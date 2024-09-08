@@ -33,7 +33,7 @@ jobs:
         run: npm install
 
       - name: Compile frontend assets in prod mode
-        run: npm run prod
+        run: npm run build
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
