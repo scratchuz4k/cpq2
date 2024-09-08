@@ -29,6 +29,9 @@ jobs:
       - name: Setup NodeJS
         uses: actions/setup-node@v4
 
+      - name: Install Composer Packages
+        run: composer install
+
       - name: Install NPM Packages
         run: npm install
 
