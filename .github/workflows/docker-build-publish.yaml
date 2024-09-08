@@ -26,11 +26,14 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup NodeJS
-        uses: actions/setup-node@v4
+      - name: Setup Composer
+      - uses: php-actions/composer@v6
 
       - name: Install Composer Packages
         run: composer install
+        
+      - name: Setup NodeJS
+        uses: actions/setup-node@v4
 
       - name: Install NPM Packages
         run: npm install
