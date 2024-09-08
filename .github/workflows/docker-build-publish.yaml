@@ -31,7 +31,7 @@ jobs:
         with:
           php_version: 8.3.10
           version: latest
-        
+
       - name: Setup NodeJS
         uses: actions/setup-node@v4
 
@@ -71,6 +71,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: .
+          file: docker/prod/Dockerfile
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
