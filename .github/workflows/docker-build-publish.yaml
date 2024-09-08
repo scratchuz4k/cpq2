@@ -27,7 +27,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup Composer
-      - uses: php-actions/composer@v6
+        uses: php-actions/composer@v6
 
       - name: Install Composer Packages
         run: composer install
