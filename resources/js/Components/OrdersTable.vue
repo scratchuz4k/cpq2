@@ -97,7 +97,6 @@ const filterData = (data) => {
         })
     });
 
-
     Object.keys(filtersRange).forEach(key => {
         articles.value = articles.value.filter((item) => {
             if (!Object.keys(item).includes(key) || !filtersRange[key] || !filtersRange[key].length) {
@@ -107,6 +106,9 @@ const filterData = (data) => {
         })
 
     })
+    if (articles.value.length) {
+        orderBy(sort.field, sort.order)
+    }
     isLoading.value = false
 }
 const countFilters = (column, value) => {
@@ -143,6 +145,25 @@ const bytesFormatter = (value) => {
     }
     return temp + " Mb"
 }
+const sort = reactive({
+    field: "id",
+    order: "asc"
+})
+const orderBy = (column, order = null) => {
+    let temp = articles.value
+
+    let changeSort = order ? order : sort.order == 'asc' ? 'desc' : 'asc'
+    sort.order = sort.field === column ? changeSort : sort.order
+    sort.field = column
+
+    if (sort.order == 'asc') {
+        temp.sort((a, b) => a[column] - b[column])
+    } else {
+        temp.sort((a, b) => b[column] - a[column])
+    }
+
+    articles.value = temp
+}
 
 watch(filters, () => {
     isLoading.value = true
@@ -169,7 +190,7 @@ getArticles()
                     </button>
                 </div>
             </div>
-            <div id="filters" class="fitlers mb-5 p-3" v-if="showFilters">
+            <div id="filters" class="fitlers mb-5 pt-3 pb-5 px-3" v-if="showFilters">
                 <Tabs>
                     <Tab title="Provider" :selected="true">
                         <div class="row mt-3">
@@ -224,7 +245,9 @@ getArticles()
             <table v-else id="table_products" class="table table-bordered table-hover">
                 <thead>
                     <tr>
-                        <th style="white-space: nowrap;">
+                        <th style="white-space: nowrap;" :style="{
+                            textDecoration: sort.field == 'productName' ? 'underline' : 'none'
+                        }">
                             Product
                             <font-awesome-icon :icon="['fas', 'sort']" />
                         </th>
@@ -236,19 +259,27 @@ getArticles()
                             Subprovider
                             <font-awesome-icon :icon="['fas', 'sort']"></font-awesome-icon>
                         </th>
-                        <th style="white-space: nowrap;">
+                        <th style="white-space: nowrap;" @click="orderBy('bearer')" :style="{
+                            textDecoration: sort.field == 'bearer' ? 'underline' : 'none'
+                        }">
                             Bearer
                             <font-awesome-icon :icon="['fas', 'sort']" />
                         </th>
-                        <th style="white-space: nowrap;">
+                        <th style="white-space: nowrap;" @click="orderBy('speed')" :style="{
+                            textDecoration: sort.field == 'speed' ? 'underline' : 'none'
+                        }">
                             Speed
                             <font-awesome-icon :icon="['fas', 'sort']" />
                         </th>
-                        <th style="white-space: nowrap;">
+                        <th style="white-space: nowrap;" @click="orderBy('priceInstall')" :style="{
+                            textDecoration: sort.field == 'priceInstall' ? 'underline' : 'none'
+                        }">
                             Set Up
                             <font-awesome-icon :icon="['fas', 'sort']" />
                         </th>
-                        <th style="white-space: nowrap;">
+                        <th style="white-space: nowrap;" @click="orderBy('priceMonthly')" :style="{
+                            textDecoration: sort.field == 'priceMonthly' ? 'underline' : 'none'
+                        }">
                             Monthly
                             <font-awesome-icon :icon="['fas', 'sort']" />
                         </th>
@@ -277,7 +308,7 @@ getArticles()
                         <td>{{ bytesFormatter(article.bearer) }} </td>
                         <td>{{ bytesFormatter(article.speed) }} </td>
                         <td>{{ GBP.format(article.priceInstall) }} </td>
-                        <td>{{ GBP.format(article.priceAnnual) }} </td>
+                        <td>{{ GBP.format(article.priceMonthly) }} </td>
                         <td>{{ GBP.format(article.priceECC) }} </td>
                         <td>{{ article.contractTermMonths }} </td>
                         <td>Add</td>
