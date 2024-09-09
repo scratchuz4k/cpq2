@@ -9,7 +9,7 @@ const props = defineProps({
         <div class="col">
             <div class="mb-3">
                 <label for="account_id" class="form-label">Select the Account:</label>
-                <select id="account_id" class="form-select" v-model="props.modelValue.account_id">
+                <select id="account_id" class="form-select" v-model="modelValue.account">
                     <option :value="null">Select an account</option>
                     <option v-for="account in accounts" :value="account">{{ account.name }}</option>
                 </select>

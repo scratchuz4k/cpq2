@@ -428,57 +428,8 @@ body {
     #filters {
         background: var(--grey-light);
         font-size: 13px;
-        display: flex;
-        align-items: flex-start;
-        padding: 30px 15px 30px 15px;
         overflow-x: auto;
         overflow-y: hidden;
-
-        label {
-            display: block;
-        }
-
-        .multiselect-native-select {
-            position:initial;
-
-            .btn-group {
-                position:initial;
-            }
-
-            .multiselect-container {
-
-                .multiselect-all.active:not(.multiselect-active-item-fallback),
-                .multiselect-all:not(.multiselect-active-item-fallback):active,
-                .multiselect-group.active:not(.multiselect-active-item-fallback),
-                .multiselect-group:not(.multiselect-active-item-fallback):active,
-                .multiselect-option.active:not(.multiselect-active-item-fallback),
-                .multiselect-option:not(.multiselect-active-item-fallback):active {
-                    background-color: var(--light-teal);
-                }
-
-                .form-check-input:focus {
-                    border-color: var(--teal);
-                    box-shadow: 0 0 0 0.25rem var(--light-teal);;
-                }
-
-                .multiselect-all,
-                .multiselect-group,
-                .multiselect-option {
-                    padding: 0 .25rem 0 .75rem;
-                }
-
-                .form-check-input:checked {
-                    background-color: var(--teal);
-                    border-color: var(--teal);
-                }
-
-                .form-check-label {
-                    font-size: 14px;
-                    line-height: 1.5rem;
-                }
-            }
-        }
-
 
         .slider-wrapper {
             label {

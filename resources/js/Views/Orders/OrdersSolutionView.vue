@@ -1,12 +1,11 @@
 <script setup>
 import { ref } from "vue"
 defineProps({
-    solution_types: Array,
+    solution_types: Object,
     modelValue: Object
 })
 
 
-const solutionCheck = ref(true)
 const solutionChange = (form) => {
     form.postCode = ''
     form.address = null
@@ -14,10 +13,10 @@ const solutionChange = (form) => {
     addresses.value = []
 
     if (form.solution_type == 3) {
-        solutionCheck.value = true
+        form.solutionCheck = true
         return
     }
-    solutionCheck.value = false
+    form.solutionCheck = false
 }
 
 const addresses = ref([])
@@ -29,7 +28,7 @@ const addressSearch = async (form) => {
 
     addresses.value = []
     form.address = null
-    solutionCheck.value = true
+    form.solutionCheck = true
     form.isLoading = true
 
     try {
@@ -52,7 +51,7 @@ const addressSelect = async (form) => {
         let res = await axios.post(`/api/external/get-position-by-address`, { fullAddress: form.address.label })
         form.isLoading = false
         form.position = res.data
-        solutionCheck.value = false
+        form.solutionCheck = false
     } catch (ex) {
         alert(ex.response.data.message)
     }

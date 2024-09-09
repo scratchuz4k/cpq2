@@ -2,7 +2,7 @@
 
     <div :class="props.class">
         <ul class="nav nav-tabs">
-            <li class="nav-item" v-for="([identifier, tabData], index) in tabs" :key="identifier">
+            <li class="nav-item" v-for="([identifier, tabData], index) in tabs" :key="identifier" style="cursor: pointer;">
                 <a class="nav-link" :class="[(activeTab == identifier) ? 'active ' : '']" :id="index + '-' + index"
                     @click.prevent="setActiveTab(identifier)" v-html="tabData.name"></a>
             </li>
@@ -44,4 +44,9 @@ export default defineComponent({
 
 </script>
 
-<style scoped></style>
+<style scoped>
+.active{
+    color:white!important;
+    background-color: var(--primary-light)!important;
+    font-weight: bold;
+}</style>

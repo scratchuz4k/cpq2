@@ -20,6 +20,7 @@ const form = reactive({
     address: null,
     postCode: null,
     position: null,
+    solutionCheck: true
 })
 
 const step = ref(0)
@@ -46,7 +47,7 @@ const step = ref(0)
             <template v-if="step == 0">
                 <div class="row mb-3">
                     <div class="col d-flex justify-content-end">
-                        <button class="btn btn-primary" :disabled="form.account_id == null" type="button"
+                        <button class="btn btn-primary" :disabled="form.account == null" type="button"
                             @click="() => step++">Continue</button>
                     </div>
                 </div>
@@ -56,7 +57,7 @@ const step = ref(0)
                 <div class="row mb-3">
                     <div class="col d-flex  justify-content-end">
                         <button class="btn btn-primary" type="button" @click="() => step--">Back</button>
-                        <button class="btn btn-primary mx-2" type="button" :disabled="solutionCheck"
+                        <button class="btn btn-primary mx-2" type="button" :disabled="form.solutionCheck"
                             @click="() => step++">
                             Continue
                             <div v-if="form.isLoading" class="spinner-border  spinner-border-sm" role="status">

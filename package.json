@@ -25,9 +25,14 @@
         "@fortawesome/free-solid-svg-icons": "^6.6.0",
         "@fortawesome/vue-fontawesome": "^3.0.8",
         "@popperjs/core": "^2.11.8",
+        "@primevue/themes": "^4.0.5",
         "bootstrap": "^5.3.3",
         "datatables.net-bs5": "^2.1.5",
         "datatables.net-dt": "^2.1.5",
-        "datatables.net-vue3": "^3.0.2"
+        "datatables.net-vue3": "^3.0.2",
+        "nouislider": "^15.8.1",
+        "primevue": "^4.0.5",
+        "uuid": "^10.0.0",
+        "vite-plugin-static-copy": "^1.0.6"
     }
 }

@@ -3,10 +3,10 @@
         <div class="container">
             <div class="row mb-3">
                 <div class="col">
-                    <img src="@assets/mockup/cloud-market-tools-giacom-logo.png">
+                    <img src="/images/cloud-market-tools-giacom-logo.png">
                 </div>
                 <div class="col d-flex justify-center justify-content-sm-end">
-                    <img src="@assets/mockup/cloud-market-tools-social-icons.png">
+                    <img src="/images/cloud-market-tools-social-icons.png">
                 </div>
             </div>
             <div class="row">
