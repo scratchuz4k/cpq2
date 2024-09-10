@@ -1,10 +1,10 @@
 <script setup>
 import axios from 'axios';
+
 import { ref, reactive, watch } from 'vue'
 import DataTable from 'datatables.net-vue3';
-import DataTablesCore from 'datatables.net';
+import DataTablesCore from 'datatables.net-bs5';
 import MultiSelect from 'primevue/multiselect';
-import Slider from 'primevue/slider';
 
 
 DataTable.use(DataTablesCore);
@@ -12,6 +12,7 @@ DataTable.use(DataTablesCore);
 const props = defineProps({
     modelValue: Object
 })
+
 const showFilters = ref(false)
 const isLoading = ref(true)
 let data = []
@@ -59,10 +60,8 @@ const GBP = new Intl.NumberFormat("en-GB", {
 
 const getArticles = async () => {
     let query = {
-        connectivityType: props.modelValue.solution_type,
-        postCode: props.modelValue.postCode,
-        latitude: props.modelValue.position?.lat,
-        longitude: props.modelValue.position?.lon,
+        connectivityType: 3,
+        postCode: props.modelValue.address_postcode,
     };
     try {
         let res = await axios.post('/api/external/get-articles-from-shop-blocks', query)
@@ -149,6 +148,7 @@ const sort = reactive({
     field: "id",
     order: "asc"
 })
+
 const orderBy = (column, order = null) => {
     let temp = articles.value
 
@@ -164,6 +164,34 @@ const orderBy = (column, order = null) => {
 
     articles.value = temp
 }
+
+const add = async (article) => {
+    try {
+        let res = await axios.post('/api/order-items',
+            {
+                order_id: props.modelValue.id,
+                product_id: null,
+                quantity: 1,
+                name: article.productName,
+                data: article,
+            })
+        props.modelValue.items.push(res.data)
+    } catch (ex) {
+        alert(ex.response.data.message)
+    }
+}
+
+const remove = async (article) => {
+    let item = props.modelValue.items.find((item) => item.data.quoteId == article.quoteId)
+    let index = props.modelValue.items.findIndex((item) => item.data.quoteId == article.quoteId)
+    try {
+        let res = await axios.delete(`/api/order-items/${item.id}`)
+        props.modelValue.items.splice(index, 1)
+    } catch (ex) {
+        alert(ex.response.data.message)
+    }
+}
+
 
 watch(filters, () => {
     isLoading.value = true
@@ -242,11 +270,13 @@ getArticles()
                 </Tabs>
             </div>
             <Loader v-if="isLoading"></Loader>
-            <table v-else id="table_products" class="table table-bordered table-hover">
+            <table v-else id="table_products" class="table table-striped">
                 <thead>
                     <tr>
+                        <th></th>
                         <th style="white-space: nowrap;" :style="{
-                            textDecoration: sort.field == 'productName' ? 'underline' : 'none'
+                            textDecoration: sort.field == 'productName' ? 'underline' : 'none',
+                            width: '30%'
                         }">
                             Product
                             <font-awesome-icon :icon="['fas', 'sort']" />
@@ -259,25 +289,25 @@ getArticles()
                             Subprovider
                             <font-awesome-icon :icon="['fas', 'sort']"></font-awesome-icon>
                         </th>
-                        <th style="white-space: nowrap;" @click="orderBy('bearer')" :style="{
+                        <th style="white-space: nowrap;" :style="{
                             textDecoration: sort.field == 'bearer' ? 'underline' : 'none'
                         }">
                             Bearer
                             <font-awesome-icon :icon="['fas', 'sort']" />
                         </th>
-                        <th style="white-space: nowrap;" @click="orderBy('speed')" :style="{
+                        <th style="white-space: nowrap;" :style="{
                             textDecoration: sort.field == 'speed' ? 'underline' : 'none'
                         }">
                             Speed
                             <font-awesome-icon :icon="['fas', 'sort']" />
                         </th>
-                        <th style="white-space: nowrap;" @click="orderBy('priceInstall')" :style="{
+                        <th style="white-space: nowrap;" :style="{
                             textDecoration: sort.field == 'priceInstall' ? 'underline' : 'none'
                         }">
                             Set Up
                             <font-awesome-icon :icon="['fas', 'sort']" />
                         </th>
-                        <th style="white-space: nowrap;" @click="orderBy('priceMonthly')" :style="{
+                        <th style="white-space: nowrap;" :style="{
                             textDecoration: sort.field == 'priceMonthly' ? 'underline' : 'none'
                         }">
                             Monthly
@@ -291,11 +321,21 @@ getArticles()
                             Contract Term
                             <font-awesome-icon :icon="['fas', 'sort']" />
                         </th>
-                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="article in articles" style="text-align: center;">
+                    <tr v-for="article in articles"
+                        :class="{ 'active': props.modelValue.items.find((item) => item.data.quoteId == article.quoteId) }"
+                        style="text-align: center;">
+                        <td>
+                            <button v-if="!props.modelValue.items.find((item) => item.data.quoteId == article.quoteId)"
+                                type="button" class="btn btn-primary btn-sm" @click="add(article)">
+                                <font-awesome-icon :icon="['fas', 'add']" />
+                            </button>
+                            <button v-else type="button" class="btn btn-secondary btn-sm" @click="remove(article)">
+                                <font-awesome-icon :icon="['fas', 'minus']" />
+                            </button>
+                        </td>
                         <td style="text-align: left;">{{ article.productName }} </td>
                         <td><img class="img-provider" @error="setAltImg"
                                 :src="`/images/providers/${article.providerKey}.png`" :alt="article.providerName"
@@ -310,11 +350,16 @@ getArticles()
                         <td>{{ GBP.format(article.priceInstall) }} </td>
                         <td>{{ GBP.format(article.priceMonthly) }} </td>
                         <td>{{ GBP.format(article.priceECC) }} </td>
-                        <td>{{ article.contractTermMonths }} </td>
-                        <td>Add</td>
+                        <td>{{ article.contractTermMonths }} Months </td>
                     </tr>
                 </tbody>
             </table>
         </div>
     </div>
 </template>
+
+<style scoped>
+tr.active td {
+    background-color: var(--light-teal);
+}
+</style>

@@ -2,10 +2,9 @@
 import DataTable from 'datatables.net-vue3';
 import DataTablesCore from 'datatables.net-bs5';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head } from '@inertiajs/vue3';
+import { Head, router } from '@inertiajs/vue3';
 import { reactive, ref } from 'vue'
-import axios from 'axios';
-import OrdersTable from '@/Components/OrdersTable.vue';
+
 DataTable.use(DataTablesCore);
 
 defineProps({
@@ -16,7 +15,7 @@ defineProps({
 const form = reactive({
     isLoading: false,
     account: null,
-    solution_type: null,
+    solutionType: null,
     address: null,
     postCode: null,
     position: null,
@@ -25,87 +24,63 @@ const form = reactive({
 
 const step = ref(0)
 
+function submit() {
+    try {
+        router.post('/orders',
+            {
+                account_id: form.account?.id,
+                address_line1: form.address?.label,
+                address_postcode: form.address?.addressparts?.PostCode,
+                solution_type_id: form.solutionType?.code
+            })
+    } catch (ex) {
+        alert(ex.response.data.message)
+    }
+}
+
 </script>
 
 <template>
 
-    <Head title="Dashboard" />
+    <Head title="Create a Quote" />
     <AuthenticatedLayout>
         <div class="d-flex justify-content-between" style="justify-content: space-between;">
             <h1>Create a Quote<span>.</span></h1>
-            <Steps v-model="step" :steps="[
+            <!-- <Steps v-model="step" :steps="[
                 'Account',
                 'Solution',
                 'Quote',
-                'Extras',
                 'Resume',
             ]">
-            </Steps>
+            </Steps> -->
         </div>
 
         <div class="panel">
-            <template v-if="step == 0">
-                <div class="row mb-3">
-                    <div class="col d-flex justify-content-end">
-                        <button class="btn btn-primary" :disabled="form.account == null" type="button"
-                            @click="() => step++">Continue</button>
-                    </div>
-                </div>
-                <OrdersAccountView v-model="form" :accounts="accounts"></OrdersAccountView>
-            </template>
-            <template v-if="step == 1">
-                <div class="row mb-3">
-                    <div class="col d-flex  justify-content-end">
-                        <button class="btn btn-primary" type="button" @click="() => step--">Back</button>
-                        <button class="btn btn-primary mx-2" type="button" :disabled="form.solutionCheck"
-                            @click="() => step++">
-                            Continue
-                            <div v-if="form.isLoading" class="spinner-border  spinner-border-sm" role="status">
-                                <span class="visually-hidden">Loading...</span>
-                            </div>
-                        </button>
-                    </div>
-                </div>
-                <OrdersSolutionView v-model="form" :solution_types="solution_types"></OrdersSolutionView>
-            </template>
-            <template v-if="step == 2">
-                <div class="row mb-3">
-                    <div class="col d-flex  justify-content-end">
-                        <button class="btn btn-primary " type="button" @click="() => step--">Back</button>
-                        <button class="btn btn-primary mx-2" type="button" @click="() => step++">Continue</button>
-                    </div>
-                </div>
-
-                <div class="row mb-4">
-                    <div class="col">
-                        <div id="price_header">
-                            <p class="mb-0">
-                                <b>Solution Type:</b> {{ form.solution_type }}
-                            </p>
-                            <p class="mb-0" v-if="form.address?.label">
-                                <b>Address:</b> {{ form.address?.label }}
-                            </p>
+            <form @submit.prevent="submit">
+                <template v-if="step == 0">
+                    <div class="row mb-3">
+                        <div class="col d-flex justify-content-end">
+                            <button class="btn btn-primary" :disabled="form.account == null" type="button"
+                                @click="() => step++">Continue</button>
                         </div>
                     </div>
-                </div>
-                <OrdersTable v-model="form"></OrdersTable>
-            </template>
-            <template v-if="step == 3">
-                <div class="row mb-3">
-                    <div class="col d-flex  justify-content-end">
-                        <button class="btn btn-primary " type="button" @click="() => step--">Back</button>
-                        <button class="btn btn-primary mx-2" type="button" @click="() => step++">Continue</button>
+                    <OrdersAccountView v-model="form" :accounts="accounts"></OrdersAccountView>
+                </template>
+                <template v-if="step == 1">
+                    <div class="row mb-3">
+                        <div class="col d-flex  justify-content-end">
+                            <button class="btn btn-primary" type="button" @click="() => step--">Back</button>
+                            <button class="btn btn-primary mx-2" type="submit" :disabled="form.solutionCheck">
+                                Create
+                                <div v-if="form.isLoading" class="spinner-border  spinner-border-sm" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                            </button>
+                        </div>
                     </div>
-                </div>
-            </template>
-            <template v-if="step == 4">
-                <div class="row mb-3">
-                    <div class="col d-flex  justify-content-end">
-                        <button class="btn btn-primary " type="button" @click="() => step--">Back</button>
-                        <button class="btn btn-primary mx-2" type="button" @click="">Finish</button>
-                    </div>
-                </div>
-            </template>
+                    <OrdersSolutionView v-model="form" :solution_types="solution_types"></OrdersSolutionView>
+                </template>
+            </form>
         </div>
     </AuthenticatedLayout>
 </template>

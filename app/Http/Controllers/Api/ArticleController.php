@@ -2,13 +2,10 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Models\Price;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Http;
+use App\Http\Controllers\BaseController;
 
-class ArticleController extends Controller
+class ArticleController extends BaseController
 {
     /**
      * Display a listing of the resource.

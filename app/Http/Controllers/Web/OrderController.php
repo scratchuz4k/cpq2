@@ -5,13 +5,21 @@ namespace App\Http\Controllers\Web;
 use Inertia\Inertia;
 use App\Models\Order;
 use App\Models\Account;
-use Inertia\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+use App\Services\OrderService;
+use Illuminate\Support\Facades\Log;
+use App\Http\Controllers\BaseController;
 use App\Http\Resources\OrderResource;
+use App\Http\Requests\OrderCreateRequest;
 
-class OrderController extends Controller
+class OrderController extends BaseController
 {
+    protected $model = Order::class;
+
+    public function __construct(protected OrderService $orderService)
+    {        
+        parent::__construct();
+    }
     /**
      * Display a listing of the resource.
      */
@@ -33,29 +41,37 @@ class OrderController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(OrderCreateRequest $request)
     {
-        return DB::transaction(function () use ($request) {
-            $order = Order::create($request->all());
-
-            return $order;
-        });
+        try {
+            $order = $this->orderService->store($request->all());
+        } catch (\Exception $e) {
+            if (!env('APP_DEBUG')) {
+                Log::error($e->getMessage());
+            }
+            throw new \Exception($e);
+        }
+        return redirect()->route('orders.edit', ['order' => $order->id]);
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Order $order)
     {
-        //
+        return Inertia::render('Order/Show', [
+            'order' => new OrderResource($order)
+        ]);
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(Order $order)
     {
-        //
+        return Inertia::render('Order/Edit', [
+            'order' => new OrderResource($order)
+        ]);
     }
 
     /**

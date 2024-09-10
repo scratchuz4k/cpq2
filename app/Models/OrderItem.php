@@ -9,6 +9,20 @@ use Illuminate\Database\Eloquent\Model;
 class OrderItem extends Model
 {
     use HasFactory;
+    protected $fillable = [
+        "order_id",
+        "product_id",
+        "quantity",
+        "name",
+        "data"
+    ];
+
+    protected function casts(): array
+    {
+        return [
+            'data' => 'object',
+        ];
+    }
 
     protected static function booted(): void
     {

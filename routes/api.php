@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\OrderItemController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\AddressController;
@@ -16,5 +17,6 @@ Route::prefix("external")->group(function () {
 Route::apiResources([
     "articles" => ArticleController::class,
     "addresses" => AddressController::class,
-    "orders" => OrderController::class
+    "orders" => OrderController::class,
+    "order-items" => OrderItemController::class
 ]);

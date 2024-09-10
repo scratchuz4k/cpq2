@@ -10,12 +10,19 @@ const solutionChange = (form) => {
     form.postCode = ''
     form.address = null
     form.position = null
+    form.articles = []
     addresses.value = []
 
-    if (form.solution_type == 3) {
+    if (!form.solutionType) {
         form.solutionCheck = true
         return
     }
+
+    if (form.solutionType?.code == 3) {
+        form.solutionCheck = true
+        return
+    }
+
     form.solutionCheck = false
 }
 
@@ -63,20 +70,20 @@ const addressSelect = async (form) => {
         <div class="col">
             <div class="mb-3">
                 <label class="form-label">Solution Type</label>
-                <select class="form-select" @change="solutionChange(modelValue)" v-model="modelValue.solution_type">
+                <select class="form-select" @change="solutionChange(modelValue)" v-model="modelValue.solutionType">
                     <option :value="null">Select a solution type and address to get started</option>
-                    <option v-for="(solution, key) in solution_types" :value="key">
-                        {{ key }} - {{ solution }}
+                    <option v-for="(solution, key) in solution_types" :value="{ code: key, name: solution }">
+                        {{ solution }}
                     </option>
                 </select>
             </div>
 
-            <template v-if="modelValue.solution_type == 3">
+            <template v-if="modelValue.solutionType?.code == 3">
                 <div class="mb-3 " id="postcode">
                     <label for="input_address" class="form-label">Enter postcode</label>
                     <input class="form-control" id="input_address" placeholder="B11 1SH" name="postcode"
                         v-model="modelValue.postCode">
-                    <button class="btn btn-secondary mt-3" @click="addressSearch(modelValue)">Search</button>
+                    <button type="button" class="btn btn-secondary mt-3" @click="addressSearch(modelValue)">Search</button>
                 </div>
 
                 <div class="mb-3" id="address" v-if="addresses.length">

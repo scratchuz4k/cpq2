@@ -1,0 +1,58 @@
+<script setup>
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import { Head,Link } from '@inertiajs/vue3';
+
+
+defineProps({
+    order: Object,
+});
+
+const solutionsViews = {
+    3: 'OrdersConectivityTableView',
+    4: 'OrdersMobileView',
+}
+</script>
+
+<template>
+
+    <Head :title="'Quote #' + order.id" />
+    <AuthenticatedLayout>
+        <div class="row mb-3">
+            <div class="col d-flex">
+                <div class="me-3">
+                    <font-awesome-icon class="fa-border" :icon="['fas', 'money-bill-wave']"
+                        style="font-size:30px;color:var(--secondary-light);border-color:var(--secondary-light);border-width:4px;border-radius:12px" />
+                </div>
+                <div style="padding-top:1px">
+                    <p class="m-0">Q-{{ order.id }} // <span id="account_name">
+                            {{ order.account?.name }}
+                        </span>
+                    </p>
+                    <h1 class="m-0" style="font-size:18px;font-weight:bold">Price</h1>
+                </div>
+            </div>
+            <div class="col " style="text-align: right">
+
+                <Link :href="route('orders.show', { order: order.id })" class="btn btn-primary" method="get">
+                Resume
+                </Link>
+            </div>
+        </div>
+
+        <div class="row mb-4">
+            <div class="col">
+                <div id="price_header">
+                    <p class="mb-0">
+                        <b>Solution Type:</b> {{ order.solution_type_name }}
+                    </p>
+                    <p class="mb-0" v-if="order.address_line1">
+                        <b>Address:</b> {{ order.address_line1 }}
+                    </p>
+                </div>
+            </div>
+        </div>
+        <component :is="solutionsViews[order.solution_type_id]" v-bind="{
+            modelValue: order
+        }"></component>
+    </AuthenticatedLayout>
+</template>

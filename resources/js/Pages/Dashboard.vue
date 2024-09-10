@@ -2,8 +2,7 @@
 import DataTable from 'datatables.net-vue3';
 import DataTablesCore from 'datatables.net-bs5';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head } from '@inertiajs/vue3';
-import axios from 'axios';
+import { Head, Link } from '@inertiajs/vue3';
 DataTable.use(DataTablesCore);
 
 </script>
@@ -20,7 +19,7 @@ DataTable.use(DataTablesCore);
 
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                     <DataTable class="table table-striped" :columns="[
+                    <DataTable class="table table-striped" :columns="[
                         { data: 'id', title: '#' },
                         { data: 'account.name', title: 'Account' },
                         { data: 'solution_type_id', title: 'Solution' },
@@ -30,6 +29,11 @@ DataTable.use(DataTablesCore);
                     ]" :ajax="{
                         url: '/api/orders',
                     }">
+                        <template #column-0="props">
+                            <Link :href="route('orders.show', { order: props.cellData })" method="get">
+                            {{ props.cellData }}
+                            </Link>                            
+                        </template>
                     </DataTable>
                 </div>
             </div>

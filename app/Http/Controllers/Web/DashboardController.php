@@ -3,10 +3,9 @@
 namespace App\Http\Controllers\Web;
 
 use Inertia\Inertia;
-use App\Models\Order;
-use Inertia\Controller;
+use App\Http\Controllers\BaseController;
 
-class DashboardController extends Controller
+class DashboardController extends BaseController
 {
     /**
      * Display a listing of the resource.

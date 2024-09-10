@@ -4,7 +4,6 @@ namespace App\Models;
 
 use App\Models\Scopes\TenantScope;
 use App\Models\Scopes\UserScope;
-use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -15,6 +14,14 @@ class Order extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        "account_id",
+        "solution_type_id",
+        "address_line1",
+        "address_postcode",
+        "tenant_id",
+        "name"
+    ];
     private static $solution_types = [
         "3" => 'Connectivity - Ethernet & Fibre',
         "4" => 'Mobile',
@@ -22,7 +29,7 @@ class Order extends Model
         // "2" => 'Connectivity - Fibre',
     ];
 
-    protected $appends= ['status'];
+    protected $appends = ['status'];
 
     public function getStatusAttribute()
     {

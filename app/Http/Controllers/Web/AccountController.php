@@ -4,9 +4,9 @@ namespace App\Http\Controllers\Web;
 
 use Inertia\Inertia;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\BaseController;
 
-class AccountController extends Controller
+class AccountController extends BaseController
 {
     /**
      * Display a listing of the resource.
