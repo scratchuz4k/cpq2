@@ -26,6 +26,7 @@ class OrderResource extends JsonResource
             'solution_type_name' => array_key_exists($this->solution_type_id, $this->solution_types) ? $this->solution_types[$this->solution_type_id] : null,
             'account' => $this->account,
             'items' => $this->items,
+            'totals' => $this->totals(),
             'updated_at' => format_date($this->updated_at),
         ];
     }

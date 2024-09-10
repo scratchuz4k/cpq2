@@ -53,11 +53,6 @@ const subProviders = {
     "vodafone": "vodafone",
 };
 
-const GBP = new Intl.NumberFormat("en-GB", {
-    style: "currency",
-    currency: "GBP",
-});
-
 const getArticles = async () => {
     let query = {
         connectivityType: 3,

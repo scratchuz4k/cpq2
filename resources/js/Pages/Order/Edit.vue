@@ -1,6 +1,6 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head,Link } from '@inertiajs/vue3';
+import { Head, Link } from '@inertiajs/vue3';
 
 
 defineProps({
@@ -51,8 +51,10 @@ const solutionsViews = {
                 </div>
             </div>
         </div>
-        <component :is="solutionsViews[order.solution_type_id]" v-bind="{
-            modelValue: order
-        }"></component>
+        <div class="panel">
+            <component :is="solutionsViews[order.solution_type_id]" v-bind="{
+                modelValue: order
+            }"></component>
+        </div>
     </AuthenticatedLayout>
 </template>

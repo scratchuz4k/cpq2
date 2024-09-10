@@ -77,6 +77,12 @@ createInertiaApp({
             }
         });
 
+        app.config.globalProperties.GBP = new Intl.NumberFormat("en-GB", {
+            style: "currency",
+            currency: "GBP",
+        });
+
+
         return app.mount(el);
     },
     progress: {

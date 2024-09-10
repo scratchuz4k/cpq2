@@ -113,20 +113,19 @@ class Order extends Model
         $subtotal = 0;
         $subtotalOneoff = 0;
 
-        foreach ($this->items()->get()->toArray() as $item) {
-            $data = json_decode($item['data'], true);
-            $lineTotal = (float) $item['quantity'] * (float) $data['priceMonthly'];
-            $lineTotalOneoff = (float) $item['quantity'] * (float) $data['priceInstall'];
+        foreach ($this->items as $item) {
+            $lineTotal = (float) $item['quantity'] * (float) $item->data->priceMonthly;
+            $lineTotalOneoff = (float) $item['quantity'] * (float) $item->data->priceInstall;
             $subtotal += $lineTotal;
             $subtotalOneoff += $lineTotalOneoff;
         }
 
-        $totals['monthly_net'] = number_format($subtotal, 2);
-        $totals['monthly_vat'] = number_format($subtotal * 0.2, 2);
-        $totals['monthly_gross'] = number_format($subtotal * 1.2, 2);
-        $totals['oneoff_net'] = number_format($subtotalOneoff, 2);
-        $totals['oneoff_vat'] = number_format($subtotalOneoff * 0.2, 2);
-        $totals['oneoff_gross'] = number_format($subtotalOneoff * 1.2, 2);
+        $totals['monthly_net'] = $subtotal;
+        $totals['monthly_vat'] = $subtotal * 0.2;
+        $totals['monthly_gross'] = $subtotal * 1.2;
+        $totals['oneoff_net'] = $subtotalOneoff;
+        $totals['oneoff_vat'] = $subtotalOneoff * 0.2;
+        $totals['oneoff_gross'] = $subtotalOneoff * 1.2;
 
         return $totals;
     }
