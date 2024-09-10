@@ -13,6 +13,7 @@ const props = defineProps({
     modelValue: Object
 })
 
+const showQuoted = ref(false)
 const showFilters = ref(false)
 const isLoading = ref(true)
 let data = []
@@ -187,6 +188,16 @@ const remove = async (article) => {
     }
 }
 
+const getQuoted = () => {
+    showQuoted.value = !showQuoted.value
+    if (!showQuoted.value) {
+        articles.value = data
+        return
+    }
+    articles.value = articles.value.filter((article) => {
+        return props.modelValue.items.find((item) => item.data.quoteId == article.quoteId)
+    })
+}
 
 watch(filters, () => {
     isLoading.value = true
@@ -208,6 +219,9 @@ getArticles()
                 <h2>Live prices</h2>
 
                 <div>
+                    <button class="btn m-2" :class="[showQuoted ? ' btn-light' : 'btn-secondary']" @click="getQuoted()">
+                        Show Quoted
+                    </button>
                     <button class="btn btn-primary m-2" @click="() => showFilters = !showFilters">
                         <font-awesome-icon :icon="['fas', 'filter']" />
                     </button>
