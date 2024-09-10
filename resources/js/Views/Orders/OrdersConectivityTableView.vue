@@ -104,6 +104,13 @@ const filterData = (data) => {
     if (articles.value.length) {
         orderBy(sort.field, sort.order)
     }
+    
+    if(showQuoted.value){
+        articles.value = articles.value.filter((article) => {
+            return props.modelValue.items.find((item) => item.data.quoteId == article.quoteId)
+        })
+    }
+
     isLoading.value = false
 }
 const countFilters = (column, value) => {
@@ -181,7 +188,7 @@ const remove = async (article) => {
     let item = props.modelValue.items.find((item) => item.data.quoteId == article.quoteId)
     let index = props.modelValue.items.findIndex((item) => item.data.quoteId == article.quoteId)
     try {
-        let res = await axios.delete(`/api/order-items/${item.id}`)
+        await axios.delete(`/api/order-items/${item.id}`)
         props.modelValue.items.splice(index, 1)
     } catch (ex) {
         alert(ex.response.data.message)
@@ -190,13 +197,7 @@ const remove = async (article) => {
 
 const getQuoted = () => {
     showQuoted.value = !showQuoted.value
-    if (!showQuoted.value) {
-        articles.value = data
-        return
-    }
-    articles.value = articles.value.filter((article) => {
-        return props.modelValue.items.find((item) => item.data.quoteId == article.quoteId)
-    })
+    filterData(data)
 }
 
 watch(filters, () => {
