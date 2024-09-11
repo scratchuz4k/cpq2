@@ -13,7 +13,9 @@ class AccountController extends BaseController
      */
     public function index()
     {
-        //
+        return Inertia::render("Account/Index", [
+            "tenants" => ["asd", "asd", "asd"]
+        ]);
     }
 
     /**

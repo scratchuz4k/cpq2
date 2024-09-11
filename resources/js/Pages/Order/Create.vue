@@ -24,7 +24,7 @@ const form = reactive({
 
 const step = ref(0)
 
-function submit() {
+const submit = () => {
     try {
         router.post('/orders',
             {
@@ -57,7 +57,7 @@ function submit() {
 
         <div class="panel">
             <form @submit.prevent="submit">
-                <template v-if="step == 0">
+                <template v-if="step == 0" >
                     <div class="row mb-3">
                         <div class="col d-flex justify-content-end">
                             <button class="btn btn-primary" :disabled="form.account == null" type="button"

@@ -13,7 +13,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::resources([
         'orders' => OrderController::class,
-        'accounts' => AccountController::class
+        'account' => AccountController::class
     ]);
     
     Route::middleware('auth')->group(function () {

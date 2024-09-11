@@ -1,6 +1,5 @@
 <script setup>
 import ApplicationLogo from '@/Components/ApplicationLogo.vue';
-import { Link } from '@inertiajs/vue3';
 </script>
 
 <template>
@@ -32,10 +31,8 @@ import { Link } from '@inertiajs/vue3';
                         <a class="nav-link" href="#">BILLING</a>
                     </li>
                     <li class="nav-item">
-                        <Link :href="route('logout')" class="nav-link" method="post" as="button">
                         <font-awesome-icon :icon="['far', 'building']" />
                         {{ $page.props.auth.user.name }}
-                        </Link>
                     </li>
 
                     <li class="nav-item">
