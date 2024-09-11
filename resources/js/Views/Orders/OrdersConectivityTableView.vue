@@ -104,8 +104,8 @@ const filterData = (data) => {
     if (articles.value.length) {
         orderBy(sort.field, sort.order)
     }
-    
-    if(showQuoted.value){
+
+    if (showQuoted.value) {
         articles.value = articles.value.filter((article) => {
             return props.modelValue.items.find((item) => item.data.quoteId == article.quoteId)
         })
@@ -214,156 +214,160 @@ getArticles()
 
 </script>
 <template>
-    <div class="row mb-4" style="min-height: 50vh;">
-        <div class="col">
-            <div class="d-flex justify-content-between align-items-center">
-                <h2>Live prices</h2>
+    <div class="panel">
+        <div class="row mb-4" style="min-height: 50vh;">
+            <div class="col">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h2>Live prices</h2>
 
-                <div>
-                    <button class="btn m-2" :class="[showQuoted ? ' btn-light' : 'btn-secondary']" @click="getQuoted()">
-                        Show Quoted
-                    </button>
-                    <button class="btn btn-primary m-2" @click="() => showFilters = !showFilters">
-                        <font-awesome-icon :icon="['fas', 'filter']" />
-                    </button>
+                    <div>
+                        <button class="btn m-2" :class="[showQuoted ? ' btn-light' : 'btn-secondary']"
+                            @click="getQuoted()">
+                            Show Quoted
+                        </button>
+                        <button class="btn btn-primary m-2" @click="() => showFilters = !showFilters">
+                            <font-awesome-icon :icon="['fas', 'filter']" />
+                        </button>
+                    </div>
                 </div>
+                <div id="filters" class="fitlers mb-5 pt-3 pb-5 px-3" v-if="showFilters">
+                    <Tabs>
+                        <Tab title="Provider" :selected="true">
+                            <div class="row mt-3">
+                                <div class="col">
+                                    <label for="filter-subprovider" class="form-label">Provider:</label>
+                                    <MultiSelect v-model="filters.providerName" :options="filterList.providerName"
+                                        filter placeholder="Select a provider" class="w-100">
+                                        <template #option="slotProps">
+                                            <div>{{ slotProps.option }} ({{ countFilters("providerName",
+                                                slotProps.option) }})</div>
+                                        </template>
+                                    </MultiSelect>
+                                </div>
+                                <div class="col">
+                                    <label for="filter-subprovider" class="form-label">Subprovider:</label>
+                                    <MultiSelect v-model="filters.connectivitySupplierName"
+                                        :options="filterList.connectivitySupplierName" filter
+                                        placeholder="Select a subprovider" class="w-100">
+                                        <template #option="slotProps">
+                                            <div>{{ slotProps.option }} ({{ countFilters("connectivitySupplierName",
+                                                slotProps.option) }})</div>
+                                        </template>
+                                    </MultiSelect>
+                                </div>
+                            </div>
+                        </Tab>
+                        <Tab title="Contract">
+                            <div class="row mt-3">
+                                <div class="col">
+                                    <label for="filter-contract" class="form-label">Contract Length:</label>
+                                    <MultiSelect v-model="filters.contractTermMonths"
+                                        :options="filterList.contractTermMonths" filter placeholder="Select months"
+                                        class="w-100">
+                                        <template #option="slotProps">
+                                            <div>{{ slotProps.option }} Months</div>
+                                        </template>
+                                    </MultiSelect>
+                                </div>
+                                <div class="col px-5">
+                                    <label for="bearerSlider" class="form-label">Bearer:</label>
+                                    <Range v-model="filtersRange.bearer" :options="filterList.bearer" />
+                                </div>
+                                <div class="col px-5">
+                                    <label for="speedSlider" class="form-label">Speed:</label>
+                                    <Range v-model="filtersRange.speed" :options="filterList.speed" mode="range" />
+                                </div>
+                            </div>
+                        </Tab>
+                    </Tabs>
+                </div>
+                <Loader v-if="isLoading"></Loader>
+                <table v-else id="table_products" class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th style="white-space: nowrap;" :style="{
+                                textDecoration: sort.field == 'productName' ? 'underline' : 'none',
+                                width: '30%'
+                            }">
+                                Product
+                                <font-awesome-icon :icon="['fas', 'sort']" />
+                            </th>
+                            <th style="white-space: nowrap;">
+                                Provider
+                                <font-awesome-icon :icon="['fas', 'sort']" />
+                            </th>
+                            <th style="white-space: nowrap;">
+                                Subprovider
+                                <font-awesome-icon :icon="['fas', 'sort']"></font-awesome-icon>
+                            </th>
+                            <th style="white-space: nowrap;" :style="{
+                                textDecoration: sort.field == 'bearer' ? 'underline' : 'none'
+                            }">
+                                Bearer
+                                <font-awesome-icon :icon="['fas', 'sort']" />
+                            </th>
+                            <th style="white-space: nowrap;" :style="{
+                                textDecoration: sort.field == 'speed' ? 'underline' : 'none'
+                            }">
+                                Speed
+                                <font-awesome-icon :icon="['fas', 'sort']" />
+                            </th>
+                            <th style="white-space: nowrap;" :style="{
+                                textDecoration: sort.field == 'priceInstall' ? 'underline' : 'none'
+                            }">
+                                Set Up
+                                <font-awesome-icon :icon="['fas', 'sort']" />
+                            </th>
+                            <th style="white-space: nowrap;" :style="{
+                                textDecoration: sort.field == 'priceMonthly' ? 'underline' : 'none'
+                            }">
+                                Monthly
+                                <font-awesome-icon :icon="['fas', 'sort']" />
+                            </th>
+                            <th style="white-space: nowrap;">
+                                ECC
+                                <font-awesome-icon :icon="['fas', 'sort']" />
+                            </th>
+                            <th style="white-space: nowrap;">
+                                Contract Term
+                                <font-awesome-icon :icon="['fas', 'sort']" />
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="article in articles"
+                            :class="{ 'active': props.modelValue.items.find((item) => item.data.quoteId == article.quoteId) }"
+                            style="text-align: center;">
+                            <td>
+                                <button
+                                    v-if="!props.modelValue.items.find((item) => item.data.quoteId == article.quoteId)"
+                                    type="button" class="btn btn-primary btn-sm" @click="add(article)">
+                                    <font-awesome-icon :icon="['fas', 'add']" />
+                                </button>
+                                <button v-else type="button" class="btn btn-secondary btn-sm" @click="remove(article)">
+                                    <font-awesome-icon :icon="['fas', 'minus']" />
+                                </button>
+                            </td>
+                            <td style="text-align: left;">{{ article.productName }} </td>
+                            <td><img class="img-provider" @error="setAltImg"
+                                    :src="`/images/providers/${article.providerKey}.png`" :alt="article.providerName"
+                                    :title="article.providerName" /> </td>
+                            <td>
+                                <img class="img-subprovider" @error="setAltImg"
+                                    :src="`/images/providers/${subProviders[article.connectivitySupplierName.toLowerCase()]}.png`"
+                                    :alt="article.connectivitySupplierName" :title="article.connectivitySupplierName" />
+                            </td>
+                            <td>{{ bytesFormatter(article.bearer) }} </td>
+                            <td>{{ bytesFormatter(article.speed) }} </td>
+                            <td>{{ GBP.format(article.priceInstall) }} </td>
+                            <td>{{ GBP.format(article.priceMonthly) }} </td>
+                            <td>{{ GBP.format(article.priceECC) }} </td>
+                            <td>{{ article.contractTermMonths }} Months </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
-            <div id="filters" class="fitlers mb-5 pt-3 pb-5 px-3" v-if="showFilters">
-                <Tabs>
-                    <Tab title="Provider" :selected="true">
-                        <div class="row mt-3">
-                            <div class="col">
-                                <label for="filter-subprovider" class="form-label">Provider:</label>
-                                <MultiSelect v-model="filters.providerName" :options="filterList.providerName" filter
-                                    placeholder="Select a provider" class="w-100">
-                                    <template #option="slotProps">
-                                        <div>{{ slotProps.option }} ({{ countFilters("providerName",
-                                            slotProps.option) }})</div>
-                                    </template>
-                                </MultiSelect>
-                            </div>
-                            <div class="col">
-                                <label for="filter-subprovider" class="form-label">Subprovider:</label>
-                                <MultiSelect v-model="filters.connectivitySupplierName"
-                                    :options="filterList.connectivitySupplierName" filter
-                                    placeholder="Select a subprovider" class="w-100">
-                                    <template #option="slotProps">
-                                        <div>{{ slotProps.option }} ({{ countFilters("connectivitySupplierName",
-                                            slotProps.option) }})</div>
-                                    </template>
-                                </MultiSelect>
-                            </div>
-                        </div>
-                    </Tab>
-                    <Tab title="Contract">
-                        <div class="row mt-3">
-                            <div class="col">
-                                <label for="filter-contract" class="form-label">Contract Length:</label>
-                                <MultiSelect v-model="filters.contractTermMonths"
-                                    :options="filterList.contractTermMonths" filter placeholder="Select months"
-                                    class="w-100">
-                                    <template #option="slotProps">
-                                        <div>{{ slotProps.option }} Months</div>
-                                    </template>
-                                </MultiSelect>
-                            </div>
-                            <div class="col px-5">
-                                <label for="bearerSlider" class="form-label">Bearer:</label>
-                                <Range v-model="filtersRange.bearer" :options="filterList.bearer" />
-                            </div>
-                            <div class="col px-5">
-                                <label for="speedSlider" class="form-label">Speed:</label>
-                                <Range v-model="filtersRange.speed" :options="filterList.speed" mode="range" />
-                            </div>
-                        </div>
-                    </Tab>
-                </Tabs>
-            </div>
-            <Loader v-if="isLoading"></Loader>
-            <table v-else id="table_products" class="table table-striped">
-                <thead>
-                    <tr>
-                        <th></th>
-                        <th style="white-space: nowrap;" :style="{
-                            textDecoration: sort.field == 'productName' ? 'underline' : 'none',
-                            width: '30%'
-                        }">
-                            Product
-                            <font-awesome-icon :icon="['fas', 'sort']" />
-                        </th>
-                        <th style="white-space: nowrap;">
-                            Provider
-                            <font-awesome-icon :icon="['fas', 'sort']" />
-                        </th>
-                        <th style="white-space: nowrap;">
-                            Subprovider
-                            <font-awesome-icon :icon="['fas', 'sort']"></font-awesome-icon>
-                        </th>
-                        <th style="white-space: nowrap;" :style="{
-                            textDecoration: sort.field == 'bearer' ? 'underline' : 'none'
-                        }">
-                            Bearer
-                            <font-awesome-icon :icon="['fas', 'sort']" />
-                        </th>
-                        <th style="white-space: nowrap;" :style="{
-                            textDecoration: sort.field == 'speed' ? 'underline' : 'none'
-                        }">
-                            Speed
-                            <font-awesome-icon :icon="['fas', 'sort']" />
-                        </th>
-                        <th style="white-space: nowrap;" :style="{
-                            textDecoration: sort.field == 'priceInstall' ? 'underline' : 'none'
-                        }">
-                            Set Up
-                            <font-awesome-icon :icon="['fas', 'sort']" />
-                        </th>
-                        <th style="white-space: nowrap;" :style="{
-                            textDecoration: sort.field == 'priceMonthly' ? 'underline' : 'none'
-                        }">
-                            Monthly
-                            <font-awesome-icon :icon="['fas', 'sort']" />
-                        </th>
-                        <th style="white-space: nowrap;">
-                            ECC
-                            <font-awesome-icon :icon="['fas', 'sort']" />
-                        </th>
-                        <th style="white-space: nowrap;">
-                            Contract Term
-                            <font-awesome-icon :icon="['fas', 'sort']" />
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="article in articles"
-                        :class="{ 'active': props.modelValue.items.find((item) => item.data.quoteId == article.quoteId) }"
-                        style="text-align: center;">
-                        <td>
-                            <button v-if="!props.modelValue.items.find((item) => item.data.quoteId == article.quoteId)"
-                                type="button" class="btn btn-primary btn-sm" @click="add(article)">
-                                <font-awesome-icon :icon="['fas', 'add']" />
-                            </button>
-                            <button v-else type="button" class="btn btn-secondary btn-sm" @click="remove(article)">
-                                <font-awesome-icon :icon="['fas', 'minus']" />
-                            </button>
-                        </td>
-                        <td style="text-align: left;">{{ article.productName }} </td>
-                        <td><img class="img-provider" @error="setAltImg"
-                                :src="`/images/providers/${article.providerKey}.png`" :alt="article.providerName"
-                                :title="article.providerName" /> </td>
-                        <td>
-                            <img class="img-subprovider" @error="setAltImg"
-                                :src="`/images/providers/${subProviders[article.connectivitySupplierName.toLowerCase()]}.png`"
-                                :alt="article.connectivitySupplierName" :title="article.connectivitySupplierName" />
-                        </td>
-                        <td>{{ bytesFormatter(article.bearer) }} </td>
-                        <td>{{ bytesFormatter(article.speed) }} </td>
-                        <td>{{ GBP.format(article.priceInstall) }} </td>
-                        <td>{{ GBP.format(article.priceMonthly) }} </td>
-                        <td>{{ GBP.format(article.priceECC) }} </td>
-                        <td>{{ article.contractTermMonths }} Months </td>
-                    </tr>
-                </tbody>
-            </table>
         </div>
     </div>
 </template>

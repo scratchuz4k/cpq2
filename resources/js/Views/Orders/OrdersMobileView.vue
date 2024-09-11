@@ -1,259 +1,254 @@
 <script setup>
 import axios from 'axios';
 import { ref, reactive, watch } from 'vue'
-import DataTable from 'datatables.net-vue3';
-import DataTablesCore from 'datatables.net';
 import MultiSelect from 'primevue/multiselect';
-import Slider from 'primevue/slider';
-import { stringify } from 'postcss';
 
-
-DataTable.use(DataTablesCore);
 
 const props = defineProps({
-    postCode: String,
-    modelValue: Array
+    modelValue: Object
 })
 
-const showFilters = ref(false)
-const isLoading = ref(true)
-let data = []
-const articles = ref([])
-const filters = reactive({
-    providerName: [],
-    connectivitySupplierName: [],
-    contractTermMonths: []
-})
-
-const filtersRange = reactive({
-    bearer: [],
-    speed: []
-})
-
-const filterList = reactive({
-    providerName: [],
-    connectivitySupplierName: [],
-    contractTermMonths: [],
-    bearer: [],
-    speed: []
-})
-
-const subProviders = {
-    "btw": "bt",
-    "bt": "bt",
-    "cityfibre": "cityfibre",
-    "colt": "colt",
-    "gamma": "gamma",
-    "giacom": "giacom",
-    "glide": "glide",
-    "its": "its",
-    "neos networks": "neos",
-    "sky": "sky",
-    "talktalk": "talktalk",
-    "virgin": "virgin",
-    "virtual1": "virtual1",
-    "vodafone": "vodafone",
-};
-
-const GBP = new Intl.NumberFormat("en-GB", {
-    style: "currency",
-    currency: "GBP",
-});
-
-const getArticles = async () => {
-    let query = {
-        connectivityType: 3,
-        postCode: props.postCode,
-    };
-    try {
-        let res = await axios.post('/api/external/get-articles-from-shop-blocks', query)
-        data = res.data
-        processFilters(data)
-        filterData(data)
-    } catch (ex) {
-        alert(ex.response.data.message)
-    }
-}
-
-const filterData = (data) => {
-    articles.value = data
-    Object.keys(filters).forEach(key => {
-        articles.value = articles.value.filter((item) => {
-            if (!Object.keys(item).includes(key) || !filters[key] || !filters[key].length) {
-                return true
-            }
-            return filters[key].reduce((acc, num) => {
-                let op = true
-                if (typeof item[key] == 'string') {
-                    op = num ? item[key].toLowerCase().includes(num.toLowerCase()) : true
-                }
-
-                if (typeof item[key] == 'number') {
-                    op = num ? item[key] == num : true
-                }
-                acc = acc || op
-                return acc
-            }, false)
-
-        })
-    });
-
-    Object.keys(filtersRange).forEach(key => {
-        articles.value = articles.value.filter((item) => {
-            if (!Object.keys(item).includes(key) || !filtersRange[key] || !filtersRange[key].length) {
-                return true
-            }
-            return item[key] >= filterList[key][filtersRange[key][0]] && item[key] <= filterList[key][filtersRange[key][1]]
-        })
-
-    })
-    if (articles.value.length) {
-        orderBy(sort.field, sort.order)
-    }
-    isLoading.value = false
-}
-const countFilters = (column, value) => {
-    let temp = articles.value.filter((item) => {
-        return item[column].toLowerCase() == value.toLowerCase()
-    })
-    return temp.length
-}
-
-const processFilters = (data) => {
-    data.forEach((item) => {
-        Object.keys(filterList).forEach((key) => {
-            if (!Object.keys(item).includes(key) || !item[key]) {
-                return
-            }
-            if (filterList[key].find((a) => a == item[key])) {
-                return
-            }
-            filterList[key].push(item[key])
-        })
-    })
-    filterList.bearer = filterList.bearer.sort((a, b) => a - b);
-    filterList.speed = filterList.speed.sort((a, b) => a - b);
-}
-
-const setAltImg = (event) => {
-    event.target.src = '/images/no_image.png'
-}
-
-const bytesFormatter = (value) => {
-    let temp = Math.ceil(value)
-    if ((temp / 1000) >= 1) {
-        return Math.ceil((temp / 1000)) + " Gb"
-    }
-    return temp + " Mb"
-}
-const sort = reactive({
-    field: "id",
-    order: "asc"
-})
-const orderBy = (column, order = null) => {
-    let temp = articles.value
-
-    let changeSort = order ? order : sort.order == 'asc' ? 'desc' : 'asc'
-    sort.order = sort.field === column ? changeSort : sort.order
-    sort.field = column
-
-    if (sort.order == 'asc') {
-        temp.sort((a, b) => a[column] - b[column])
-    } else {
-        temp.sort((a, b) => b[column] - a[column])
-    }
-
-    articles.value = temp
-}
-
-const add = (article) => {
-    props.modelValue.push(article)
-}
-
-const remove = (article) => {
-    let index = props.modelValue.findIndex((item) => item.quoteId == article.quoteId)
-    props.modelValue.splice(index, 1)
-}
-
-
-watch(filters, () => {
-    isLoading.value = true
-    filterData(data)
-})
-
-watch(filtersRange, () => {
-    isLoading.value = true
-    filterData(data)
-})
-
-getArticles()
 
 </script>
 <template>
-    <div class="row mb-4" style="min-height: 50vh;">
+    <div class="row mb-4">
         <div class="col">
-            <div class="d-flex justify-content-between align-items-center">
-                <h2>Live prices</h2>
-
-                <div>
-                    <button class="btn btn-primary m-2" @click="() => showFilters = !showFilters">
-                        <font-awesome-icon :icon="['fas', 'filter']" />
-                    </button>
-                </div>
-            </div>
-            <div id="filters" class="fitlers mb-5 pt-3 pb-5 px-3" v-if="showFilters">
-                <Tabs>
-                    <Tab title="Provider" :selected="true">
-                        <div class="row mt-3">
-                            <div class="col">
-                                <label for="filter-subprovider" class="form-label">Provider:</label>
-                                <MultiSelect v-model="filters.providerName" :options="filterList.providerName" filter
-                                    placeholder="Select a provider" class="w-100">
-                                    <template #option="slotProps">
-                                        <div>{{ slotProps.option }} ({{ countFilters("providerName",
-                                            slotProps.option) }})</div>
-                                    </template>
-                                </MultiSelect>
-                            </div>
-                            <div class="col">
-                                <label for="filter-subprovider" class="form-label">Subprovider:</label>
-                                <MultiSelect v-model="filters.connectivitySupplierName"
-                                    :options="filterList.connectivitySupplierName" filter
-                                    placeholder="Select a subprovider" class="w-100">
-                                    <template #option="slotProps">
-                                        <div>{{ slotProps.option }} ({{ countFilters("connectivitySupplierName",
-                                            slotProps.option) }})</div>
-                                    </template>
-                                </MultiSelect>
-                            </div>
-                        </div>
-                    </Tab>
-                    <Tab title="Contract">
-                        <div class="row mt-3">
-                            <div class="col">
-                                <label for="filter-contract" class="form-label">Contract Length:</label>
-                                <MultiSelect v-model="filters.contractTermMonths"
-                                    :options="filterList.contractTermMonths" filter placeholder="Select months"
-                                    class="w-100">
-                                    <template #option="slotProps">
-                                        <div>{{ slotProps.option }} Months</div>
-                                    </template>
-                                </MultiSelect>
-                            </div>
-                            <div class="col px-5">
-                                <label for="bearerSlider" class="form-label">Bearer:</label>
-                                <Range v-model="filtersRange.bearer" :options="filterList.bearer" />
-                            </div>
-                            <div class="col px-5">
-                                <label for="speedSlider" class="form-label">Speed:</label>
-                                <Range v-model="filtersRange.speed" :options="filterList.speed" mode="range" />
-                            </div>
-                        </div>
-                    </Tab>
-                </Tabs>
-            </div>
             <Loader v-if="isLoading"></Loader>
-            <div v-else> ---- MOBILE TABLE ---- </div>          
+
+            <template v-else>
+                <div class="row">
+                    <div class="col-lg-7 mb-5">
+                        <div class="step">
+                            <div class="d-flex justify-content-between mb-3">
+                                <h2>Select some products to get started</h2>
+                                <p class="m-0 mb-2 text-primary bold">STEP 1/3</p>
+                            </div>
+
+
+                            <div class="mobile-item mobile-product mb-3 panel">
+                                <div class="d-flex justify-content-between">
+                                    <h4>Product<span class="ms-2">data / mins / £ </span></h4>
+                                    <i class="fa fa-circle-info mobile-item-info"></i>
+                                </div>
+                                <div class="mobile-product-quantity">
+                                    <label>Quantity</label>
+
+                                    <div class="d-flex align-items-center pb-3">
+                                        <button class="btn btn-secondary btn-sm me-1" type="button">
+                                            <font-awesome-icon :icon="['fas', 'minus']" />
+                                        </button>
+                                        <input type="number"
+                                            class="form-control form-control-sm text-center w-25 me-1" value="0" />
+                                        <input type="hidden" />
+                                        <button class="btn btn-secondary btn-sm me-3" type="button">
+                                            <font-awesome-icon :icon="['fas', 'plus']" />
+                                        </button>
+                                        <button type="button" class="btn btn-secondary btn-sm">+25</button>
+                                        <button type="button" class="btn btn-secondary btn-sm mx-2">+50</button>
+                                        <button type="button" class="btn btn-secondary btn-sm">+100</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="d-flex justify-content-end align-items-center">
+                                <span id="total_mobile_users">Add 0 mobile users</span> <button
+                                    class="ms-3 btn btn-primary step-nav" type="button" data-direction="next">Next
+                                    <i class="fa fa-arrow-right"></i></button>
+                            </div>
+                        </div>
+                        <!-- <div id="mobile_step2" class="step" <?=$activeStep==2 ? '' : ' style="display: none;"' ?>>
+                            <h2 class="mb-4">Create a quote</h2>
+
+                            <x-info-box type="error" :account="$order -> account" />
+
+                            <div class="d-flex justify-content-between mb-3">
+                                <h3>Next, choose your bolt-ons</h3>
+                                <p class="m-0 mb-2 text-primary bold">STEP 2/3</p>
+                            </div>
+
+                            @foreach ($bolt_ons as $bolt_on)
+                            <div class="mobile-item mobile-bolt-on mb-3">
+                                <div class="d-flex justify-content-between">
+                                    <h4>{{ $bolt_on['name'] }} <span class="ms-2">£{{ $bolt_on['price'] }}</span>
+                                    </h4>
+                                    <i class="fa fa-circle-info mobile-item-info"></i>
+                                </div>
+                                <div class="mobile-product-quantity">
+                                    <label>Quantity</label>
+
+                                    <div class="d-flex align-items-center pb-3">
+                                        <button class="btn btn-secondary btn-minus btn-sm me-1" type="button"><i
+                                                class="fa-solid fa-minus"></i></button>
+                                        <input type="number" name="mobile[bolt_on][{{ $bolt_on['name'] }}][quantity]"
+                                            class="form-control text-center input-qty me-1" value="0">
+                                        <input type="hidden" name="mobile[bolt_on][{{ $bolt_on['name'] }}][price]"
+                                            value="{{ $bolt_on['price'] }}">
+                                        <button class="btn btn-secondary btn-plus btn-sm me-3" type="button"><i
+                                                class="fa-solid fa-plus"></i></button>
+                                        <span class="badge text-bg-secondary badge-qty-add me-2"
+                                            data-qty="25">+25</span>
+                                        <span class="badge text-bg-secondary badge-qty-add me-2"
+                                            data-qty="50">+50</span>
+                                        <span class="badge text-bg-secondary badge-qty-add" data-qty="100">+100</span>
+                                    </div>
+                                </div>
+                            </div>
+                            @endforeach
+
+                            <div class="d-flex justify-content-between align-items-center">
+                                <button class="btn btn-light step-nav btn-sm me-3" type="button"
+                                    data-direction="prev"><i class="fa fa-arrow-left"></i> Back</button>
+                                <div>
+                                    <span id="total_bolt_ons">Add <span>0</span> bolt-ons</span> <button
+                                        class="ms-3 btn btn-primary step-nav" type="button" data-direction="next">Next
+                                        <i class="fa fa-arrow-right"></i></button>
+                                </div>
+                            </div>
+                        </div> -->
+                        <!-- <div id="mobile_step3" class="step" <?=$activeStep==3 ? '' : ' style="display: none;"' ?>>
+                            <h2 class="mb-4">Create a quote</h2>
+
+                            <x-info-box type="error" :account="$order -> account" />
+
+                            <div class="d-flex justify-content-between mb-3">
+                                <h3>Finally, choose your add-ons</h3>
+                                <p class="m-0 mb-2 text-primary bold">STEP 3/3</p>
+                            </div>
+
+                            @foreach ($add_ons as $add_on)
+                            @foreach ($add_on['categories'] as $category)
+                            @if (!empty($category['products']))
+                            <div class="mobile-item mobile-add-on mb-3">
+                                <div class="d-flex justify-content-between">
+                                    <h4>{{ $category['name'] }}</h4>
+                                    <button class="btn btn-secondary btn-sm btn-clear-filters" type="button"
+                                        disabled>Clear filters</button>
+                                </div>
+
+                                <div class="hardware-labels mb-3">
+                                    <p class="mb-1">Models</p>
+                                    @foreach ($category['products']['labels'] as $label => $count)
+                                    <div class="badge badge-label text-bg-secondary" data-type="label"
+                                        style="display:none">{{ $label }}</div>
+                                    @endforeach
+                                </div>
+
+                                <div class="hardware-filters mb-3">
+                                    <p class="mb-1">Filters</p>
+                                    <div class="mobile-item-filter">
+                                        <label>Storage</label>
+                                        <div class="badge badge-filter text-bg-dark" data-type="filter"
+                                            data-field="storage" value="1 TB">1 TB</div>
+                                        <div class="badge badge-filter text-bg-dark" data-type="filter"
+                                            data-field="storage" value="512 GB">512 GB</div>
+                                        <div class="badge badge-filter text-bg-dark" data-type="filter"
+                                            data-field="storage" value="256 GB">256 GB</div>
+                                        <div class="badge badge-filter text-bg-dark" data-type="filter"
+                                            data-field="storage" value="128 GB">128 GB</div>
+                                        <div class="badge badge-filter text-bg-dark" data-type="filter"
+                                            data-field="storage" value="64 GB">64 GB</div>
+                                        <div class="badge badge-filter text-bg-dark" data-type="filter"
+                                            data-field="storage" value="32 GB">32 GB</div>
+                                        <div class="badge badge-filter text-bg-dark" data-type="filter"
+                                            data-field="storage" value="16 GB">16 GB</div>
+                                    </div>
+                                </div>
+
+                                <div class="hardware-products pb-3">
+                                    @foreach ($category['products']['products'] as $product)
+                                    <div class="hardware-product">
+                                        <div class="text-center"><a href="{{ $product['url'] }}" target="_blank"><img
+                                                    src="{{ Str::of($product['primary_image'])->replace('1024x1024','256x256')->replace('/fit', '/resize') }}"></a>
+                                        </div>
+                                        <b class="label">{{ $product['label'] }}</b>
+                                        <span>{{ $product['sku'] }}</span>
+                                        <span class="name mb-1" data-full-name="{{ $product['name'] }}">{{
+                                            Str:: of($product['name']) -> words(8) }}</span>
+                                        <span class="mb-2"><span class="price">£{{ $product['price']
+                                                }}</span></span>
+                                        @if ($product['in_stock'])
+                                        <span data-stock="{{ $product['stock'] }}" class="badge text-bg-warning">{{
+                                            $product['stock'] }} in stock</span>
+                                        @else
+                                        <span data-stock="0" class="out-of-stock badge text-bg-danger"><i
+                                                class="fa fa-warning"></i> OUT OF STOCK</span>
+                                        @endif
+
+                                        <div class="mobile-product-quantity pt-2">
+                                            <label>Quantity</label>
+                                            <div class="d-flex align-items-center mb-2">
+                                                <button class="btn btn-secondary btn-minus btn-sm me-1" type="button"><i
+                                                        class="fa-solid fa-minus"></i></button>
+                                                <input type="number"
+                                                    name="mobile[add_on][hardware][{{ $product['sku'] }}][quantity]"
+                                                    class="form-control text-center input-qty me-1" value="0" disabled>
+                                                <input type="hidden"
+                                                    name="mobile[add_on][hardware][{{ $product['sku'] }}][name]"
+                                                    value="{{ $product['name'] }}" disabled>
+                                                <input type="hidden"
+                                                    name="mobile[add_on][hardware][{{ $product['sku'] }}][price]"
+                                                    value="{{ $product['price'] }}" disabled>
+                                                <button class="btn btn-secondary btn-plus btn-sm" type="button"><i
+                                                        class="fa-solid fa-plus"></i></button>
+                                            </div>
+
+                                            <span class="badge text-bg-secondary badge-qty-add me-1"
+                                                data-qty="25">+25</span>
+                                            <span class="badge text-bg-secondary badge-qty-add me-1"
+                                                data-qty="50">+50</span>
+                                            <span class="badge text-bg-secondary badge-qty-add"
+                                                data-qty="100">+100</span>
+                                        </div>
+                                    </div>
+                                    @endforeach
+                                </div>
+                            </div>
+                            @endif
+                            @endforeach
+                            @endforeach
+
+                            <div class="d-flex justify-content-between align-items-center">
+                                <button class="btn btn-light step-nav btn-sm me-3" type="button"
+                                    data-direction="prev"><i class="fa fa-arrow-left"></i> Back</button>
+                                <div>
+                                    <span id="total_add_ons">Add <span>0</span> add-ons</span> <button
+                                        class="ms-3 btn btn-primary" data-direction="next">Next <i
+                                            class="fa fa-arrow-right"></i></button>
+                                </div>
+                            </div>
+                        </div> -->
+                    </div>
+                    <!-- <div class="col-2"></div> -->
+                    <!-- <div class="col-lg-3">
+                        <div class="configure-mobile-sidebar px-4 py-4">
+                            <h4 id="sidebar_products" data-total="0">1. Products</h4>
+                            <div class="sidebar_items mb-3">
+                                @foreach ($products as $product)
+                                <div class="item mb-2">
+                                    <span>{{ $product['name'] }}</span><span class="badge bg-light-grey dark">0</span>
+                                </div>
+                                @endforeach
+                            </div>
+                            <h4>2. Bolt-ons</h4>
+                            <div class="sidebar_bolt_ons mb-3">
+                                @foreach ($bolt_ons as $bolt_on)
+                                <div class="item mb-2">
+                                    <span>{{ $bolt_on['name'] }}</span><span class="badge bg-light-grey dark">0</span>
+                                </div>
+                                @endforeach
+                            </div>
+                            <h4>3. Add-ons</h4>
+                            <div class="sidebar_add_ons mb-3">
+                                @foreach ($add_ons as $add_on)
+                                <div class="item mb-2">
+                                    <span>{{ $add_on['name'] }}</span><span class="badge bg-light-grey dark">0</span>
+                                </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    </div> -->
+                </div>
+            </template>
         </div>
     </div>
 </template>

@@ -35,13 +35,7 @@ class RolePermissionSeeder extends Seeder
 
         $permissionsByGroup = [
             'Website' => [
-                'page' => 'Páginas',
-                'content' => 'Conteudos',
-                'section' => 'Secções',
-                'components' => 'Componentes',
-                'templates' => 'Templates',
-                'forms' => 'Formulários',
-                'submissions' => 'Submissões',
+                'order' => 'Order',
             ],
 
         ];
