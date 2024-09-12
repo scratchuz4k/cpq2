@@ -59,12 +59,12 @@ import ApplicationLogo from '@/Components/ApplicationLogo.vue';
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
-                        <a class="nav-link <?= $active_tab == 'dashboard' ? 'active' : '' ?>" id="dashboard-tab"
+                        <a class="nav-link" id="dashboard-tab"
                             data-toggle="tab" href="/" role="tab" aria-controls="dashboard"
                             aria-selected="false">DASHBOARD</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link <?= $active_tab == 'create' ? 'active' : '' ?>" id="create-tab"
+                        <a class="nav-link" id="create-tab"
                             data-toggle="tab" href="/orders/create" role="tab" aria-controls="create"
                             aria-selected="false">
                             <font-awesome-icon :icon="['fas', 'plus']" />
@@ -72,17 +72,17 @@ import ApplicationLogo from '@/Components/ApplicationLogo.vue';
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link <?= $active_tab == 'configure' ? 'active' : '' ?>" id="configure-tab"
+                        <a class="nav-link" id="configure-tab"
                             data-toggle="tab" href="#configure" role="tab" aria-controls="configure"
                             aria-selected="false">CONFIGURE</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link <?= $active_tab == 'price' ? 'active' : '' ?>" id="price-tab"
+                        <a class="nav-link" id="price-tab"
                             data-toggle="tab" href="#price" role="tab" aria-controls="price"
                             aria-selected="false">PRICE</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link <?= $active_tab == 'quote' ? 'active' : '' ?>" id="quote-tab"
+                        <a class="nav-link" id="quote-tab"
                             data-toggle="tab" href="#quote" role="tab" aria-controls="quote"
                             aria-selected="false">QUOTE</a>
                     </li>

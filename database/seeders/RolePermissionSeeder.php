@@ -2,10 +2,10 @@
 
 namespace Database\Seeders;
 
+use App\Models\Role;
 use App\Models\User;
+use App\Models\Permission;
 use Illuminate\Database\Seeder;
-use Spatie\Permission\Models\Role;
-use Spatie\Permission\Models\Permission;
 use Spatie\Permission\PermissionRegistrar;
 
 class RolePermissionSeeder extends Seeder
@@ -36,13 +36,21 @@ class RolePermissionSeeder extends Seeder
         $permissionsByGroup = [
             'Website' => [
                 'order' => 'Order',
+                'merchant' => 'Merchant',
+                'account' => 'Account',
+                'order_items' => 'Order Items',
+                'price' => 'Price',
+                'product' => 'Product',
+                'region' => 'Region',
             ],
-
         ];
 
         $roles = [
             'Super Admin' => [],
-            'Admin' => ['Admin', 'Website'],
+            'Admin' => ['Admin', 'order', 'order_items', 'merchant', 'account',  'price', 'product', 'region'],
+            'Support Agent' => ['merchant'],
+            'Company Admin' => ['order', 'order_items', 'merchant', 'account',  'price', 'product', 'region'],
+            'Sales Rep' => ['order', 'order_items', 'account']
         ];
 
         foreach ($simplePermissions as $key => $pe) {
@@ -59,16 +67,15 @@ class RolePermissionSeeder extends Seeder
         foreach ($permissionsByGroup as $group => $values) {
             $ids = collect();
 
-            foreach ($permissions as $permissionKey => $permission) {
-                $ids->push(...collect($values)
-                    ->map(function ($name, $index) use ($group, $permissionKey, $permission) {
-                        return Permission::updateOrCreate(['name' => "$permissionKey $index", 'guard_name' => 'web'], ['group' => $group, 'title' => "$permission $name"]);
+            foreach ($values as $valueKey => $value) {
+                $ids->push(...collect($permissions)
+                    ->map(function ($name, $index) use ($group, $valueKey, $value) {
+                        return Permission::updateOrCreate(['name' => "$index $valueKey", 'guard_name' => 'web'], ['group' => $group, 'title' => "$name $value"]);
                     })
                     ->pluck('id')
                     ->toArray());
+                $insertPermissions[$valueKey] = $ids;
             }
-
-            $insertPermissions[$group] = $ids;
         }
 
         foreach ($roles as $role => $groups) {
@@ -82,8 +89,16 @@ class RolePermissionSeeder extends Seeder
             $role->syncPermissions($permissions);
         }
 
-        $sAdmin = User::where('name', 'Company Admin User')->first();
+        $sAdmin = User::where('email', 'super@example.com',)->first();
         $sAdmin->assignRole('Super Admin');
-        $sAdmin->assignRole('Admin');
+
+        $supp = User::where('email', 'support@example.com',)->first();
+        $supp->assignRole('Support Agent');
+
+        $cAdmin = User::where('email', 'companyadmin@example.com',)->first();
+        $cAdmin->assignRole('Company Admin');
+
+        $salesR = User::where('email', 'sales@example.com',)->first();
+        $salesR->assignRole('Sales Rep');
     }
 }

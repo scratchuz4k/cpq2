@@ -129,15 +129,4 @@ class Order extends Model
 
         return $totals;
     }
-
-    public function status()
-    {
-        if ($this->items()->count()) {
-            return 'QUOTE';
-        } elseif (!empty($record->address_data)) {
-            return 'PRICE';
-        } else {
-            return 'CONFIGURE';
-        }
-    }
 }

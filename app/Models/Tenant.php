@@ -10,6 +10,7 @@ use Laravel\Sanctum\HasApiTokens;
 class Tenant extends \Spatie\Multitenancy\Models\Tenant
 {
     use HasFactory, HasApiTokens;
+    protected $fillable = ['name', 'domain', 'database'];
 
     public function users(): BelongsToMany
     {

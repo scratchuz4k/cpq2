@@ -25,4 +25,8 @@ return new class extends Migration
             $table->primary(['merchant_id', 'supplier_id'], 'merchant_has_suppliers_supplier_id_merchant_id_primary');
         });
     }
+    public function down(): void{
+        
+        Schema::dropIfExists('merchant_supplier');
+    }
 };

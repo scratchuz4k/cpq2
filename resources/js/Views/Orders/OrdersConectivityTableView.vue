@@ -6,7 +6,6 @@ import DataTable from 'datatables.net-vue3';
 import DataTablesCore from 'datatables.net-bs5';
 import MultiSelect from 'primevue/multiselect';
 
-
 DataTable.use(DataTablesCore);
 
 const props = defineProps({
@@ -101,15 +100,17 @@ const filterData = (data) => {
         })
 
     })
-    if (articles.value.length) {
-        orderBy(sort.field, sort.order)
-    }
 
     if (showQuoted.value) {
         articles.value = articles.value.filter((article) => {
             return props.modelValue.items.find((item) => item.data.quoteId == article.quoteId)
         })
     }
+    
+    if (articles.value.length) {
+        orderBy(sort.field, sort.order)
+    }
+
 
     isLoading.value = false
 }

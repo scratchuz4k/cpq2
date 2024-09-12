@@ -25,4 +25,8 @@ return new class extends Migration
             $table->primary(['user_id', 'tenant_id'], 'tenant_has_users_user_id_tenant_id_primary');
         });
     }
+    public function down(): void{
+        
+        Schema::dropIfExists('tenant_user');
+    }
 };

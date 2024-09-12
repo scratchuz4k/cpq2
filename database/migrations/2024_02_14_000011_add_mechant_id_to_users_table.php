@@ -11,9 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('accounts', function (Blueprint $table) {
-            $table->timestamp('created_at', 6)->nullable()->change();
-            $table->timestamp('updated_at', 6)->nullable()->change();
+        Schema::table('users', function (Blueprint $table) {
+            $table->foreignId('merchant_id')->nullable()->constrained()->nullOnDelete();
         });
     }
 
@@ -22,6 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        //
+        Schema::table('users', function (Blueprint $table) {
+            $table->dropConstrainedForeignId('merchant_id');
+        });
     }
 };
