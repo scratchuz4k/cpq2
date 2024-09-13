@@ -17,7 +17,7 @@ const solutionsViews = {
 <template>
 
     <Head :title="'Quote #' + order.id" />
-    <AuthenticatedLayout>
+    <AuthenticatedLayout  :order="order">
         <div class="row mb-3">
             <div class="col d-flex">
                 <div class="me-3">
@@ -34,7 +34,7 @@ const solutionsViews = {
             </div>
             <div class="col " style="text-align: right">
                 <Link :href="route('orders.show', { order: order.id })" class="btn btn-primary" method="get">
-                Save Quote
+                Next
                 </Link>
             </div>
         </div>

@@ -43,7 +43,7 @@ const submit = () => {
 <template>
 
     <Head title="Create a Quote" />
-    <AuthenticatedLayout>
+    <AuthenticatedLayout :order="order">
         <form @submit.prevent="submit">
             <div class="row mb-3">
                 <div class="col d-flex">

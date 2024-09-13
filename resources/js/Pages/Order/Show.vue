@@ -2,7 +2,6 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link } from '@inertiajs/vue3';
 
-
 defineProps({
     order: Object,
 });
@@ -12,7 +11,7 @@ defineProps({
 <template>
 
     <Head :title="'Quote #' + order.id" />
-    <AuthenticatedLayout>
+    <AuthenticatedLayout :order="order">
         <div class="row mb-3">
             <div class="col d-flex">
                 <div class="me-3">
@@ -28,10 +27,6 @@ defineProps({
                 </div>
             </div>
             <div class="col" style="text-align: right">
-                <Link :href="route('orders.edit', { order: order.id })" class="btn btn-primary" method="get">
-                <font-awesome-icon :icon="['fas', 'edit']"></font-awesome-icon>
-                Edit Quote
-                </Link>
                 <Link :href="route('orders.show', { order: order.id })" class="btn btn-secondary mx-2" method="get"
                     :disabled="true">
                 <font-awesome-icon :icon="['fas', 'file-pdf']"></font-awesome-icon>
@@ -47,12 +42,6 @@ defineProps({
                 <div class="col">
                     <div class="d-flex justify-content-between align-items-center">
                         <h2>Items</h2>
-
-                        <div>
-                            <!-- <button class="btn btn-primary m-2" @click="() => showFilters = !showFilters">
-                                <font-awesome-icon :icon="['fas', 'filter']" />
-                            </button> -->
-                        </div>
                     </div>
 
                     <!-- Product List -->

@@ -1,5 +1,10 @@
 <script setup>
 import ApplicationLogo from '@/Components/ApplicationLogo.vue';
+import { Head, Link } from '@inertiajs/vue3';
+
+defineProps({
+    order: Object
+})
 </script>
 
 <template>
@@ -65,23 +70,24 @@ import ApplicationLogo from '@/Components/ApplicationLogo.vue';
                             aria-controls="dashboard" aria-selected="false">DASHBOARD</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" id="create-tab" data-toggle="tab" href="/orders/create" role="tab"
-                            aria-controls="create" aria-selected="false">
+                        <a class="nav-link" :class="{ 'active': $page.component == 'Order/Create' }" id="create-tab"
+                            data-toggle="tab" href="/orders/create" role="tab" aria-controls="create"
+                            aria-selected="false">
                             <font-awesome-icon :icon="['fas', 'plus']" />
                             NEW
                         </a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" id="configure-tab" data-toggle="tab" href="#configure" role="tab"
-                            aria-controls="configure" aria-selected="false">CONFIGURE</a>
+                    <li class="nav-item" v-if="order">
+                        <Link :href="route('orders.configure', { order: order.id })" class="nav-link"
+                            :class="{ 'active': $page.component == 'Order/Configure' }">CONFIGURE</Link>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" id="price-tab" data-toggle="tab" href="#price" role="tab"
-                            aria-controls="price" aria-selected="false">PRICE</a>
+                    <li class="nav-item" v-if="order">
+                        <Link :href="route('orders.edit', { order: order.id })" class="nav-link"
+                            :class="{ 'active': $page.component == 'Order/Edit' }">PRICE</Link>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" id="quote-tab" data-toggle="tab" href="#quote" role="tab"
-                            aria-controls="quote" aria-selected="false">QUOTE</a>
+                    <li class="nav-item" v-if="order">
+                        <Link :href="route('orders.show', { order: order.id })" class="nav-link"
+                            :class="{ 'active': $page.component == 'Order/Show' }">QUOTE</Link>
                     </li>
                 </ul>
                 <form class="d-md-flex d-none" role="search">
