@@ -11,7 +11,7 @@ use App\Http\Controllers\Api\SolutionTypeController;
 Route::prefix("external")->group(function () {
     Route::post("get-address-by-postcode", [ExternalController::class, "getAddressesByPostCode"]);
     Route::post("get-position-by-address", [ExternalController::class, "getPositionByAddress"]);
-    Route::post("get-articles-from-shop-blocks", [ExternalController::class, "getArticlesFromShopBlock"]);
+    Route::post("get-articles-from-cloud-market", [ExternalController::class, "getArticlesFromCloudMarket"]);
 });
 
 

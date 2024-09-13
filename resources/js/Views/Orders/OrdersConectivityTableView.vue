@@ -59,7 +59,7 @@ const getArticles = async () => {
         postCode: props.modelValue.address_postcode,
     };
     try {
-        let res = await axios.post('/api/external/get-articles-from-shop-blocks', query)
+        let res = await axios.post('/api/external/get-articles-from-cloud-market', query)
         data = res.data
         processFilters(data)
         filterData(data)
