@@ -13,7 +13,7 @@ const props = defineProps({
 })
 
 const showQuoted = ref(false)
-const showFilters = ref(false)
+const showFilters = ref(true)
 const isLoading = ref(true)
 let data = []
 const articles = ref([])
@@ -96,7 +96,7 @@ const filterData = (data) => {
             if (!Object.keys(item).includes(key) || !filtersRange[key] || !filtersRange[key].length) {
                 return true
             }
-            return item[key] >= filterList[key][filtersRange[key][0]] && item[key] <= filterList[key][filtersRange[key][1]]
+            return item[key] >= filtersRange[key][0] && item[key] <= filtersRange[key][1]
         })
 
     })
@@ -106,7 +106,7 @@ const filterData = (data) => {
             return props.modelValue.items.find((item) => item.data.quoteId == article.quoteId)
         })
     }
-    
+
     if (articles.value.length) {
         orderBy(sort.field, sort.order)
     }
@@ -216,6 +216,7 @@ getArticles()
 </script>
 <template>
     <div class="panel">
+        <InfoBox :order="modelValue"></InfoBox>
         <div class="row mb-4" style="min-height: 50vh;">
             <div class="col">
                 <div class="d-flex justify-content-between align-items-center">
@@ -226,64 +227,64 @@ getArticles()
                             @click="getQuoted()">
                             Show Quoted
                         </button>
-                        <button class="btn btn-primary m-2" @click="() => showFilters = !showFilters">
+                        <button class="btn m-2" :class="[showFilters ? ' btn-light' : 'btn-primary']"
+                            @click="() => showFilters = !showFilters">
                             <font-awesome-icon :icon="['fas', 'filter']" />
                         </button>
                     </div>
                 </div>
-                <div id="filters" class="fitlers mb-5 pt-3 pb-5 px-3" v-if="showFilters">
-                    <Tabs>
-                        <Tab title="Provider" :selected="true">
-                            <div class="row mt-3">
-                                <div class="col">
-                                    <label for="filter-subprovider" class="form-label">Provider:</label>
-                                    <MultiSelect v-model="filters.providerName" :options="filterList.providerName"
-                                        filter placeholder="Select a provider" class="w-100">
-                                        <template #option="slotProps">
-                                            <div>{{ slotProps.option }} ({{ countFilters("providerName",
-                                                slotProps.option) }})</div>
-                                        </template>
-                                    </MultiSelect>
-                                </div>
-                                <div class="col">
-                                    <label for="filter-subprovider" class="form-label">Subprovider:</label>
-                                    <MultiSelect v-model="filters.connectivitySupplierName"
-                                        :options="filterList.connectivitySupplierName" filter
-                                        placeholder="Select a subprovider" class="w-100">
-                                        <template #option="slotProps">
-                                            <div>{{ slotProps.option }} ({{ countFilters("connectivitySupplierName",
-                                                slotProps.option) }})</div>
-                                        </template>
-                                    </MultiSelect>
-                                </div>
+                <div class="row">
+                    <div class="col">
+                        <div id="filters" v-if="showFilters">
+                            <p class="me-3">
+                                <b>FILTERS</b><br>
+                                <span class="prices-total">
+                                    ({{ articles.length }})</span>
+                            </p>
+                            <div>
+                                <label for="filter-subprovider" class="form-label">Provider:</label>
+                                <MultiSelect v-model="filters.providerName" :options="filterList.providerName" filter
+                                    placeholder="Select a provider" class="me-3 " style="width:150px">
+                                    <template #option="slotProps">
+                                        <div>{{ slotProps.option }} ({{ countFilters("providerName",
+                                            slotProps.option) }})</div>
+                                    </template>
+                                </MultiSelect>
                             </div>
-                        </Tab>
-                        <Tab title="Contract">
-                            <div class="row mt-3">
-                                <div class="col">
-                                    <label for="filter-contract" class="form-label">Contract Length:</label>
-                                    <MultiSelect v-model="filters.contractTermMonths"
-                                        :options="filterList.contractTermMonths" filter placeholder="Select months"
-                                        class="w-100">
-                                        <template #option="slotProps">
-                                            <div>{{ slotProps.option }} Months</div>
-                                        </template>
-                                    </MultiSelect>
-                                </div>
-                                <div class="col px-5">
-                                    <label for="bearerSlider" class="form-label">Bearer:</label>
-                                    <Range v-model="filtersRange.bearer" :options="filterList.bearer" />
-                                </div>
-                                <div class="col px-5">
-                                    <label for="speedSlider" class="form-label">Speed:</label>
-                                    <Range v-model="filtersRange.speed" :options="filterList.speed" mode="range" />
-                                </div>
+                            <div>
+                                <label for="filter-subprovider" class="form-label">Subprovider:</label>
+                                <MultiSelect v-model="filters.connectivitySupplierName"
+                                    :options="filterList.connectivitySupplierName" filter
+                                    placeholder="Select a subprovider" class="me-3 " style="width:150px">
+                                    <template #option="slotProps">
+                                        <div>{{ slotProps.option }} ({{ countFilters("connectivitySupplierName",
+                                            slotProps.option) }})</div>
+                                    </template>
+                                </MultiSelect>
                             </div>
-                        </Tab>
-                    </Tabs>
+                            <div>
+                                <label for="filter-contract" class="form-label">Contract Length:</label>
+                                <MultiSelect v-model="filters.contractTermMonths"
+                                    :options="filterList.contractTermMonths" filter placeholder="Select months"
+                                    class="me-3 " style="width:150px">
+                                    <template #option="slotProps">
+                                        <div>{{ slotProps.option }} Months</div>
+                                    </template>
+                                </MultiSelect>
+                            </div>
+                            <div class="d-flex slider-wrapper me-5">
+                                <label for="bearerSlider" class="form-label">Bearer:</label>
+                                <BearerRange v-model="filtersRange.bearer" :options="filterList.bearer" />
+                            </div>
+                            <div class="d-flex slider-wrapper me-5">
+                                <label for="speedSlider" class="form-label">Speed:</label>
+                                <SpeedRange v-model="filtersRange.speed" :options="filterList.speed" />
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <Loader v-if="isLoading"></Loader>
-                <table v-else id="table_products" class="table table-striped">
+                <table v-else id="table_products" class="table  table-bordered table-hover">
                     <thead>
                         <tr>
                             <th></th>

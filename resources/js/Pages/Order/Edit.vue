@@ -38,7 +38,6 @@ const solutionsViews = {
                 </Link>
             </div>
         </div>
-        <InfoBox :order="order"></InfoBox>
 
 
         <component :is="solutionsViews[order.solution_type_id]" v-bind="{

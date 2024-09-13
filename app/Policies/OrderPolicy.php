@@ -10,9 +10,13 @@ class OrderPolicy
     /**
      * Determine whether the user can view any models.
      */
+    private string $model = "order";
     public function viewAny(User $user): bool
     {
-        return true;
+        // if(user()->hasPermission("viewAny $this->model")){
+        //     return true;
+        // }
+        return false;
     }
 
     /**
@@ -20,9 +24,6 @@ class OrderPolicy
      */
     public function view(User $user, Order $order): bool
     {
-        if ($order->id == 107) {
-            return false;
-        }
 
         return true;
     }
