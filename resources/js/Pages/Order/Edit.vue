@@ -1,9 +1,10 @@
 <script setup>
-import InfoBox from '@/Components/InfoBox.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link } from '@inertiajs/vue3';
 
 defineProps({
+    accounts: Array,
+    solution_types: Object,
     order: Object,
 });
 
@@ -32,13 +33,11 @@ const solutionsViews = {
                 </div>
             </div>
             <div class="col " style="text-align: right">
-
                 <Link :href="route('orders.show', { order: order.id })" class="btn btn-primary" method="get">
-                Resume
+                Save Quote
                 </Link>
             </div>
         </div>
-
 
         <component :is="solutionsViews[order.solution_type_id]" v-bind="{
             modelValue: order

@@ -40,21 +40,9 @@ defineProps({
             </div>
         </div>
 
-        <div class="row mb-3">
-            <div class="col">
-                <div class="col">
-                    <div id="price_header">
-                        <p class="mb-0">
-                            <b>Solution Type:</b> {{ order.solution_type_name }}
-                        </p>
-                        <p class="mb-0" v-if="order.address_line1">
-                            <b>Address:</b> {{ order.address_line1 }}
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </div>
         <div class="panel">
+
+            <InfoBox :order="order"></InfoBox>
             <div class="row mb-4" style="min-height: 50vh;">
                 <div class="col">
                     <div class="d-flex justify-content-between align-items-center">

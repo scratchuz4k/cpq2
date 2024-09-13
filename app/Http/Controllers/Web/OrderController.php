@@ -17,7 +17,7 @@ class OrderController extends BaseController
     protected $model = Order::class;
 
     public function __construct(protected OrderService $orderService)
-    {        
+    {
         parent::__construct();
     }
     /**
@@ -70,6 +70,8 @@ class OrderController extends BaseController
     public function edit(Order $order)
     {
         return Inertia::render('Order/Edit', [
+            'accounts' => Account::all(),
+            'solution_types' => Order::getSolutionTypes(),
             'order' => new OrderResource($order)
         ]);
     }
@@ -77,9 +79,17 @@ class OrderController extends BaseController
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Order $order)
     {
-        //
+        try {
+            $order = $this->orderService->update($order, $request->all());
+        } catch (\Exception $e) {
+            if (!env('APP_DEBUG')) {
+                Log::error($e->getMessage());
+            }
+            throw new \Exception($e);
+        }
+        return redirect()->route('orders.edit', ['order' => $order->id]);
     }
 
     /**
@@ -88,5 +98,16 @@ class OrderController extends BaseController
     public function destroy(string $id)
     {
         //
+    }
+    /**
+     * TODO: maybe one day remove this method and allow editing the order in the edit method
+     */
+    public function configure(Order $order)
+    {
+        return Inertia::render('Order/Configure', [
+            'accounts' => Account::all(),
+            'solution_types' => Order::getSolutionTypes(),
+            'order' => new OrderResource($order)
+        ]);
     }
 }

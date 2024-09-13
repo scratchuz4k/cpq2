@@ -21,4 +21,19 @@ class OrderService
             return $order;
         });
     }
+
+    public function update(Order $order, array $array): Order
+    {
+        return DB::transaction(function () use ($order, $array) {
+            $order->update(
+                [
+                    ...$array,
+                    'tenant_id' => app('currentTenant')->id,
+                    'name' => 'WIP'
+                ]
+            );
+
+            return $order;
+        });
+    }
 }

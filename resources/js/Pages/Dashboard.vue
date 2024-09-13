@@ -22,7 +22,7 @@ DataTable.use(DataTablesCore);
                     <DataTable class="table table-striped" :columns="[
                         { data: 'id', title: '#' },
                         { data: 'account.name', title: 'Account' },
-                        { data: 'solution_type_id', title: 'Solution' },
+                        { data: 'solution_type_name', title: 'Solution' },
                         { data: 'user.name', title: 'User' },
                         { data: 'status', title: 'Status' },
                         { data: 'updated_at', title: 'Last Updated' },

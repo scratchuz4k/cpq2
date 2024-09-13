@@ -31,8 +31,10 @@ import ApplicationLogo from '@/Components/ApplicationLogo.vue';
                         <a class="nav-link" href="#">BILLING</a>
                     </li>
                     <li class="nav-item">
-                        <font-awesome-icon :icon="['far', 'building']" />
-                        {{ $page.props.auth.user.name }}
+                        <a class="nav-link" href="#">
+                            <font-awesome-icon :icon="['far', 'building']" />
+                            {{ $page.props.auth.user.name }}
+                        </a>
                     </li>
 
                     <li class="nav-item">
@@ -59,32 +61,27 @@ import ApplicationLogo from '@/Components/ApplicationLogo.vue';
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
-                        <a class="nav-link" id="dashboard-tab"
-                            data-toggle="tab" href="/" role="tab" aria-controls="dashboard"
-                            aria-selected="false">DASHBOARD</a>
+                        <a class="nav-link" id="dashboard-tab" data-toggle="tab" href="/" role="tab"
+                            aria-controls="dashboard" aria-selected="false">DASHBOARD</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" id="create-tab"
-                            data-toggle="tab" href="/orders/create" role="tab" aria-controls="create"
-                            aria-selected="false">
+                        <a class="nav-link" id="create-tab" data-toggle="tab" href="/orders/create" role="tab"
+                            aria-controls="create" aria-selected="false">
                             <font-awesome-icon :icon="['fas', 'plus']" />
                             NEW
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" id="configure-tab"
-                            data-toggle="tab" href="#configure" role="tab" aria-controls="configure"
-                            aria-selected="false">CONFIGURE</a>
+                        <a class="nav-link" id="configure-tab" data-toggle="tab" href="#configure" role="tab"
+                            aria-controls="configure" aria-selected="false">CONFIGURE</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" id="price-tab"
-                            data-toggle="tab" href="#price" role="tab" aria-controls="price"
-                            aria-selected="false">PRICE</a>
+                        <a class="nav-link" id="price-tab" data-toggle="tab" href="#price" role="tab"
+                            aria-controls="price" aria-selected="false">PRICE</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" id="quote-tab"
-                            data-toggle="tab" href="#quote" role="tab" aria-controls="quote"
-                            aria-selected="false">QUOTE</a>
+                        <a class="nav-link" id="quote-tab" data-toggle="tab" href="#quote" role="tab"
+                            aria-controls="quote" aria-selected="false">QUOTE</a>
                     </li>
                 </ul>
                 <form class="d-md-flex d-none" role="search">

@@ -5,7 +5,6 @@ defineProps({
     modelValue: Object
 })
 
-
 const solutionChange = (form) => {
     form.postCode = ''
     form.address = null
@@ -66,12 +65,13 @@ const addressSelect = async (form) => {
 
 </script>
 <template>
+    <h2 class="mb-3">Select a solution type and address to get started</h2>
     <div class="row">
         <div class="col">
             <div class="mb-3">
                 <label class="form-label">Solution Type</label>
                 <select class="form-select" @change="solutionChange(modelValue)" v-model="modelValue.solutionType">
-                    <option :value="null">Select a solution type and address to get started</option>
+                    <option :value="null">Select an option</option>
                     <option v-for="(solution, key) in solution_types" :value="{ code: key, name: solution }">
                         {{ solution }}
                     </option>
@@ -83,7 +83,8 @@ const addressSelect = async (form) => {
                     <label for="input_address" class="form-label">Enter postcode</label>
                     <input class="form-control" id="input_address" placeholder="B11 1SH" name="postcode"
                         v-model="modelValue.postCode">
-                    <button type="button" class="btn btn-secondary mt-3" @click="addressSearch(modelValue)">Search</button>
+                    <button type="button" class="btn btn-secondary mt-3"
+                        @click="addressSearch(modelValue)">Search</button>
                 </div>
 
                 <div class="mb-3" id="address" v-if="addresses.length">

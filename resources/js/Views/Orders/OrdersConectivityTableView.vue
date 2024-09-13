@@ -148,6 +148,7 @@ const bytesFormatter = (value) => {
     }
     return temp + " Mb"
 }
+
 const sort = reactive({
     field: "id",
     order: "asc"
@@ -217,6 +218,8 @@ getArticles()
 <template>
     <div class="panel">
         <InfoBox :order="modelValue"></InfoBox>
+
+
         <div class="row mb-4" style="min-height: 50vh;">
             <div class="col">
                 <div class="d-flex justify-content-between align-items-center">
