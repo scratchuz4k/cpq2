@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Api;
 use Illuminate\Http\Request;
 use App\Http\Controllers\BaseController;
 
-class ArticleController extends BaseController
+class ProductController extends BaseController
 {
     /**
      * Display a listing of the resource.

@@ -54,7 +54,7 @@ class User extends Authenticatable
      */
     public function parent()
     {
-        return $this->belongsTo(User::class, 'parent_id');
+        return $this->hasOne(User::class, 'id', 'parent_id');
     }
 
     /**
@@ -62,13 +62,22 @@ class User extends Authenticatable
      */
     public function children()
     {
-        return $this->hasMany(User::class, 'parent_id');
+        return $this->hasMany(User::class, 'parent_id', 'id');
     }
 
     public function tenants(): BelongsToMany
     {
         return $this->belongsToMany(Tenant::class);
     }
+
+    // public static function ancestors()
+    // {
+    //     return static::with([implode('.', array_fill(0, 10, 'parent'))]);
+    // }
+    // public static function descendants()
+    // {
+    //     return static::with([implode('.', array_fill(0, 10, 'children'))]);
+    // }
 
     public static function ancestors(int $user_id): array
     {
@@ -96,9 +105,10 @@ class User extends Authenticatable
                 }, $ancestor_ids);
             }
         }
-        
+
         return $ancestor_ids ?? [];
     }
+    
 
     public static function descendants(int $user_id): array
     {
@@ -116,17 +126,17 @@ class User extends Authenticatable
                 inner join cte c on u.parent_id = c.id
             )
             select id, level from cte";
-            
+
             // Execute the SQL query
             $results = DB::select($sql);
-    
+
             // Extract the descendant IDs and their levels from the result
             foreach ($results as $result) {
                 // $descendant_ids[] = ['id' => $result->id, 'level' => $result->level];
                 $descendant_ids[] = (int) $result->id;
             }
         }
-        
+
         return $descendant_ids ?? [];
     }
 }

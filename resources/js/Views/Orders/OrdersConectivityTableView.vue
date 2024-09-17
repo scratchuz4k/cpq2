@@ -1,6 +1,7 @@
 <script setup>
 import axios from 'axios';
 
+import { Head, Link } from '@inertiajs/vue3';
 import { ref, reactive, watch } from 'vue'
 import DataTable from 'datatables.net-vue3';
 import DataTablesCore from 'datatables.net-bs5';
@@ -87,7 +88,6 @@ const filterData = (data) => {
                 acc = acc || op
                 return acc
             }, false)
-
         })
     });
 
@@ -217,9 +217,8 @@ getArticles()
 </script>
 <template>
     <div class="panel">
+
         <InfoBox :order="modelValue"></InfoBox>
-
-
         <div class="row mb-4" style="min-height: 50vh;">
             <div class="col">
                 <div class="d-flex justify-content-between align-items-center">

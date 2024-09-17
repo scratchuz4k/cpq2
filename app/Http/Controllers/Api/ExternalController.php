@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Helpers\ShopBlocksApi;
 use App\Models\Price;
 use App\Helpers\Geocoder;
 use Illuminate\Support\Str;
@@ -72,11 +73,38 @@ class ExternalController extends Controller
         ]);
 
         $cache_key = md5(json_encode($request->all()));
-        return Cache::remember($cache_key, 3600, function () use ($request) {
+        $res = Cache::remember($cache_key, 3600, function () use ($request) {
             return (new CloudMarketApi())->get($request->get('connectivityType'), $request->get('postCode'));
         });
 
         $prices = $this->recalculatePrices($res);
+    }
+
+    public function getArticlesFromShopBlocks(Request $request)
+    {
+        $cache_key = md5("shop-blocks" . json_encode($request->all()));
+        return Cache::remember($cache_key, 3600, function () use ($request) {
+            $products = [];
+            $page = 0;
+            do {
+                $page++;
+                $res = (new ShopBlocksApi())->get(22, 200, $page);
+                if (!array_key_exists("data", $res)) {
+                    break;
+                }
+                array_push($products, ...$res["data"]);
+                $last_page = array_key_exists("meta", $res) ? $res["meta"]["last_page"] : 1;
+            } while ($page != $last_page);
+
+            foreach ($products as $key => $product) {
+                $model = (string) Str::of($product['name'])->words(3, '');
+                $products[$key]['model'] = $model;
+                $products[$key]['url'] = 'https://hardware.cloud.market/smartphones/' . $product['slug'];
+                // $labels[$label] = !empty($labels[$label]) ? $labels[$label] + 1 : 1;
+            }
+
+            return $products;
+        });
     }
 
     private function recalculatePrices($prices)

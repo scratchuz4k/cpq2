@@ -2,9 +2,19 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link } from '@inertiajs/vue3';
 
-defineProps({
+const props = defineProps({
     order: Object,
 });
+
+const remove = async (id) => {
+    let index = props.order.items.findIndex((item) => item.id == id)
+    try {
+        await axios.delete(`/api/order-items/${id}`)
+        props.order.items.splice(index, 1)
+    } catch (ex) {
+        alert(ex.response.data.message)
+    }
+}
 
 </script>
 
@@ -64,13 +74,12 @@ defineProps({
                         <tbody>
                             <tr class="item-row" v-for="item in order.items" style="vertical-align: middle;">
                                 <td class="position-relative" style="width:40px">
-                                    <label class="container-form-check-input custom-control custom-checkbox">
-                                        <input type="checkbox" class="form-check-input" name="selected_items[]"
-                                            value="{{ $item['id'] }}">
-                                    </label>
+                                    <button class="btn btn-secondary btn-sm" @click="remove(item.id)">
+                                        <font-awesome-icon :icon="['fas', 'trash']"></font-awesome-icon>
+                                    </button>
                                 </td>
                                 <td class="text-center d-none d-xl-table-cell">
-                                    <img class="img-provider" @error="setAltImg"
+                                    <img v-if="item.data.providerKey" class="img-provider" @error="setAltImg"
                                         :src="`/images/providers/${item.data.providerKey}.png`"
                                         :alt="item.data.providerName" :title="item.data.providerName" />
                                 </td>
@@ -96,10 +105,10 @@ defineProps({
                                     </div>
                                 </td>
                                 <td class="text-end">
-                                    {{ GBP.format(item.data?.priceMonthly) }}
+                                    {{ GBP.format(item.data?.priceMonthly ?? item.data?.price) }}
                                 </td>
                                 <td class="text-end">
-                                    {{ GBP.format(item.data?.priceInstall) }}
+                                    {{ GBP.format(item.data?.priceInstall ?? 0) }}
                                 </td>
                             </tr>
                         </tbody>

@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Models\Scopes\TenantScope;
 use Illuminate\Database\Eloquent\Relations\Pivot;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Money\Currencies;
@@ -35,9 +36,11 @@ use Money\Parser\IntlMoneyParser;
  * - 9,223,372,036,854.775807 (9 trillion)
  * 
  */
-class Price extends Pivot
+class Price extends Model
 {
     use HasFactory;
+
+    protected $fillable = ["spa_id", "tenant_id", "product_id", "tax_rate", "net", "tax", "gross"];
 
     protected static $supplier_cache = [];
     protected static $ancestor_cache = [];
@@ -63,13 +66,9 @@ class Price extends Pivot
             $userAncestors = static::$ancestor_cache[$user_id];
         }
 
-        if (!empty ($params['supplier'])) {
+        if (!empty($params['supplier'])) {
             if (!isset(static::$supplier_cache[$params['supplier']])) {
                 if ($supplier = Supplier::where('reference', $params['supplier'])->first()) {
-                    // Log::debug(app('currentTenant')->id);
-                    // Log::debug($supplier->toSql());
-                    // Log::debug(json_encode($supplier));
-                    // dd($supplier);
                     $supplier_id = $supplier->id;
                     static::$supplier_cache[$params['supplier']] = $supplier_id ?: false;
                 }
@@ -82,10 +81,10 @@ class Price extends Pivot
                     Log::debug('calc spa check for supplier:' . $supplier_id . ', users: ' . json_encode($userAncestors));
                     // Check for SPA associated with this specific user, if not found, check for ancestors
                     $spa = Spa::where('supplier_id', $supplier_id)
-                              ->where('user_id', $user_id)
-                              ->first() ?: Spa::where('supplier_id', $supplier_id)
-                                             ->whereIn('user_id', $userAncestors)
-                                             ->first();
+                        ->where('user_id', $user_id)
+                        ->first() ?: Spa::where('supplier_id', $supplier_id)
+                        ->whereIn('user_id', $userAncestors)
+                        ->first();
                     static::$spa_cache[$supplier_id] = $spa ?: false;
                 } else {
                     $spa = static::$spa_cache[$supplier_id] ?? false;
@@ -101,7 +100,7 @@ class Price extends Pivot
                     $outputFormatter = new DecimalMoneyFormatter($currencies);
 
                     foreach ($params['prices'] as $price_field) {
-                        if (isset ($output[$price_field])) {
+                        if (isset($output[$price_field])) {
                             $output[$price_field] = static::reprice($output[$price_field], $spa, $currency, $currencies, $numberFormatter, $moneyParser, $outputFormatter);
                         }
                     }
