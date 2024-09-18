@@ -1,6 +1,6 @@
 <script setup>
 import axios from 'axios';
-import { Head, Link, router } from '@inertiajs/vue3';
+import { router } from '@inertiajs/vue3';
 import { reactive, ref, watch } from 'vue'
 
 const props = defineProps({
@@ -13,41 +13,46 @@ const step = ref(1)
 
 const planProducts = ref([
     {
+        id: props.modelValue.items.find(x => x.data?.name == 'Basic / 5 GB / 100min')?.id ?? null,
         label: 'Basic',
         name: 'Basic / 5 GB / 100min',
         data: '5 GB',
         minutes: 100,
         price: 10,
-        quantity: 0,
+        quantity: props.modelValue.items.find(x => x.data?.name == 'Basic / 5 GB / 100min')?.quantity ?? 0,
     },
     {
+        id: props.modelValue.items.find(x => x.data?.name == 'Premium / 20 GB / 500min')?.id ?? null,
         label: 'Premium',
         name: 'Premium / 20 GB / 500min',
         data: '20 GB',
         minutes: 500,
         price: 20,
-        quantity: 0,
+        quantity: props.modelValue.items.find(x => x.data?.name == 'Premium / 20 GB / 500min')?.quantity ?? 0,
     },
     {
+        id: props.modelValue.items.find(x => x.data?.name == 'Traveller / Unlimited / 1000min')?.id ?? null,
         label: 'Traveller',
         name: 'Traveller / Unlimited / 1000min',
         data: 'Unlimited',
         minutes: 1000,
         price: 30,
-        quantity: 0,
+        quantity: props.modelValue.items.find(x => x.data?.name == 'Traveller / Unlimited / 1000min')?.quantity ?? 0,
     },
 ]);
 
 const boltOnProducts = ref([
     {
+        id: props.modelValue.items.find(x => x.data?.name == '500 UK minute bundle')?.id ?? null,
         name: '500 UK minute bundle',
         price: 10,
-        quantity: 0,
+        quantity: props.modelValue.items.find(x => x.data?.name == '500 UK minute bundle')?.quantity ?? 0,
     },
     {
+        id: props.modelValue.items.find(x => x.data?.name == 'Share bundle')?.id ?? null,
         name: 'Share bundle',
         price: 20,
-        quantity: 0,
+        quantity: props.modelValue.items.find(x => x.data?.name == 'Share bundle')?.quantity ?? 0,
     },
 ]);
 
@@ -71,7 +76,10 @@ const filters = reactive({
 const getProducts = async () => {
     let res = await axios.post("/api/external/get-articles-from-shop-blocks")
     data = res.data
-    res.data.forEach(element => {
+    data.forEach(element => {
+        let orderItem = props.modelValue.items.find(x => x.data?.name == element.name)
+        element.quantity = orderItem ? orderItem.quantity : 0
+        element.id = orderItem ? orderItem.id : null
         if (!filters.models.find(x => x == element.model)) {
             filters.models.push(element.model)
         }
@@ -140,10 +148,11 @@ const saveQuote = () => {
     items.push(...hardwareProducts.value.filter(x => x.quantity))
     try {
         items.forEach(async (article) => {
-            await axios.post('/api/order-items',
+            let url = article.id ? `/api/order-items/${article.id}` : '/api/order-items';
+            let method = article.id ? 'put' : 'post';
+            await axios[method](url,
                 {
                     order_id: props.modelValue.id,
-                    product_id: null,
                     quantity: article.quantity,
                     name: article.name,
                     data: article,
@@ -164,6 +173,7 @@ watch(activeFilters, () => {
 </script>
 <template>
     <div class="panel panel-mobile">
+        {{ modelValue.items }}
         <div class="row">
             <div class="col-lg-9">
                 <h2 class="mb-4">Create a quote</h2>

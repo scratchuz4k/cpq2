@@ -1,16 +1,47 @@
 <script setup>
+import { router } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link } from '@inertiajs/vue3';
+import { ref } from 'vue';
 
 const props = defineProps({
     order: Object,
 });
 
+const isEdited = ref(false)
 const remove = async (id) => {
     let index = props.order.items.findIndex((item) => item.id == id)
     try {
         await axios.delete(`/api/order-items/${id}`)
         props.order.items.splice(index, 1)
+    } catch (ex) {
+        alert(ex.response.data.message)
+    }
+}
+
+const addQuantity = (product, quantity) => {
+    product.quantity += quantity
+    isEdited.value = true
+}
+
+const removeQuantity = (product, quantity) => {
+    product.quantity -= quantity
+    isEdited.value = true
+}
+
+const saveQuote = () => {
+    try {
+        props.order.items.forEach(async (article) => {
+            let url = article.id ? `/api/order-items/${article.id}` : '/api/order-items';
+            let method = article.id ? 'put' : 'post';
+            await axios[method](url,
+                {
+                    order_id: props.order.id,
+                    quantity: article.quantity,
+                    name: article.name,
+                })
+        })
+        router.get(`/orders/${props.order.id}`)
     } catch (ex) {
         alert(ex.response.data.message)
     }
@@ -94,12 +125,14 @@ const remove = async (id) => {
                                 </td>
                                 <td>
                                     <div class="cpq-qty d-flex">
-                                        <button type="button" class="btn btn-primary btn-sm mx-2">
+                                        <button type="button" class="btn btn-primary btn-sm mx-2"
+                                            @click="removeQuantity(item, 1)">
                                             <font-awesome-icon :icon="['fas', 'minus']" />
                                         </button>
                                         <input class="form-control form-control-sm" type="number" min="0" max="99999"
                                             maxlength="5" :value="item.quantity" style="width: 100px; ">
-                                        <button type="button" class="btn btn-primary btn-sm mx-2">
+                                        <button type="button" class="btn btn-primary btn-sm mx-2"
+                                            @click="addQuantity(item, 1)">
                                             <font-awesome-icon :icon="['fas', 'plus']" />
                                         </button>
                                     </div>
@@ -113,6 +146,9 @@ const remove = async (id) => {
                             </tr>
                         </tbody>
                     </table>
+                    <div v-if="isEdited" class="d-flex justify-content-end my-3">
+                        <button class="btn btn-primary" @click="saveQuote()">Save Quote</button>
+                    </div>
                     <div class="cpq-total text-right">
                         <div class="row">
                             <div class="col"></div>

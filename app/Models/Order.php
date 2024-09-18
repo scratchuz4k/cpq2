@@ -114,10 +114,8 @@ class Order extends Model
         $subtotalOneoff = 0;
 
         foreach ($this->items as $item) {
-            $lineTotal = (float) $item->quantity * (float) ($item->data?->priceMonthly ?? $item->data?->price);
-            $lineTotalOneoff = (float) $item->quantity * (float) ($item->data?->priceInstall ?? 0);
-            $subtotal += $lineTotal;
-            $subtotalOneoff += $lineTotalOneoff;
+            $subtotal += (float) $item->quantity * (float) ($item->data?->priceMonthly ?? $item->data?->price);
+            $subtotalOneoff += (float) $item->quantity * (float) ($item->data?->priceInstall ?? 0);
         }
 
         $totals['monthly_net'] = $subtotal;
