@@ -31,7 +31,10 @@ const submit = () => {
             {
                 address_line1: form.address?.label,
                 address_postcode: form.address?.addressparts?.PostCode,
-                solution_type_id: form.solutionType?.code
+                solution_type_id: form.solutionType?.code,
+                address_position: form.position,
+                address_city: form.address?.addressparts?.PostTown,
+                address_data: form.address,
             })
     } catch (ex) {
         alert(ex.response.data.message)

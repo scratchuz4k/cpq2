@@ -9,14 +9,24 @@ class CloudMarketApi
 
     public function __construct() {}
 
-    public function get($connectivityType, $postCode)
+    public function get($connectivityType, CloudMarketAddress $address)
     {
         $res = Http::timeout(360)->withToken(env('ALPNET_API_TOKEN'))
             ->get(
                 env('PARTNER_QUOTE_SERVICE_URL', 'https://cpq-poc-uat-api.cloudmarket.com') . '/PartnerQuoteService/' . env('PARTNER_QUOTE_SERVICE_ENDPOINT', 'TestNoParams'),
                 [
                     'ConnectivityType' => $connectivityType,
-                    'Address1.Postcode' => $postCode,
+                    'Address1.Postcode' => $address->postCode,
+                    'Address1.Latitude' => $address->lat,
+                    'Address1.Longitude' => $address->lon,
+
+                    "Address1.UPRN" =>  $address->uprn,
+                    "Address1.AddressKey" =>  $address->addressKey,
+                    "Address1.BuildingName" =>  $address->buildingName,
+                    "Address1.BuildingNumber" =>  $address->buildingNumber,
+                    "Address1.SubPremises" =>  $address->subPremises,
+                    "Address1.Street" =>  $address->street,
+                    "Address1.Town" =>  $address->town,
 
                     "ManagedOption" => 1,
 
@@ -30,6 +40,6 @@ class CloudMarketApi
                     'SupplierApiConnections.Giacom_Connection.Password' => env('GIACOM_CONNECTION_PASSWORD', '2345678'),
                 ]
             );
-        return $res->body();
+        return $res->json();
     }
 }

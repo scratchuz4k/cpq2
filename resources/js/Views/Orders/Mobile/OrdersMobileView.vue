@@ -18,7 +18,7 @@ const planProducts = ref([
         name: 'Basic / 5 GB / 100min',
         data: '5 GB',
         minutes: 100,
-        price: 10,
+        priceMonthly: 10,
         quantity: props.modelValue.items.find(x => x.data?.name == 'Basic / 5 GB / 100min')?.quantity ?? 0,
     },
     {
@@ -27,7 +27,7 @@ const planProducts = ref([
         name: 'Premium / 20 GB / 500min',
         data: '20 GB',
         minutes: 500,
-        price: 20,
+        priceMonthly: 20,
         quantity: props.modelValue.items.find(x => x.data?.name == 'Premium / 20 GB / 500min')?.quantity ?? 0,
     },
     {
@@ -36,7 +36,7 @@ const planProducts = ref([
         name: 'Traveller / Unlimited / 1000min',
         data: 'Unlimited',
         minutes: 1000,
-        price: 30,
+        priceMonthly: 30,
         quantity: props.modelValue.items.find(x => x.data?.name == 'Traveller / Unlimited / 1000min')?.quantity ?? 0,
     },
 ]);
@@ -45,13 +45,13 @@ const boltOnProducts = ref([
     {
         id: props.modelValue.items.find(x => x.data?.name == '500 UK minute bundle')?.id ?? null,
         name: '500 UK minute bundle',
-        price: 10,
+        priceMonthly: 10,
         quantity: props.modelValue.items.find(x => x.data?.name == '500 UK minute bundle')?.quantity ?? 0,
     },
     {
         id: props.modelValue.items.find(x => x.data?.name == 'Share bundle')?.id ?? null,
         name: 'Share bundle',
-        price: 20,
+        priceMonthly: 20,
         quantity: props.modelValue.items.find(x => x.data?.name == 'Share bundle')?.quantity ?? 0,
     },
 ]);
@@ -173,7 +173,6 @@ watch(activeFilters, () => {
 </script>
 <template>
     <div class="panel panel-mobile">
-        {{ modelValue.items }}
         <div class="row">
             <div class="col-lg-9">
                 <h2 class="mb-4">Create a quote</h2>

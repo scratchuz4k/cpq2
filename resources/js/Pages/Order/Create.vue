@@ -29,6 +29,9 @@ const submit = () => {
         router.post('/orders',
             {
                 account_id: form.account?.id,
+                address_position: form.position,
+                address_city: form.address?.addressparts?.PostTown,
+                address_data: form.address,
                 address_line1: form.address?.label,
                 address_postcode: form.address?.addressparts?.PostCode,
                 solution_type_id: form.solutionType?.code
@@ -57,7 +60,7 @@ const submit = () => {
 
         <div class="panel">
             <form @submit.prevent="submit">
-                <template v-if="step == 0" >
+                <template v-if="step == 0">
                     <div class="row mb-3">
                         <div class="col d-flex justify-content-end">
                             <button class="btn btn-primary" :disabled="form.account == null" type="button"
