@@ -143,13 +143,13 @@ const removeQuantity = (product, quantity) => {
 
 const saveQuote = () => {
     let items = []
-    items.push(...planProducts.value.filter(x => x.quantity))
-    items.push(...boltOnProducts.value.filter(x => x.quantity))
-    items.push(...hardwareProducts.value.filter(x => x.quantity))
+    items.push(...planProducts.value.filter(x => x.quantity || x.id))
+    items.push(...boltOnProducts.value.filter(x => x.quantity | x.id))
+    items.push(...hardwareProducts.value.filter(x => x.quantity || x.id))
     try {
         items.forEach(async (article) => {
             let url = article.id ? `/api/order-items/${article.id}` : '/api/order-items';
-            let method = article.id ? 'put' : 'post';
+            let method = article.id ? !article.quantity ? 'delete' : 'put' : 'post';
             await axios[method](url,
                 {
                     order_id: props.modelValue.id,
@@ -159,14 +159,6 @@ const saveQuote = () => {
                 })
         })
         router.get(`/orders/${props.modelValue.id}`)
-    } catch (ex) {
-        alert(ex.response.data.message)
-    }
-}
-const remove = async (id) => {
-    try {
-        await axios.delete(`/api/order-items/${id}`)
-        router.get(`/orders/${props.modelValue.id}/edit`)
     } catch (ex) {
         alert(ex.response.data.message)
     }
@@ -203,29 +195,24 @@ watch(activeFilters, () => {
                         </div>
                         <div class="mobile-product-quantity">
                             <label>Quantity</label>
-                            <div class="d-flex justify-content-between  pb-3">
-                                <div class="d-flex align-items-center ">
-                                    <button class="btn btn-secondary btn-sm me-1" type="button"
-                                        @click="() => product.quantity--" :disabled="product.quantity <= 0">
-                                        <font-awesome-icon :icon="['fas', 'minus']" />
-                                    </button>
-                                    <input type="number" class="form-control form-control-sm text-center w-25 me-1"
-                                        v-model="product.quantity" min="0" @input="checkValue(product)" />
-                                    <input type="hidden" />
-                                    <button class="btn btn-secondary btn-sm me-3" type="button"
-                                        @click="() => product.quantity++">
-                                        <font-awesome-icon :icon="['fas', 'plus']" />
-                                    </button>
-                                    <button type="button" class="btn btn-secondary btn-sm"
-                                        @click="() => product.quantity += 25">+25</button>
-                                    <button type="button" class="btn btn-secondary btn-sm mx-2"
-                                        @click="() => product.quantity += 50">+50</button>
-                                    <button type="button" class="btn btn-secondary btn-sm"
-                                        @click="() => product.quantity += 100">+100</button>
-                                </div>
-                                <button v-if="product.id" class="btn btn-danger btn-sm" @click="remove(product.id)">
-                                    <font-awesome-icon :icon="['fas', 'trash']"></font-awesome-icon>
+                            <div class="d-flex align-items-center pb-3">
+                                <button class="btn btn-secondary btn-sm me-1" type="button"
+                                    @click="() => product.quantity--" :disabled="product.quantity <= 0">
+                                    <font-awesome-icon :icon="['fas', 'minus']" />
                                 </button>
+                                <input type="number" class="form-control form-control-sm text-center w-25 me-1"
+                                    v-model="product.quantity" min="0" @input="checkValue(product)" />
+                                <input type="hidden" />
+                                <button class="btn btn-secondary btn-sm me-3" type="button"
+                                    @click="() => product.quantity++">
+                                    <font-awesome-icon :icon="['fas', 'plus']" />
+                                </button>
+                                <button type="button" class="btn btn-secondary btn-sm"
+                                    @click="() => product.quantity += 25">+25</button>
+                                <button type="button" class="btn btn-secondary btn-sm mx-2"
+                                    @click="() => product.quantity += 50">+50</button>
+                                <button type="button" class="btn btn-secondary btn-sm"
+                                    @click="() => product.quantity += 100">+100</button>
                             </div>
                         </div>
                     </div>
@@ -257,29 +244,24 @@ watch(activeFilters, () => {
                         </div>
                         <div class="mobile-product-quantity">
                             <label>Quantity</label>
-                            <div class="d-flex justify-content-between  pb-3">
-                                <div class="d-flex align-items-center">
-                                    <button class="btn btn-secondary btn-sm me-1" type="button"
-                                        @click="() => product.quantity--" :disabled="product.quantity <= 0">
-                                        <font-awesome-icon :icon="['fas', 'minus']" />
-                                    </button>
-                                    <input type="number" class="form-control form-control-sm text-center w-25 me-1"
-                                        v-model="product.quantity" min="0" @input="checkValue(product)" />
-                                    <input type="hidden" />
-                                    <button class="btn btn-secondary btn-sm me-3" type="button"
-                                        @click="() => product.quantity++">
-                                        <font-awesome-icon :icon="['fas', 'plus']" />
-                                    </button>
-                                    <button type="button" class="btn btn-secondary btn-sm"
-                                        @click="() => product.quantity += 25">+25</button>
-                                    <button type="button" class="btn btn-secondary btn-sm mx-2"
-                                        @click="() => product.quantity += 50">+50</button>
-                                    <button type="button" class="btn btn-secondary btn-sm"
-                                        @click="() => product.quantity += 100">+100</button>
-                                </div>
-                                <button v-if="product.id" class="btn btn-danger btn-sm" @click="remove(product.id)">
-                                    <font-awesome-icon :icon="['fas', 'trash']"></font-awesome-icon>
+                            <div class="d-flex align-items-center  pb-3">
+                                <button class="btn btn-secondary btn-sm me-1" type="button"
+                                    @click="() => product.quantity--" :disabled="product.quantity <= 0">
+                                    <font-awesome-icon :icon="['fas', 'minus']" />
                                 </button>
+                                <input type="number" class="form-control form-control-sm text-center w-25 me-1"
+                                    v-model="product.quantity" min="0" @input="checkValue(product)" />
+                                <input type="hidden" />
+                                <button class="btn btn-secondary btn-sm me-3" type="button"
+                                    @click="() => product.quantity++">
+                                    <font-awesome-icon :icon="['fas', 'plus']" />
+                                </button>
+                                <button type="button" class="btn btn-secondary btn-sm"
+                                    @click="() => product.quantity += 25">+25</button>
+                                <button type="button" class="btn btn-secondary btn-sm mx-2"
+                                    @click="() => product.quantity += 50">+50</button>
+                                <button type="button" class="btn btn-secondary btn-sm"
+                                    @click="() => product.quantity += 100">+100</button>
                             </div>
                         </div>
                     </div>
@@ -412,10 +394,6 @@ watch(activeFilters, () => {
                                     <a class="badge text-bg-secondary badge-qty-add" style="text-decoration: none;"
                                         @click="addQuantity(product, 100)">+100</a>
                                 </div>
-                                
-                                <button v-if="product.id" class="badge btn btn-danger btn-sm w-100 mt-2" @click="remove(product.id)">
-                                    <font-awesome-icon :icon="['fas', 'trash']"></font-awesome-icon>
-                                </button>
                             </div>
                         </div>
                         <div class="label my-2" v-if="hardwareProducts.length"> Showing {{ hardwareProducts.length }}
