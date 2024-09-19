@@ -33,11 +33,10 @@ const solutionsViews = {
                 </div>
             </div>
             <div class="col" style="text-align: right">
-                <Link :href="route('orders.show', { order: order.id })" class="btn btn-secondary mx-2" method="get"
-                    :disabled="true">
-                <font-awesome-icon :icon="['fas', 'file-pdf']"></font-awesome-icon>
-                Preview PDF
-                </Link>
+                <a :href="route('orders.download', { order: order.id })" class="btn btn-secondary mx-2">
+                    <font-awesome-icon :icon="['fas', 'file-pdf']"></font-awesome-icon>
+                    Download PDF
+                </a>
                 <button class="btn btn-primary">Email this quote
                     <font-awesome-icon :icon="['fas', 'arrow-right']"></font-awesome-icon></button>
             </div>

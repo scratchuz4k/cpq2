@@ -8,9 +8,11 @@ use App\Models\Account;
 use Illuminate\Http\Request;
 use App\Services\OrderService;
 use Illuminate\Support\Facades\Log;
-use App\Http\Controllers\BaseController;
 use App\Http\Resources\OrderResource;
+use Illuminate\Support\Facades\Storage;
+use App\Http\Controllers\BaseController;
 use App\Http\Requests\OrderCreateRequest;
+use function Spatie\LaravelPdf\Support\pdf;
 
 class OrderController extends BaseController
 {
@@ -109,5 +111,21 @@ class OrderController extends BaseController
             'solution_types' => Order::getSolutionTypes(),
             'order' => new OrderResource($order)
         ]);
+    }
+
+    public function download(Order $order)
+    {
+        $totals = $order->totals();
+        $solution_types = Order::getSolutionTypes();
+
+        $dir = 'pdf/' . app('currentTenant')->id;
+
+        if (!Storage::makeDirectory($dir)) {
+            throw new \Exception("Could not create directory for PDFs");
+        }
+
+        return pdf()
+            ->view('pdf.invoice', compact('order', 'totals', 'solution_types'))
+            ->name('quote-' . $order->id . '.pdf');
     }
 }
