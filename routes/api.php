@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\AddressController;
 use App\Http\Controllers\Api\ArticleController;
 use App\Http\Controllers\Api\ExternalController;
 use App\Http\Controllers\Api\SolutionTypeController;
+use App\Http\Controllers\Api\PermissionController;
 
 Route::prefix("external")->group(function () {
     Route::post("get-address-by-postcode", [ExternalController::class, "getAddressesByPostCode"]);
@@ -21,4 +22,5 @@ Route::apiResources([
     "orders" => OrderController::class,
     "order-items" => OrderItemController::class,
     "solution-types" => SolutionTypeController::class,
+    "permissions" => PermissionController::class
 ]);

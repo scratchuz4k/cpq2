@@ -43,7 +43,7 @@ defineProps({
                     </li>
 
                     <li class="nav-item">
-                        <a class="nav-link" :href="route('profile.edit')">
+                        <a class="nav-link" :href="route('account.index')">
                             <font-awesome-icon :icon="['far', 'user']" />
                         </a>
                     </li>
