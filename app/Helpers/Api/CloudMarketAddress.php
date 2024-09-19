@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Helpers;
+namespace App\Helpers\Api;
 
 
 class CloudMarketAddress
@@ -17,4 +17,9 @@ class CloudMarketAddress
         public $street = null,
         public $town = null,
     ) {}
+
+    public function all(): string
+    {
+        return $this->postCode . $this->uprn . $this->lat . $this->lon;
+    }
 }

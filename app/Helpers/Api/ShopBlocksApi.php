@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Helpers;
+namespace App\Helpers\Api;
 
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;

@@ -38,9 +38,11 @@ const solutionsViews = {
                 <font-awesome-icon :icon="['fas', 'file-pdf']"></font-awesome-icon>
                 Preview PDF
                 </Link>
+                <button class="btn btn-primary">Email this quote
+                    <font-awesome-icon :icon="['fas', 'arrow-right']"></font-awesome-icon></button>
             </div>
         </div>
-        
+
         <component :is="solutionsViews[order.solution_type_id]" v-bind="{
             modelValue: order
         }"></component>
