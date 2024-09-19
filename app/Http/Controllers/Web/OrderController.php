@@ -124,8 +124,11 @@ class OrderController extends BaseController
             throw new \Exception("Could not create directory for PDFs");
         }
 
+        // return view('pdf.invoice', compact('order', 'totals', 'solution_types'));
+        
         return pdf()
             ->view('pdf.invoice', compact('order', 'totals', 'solution_types'))
-            ->name('quote-' . $order->id . '.pdf');
+            ->name('quote-' . $order->id . '.pdf')
+            ->download();
     }
 }

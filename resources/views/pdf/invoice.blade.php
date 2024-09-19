@@ -4,9 +4,8 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ config('app.name', 'rebate') }} - @yield('title')</title>
-
-    @vite(['resources/sass/app.scss'])
+    <title>Quote #{{$order->id}}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <style>
         :root {
             --pdf-header-logo-width: 30px;
@@ -106,202 +105,137 @@
 </head>
 
 <body>
-    <div id="pdf">
-        <div class="d-flex align-items-center mb-4">
-            <div class="me-3">
-                <i class="fa fa-file-lines fa-border" style="font-size:30px;color:var(--secondary-light);border-color:var(--secondary-light);border-width:4px;border-radius:12px"></i>
+    <div class="container-fluid">
+        <div class="row" id="header">
+            <div class="col" id="header_left">
+                <img src="https://img.logoipsum.com/331.svg" alt="Sample Logo" class="img-fluid">
+                <p>Insert Tagline</p>
             </div>
-            <div style="padding-top:1px">
-                <p class="m-0">Q-{{ $order->id }} // <span id="account_name">{{ $order->account->name }}</span></p>
-                <h1 class="m-0" style="font-size:18px;font-weight:bold">Quote</h1>
-            </div>
-            <div class="text-end flex-grow-1">
-                <a class="btn btn-secondary" href="/quotes/pdf/{{ $order->id }}"><i class="fa fa-file-pdf"></i> Preview PDF</a>
-                <button class="btn btn-primary" type="submit">Save Quote</button>
+            <div class="col text-end" id="header_right">
+                <p>{{ $order->account->name }}<br>{{ $order->address_data?->label}}</p>
+                <p>Tel: +44 (0) 191 300 700</p>
+                <p>Email: sales@example.com</p>
             </div>
         </div>
+        <div class="cpq-summary row px-3" id="main">
+            <div class="col">
+                <h1 class="mb-3">Quote Q-{{ $order['id'] }}</h1>
+                <div class="row mb-3">
+                    <div class="col">
+                        <p>Company address, city, state, post code<br>
+                            sales@example.com<br>
+                            +44 (0) 123 456 7890</p>
+                    </div>
+                    <div class="col">
+                        <p>Quote #{{ $order['id'] }}<br>
+                            Quotation Date: {{ date('d/m/Y') }}<br>
+                            Valid Date: {{ date('d/m/Y', strtotime('+7 days')) }}</p>
+                    </div>
+                </div>
+                <div class="row mb-4">
+                    <div class="col">
+                        <h2>BILL FROM</h2>
+                        <p>Name Surname<br>
+                            Company address, city, state, post code<br>
+                            sales@example.com<br>
+                            +44 (0) 123 456 7890</p>
+                    </div>
+                    <div class="col">
+                        <h2>BILL TO</h2>
+                        <p>Name Surname<br>
+                            Company address, city, state, post code<br>
+                            contact@account.test<br>
+                            +44 (0) 234 567 8910</p>
+                    </div>
+                </div>
+                <table class="table mb-4">
+                    <thead>
+                        <tr>
+                            <th scope="col">SR #</th>
+                            <th class="text-center" scope="col">PROVIDER</th>
+                            <th scope="col">ITEM DETAILS</th>
+                            <th scope="col">SUPPLIER QUOTE REF.</th>
+                            <th scope="col">TYPE</th>
+                            <th scope="col">QTY</th>
+                            <th class="text-end" scope="col">MONTHLY</th>
+                            <th class="text-end" scope="col">INSTALL</th>
+                            <th class="text-end" scope="col">LINE TOTAL</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($order->items as $key => $item)
+                        <tr class="item-row">
+                            <td>
+                                {{$key}}
+                            </td>
+                            <td class="text-center"><img class="img-provider" style="max-width: 60px; max-height: 20px; width: auto; height: auto;" src="{{ $item->image ?? env('APP_URL').'/images/providers/' . $item->data?->providerKey. '.png' }}"></td>
+                            <td>
+                                {{ $item->name }}
+                                {{-- !empty($item['data']['additionalInfo']['Primary Router Model']) ? '<br/><span data-bs-toggle="tooltip" data-bs-title="Primary Router Model" data-bs-custom-class="tooltip-small" class="badge border border-secondary text-secondary opacity-75"><i class="d-print-none fa-solid fa-plug me-1"></i>' . $item['data']['additionalInfo']['Primary Router Model'] . '</span>' : '' --}}
+                            </td>
+                            <td>{{ $item->data?->quoteId }}</td>
+                            <td>Pay Monthly</td>
+                            <td>{{ $item->quantity }}</td>
+                            <td class="text-end">
+                                {{$item->data?->priceMonthly}}
+                            </td>
+                            <td class="text-end">
+                                {{$item->data?->priceInstall}}
+                            </td>
+                            <td class="text-end">
+                                {{$item->quantity * ($item->data?->priceMonthly?? 0) +  ($item->data?->priceInstall?? 0)}}
+                            </td>
+                        </tr>
+                        @endforeach
 
-        <div class="panel">
-            <div class="row">
-                <div class="col">
-                    <form>
-                        <div class="row mb-3">
-                            <div class="col">
-                                <div id="price_header">
-                                    <p class="mb-0"><b>Solution Type:</b> {{ $solution_types[$order->solution_type_id] }} <a class="btn btn-sm btn-secondary py-0" href="/quotes/configure/{{ $order->id }}">Edit</a>
-                                        <br>
-                                        <b>Address:</b> {{$order->address_data?->label}} <a class="btn btn-sm btn-secondary py-0" href="/quotes/configure/{{ $order->id }}">Edit address</a>
-                                    </p>
-                                </div>
-                            </div>
-                            <div class="col-md-6 cpq-hidden-without-solution">
-                                <div class="row">
-                                    <div class="col">
-                                        <!-- Global Discount -->
-                                        <div class="form-group">
-                                            <label for="globalDiscount">Global Discount (%)</label>
-                                            <input type="number" class="form-control" id="globalDiscount" value="0">
-                                            <div><small><a href="#" data-toggle="modal" data-target="#calculateDiscountModal" id="calculate_discount">Calculate discount for budget</a></small>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-6">
-                                        <!-- Subscription Term -->
-                                        <div class="form-group">
-                                            <label for="subscriptionTerm">Subscription Term (months)</label>
-                                            <input type="number" class="form-control" id="subscriptionTerm" value="36">
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="collapse text-left" id="dealInfo">
-                                    <div class="row">
-                                        <div class="col">
-                                            <div class="form-group">
-                                                <label for="total">Margin</label>
-                                                <input type="number" class="form-control" id="total" value="0" readonly>
-                                            </div>
-                                        </div>
 
-                                        <div class="col">
-                                            <div class="form-group">
-                                                <label for="commission">Commission</label>
-                                                <input type="number" class="form-control" id="commission" value="0" readonly>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="summary d-flex justify-content-between mb-3 d-none">
-                            <div class="inner flex-grow-1 me-3">
-                                <h2 class="mb-3">Cost Summary</h2>
-                                <div class="d-flex">
-                                    <div>
-                                        <h3>Total one-off cost to you</h3>
-                                        <p class="mb-0">£6,600</p>
-                                    </div>
-                                    <div>
-                                        <h3>Total one-off cost to customer</h3>
-                                        <p class="mb-0">£7,500</p>
-                                    </div>
-                                    <div>
-                                        <h3>Total monthly cost to you</h3>
-                                        <p class="mb-0">£645</p>
-                                    </div>
-                                    <div>
-                                        <h3>Total monthly cost to customer</h3>
-                                        <p class="mb-0">£750</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="inner flex-grow-1">
-                                <h2 class="mb-3">Profitability</h2>
-                                <div class="d-flex">
-                                    <div>
-                                        <h3>Total one-off profit</h3>
-                                        <p class="mb-0">£900</p>
-                                    </div>
-                                    <div>
-                                        <h3>Total monthly profit</h3>
-                                        <p class="mb-0">£105</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                    </tbody>
+                </table>
 
-                        <div class="cpq-products cpq-summary mb-3">
-                            <div class="mb-3">
-                                <button type="button" class="btn btn-sm btn-danger" id="remove_items" disabled>Remove item(s)</button>
-                            </div>
-
-                            <!-- Product List -->
-                            <!-- In a real application, this would be dynamically generated based on the selected solution type -->
-                            <table id="table-quotes" class="table table-hover">
-                                <!-- Headers -->
-                                <thead>
-                                    <tr>
-                                        <th></th>
-                                        <th class="text-center">Image</th>
-                                        <th>Name</th>
-                                        <th>Supplier Quote Ref.</th>
-                                        <th>Type</th>
-                                        <th>Qty</th>
-                                        <th class="text-end">Monthly Price</th>
-                                        <th class="text-end">Install Price</th>
-                                        <!-- <th>Line Discount</th> -->
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach ($order->items as $item)
-                                    <tr class="item-row">
-                                        <td class="position-relative" style="width:40px">
-                                            <label class="container-form-check-input custom-control custom-checkbox">
-                                                <input type="checkbox" class="form-check-input" name="selected_items[]"
-                                                    value="{{ $item['id'] }}">
-                                            </label>
-                                        </td>
-                                        <td class="text-center"><img class="img-provider" src="<?= $item['image'] ?? '/mockup/images/providers/' . $item['data']['providerKey'] . '.png' ?>" width="50">
-                                        </td>
-                                        <td>
-                                            <?= $item['name'] ?>
-                                            <?= !empty($item['data']['additionalInfo']['Primary Router Model']) ? '<br/><span data-bs-toggle="tooltip" data-bs-title="Primary Router Model" data-bs-custom-class="tooltip-small" class="badge border border-secondary text-secondary opacity-75"><i class="fa-solid fa-plug me-1"></i>' . $item['data']['additionalInfo']['Primary Router Model'] . '</span>' : '' ?>
-                                            <!-- <?php dump($item); ?> -->
-                                        </td>
-                                        <td><?= $item['data']['quoteId'] ? $item['data']['quoteId'] : '' ?></td>
-                                        <td>
-                                            Pay Monthly
-                                        </td>
-                                        <td>
-                                            <div class="cpq-qty d-flex">
-                                                <input type="number" min="0" max="99999" maxlength="5" name="item[{{ $item['id'] }}][quantity]" class="form-control input-qty me-1" value="{{ $item['quantity'] }}" onkeypress='return event.charCode >= 48 && event.charCode <= 57'>
-                                                <button class="btn btn-secondary btn-plus me-1" type="button"><i class="fa-solid fa-plus"></i></button>
-                                                <button class="btn btn-secondary btn-minus" type="button"><i class="fa-solid fa-minus"></i></button>
-                                            </div>
-                                        </td>
-                                        <td class="text-end" data-price="<?= $item['data']['priceMonthly'] ?? '' ?>">
-                                            <?= number_format($item['data']['priceMonthly'] ?? '', 2) ?>
-                                        </td>
-                                        <td class="text-end" data-oneoff="<?= $item['data']['priceInstall'] ?? '' ?>">
-                                            <?= number_format($item['data']['priceInstall'] ?? '', 2) ?>
-                                        </td>
-                                    </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-
-                            <div class="cpq-total text-right">
-                                <div class="row">
-                                    <div class="col"></div>
-                                    <div class="col">
-                                        <table class="table table-hover">
-                                            <tr>
-                                                <th></th>
-                                                <th>NET</th>
-                                                <th>VAT (20%)</th>
-                                                <th>GROSS</th>
-                                            </tr>
-                                            <tr>
-                                                <th>Total Monthly</th>
-                                                <td class="text-end" id="total_monthly_net">£0</td>
-                                                <td class="text-end" id="total_monthly_vat">£0</td>
-                                                <td class="text-end" id="total_monthly_gross">£0</td>
-                                            </tr>
-                                            <tr>
-                                                <th>Total One-off Costs</th>
-                                                <td class="text-end" id="total_oneoff_net">£0</td>
-                                                <td class="text-end" id="total_oneoff_vat">£0</td>
-                                                <td class="text-end" id="total_oneoff_gross">£0</td>
-                                            </tr>
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </form>
+                <div class="d-flex justify-content-end">
+                    <div class="col-6"></div>
+                    <div class="col-6">
+                        <table class="table">
+                            <tr>
+                                <th></th>
+                                <th>NET</th>
+                                <th>VAT (20%)</th>
+                                <th>GROSS</th>
+                            </tr>
+                            <tr>
+                                <th>Total Monthly</th>
+                                <td class="text-end" id="total_monthly_net">£{{ $totals['monthly_net'] }}</td>
+                                <td class="text-end" id="total_monthly_vat">£{{ $totals['monthly_vat'] }}</td>
+                                <td class="text-end" id="total_monthly_gross">£{{ $totals['monthly_gross'] }}</td>
+                            </tr>
+                            <tr>
+                                <th>Total One-off Costs</th>
+                                <td class="text-end" id="total_oneoff_net">£{{ $totals['oneoff_net'] }}</td>
+                                <td class="text-end" id="total_oneoff_vat">£{{ $totals['oneoff_vat'] }}</td>
+                                <td class="text-end" id="total_oneoff_gross">£{{ $totals['oneoff_gross'] }}</td>
+                            </tr>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
+        <div class="row px-3 mb-4" id="terms">
+            <div class="col">
+                <p>Terms & Conditions:</p>
+                <p>Lorem ipsum dolor sit amet...</p>
+            </div>
+        </div>
+        <!-- <div class="row mb-2" id="footer">
+            <div class="col">
+                <img src="https://img.logoipsum.com/331.svg">
+                <p>Insert Tagline</p>
+            </div>
+            <div class="col text-end">
+                <p>Lorem ipsum dolor sit amet...</p>
+            </div>
+        </div> -->
     </div>
+
 </body>
 
 </html>
