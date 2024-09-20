@@ -19,9 +19,21 @@ class Order extends Model
         "solution_type_id",
         "address_line1",
         "address_postcode",
+        "address_position",
+        "address_city",
+        "address_country",
+        "address_data",
         "tenant_id",
         "name"
     ];
+    protected function casts(): array
+    {
+        return [
+            'address_position' => 'object',
+            'address_data' => 'object',
+        ];
+    }
+
     private static $solution_types = [
         "3" => 'Connectivity - Ethernet & Fibre',
         "4" => 'Mobile',
@@ -114,10 +126,8 @@ class Order extends Model
         $subtotalOneoff = 0;
 
         foreach ($this->items as $item) {
-            $lineTotal = (float) $item['quantity'] * (float) $item->data->priceMonthly;
-            $lineTotalOneoff = (float) $item['quantity'] * (float) $item->data->priceInstall;
-            $subtotal += $lineTotal;
-            $subtotalOneoff += $lineTotalOneoff;
+            $subtotal += (float) $item->quantity * (float) ($item->data?->priceMonthly ?? 0);
+            $subtotalOneoff += (float) $item->quantity * (float) ($item->data?->price ?? $item->data?->priceInstall ?? 0);
         }
 
         $totals['monthly_net'] = $subtotal;

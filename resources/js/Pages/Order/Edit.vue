@@ -32,11 +32,11 @@ const solutionsViews = {
                     <h1 class="m-0" style="font-size:18px;font-weight:bold">Price</h1>
                 </div>
             </div>
-            <div class="col " style="text-align: right">
+            <!-- <div class="col" style="text-align: right">
                 <Link :href="route('orders.show', { order: order.id })" class="btn btn-primary" method="get">
                 Next
                 </Link>
-            </div>
+            </div> -->
         </div>
 
         <component :is="solutionsViews[order.solution_type_id]" v-bind="{

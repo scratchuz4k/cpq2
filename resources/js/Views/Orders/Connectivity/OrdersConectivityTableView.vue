@@ -1,6 +1,7 @@
 <script setup>
 import axios from 'axios';
 
+import { Head, Link } from '@inertiajs/vue3';
 import { ref, reactive, watch } from 'vue'
 import DataTable from 'datatables.net-vue3';
 import DataTablesCore from 'datatables.net-bs5';
@@ -57,6 +58,13 @@ const getArticles = async () => {
     let query = {
         connectivityType: 3,
         postCode: props.modelValue.address_postcode,
+        latitude: props.modelValue.address_position?.lat,
+        longitude: props.modelValue.address_position?.lon,
+        uprn: props.modelValue.address_data?.uprn,
+        street: props.modelValue.address_data?.addressparts?.ThoroughfareName,
+        town: props.modelValue.address_city,
+        addressKey: props.modelValue.address_data?.value,
+        buildingNumber: props.modelValue.address_data?.addressparts?.ThoroughfareNumber,
     };
     try {
         let res = await axios.post('/api/external/get-articles-from-cloud-market', query)
@@ -70,6 +78,7 @@ const getArticles = async () => {
 
 const filterData = (data) => {
     articles.value = data
+    articles.value = articles.value.filter(x => x.connectivitySupplierName != null)
     Object.keys(filters).forEach(key => {
         articles.value = articles.value.filter((item) => {
             if (!Object.keys(item).includes(key) || !filters[key] || !filters[key].length) {
@@ -87,7 +96,6 @@ const filterData = (data) => {
                 acc = acc || op
                 return acc
             }, false)
-
         })
     });
 
@@ -217,9 +225,8 @@ getArticles()
 </script>
 <template>
     <div class="panel">
+
         <InfoBox :order="modelValue"></InfoBox>
-
-
         <div class="row mb-4" style="min-height: 50vh;">
             <div class="col">
                 <div class="d-flex justify-content-between align-items-center">
@@ -360,7 +367,7 @@ getArticles()
                                     :title="article.providerName" /> </td>
                             <td>
                                 <img class="img-subprovider" @error="setAltImg"
-                                    :src="`/images/providers/${subProviders[article.connectivitySupplierName.toLowerCase()]}.png`"
+                                    :src="`/images/providers/${subProviders[article.connectivitySupplierName?.toLowerCase()]}.png`"
                                     :alt="article.connectivitySupplierName" :title="article.connectivitySupplierName" />
                             </td>
                             <td>{{ bytesFormatter(article.bearer) }} </td>

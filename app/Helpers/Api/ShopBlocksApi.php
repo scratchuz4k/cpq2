@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Helpers;
+namespace App\Helpers\Api;
 
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
@@ -25,6 +25,7 @@ class ShopBlocksApi
             Log::error('Failed to retrieve products from Shopblocks API: ' . $response->body());
             return [];
         }
-        return  $response->json();
+        return $response->json();
     }
+
 }

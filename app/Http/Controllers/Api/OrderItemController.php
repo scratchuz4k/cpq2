@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\OrderItemCreateRequest;
+use App\Http\Requests\OrderItemUpdateRequest;
 
 class OrderItemController extends BaseController
 {
@@ -53,9 +54,24 @@ class OrderItemController extends BaseController
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, OrderItem $orderItem)
+    public function update(OrderItemUpdateRequest $request, OrderItem $orderItem)
     {
-        //
+        try {
+            $orderItem = DB::transaction(function () use ($request, $orderItem) {
+                $orderItem = $orderItem->update([
+                    ...$request->all(),
+                    "tenant_id" => app("currentTenant")->id,
+                ]);
+
+                return $orderItem;
+            });
+        } catch (\Exception $e) {
+            if (!env("APP_DEBUG")) {
+                Log::error($e->getMessage());
+            }
+            throw new \Exception($e);
+        }
+        return response()->json($orderItem);
     }
 
     /**
