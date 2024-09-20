@@ -22,28 +22,14 @@ class TenantController extends BaseController
      */
     public function index()
     {
-        $files = [];
-
         $isSuperAdmin = auth()->user()->hasRole('Super Admin');
         $tenants = $isSuperAdmin
-            ? Tenant::all()
-            : auth()->user()->tenants()->get();
-
-        foreach ($tenants as $tenant) {
-            if ($tenant->config_id) {
-                $resource = Resource::find($tenant->config_id);
-
-                $file = $resource->getRouteValue();
-                if (Storage::exists($file)) {
-                    $files[$tenant->id] = Storage::get($file) ?? null;
-                }
-            }
-        }
+            ? Tenant::with('file')->get()
+            : auth()->user()->tenants()->with('file')->get();
 
         return Inertia::render('Tenant/index', [
             'isSuperAdmin' => $isSuperAdmin,
             'tenants' => $tenants,
-            'files' => $files,
         ]);
     }
 
