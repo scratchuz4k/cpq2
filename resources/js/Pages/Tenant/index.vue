@@ -1,16 +1,13 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import SooXmlForm from "@/Components/SooXmlForm.vue";
+import Tabs from "@/Components/Tabs.vue";
+import Tab from "@/Components/Tab.vue";
 
-const titleImport = 'Import XML file for '
-const subTitleImport = 'The file to upload must be a .xml'
-const titleTextArea = 'Input SSO configuration for '
-const subTitleTextArea = 'Please provide a valid xml syntax'
 
 defineProps({
     isSuperAdmin: String,
-    tenants: Array,
-    files: Array
+    tenants: Array
 })
 
 </script>
@@ -23,45 +20,22 @@ defineProps({
                 <div class="row">
                     <div class="col">
                         <div v-if="isSuperAdmin" class="xml-in-tabs">
-                            <ul class="nav nav-tabs" id="myTab" role="tablist">
-                                <li v-for="(tenant, index) in tenants" class="nav-item" role="presentation">
-                                    <button
-                                        class="nav-link"
-                                        v-bind:class="{ 'active': index === 0 }"
-                                        id="home-tab"
-                                        data-bs-toggle="tab"
-                                        v-bind:data-bs-target="'#tab-' + tenant.id"
-                                        type="button"
-                                        role="tab"
-                                        v-bind:aria-controls="'tab-' + tenant.id"
-                                        aria-selected="true"
-                                    >
-                                        {{ tenant.name }}
-                                    </button>
-                                </li>
-                            </ul>
-                            <div class="tab-content p-3" id="myTabContent">
-                                <div v-for="(tenant, index) in tenants"
-                                     class="tab-pane fade"
-                                     :class="{ 'active show': index === 0 }"
-                                     v-bind:id="'tab-' + tenant.id"
-                                     role="tabpanel"
-                                     aria-labelledby="home-tab"
-                                     tabindex="0"
-                                >
+                            <tabs>
+                                <tab v-for="(tenant, index) in tenants" :title="tenant.name" :selected="index == 0" :key="tenant.id">
                                     <SooXmlForm
-                                        :tenant="tenant.id"
-                                        :titleImport="titleImport + tenant.name"
-                                        :subTitleImport="subTitleImport"
-                                        v-bind:titleTextArea="titleTextArea + tenant.name"
-                                        :subTitleTextArea="subTitleTextArea"
-                                        :files="files"
-                                    />
-                                </div>
-                            </div>
+                                        v-model="tenant.file"
+                                        :tenant="tenant"
+                                        :tenant-name="tenant.name"
+                                        />
+                                </tab>
+                            </tabs>
                         </div>
                         <div v-else>
-                            <SooXmlForm />
+                            <SooXmlForm
+                                v-model="tenants[0].file"
+                                :tenant="tenants[0]"
+                                :tenant-name="tenants[0].name"
+                            />
                         </div>
                     </div>
                 </div>

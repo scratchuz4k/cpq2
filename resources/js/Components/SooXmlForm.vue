@@ -4,14 +4,14 @@ import {router, usePage, useForm} from "@inertiajs/vue3";
 
 const page = usePage();
 
+
 const props = defineProps({
-    titleImport: String,
-    subTitleImport: String,
-    titleTextArea: String,
-    subTitleTextArea: String,
-    files: Array,
-    tenant: Number
+    tenantName: String,
+    tenant: Object,
+    modelValue: Object,
 });
+
+const ssoText = ref(props.modelValue?.file_content)
 
 /**
  * Handle file form
@@ -25,36 +25,27 @@ const formFile = reactive({
 });
 
 const submitFileForm = () => {
-    router.post(`/tenant/${props.tenant}`,
+    router.post(`/tenant/${props.tenant.id}`,
     {
         _method: "PUT",
         file: formFile.file
     }
 )};
 
-
-/**
- * Handle Textarea form
- */
-const formTextArea = reactive({
-    sso_text_area: null
-})
-
 const submitTextForm = () => {
-    router.post(`/tenant/${props.tenant}`,
+    router.post(`/tenant/${props.tenant.id}`,
         {
             _method: "PUT",
-            sso_text_area: props.files[props.tenant]
+            sso_text_area: ssoText.value
         }
     )
 }
 </script>
 
 <template>
-<!--    {{ files }}-->
     <br>
-    <h4>{{ titleImport }}</h4>
-    <p>{{ subTitleImport }}</p>
+    <h4>Import XML file for {{ tenantName }}</h4>
+    <p>The file to upload must be a .xml</p>
 
     <form @submit.prevent="submitFileForm" enctype="multipart/form-data">
         <input type="file" accept=".xml" required @input="onFileChange" />
@@ -62,17 +53,14 @@ const submitTextForm = () => {
     </form>
     <div class="separator pt-4"> OR </div>
     <div class="mt-4">
-        <h4>{{ titleTextArea }}</h4>
-        <p>{{ subTitleTextArea }}</p>
+        <h4>Input SSO configuration for {{tenantName}}</h4>
+        <p>Please provide a valid xml syntax</p>
 
         <form @submit.prevent="submitTextForm" enctype="multipart/form-data">
-            <textarea v-model="files[tenant]" class="w-100 p-4" rows="10"></textarea>
+            <textarea v-model="ssoText" class="w-100 p-4" rows="10"></textarea>
             <button type="submit" class="btn btn-success">Save</button>
         </form>
     </div>
-
 </template>
 
-<style scoped>
-
-</style>
+<style scoped></style>

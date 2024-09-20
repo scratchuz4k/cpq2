@@ -11,12 +11,12 @@ class TenantRepository
 {
     public function createSooFileForTenant($data, $tenant)
     {
-        if (isset($data['file']) && $data['file'] instanceof UploadedFile) {
+        if (array_key_exists('file', $data) && $data['file'] instanceof UploadedFile) {
             $file = $data['file'];
             $xml_content = file_get_contents($file);
         }
 
-        if ($data['sso_text_area']) {
+        if (array_key_exists('sso_text_area', $data) && $data['sso_text_area']) {
             $xml_content = $data['sso_text_area'];
             $path = storage_path('/app/temp/');
 
@@ -32,7 +32,8 @@ class TenantRepository
             if (Storage::exists('temp/temp_file.xml')) {
                 Storage::delete('temp/temp_file.xml');
             }
-            return redirect('admin')->withErrors(__('An error occurred while uploading the XML file.'));
+
+            throw new \Exception(__('An error occurred while uploading the XML file.'));
         }
 
         $path = $file->store('sso', 'local');
