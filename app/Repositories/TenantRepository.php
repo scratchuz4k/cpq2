@@ -11,7 +11,7 @@ class TenantRepository
 {
     public function createSooFileForTenant($data, $tenant)
     {
-        if (isset($data['file']) && $data['file'] instanceof UploadedFile) {
+        if (array_key_exists('file', $data) && $data['file'] instanceof UploadedFile) {
             $file = $data['file'];
             $xml_content = file_get_contents($file);
         }
@@ -39,7 +39,6 @@ class TenantRepository
         $path = $file->store('sso', 'local');
 
         $resource = Resource::create([
-            'storage_disk' => 'sso',
             'title' => $tenant->name . '-sso.xml',
             'mime_type' => 'text/xml',
             'route' => $path,
