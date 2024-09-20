@@ -43,8 +43,6 @@ const submitTextForm = () => {
 </script>
 
 <template>
-
-    {{ tenant}}
     <br>
     <h4>Import XML file for {{ tenantName }}</h4>
     <p>The file to upload must be a .xml</p>
