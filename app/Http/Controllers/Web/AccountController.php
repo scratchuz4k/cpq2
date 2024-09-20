@@ -2,6 +2,12 @@
 
 namespace App\Http\Controllers\Web;
 
+use App\Models\Account;
+use App\Models\Resource;
+use App\Models\Tenant;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Illuminate\Http\Request;
 use App\Http\Controllers\BaseController;
@@ -13,8 +19,11 @@ class AccountController extends BaseController
      */
     public function index()
     {
-        return Inertia::render("Account/Index", [
-            "tenants" => ["asd", "asd", "asd"]
+        $tenants = auth()->user()->tenants;
+        $permissions = auth()->user()->getAllPermissions();
+        return Inertia::render('Account/Index', [
+            'permissions' => $permissions,
+            'tenants' => $tenants,
         ]);
     }
 
@@ -53,7 +62,7 @@ class AccountController extends BaseController
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Account $account)
     {
         //
     }

@@ -1,10 +1,12 @@
 <?php
 
+use App\Http\Controllers\Web\TenantController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Web\OrderController;
 use App\Http\Controllers\Web\AccountController;
 use App\Http\Controllers\Web\ProfileController;
 use App\Http\Controllers\Web\DashboardController;
+use \App\Http\Controllers\AdminController;
 
 
 Route::middleware(['auth', 'verified'])->group(function () {
@@ -16,7 +18,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/orders/{order}/configure', [OrderController::class, 'configure'])->name('orders.configure');
     Route::resources([
         'orders' => OrderController::class,
-        'account' => AccountController::class
+        'account' => AccountController::class,
+        'tenant' => TenantController::class
     ]);
 
     Route::middleware('auth')->group(function () {
