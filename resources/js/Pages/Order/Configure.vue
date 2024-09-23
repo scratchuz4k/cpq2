@@ -1,11 +1,8 @@
 <script setup>
-import DataTable from 'datatables.net-vue3';
-import DataTablesCore from 'datatables.net-bs5';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, router } from '@inertiajs/vue3';
 import { reactive, ref } from 'vue'
 
-DataTable.use(DataTablesCore);
 
 const props = defineProps({
     order: Object,

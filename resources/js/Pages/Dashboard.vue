@@ -4,7 +4,6 @@ import DataTablesCore from 'datatables.net-bs5';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link } from '@inertiajs/vue3';
 DataTable.use(DataTablesCore);
-
 </script>
 
 <template>
@@ -19,7 +18,16 @@ DataTable.use(DataTablesCore);
 
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                    <DataTable class="table table-striped" :columns="[
+                    <Datatable route="/orders" :columns="[
+                        { data: 'id', title: '#' },
+                        { data: 'account.name', title: 'Account' },
+                        { data: 'solution_type_name', title: 'Solution' },
+                        { data: 'user.name', title: 'User' },
+                        { data: 'status', title: 'Status' },
+                        { data: 'updated_at', title: 'Last Updated' },
+                    ]">
+                    </Datatable>
+                    <!-- <DataTable class="table table-striped" :columns="[
                         { data: 'id', title: '#' },
                         { data: 'account.name', title: 'Account' },
                         { data: 'solution_type_name', title: 'Solution' },
@@ -28,13 +36,13 @@ DataTable.use(DataTablesCore);
                         { data: 'updated_at', title: 'Last Updated' },
                     ]" :ajax="{
                         url: '/api/orders',
-                    }">
+                    }" :options="options">
                         <template #column-0="props">
                             <Link :href="route('orders.show', { order: props.cellData })" method="get">
                             {{ props.cellData }}
-                            </Link>                            
+                            </Link>
                         </template>
-                    </DataTable>
+                    </DataTable> -->
                 </div>
             </div>
         </div>

@@ -3,11 +3,7 @@ import axios from 'axios';
 
 import { Head, Link } from '@inertiajs/vue3';
 import { ref, reactive, watch } from 'vue'
-import DataTable from 'datatables.net-vue3';
-import DataTablesCore from 'datatables.net-bs5';
 import MultiSelect from 'primevue/multiselect';
-
-DataTable.use(DataTablesCore);
 
 const props = defineProps({
     modelValue: Object

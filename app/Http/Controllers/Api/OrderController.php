@@ -17,8 +17,16 @@ class OrderController extends BaseController
      */
     public function index()
     {
-        $items = Order::with(['user', 'account'])->orderBy('id', 'desc')->get();
-        return response()->json(["data" => OrderResource::collection($items)]);
+        // if (request()->has("filters")) {
+        //     $filters =  is_string(request()->filters) ? json_decode(request()->filters, true) : request()->filters;
+        // }
+        $search = '3';
+        $columns = ['solution_type_id'];
+
+        $items = Order::search($search, $columns)->get();
+        // $items = Order::with(['user', 'account'])->orderBy('id', 'desc')->paginate();
+
+        return  OrderResource::collection($items);
     }
 
     /**

@@ -139,4 +139,14 @@ class Order extends Model
 
         return $totals;
     }
+
+    // In YourModel.php
+    public function scopeSearch($query, $searchTerm, $columns = [])
+    {
+        return $query->where(function ($q) use ($searchTerm, $columns) {
+            foreach ($columns as $column) {
+                $q->orWhere($column, 'like', "%{$searchTerm}%");
+            }
+        });
+    }
 }
