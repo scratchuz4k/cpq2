@@ -23,6 +23,7 @@ class Order extends Model
         "address_city",
         "address_country",
         "address_data",
+        "solution_type_id",
         "tenant_id",
         "name"
     ];
@@ -33,13 +34,6 @@ class Order extends Model
             'address_data' => 'object',
         ];
     }
-
-    private static $solution_types = [
-        "3" => 'Connectivity - Ethernet & Fibre',
-        "4" => 'Mobile',
-        // "1" => 'Connectivity - Ethernet Point to Point',
-        // "2" => 'Connectivity - Fibre',
-    ];
 
     protected $appends = ['status'];
 
@@ -55,47 +49,6 @@ class Order extends Model
         return 'CONFIGURE';
     }
 
-    public static function getSolutionTypes(): array
-    {
-        $option = app('currentTenant')->solutions ?? '';
-        $solution_types = static::$solution_types;
-        $allowed = explode(',', $option);
-        $allowed = array_map('trim', $allowed);
-        $tenant_solutions = array_filter($allowed);
-        $solution_map = static::getSolutionMap();
-
-        foreach ($solution_map as $slug => $id) {
-            if (!empty($tenant_solutions) && !in_array($slug, $tenant_solutions)) {
-                unset($solution_types[$id]);
-            }
-        }
-
-        return $solution_types;
-    }
-
-    public static function getSolutionTypeName($id): string
-    {
-        return self::$solution_types[$id] ?? "Unknown";
-    }
-
-    public static function getSolutionMap()
-    {
-        $solution_map = [];
-
-        foreach (static::$solution_types as $solution_id => $solution_name) {
-            $solution_key = (string) Str::of($solution_name)->slug()->replace('-', '_')->upper();
-            $solution_map[$solution_key] = $solution_id;
-        }
-
-        return $solution_map;
-    }
-
-    protected static function booted(): void
-    {
-        static::addGlobalScope(new TenantScope);
-        static::addGlobalScope(new UserScope);
-    }
-
     public function save(array $options = []): bool
     {
         if (empty($this->user_id)) {
@@ -105,11 +58,22 @@ class Order extends Model
         return parent::save($options);
     }
 
+
+    protected static function booted(): void
+    {
+        // static::addGlobalScope(new TenantScope);
+        // static::addGlobalScope(new UserScope);
+    }
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
+    public function solutionType(): BelongsTo
+    {
+        return $this->belongsTo(SolutionType::class);
+    }
     public function account(): BelongsTo
     {
         return $this->belongsTo(Account::class);
@@ -138,15 +102,5 @@ class Order extends Model
         $totals['oneoff_gross'] = $subtotalOneoff * 1.2;
 
         return $totals;
-    }
-
-    // In YourModel.php
-    public function scopeSearch($query, $searchTerm, $columns = [])
-    {
-        return $query->where(function ($q) use ($searchTerm, $columns) {
-            foreach ($columns as $column) {
-                $q->orWhere($column, 'like', "%{$searchTerm}%");
-            }
-        });
     }
 }

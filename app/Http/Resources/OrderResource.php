@@ -23,8 +23,9 @@ class OrderResource extends JsonResource
     {
         return [
             ...$this->resource->toArray(),
-            'solution_type_name' => array_key_exists($this->solution_type_id, $this->solution_types) ? $this->solution_types[$this->solution_type_id] : null,
+            'user' => $this->user,
             'account' => $this->account,
+            'solution_type' => $this->solutionType,
             'items' => $this->items,
             'totals' => $this->totals(),
             'updated_at' => format_date($this->updated_at),

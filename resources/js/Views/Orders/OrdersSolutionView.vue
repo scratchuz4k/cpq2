@@ -72,8 +72,8 @@ const addressSelect = async (form) => {
                 <label class="form-label">Solution Type</label>
                 <select class="form-select" @change="solutionChange(modelValue)" v-model="modelValue.solutionType">
                     <option :value="null">Select an option</option>
-                    <option v-for="(solution, key) in solution_types" :value="{ code: key, name: solution }">
-                        {{ solution }}
+                    <option v-for="(solution, key) in solution_types" :value="solution">
+                        {{ solution.name }}
                     </option>
                 </select>
             </div>

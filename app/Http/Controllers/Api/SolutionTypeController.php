@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Models\Order;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\SolutionType;
 
 class SolutionTypeController extends Controller
 {
@@ -13,7 +14,7 @@ class SolutionTypeController extends Controller
      */
     public function index()
     {
-        return Order::getSolutionTypes();
+        return SolutionType::get();
     }
 
     /**

@@ -13,6 +13,21 @@ import Aura from '@primevue/themes/aura';
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
+import { Notyf } from 'notyf';
+import 'notyf/notyf.min.css'; // for React, Vue and Svelte
+
+window.notyf = new Notyf({
+    duration: 5000,
+    ripple: false,
+    dismissible: true,
+    position: {
+        x: "right",
+        y: "top",
+    },
+});
+
+window.notyf = notyf;
+
 /* import the fontawesome core */
 import { library } from '@fortawesome/fontawesome-svg-core'
 

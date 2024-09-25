@@ -12,6 +12,8 @@ use App\Http\Resources\OrderResource;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\OrderCreateRequest;
+use App\Models\SolutionType;
+
 use function Spatie\LaravelPdf\Support\pdf;
 
 class OrderController extends BaseController
@@ -36,7 +38,7 @@ class OrderController extends BaseController
     {
         return Inertia::render('Order/Create', [
             'accounts' => Account::all(),
-            'solution_types' => Order::getSolutionTypes()
+            'solution_types' => SolutionType::get()
         ]);
     }
 
@@ -73,7 +75,7 @@ class OrderController extends BaseController
     {
         return Inertia::render('Order/Edit', [
             'accounts' => Account::all(),
-            'solution_types' => Order::getSolutionTypes(),
+            'solution_types' => SolutionType::get(),
             'order' => new OrderResource($order)
         ]);
     }
@@ -108,7 +110,7 @@ class OrderController extends BaseController
     {
         return Inertia::render('Order/Configure', [
             'accounts' => Account::all(),
-            'solution_types' => Order::getSolutionTypes(),
+            'solution_types' => SolutionType::get(),
             'order' => new OrderResource($order)
         ]);
     }
@@ -116,7 +118,7 @@ class OrderController extends BaseController
     public function download(Order $order)
     {
         $totals = $order->totals();
-        $solution_types = Order::getSolutionTypes();
+        $solution_types = SolutionType::get();
 
         $dir = 'pdf/' . app('currentTenant')->id;
 

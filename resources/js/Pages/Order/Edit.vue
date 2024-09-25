@@ -39,7 +39,7 @@ const solutionsViews = {
             </div> -->
         </div>
 
-        <component :is="solutionsViews[order.solution_type_id]" v-bind="{
+        <component :is="solutionsViews[order.solution_type.code]" v-bind="{
             modelValue: order
         }"></component>
     </AuthenticatedLayout>

@@ -34,9 +34,12 @@
     "datatables.net-bs5": "^2.1.5",
     "datatables.net-dt": "^2.1.5",
     "datatables.net-vue3": "^3.0.2",
+    "lodash": "^4.17.21",
+    "notyf": "^3.10.0",
     "nouislider": "^15.8.1",
     "primevue": "^4.0.5",
     "query-string": "^9.1.0",
+    "sweetalert2": "^11.14.1",
     "uuid": "^10.0.0",
     "vite-plugin-static-copy": "^1.0.6"
   }

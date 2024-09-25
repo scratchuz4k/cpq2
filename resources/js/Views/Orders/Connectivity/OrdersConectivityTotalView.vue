@@ -123,36 +123,40 @@ const saveQuote = () => {
                         <div class="col"></div>
                         <div class="col">
                             <table class="table table-hover">
-                                <tr>
-                                    <th></th>
-                                    <th>NET</th>
-                                    <th>VAT (20%)</th>
-                                    <th>GROSS</th>
-                                </tr>
-                                <tr>
-                                    <th>Total Monthly</th>
-                                    <td id="total_monthly_net" class="text-end">
-                                        {{ GBP.format(modelValue.totals.monthly_net) }}
-                                    </td>
-                                    <td id="total_monthly_vat" class="text-end">
-                                        {{ GBP.format(modelValue.totals.monthly_vat) }}
-                                    </td>
-                                    <td id="total_monthly_gross" class="text-end">
-                                        {{ GBP.format(modelValue.totals.monthly_gross) }}
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <th>Total One-off Costs</th>
-                                    <td id="total_oneoff_net" class="text-end">
-                                        {{ GBP.format(modelValue.totals.oneoff_net) }}
-                                    </td>
-                                    <td id="total_oneoff_vat" class="text-end">
-                                        {{ GBP.format(modelValue.totals.oneoff_vat) }}
-                                    </td>
-                                    <td id="total_oneoff_gross" class="text-end">
-                                        {{ GBP.format(modelValue.totals.oneoff_gross) }}
-                                    </td>
-                                </tr>
+                                <thead>
+                                    <tr>
+                                        <th></th>
+                                        <th>NET</th>
+                                        <th>VAT (20%)</th>
+                                        <th>GROSS</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <th>Total Monthly</th>
+                                        <td id="total_monthly_net" class="text-end">
+                                            {{ GBP.format(modelValue.totals.monthly_net) }}
+                                        </td>
+                                        <td id="total_monthly_vat" class="text-end">
+                                            {{ GBP.format(modelValue.totals.monthly_vat) }}
+                                        </td>
+                                        <td id="total_monthly_gross" class="text-end">
+                                            {{ GBP.format(modelValue.totals.monthly_gross) }}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>Total One-off Costs</th>
+                                        <td id="total_oneoff_net" class="text-end">
+                                            {{ GBP.format(modelValue.totals.oneoff_net) }}
+                                        </td>
+                                        <td id="total_oneoff_vat" class="text-end">
+                                            {{ GBP.format(modelValue.totals.oneoff_vat) }}
+                                        </td>
+                                        <td id="total_oneoff_gross" class="text-end">
+                                            {{ GBP.format(modelValue.totals.oneoff_gross) }}
+                                        </td>
+                                    </tr>
+                                </tbody>
                             </table>
                         </div>
                     </div>
