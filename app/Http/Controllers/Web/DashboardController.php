@@ -24,7 +24,7 @@ class DashboardController extends BaseController
     {
         $tenants = auth()->user()->tenants;
         $permissions = auth()->user()->getAllPermissions();
-        return Inertia::render('Account/Index', [
+        return Inertia::render('MyAccount/Index', [
             'permissions' => $permissions,
             'tenants' => $tenants,
         ]);
