@@ -93,7 +93,8 @@ class ExternalController extends Controller
             $page = 0;
             do {
                 $page++;
-                $res = (new ShopBlocksApi())->get(22, 200, $page);
+                $category_id = $request->input('category_id', 22);
+                $res = (new ShopBlocksApi())->get($category_id, 200, $page);
                 if (!array_key_exists("data", $res)) {
                     break;
                 }
@@ -105,7 +106,6 @@ class ExternalController extends Controller
                 $model = (string) Str::of($product['name'])->words(3, '');
                 $products[$key]['model'] = $model;
                 $products[$key]['url'] = 'https://hardware.cloud.market/smartphones/' . $product['slug'];
-                // $labels[$label] = !empty($labels[$label]) ? $labels[$label] + 1 : 1;
             }
 
             return $products;

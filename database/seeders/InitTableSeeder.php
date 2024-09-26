@@ -68,5 +68,10 @@ class InitTableSeeder extends Seeder
         ], [
             "name" => "Mobile",
         ]);
+        SolutionType::updateOrCreate([
+            "code" => 5
+        ], [
+            "name" => "Hardware",
+        ]);
     }
 }

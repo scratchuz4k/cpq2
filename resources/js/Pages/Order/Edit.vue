@@ -11,6 +11,7 @@ defineProps({
 const solutionsViews = {
     3: 'OrdersConectivityTableView',
     4: 'OrdersMobileView',
+    5: 'OrdersHardwareView',
 }
 </script>
 
