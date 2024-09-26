@@ -15,7 +15,6 @@ import Button from 'primevue/button';
 import { reactive, ref, watch } from 'vue';
 import queryString from 'query-string';
 import axios from 'axios';
-import { Notyf } from "notyf";
 
 const props = defineProps({
     route: String,
@@ -106,7 +105,7 @@ const deleteRecord = async (id) => {
             notyf.success('Removed with success');
             return
         } catch (err) {
-            window.notyf.error(err.response.message)
+            notyf.error(err?.response?.data?.message ?? 'Something went wrong')
         }
 
     })
@@ -217,7 +216,7 @@ getData()
             </template>
         </Column>
     </DataTable>
-    <Paginator v-model:first="meta.first" :rows="form.limit" :totalRecords="meta.total"
+    <Paginator  v-model:first="meta.first" :rows="form.limit" :totalRecords="meta.total"
         :rowsPerPageOptions="[10, 20, 30]" @page="handlePaginator">
     </Paginator>
 

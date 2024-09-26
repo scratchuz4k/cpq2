@@ -3,9 +3,13 @@
 namespace App\Models;
 
 use App\Models\Scopes\TenantScope;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Observers\OrderItemObserver;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 
+#[ObservedBy([OrderItemObserver::class])]
 class OrderItem extends Model
 {
     use HasFactory;
@@ -36,5 +40,10 @@ class OrderItem extends Model
         }
 
         return parent::save($options);
+    }
+
+    public function order(): BelongsTo
+    {related:
+        return $this->belongsTo(Order::class);
     }
 }

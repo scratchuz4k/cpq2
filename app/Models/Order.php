@@ -2,14 +2,16 @@
 
 namespace App\Models;
 
-use App\Models\Scopes\TenantScope;
 use App\Models\Scopes\UserScope;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Observers\OrderObserver;
+use App\Models\Scopes\TenantScope;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Str;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 
+#[ObservedBy([OrderObserver::class])]
 class Order extends Model
 {
     use HasFactory;
@@ -35,34 +37,11 @@ class Order extends Model
         ];
     }
 
-    protected $appends = ['status'];
-
-    public function getStatusAttribute()
-    {
-        if ($this->items()->count()) {
-            return 'QUOTE';
-        }
-        if (!empty($record->address_data)) {
-            return 'PRICE';
-        }
-
-        return 'CONFIGURE';
-    }
-
-    public function save(array $options = []): bool
-    {
-        if (empty($this->user_id)) {
-            $this->user_id = auth()->user()->id;
-        }
-
-        return parent::save($options);
-    }
-
 
     protected static function booted(): void
     {
-        // static::addGlobalScope(new TenantScope);
-        // static::addGlobalScope(new UserScope);
+        static::addGlobalScope(new TenantScope);
+        static::addGlobalScope(new UserScope);
     }
 
     public function user(): BelongsTo

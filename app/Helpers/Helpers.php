@@ -1,5 +1,7 @@
 <?php
 
+use App\Models\Order;
+
 if (! function_exists('format_date')) {
     /**
      * Format a date to string
@@ -22,9 +24,23 @@ if (! function_exists('format_date')) {
         $dt = \Carbon\Carbon::create($date);
 
         $dt->settings([
-            'toStringFormat' => 'jS M Y H:i',
+            'toStringFormat' => 'Y-m-d   H:i',
         ]);
 
         return $dt;
+    }
+}
+
+if (! function_exists('get_order_status')) {
+    function get_order_status(Order $order)
+    {
+        if ($order->items->count()) {
+            return 'QUOTE';
+        }
+        if (!empty($order->address_data)) {
+            return 'PRICE';
+        }
+
+        return 'CONFIGURE';
     }
 }

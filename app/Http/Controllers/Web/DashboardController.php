@@ -16,4 +16,17 @@ class DashboardController extends BaseController
     {
         return Inertia::render('Dashboard');
     }
+
+    /**
+     * Display a listing of the resource.
+     */
+    public function myAccount()
+    {
+        $tenants = auth()->user()->tenants;
+        $permissions = auth()->user()->getAllPermissions();
+        return Inertia::render('Account/Index', [
+            'permissions' => $permissions,
+            'tenants' => $tenants,
+        ]);
+    }
 }

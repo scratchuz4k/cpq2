@@ -1,10 +1,10 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import Permissions from "@/Components/Permissions.vue";
-import {Link} from "@inertiajs/vue3";
+import { Link } from "@inertiajs/vue3";
 defineProps({
-    permissions : Array,
-    tenants     : Array
+    permissions: Array,
+    tenants: Array
 })
 
 </script>
@@ -22,12 +22,8 @@ defineProps({
                             <hr class="dropdown-divider">
 
                             <form @submit.prevent="submit">
-                                <Link
-                                    :href="route('logout')"
-                                    method="post"
-                                    as="button"
-                                    class="btn btn-danger"
-                                >Log Out</Link>
+                                <Link :href="route('logout')" method="post" as="button" class="btn btn-danger">Log Out
+                                </Link>
                             </form>
 
                         </div>
@@ -46,9 +42,21 @@ defineProps({
                     <div class="col">
                         <h4>
                             <a :href="route('tenant.index')">
-                              Admin
+                                Admin
                             </a>
                         </h4>
+                        <ul>
+                            <li>
+                                <Link :href="route('accounts.index')">Accounts</Link>
+                            </li>
+                            <li>Brands</li>
+                            <li>Prices</li>
+                            <li>Products</li>
+                            <li>Regions</li>
+                            <li>Suppliers</li>
+                            <li>SPAs</li>
+                            <li>Users</li>
+                        </ul>
                     </div>
                 </div>
             </div>

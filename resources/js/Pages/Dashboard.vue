@@ -19,9 +19,9 @@ DataTable.use(DataTablesCore);
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <Datatable :allow="{
                     create: false,
-                    update: false,
-                    delete: false,
-                    link: false,
+                    update: true,
+                    delete: true,
+                    link: true,
                 }" :columns="[
                     { data: 'id', title: '#' },
                     { data: 'name', title: 'Name', options: { create: true, edit: true } },

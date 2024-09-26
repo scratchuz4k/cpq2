@@ -19,12 +19,7 @@ class AccountController extends BaseController
      */
     public function index()
     {
-        $tenants = auth()->user()->tenants;
-        $permissions = auth()->user()->getAllPermissions();
-        return Inertia::render('Account/Index', [
-            'permissions' => $permissions,
-            'tenants' => $tenants,
-        ]);
+//
     }
 
     /**

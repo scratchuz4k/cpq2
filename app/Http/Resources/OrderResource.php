@@ -8,12 +8,6 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class OrderResource extends JsonResource
 {
-    private $solution_types = [
-        3 => 'Connectivity - Ethernet & Fibre',
-        4 => 'Mobile',
-        // "1" => 'Connectivity - Ethernet Point to Point',
-        // "2" => 'Connectivity - Fibre',
-    ];
     /**
      * Transform the resource into an array.
      *
