@@ -35,6 +35,7 @@ class RolePermissionSeeder extends Seeder
 
         $permissionsByGroup = [
             'Website' => [
+                'tenant' => 'Tenant',
                 'order' => 'Order',
                 'merchant' => 'Merchant',
                 'account' => 'Account',
@@ -47,9 +48,8 @@ class RolePermissionSeeder extends Seeder
 
         $roles = [
             'Super Admin' => [],
-            'Admin' => ['Admin', 'order', 'order_items', 'merchant', 'account',  'price', 'product', 'region'],
             'Support Agent' => ['merchant'],
-            'Company Admin' => ['order', 'order_items', 'merchant', 'account',  'price', 'product', 'region'],
+            'Company Admin' => ['order', 'order_items', 'merchant', 'account',  'price', 'product', 'region', 'tenant'],
             'Sales Rep' => ['order', 'order_items', 'account']
         ];
 
@@ -65,9 +65,8 @@ class RolePermissionSeeder extends Seeder
         }
 
         foreach ($permissionsByGroup as $group => $values) {
-            $ids = collect();
-
             foreach ($values as $valueKey => $value) {
+                $ids = collect();
                 $ids->push(...collect($permissions)
                     ->map(function ($name, $index) use ($group, $valueKey, $value) {
                         return Permission::updateOrCreate(['name' => "$index $valueKey", 'guard_name' => 'web'], ['group' => $group, 'title' => "$name $value"]);

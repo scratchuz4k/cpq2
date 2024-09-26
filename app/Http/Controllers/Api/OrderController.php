@@ -14,6 +14,7 @@ use App\Http\Requests\OrderCreateRequest;
 
 class OrderController extends BaseController
 {
+    protected $model = Order::class;
     public function __construct(protected OrderService $orderService) {}
     /**
      * Display a listing of the resource.

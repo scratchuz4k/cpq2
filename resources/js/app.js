@@ -9,7 +9,6 @@ import { createInertiaApp } from '@inertiajs/vue3';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { ZiggyVue } from '../../vendor/tightenco/ziggy';
 import PrimeVue from "primevue/config";
-import Aura from '@primevue/themes/aura';
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
@@ -36,6 +35,7 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { fas } from '@fortawesome/free-solid-svg-icons'
 import { far } from '@fortawesome/free-regular-svg-icons'
 import { fab } from '@fortawesome/free-brands-svg-icons'
+import AuraReformed from './Themes/Aura';
 
 /* add icons to the library */
 library.add(fas)
@@ -88,7 +88,7 @@ createInertiaApp({
 
         app.use(PrimeVue, {
             theme: {
-                preset: Aura
+                preset: AuraReformed
             }
         });
 

@@ -20,10 +20,6 @@ import { useTabs } from '@composables/tabs'
 
 export default defineComponent({
     props: {
-        inverted: {
-            required: false,
-            default: false
-        },
         class: {
             required: false,
             default: []

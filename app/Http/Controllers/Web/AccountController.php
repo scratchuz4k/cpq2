@@ -11,9 +11,11 @@ use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Illuminate\Http\Request;
 use App\Http\Controllers\BaseController;
+use App\Http\Resources\AccountResource;
 
 class AccountController extends BaseController
 {
+    protected $model = Account::class;
     /**
      * Display a listing of the resource.
      */
@@ -49,9 +51,12 @@ class AccountController extends BaseController
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(Account $account)
     {
-        //
+        $temp = new AccountResource($account);
+        return Inertia::render('Accounts/Edit', [
+            "account" => $temp->toArray(request())
+        ]);
     }
 
     /**

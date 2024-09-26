@@ -2,6 +2,7 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import Permissions from "@/Components/Permissions.vue";
 import { Link } from "@inertiajs/vue3";
+import { can, hasRole } from '@composables/useAuth'
 defineProps({
     permissions: Array,
     tenants: Array
@@ -16,7 +17,6 @@ defineProps({
                 <h1>My Account</h1>
                 <div class="row">
                     <div class="col">
-
                         <div class="mb-3">
                             <p>Your email: {{ $page.props.auth.user.email }}</p>
                             <hr class="dropdown-divider">
@@ -33,6 +33,11 @@ defineProps({
                             <li v-for="tenant in tenants"> {{ tenant.name }} (T{{ tenant.id }})</li>
                         </ul>
 
+                        <h2>User Roles</h2>
+                        <ul>
+                            <li v-for="role in $page.props.auth.roles">{{ role }}</li>
+                        </ul>
+
                         <h2>User Permissions</h2>
                         <Permissions :permissions="permissions" />
 
@@ -40,12 +45,15 @@ defineProps({
                         <p>UID: {{ $page.props.auth.user.id }}</p>
                     </div>
                     <div class="col">
-                        <h4>
-                            <a :href="route('tenant.index')">
-                                Admin
-                            </a>
-                        </h4>
                         <ul>
+                            <li v-if="hasRole('Super Admin') || hasRole('Company Admin')">
+                                <a v-if="hasRole('Super Admin')" :href="route('tenant.index')">
+                                    Tenants
+                                </a>
+                                <a v-else :href="route('tenant.edit', { tenant: 1 })">
+                                    Tenant
+                                </a>
+                            </li>
                             <li>
                                 <Link :href="route('accounts.index')">Accounts</Link>
                             </li>

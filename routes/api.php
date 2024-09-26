@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\AccountController;
 use App\Http\Controllers\Api\OrderItemController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\OrderController;
@@ -23,5 +24,6 @@ Route::apiResources([
     "orders" => OrderController::class,
     "order-items" => OrderItemController::class,
     "solution-types" => SolutionTypeController::class,
-    "permissions" => PermissionController::class
+    "permissions" => PermissionController::class,
+    "accounts" => AccountController::class
 ]);
