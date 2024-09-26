@@ -1,6 +1,8 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head } from "@inertiajs/vue3";
+import { Head, Link } from "@inertiajs/vue3";
+import Button from 'primevue/button';
+
 
 defineProps({
 })
@@ -12,7 +14,16 @@ defineProps({
     <Head title="Accounts" />
     <AuthenticatedLayout>
         <div class="panel">
-            <h1>Accounts</h1>
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h1 class="m-0">Accounts</h1>
+                <div>
+                    <Link href="/accounts/create" class="btn p-0 me-2">
+                    <font-awesome-icon :icon="['fas', 'plus']"></font-awesome-icon> New Account
+                    </Link>
+                </div>
+            </div>
+
+
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
 
                 <Datatable :allow="{

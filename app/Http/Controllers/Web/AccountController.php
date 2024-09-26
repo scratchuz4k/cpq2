@@ -2,20 +2,27 @@
 
 namespace App\Http\Controllers\Web;
 
+use Inertia\Inertia;
+use App\Models\Tenant;
 use App\Models\Account;
 use App\Models\Resource;
-use App\Models\Tenant;
+use Illuminate\Http\Request;
+use App\Services\AccountService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Storage;
-use Inertia\Inertia;
-use Illuminate\Http\Request;
-use App\Http\Controllers\BaseController;
 use App\Http\Resources\AccountResource;
+use Illuminate\Support\Facades\Storage;
+use App\Http\Controllers\BaseController;
+use App\Http\Requests\AccountCreateRequest;
 
 class AccountController extends BaseController
 {
     protected $model = Account::class;
+    public function __construct(protected AccountService $accountService)
+    {
+        parent::__construct();
+    }
+
     /**
      * Display a listing of the resource.
      */
@@ -29,15 +36,23 @@ class AccountController extends BaseController
      */
     public function create()
     {
-        return Inertia::render('Dashboard');
+        return Inertia::render('Accounts/Create');
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(AccountCreateRequest $request)
     {
-        //
+        try {
+            $order = $this->accountService->store($request->all());
+        } catch (\Exception $e) {
+            if (!env('APP_DEBUG')) {
+                Log::error($e->getMessage());
+            }
+            throw new \Exception($e);
+        }
+        return redirect()->route('orders.edit', ['order' => $order->id]);
     }
 
     /**

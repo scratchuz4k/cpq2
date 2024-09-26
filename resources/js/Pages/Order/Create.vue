@@ -3,7 +3,6 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, router } from '@inertiajs/vue3';
 import { reactive, ref } from 'vue'
 
-
 defineProps({
     accounts: Array,
     solution_types: Object,
@@ -48,13 +47,6 @@ const submit = () => {
     <AuthenticatedLayout>
         <div class="d-flex justify-content-between" style="justify-content: space-between;">
             <h1>Create a Quote<span>.</span></h1>
-            <!-- <Steps v-model="step" :steps="[
-                'Account',
-                'Solution',
-                'Quote',
-                'Resume',
-            ]">
-            </Steps> -->
         </div>
 
         <div class="panel">

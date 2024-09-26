@@ -11,7 +11,7 @@ class Contact extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['primary_contact_name', 'email', 'address_1', 'city', 'postcode'];
+    protected $fillable = ['primary_contact_name', 'email', 'address_1', 'city', 'postcode', 'account_id'];
 
     public function account()
     {
