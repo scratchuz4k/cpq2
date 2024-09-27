@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\OrderItemController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\AddressController;
+use App\Http\Controllers\Api\BrandController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\ExternalController;
 use App\Http\Controllers\Api\SolutionTypeController;
@@ -25,5 +26,6 @@ Route::apiResources([
     "order-items" => OrderItemController::class,
     "solution-types" => SolutionTypeController::class,
     "permissions" => PermissionController::class,
-    "accounts" => AccountController::class
+    "accounts" => AccountController::class,
+    "brands" => BrandController::class
 ]);

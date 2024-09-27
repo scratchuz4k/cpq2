@@ -5,13 +5,17 @@ namespace App\Repositories;
 use App\Models\Account;
 use App\Models\Contact;
 
-class ContactRepository
+class AccountRepository
 {
-    public function sync(Account $account, array $contacts)
+    public function syncContacts(Account $account, array $contacts)
     {
         $oldContacts = $account->contacts;
 
         foreach ($contacts as $item) {
+            if (!isset($item["email"])) {
+                continue;
+            }
+
             if (array_key_exists('id', $item)) {
                 $contact = Contact::find($item['id']);
 
@@ -21,10 +25,6 @@ class ContactRepository
                     return $contact->id === $item['id'];
                 });
             } else {
-                if (array_key_exists('name', $item) && ! $item['name']) {
-                    continue;
-                }
-
                 $contact = Contact::create([...$item, 'account_id' => $account->id]);
             }
         }

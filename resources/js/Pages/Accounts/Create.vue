@@ -6,8 +6,10 @@ import Accordion from 'primevue/accordion';
 import AccordionPanel from 'primevue/accordionpanel';
 import AccordionHeader from 'primevue/accordionheader';
 import AccordionContent from 'primevue/accordioncontent';
+import Swal from 'sweetalert2';
+import { reactive,ref } from 'vue';
 
-const account = useForm({
+const account = reactive({
     name: null,
     reference: null,
     contacts: []
@@ -17,8 +19,40 @@ const addContact = () => {
 }
 
 const saveAccount = () => {
-    account.post("/accounts", account)
+    router.post("/accounts", account, {
+        onSuccess: (page) => {
+            notyf.success("Updated with Success")
+        },
+        onError: (errors) => {
+            Object.keys(errors).forEach((key) => {
+                notyf.error(errors[key])
+            })
+        },
+    })
 }
+
+const removeContact = (key) => {
+    Swal.fire({
+        title: 'Are you sure?',
+        icon: 'warning',
+        showCancelButton: true,
+        cancelButtonText: 'No, cancel.',
+        confirmButtonColor: '#2d72d9',
+        cancelButtonColor: '#E53A40',
+        confirmButtonText: 'Yes, delete!'
+    }).then(async (result) => {
+        if (['cancel', 'backdrop'].includes(result.dismiss)) {
+            bulkOperation.value = ''
+            return
+        }
+        account.contacts.splice(key, 1)
+    })
+}
+
+const items = ref([
+    { label: 'My', url: '/myaccount' },
+    { label: 'Accounts', url: '/accounts' },
+]);
 
 
 </script>
@@ -28,31 +62,36 @@ const saveAccount = () => {
     <Head title="Accounts" />
     <AuthenticatedLayout>
         <div class="panel">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <h1 class="m-0">New Account</h1>
-                <div>
-                    <Button @click="saveAccount()">
+            <Header title="New Account" :breadcrumbs="items">
+                <template #buttons>
+                    <Button @click="saveAccount()" size="small">
                         <font-awesome-icon :icon="['fas', 'save']"></font-awesome-icon> Save
                     </Button>
-                </div>
-            </div>
+                </template>
+            </Header>
             <div class="row mb-3">
                 <div class="col">
                     <label for="account-name" class="form-label">Name:</label>
                     <input id="account-name" class="form-control" v-model="account.name">
-                    <div class="text-danger"  v-if="account.errors.name">{{ account.errors.name }}</div>
                 </div>
                 <div class="col">
                     <label for="account-name" class="form-label">Reference:</label>
                     <input id="account-name" class="form-control" v-model="account.reference">
-                    <div class="text-danger"  v-if="account.errors.reference">{{ account.errors.reference }}</div>
                 </div>
             </div>
             <h2>Contacts</h2>
             <Accordion value="0">
-                <AccordionPanel v-for="(contact, key) in account.contacts" :key="contact.email" :value="key">
-                    <AccordionHeader>Contact #{{ contact.id }} {{ contact.primary_contact_name ? ' - ' +
-                        contact.primary_contact_name : '' }}</AccordionHeader>
+                <AccordionPanel v-for="(contact, key) in account.contacts" :key="key" :value="key">
+                    <AccordionHeader>
+                        <div class="d-flex justify-content-between align-items-center w-100 pe-3">
+                            <p class="m-0">
+                                Contact #{{ contact.id }}
+                                {{ contact.primary_contact_name ? ' - ' + contact.primary_contact_name : '' }}
+
+                            </p>
+                            <Button size="small" @click="removeContact(key)">Delete</Button>
+                        </div>
+                    </AccordionHeader>
                     <AccordionContent>
                         <div class="row">
                             <div class="col">

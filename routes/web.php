@@ -7,7 +7,7 @@ use App\Http\Controllers\Web\AccountController;
 use App\Http\Controllers\Web\ProfileController;
 use App\Http\Controllers\Web\DashboardController;
 use \App\Http\Controllers\AdminController;
-
+use App\Http\Controllers\Web\BrandController;
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('index');
@@ -20,7 +20,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resources([
         'orders' => OrderController::class,
         'accounts' => AccountController::class,
-        'tenant' => TenantController::class
+        'tenant' => TenantController::class,
+        'brands' => BrandController::class
     ]);
 
     Route::middleware('auth')->group(function () {

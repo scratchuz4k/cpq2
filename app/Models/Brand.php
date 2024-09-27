@@ -10,6 +10,8 @@ class Brand extends Model
 {
     use HasFactory;
 
+    protected $fillable = ["name", "tenant_id"];
+
     protected static function booted(): void
     {
         static::addGlobalScope(new TenantScope);

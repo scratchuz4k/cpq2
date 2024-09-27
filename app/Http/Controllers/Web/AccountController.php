@@ -3,17 +3,14 @@
 namespace App\Http\Controllers\Web;
 
 use Inertia\Inertia;
-use App\Models\Tenant;
 use App\Models\Account;
-use App\Models\Resource;
 use Illuminate\Http\Request;
 use App\Services\AccountService;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Http\Resources\AccountResource;
-use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\AccountCreateRequest;
+use App\Http\Requests\AccountUpdateRequest;
 
 class AccountController extends BaseController
 {
@@ -45,20 +42,20 @@ class AccountController extends BaseController
     public function store(AccountCreateRequest $request)
     {
         try {
-            $order = $this->accountService->store($request->all());
+            $account = $this->accountService->store($request->all());
         } catch (\Exception $e) {
             if (!env('APP_DEBUG')) {
                 Log::error($e->getMessage());
             }
             throw new \Exception($e);
         }
-        return redirect()->route('orders.edit', ['order' => $order->id]);
+        return redirect()->route('accounts.edit', ['account' => $account->id]);
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Account $account)
     {
         //
     }
@@ -77,15 +74,23 @@ class AccountController extends BaseController
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Account $account)
+    public function update(AccountUpdateRequest $request, Account $account)
     {
-        //
+        try {
+            $account = $this->accountService->update($account, $request->all());
+        } catch (\Exception $e) {
+            if (!env(key: 'APP_DEBUG')) {
+                Log::error($e->getMessage());
+            }
+            throw new \Exception($e);
+        }
+        return redirect()->route('accounts.edit', ['account' => $account->id]);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Account $account)
     {
         //
     }

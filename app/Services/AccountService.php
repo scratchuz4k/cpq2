@@ -3,13 +3,12 @@
 namespace App\Services;
 
 use App\Models\Account;
-use App\Repositories\ContactRepository;
+use App\Repositories\AccountRepository;
 use Illuminate\Support\Facades\DB;
 
 class AccountService
 {
-
-    public function __construct(protected ContactRepository $contactRepository) {}
+    public function __construct(protected AccountRepository $accountRepository) {}
     public function store(array $array): Account
     {
         return DB::transaction(function () use ($array) {
@@ -21,7 +20,7 @@ class AccountService
             );
 
             if (isset($array['contacts']) && is_array($array['contacts'])) {
-                $this->contactRepository->sync($account, $array['contacts']);
+                $this->accountRepository->syncContacts($account, $array['contacts']);
             }
 
             return $account;
@@ -37,6 +36,10 @@ class AccountService
                     'tenant_id' => app('currentTenant')->id,
                 ]
             );
+
+            if (isset($array['contacts']) && is_array($array['contacts'])) {
+                $this->accountRepository->syncContacts($account, $array['contacts']);
+            }
 
             return $account;
         });

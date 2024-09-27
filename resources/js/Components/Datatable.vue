@@ -22,7 +22,6 @@ const props = defineProps({
     allow: {
         type: Object,
         default: {
-            create: false,
             update: false,
             delete: false,
             link: false,
@@ -31,7 +30,6 @@ const props = defineProps({
 })
 
 const activeFilters = ref(false)
-const activeCreate = ref(false)
 const data = ref([])
 
 const global = reactive({
@@ -131,10 +129,6 @@ getData()
         <template #header>
             <div class="d-flex justify-content-between">
                 <div>
-                    <Button v-if="allow.create" :severity="activeCreate ? 'primary' : 'secondary'" :class="['me-2']"
-                        type="button" @click="() => activeCreate = !activeCreate">
-                        <font-awesome-icon :icon="['fas', 'add']" />
-                    </Button>
                     <Button :severity="activeFilters ? 'primary' : 'secondary'" type="button" :class="['me-2']"
                         @click="() => activeFilters = !activeFilters">
                         <font-awesome-icon :icon="['fas', 'filter']" />
@@ -219,18 +213,6 @@ getData()
     <Paginator  v-model:first="meta.first" :rows="form.limit" :totalRecords="meta.total"
         :rowsPerPageOptions="[10, 20, 30]" @page="handlePaginator">
     </Paginator>
-
-    <Dialog v-model:visible="activeCreate" modal header="Add a new Record" :style="{ width: '50rem' }"
-        :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
-        <div class="mb-3" v-for="column in columns.filter(x => x.options && x.options.create)">
-            <label for="username" class="form-label">{{ column.title }}</label>
-            <InputText id="username" class="form-control" autocomplete="off" />
-        </div>
-        <div class="d-flex justify-content-end gap-2">
-            <button type="button" class="btn btn-secondary me-2" @click="activeCreate = false">Cancel</button>
-            <button type="button" class="btn btn-primary" @click="activeCreate = false">Save</button>
-        </div>
-    </Dialog>
 </template>
 <style>
 .p-datatable {

@@ -18,15 +18,14 @@ DataTable.use(DataTablesCore);
 
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <Datatable :allow="{
-                    create: false,
                     update: true,
                     delete: true,
                     link: true,
                 }" :columns="[
                     { data: 'id', title: '#' },
-                    { data: 'name', title: 'Name', options: { create: true, edit: true } },
-                    { data: 'account.name', title: 'Account', options: { create: true, edit: true } },
-                    { data: 'solution_type.name', title: 'Solution', options: { create: true, edit: true } },
+                    { data: 'name', title: 'Name'},
+                    { data: 'account.name', title: 'Account'},
+                    { data: 'solution_type.name', title: 'Solution'},
                     { data: 'user.name', title: 'User' },
                     { data: 'status', title: 'Status' },
                     { data: 'updated_at', title: 'Last Updated' },

@@ -25,6 +25,14 @@ class TenantPolicy
      */
     public function view(User $user, Tenant $tenant): bool
     {
+        if ($user->hasRole("Super Admin")) {
+            return true;
+        }
+
+        if ($tenant->id !=  app("currentTenant")->id) {
+            return false;
+        }
+
         if (!$user->can("view $this->model")) {
             return false;
         }

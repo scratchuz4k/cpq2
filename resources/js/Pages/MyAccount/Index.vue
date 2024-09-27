@@ -25,7 +25,6 @@ defineProps({
                                 <Link :href="route('logout')" method="post" as="button" class="btn btn-danger">Log Out
                                 </Link>
                             </form>
-
                         </div>
 
                         <h2 v-if="true">Company Accounts</h2>
@@ -57,7 +56,7 @@ defineProps({
                             <li>
                                 <Link :href="route('accounts.index')">Accounts</Link>
                             </li>
-                            <li>Brands</li>
+                            <li><Link :href="route('brands.index')">Brands</Link></li>
                             <li>Prices</li>
                             <li>Products</li>
                             <li>Regions</li>

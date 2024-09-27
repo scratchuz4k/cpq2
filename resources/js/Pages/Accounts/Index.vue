@@ -1,11 +1,11 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link } from "@inertiajs/vue3";
-import Button from 'primevue/button';
+import { ref } from 'vue';
+const items = ref([
+    { label: 'My', url: '/myaccount' }
+]);
 
-
-defineProps({
-})
 
 </script>
 
@@ -14,30 +14,25 @@ defineProps({
     <Head title="Accounts" />
     <AuthenticatedLayout>
         <div class="panel">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <h1 class="m-0">Accounts</h1>
-                <div>
+            <Header title="Accounts" :breadcrumbs="items">
+                <template #buttons>
                     <Link href="/accounts/create" class="btn p-0 me-2">
                     <font-awesome-icon :icon="['fas', 'plus']"></font-awesome-icon> New Account
                     </Link>
-                </div>
-            </div>
-
-
+                </template>
+            </Header>
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-
                 <Datatable :allow="{
-                    create: false,
                     update: true,
                     delete: true,
                     link: false,
                 }" :columns="[
                     { data: 'id', title: '#' },
-                    { data: 'name', title: 'Name', options: { create: true, edit: true } },
-                    { data: 'reference', title: 'Reference', options: { create: true, edit: true } },
-                    { data: 'tenant.name', title: 'Tenant', options: { create: true, edit: true } },
-                    { data: 'created_at', title: 'Created At', options: { create: true, edit: true } },
-                    { data: 'updated_at', title: 'Updated At', options: { create: true, edit: true } },
+                    { data: 'name', title: 'Name' },
+                    { data: 'reference', title: 'Reference' },
+                    { data: 'tenant.name', title: 'Tenant' },
+                    { data: 'created_at', title: 'Created At' },
+                    { data: 'updated_at', title: 'Updated At' },
                 ]" route="/accounts">
                 </Datatable>
             </div>

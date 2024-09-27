@@ -61,10 +61,6 @@ body {
 
 
 #app {
-    a:not(.btn) {
-        color: var(--purple);
-    }
-
     .bg-theme-secondary-dark {
         background: var(--secondary-dark);
     }
@@ -161,11 +157,6 @@ body {
 
     h1 span {
         color: var(--primary-light);
-    }
-
-    h2 {
-        font-size: 18px;
-        font-weight: bold;
     }
 
     .bold {
@@ -385,10 +376,6 @@ body {
         background: #F2ECE1;
         padding: 15px;
         border-radius: 6px;
-    }
-
-    .summary .inner h2 {
-        font-size: 18px;
     }
 
     .summary .inner>div {
@@ -634,15 +621,6 @@ body {
     .panel-mobile {
         padding: 0;
         background-color: var(--grey-lighter);
-
-        h2 {
-            font-size: 30px;
-        }
-
-        h3 {
-            font-size: 20px;
-            font-weight: bold;
-        }
 
         .mobile-item {
             background-color: var(--white);

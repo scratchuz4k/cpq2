@@ -1,6 +1,7 @@
 import accordion from '@primevue/themes/aura/accordion';
 import { definePreset } from '@primevue/themes';
 import Aura from '@primevue/themes/aura';
+import breadcrumb from '@primevue/themes/aura/breadcrumb';
 
 const AuraReformed = definePreset(Aura, {
     primitive: {
@@ -405,6 +406,9 @@ const AuraReformed = definePreset(Aura, {
             content: {
                 background: '#f6f6f6',
             }
+        },
+        breadcrumb: {
+            padding: ".5rem 0"
         }
     }
 });
