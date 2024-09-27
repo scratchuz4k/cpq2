@@ -9,6 +9,7 @@ const props = defineProps({
 const solutionsViews = {
     3: 'OrdersConectivityTotalView',
     4: 'OrdersMobileTotalView',
+    5: 'OrdersHardwareTotalView',
 }
 
 
