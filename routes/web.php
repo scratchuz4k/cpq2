@@ -9,6 +9,7 @@ use App\Http\Controllers\Web\DashboardController;
 use \App\Http\Controllers\AdminController;
 use App\Http\Controllers\Web\BrandController;
 
+
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('index');
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');

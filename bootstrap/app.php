@@ -10,7 +10,7 @@ return Application::configure(basePath: dirname(__DIR__))
         commands: __DIR__ . '/../routes/console.php',
         health: '/up',
         using: function () {
-            Route::middleware('web')
+            Route::middleware('auth:sanctum')
 
                 ->prefix('api')
 
@@ -24,11 +24,11 @@ return Application::configure(basePath: dirname(__DIR__))
         },
     )
     ->withMiddleware(function (Middleware $middleware) {
+        $middleware->statefulApi();
         $middleware->web(append: [
             \App\Http\Middleware\HandleInertiaRequests::class,
             \Illuminate\Http\Middleware\AddLinkHeadersForPreloadedAssets::class,
         ]);
-
         //
     })
     ->withExceptions(function (Exceptions $exceptions) {
