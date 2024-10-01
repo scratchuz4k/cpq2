@@ -2,8 +2,6 @@
 
 namespace App\Helpers;
 
-use Illuminate\Database\QueryException;
-use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 
@@ -32,10 +30,12 @@ class DataProvider
         return $this;
     }
 
-    public function get(array $filters = [], array $with = [])
+    public function get()
     {
         $this->builder = $this->builder->with($this->relations);
-        $this->builder = $this->builder->with($with);
+
+        $filters = request()->input('filters', []);
+        $filters = is_string($filters) ? json_decode($filters, true) : $filters;
 
         foreach ($filters as $filter) {
             if (! $filter['value']) {

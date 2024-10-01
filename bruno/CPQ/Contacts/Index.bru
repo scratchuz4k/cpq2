@@ -6,7 +6,7 @@ meta {
 
 get {
   url: {{base_url}}/api/contacts
-  body: none
+  body: json
   auth: bearer
 }
 
@@ -16,4 +16,16 @@ headers {
 
 auth:bearer {
   token: {{token}}
+}
+
+body:json {
+  {
+    "filters": [
+      {
+        "column":"id",
+        "operator": "equals",
+        "value": 522
+      }
+    ]
+  }
 }

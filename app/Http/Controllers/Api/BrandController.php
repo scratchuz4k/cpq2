@@ -19,8 +19,7 @@ class BrandController extends Controller
     {
         $dataProvider = new DataProvider(Brand::class);
         try {
-            $filters = json_decode(request()->input('filters', '[]'), true);
-            $data = $dataProvider->get($filters);
+            $data = $dataProvider->get();
         } catch (Exception $e) {
             Log::debug($e->getMessage());
             return $e->getMessage();
