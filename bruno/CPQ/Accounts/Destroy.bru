@@ -1,0 +1,26 @@
+meta {
+  name: Destroy
+  type: http
+  seq: 5
+}
+
+delete {
+  url: {{base_url}}/api/accounts/101
+  body: json
+  auth: bearer
+}
+
+headers {
+  : 
+}
+
+auth:bearer {
+  token: 7exeBQwJKEYwT7vlW0wRFwqWPpc8sD4hoBGQLCvYe9a7387d
+}
+
+body:json {
+  {
+    "name": "toze",
+    "reference": "1233"
+  }
+}

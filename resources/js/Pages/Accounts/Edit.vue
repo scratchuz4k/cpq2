@@ -41,9 +41,11 @@ const saveAccount = () => {
                 notyf.success("Updated with Success")
             },
             onError: (errors) => {
+                let string = ''
                 Object.keys(errors).forEach((key) => {
-                    notyf.error(errors[key])
+                    string += errors[key] + '<br>'
                 })
+                notyf.error(string)
             },
         }
     )

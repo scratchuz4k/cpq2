@@ -7,7 +7,7 @@ import AccordionPanel from 'primevue/accordionpanel';
 import AccordionHeader from 'primevue/accordionheader';
 import AccordionContent from 'primevue/accordioncontent';
 import Swal from 'sweetalert2';
-import { reactive,ref } from 'vue';
+import { reactive, ref } from 'vue';
 
 const account = reactive({
     name: null,
@@ -24,9 +24,11 @@ const saveAccount = () => {
             notyf.success("Updated with Success")
         },
         onError: (errors) => {
+            let string = ''
             Object.keys(errors).forEach((key) => {
-                notyf.error(errors[key])
+                string += errors[key] + '<br>'
             })
+            notyf.error(string)
         },
     })
 }

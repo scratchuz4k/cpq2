@@ -2,13 +2,25 @@
 
 namespace App\Http\Controllers\Web;
 
+use App\Models\Spa;
 use Inertia\Inertia;
 use App\Models\Price;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
+use App\Services\PriceService;
+use Illuminate\Support\Facades\Log;
+use App\Http\Resources\PriceResource;
+use App\Http\Controllers\BaseController;
+use App\Http\Requests\PriceCreateRequest;
+use App\Http\Requests\PriceUpdateRequest;
 
-class PriceController extends Controller
+class PriceController extends BaseController
 {
+    protected $model = Price::class;
+
+    public function __construct(protected PriceService $priceService)
+    {
+        parent::__construct();
+    }
     /**
      * Display a listing of the resource.
      */
@@ -22,15 +34,25 @@ class PriceController extends Controller
      */
     public function create()
     {
-        return Inertia::render(component: 'Prices/Create');
+        return Inertia::render('Prices/Create', [
+            "spas" => Spa::all()
+        ]);
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(PriceCreateRequest $request)
     {
-        //
+        try {
+            $price = $this->priceService->store($request->all());
+        } catch (\Exception $e) {
+            if (!env('APP_DEBUG')) {
+                Log::error($e->getMessage());
+            }
+            throw new \Exception($e);
+        }
+        return redirect()->route('prices.edit', ['price' => $price->id]);
     }
 
     /**
@@ -38,7 +60,9 @@ class PriceController extends Controller
      */
     public function show(Price $price)
     {
-        //
+        return Inertia::render('Prices/Show', [
+            'order' => new PriceResource($price)
+        ]);
     }
 
     /**
@@ -46,15 +70,25 @@ class PriceController extends Controller
      */
     public function edit(Price $price)
     {
-        //
+        return Inertia::render('Prices/Edit', [
+            'price' => new PriceResource($price)
+        ]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Price $price)
+    public function update(PriceUpdateRequest $request, Price $price)
     {
-        //
+        try {
+            $price = $this->priceService->update($price, $request->all());
+        } catch (\Exception $e) {
+            if (!env('APP_DEBUG')) {
+                Log::error($e->getMessage());
+            }
+            throw new \Exception($e);
+        }
+        return redirect()->route('prices.edit', ['price' => $price->id]);
     }
 
     /**
