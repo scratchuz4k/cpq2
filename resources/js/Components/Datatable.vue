@@ -32,11 +32,7 @@ const props = defineProps({
 const activeFilters = ref(false)
 const data = ref([])
 
-const global = reactive({
-    column: props.columns.map(x => x.data).join(","),
-    operator: 'search',
-    value: null
-})
+const global = ref(null)
 
 const form = reactive({
     filters: [],
@@ -60,7 +56,8 @@ const getData = _.debounce(async () => {
     let string = queryString.stringify({
         ...form,
         page: meta.page,
-        filters: JSON.stringify([...form.filters, global]),
+        filters: JSON.stringify([...form.filters]),
+        search: global.value
     })
 
     let res = await axios.get('/api' + props.route + '?' + string)
@@ -142,7 +139,7 @@ getData()
                     <InputIcon>
                         <font-awesome-icon :icon="['fas', 'search']" />
                     </InputIcon>
-                    <InputText v-model="global.value" placeholder="Keyword Search" />
+                    <InputText v-model="global" placeholder="Keyword Search" />
                 </IconField>
             </div>
         </template>
