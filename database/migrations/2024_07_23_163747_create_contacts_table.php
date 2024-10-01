@@ -14,6 +14,7 @@ return new class extends Migration
     {
         Schema::create('contacts', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('tenant_id')->constrained()->cascadeOnDelete();
             $table->foreignId('account_id')->constrained()->cascadeOnDelete();
             $table->string('primary_contact_name')->nullable();
             $table->string('email')->nullable();
@@ -30,6 +31,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('contacts', function (Blueprint $table) {
+            $table->dropConstrainedForeignId('tenant_id');
             $table->dropConstrainedForeignId('account_id');
         });
 
