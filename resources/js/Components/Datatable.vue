@@ -122,7 +122,7 @@ getData()
 
 </script>
 <template>
-    <DataTable :value="data" :rows="form.limit" stripedRows showGridlines>
+    <DataTable :value="data" :rows="form.limit" stripedRows>
         <template #header>
             <div class="d-flex justify-content-between">
                 <div>
