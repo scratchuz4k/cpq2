@@ -89,7 +89,7 @@ const addressSelect = async (form) => {
 
                 <div class="mb-3" id="address" v-if="addresses.length">
                     <label for="select_address">Select address</label>
-                    <select class="form-control" id="select_address" @change="addressSelect(modelValue)"
+                    <select class="form-select" id="select_address" @change="addressSelect(modelValue)"
                         v-model="modelValue.address">
                         <option :value="null">Select address</option>
                         <option v-for="(address, key) in addresses" :value="address">{{ address.label }}

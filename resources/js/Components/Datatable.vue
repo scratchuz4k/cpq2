@@ -158,7 +158,7 @@ getData()
                             <font-awesome-icon :icon="['fas', 'filter']" />
                         </button>
                         <div class="filter-content" :class="{ 'last': key + 1 == columns.length }">
-                            <div class="mb-3">
+                            <!-- <div class="mb-3">
                                 <label class="form-label" :for="`filter-operator-${key}`">Operator</label>
                                 <select :id="`filter-operator-${key}`" class="form-select w-100"
                                     v-model="form.filters[key].operator">
@@ -173,9 +173,9 @@ getData()
                                     <option value="greater_than_or_equal_to" v-html="'>='"></option>
                                     <option value="less_than_or_equal_to" v-html="'<='"></option>
                                 </select>
-                            </div>
+                            </div> -->
                             <div class="mb-3">
-                                <label class="form-label" :for="`filter-operator-${key}`">Value</label>
+                                <label class="form-label" :for="`filter-operator-${key}`">Search</label>
                                 <input class="form-control me-2 form-control-sm" v-model="form.filters[key].value" />
                             </div>
                         </div>

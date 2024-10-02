@@ -23,10 +23,9 @@ DataTable.use(DataTablesCore);
                     link: true,
                 }" :columns="[
                     { data: 'id', title: '#' },
-                    { data: 'name', title: 'Name'},
                     { data: 'account.name', title: 'Account'},
                     { data: 'solution_type.name', title: 'Solution'},
-                    { data: 'user.name', title: 'User' },
+                    { data: 'user.name', title: 'Owner' },
                     { data: 'status', title: 'Status' },
                     { data: 'updated_at', title: 'Last Updated' },
                 ]" route="/orders">

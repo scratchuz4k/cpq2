@@ -14,10 +14,10 @@
     --peach: #F2ECE1;
     --light-blue: #DEF1FB;
     --dark-blue: #356E8E;
-    --teal:#3FB8AF;
-    --light-teal:#CFEDEB;
-    --red:#DC3545;
-    --light-red:#FBEAEC;
+    --teal: #3FB8AF;
+    --light-teal: #CFEDEB;
+    --red: #DC3545;
+    --light-red: #FBEAEC;
 }
 
 :root {
@@ -459,6 +459,7 @@ body {
             vertical-align: middle;
             position: sticky;
             top: -1px;
+            z-index: 1;
             cursor: pointer;
         }
 
@@ -485,12 +486,13 @@ body {
                 font-size: 12px;
             }
         }
+
         .container-form-check-input {
             position: absolute;
-            left:0;
-            right:0;
-            top:0;
-            bottom:0;
+            left: 0;
+            right: 0;
+            top: 0;
+            bottom: 0;
             margin: auto;
             width: 100%;
             height: 100%;
@@ -500,12 +502,12 @@ body {
             cursor: pointer;
         }
 
-        tbody > tr:has(.form-check-input:checked) > * {
+        tbody>tr:has(.form-check-input:checked)>* {
             background-color: var(--light-teal);
         }
 
         .form-check-input {
-            margin:0;
+            margin: 0;
             width: 20px;
             height: 20px;
             cursor: pointer;
@@ -526,10 +528,10 @@ body {
     #table-quotes {
         .container-form-check-input {
             position: absolute;
-            left:0;
-            right:0;
-            top:0;
-            bottom:0;
+            left: 0;
+            right: 0;
+            top: 0;
+            bottom: 0;
             margin: auto;
             width: 100%;
             height: 100%;
@@ -539,19 +541,20 @@ body {
             cursor: pointer;
         }
 
-        tbody > tr:has(.form-check-input:checked) > * {
+        tbody>tr:has(.form-check-input:checked)>* {
             background-color: var(--light-red);
         }
 
         .form-check-input {
-            margin:0;
+            margin: 0;
             width: 20px;
             height: 20px;
             cursor: pointer;
         }
 
         .form-check-input:focus {
-            border-color: var(--red);;
+            border-color: var(--red);
+            ;
             box-shadow: 0 0 0 0.25rem var(--light-red);
         }
 
@@ -780,10 +783,12 @@ body {
             .out-of-stock {
                 color: var(--dark-grey);
             }
+
             .price {
                 font-size: 14px;
                 font-weight: bold;
             }
+
             .mobile-product-quantity {
                 button {
                     font-size: 12px;
@@ -824,13 +829,14 @@ body {
 
                 &.active {
 
-                    .accordion-header{
+                    .accordion-header {
                         box-shadow: none;
-                        background-color:var(--lighter-grey);
+                        background-color: var(--lighter-grey);
                     }
+
                     .accordion-collapse.collapsing,
                     .accordion-collapse.show {
-                        background-color:var(--lighter-grey);
+                        background-color: var(--lighter-grey);
                     }
 
                 }
@@ -845,15 +851,16 @@ body {
                         outline: 0;
                         box-shadow: initial;
                     }
-                    &:not(.collapsed){
+
+                    &:not(.collapsed) {
                         box-shadow: none;
-                        background-color:transparent;
+                        background-color: transparent;
                     }
 
                     &:after {
                         order: -1;
                         margin-left: 0;
-                        margin-right:0.5em;
+                        margin-right: 0.5em;
                     }
                 }
 
@@ -888,7 +895,7 @@ body {
             border: var(--bs-border-width) solid var(--bs-border-color);
 
             &:hover {
-                background-color:var(--lighter-grey);
+                background-color: var(--lighter-grey);
             }
         }
     }
@@ -898,12 +905,15 @@ body {
     0% {
         width: 0%;
     }
+
     20% {
         width: 80%;
     }
+
     40% {
         width: 90%;
     }
+
     100% {
         width: 100%;
     }

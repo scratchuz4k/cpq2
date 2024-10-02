@@ -88,7 +88,10 @@ createInertiaApp({
 
         app.use(PrimeVue, {
             theme: {
-                preset: AuraReformed
+                preset: AuraReformed,
+                options: {
+                    darkModeSelector: '.dark-mode',
+                }
             }
         });
 

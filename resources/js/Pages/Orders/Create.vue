@@ -10,7 +10,6 @@ defineProps({
 
 const form = reactive({
     isLoading: false,
-    name: null,
     account: null,
     solutionType: null,
     address: null,
@@ -25,7 +24,6 @@ const submit = () => {
     try {
         router.post('/orders',
             {
-                name: form.name,
                 account_id: form.account?.id,
                 address_position: form.position,
                 address_city: form.address?.addressparts?.PostTown,
@@ -56,14 +54,6 @@ const submit = () => {
                         <div class="col d-flex justify-content-end">
                             <button class="btn btn-primary" :disabled="form.account == null" type="button"
                                 @click="() => step++">Continue</button>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col">
-                            <div class="mb-3">
-                                <label for="account_id" class="form-label">Give a name to the quote:</label>
-                                <input class="form-control" v-model="form.name" />
-                            </div>
                         </div>
                     </div>
                     <OrdersAccountView v-model="form" :accounts="accounts"></OrdersAccountView>
