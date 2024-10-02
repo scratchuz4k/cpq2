@@ -22,6 +22,10 @@ return new class extends Migration
             $table->string('postcode')->nullable();
             $table->timestamps();
         });
+
+        Schema::table('accounts', function (Blueprint $table) {
+            $table->dropColumn(['primary_contact_name', 'email', 'address_1', 'city', 'postcode']);
+        });
     }
 
     /**
@@ -29,6 +33,16 @@ return new class extends Migration
      */
     public function down(): void
     {
+        Schema::table('accounts', function (Blueprint $table) {
+            $table->after('reference', function ($table) {
+                $table->string('primary_contact_name')->nullable();
+                $table->string('email')->nullable();
+                $table->string('address_1')->nullable();
+                $table->string('city')->nullable();
+                $table->string('postcode')->nullable();
+            });
+        });
+
         Schema::table('contacts', function (Blueprint $table) {
             $table->dropConstrainedForeignId('account_id');
         });
