@@ -21,7 +21,6 @@ class Account extends Model
     protected static function booted(): void
     {
         static::addGlobalScope(new TenantScope);
-        static::observe(AccountObserver::class);
     }
     public function tenant(): BelongsTo
     {

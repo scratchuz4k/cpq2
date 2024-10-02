@@ -4,7 +4,6 @@ namespace App\Helpers;
 
 use App\Models\Tenant as ModelsTenant;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Laravel\Sanctum\PersonalAccessToken;
 use Spatie\Multitenancy\Models\Tenant;

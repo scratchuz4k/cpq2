@@ -6,7 +6,7 @@ meta {
 
 get {
   url: {{base_url}}/api/accounts
-  body: none
+  body: json
   auth: bearer
 }
 
@@ -15,5 +15,22 @@ headers {
 }
 
 auth:bearer {
-  token: 7exeBQwJKEYwT7vlW0wRFwqWPpc8sD4hoBGQLCvYe9a7387d
+  token: {{token}}
+}
+
+body:json {
+  {
+    "filters": [
+      {
+        "column":"id",
+        "operator": "greater_than",
+        "value": 2
+      },
+      {
+        "column":"id",
+        "operator": "less_than",
+        "value": 14
+      }
+    ]
+  }
 }
