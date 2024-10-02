@@ -48,28 +48,17 @@ getHardwareProducts()
                             </div>
                         </div>
                     </div>
+                    <div class="mt-5">
+                        <button :href="route('orders.edit', { order: modelValue.id })" class="btn btn-light step-nav btn-sm me-3" type="button" @click="() => step--">
+                            <font-awesome-icon :icon="['fas', 'arrow-left']" /> Back
+                        </button>
+                    </div>
                 </div>
             </div>
             <div class="col-lg-4">
                 <div class="price-mobile-sidebar px-4 pt-4 pb-2 mb-3" style="position: sticky; top: 25px">
                     <h3 class="mb-3">Your quote: #{{ modelValue.id }}</h3>
 
-                    <h4>Recurring charges</h4>
-
-                    <div class="sidebar_items border-bottom mb-2">
-                        <div v-for="p in planProducts" class="item mb-2">
-                            <span>{{ p.label }}</span><span class="badge bg-light-grey dark">
-                                {{ GBP.format(p.quantity * p.priceMonthly) }}
-                            </span>
-                        </div>
-
-                        <div v-for="p in boltOnProducts" class="item mb-2">
-                            <span>{{ p.name }}</span>
-                            <span class="badge bg-light-grey dark">
-                                {{ GBP.format(p.quantity * p.priceMonthly) }}
-                            </span>
-                        </div>
-                    </div>
                     <h4>One-off charges</h4>
                     <div class="sidebar_items border-bottom mb-2">
                         <div class="item mb-2">
@@ -81,7 +70,7 @@ getHardwareProducts()
                             </span>
                         </div>
                     </div>
-                    <div class="sidebar_items border-bottom mb-4">
+                    <div class="sidebar_items mb-4">
                         <div class="item mb-2">
                             <span><b>One-off Subtotal</b></span>
                             <span class="badge bg-light-grey dark">
@@ -89,11 +78,6 @@ getHardwareProducts()
                             </span>
                         </div>
                     </div>
-                    <p class="payment-info px-3">
-                        1 payment of
-                        {{ GBP.format(modelValue.totals.oneoff_vat) }} followed
-                        by 12 monthly payments of {{ GBP.format(modelValue.totals.monthly_vat) }}
-                    </p>
                 </div>
             </div>
         </div>

@@ -256,12 +256,14 @@ watch(searchValue, () => {
                             products</div>
                     </div>
 
-                    <div class="d-flex justify-content-between align-items-center">
-                        <button class="btn btn-light step-nav btn-sm me-3" type="button" @click="() => step--">
-                            <font-awesome-icon :icon="['fas', 'arrow-left']" /> Back
-                        </button>
+                    <div class="text-end">
                         <div>
-                            <span id="total_add_ons">Add <span>0</span> add-ons</span>
+                            <span id="total_add_ons">
+                                Add <span>{{ hardwareProducts.reduce((acc, x) => acc += !x.quantity ? 0 : x.quantity, 0) }}</span> Hardware
+                            </span>
+                            <button class="btn btn-primary ms-3" @click="saveQuote()">
+                                Next <font-awesome-icon :icon="['fas', 'arrow-right']" />
+                            </button>
                         </div>
                     </div>
                 </div>
