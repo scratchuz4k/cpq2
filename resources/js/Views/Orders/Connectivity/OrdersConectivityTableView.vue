@@ -250,10 +250,10 @@ getArticles()
                             </p>
                             <div>
                                 <label for="filter-subprovider" class="form-label">Provider:</label>
-                                <MultiSelect v-model="filters.providerName" :options="filterList.providerName" filter
-                                    placeholder="Select a provider" class="me-3 " style="width:150px">
+                                <MultiSelect v-model="filters.providerName" :options="filterList.providerName"
+                                    placeholder="Select a provider" class="me-3 " style="width:150px;" size="small">
                                     <template #option="slotProps">
-                                        <div>{{ slotProps.option }} ({{ countFilters("providerName",
+                                        <div style="font-size:14px;line-height: 1.5rem;">{{ slotProps.option }} ({{ countFilters("providerName",
                                             slotProps.option) }})</div>
                                     </template>
                                 </MultiSelect>
@@ -261,10 +261,10 @@ getArticles()
                             <div>
                                 <label for="filter-subprovider" class="form-label">Subprovider:</label>
                                 <MultiSelect v-model="filters.connectivitySupplierName"
-                                    :options="filterList.connectivitySupplierName" filter
-                                    placeholder="Select a subprovider" class="me-3 " style="width:150px">
+                                    :options="filterList.connectivitySupplierName" placeholder="Select a subprovider"
+                                    class="me-3 " style="width:150px;">
                                     <template #option="slotProps">
-                                        <div>{{ slotProps.option }} ({{ countFilters("connectivitySupplierName",
+                                        <div style="font-size:14px;line-height: 1.5rem;">{{ slotProps.option }} ({{ countFilters("connectivitySupplierName",
                                             slotProps.option) }})</div>
                                     </template>
                                 </MultiSelect>
@@ -272,10 +272,10 @@ getArticles()
                             <div>
                                 <label for="filter-contract" class="form-label">Contract Length:</label>
                                 <MultiSelect v-model="filters.contractTermMonths"
-                                    :options="filterList.contractTermMonths" filter placeholder="Select months"
-                                    class="me-3 " style="width:150px">
+                                    :options="filterList.contractTermMonths" placeholder="Select months" class="me-3 "
+                                    style="width:150px;">
                                     <template #option="slotProps">
-                                        <div>{{ slotProps.option }} Months</div>
+                                        <div style="font-size:14px;line-height: 1.5rem;">{{ slotProps.option }} Months</div>
                                     </template>
                                 </MultiSelect>
                             </div>

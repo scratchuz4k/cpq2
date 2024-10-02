@@ -23,12 +23,15 @@ DataTable.use(DataTablesCore);
                     link: true,
                 }" :columns="[
                     { data: 'id', title: '#' },
-                    { data: 'account.name', title: 'Account'},
-                    { data: 'solution_type.name', title: 'Solution'},
+                    { data: 'account.name', title: 'Account' },
+                    { data: 'solution_type.name', title: 'Solution' },
                     { data: 'user.name', title: 'Owner' },
                     { data: 'status', title: 'Status' },
                     { data: 'updated_at', title: 'Last Updated' },
                 ]" route="/orders">
+                    <template #status="{ value }">
+                        <span class="badge text-bg-secondary">{{ value }}</span>
+                    </template>
                 </Datatable>
             </div>
         </div>

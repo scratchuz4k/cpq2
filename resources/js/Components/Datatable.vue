@@ -3,7 +3,6 @@ import _ from "lodash";
 import swal from "sweetalert2";
 import { Link } from '@inertiajs/vue3';
 
-import Dialog from 'primevue/dialog';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import Paginator from 'primevue/paginator';
@@ -12,9 +11,12 @@ import InputIcon from 'primevue/inputicon';
 import InputText from 'primevue/inputtext';
 import Button from 'primevue/button';
 
-import { reactive, ref, watch } from 'vue';
+import { reactive, ref, watch, useSlots } from 'vue';
 import queryString from 'query-string';
 import axios from 'axios';
+
+const slots = useSlots()
+const usedSlots = Object.keys(slots)
 
 const props = defineProps({
     route: String,
@@ -38,7 +40,7 @@ const form = reactive({
     filters: [],
     order: "desc",
     orderBy: "id",
-    limit: 10,
+    limit: 20,
 })
 
 const meta = reactive({
@@ -56,6 +58,7 @@ const getData = _.debounce(async () => {
     let string = queryString.stringify({
         ...form,
         page: meta.page,
+        columns: props.columns.map(x => x.data).join(","),
         filters: JSON.stringify([...form.filters]),
         search: global.value
     })
@@ -105,6 +108,29 @@ const deleteRecord = async (id) => {
 
     })
 
+}
+
+const getValue = (item, key) => {
+    let items = key.split(".")
+    let result = item;
+
+    for (let i = 0; i < items.length; i++) {
+        const prop = items[i];
+
+        // Check if the current property exists in the current object
+        if (result && typeof result === 'object' && prop in result) {
+            result = result[prop];
+            // Access the nested object using the current property
+            if (Array.isArray(result) && i < items.length - 1) {
+                result = result.length > 0 ? result[0] : undefined;
+            }
+        } else {
+            // Property not found, return undefined
+            return undefined;
+        }
+    }
+
+    return result;
 }
 
 setFilters()
@@ -182,6 +208,10 @@ getData()
                     </div>
                 </div>
             </template>
+            <template #body="{ data, field }">
+                <slot v-if="usedSlots.includes(field)" :name="field" :value="getValue(data, field)" />
+                <template v-else>{{ getValue(data, field) }}</template>
+            </template>
         </Column>
         <Column v-if="allow.update || allow.link || allow.delete">
             <template #body="{ data, index }">
@@ -207,8 +237,8 @@ getData()
             </template>
         </Column>
     </DataTable>
-    <Paginator  v-model:first="meta.first" :rows="form.limit" :totalRecords="meta.total"
-        :rowsPerPageOptions="[10, 20, 30]" @page="handlePaginator">
+    <Paginator v-model:first="meta.first" :rows="form.limit" :totalRecords="meta.total"
+        :rowsPerPageOptions="[20, 30, 50]" @page="handlePaginator">
     </Paginator>
 </template>
 <style>

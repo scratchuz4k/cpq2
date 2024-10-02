@@ -39,7 +39,8 @@ class DataProvider
         $filters = is_string($filters) ? json_decode($filters, true) : $filters;
 
         if ($search) {
-            $columns = request()->input('columns', $this->builder->getModel()->getFillable()) ;
+            $columns = $this->builder->getModel()->getFillable();
+            $columns = explode(",", request()->input('columns', ''));
             $this->builder = $this->searchModel($this->builder, $columns, $search);
         }
 
