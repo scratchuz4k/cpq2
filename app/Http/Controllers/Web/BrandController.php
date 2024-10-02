@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Web;
 use Inertia\Inertia;
 use App\Models\Brand;
 use Illuminate\Http\Request;
+use App\Services\BrandService;
 use Illuminate\Support\Facades\DB;
 use App\Http\Resources\BrandResource;
 use App\Http\Controllers\BaseController;
@@ -12,6 +13,10 @@ use App\Http\Controllers\BaseController;
 class BrandController extends BaseController
 {
     protected $model = Brand::class;
+    public function __construct(protected BrandService $brandService)
+    {
+        parent::__construct();
+    }
 
     /**
      * Display a listing of the resource.
@@ -35,13 +40,7 @@ class BrandController extends BaseController
     public function store(Request $request)
     {
         try {
-            $brand = DB::transaction(function () use ($request) {
-                $brand = Brand::create([
-                    ...$request->all(),
-                    "tenant_id" => app("currentTenant")->id,
-                ]);
-                return $brand;
-            });
+            $brand = $this->brandService->store($request->all());
         } catch (\Exception $e) {
             throw new \Exception($e);
         }
@@ -73,13 +72,7 @@ class BrandController extends BaseController
     public function update(Request $request, Brand $brand)
     {
         try {
-            $brand = DB::transaction(function () use ($request, $brand) {
-                $brand->update([
-                    ...$request->all(),
-                    "tenant_id" => app("currentTenant")->id,
-                ]);
-                return $brand;
-            });
+            $brand = $this->brandService->update($brand, $request->all());
         } catch (\Exception $e) {
             throw new \Exception($e);
         }

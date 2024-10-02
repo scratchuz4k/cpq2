@@ -57,7 +57,7 @@ defineProps({
                                 <Link :href="route('accounts.index')">Accounts</Link>
                             </li>
                             <li><Link :href="route('brands.index')">Brands</Link></li>
-                            <li>Prices</li>
+                            <li><Link :href="route('prices.index')">Prices</Link></li>
                             <li>Products</li>
                             <li>Regions</li>
                             <li>Suppliers</li>

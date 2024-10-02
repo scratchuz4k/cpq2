@@ -2,8 +2,6 @@
 
 namespace App\Helpers;
 
-use Illuminate\Database\QueryException;
-use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 
@@ -32,10 +30,17 @@ class DataProvider
         return $this;
     }
 
-    public function get(array $filters = [], array $with = [])
+    public function get()
     {
         $this->builder = $this->builder->with($this->relations);
-        $this->builder = $this->builder->with($with);
+
+        $search = request()->input('search', null);
+        $filters = request()->input('filters', []);
+        $filters = is_string($filters) ? json_decode($filters, true) : $filters;
+
+        if ($search) {
+            $this->builder = $this->searchModel($this->builder, $this->builder->getModel()->getFillable(), $search);
+        }
 
         foreach ($filters as $filter) {
             if (! $filter['value']) {
@@ -43,12 +48,6 @@ class DataProvider
             }
 
             $queryParts = $this->resolveQueryParts($filter['operator'], $filter['value']);
-
-            if ($queryParts['operator'] == 'search') {
-                $this->builder = $this->searchModel($this->builder, explode(',', $filter['column']), $queryParts['value']);
-                continue;
-            }
-
             $func = $this->getFunction($filter);
             $this->builder = $this->buildSearch($this->builder, $filter['column'], $queryParts['operator'], $queryParts['value'], $func);
         }

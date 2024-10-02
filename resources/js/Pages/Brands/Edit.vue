@@ -16,9 +16,11 @@ const saveBrand = () => {
                 notyf.success("Updated with Success")
             },
             onError: (errors) => {
+                let string = ''
                 Object.keys(errors).forEach((key) => {
-                    notyf.error(errors[key])
+                    string += errors[key] + '<br>'
                 })
+                notyf.error(string)
             },
         }
     )
@@ -31,6 +33,7 @@ const items = ref([
 
 </script>
 <template>
+
     <Head title="Brands" />
     <AuthenticatedLayout>
         <div class="panel">

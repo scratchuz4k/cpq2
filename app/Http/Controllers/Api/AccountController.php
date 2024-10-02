@@ -6,13 +6,19 @@ use Exception;
 use App\Models\Account;
 use Illuminate\Http\Request;
 use App\Helpers\DataProvider;
-use App\Http\Controllers\BaseController;
+use App\Services\AccountService;
 use Illuminate\Support\Facades\Log;
 use App\Http\Resources\AccountResource;
+use App\Http\Controllers\BaseController;
 
 class AccountController extends BaseController
 {
+
     protected $model = Account::class;
+    public function __construct(protected AccountService $accountService)
+    {
+        parent::__construct();
+    }
     /**
      * Display a listing of the resource.
      */
@@ -20,8 +26,7 @@ class AccountController extends BaseController
     {
         $dataProvider = new DataProvider(Account::class);
         try {
-            $filters = json_decode(request()->input('filters', '[]'), true);
-            $data = $dataProvider->get($filters);
+            $data = $dataProvider->get();
         } catch (Exception $e) {
             Log::debug($e->getMessage());
             return $e->getMessage();
@@ -35,23 +40,40 @@ class AccountController extends BaseController
      */
     public function store(Request $request)
     {
-        //
+        try {
+            $account = $this->accountService->store($request->all());
+        } catch (\Exception $e) {
+            if (!env('APP_DEBUG')) {
+                Log::error($e->getMessage());
+            }
+            throw new \Exception($e);
+        }
+        return redirect()->route('accounts.edit', ['account' => $account->id]);
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Account $account)
     {
-        //
+        $temp = new AccountResource($account);
+        return $temp->toArray(request());
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Account $account)
     {
-        //
+        try {
+            $account = $this->accountService->update($account, $request->all());
+        } catch (Exception $e) {
+            if (!env(key: 'APP_DEBUG')) {
+                Log::error($e->getMessage());
+            }
+            throw new Exception($e);
+        }
+        return redirect()->route('accounts.edit', ['account' => $account->id]);
     }
 
     /**
@@ -60,5 +82,6 @@ class AccountController extends BaseController
     public function destroy(Account $account)
     {
         $account->delete();
+        return response()->json(null, 204);
     }
 }

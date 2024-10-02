@@ -12,6 +12,16 @@ class Spa extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        "tenant_id",
+        "supplier_id",
+        "merchant_id",
+        "account_id",
+        "user_id",
+        "name",
+        "data",
+    ];
+
     protected static function booted(): void
     {
         static::addGlobalScope(new TenantScope);

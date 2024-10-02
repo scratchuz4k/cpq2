@@ -4,7 +4,6 @@ namespace App\Helpers;
 
 use App\Models\Tenant as ModelsTenant;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Laravel\Sanctum\PersonalAccessToken;
 use Spatie\Multitenancy\Models\Tenant;
@@ -43,6 +42,6 @@ class RebateTenantFinder extends TenantFinder
         }
 
         Log::debug("Tenant NOT FOUND for request (yet) - using Default Tenant 1 for now...");
-        return Tenant::find(1);
+        return \App\Models\Tenant::find(1);
     }
 }

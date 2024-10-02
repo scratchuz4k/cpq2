@@ -1,0 +1,36 @@
+meta {
+  name: Index
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{base_url}}/api/accounts
+  body: json
+  auth: bearer
+}
+
+headers {
+  : 
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "filters": [
+      {
+        "column":"id",
+        "operator": "greater_than",
+        "value": 2
+      },
+      {
+        "column":"id",
+        "operator": "less_than",
+        "value": 14
+      }
+    ]
+  }
+}
