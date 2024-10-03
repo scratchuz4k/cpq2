@@ -12,7 +12,12 @@ const props = defineProps({
 let data = []
 const modelsLimit = ref(15)
 
-const step = ref(props.step)
+const urlParams = new URLSearchParams(window.location.search)
+const params = new Proxy(urlParams, {
+    get: (searchParams, prop) => searchParams.get(prop),
+})
+
+const step = ref(params["step"] ?? 1)
 
 const planProducts = ref([
     {
@@ -413,17 +418,21 @@ watch(activeFilters, () => {
                                         <input type="number" class="form-control text-center input-qty me-1"
                                             v-model="product.quantity">
                                         <button class="btn btn-secondary btn-sm" type="button"
-                                            @click="addQuantity(product, 1)" :disabled="checkPlansHardwareQuantity() <= 0">
+                                            @click="addQuantity(product, 1)"
+                                            :disabled="checkPlansHardwareQuantity() <= 0">
                                             <font-awesome-icon :icon="['fas', 'plus']" />
                                         </button>
                                     </div>
 
                                     <button class="badge text-bg-secondary badge-qty-add" style="text-decoration: none;"
-                                        @click="addQuantity(product, 25)" :disabled="checkPlansHardwareQuantity() <= 0">+25</button>
-                                    <button class="badge text-bg-secondary badge-qty-add mx-2" style="text-decoration: none;"
-                                        @click="addQuantity(product, 50)"  :disabled="checkPlansHardwareQuantity() <= 0">+50</button>
+                                        @click="addQuantity(product, 25)"
+                                        :disabled="checkPlansHardwareQuantity() <= 0">+25</button>
+                                    <button class="badge text-bg-secondary badge-qty-add mx-2"
+                                        style="text-decoration: none;" @click="addQuantity(product, 50)"
+                                        :disabled="checkPlansHardwareQuantity() <= 0">+50</button>
                                     <button class="badge text-bg-secondary badge-qty-add" style="text-decoration: none;"
-                                        @click="addQuantity(product, 100)"  :disabled="checkPlansHardwareQuantity() <= 0">+100</button>
+                                        @click="addQuantity(product, 100)"
+                                        :disabled="checkPlansHardwareQuantity() <= 0">+100</button>
                                 </div>
                             </div>
                         </div>
@@ -469,7 +478,8 @@ watch(activeFilters, () => {
                             </span>
                         </div>
                     </div>
-                    <button class="btn btn-primary mt-2" @click="saveQuote()" :disabled="checkPlansHardwareQuantity() < 0">
+                    <button class="btn btn-primary mt-2" @click="saveQuote()"
+                        :disabled="checkPlansHardwareQuantity() < 0">
                         Save Quote
                     </button>
                 </div>
@@ -487,12 +497,12 @@ tr.active td {
     background-color: var(--highlight-darker) !important
 }
 
-button.badge{
+button.badge {
     font-size: 9px;
 }
 
-.badge:disabled{
-    background: lightgray!important;
+.badge:disabled {
+    background: lightgray !important;
     pointer-events: none;
 }
 </style>
