@@ -9,6 +9,7 @@ const props = defineProps({
 const solutionsViews = {
     3: 'OrdersConectivityTotalView',
     4: 'OrdersMobileTotalView',
+    5: 'OrdersHardwareTotalView',
 }
 
 
@@ -33,10 +34,10 @@ const solutionsViews = {
                 </div>
             </div>
             <div class="col" style="text-align: right">
-                <a :href="route('orders.download', { order: order.id })" class="btn btn-secondary mx-2">
-                    <font-awesome-icon :icon="['fas', 'file-pdf']"></font-awesome-icon>
-                    Download PDF
-                </a>
+<!--                <a :href="route('orders.download', { order: order.id })" class="btn btn-secondary mx-2">-->
+<!--                    <font-awesome-icon :icon="['fas', 'file-pdf']"></font-awesome-icon>-->
+<!--                    Download PDF-->
+<!--                </a>-->
                 <button class="btn btn-primary">Email this quote
                     <font-awesome-icon :icon="['fas', 'arrow-right']"></font-awesome-icon></button>
             </div>

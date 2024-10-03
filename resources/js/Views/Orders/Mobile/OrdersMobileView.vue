@@ -2,14 +2,21 @@
 import axios from 'axios';
 import { router } from '@inertiajs/vue3';
 import { reactive, ref, watch } from 'vue'
+import swal from "sweetalert2";
 
 const props = defineProps({
-    modelValue: Object
+    modelValue: Object,
 })
 
 let data = []
 const modelsLimit = ref(15)
-const step = ref(1)
+
+const urlParams = new URLSearchParams(window.location.search)
+const params = new Proxy(urlParams, {
+    get: (searchParams, prop) => searchParams.get(prop),
+})
+
+const step = ref(params["step"] ?? 1)
 
 const planProducts = ref([
     {
@@ -56,7 +63,15 @@ const boltOnProducts = ref([
     },
 ]);
 
+
 const hardwareProducts = ref([])
+const checkPlansHardwareQuantity = () => {
+    let plansQty = planProducts.value.reduce((acc, x) => acc += x.quantity, 0)
+    let boltOnQty = boltOnProducts.value.reduce((acc, x) => acc += x.quantity, 0)
+    let hardwareQty = hardwareProducts.value.reduce((acc, x) => acc += x.quantity, 0)
+
+    return (plansQty + boltOnQty) - hardwareQty
+}
 
 const checkValue = (product) => {
     if (product.quantity < 0) {
@@ -120,12 +135,32 @@ const addQuantity = (product, quantity) => {
     if (!Object.keys(product).includes('quantity')) {
         product.quantity = 0
     }
+    let oldQty = product.quantity
     let temp = product.quantity + quantity
     if (product.stock <= temp) {
         temp = product.stock
     }
+
     product.quantity = temp
 
+    if (checkPlansHardwareQuantity() < 0) {
+        swal.fire({
+            title: 'Quantity exceeds plans limit',
+            subtitle: 'Your hardware quantity exceeds plans limit',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Ok',
+            cancelButtonText: 'Cancel.',
+            confirmButtonColor: '#2d72d9',
+            cancelButtonColor: '#E53A40',
+        }).then(async (result) => {
+            if (['cancel', 'backdrop'].includes(result.dismiss)) {
+                product.quantity = oldQty
+                return
+            }
+            product.quantity += checkPlansHardwareQuantity()
+        })
+    }
 }
 
 const removeQuantity = (product, quantity) => {
@@ -144,7 +179,7 @@ const removeQuantity = (product, quantity) => {
 const saveQuote = () => {
     let items = []
     items.push(...planProducts.value.filter(x => x.quantity || x.id))
-    items.push(...boltOnProducts.value.filter(x => x.quantity | x.id))
+    items.push(...boltOnProducts.value.filter(x => x.quantity || x.id))
     items.push(...hardwareProducts.value.filter(x => x.quantity || x.id))
     try {
         items.forEach(async (article) => {
@@ -188,7 +223,7 @@ watch(activeFilters, () => {
                             <div class="d-flex align-items-center mb-2">
                                 <h4 class="m-0 ">{{ product.label }}</h4>
                                 <p class="m-0 ms-2">
-                                    {{ product.data }} data / {{ product.minutes }} mins / {{ product.price }} £
+                                    {{ product.data }} data / {{ product.minutes }} mins / {{ product.priceMonthly }} £
                                 </p>
                             </div>
                             <font-awesome-icon :icon="['fa', 'circle-info']" />
@@ -207,11 +242,11 @@ watch(activeFilters, () => {
                                     @click="() => product.quantity++">
                                     <font-awesome-icon :icon="['fas', 'plus']" />
                                 </button>
-                                <button type="button" class="btn btn-secondary btn-sm"
+                                <button type="button" class="badge border-0 text-bg-secondary"
                                     @click="() => product.quantity += 25">+25</button>
-                                <button type="button" class="btn btn-secondary btn-sm mx-2"
+                                <button type="button" class="badge border-0 text-bg-secondary mx-2"
                                     @click="() => product.quantity += 50">+50</button>
-                                <button type="button" class="btn btn-secondary btn-sm"
+                                <button type="button" class="badge border-0 text-bg-secondary"
                                     @click="() => product.quantity += 100">+100</button>
                             </div>
                         </div>
@@ -237,7 +272,7 @@ watch(activeFilters, () => {
                             <div class="d-flex align-items-center mb-2">
                                 <h4 class="m-0 ">{{ product.name }}</h4>
                                 <p class="m-0 ms-2">
-                                    {{ product.price }} £
+                                    {{ product.priceMonthly }} £
                                 </p>
                             </div>
                             <font-awesome-icon :icon="['fa', 'circle-info']" />
@@ -256,11 +291,11 @@ watch(activeFilters, () => {
                                     @click="() => product.quantity++">
                                     <font-awesome-icon :icon="['fas', 'plus']" />
                                 </button>
-                                <button type="button" class="btn btn-secondary btn-sm"
+                                <button type="button" class="badge border-0 text-bg-secondary"
                                     @click="() => product.quantity += 25">+25</button>
-                                <button type="button" class="btn btn-secondary btn-sm mx-2"
+                                <button type="button" class="badge border-0 text-bg-secondary mx-2"
                                     @click="() => product.quantity += 50">+50</button>
-                                <button type="button" class="btn btn-secondary btn-sm"
+                                <button type="button" class="badge border-0 text-bg-secondary"
                                     @click="() => product.quantity += 100">+100</button>
                             </div>
                         </div>
@@ -382,17 +417,21 @@ watch(activeFilters, () => {
                                         <input type="number" class="form-control text-center input-qty me-1"
                                             v-model="product.quantity">
                                         <button class="btn btn-secondary btn-sm" type="button"
-                                            @click="addQuantity(product, 1)">
+                                            @click="addQuantity(product, 1)"
+                                            :disabled="checkPlansHardwareQuantity() <= 0">
                                             <font-awesome-icon :icon="['fas', 'plus']" />
                                         </button>
                                     </div>
 
-                                    <a class="badge text-bg-secondary badge-qty-add" style="text-decoration: none;"
-                                        @click="addQuantity(product, 25)">+25</a>
-                                    <a class="badge text-bg-secondary badge-qty-add mx-2" style="text-decoration: none;"
-                                        @click="addQuantity(product, 50)">+50</a>
-                                    <a class="badge text-bg-secondary badge-qty-add" style="text-decoration: none;"
-                                        @click="addQuantity(product, 100)">+100</a>
+                                    <button class="badge text-bg-secondary badge-qty-add" style="text-decoration: none;"
+                                        @click="addQuantity(product, 25)"
+                                        :disabled="checkPlansHardwareQuantity() <= 0">+25</button>
+                                    <button class="badge text-bg-secondary badge-qty-add mx-2"
+                                        style="text-decoration: none;" @click="addQuantity(product, 50)"
+                                        :disabled="checkPlansHardwareQuantity() <= 0">+50</button>
+                                    <button class="badge text-bg-secondary badge-qty-add" style="text-decoration: none;"
+                                        @click="addQuantity(product, 100)"
+                                        :disabled="checkPlansHardwareQuantity() <= 0">+100</button>
                                 </div>
                             </div>
                         </div>
@@ -438,8 +477,8 @@ watch(activeFilters, () => {
                             </span>
                         </div>
                     </div>
-
-                    <button class="btn btn-primary mt-2" @click="saveQuote()">
+                    <button class="btn btn-primary mt-2" @click="saveQuote()"
+                        :disabled="checkPlansHardwareQuantity() < 0">
                         Save Quote
                     </button>
                 </div>
@@ -455,5 +494,14 @@ tr.active td {
 
 .active {
     background-color: var(--highlight-darker) !important
+}
+
+button.badge {
+    font-size: 9px;
+}
+
+.badge:disabled {
+    background: lightgray !important;
+    pointer-events: none;
 }
 </style>
