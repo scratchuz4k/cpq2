@@ -1,8 +1,7 @@
 <script setup>
 import {reactive, ref} from 'vue';
-import {router, usePage, useForm} from "@inertiajs/vue3";
+import {router} from "@inertiajs/vue3";
 
-const page = usePage();
 
 
 const props = defineProps({

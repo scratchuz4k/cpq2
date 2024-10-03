@@ -13,9 +13,9 @@ class OrderPolicy
     private string $model = "order";
     public function viewAny(User $user): bool
     {
-        // if(user()->hasPermission("viewAny $this->model")){
-        //     return true;
-        // }
+        if ($user->can("viewAny $this->model")) {
+            return true;
+        }
         return false;
     }
 
@@ -24,7 +24,6 @@ class OrderPolicy
      */
     public function view(User $user, Order $order): bool
     {
-
         return true;
     }
 

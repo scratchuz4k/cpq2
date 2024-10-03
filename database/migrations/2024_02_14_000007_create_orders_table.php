@@ -16,8 +16,9 @@ return new class extends Migration
             $table->foreignId('tenant_id')->constrained()->cascadeOnDelete();
             $table->foreignId('user_id')->nullable()->constrained()->nullOnDelete();
             $table->foreignId('account_id')->nullable()->constrained()->nullOnDelete();
+            $table->foreignId('solution_type_id')->nullable()->constrained()->nullOnDelete();
             $table->string('name', 100)->nullable();
-            $table->integer('solution_type_id')->nullable();
+            $table->string('status')->nullable();
             $table->string('payment_method', 200)->nullable();
             $table->string('address_line1', 200)->nullable();
             $table->string('address_line2', 200)->nullable();

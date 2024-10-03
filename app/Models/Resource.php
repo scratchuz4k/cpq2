@@ -31,6 +31,11 @@ class Resource extends Model
         return asset('storage/' . $this->attributes['route']);
     }
 
+    public function getRouteValue(): string
+    {
+        return $this->attributes['route'];
+    }
+
     public function getBase64Attribute(): string
     {
         return base64_encode($this->getContent());

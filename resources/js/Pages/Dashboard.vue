@@ -17,33 +17,19 @@ DataTable.use(DataTablesCore);
             <h2>Quotes</h2>
 
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                    <Datatable route="/orders" :columns="[
-                        { data: 'id', title: '#' },
-                        { data: 'account.name', title: 'Account' },
-                        { data: 'solution_type_name', title: 'Solution' },
-                        { data: 'user.name', title: 'User' },
-                        { data: 'status', title: 'Status' },
-                        { data: 'updated_at', title: 'Last Updated' },
-                    ]">
-                    </Datatable>
-                    <!-- <DataTable class="table table-striped" :columns="[
-                        { data: 'id', title: '#' },
-                        { data: 'account.name', title: 'Account' },
-                        { data: 'solution_type_name', title: 'Solution' },
-                        { data: 'user.name', title: 'User' },
-                        { data: 'status', title: 'Status' },
-                        { data: 'updated_at', title: 'Last Updated' },
-                    ]" :ajax="{
-                        url: '/api/orders',
-                    }" :options="options">
-                        <template #column-0="props">
-                            <Link :href="route('orders.show', { order: props.cellData })" method="get">
-                            {{ props.cellData }}
-                            </Link>
-                        </template>
-                    </DataTable> -->
-                </div>
+                <Datatable :allow="{
+                    update: true,
+                    delete: true,
+                    link: true,
+                }" :columns="[
+                    { data: 'id', title: '#' },
+                    { data: 'account.name', title: 'Account'},
+                    { data: 'solution_type.name', title: 'Solution'},
+                    { data: 'user.name', title: 'Owner' },
+                    { data: 'status', title: 'Status' },
+                    { data: 'updated_at', title: 'Last Updated' },
+                ]" route="/orders">
+                </Datatable>
             </div>
         </div>
     </AuthenticatedLayout>

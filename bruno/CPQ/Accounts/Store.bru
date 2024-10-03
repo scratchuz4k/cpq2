@@ -1,0 +1,26 @@
+meta {
+  name: Store
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{base_url}}/api/accounts
+  body: json
+  auth: bearer
+}
+
+headers {
+  : 
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "name": "gabriel",
+    "reference": "1lulul"
+  }
+}

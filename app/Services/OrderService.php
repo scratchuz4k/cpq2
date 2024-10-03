@@ -14,7 +14,6 @@ class OrderService
                 [
                     ...$array,
                     'tenant_id' => app('currentTenant')->id,
-                    'name' => 'WIP'
                 ]
             );
 

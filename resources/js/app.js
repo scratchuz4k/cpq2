@@ -9,9 +9,23 @@ import { createInertiaApp } from '@inertiajs/vue3';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { ZiggyVue } from '../../vendor/tightenco/ziggy';
 import PrimeVue from "primevue/config";
-import Aura from '@primevue/themes/aura';
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
+
+import { Notyf } from 'notyf';
+import 'notyf/notyf.min.css'; // for React, Vue and Svelte
+
+window.notyf = new Notyf({
+    duration: 5000,
+    ripple: false,
+    dismissible: true,
+    position: {
+        x: "right",
+        y: "top",
+    },
+});
+
+window.notyf = notyf;
 
 /* import the fontawesome core */
 import { library } from '@fortawesome/fontawesome-svg-core'
@@ -21,6 +35,7 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { fas } from '@fortawesome/free-solid-svg-icons'
 import { far } from '@fortawesome/free-regular-svg-icons'
 import { fab } from '@fortawesome/free-brands-svg-icons'
+import AuraReformed from './Themes/Aura';
 
 /* add icons to the library */
 library.add(fas)
@@ -73,7 +88,10 @@ createInertiaApp({
 
         app.use(PrimeVue, {
             theme: {
-                preset: Aura
+                preset: AuraReformed,
+                options: {
+                    darkModeSelector: '.dark-mode',
+                }
             }
         });
 

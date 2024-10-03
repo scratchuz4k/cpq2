@@ -2,29 +2,30 @@
 
 namespace App\Http\Controllers\Web;
 
-use App\Models\Account;
-use App\Models\Resource;
-use App\Models\Tenant;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
+use App\Models\Account;
 use Illuminate\Http\Request;
+use App\Services\AccountService;
+use Illuminate\Support\Facades\Log;
+use App\Http\Resources\AccountResource;
 use App\Http\Controllers\BaseController;
+use App\Http\Requests\AccountCreateRequest;
+use App\Http\Requests\AccountUpdateRequest;
 
 class AccountController extends BaseController
 {
+    protected $model = Account::class;
+    public function __construct(protected AccountService $accountService)
+    {
+        parent::__construct();
+    }
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $tenants = auth()->user()->tenants;
-        $permissions = auth()->user()->getAllPermissions();
-        return Inertia::render('Account/Index', [
-            'permissions' => $permissions,
-            'tenants' => $tenants,
-        ]);
+        return Inertia::render(component: 'Accounts/Index');
     }
 
     /**
@@ -32,21 +33,29 @@ class AccountController extends BaseController
      */
     public function create()
     {
-        return Inertia::render('Dashboard');
+        return Inertia::render('Accounts/Create');
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(AccountCreateRequest $request)
     {
-        //
+        try {
+            $account = $this->accountService->store($request->all());
+        } catch (\Exception $e) {
+            if (!env('APP_DEBUG')) {
+                Log::error($e->getMessage());
+            }
+            throw new \Exception($e);
+        }
+        return redirect()->route('accounts.edit', ['account' => $account->id]);
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Account $account)
     {
         //
     }
@@ -54,23 +63,34 @@ class AccountController extends BaseController
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(Account $account)
     {
-        //
+        $temp = new AccountResource($account);
+        return Inertia::render('Accounts/Edit', [
+            "account" => $temp->toArray(request())
+        ]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Account $account)
+    public function update(AccountUpdateRequest $request, Account $account)
     {
-        //
+        try {
+            $account = $this->accountService->update($account, $request->all());
+        } catch (\Exception $e) {
+            if (!env(key: 'APP_DEBUG')) {
+                Log::error($e->getMessage());
+            }
+            throw new \Exception($e);
+        }
+        return redirect()->route('accounts.edit', ['account' => $account->id]);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Account $account)
     {
         //
     }

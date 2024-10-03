@@ -1,0 +1,120 @@
+<?php
+
+namespace App\Http\Controllers\Auth;
+
+use App\Models\Resource;
+use App\Models\Tenant;
+use App\Models\User;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
+use Inertia\Controller;
+use Inertia\Inertia;
+use Laravel\Socialite\Facades\Socialite;
+
+class SsoController extends Controller
+{
+    public function create()
+    {
+        return Inertia::render('Auth/LoginSso', [
+            'canGoogleLogin' => (env("GOOGLE_OIDC_CLIENT_ID") && env("GOOGLE_OIDC_CLIENT_SECRET")),
+            'status' => session('status'),
+        ]);
+    }
+
+    //SAML2 Login
+    public function store(Request $request)
+    {
+        $validatedData = $request->validate([
+            'email' => 'required|email',
+        ]);
+
+        $email = $request->input('email');
+        $domain = substr(strrchr($email, "@"), 1);
+        $domainRecord = Tenant::where('domain', $domain)->first();
+        if (!$domainRecord || !$domainRecord->config_id) {
+            return redirect()->back()->withErrors(['email' => __('No SSO provider was found for your domain.')]);
+        }
+
+        $resourceFile = Resource::where('id', $domainRecord->config_id)->where('tenant_id', $domainRecord->id)->first();
+        if (!$resourceFile || !Storage::exists($resourceFile->getRouteValue())) {
+            return redirect()->back()->withErrors(['email' => __('No SSO provider was found for your domain.')]);
+        }
+
+        $ssoXmlContent = Storage::get($resourceFile->getRouteValue());
+        if (!simplexml_load_string($ssoXmlContent)) {
+            return redirect()->back()->withErrors(['email' => __('The SSO configuration found for your domain is invalid.')]);
+        }
+
+        Cache::put("saml2.metadata", $ssoXmlContent, now()->addMinutes(5));
+        config(['services.saml2.metadata' => $ssoXmlContent]);
+
+        try {
+            return Inertia::location(Socialite::driver('saml2')->redirect());
+        } catch (\Exception $e) {
+            Log::debug("Error on socialite saml2 redirect: " . $e->getMessage());
+            return redirect()->back()->withErrors(['email' => __('An error occurred while redirecting to your SSO provider, please contact your administrator.')]);
+        }
+    }
+
+    //SAML2 Callback
+    public function callback()
+    {
+        try {
+            config(['services.saml2.metadata' => Cache::get("saml2.metadata")]);
+            $ssoUser = Socialite::driver('saml2')->stateless()->user();
+            Log::debug("Socialite Callback Saml2 user: " . json_encode($ssoUser));
+            $userData = $this->getSsoAttributes($ssoUser);
+
+            if (!isset($userData['email'])) {
+                throw new \Exception("SSO ERROR: Email not provided in user data");
+            }
+            $domain = substr(strrchr($userData['email'], "@"), 1);
+            $user = User::where('email', $userData['email'])->where('sso', true)->first();
+
+            if ($user && $user->tenants->count()) {
+                foreach ($user->tenants as $tenant) {
+                    if ($tenant->domain === $domain) {
+                        $tenant->makeCurrent();
+                        session(['tenant_id' => $tenant->id]);
+                        Auth::login($user);
+                        Cache::forget("saml2.metadata");
+                        return redirect('/');
+                    }
+                }
+            } else {
+                throw new \Exception("SSO ERROR: Email domain not found");
+            }
+            throw new \Exception("SSO ERROR: SSO account not linked to tenant");
+        } catch (\Exception $e) {
+            Log::debug("Error on socialite saml2 callback: " . $e->getMessage());
+            return redirect('/login/sso')->withErrors(['email' => __('We were unable to log into your account using SSO, please contact your administrator.')]);
+        }
+    }
+
+    // Get SSO user data
+    private function getSsoAttributes($ssoUser) {
+        $attr = [];
+        $attributes = $ssoUser->getRaw();
+        foreach ($attributes as $attribute) {
+            $attr[$attribute->getName()] = $attribute->getFirstAttributeValue();
+        }
+        $userData = ['id' => $ssoUser->id];
+        $userData += $attr;
+
+        if (!empty($userData[config('auth.sso.name_claim')])) {
+            $userData['email'] = $userData[config('auth.sso.name_claim')];
+        }
+
+        if (!empty($userData[config('auth.sso.given_name_claim')])) {
+            $userData['firstName'] = $userData[config('auth.sso.given_name_claim')];
+        }
+
+        if (!empty($userData[config('auth.sso.surname_claim')])) {
+            $userData['lastName'] = $userData[config('auth.sso.surname_claim')];
+        }
+        return $userData;
+    }
+}

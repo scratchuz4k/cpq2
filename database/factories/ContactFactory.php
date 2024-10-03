@@ -20,6 +20,7 @@ class ContactFactory extends Factory
     public function definition(): array
     {
         return [
+            'tenant_id' => \App\Models\Tenant::factory(),
             'account_id' => \App\Models\Account::factory(),
             'primary_contact_name' => $this->faker->name,
             'email' => $this->faker->unique()->safeEmail,

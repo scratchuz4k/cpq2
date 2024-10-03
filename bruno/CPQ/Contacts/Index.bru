@@ -1,0 +1,31 @@
+meta {
+  name: Index
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{base_url}}/api/contacts
+  body: json
+  auth: bearer
+}
+
+headers {
+  : 
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "filters": [
+      {
+        "column":"id",
+        "operator": "equals",
+        "value": 522
+      }
+    ]
+  }
+}

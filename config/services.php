@@ -34,5 +34,13 @@ return [
             'channel' => env('SLACK_BOT_USER_DEFAULT_CHANNEL'),
         ],
     ],
+    'saml2' => [
+        'metadata' => null
+    ],
 
+    'google' => [
+        'client_id' => env('GOOGLE_OIDC_CLIENT_ID'),
+        'client_secret' => env('GOOGLE_OIDC_CLIENT_SECRET'),
+        'redirect' => env('APP_URL').'/auth/google/callback',
+    ]
 ];

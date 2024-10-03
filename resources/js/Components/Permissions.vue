@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div class="box">
+        <div class="box" style="max-height: 400px; overflow: auto;">
             <ul>
                 <li v-for="permission in list">
                     {{ permission.title }}

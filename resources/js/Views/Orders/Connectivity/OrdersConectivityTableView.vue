@@ -50,7 +50,7 @@ const subProviders = {
     "vodafone": "vodafone",
 };
 
-const getArticles = async () => {
+const getArticles = () => {
     let query = {
         connectivityType: 3,
         postCode: props.modelValue.address_postcode,
@@ -63,10 +63,11 @@ const getArticles = async () => {
         buildingNumber: props.modelValue.address_data?.addressparts?.ThoroughfareNumber,
     };
     try {
-        let res = await axios.post('/api/external/get-articles-from-cloud-market', query)
-        data = res.data
-        processFilters(data)
-        filterData(data)
+        axios.post('/api/external/get-articles-from-cloud-market', query).then((res) => {
+            data = res.data
+            processFilters(data)
+            filterData(data)
+        })
     } catch (ex) {
         alert(ex.response.data.message)
     }

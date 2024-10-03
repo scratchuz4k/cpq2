@@ -1,14 +1,17 @@
 <?php
 
-use App\Http\Controllers\Api\OrderItemController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\BrandController;
 use App\Http\Controllers\Api\OrderController;
+use App\Http\Controllers\Api\AccountController;
 use App\Http\Controllers\Api\AddressController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\ExternalController;
-use App\Http\Controllers\Api\SolutionTypeController;
+use App\Http\Controllers\Api\OrderItemController;
 use App\Http\Controllers\Api\PermissionController;
 use App\Http\Controllers\Api\TenantController;
+use App\Http\Controllers\Api\SolutionTypeController;
+use App\Http\Controllers\Auth\CreateTokenController;
 
 Route::prefix("external")->group(function () {
     Route::post("get-address-by-postcode", [ExternalController::class, "getAddressesByPostCode"]);
@@ -26,4 +29,10 @@ Route::apiResources([
     "solution-types" => SolutionTypeController::class,
     "permissions" => PermissionController::class,
     "tenant" => TenantController::class
+    "accounts" => AccountController::class,
+    "brands" => BrandController::class
 ]);
+
+Route::controller(CreateTokenController::class)->group(function () {
+    Route::post('create/token', 'create');
+});

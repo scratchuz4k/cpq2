@@ -2,31 +2,34 @@
 
 namespace App\Http\Controllers\Api;
 
+use Exception;
 use App\Models\Order;
 use Illuminate\Http\Request;
+use App\Helpers\DataProvider;
 use App\Services\OrderService;
-use App\Http\Controllers\BaseController;
+use Illuminate\Support\Facades\Log;
 use App\Http\Resources\OrderResource;
+use App\Http\Controllers\BaseController;
 use App\Http\Requests\OrderCreateRequest;
 
 class OrderController extends BaseController
 {
+    protected $model = Order::class;
     public function __construct(protected OrderService $orderService) {}
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        // if (request()->has("filters")) {
-        //     $filters =  is_string(request()->filters) ? json_decode(request()->filters, true) : request()->filters;
-        // }
-        $search = '3';
-        $columns = ['solution_type_id'];
+        $dataProvider = new DataProvider(Order::class);
+        try {
+            $data = $dataProvider->get();
+        } catch (Exception $e) {
+            Log::debug($e->getMessage());
+            return $e->getMessage();
+        }
 
-        $items = Order::search($search, $columns)->get();
-        // $items = Order::with(['user', 'account'])->orderBy('id', 'desc')->paginate();
-
-        return  OrderResource::collection($items);
+        return OrderResource::collection($data);
     }
 
     /**
@@ -61,8 +64,8 @@ class OrderController extends BaseController
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Order $order)
     {
-        //
+        $order->delete();
     }
 }

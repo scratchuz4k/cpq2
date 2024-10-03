@@ -1,0 +1,24 @@
+meta {
+  name: Update
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{base_url}}/api/contacts/524
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "account_id":107,
+    "primary_contact_name": null,
+    "email": null,
+    "address_1": "asd"
+  }
+}

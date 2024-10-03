@@ -1,25 +1,29 @@
 <?php
 
-use App\Http\Controllers\Web\TenantController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Web\BrandController;
 use App\Http\Controllers\Web\OrderController;
+use App\Http\Controllers\Web\PriceController;
+use App\Http\Controllers\Web\TenantController;
 use App\Http\Controllers\Web\AccountController;
 use App\Http\Controllers\Web\ProfileController;
 use App\Http\Controllers\Web\DashboardController;
-use \App\Http\Controllers\AdminController;
 
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('index');
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/myaccount', [DashboardController::class, 'myAccount'])->name('myaccount');
 
 
     Route::get('/orders/{order}/download', [OrderController::class, 'download'])->name('orders.download');
     Route::get('/orders/{order}/configure', [OrderController::class, 'configure'])->name('orders.configure');
     Route::resources([
+        'prices' => PriceController::class,
         'orders' => OrderController::class,
-        'account' => AccountController::class,
-        'tenant' => TenantController::class
+        'accounts' => AccountController::class,
+        'tenant' => TenantController::class,
+        'brands' => BrandController::class
     ]);
 
     Route::middleware('auth')->group(function () {
