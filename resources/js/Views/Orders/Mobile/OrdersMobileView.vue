@@ -6,7 +6,6 @@ import swal from "sweetalert2";
 
 const props = defineProps({
     modelValue: Object,
-    step: Number
 })
 
 let data = []
