@@ -24,13 +24,7 @@ const submit = () => {
     try {
         router.post('/orders',
             {
-                account_id: form.account?.id,
-                address_position: form.position,
-                address_city: form.address?.addressparts?.PostTown,
-                address_data: form.address,
-                address_line1: form.address?.label,
-                address_postcode: form.address?.addressparts?.PostCode,
-                solution_type_id: form.solutionType?.id
+                account_id: form.account?.id
             })
     } catch (ex) {
         alert(ex.response.data.message)
@@ -49,16 +43,24 @@ const submit = () => {
 
         <div class="panel">
             <form @submit.prevent="submit">
-                <template v-if="step == 0">
-                    <div class="row mb-3">
-                        <div class="col d-flex justify-content-end">
-                            <button class="btn btn-primary" :disabled="form.account == null" type="button"
-                                @click="() => step++">Continue</button>
+                <div class="row mb-3">
+                    <div class="col-6">
+                        <div class="mb-3">
+                            <label for="account_id" class="form-label">Select the Account:</label>
+                            <select id="account_id" class="form-select" v-model="form.account">
+                                <option :value="null">Select an account</option>
+                                <option v-for="account in accounts" :value="account">{{ account.name }}</option>
+                            </select>
                         </div>
+                        Didnt find the account? <a href="/accounts/create"> Create new!</a>
                     </div>
-                    <OrdersAccountView v-model="form" :accounts="accounts"></OrdersAccountView>
-                </template>
-                <template v-if="step == 1">
+                </div>
+                <div class="row mb-3">
+                    <div class="col ">
+                        <button class="btn btn-primary" :disabled="form.account == null" type="submit">Create</button>
+                    </div>
+                </div>
+                <!-- <template v-if="step == 1">
                     <div class="row mb-3">
                         <div class="col d-flex  justify-content-end">
                             <button class="btn btn-primary" type="button" @click="() => step--">Back</button>
@@ -71,7 +73,7 @@ const submit = () => {
                         </div>
                     </div>
                     <OrdersSolutionView v-model="form" :solution_types="solution_types"></OrdersSolutionView>
-                </template>
+                </template> -->
             </form>
         </div>
     </AuthenticatedLayout>

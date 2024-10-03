@@ -149,7 +149,7 @@ getData()
 
 </script>
 <template>
-    <DataTable :value="data" :rows="form.limit" stripedRows>
+    <DataTable :value="data" :rows="form.limit" stripedRows :reorderableColumns="false">
         <template #header>
             <div class="d-flex justify-content-between">
                 <div>

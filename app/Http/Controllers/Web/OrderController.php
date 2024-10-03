@@ -55,7 +55,7 @@ class OrderController extends BaseController
             }
             throw new \Exception($e);
         }
-        return redirect()->route('orders.edit', ['order' => $order->id]);
+        return redirect()->route('orders.configure', ['order' => $order->id]);
     }
 
     /**

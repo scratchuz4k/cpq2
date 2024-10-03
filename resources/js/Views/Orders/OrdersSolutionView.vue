@@ -67,7 +67,7 @@ const addressSelect = async (form) => {
 <template>
     <h2 class="mb-3">Select a solution type and address to get started</h2>
     <div class="row">
-        <div class="col">
+        <div class="col-6">
             <div class="mb-3">
                 <label class="form-label">Solution Type</label>
                 <select class="form-select" @change="solutionChange(modelValue)" v-model="modelValue.solutionType">

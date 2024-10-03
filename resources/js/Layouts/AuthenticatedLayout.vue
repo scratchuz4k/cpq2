@@ -122,7 +122,7 @@ watch(search, () => {
                             aria-controls="dashboard" aria-selected="false">DASHBOARD</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" :class="{ 'active': $page.component == 'Order/Create' }" id="create-tab"
+                        <a class="nav-link" :class="{ 'active': $page.component == 'Orders/Create' }" id="create-tab"
                             data-toggle="tab" href="/orders/create" role="tab" aria-controls="create"
                             aria-selected="false">
                             <font-awesome-icon :icon="['fas', 'plus']" />
@@ -131,15 +131,15 @@ watch(search, () => {
                     </li>
                     <li class="nav-item" v-if="order">
                         <Link :href="route('orders.configure', { order: order.id })" class="nav-link"
-                            :class="{ 'active': $page.component == 'Order/Configure' }">CONFIGURE</Link>
+                            :class="{ 'active': $page.component == 'Orders/Configure' }">CONFIGURE</Link>
                     </li>
                     <li class="nav-item" v-if="order">
                         <Link :href="route('orders.edit', { order: order.id })" class="nav-link"
-                            :class="{ 'active': $page.component == 'Order/Edit' }">PRICE</Link>
+                            :class="{ 'active': $page.component == 'Orders/Edit' }">PRICE</Link>
                     </li>
                     <li class="nav-item" v-if="order">
                         <Link :href="route('orders.show', { order: order.id })" class="nav-link"
-                            :class="{ 'active': $page.component == 'Order/Show' }">QUOTE</Link>
+                            :class="{ 'active': $page.component == 'Orders/Show' }">QUOTE</Link>
                     </li>
                 </ul>
                 <form class="d-md-flex d-none" @submit.prevent="showSearch()">
