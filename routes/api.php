@@ -28,7 +28,7 @@ Route::apiResources([
     "order-items" => OrderItemController::class,
     "solution-types" => SolutionTypeController::class,
     "permissions" => PermissionController::class,
-    "tenant" => TenantController::class
+    "tenant" => TenantController::class,
     "accounts" => AccountController::class,
     "brands" => BrandController::class
 ]);
