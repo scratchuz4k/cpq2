@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Log;
 use App\Http\Resources\OrderResource;
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\OrderCreateRequest;
+use App\Http\Requests\OrderUpdateRequest;
 
 class OrderController extends BaseController
 {
@@ -39,7 +40,7 @@ class OrderController extends BaseController
     {
         try {
             $order = $this->orderService->store($request->all());
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return response($e->getMessage(), 500);
         }
         return response()->json(new OrderResource($order));
@@ -48,7 +49,7 @@ class OrderController extends BaseController
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Order $order)
     {
         //
     }
@@ -56,7 +57,7 @@ class OrderController extends BaseController
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(OrderUpdateRequest $request, Order $order)
     {
         //
     }
