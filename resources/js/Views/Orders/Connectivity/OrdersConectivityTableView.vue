@@ -62,15 +62,11 @@ const getArticles = () => {
         addressKey: props.modelValue.address_data?.value,
         buildingNumber: props.modelValue.address_data?.addressparts?.ThoroughfareNumber,
     };
-    try {
-        axios.post('/api/external/get-articles-from-cloud-market', query).then((res) => {
-            data = res.data
-            processFilters(data)
-            filterData(data)
-        })
-    } catch (ex) {
-        alert(ex.response.data.message)
-    }
+    axios.post('/api/external/get-articles-from-cloud-market', query).then((res) => {
+        data = res.data
+        processFilters(data)
+        filterData(data)
+    })
 }
 
 const filterData = (data) => {
@@ -253,7 +249,8 @@ getArticles()
                                 <MultiSelect v-model="filters.providerName" :options="filterList.providerName"
                                     placeholder="Select a provider" class="me-3 " style="width:150px;" size="small">
                                     <template #option="slotProps">
-                                        <div style="font-size:14px;line-height: 1.5rem;">{{ slotProps.option }} ({{ countFilters("providerName",
+                                        <div style="font-size:14px;line-height: 1.5rem;">{{ slotProps.option }} ({{
+                                            countFilters("providerName",
                                             slotProps.option) }})</div>
                                     </template>
                                 </MultiSelect>
@@ -264,7 +261,8 @@ getArticles()
                                     :options="filterList.connectivitySupplierName" placeholder="Select a subprovider"
                                     class="me-3 " style="width:150px;">
                                     <template #option="slotProps">
-                                        <div style="font-size:14px;line-height: 1.5rem;">{{ slotProps.option }} ({{ countFilters("connectivitySupplierName",
+                                        <div style="font-size:14px;line-height: 1.5rem;">{{ slotProps.option }} ({{
+                                            countFilters("connectivitySupplierName",
                                             slotProps.option) }})</div>
                                     </template>
                                 </MultiSelect>
@@ -275,7 +273,8 @@ getArticles()
                                     :options="filterList.contractTermMonths" placeholder="Select months" class="me-3 "
                                     style="width:150px;">
                                     <template #option="slotProps">
-                                        <div style="font-size:14px;line-height: 1.5rem;">{{ slotProps.option }} Months</div>
+                                        <div style="font-size:14px;line-height: 1.5rem;">{{ slotProps.option }} Months
+                                        </div>
                                     </template>
                                 </MultiSelect>
                             </div>
