@@ -11,7 +11,7 @@ const props = defineProps({
             <div class="price_header d-flex justify-content-between">
                 <div>
                     <p class="mb-0">
-                        <b>Solution Type:</b> {{ order?.solution_type_name }}
+                        <b>Solution Type:</b> {{ order?.solution_type.name }}
                         <Link :href="route('orders.configure', { order: order.id })" class="btn btn-sm btn-secondary py-0">Edit</Link>
                     </p>
                     <p class="mb-0" v-if="order?.address_line1">
