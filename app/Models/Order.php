@@ -41,7 +41,7 @@ class Order extends Model
     protected static function booted(): void
     {
         static::addGlobalScope(new TenantScope);
-        static::addGlobalScope(new UserScope);
+//        static::addGlobalScope(new UserScope);
     }
 
     public function user(): BelongsTo

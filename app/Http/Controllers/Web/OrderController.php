@@ -76,7 +76,8 @@ class OrderController extends BaseController
         return Inertia::render('Orders/Edit', [
             'accounts' => Account::all(),
             'solution_types' => SolutionType::get(),
-            'order' => new OrderResource($order)
+            'order' => new OrderResource($order),
+            'step' => $_GET['step'] ?? 1
         ]);
     }
 

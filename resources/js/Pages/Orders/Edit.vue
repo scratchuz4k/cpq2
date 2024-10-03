@@ -6,6 +6,7 @@ defineProps({
     accounts: Array,
     solution_types: Object,
     order: Object,
+    step: Number
 });
 
 const solutionsViews = {
@@ -36,7 +37,8 @@ const solutionsViews = {
         </div>
 
         <component :is="solutionsViews[order.solution_type.code]" v-bind="{
-            modelValue: order
+            modelValue: order,
+            step: step
         }"></component>
     </AuthenticatedLayout>
 </template>
