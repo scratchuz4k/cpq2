@@ -21,6 +21,7 @@ const usedSlots = Object.keys(slots)
 const props = defineProps({
     route: String,
     columns: Array,
+    filters: Object,
     allow: {
         type: Object,
         default: {
@@ -169,7 +170,7 @@ getData()
                 </IconField>
             </div>
         </template>
-        <Column v-for="(column, key) in columns" :field="column.data">
+        <Column v-for="(column, key) in columns.filter(x => !x.hide)" :field="column.data">
             <template #header>
                 <div class="d-flex justify-content-between align-items-center w-100">
                     <b v-if="column.data.split('.').length > 1" class="column-title">
@@ -200,9 +201,22 @@ getData()
                                     <option value="less_than_or_equal_to" v-html="'<='"></option>
                                 </select>
                             </div> -->
-                            <div class="mb-3">
-                                <label class="form-label" :for="`filter-operator-${key}`">Search</label>
-                                <input class="form-control me-2 form-control-sm" v-model="form.filters[key].value" />
+                            <template v-if="Object.keys(props.filters).includes(column.data)">
+                                <div class="mb-3">
+                                    <label class="form-label" :for="`filter-value-${key}`">Options</label>
+                                    <select :id="`filter-value-${key}`" class="form-select w-100"
+                                        v-model="form.filters[key].value">
+                                        <option :value="null">All</option>
+                                        <option v-for="option in filters[column.data].options" :value="option">
+                                            {{ option }}
+                                        </option>
+                                    </select>
+                                </div>
+                            </template>
+                            <div v-else class="mb-3">
+                                <label class="form-label" :for="`filter-value-${key}`">Search</label>
+                                <input :id="`filter-value-${key}`" class="form-control me-2 form-control-sm"
+                                    v-model="form.filters[key].value" />
                             </div>
                         </div>
                     </div>
@@ -274,7 +288,6 @@ getData()
     left: 0;
     width: 250px;
     background-color: white;
-    transition: all .1s ease-in-out .3s;
     border-radius: 5px;
     box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
     padding: 0 10px;

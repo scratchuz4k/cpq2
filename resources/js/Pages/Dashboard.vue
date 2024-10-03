@@ -2,8 +2,27 @@
 import DataTable from 'datatables.net-vue3';
 import DataTablesCore from 'datatables.net-bs5';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head, Link } from '@inertiajs/vue3';
+import { Head } from '@inertiajs/vue3';
 DataTable.use(DataTablesCore);
+
+defineProps({
+    users: {
+        type: Array,
+        default: []
+    },
+    solutions: {
+        type: Array,
+        default: []
+    },
+    accounts: {
+        type: Array,
+        default: []
+    },
+    status: {
+        type: Array,
+        default: []
+    },
+})
 </script>
 
 <template>
@@ -28,7 +47,14 @@ DataTable.use(DataTablesCore);
                     { data: 'user.name', title: 'Owner' },
                     { data: 'status', title: 'Status' },
                     { data: 'updated_at', title: 'Last Updated' },
-                ]" route="/orders">
+                    { data: 'items.data', title: 'Last Updated', hide: true },
+                    { data: 'items.name', title: 'Last Updated', hide: true },
+                    { data: 'account.contacts.email', title: 'Last Updated', hide: true },
+                ]" :filters="{
+                    'user.name': { type: 'options', options: users.map(x => x.name) },
+                    'solution_type.name': { type: 'options', options: solutions.map(x => x.name) },
+                    'status': { type: 'options', options: status }
+                }" route="/orders">
                     <template #status="{ value }">
                         <span class="badge text-bg-secondary">{{ value }}</span>
                     </template>
