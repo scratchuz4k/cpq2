@@ -44,7 +44,7 @@ const addressSearch = async (form) => {
         let res = await axios.post(`/api/external/get-address-by-postcode`, { postCode: form.postCode })
         form.isLoading = false
         if (!res.data?.body?.addresses) {
-            alert("Addresses not found!")
+            notyf.error("Addresses not found!")
             return
         }
         addresses.value = res.data.body.addresses

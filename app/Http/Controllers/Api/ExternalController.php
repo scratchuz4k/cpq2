@@ -60,11 +60,11 @@ class ExternalController extends Controller
         $request->validate([
             "connectivityType" => "required",
             "postCode" => "required",
-            "uprn" => "required",
-            "latitude" => "required",
-            "longitude" => "required",
-            "street" => "required",
-            "town" => "required",
+            "uprn" => "nullable",
+            "latitude" => "nullable",
+            "longitude" => "nullable",
+            "street" => "nullable",
+            "town" => "nullable",
         ]);
 
         $address = new CloudMarketAddress(

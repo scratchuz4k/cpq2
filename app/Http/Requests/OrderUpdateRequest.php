@@ -22,8 +22,8 @@ class OrderUpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'account_id' => 'required|exists:accounts,id',
-            'solution_type_id' => 'required|exists:solution_types,id'
+            'account_id' => 'exists:accounts,id',
+            'solution_type_id' => 'exists:solution_types,id'
         ];
     }
 }

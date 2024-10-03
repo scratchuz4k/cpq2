@@ -13,7 +13,6 @@ use App\Http\Resources\OrderResource;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\OrderCreateRequest;
-
 use App\Http\Requests\OrderUpdateRequest;
 use function Spatie\LaravelPdf\Support\pdf;
 
@@ -94,7 +93,7 @@ class OrderController extends BaseController
             }
             throw new \Exception($e);
         }
-        return redirect()->route('orders.edit', ['order' => $order->id]);
+        return to_route('orders.edit', ['order' => $order->id]);
     }
 
     /**
