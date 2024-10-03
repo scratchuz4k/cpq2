@@ -5,8 +5,7 @@ import { Head, Link } from '@inertiajs/vue3';
 defineProps({
     accounts: Array,
     solution_types: Object,
-    order: Object,
-    step: Number
+    order: Object
 });
 
 const solutionsViews = {
@@ -37,8 +36,7 @@ const solutionsViews = {
         </div>
 
         <component :is="solutionsViews[order.solution_type.code]" v-bind="{
-            modelValue: order,
-            step: step
+            modelValue: order
         }"></component>
     </AuthenticatedLayout>
 </template>
