@@ -36,6 +36,7 @@ const meta = reactive({
     total: 0,
     first: 1,
     limit: 20,
+    isUpdating: false
 })
 
 
@@ -74,6 +75,7 @@ const getArticles = async () => {
     data = res.data.data
     meta.first = (meta.page - 1) * meta.limit
     meta.total = res.data.total
+    meta.isUpdating = !!res.data.finished_at
     processFilters(data)
     filterData(data)
 }
@@ -237,7 +239,11 @@ getArticles()
         <div class="row mb-4" style="min-height: 50vh;">
             <div class="col">
                 <div class="d-flex justify-content-between align-items-center">
-                    <h2>Live prices</h2>
+                    <div class="d-flex  align-items-center">
+                        <h2 class="me-3">Live prices </h2>
+                        <p v-if="!meta.isUpdating" class="badge badge-filter text-bg-danger m-0"> Prices Updating</p>
+                        <p v-else class="badge badge-filter text-bg-success m-0"> Prices Updated</p>
+                    </div>
 
                     <div>
                         <button class="btn m-2" :class="[showQuoted ? ' btn-light' : 'btn-secondary']"

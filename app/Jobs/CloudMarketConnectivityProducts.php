@@ -17,7 +17,7 @@ class CloudMarketConnectivityProducts implements ShouldQueue
     /**
      * Create a new job instance.
      */
-    public function __construct(protected $filename, protected $connectivityType, protected CloudMarketAddress $address)
+    public function __construct(protected $path,protected $filename, protected $connectivityType, protected CloudMarketAddress $address)
     {
         //
     }
@@ -57,11 +57,10 @@ class CloudMarketConnectivityProducts implements ShouldQueue
                 ]
             );
 
-        $path = storage_path('/app/public/connectivity/');
         $started_at = now();
 
-        if (!is_dir($path)) {
-            mkdir($path, 0777, true);
+        if (!is_dir($this->path)) {
+            mkdir($this->path, 0777, true);
         }
         $prices = [];
         $stream = StreamWrapper::getResource($res->toPsrResponse()->getBody());
@@ -77,7 +76,7 @@ class CloudMarketConnectivityProducts implements ShouldQueue
                 'total' => count($prices),
                 'data' => $prices
             ]);
-            file_put_contents($path . $this->filename, $data);
+            file_put_contents($this->path . $this->filename, $data);
         }
 
         $finalData = json_encode([
@@ -86,6 +85,6 @@ class CloudMarketConnectivityProducts implements ShouldQueue
             'total' => count($prices),
             'data' => $prices
         ]);
-        file_put_contents($path . $this->filename, $finalData);
+        file_put_contents($this->path . $this->filename, $finalData);
     }
 }

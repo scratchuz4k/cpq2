@@ -19,13 +19,15 @@ class CloudMarketApi
             }
             return json_decode(file_get_contents($mock_prices), true);
         }
-        $filename = "/app/public/connectivity/" . $address->toString() . '.json';
+        $path = storage_path("/app/public/connectivity/");
+        $filename =  $address->toString() . '.json';
 
         if (!Storage::exists($filename)) {
-            CloudMarketConnectivityProducts::dispatch($filename, $connectivityType, $address);
+            $isUpdating = false;
+            CloudMarketConnectivityProducts::dispatch($path, $filename, $connectivityType, $address);
         }
 
-        $fileContent = json_decode(file_get_contents(storage_path($filename)), true);
+        $fileContent = json_decode(file_get_contents($path . $filename), true);
         $items = collect($fileContent['data']);
 
         // Manually paginate
@@ -38,7 +40,7 @@ class CloudMarketApi
             'current_page' => $currentPage,
             'per_page' => $perPage,
             'total' => count($fileContent['data']),
-            'finished_at' =>  $fileContent['finished_at'],
+            'finished_at' => isset($isUpdating) ? $isUpdating : $fileContent['finished_at'],
             'started_at' =>  $fileContent['started_at']
         ];
     }
