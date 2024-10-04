@@ -2,7 +2,6 @@
 
 namespace App\Policies;
 
-use App\Models\Price;
 use App\Models\Product;
 use App\Models\User;
 use Illuminate\Auth\Access\Response;

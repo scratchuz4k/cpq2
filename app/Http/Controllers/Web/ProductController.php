@@ -19,7 +19,7 @@ use App\Http\Requests\PriceUpdateRequest;
 
 class ProductController extends BaseController
 {
-    protected $model = Product::class;
+     protected $model = Product::class;
 
     public function __construct(protected ProductsService $productsService)
     {
