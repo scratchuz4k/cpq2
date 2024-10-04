@@ -14,7 +14,7 @@ return Application::configure(basePath: dirname(__DIR__))
         commands: __DIR__ . '/../routes/console.php',
         health: '/up',
         using: function () {
-            Route::middleware('api')
+            Route::middleware(['api','web','auth:sanctum'])
 
                 ->prefix('api')
 
