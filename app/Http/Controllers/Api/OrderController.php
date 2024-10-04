@@ -16,7 +16,10 @@ use App\Http\Requests\OrderUpdateRequest;
 class OrderController extends BaseController
 {
     protected $model = Order::class;
-    public function __construct(protected OrderService $orderService) {}
+    public function __construct(protected OrderService $orderService)
+    {
+        parent::__construct();
+    }
     /**
      * Display a listing of the resource.
      */

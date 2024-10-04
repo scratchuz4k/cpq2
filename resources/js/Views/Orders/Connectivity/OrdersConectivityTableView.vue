@@ -66,6 +66,7 @@ const getArticles = async () => {
 
     const reader = res.body.getReader();
     const decoder = new TextDecoder();
+    let buffer = ''
     while (true) {
         console.log("reading")
         const { done, value } = await reader.read();
@@ -73,13 +74,21 @@ const getArticles = async () => {
             console.log("connection closed")
             break;
         }
-        debugger
-        console.log(value)
-    } 
+
+        const chunk = decoder.decode(value, { stream: true });
+        buffer += chunk;
+        let boundary = buffer.indexOf("}{");
+
+        while (boundary !== -1) {
+            const jsonStr = buffer.substring(0, boundary + 1);
+            buffer = buffer.substring(boundary + 1);
+            boundary = buffer.indexOf("}{");
+            articles.value.push(JSON.parse(jsonStr))
+        }
+    }
 
     //processFilters(data)
     //filterData(data)
-
 }
 
 const filterData = (data) => {
@@ -231,7 +240,6 @@ getArticles()
 </script>
 <template>
     <div class="panel">
-
         <InfoBox :order="modelValue"></InfoBox>
         <div class="row mb-4" style="min-height: 50vh;">
             <div class="col">

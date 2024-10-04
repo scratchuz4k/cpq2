@@ -2,15 +2,13 @@
 
 namespace App\Helpers\Api;
 
+use App\Models\Price;
 use JsonMachine\Items;
 use GuzzleHttp\Psr7\StreamWrapper;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Cache;
-use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class CloudMarketApi
 {
-
     public function __construct() {}
 
     public function get($connectivityType, CloudMarketAddress $address)
@@ -56,8 +54,26 @@ class CloudMarketApi
 
         $stream = StreamWrapper::getResource($res->toPsrResponse()->getBody());
         foreach (Items::fromStream($stream) as $key => $value) {
-            $value = json_encode((array)$value);
-            echo "Key: {$value}. Value: {json_encode($value, true)}." . PHP_EOL;
+            echo json_encode($this->recalculatePrices($value));
         }
+    }
+
+    private function recalculatePrices($data)
+    {
+        if (empty($data->providerKey)) {
+            return null;
+        }
+
+        $params = [
+            'supplier' => $data->providerKey,
+            'prices' => [
+                'priceMonthly',
+                'priceAnnual',
+                'priceInstall',
+            ],
+            'data' => (array)$data,
+        ];
+
+        return Price::calculate($params);
     }
 }

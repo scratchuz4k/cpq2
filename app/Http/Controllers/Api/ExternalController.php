@@ -111,28 +111,4 @@ class ExternalController extends Controller
             return $products;
         });
     }
-
-    private function recalculatePrices($prices)
-    {
-        foreach ($prices as $key => $data) {
-
-            if (empty($data->providerKey)) {
-                continue;
-            }
-
-            $params = [
-                'supplier' => $data->providerKey,
-                'prices' => [
-                    'priceMonthly',
-                    'priceAnnual',
-                    'priceInstall',
-                ],
-                'data' => json_decode(json_encode($data), 1),
-            ];
-
-            $prices[$key] = Price::calculate($params);
-        }
-
-        return $prices;
-    }
 }
