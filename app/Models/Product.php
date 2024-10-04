@@ -9,6 +9,11 @@ use Illuminate\Database\Eloquent\Model;
 class Product extends Model
 {
     use HasFactory;
+    protected $fillable = [
+        'name',
+        'supplier_id',
+        'brand_id'
+    ];
 
     protected static function booted(): void
     {

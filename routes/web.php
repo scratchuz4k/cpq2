@@ -8,6 +8,8 @@ use App\Http\Controllers\Web\TenantController;
 use App\Http\Controllers\Web\AccountController;
 use App\Http\Controllers\Web\ProfileController;
 use App\Http\Controllers\Web\DashboardController;
+use App\Http\Controllers\Web\ProductController;
+use App\Http\Controllers\Web\SupplierController;
 
 
 Route::middleware(['auth', 'verified'])->group(function () {
@@ -23,7 +25,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         'orders' => OrderController::class,
         'accounts' => AccountController::class,
         'tenant' => TenantController::class,
-        'brands' => BrandController::class
+        'brands' => BrandController::class,
+        'products' => ProductController::class,
+        'suppliers' => SupplierController::class
     ]);
 
     Route::middleware('auth')->group(function () {

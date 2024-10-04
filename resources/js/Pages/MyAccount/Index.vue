@@ -58,9 +58,9 @@ defineProps({
                             </li>
                             <li><Link :href="route('brands.index')">Brands</Link></li>
                             <li><Link :href="route('prices.index')">Prices</Link></li>
-                            <li>Products</li>
+                            <li><Link :href="route('products.index')">Products</Link></li>
                             <li>Regions</li>
-                            <li>Suppliers</li>
+                            <li><Link :href="route('suppliers.index')">Suppliers</Link></li>
                             <li>SPAs</li>
                             <li>Users</li>
                         </ul>
