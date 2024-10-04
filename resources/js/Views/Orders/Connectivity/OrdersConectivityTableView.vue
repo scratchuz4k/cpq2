@@ -78,17 +78,20 @@ const getArticles = async () => {
         const chunk = decoder.decode(value, { stream: true });
         buffer += chunk;
         let boundary = buffer.indexOf("}{");
+        console.log(buffer)
 
         while (boundary !== -1) {
             const jsonStr = buffer.substring(0, boundary + 1);
             buffer = buffer.substring(boundary + 1);
             boundary = buffer.indexOf("}{");
-            articles.value.push(JSON.parse(jsonStr))
+            // data.push(JSON.parse(jsonStr))
         }
     }
+    console.log("FINAL:")
+    console.log(buffer)
 
-    //processFilters(data)
-    //filterData(data)
+    processFilters(data)
+    filterData(data)
 }
 
 const filterData = (data) => {
