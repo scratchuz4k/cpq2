@@ -1,7 +1,6 @@
 <script setup>
 import axios from 'axios';
-
-import queryString from 'query-string';
+import Paginator from 'primevue/paginator';
 import { ref, reactive, watch } from 'vue'
 import MultiSelect from 'primevue/multiselect';
 
@@ -32,6 +31,13 @@ const filterList = reactive({
     bearer: [],
     speed: []
 })
+const meta = reactive({
+    page: 1,
+    total: 0,
+    first: 1,
+    limit: 20,
+})
+
 
 const subProviders = {
     "btw": "bt",
@@ -51,7 +57,7 @@ const subProviders = {
 };
 
 const getArticles = async () => {
-    let query = queryString.stringify({
+    let query = {
         connectivityType: 3,
         postCode: props.modelValue.address_postcode,
         latitude: props.modelValue.address_position?.lat,
@@ -61,35 +67,13 @@ const getArticles = async () => {
         town: props.modelValue.address_city,
         addressKey: props.modelValue.address_data?.value,
         buildingNumber: props.modelValue.address_data?.addressparts?.ThoroughfareNumber,
-    });
-    let res = await fetch('/api/external/get-articles-from-cloud-market?' + query)
-
-    const reader = res.body.getReader();
-    const decoder = new TextDecoder();
-    let buffer = ''
-    while (true) {
-        console.log("reading")
-        const { done, value } = await reader.read();
-        if (done) {
-            console.log("connection closed")
-            break;
-        }
-
-        const chunk = decoder.decode(value, { stream: true });
-        buffer += chunk;
-        let boundary = buffer.indexOf("}{");
-        console.log(buffer)
-
-        while (boundary !== -1) {
-            const jsonStr = buffer.substring(0, boundary + 1);
-            buffer = buffer.substring(boundary + 1);
-            boundary = buffer.indexOf("}{");
-            // data.push(JSON.parse(jsonStr))
-        }
-    }
-    console.log("FINAL:")
-    console.log(buffer)
-
+        page: meta.page,
+        perPage: meta.limit
+    };
+    let res = await axios.post('/api/external/get-articles-from-cloud-market', query)
+    data = res.data.data
+    meta.first = (meta.page - 1) * meta.limit
+    meta.total = res.data.total
     processFilters(data)
     filterData(data)
 }
@@ -226,6 +210,12 @@ const remove = async (article) => {
 const getQuoted = () => {
     showQuoted.value = !showQuoted.value
     filterData(data)
+}
+
+const handlePaginator = (ev) => {
+    meta.limit = ev.rows
+    meta.page = ev.page + 1
+    getArticles()
 }
 
 watch(filters, () => {
@@ -399,6 +389,9 @@ getArticles()
                         </tr>
                     </tbody>
                 </table>
+                <Paginator v-model:first="meta.first" :rows="meta.limit" :totalRecords="meta.total"
+                    :rowsPerPageOptions="[20, 30, 50]" @page="handlePaginator">
+                </Paginator>
             </div>
         </div>
     </div>

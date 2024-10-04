@@ -80,7 +80,7 @@ class ExternalController extends Controller
             town: $request->input('town', null),
         );
 
-        (new CloudMarketApi())->get($request->get('connectivityType'), $address);
+        return (new CloudMarketApi())->get($request->get('connectivityType'), $address);
 
         // return $this->recalculatePrices($res);
     }
