@@ -16,7 +16,7 @@ use App\Http\Controllers\Auth\CreateTokenController;
 Route::prefix("external")->group(function () {
     Route::post("get-address-by-postcode", [ExternalController::class, "getAddressesByPostCode"]);
     Route::post("get-position-by-address", [ExternalController::class, "getPositionByAddress"]);
-    Route::post("get-articles-from-cloud-market", [ExternalController::class, "getArticlesFromCloudMarket"]);
+    Route::get("get-articles-from-cloud-market", [ExternalController::class, "getArticlesFromCloudMarket"]);
     Route::post("get-articles-from-shop-blocks", [ExternalController::class, "getArticlesFromShopBlocks"]);
 });
 

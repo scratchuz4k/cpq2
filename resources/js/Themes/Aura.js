@@ -2,6 +2,7 @@ import accordion from '@primevue/themes/aura/accordion';
 import { definePreset } from '@primevue/themes';
 import Aura from '@primevue/themes/aura';
 import breadcrumb from '@primevue/themes/aura/breadcrumb';
+import multiselect from '@primevue/themes/aura/multiselect';
 
 const AuraReformed = definePreset(Aura, {
     primitive: {
@@ -409,6 +410,23 @@ const AuraReformed = definePreset(Aura, {
         },
         breadcrumb: {
             padding: ".5rem 0"
+        },
+        multiselect: {
+            padding: {
+                x: " .3rem",
+                y: " .3rem"
+            },
+            option: {
+                padding: {
+                    x: " .3rem",
+                    y: " .3rem"
+                }
+            },
+            list: {
+                header: {
+                    padding: " .3rem"
+                }
+            }
         }
     }
 });

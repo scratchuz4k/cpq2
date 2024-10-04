@@ -5,7 +5,7 @@ import { Head, Link } from '@inertiajs/vue3';
 defineProps({
     accounts: Array,
     solution_types: Object,
-    order: Object,
+    order: Object
 });
 
 const solutionsViews = {

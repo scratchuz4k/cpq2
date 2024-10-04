@@ -1,7 +1,7 @@
 <script setup>
 import axios from 'axios';
 
-import { Head, Link } from '@inertiajs/vue3';
+import queryString from 'query-string';
 import { ref, reactive, watch } from 'vue'
 import MultiSelect from 'primevue/multiselect';
 
@@ -50,8 +50,8 @@ const subProviders = {
     "vodafone": "vodafone",
 };
 
-const getArticles = () => {
-    let query = {
+const getArticles = async () => {
+    let query = queryString.stringify({
         connectivityType: 3,
         postCode: props.modelValue.address_postcode,
         latitude: props.modelValue.address_position?.lat,
@@ -61,16 +61,25 @@ const getArticles = () => {
         town: props.modelValue.address_city,
         addressKey: props.modelValue.address_data?.value,
         buildingNumber: props.modelValue.address_data?.addressparts?.ThoroughfareNumber,
-    };
-    try {
-        axios.post('/api/external/get-articles-from-cloud-market', query).then((res) => {
-            data = res.data
-            processFilters(data)
-            filterData(data)
-        })
-    } catch (ex) {
-        alert(ex.response.data.message)
-    }
+    });
+    let res = await fetch('/api/external/get-articles-from-cloud-market?' + query)
+
+    const reader = res.body.getReader();
+    const decoder = new TextDecoder();
+    while (true) {
+        console.log("reading")
+        const { done, value } = await reader.read();
+        if (done) {
+            console.log("connection closed")
+            break;
+        }
+        debugger
+        console.log(value)
+    } 
+
+    //processFilters(data)
+    //filterData(data)
+
 }
 
 const filterData = (data) => {
@@ -250,32 +259,35 @@ getArticles()
                             </p>
                             <div>
                                 <label for="filter-subprovider" class="form-label">Provider:</label>
-                                <MultiSelect v-model="filters.providerName" :options="filterList.providerName" filter
-                                    placeholder="Select a provider" class="me-3 " style="width:150px">
+                                <MultiSelect v-model="filters.providerName" :options="filterList.providerName"
+                                    placeholder="Select a provider" class="me-3 " style="width:150px;" size="small">
                                     <template #option="slotProps">
-                                        <div>{{ slotProps.option }} ({{ countFilters("providerName",
-                                            slotProps.option) }})</div>
+                                        <div style="font-size:14px;line-height: 1.5rem;">{{ slotProps.option }} ({{
+                                            countFilters("providerName",
+                                                slotProps.option) }})</div>
                                     </template>
                                 </MultiSelect>
                             </div>
                             <div>
                                 <label for="filter-subprovider" class="form-label">Subprovider:</label>
                                 <MultiSelect v-model="filters.connectivitySupplierName"
-                                    :options="filterList.connectivitySupplierName" filter
-                                    placeholder="Select a subprovider" class="me-3 " style="width:150px">
+                                    :options="filterList.connectivitySupplierName" placeholder="Select a subprovider"
+                                    class="me-3 " style="width:150px;">
                                     <template #option="slotProps">
-                                        <div>{{ slotProps.option }} ({{ countFilters("connectivitySupplierName",
-                                            slotProps.option) }})</div>
+                                        <div style="font-size:14px;line-height: 1.5rem;">{{ slotProps.option }} ({{
+                                            countFilters("connectivitySupplierName",
+                                                slotProps.option) }})</div>
                                     </template>
                                 </MultiSelect>
                             </div>
                             <div>
                                 <label for="filter-contract" class="form-label">Contract Length:</label>
                                 <MultiSelect v-model="filters.contractTermMonths"
-                                    :options="filterList.contractTermMonths" filter placeholder="Select months"
-                                    class="me-3 " style="width:150px">
+                                    :options="filterList.contractTermMonths" placeholder="Select months" class="me-3 "
+                                    style="width:150px;">
                                     <template #option="slotProps">
-                                        <div>{{ slotProps.option }} Months</div>
+                                        <div style="font-size:14px;line-height: 1.5rem;">{{ slotProps.option }} Months
+                                        </div>
                                     </template>
                                 </MultiSelect>
                             </div>

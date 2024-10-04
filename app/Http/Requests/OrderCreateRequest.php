@@ -22,7 +22,8 @@ class OrderCreateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'account_id' => 'required|exists:accounts,id'
+            'account_id' => 'required|exists:accounts,id',
+            'solution_type_id' => 'required|exists:solution_types,id'
         ];
     }
 }

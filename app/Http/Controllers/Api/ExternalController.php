@@ -60,11 +60,11 @@ class ExternalController extends Controller
         $request->validate([
             "connectivityType" => "required",
             "postCode" => "required",
-            "uprn" => "required",
-            "latitude" => "required",
-            "longitude" => "required",
-            "street" => "required",
-            "town" => "required",
+            "uprn" => "nullable",
+            "latitude" => "nullable",
+            "longitude" => "nullable",
+            "street" => "nullable",
+            "town" => "nullable",
         ]);
 
         $address = new CloudMarketAddress(
@@ -80,9 +80,9 @@ class ExternalController extends Controller
             town: $request->input('town', null),
         );
 
-        $res = (new CloudMarketApi())->get($request->get('connectivityType'), $address);
+        (new CloudMarketApi())->get($request->get('connectivityType'), $address);
 
-        return $this->recalculatePrices($res);
+        // return $this->recalculatePrices($res);
     }
 
     public function getArticlesFromShopBlocks(Request $request)

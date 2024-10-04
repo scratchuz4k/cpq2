@@ -6,6 +6,8 @@ use App\Models\User;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\BaseController;
+use App\Models\Account;
+use App\Models\SolutionType;
 
 class DashboardController extends BaseController
 {
@@ -14,7 +16,19 @@ class DashboardController extends BaseController
      */
     public function index()
     {
-        return Inertia::render('Dashboard');
+        $userDescedents = User::descendants(auth()->id());
+        $users = collect([]);
+        do {
+            $current = $userDescedents->pop();
+            $users->push($current);
+            $userDescedents->push(...$current->children);
+        } while (count($userDescedents));
+
+        return Inertia::render('Dashboard',[
+            "users" => $users,
+            "solutions" => SolutionType::all(),
+            "status" => ["PRICE", "QUOTE", "CONFIGURE"]
+        ]);
     }
 
     /**

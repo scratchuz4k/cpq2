@@ -1,5 +1,5 @@
 <script setup>
-import { router } from '@inertiajs/vue3';
+import {Link, router} from '@inertiajs/vue3';
 import { ref } from 'vue'
 
 const props = defineProps({
@@ -84,16 +84,13 @@ getHardwareProducts()
                     <div
                         class="mobile-price-group-heading border-bottom mb-3 d-flex justify-content-between align-items-center">
                         <h3>Products</h3>
-                        <!-- <a href="#">Make a change</a> -->
+                        <Link :href="route('orders.edit', { order: modelValue.id }) + '?step=1'">Make a change</Link>
                     </div>
                     <div>
                         <div v-for="p in planProducts" class="item mb-2">
                             <span>{{ p.label }}</span>
 
                             <div>
-                                <button v-if="p.id" class="badge btn btn-danger btn-sm me-2" @click="remove(p.id)">
-                                    <font-awesome-icon :icon="['fas', 'trash']"></font-awesome-icon>
-                                </button>
                                 <span class="badge bg-light-grey dark">{{ p.quantity }}</span>
                             </div>
                         </div>
@@ -104,15 +101,12 @@ getHardwareProducts()
                     <div
                         class="mobile-price-group-heading border-bottom mb-3 d-flex justify-content-between align-items-center">
                         <h3>Bolt-ons</h3>
-                        <!-- <a href="/quotes/mobile/configure/{{ $order->id }}?s=2">Make a change</a> -->
+                        <Link :href="route('orders.edit', { order: modelValue.id }) + '?step=2'">Make a change</Link>
                     </div>
                     <div>
                         <div v-for="p in boltOnProducts" class="item mb-2">
                             <span>{{ p.name }}</span>
                             <div>
-                                <button v-if="p.id" class="badge btn btn-danger btn-sm me-2" @click="remove(p.id)">
-                                    <font-awesome-icon :icon="['fas', 'trash']"></font-awesome-icon>
-                                </button>
                                 <span class="badge bg-light-grey dark">{{ p.quantity }}</span>
                             </div>
                         </div>
@@ -123,15 +117,12 @@ getHardwareProducts()
                     <div
                         class="mobile-price-group-heading border-bottom mb-3 d-flex justify-content-between align-items-center">
                         <h3>Add-ons</h3>
-                        <!-- <a href="/quotes/mobile/configure/{{ $order->id }}?s=3">Make a change</a> -->
+                        <Link :href="route('orders.edit', { order: modelValue.id}) + '?step=3'">Make a change</Link>
                     </div>
                     <div>
                         <div v-for="p in hardwareProducts" class="item mb-2">
                             <span>{{ p.name }}</span>
                             <div>
-                                <button v-if="p.id" class="badge btn btn-danger btn-sm me-2" @click="remove(p.id)">
-                                    <font-awesome-icon :icon="['fas', 'trash']"></font-awesome-icon>
-                                </button>
                                 <span class="badge bg-light-grey dark">{{ p.quantity }}</span>
                             </div>
                         </div>

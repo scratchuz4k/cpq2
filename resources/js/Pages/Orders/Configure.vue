@@ -20,8 +20,6 @@ const form = reactive({
     solutionCheck: true
 })
 
-const step = ref(0)
-
 const submit = () => {
     try {
         router.put(`/orders/${props.order.id}`,
@@ -41,7 +39,6 @@ const submit = () => {
 </script>
 
 <template>
-
     <Head title="Create a Quote" />
     <AuthenticatedLayout :order="order">
         <form @submit.prevent="submit">
@@ -56,7 +53,7 @@ const submit = () => {
                                 {{ order.account?.name }}
                             </span>
                         </p>
-                        <h1 class="m-0" style="font-size:18px;font-weight:bold">Price</h1>
+                        <h1 class="m-0" style="font-size:18px;font-weight:bold">Configure</h1>
                     </div>
                 </div>
                 <div class="col " style="text-align: right">

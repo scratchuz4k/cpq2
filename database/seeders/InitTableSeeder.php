@@ -24,7 +24,7 @@ class InitTableSeeder extends Seeder
         $tenant = Tenant::updateOrCreate([
             "name" => "CloudMarket"
         ],[
-            "domain" => "cloudmarket.com",
+            "domain" => "localhost",
             "database" => "cloudmarket"
         ]);
 
