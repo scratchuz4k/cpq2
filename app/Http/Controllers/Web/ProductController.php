@@ -10,12 +10,8 @@ use App\Models\Product;
 use App\Models\Supplier;
 use App\Services\ProductsService;
 use Inertia\Inertia;
-use App\Models\Price;
 use Illuminate\Support\Facades\Log;
-use App\Http\Resources\PriceResource;
 use App\Http\Controllers\BaseController;
-use App\Http\Requests\PriceCreateRequest;
-use App\Http\Requests\PriceUpdateRequest;
 
 class ProductController extends BaseController
 {
@@ -50,7 +46,7 @@ class ProductController extends BaseController
     public function store(ProductCreateRequest $request)
     {
         try {
-            $price = $this->productsService->store($request->all());
+            $product = $this->productsService->store($request->all());
         } catch (\Exception $e) {
             if (!env('APP_DEBUG')) {
                 Log::error($e->getMessage());
@@ -75,8 +71,11 @@ class ProductController extends BaseController
      */
     public function edit(Product $product)
     {
+        $temp = new ProductResource($product);
         return Inertia::render('Products/Edit', [
-            'product' => new Product($product)
+            'product' => $temp->toArray(request()),
+            'brands' => Brand::all(),
+            'suppliers' => Supplier::all()
         ]);
     }
 
@@ -99,7 +98,7 @@ class ProductController extends BaseController
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Price $price)
+    public function destroy(Product $product)
     {
         //
     }

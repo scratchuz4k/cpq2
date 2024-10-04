@@ -22,12 +22,9 @@ class ProductUpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "tax_rate" => "required|number",
-            "net" => "required|number",
-            "tax" => "required|number",
-            "gross" => "required|number",
-            "spa_id" => "required|exists:spas,id",
-            "product_id" => "required|exists:products,id",
+            "name" => "required|string|max:255",
+            "supplier_id" => "required|exists:suppliers,id",
+            "brand_id" => "required|exists:brands,id"
         ];
     }
 }

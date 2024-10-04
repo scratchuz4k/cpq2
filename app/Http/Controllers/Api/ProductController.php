@@ -58,7 +58,7 @@ class ProductController extends BaseController
      */
     public function destroy(Product $product)
     {
-        //
+        $product->delete();
     }
 }
 

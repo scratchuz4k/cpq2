@@ -12,7 +12,8 @@ class Product extends Model
     protected $fillable = [
         'name',
         'supplier_id',
-        'brand_id'
+        'brand_id',
+        'tenant_id'
     ];
 
     protected static function booted(): void

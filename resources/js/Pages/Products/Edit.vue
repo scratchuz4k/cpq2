@@ -5,11 +5,13 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, router } from "@inertiajs/vue3";
 
 const props = defineProps({
-    price: Object
+    product: Object,
+    brands: Object,
+    suppliers: Object
 })
 
-const savePrice = () => {
-    router.post(`/prices/${props.price.id}`, props.price,
+const saveProduct = () => {
+    router.put(`/products/${props.product.id}`, props.product,
         {
             onSuccess: (page) => {
                 notyf.success("Updated with Success")
@@ -25,53 +27,40 @@ const savePrice = () => {
     )
 }
 const items = ref([
-    { label: 'My', url: '/myaccount' },
-    { label: 'Prices', url: '/brands' },
+    { label: 'My Account', url: '/myaccount' },
+    { label: 'Products', url: '/products' },
 ]);
 
 </script>
 <template>
 
-    <Head title="Prices" />
+    <Head title="Products" />
     <AuthenticatedLayout>
         <div class="panel">
-            <Header title="New Price" :breadcrumbs="items">
+            <Header title="New Product" :breadcrumbs="items">
                 <template #buttons>
-                    <Button @click="savePrice()" size="small">
+                    <Button @click="saveProduct()" size="small">
                         <font-awesome-icon :icon="['fas', 'save']"></font-awesome-icon> Save
                     </Button>
                 </template>
             </Header>
+            {{ product.name}}
             <div class="row mb-3">
                 <div class="col-6">
-                    <div class="mb-3">
-                        <label for="price-name" class="form-label">Tax Rate:</label>
-                        <input id="price-name" type="number" class="form-control" v-model="price.tax_rate">
+                    <div class="row mb-3">
+                        <label for="product-name" class="form-label">Name:</label>
+                        <input id="product-name" class="form-control" v-model="product.name">
                     </div>
-                    <div class="mb-3">
-                        <label for="price-name" class="form-label">Net:</label>
-                        <input id="price-name" type="number" class="form-control" v-model="price.net">
-                    </div>
-                    <div class="mb-3">
-                        <label for="price-name" class="form-label">Tax:</label>
-                        <input id="price-name" type="number" class="form-control" v-model="price.tax">
-                    </div>
-                    <div class="mb-3">
-                        <label for="price-name" class="form-label">Gross:</label>
-                        <input id="price-name" type="number" class="form-control" v-model="price.gross">
-                    </div>
-                </div>
-                <div class="col-6">
-                    <div class="mb-3">
-                        <label for="price-name" class="form-label">SPA:</label>
-                        <select class="form-select" v-model="price.spa_id">
-                            <option v-for="spa in spas" :value="spa.id">{{ spa.name }}</option>
+                    <div class="row mb-3">
+                        <label for="supplier-name" class="form-label">Supplier:</label>
+                        <select class="form-select" v-model="product.supplier_id">
+                            <option v-for="supplier in suppliers" :value="supplier.id">{{ supplier.name }}</option>
                         </select>
                     </div>
-                    <div class="mb-3">
-                        <label for="price-name" class="form-label">Product:</label>
-                        <select class="form-select" v-model="price.product_id">
-                            <option v-for="product in products" :value="product.id">{{ product }}</option>
+                    <div class="row mb-3">
+                        <label for="brand-name" class="form-label">Brand:</label>
+                        <select class="form-select" v-model="product.brand_id">
+                            <option v-for="brand in brands" :value="brand.id">{{ brand.name }}</option>
                         </select>
                     </div>
                 </div>
