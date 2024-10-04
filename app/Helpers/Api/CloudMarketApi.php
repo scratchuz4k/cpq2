@@ -2,9 +2,11 @@
 
 namespace App\Helpers\Api;
 
+use JsonMachine\Items;
 use GuzzleHttp\Psr7\StreamWrapper;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Cache;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class CloudMarketApi
 {
@@ -21,7 +23,7 @@ class CloudMarketApi
             return json_decode(file_get_contents($mock_prices), true);
         }
 
-        return Http::withOptions(['stream' => true])->timeout(360)->withToken(env('ALPNET_API_TOKEN'))
+        $res = Http::withOptions(['stream' => true])->timeout(360)->withToken(env('ALPNET_API_TOKEN'))
             ->get(
                 env('PARTNER_QUOTE_SERVICE_URL', 'https://cpq-poc-uat-api.cloudmarket.com') . '/PartnerQuoteService/' . env('PARTNER_QUOTE_SERVICE_ENDPOINT', 'TestNoParams'),
                 [
@@ -51,7 +53,11 @@ class CloudMarketApi
                 ]
             );
 
-        $stream = StreamWrapper::getResource($res->getBody());
-        $items = Items::fromStream($stream);
+
+        $stream = StreamWrapper::getResource($res->toPsrResponse()->getBody());
+        foreach (Items::fromStream($stream) as $key => $value) {
+            $value = json_encode((array)$value);
+            echo "Key: {$value}. Value: {json_encode($value, true)}." . PHP_EOL;
+        }
     }
 }

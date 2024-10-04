@@ -80,9 +80,9 @@ class ExternalController extends Controller
             town: $request->input('town', null),
         );
 
-        $res = (new CloudMarketApi())->get($request->get('connectivityType'), $address);
+        (new CloudMarketApi())->get($request->get('connectivityType'), $address);
 
-        return $this->recalculatePrices($res);
+        // return $this->recalculatePrices($res);
     }
 
     public function getArticlesFromShopBlocks(Request $request)
