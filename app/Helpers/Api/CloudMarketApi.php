@@ -19,11 +19,22 @@ class CloudMarketApi
             }
             return json_decode(file_get_contents($mock_prices), true);
         }
-        $path = storage_path("/app/public/connectivity/");
+        $path = storage_path("/app/products/");
         $filename =  $address->toString() . '.json';
 
-        if (!Storage::exists($filename)) {
-            $isUpdating = false;
+        if (!Storage::disk("products")->exists($filename)) {
+            if (!is_dir($path)) {
+                mkdir($path, 0777, true);
+            }
+
+            $starterData = json_encode([
+                'started_at' => now(),
+                'finished_at' => null,
+                'total' => 0,
+                'data' => []
+            ]);
+            file_put_contents($path . $filename, $starterData);
+
             CloudMarketConnectivityProducts::dispatch($path, $filename, $connectivityType, $address);
         }
 

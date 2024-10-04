@@ -2,10 +2,13 @@
 
 namespace App\Jobs;
 
+use Exception;
 use JsonMachine\Items;
 use GuzzleHttp\Psr7\StreamWrapper;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
 use App\Helpers\Api\CloudMarketAddress;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
@@ -58,10 +61,11 @@ class CloudMarketConnectivityProducts implements ShouldQueue
             );
 
         $started_at = now();
-
-        if (!is_dir($this->path)) {
-            mkdir($this->path, 0777, true);
+        if (!Storage::disk("products")->exists($this->filename)) {
+            Log::error(`File $this->path/$this->filename not Found!`);
+            throw new Exception(`File $this->path/$this->filename not Found!`);
         }
+
         $prices = [];
         $stream = StreamWrapper::getResource($res->toPsrResponse()->getBody());
         foreach (Items::fromStream($stream) as $key => $value) {
