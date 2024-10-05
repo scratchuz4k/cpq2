@@ -3,6 +3,7 @@ import axios from 'axios';
 import Paginator from 'primevue/paginator';
 import { ref, reactive, watch } from 'vue'
 import MultiSelect from 'primevue/multiselect';
+import Swal from 'sweetalert2';
 
 const props = defineProps({
     modelValue: Object
@@ -72,6 +73,31 @@ const getArticles = async () => {
         perPage: meta.limit
     };
     let res = await axios.post('/api/external/get-articles-from-cloud-market', query)
+    if (res.data.wating_task) {
+        let timerInterval;
+        Swal.fire({
+            title: "We're fetching results!",
+            html: "I will close in <b></b> milliseconds.",
+            timer: 10000,
+            timerProgressBar: true,
+            didOpen: () => {
+                Swal.showLoading();
+                const timer = Swal.getPopup().querySelector("b");
+                timerInterval = setInterval(() => {
+                    timer.textContent = `${Swal.getTimerLeft()}`;
+                }, 100);
+            },
+            willClose: () => {
+                clearInterval(timerInterval);
+            }
+        }).then((result) => {
+            /* Read more about handling dismissals below */
+            if (result.dismiss === Swal.DismissReason.timer) {
+                console.log("I was closed by the timer");
+            }
+            getArticles()
+        });
+    }
     data = res.data.data
     meta.first = (meta.page - 1) * meta.limit
     meta.total = res.data.total

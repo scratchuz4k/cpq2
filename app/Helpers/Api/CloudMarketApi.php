@@ -28,6 +28,7 @@ class CloudMarketApi
             }
 
             $starterData = json_encode([
+                'wating_task' => true,
                 'started_at' => now(),
                 'finished_at' => null,
                 'total' => 0,
@@ -52,7 +53,8 @@ class CloudMarketApi
             'per_page' => $perPage,
             'total' => count($fileContent['data']),
             'finished_at' => isset($isUpdating) ? $isUpdating : $fileContent['finished_at'],
-            'started_at' =>  $fileContent['started_at']
+            'started_at' =>  $fileContent['started_at'],
+            'wating_task'=>  $fileContent['wating_task'],
         ];
     }
 }

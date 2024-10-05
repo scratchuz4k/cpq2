@@ -75,6 +75,7 @@ class CloudMarketConnectivityProducts implements ShouldQueue
 
             $prices[] =  (array)$value;
             $data = json_encode([
+                'wating_task' => false,
                 'started_at' => $started_at,
                 'finished_at' => null,
                 'total' => count($prices),
@@ -84,6 +85,7 @@ class CloudMarketConnectivityProducts implements ShouldQueue
         }
 
         $finalData = json_encode([
+            'wating_task' => false,
             'started_at' => $started_at,
             'finished_at' => now(),
             'total' => count($prices),
