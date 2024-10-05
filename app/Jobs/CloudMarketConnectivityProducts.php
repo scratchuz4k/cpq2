@@ -8,11 +8,11 @@ use GuzzleHttp\Psr7\StreamWrapper;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
 use App\Helpers\Api\CloudMarketAddress;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Spatie\Multitenancy\Jobs\TenantAware;
 
-class CloudMarketConnectivityProducts implements ShouldQueue
+class CloudMarketConnectivityProducts implements ShouldQueue, TenantAware
 {
     use Queueable;
     public $timeout = 3600;
@@ -20,7 +20,7 @@ class CloudMarketConnectivityProducts implements ShouldQueue
     /**
      * Create a new job instance.
      */
-    public function __construct(protected $path,protected $filename, protected $connectivityType, protected CloudMarketAddress $address)
+    public function __construct(protected $path, protected $filename, protected $connectivityType, protected CloudMarketAddress $address)
     {
         //
     }
@@ -30,6 +30,7 @@ class CloudMarketConnectivityProducts implements ShouldQueue
      */
     public function handle(): void
     {
+        Log::debug("Fetching produts for: " . $this->address->toString());
         $res = Http::withOptions(['stream' => true])->timeout(360)->withToken(env('ALPNET_API_TOKEN'))
             ->get(
                 env('PARTNER_QUOTE_SERVICE_URL', 'https://cpq-poc-uat-api.cloudmarket.com') . '/PartnerQuoteService/' . env('PARTNER_QUOTE_SERVICE_ENDPOINT', 'TestNoParams'),
@@ -61,9 +62,8 @@ class CloudMarketConnectivityProducts implements ShouldQueue
             );
 
         $started_at = now();
-        if (!Storage::disk("products")->exists($this->filename)) {
-            Log::error(`File $this->path/$this->filename not Found!`);
-            throw new Exception(`File $this->path/$this->filename not Found!`);
+        if (!file_exists($this->path . $this->filename)) {
+            throw new Exception("File " . $this->path . $this->filename . " not Found!");
         }
 
         $prices = [];
@@ -72,16 +72,17 @@ class CloudMarketConnectivityProducts implements ShouldQueue
             if (empty($value->providerKey)) {
                 continue;
             }
-
             $prices[] =  (array)$value;
+
             $data = json_encode([
                 'wating_task' => false,
                 'started_at' => $started_at,
                 'finished_at' => null,
                 'total' => count($prices),
-                'data' => $prices
+                'data' => $prices,
             ]);
-            file_put_contents($this->path . $this->filename, $data);
+
+            $this->write($data, $this->path . $this->filename);
         }
 
         $finalData = json_encode([
@@ -89,8 +90,28 @@ class CloudMarketConnectivityProducts implements ShouldQueue
             'started_at' => $started_at,
             'finished_at' => now(),
             'total' => count($prices),
-            'data' => $prices
+            'data' => $prices,
         ]);
-        file_put_contents($this->path . $this->filename, $finalData);
+
+        $this->write($finalData, $this->path . $this->filename);
+    }
+    private function write($data, $file)
+    {
+        if (!file_exists($file)) {
+            throw new Exception("File $file not Found!");
+        }
+        file_put_contents($file, $data);
+    }
+
+    /**
+     * The job failed to process.
+     *
+     * @param  \Exception  $exception
+     * @return void
+     */
+    public function failed(Exception $exception)
+    {
+        // Handle the failure, log exception details, etc.
+        Log::error("CloudMarketConnectivityProducts failed with message: " . $exception->getMessage());
     }
 }

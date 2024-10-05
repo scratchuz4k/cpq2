@@ -76,15 +76,16 @@ const getArticles = async () => {
     if (res.data.wating_task) {
         let timerInterval;
         Swal.fire({
-            title: "We're fetching results!",
-            html: "I will close in <b></b> milliseconds.",
+            title: "We're searching for results!",
+            html: "I will close in <b></b> seconds.",
             timer: 10000,
             timerProgressBar: true,
+            cancelButtonText: 'Cancel.',
             didOpen: () => {
                 Swal.showLoading();
                 const timer = Swal.getPopup().querySelector("b");
                 timerInterval = setInterval(() => {
-                    timer.textContent = `${Swal.getTimerLeft()}`;
+                    timer.textContent = `${(Swal.getTimerLeft() / 1000).toFixed(0)}`;
                 }, 100);
             },
             willClose: () => {
@@ -92,8 +93,8 @@ const getArticles = async () => {
             }
         }).then((result) => {
             /* Read more about handling dismissals below */
-            if (result.dismiss === Swal.DismissReason.timer) {
-                console.log("I was closed by the timer");
+            if (['cancel', 'backdrop',].includes(result.dismiss)) {
+                return
             }
             getArticles()
         });
@@ -102,7 +103,7 @@ const getArticles = async () => {
     meta.first = (meta.page - 1) * meta.limit
     meta.total = res.data.total
     meta.isUpdating = !!res.data.finished_at
-    processFilters(data)
+    Object.assign(filterList, res.data.filters)
     filterData(data)
 }
 
@@ -152,27 +153,12 @@ const filterData = (data) => {
 
     isLoading.value = false
 }
+
 const countFilters = (column, value) => {
     let temp = articles.value.filter((item) => {
         return item[column].toLowerCase() == value.toLowerCase()
     })
     return temp.length
-}
-
-const processFilters = (data) => {
-    data.forEach((item) => {
-        Object.keys(filterList).forEach((key) => {
-            if (!Object.keys(item).includes(key) || !item[key]) {
-                return
-            }
-            if (filterList[key].find((a) => a == item[key])) {
-                return
-            }
-            filterList[key].push(item[key])
-        })
-    })
-    filterList.bearer = filterList.bearer.sort((a, b) => a - b);
-    filterList.speed = filterList.speed.sort((a, b) => a - b);
 }
 
 const setAltImg = (event) => {
@@ -267,8 +253,14 @@ getArticles()
                 <div class="d-flex justify-content-between align-items-center">
                     <div class="d-flex  align-items-center">
                         <h2 class="me-3">Live prices </h2>
-                        <p v-if="!meta.isUpdating" class="badge badge-filter text-bg-danger m-0"> Prices Updating</p>
-                        <p v-else class="badge badge-filter text-bg-success m-0"> Prices Updated</p>
+                        <div v-if="!meta.isUpdating"
+                            class="badge badge-filter text-bg-danger m-0 d-flex align-items-center">
+                            <div class="spinner-border spinner-border-sm me-2" role="status">
+                                <span class="sr-only">Loading...</span>
+                            </div>
+                            Searching
+                        </div>
+                        <p v-else class="badge badge-filter text-bg-success m-0">Prices Updated</p>
                     </div>
 
                     <div>
@@ -288,7 +280,7 @@ getArticles()
                             <p class="me-3">
                                 <b>FILTERS</b><br>
                                 <span class="prices-total">
-                                    ({{ articles.length }})</span>
+                                    ({{ meta.total }})</span>
                             </p>
                             <div>
                                 <label for="filter-subprovider" class="form-label">Provider:</label>

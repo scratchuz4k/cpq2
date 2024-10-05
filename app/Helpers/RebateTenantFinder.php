@@ -41,7 +41,6 @@ class RebateTenantFinder extends TenantFinder
             }
         }
 
-        Log::debug("Tenant NOT FOUND for request (yet) - using Default Tenant 1 for now...");
         return \App\Models\Tenant::find(1);
     }
 }

@@ -32,7 +32,7 @@ class CloudMarketApi
                 'started_at' => now(),
                 'finished_at' => null,
                 'total' => 0,
-                'data' => []
+                'data' => [],
             ]);
             file_put_contents($path . $filename, $starterData);
 
@@ -40,8 +40,28 @@ class CloudMarketApi
         }
 
         $fileContent = json_decode(file_get_contents($path . $filename), true);
-        $items = collect($fileContent['data']);
+        $filters = [
+            "providerName" => [],
+            "connectivitySupplierName" => [],
+            "contractTermMonths" => [],
+            "bearer" => [],
+            "speed" => []
+        ];
 
+        foreach ($fileContent['data'] as $value) {
+            foreach ($filters as $key => $items) {
+                if (!array_key_exists($key, $value) || !$value[$key]) {
+                    continue;
+                }
+
+                if (in_array($value[$key], $items)) {
+                    continue;
+                }
+                array_push($filters[$key], $value[$key]);
+            }
+        }
+
+        $items = collect($fileContent['data']);
         // Manually paginate
         $perPage =  request()->input('perPage', 10);
         $currentPage = request()->input('page', 1);
@@ -54,7 +74,8 @@ class CloudMarketApi
             'total' => count($fileContent['data']),
             'finished_at' => isset($isUpdating) ? $isUpdating : $fileContent['finished_at'],
             'started_at' =>  $fileContent['started_at'],
-            'wating_task'=>  $fileContent['wating_task'],
+            'wating_task' =>  $fileContent['wating_task'],
+            'filters' =>  $filters,
         ];
     }
 }
