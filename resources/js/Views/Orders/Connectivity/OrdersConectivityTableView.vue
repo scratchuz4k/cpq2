@@ -88,7 +88,9 @@ const getArticles = async () => {
         buildingNumber: props.modelValue.address_data?.addressparts?.ThoroughfareNumber,
         page: meta.page,
         perPage: meta.limit,
-        filters: temp
+        filters: temp,
+        order: sort.order,
+        orderBy: sort.field,
     };
 
     let res = await axios.post('/api/external/get-articles-from-cloud-market', query)
@@ -142,10 +144,11 @@ const sort = reactive({
     order: "asc"
 })
 
-const orderBy = (column, order = null) => {
-    let changeSort = order ? order : sort.order == 'asc' ? 'desc' : 'asc'
+const orderBy = (column) => {
+    let changeSort = sort.order == 'asc' ? 'desc' : 'asc'
     sort.order = sort.field === column ? changeSort : sort.order
     sort.field = column
+    getArticles()
 }
 
 const add = async (article) => {
@@ -277,50 +280,63 @@ getArticles()
                     <thead>
                         <tr>
                             <th></th>
-                            <th style="white-space: nowrap;" :style="{
+                            <th :style="{
+                                whiteSpace: 'nowrap',
                                 textDecoration: sort.field == 'productName' ? 'underline' : 'none',
                                 width: '30%'
-                            }">
+                            }" @click="orderBy('productName')">
                                 Product
                                 <font-awesome-icon :icon="['fas', 'sort']" />
                             </th>
-                            <th style="white-space: nowrap;">
+                            <th :style="{ whiteSpace: 'nowrap', textDecoration: sort.field == 'providerName' ? 'underline' : 'none' }"
+                                @click="orderBy('providerName')">
                                 Provider
                                 <font-awesome-icon :icon="['fas', 'sort']" />
                             </th>
-                            <th style="white-space: nowrap;">
+                            <th :style="{ whiteSpace: 'nowrap', textDecoration: sort.field == 'connectivitySupplierName' ? 'underline' : 'none' }"
+                                @click="orderBy('connectivitySupplierName')">
                                 Subprovider
                                 <font-awesome-icon :icon="['fas', 'sort']"></font-awesome-icon>
                             </th>
-                            <th style="white-space: nowrap;" :style="{
+                            <th :style="{
+                                whiteSpace: 'nowrap',
                                 textDecoration: sort.field == 'bearer' ? 'underline' : 'none'
-                            }">
+                            }" @click="orderBy('bearer')">
                                 Bearer
                                 <font-awesome-icon :icon="['fas', 'sort']" />
                             </th>
-                            <th style="white-space: nowrap;" :style="{
+                            <th :style="{
+                                whiteSpace: 'nowrap',
                                 textDecoration: sort.field == 'speed' ? 'underline' : 'none'
-                            }">
+                            }" @click="orderBy('speed')">
                                 Speed
                                 <font-awesome-icon :icon="['fas', 'sort']" />
                             </th>
-                            <th style="white-space: nowrap;" :style="{
+                            <th :style="{
+                                whiteSpace: 'nowrap',
                                 textDecoration: sort.field == 'priceInstall' ? 'underline' : 'none'
-                            }">
+                            }" @click="orderBy('priceInstall')">
                                 Set Up
                                 <font-awesome-icon :icon="['fas', 'sort']" />
                             </th>
-                            <th style="white-space: nowrap;" :style="{
+                            <th :style="{
+                                whiteSpace: 'nowrap',
                                 textDecoration: sort.field == 'priceMonthly' ? 'underline' : 'none'
-                            }">
+                            }" @click="orderBy('priceMonthly')">
                                 Monthly
                                 <font-awesome-icon :icon="['fas', 'sort']" />
                             </th>
-                            <th style="white-space: nowrap;">
+                            <th :style="{
+                                whiteSpace: 'nowrap',
+                                textDecoration: sort.field == 'priceECC' ? 'underline' : 'none'
+                            }" @click="orderBy('priceECC')">
                                 ECC
                                 <font-awesome-icon :icon="['fas', 'sort']" />
                             </th>
-                            <th style="white-space: nowrap;">
+                            <th :style="{
+                                whiteSpace: 'nowrap',
+                                textDecoration: sort.field == 'contractTermMonths' ? 'underline' : 'none'
+                            }" @click="orderBy('contractTermMonths')">
                                 Contract Term
                                 <font-awesome-icon :icon="['fas', 'sort']" />
                             </th>
@@ -340,7 +356,8 @@ getArticles()
                                     <font-awesome-icon :icon="['fas', 'minus']" />
                                 </button>
                             </td>
-                            <td style="text-align: left;">{{ article.productName }} </td>
+                            <td style="text-align: left;">
+                                {{ article.productName }} </td>
                             <td><img class="img-provider" @error="setAltImg"
                                     :src="`/images/providers/${article.providerKey}.png`" :alt="article.providerName"
                                     :title="article.providerName" /> </td>

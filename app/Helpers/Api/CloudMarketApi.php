@@ -41,6 +41,9 @@ class CloudMarketApi
         $fileContent = json_decode(file_get_contents($path . $filename), true);
         $filtersData = $this->processFilters($fileContent['data']);
         $items = $this->filterData($fileContent['data'], $filters);
+        $order = request()->input('order', 'asc');
+        $orderBy = request()->input('orderBy', 'productName');
+        $items = $order == 'asc' ? $items->sortBy($orderBy) : $items->sortByDesc($orderBy);
         $perPage =  request()->input('perPage', 10);
         $currentPage = request()->input('page', 1);
         $temp = $items->slice(($currentPage - 1) * $perPage, $perPage)->values();
