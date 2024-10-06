@@ -11,18 +11,28 @@ const props = defineProps({
 
 const showQuoted = ref(false)
 const showFilters = ref(true)
-const isLoading = ref(true)
-let data = []
 const articles = ref([])
 const filters = reactive({
-    providerName: [],
-    connectivitySupplierName: [],
-    contractTermMonths: []
-})
-
-const filtersRange = reactive({
-    bearer: [],
-    speed: []
+    providerName: {
+        operator: "in",
+        value: ""
+    },
+    connectivitySupplierName: {
+        operator: "in",
+        value: ""
+    },
+    contractTermMonths: {
+        operator: "in",
+        value: ""
+    },
+    bearer: {
+        operator: "between",
+        value: []
+    },
+    speed: {
+        operator: "between",
+        value: []
+    }
 })
 
 const filterList = reactive({
@@ -32,6 +42,7 @@ const filterList = reactive({
     bearer: [],
     speed: []
 })
+
 const meta = reactive({
     page: 1,
     total: 0,
@@ -39,7 +50,6 @@ const meta = reactive({
     limit: 20,
     isUpdating: false
 })
-
 
 const subProviders = {
     "btw": "bt",
@@ -59,6 +69,13 @@ const subProviders = {
 };
 
 const getArticles = async () => {
+    let temp = []
+    Object.keys(filters).forEach((key) => {
+        temp.push({ column: key, operator: filters[key].operator, value: filters[key].value })
+    })
+    if (showQuoted.value) {
+        temp.push({ column: 'productCode', operator: 'in', value: props.modelValue.items.filter((item) => item.data.productCode).map((item) => item.data.productCode) })
+    }
     let query = {
         connectivityType: 3,
         postCode: props.modelValue.address_postcode,
@@ -70,8 +87,10 @@ const getArticles = async () => {
         addressKey: props.modelValue.address_data?.value,
         buildingNumber: props.modelValue.address_data?.addressparts?.ThoroughfareNumber,
         page: meta.page,
-        perPage: meta.limit
+        perPage: meta.limit,
+        filters: temp
     };
+
     let res = await axios.post('/api/external/get-articles-from-cloud-market', query)
     if (res.data.wating_task) {
         let timerInterval;
@@ -99,66 +118,11 @@ const getArticles = async () => {
             getArticles()
         });
     }
-    data = res.data.data
+    articles.value = res.data.data
     meta.first = (meta.page - 1) * meta.limit
     meta.total = res.data.total
     meta.isUpdating = !!res.data.finished_at
     Object.assign(filterList, res.data.filters)
-    filterData(data)
-}
-
-const filterData = (data) => {
-    articles.value = data
-    articles.value = articles.value.filter(x => x.connectivitySupplierName != null)
-    Object.keys(filters).forEach(key => {
-        articles.value = articles.value.filter((item) => {
-            if (!Object.keys(item).includes(key) || !filters[key] || !filters[key].length) {
-                return true
-            }
-            return filters[key].reduce((acc, num) => {
-                let op = true
-                if (typeof item[key] == 'string') {
-                    op = num ? item[key].toLowerCase().includes(num.toLowerCase()) : true
-                }
-
-                if (typeof item[key] == 'number') {
-                    op = num ? item[key] == num : true
-                }
-                acc = acc || op
-                return acc
-            }, false)
-        })
-    });
-
-    Object.keys(filtersRange).forEach(key => {
-        articles.value = articles.value.filter((item) => {
-            if (!Object.keys(item).includes(key) || !filtersRange[key] || !filtersRange[key].length) {
-                return true
-            }
-            return item[key] >= filtersRange[key][0] && item[key] <= filtersRange[key][1]
-        })
-
-    })
-
-    if (showQuoted.value) {
-        articles.value = articles.value.filter((article) => {
-            return props.modelValue.items.find((item) => item.data.quoteId == article.quoteId)
-        })
-    }
-
-    if (articles.value.length) {
-        orderBy(sort.field, sort.order)
-    }
-
-
-    isLoading.value = false
-}
-
-const countFilters = (column, value) => {
-    let temp = articles.value.filter((item) => {
-        return item[column].toLowerCase() == value.toLowerCase()
-    })
-    return temp.length
 }
 
 const setAltImg = (event) => {
@@ -179,19 +143,9 @@ const sort = reactive({
 })
 
 const orderBy = (column, order = null) => {
-    let temp = articles.value
-
     let changeSort = order ? order : sort.order == 'asc' ? 'desc' : 'asc'
     sort.order = sort.field === column ? changeSort : sort.order
     sort.field = column
-
-    if (sort.order == 'asc') {
-        temp.sort((a, b) => a[column] - b[column])
-    } else {
-        temp.sort((a, b) => b[column] - a[column])
-    }
-
-    articles.value = temp
 }
 
 const add = async (article) => {
@@ -211,8 +165,8 @@ const add = async (article) => {
 }
 
 const remove = async (article) => {
-    let item = props.modelValue.items.find((item) => item.data.quoteId == article.quoteId)
-    let index = props.modelValue.items.findIndex((item) => item.data.quoteId == article.quoteId)
+    let item = props.modelValue.items.find((item) => item.data.productCode == article.productCode)
+    let index = props.modelValue.items.findIndex((item) => item.data.productCode == article.productCode)
     try {
         await axios.delete(`/api/order-items/${item.id}`)
         props.modelValue.items.splice(index, 1)
@@ -223,7 +177,7 @@ const remove = async (article) => {
 
 const getQuoted = () => {
     showQuoted.value = !showQuoted.value
-    filterData(data)
+    getArticles()
 }
 
 const handlePaginator = (ev) => {
@@ -233,14 +187,9 @@ const handlePaginator = (ev) => {
 }
 
 watch(filters, () => {
-    isLoading.value = true
-    filterData(data)
+    getArticles()
 })
 
-watch(filtersRange, () => {
-    isLoading.value = true
-    filterData(data)
-})
 
 getArticles()
 
@@ -284,30 +233,26 @@ getArticles()
                             </p>
                             <div>
                                 <label for="filter-subprovider" class="form-label">Provider:</label>
-                                <MultiSelect v-model="filters.providerName" :options="filterList.providerName"
+                                <MultiSelect v-model="filters['providerName'].value" :options="filterList.providerName"
                                     placeholder="Select a provider" class="me-3 " style="width:150px;" size="small">
                                     <template #option="slotProps">
-                                        <div style="font-size:14px;line-height: 1.5rem;">{{ slotProps.option }} ({{
-                                            countFilters("providerName",
-                                                slotProps.option) }})</div>
+                                        <div style="font-size:14px;line-height: 1.5rem;">{{ slotProps.option }} </div>
                                     </template>
                                 </MultiSelect>
                             </div>
                             <div>
                                 <label for="filter-subprovider" class="form-label">Subprovider:</label>
-                                <MultiSelect v-model="filters.connectivitySupplierName"
+                                <MultiSelect v-model="filters['connectivitySupplierName'].value"
                                     :options="filterList.connectivitySupplierName" placeholder="Select a subprovider"
                                     class="me-3 " style="width:150px;">
                                     <template #option="slotProps">
-                                        <div style="font-size:14px;line-height: 1.5rem;">{{ slotProps.option }} ({{
-                                            countFilters("connectivitySupplierName",
-                                                slotProps.option) }})</div>
+                                        <div style="font-size:14px;line-height: 1.5rem;">{{ slotProps.option }}</div>
                                     </template>
                                 </MultiSelect>
                             </div>
                             <div>
                                 <label for="filter-contract" class="form-label">Contract Length:</label>
-                                <MultiSelect v-model="filters.contractTermMonths"
+                                <MultiSelect v-model="filters['contractTermMonths'].value"
                                     :options="filterList.contractTermMonths" placeholder="Select months" class="me-3 "
                                     style="width:150px;">
                                     <template #option="slotProps">
@@ -318,16 +263,16 @@ getArticles()
                             </div>
                             <div class="d-flex slider-wrapper me-5">
                                 <label for="bearerSlider" class="form-label">Bearer:</label>
-                                <BearerRange v-model="filtersRange.bearer" :options="filterList.bearer" />
+                                <BearerRange v-model="filters['bearer'].value" :options="filterList.bearer" />
                             </div>
                             <div class="d-flex slider-wrapper me-5">
                                 <label for="speedSlider" class="form-label">Speed:</label>
-                                <SpeedRange v-model="filtersRange.speed" :options="filterList.speed" />
+                                <SpeedRange v-model="filters['speed'].value" :options="filterList.speed" />
                             </div>
                         </div>
                     </div>
                 </div>
-                <Loader v-if="isLoading"></Loader>
+                <Loader v-if="articles.value"></Loader>
                 <table v-else id="table_products" class="table  table-bordered table-hover">
                     <thead>
                         <tr>
@@ -383,11 +328,11 @@ getArticles()
                     </thead>
                     <tbody>
                         <tr v-for="article in articles"
-                            :class="{ 'active': props.modelValue.items.find((item) => item.data.quoteId == article.quoteId) }"
+                            :class="{ 'active': props.modelValue.items.find((item) => item.data.productCode == article.productCode) }"
                             style="text-align: center;">
                             <td>
                                 <button
-                                    v-if="!props.modelValue.items.find((item) => item.data.quoteId == article.quoteId)"
+                                    v-if="!props.modelValue.items.find((item) => item.data.productCode == article.productCode)"
                                     type="button" class="btn btn-primary btn-sm" @click="add(article)">
                                     <font-awesome-icon :icon="['fas', 'add']" />
                                 </button>

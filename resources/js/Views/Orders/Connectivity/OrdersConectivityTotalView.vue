@@ -87,7 +87,7 @@ const saveQuote = () => {
                                 {{ item.name }}
                             </td>
                             <td class="d-none d-xl-table-cell">
-                                {{ item.data?.quoteId }}
+                                {{ item.data?.productCode }}
                             </td>
                             <td>
                                 Monthly

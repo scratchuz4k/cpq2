@@ -10,7 +10,7 @@ class CloudMarketApi
 {
     public function __construct() {}
 
-    public function get($connectivityType, CloudMarketAddress $address)
+    public function get($connectivityType, CloudMarketAddress $address, $filters = [])
     {
         if (env('PARTNER_QUOTE_SERVICE_ENDPOINT') == 'mock') {
             $mock_prices = storage_path('mocks/prices.json');
@@ -26,7 +26,6 @@ class CloudMarketApi
             if (!is_dir($path)) {
                 mkdir($path, 0777, true);
             }
-
             $starterData = json_encode([
                 'wating_task' => true,
                 'started_at' => now(),
@@ -40,6 +39,26 @@ class CloudMarketApi
         }
 
         $fileContent = json_decode(file_get_contents($path . $filename), true);
+        $filtersData = $this->processFilters($fileContent['data']);
+        $items = $this->filterData($fileContent['data'], $filters);
+        $perPage =  request()->input('perPage', 10);
+        $currentPage = request()->input('page', 1);
+        $temp = $items->slice(($currentPage - 1) * $perPage, $perPage)->values();
+
+        return [
+            "data" => $temp,
+            'current_page' => $currentPage,
+            'per_page' => $perPage,
+            'total' => $items->count(),
+            'finished_at' => isset($isUpdating) ? $isUpdating : $fileContent['finished_at'],
+            'started_at' =>  $fileContent['started_at'],
+            'wating_task' =>  $fileContent['wating_task'],
+            'filters' =>  $filtersData,
+        ];
+    }
+
+    private function processFilters($data)
+    {
         $filters = [
             "providerName" => [],
             "connectivitySupplierName" => [],
@@ -48,7 +67,7 @@ class CloudMarketApi
             "speed" => []
         ];
 
-        foreach ($fileContent['data'] as $value) {
+        foreach ($data as $value) {
             foreach ($filters as $key => $items) {
                 if (!array_key_exists($key, $value) || !$value[$key]) {
                     continue;
@@ -60,26 +79,28 @@ class CloudMarketApi
                 array_push($filters[$key], $value[$key]);
             }
         }
-
-        $items = collect($fileContent['data']);
-        // Manually paginate
-        $perPage =  request()->input('perPage', 10);
-        $currentPage = request()->input('page', 1);
-        $items = $items->slice(($currentPage - 1) * $perPage, $perPage)->values();
-
-        return [
-            "data" => $items,
-            'current_page' => $currentPage,
-            'per_page' => $perPage,
-            'total' => count($fileContent['data']),
-            'finished_at' => isset($isUpdating) ? $isUpdating : $fileContent['finished_at'],
-            'started_at' =>  $fileContent['started_at'],
-            'wating_task' =>  $fileContent['wating_task'],
-            'filters' =>  $filters,
-        ];
+        return $filters;
+    }
+    private function filterData($data, $filters)
+    {
+        $data = collect($data);
+        foreach ($filters as $filter) {
+            if (!$filter['value']) {
+                continue;
+            }
+            $data = $this->resolveQuery($filter['operator'], $filter['column'], $filter['value'], $data);
+        }
+        return  $data;
+    }
+    private function resolveQuery($operator,  $column, $value, $data)
+    {
+        switch ($operator) {
+            case "in":
+                return $data->whereIn($column, $value);
+            case "between":
+                return $data->whereBetween($column, $value);
+            default:
+                return  true;
+        }
     }
 }
-// current_page
-// data
-// per_page
-// total
