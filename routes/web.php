@@ -10,7 +10,8 @@ use App\Http\Controllers\Web\ProfileController;
 use App\Http\Controllers\Web\DashboardController;
 use App\Http\Controllers\Web\ProductController;
 use App\Http\Controllers\Web\SupplierController;
-
+use App\Http\Controllers\Web\RegionController;
+use App\Http\Controllers\Web\SpaController;
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('index');
@@ -27,7 +28,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         'tenant' => TenantController::class,
         'brands' => BrandController::class,
         'products' => ProductController::class,
-        'suppliers' => SupplierController::class
+        'suppliers' => SupplierController::class,
+        'regions' => RegionController::class,
+        'spas' => SpaController::class
     ]);
 
     Route::middleware('auth')->group(function () {

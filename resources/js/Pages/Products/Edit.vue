@@ -44,7 +44,7 @@ const items = ref([
                     </Button>
                 </template>
             </Header>
-            {{ product.name}}
+
             <div class="row mb-3">
                 <div class="col-6">
                     <div class="row mb-3">
