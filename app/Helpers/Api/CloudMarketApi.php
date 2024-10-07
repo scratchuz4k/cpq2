@@ -2,6 +2,7 @@
 
 namespace App\Helpers\Api;
 
+use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
 use App\Jobs\CloudMarketConnectivityProducts;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -39,8 +40,10 @@ class CloudMarketApi
         }
 
         $fileContent = json_decode(file_get_contents($path . $filename), true);
+
         $filtersData = $this->processFilters($fileContent['data']);
         $items = $this->filterData($fileContent['data'], $filters);
+
         $order = request()->input('order', 'asc');
         $orderBy = request()->input('orderBy', 'productName');
         $items = $order == 'asc' ? $items->sortBy($orderBy) : $items->sortByDesc($orderBy);
@@ -102,8 +105,32 @@ class CloudMarketApi
                 return $data->whereIn($column, $value);
             case "between":
                 return $data->whereBetween($column, $value);
+            case "lowest-cost":
+                $keys = [];
+                $temp = collect($data->reduce(function ($carry, array $item) use (&$keys) {
+                    $key = Str::slug(
+                        $item['productName'] .
+                            $item['providerName'] .
+                            $item['connectivitySupplierName'] .
+                            $item['bearer'] .
+                            $item['speed'] .
+                            $item['priceInstall'] .
+                            $item['priceECC'] .
+                            $item['contractTermMonths']
+                    );
+                    if (in_array($key, $keys)) {
+                        if ($item['priceMonthly'] < $carry[$key]['priceMonthly']) {
+                            $carry[$key] = $item;
+                        }
+                        return $carry;
+                    }
+                    array_push($keys, $key);
+                    $carry[$key] = $item;
+                    return $carry;
+                }, []));
+                return $temp->values();
             default:
-                return  true;
+                return $data;
         }
     }
 }
