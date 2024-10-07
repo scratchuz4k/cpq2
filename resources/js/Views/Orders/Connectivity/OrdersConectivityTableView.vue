@@ -94,37 +94,46 @@ const getArticles = async () => {
     };
 
     let res = await axios.post('/api/external/get-articles-from-cloud-market', query)
-    if (res.data.wating_task) {
-        let timerInterval;
-        Swal.fire({
-            title: "We're searching for results!",
-            html: "I will close in <b></b> seconds.",
-            timer: 10000,
-            timerProgressBar: true,
-            cancelButtonText: 'Cancel.',
-            didOpen: () => {
-                Swal.showLoading();
-                const timer = Swal.getPopup().querySelector("b");
-                timerInterval = setInterval(() => {
-                    timer.textContent = `${(Swal.getTimerLeft() / 1000).toFixed(0)}`;
-                }, 100);
-            },
-            willClose: () => {
-                clearInterval(timerInterval);
-            }
-        }).then((result) => {
-            /* Read more about handling dismissals below */
-            if (['cancel', 'backdrop',].includes(result.dismiss)) {
-                return
-            }
-            getArticles()
-        });
-    }
+    resolveGetProducts(!!res.data.finished_at)
     articles.value = res.data.data
     meta.first = (meta.page - 1) * meta.limit
     meta.total = res.data.total
     meta.isUpdating = !!res.data.finished_at
     Object.assign(filterList, res.data.filters)
+}
+
+const resolveGetProducts = (finished) => {
+    if (finished) {
+        return
+    }
+    setTimeout(() => {
+        getArticles()
+    }, 10000);
+
+    // let timerInterval;
+    // Swal.fire({
+    //     title: "We're searching for results!",
+    //     html: "I will close in <b></b> seconds.",
+    //     timer: 10000,
+    //     timerProgressBar: true,
+    //     cancelButtonText: 'Cancel.',
+    //     didOpen: () => {
+    //         Swal.showLoading();
+    //         const timer = Swal.getPopup().querySelector("b");
+    //         timerInterval = setInterval(() => {
+    //             timer.textContent = `${(Swal.getTimerLeft() / 1000).toFixed(0)}`;
+    //         }, 100);
+    //     },
+    //     willClose: () => {
+    //         clearInterval(timerInterval);
+    //     }
+    // }).then((result) => {
+    //     /* Read more about handling dismissals below */
+    //     if (['cancel', 'backdrop',].includes(result.dismiss)) {
+    //         return
+    //     }
+    //     getArticles()
+    // });
 }
 
 const setAltImg = (event) => {
