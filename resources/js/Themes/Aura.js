@@ -409,6 +409,7 @@ const AuraReformed = definePreset(Aura, {
             }
         },
         breadcrumb: {
+            background: "none",
             padding: ".5rem 0"
         },
         multiselect: {

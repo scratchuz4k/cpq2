@@ -208,7 +208,7 @@ getArticles()
 </script>
 <template>
     <div class="panel">
-        <InfoBox :order="modelValue"></InfoBox>
+        <InfoConnectivity :order="modelValue"></InfoConnectivity>
         <div class="row mb-4" style="min-height: 50vh;">
             <div class="col">
                 <div class="d-flex justify-content-between align-items-center">

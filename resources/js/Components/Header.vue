@@ -1,8 +1,9 @@
 <template>
-    <div class="d-flex justify-content-between align-items-center pb-3" style="border-bottom: 1px solid lightgray; ">
-        <h2 class="text-4xl font-bold m-0">
-            {{ title }}
-        </h2>
+    <div class="d-flex justify-content-between align-items-center pb-1">
+        <!--style="border-bottom: 1px solid lightgray; " -->
+        <div class="d-flex justify-content-between " style="justify-content: space-between;;">
+            <h1 class="m-0 font-bold">{{ title }} </h1> <!--<span>.</span>-->
+        </div>
         <div>
             <slot name="buttons"></slot>
         </div>
@@ -13,7 +14,7 @@
                 <a v-if="item.url" :href="item.url" :target="item.target" v-bind="props.action">
                     <span class="text-surface-700 dark:text-surface-0">{{ item.label }}</span>
                 </a>
-                <p v-else class="text-surface-700 dark:text-surface-0 m-0" :href="item.url">
+                <p v-else class="text-surface-700 dark:text-surface-0 m-0 font-bold" :href="item.url">
                     {{ item.label }}
                 </p>
             </template>
@@ -28,3 +29,8 @@ defineProps({
     breadcrumbs: Array
 })
 </script>
+<style>
+.font-bold {
+    font-weight: bold
+}
+</style>
