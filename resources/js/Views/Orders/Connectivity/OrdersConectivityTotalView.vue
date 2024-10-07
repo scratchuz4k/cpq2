@@ -1,11 +1,10 @@
 <script setup>
+import _ from 'lodash'
 import { router } from '@inertiajs/vue3';
-import { ref } from 'vue';
 const props = defineProps({
     modelValue: Object
 })
 
-const isEdited = ref(false)
 const remove = async (id) => {
     let index = props.modelValue.items.findIndex((item) => item.id == id)
     try {
@@ -16,17 +15,12 @@ const remove = async (id) => {
     }
 }
 
-const addQuantity = (product, quantity) => {
-    product.quantity += quantity
-    isEdited.value = true
+const changeQuantity = (quantity, product) => {
+    product.quantity = quantity
+    saveQuote()
 }
 
-const removeQuantity = (product, quantity) => {
-    product.quantity -= quantity
-    isEdited.value = true
-}
-
-const saveQuote = () => {
+const saveQuote = _.debounce(async () => {
     try {
         props.modelValue.items.forEach(async (article) => {
             let url = article.id ? `/api/order-items/${article.id}` : '/api/order-items';
@@ -42,7 +36,8 @@ const saveQuote = () => {
     } catch (ex) {
         alert(ex.response.data.message)
     }
-}
+}, 500)
+
 </script>
 <template>
     <div class="panel">
@@ -95,13 +90,14 @@ const saveQuote = () => {
                             <td>
                                 <div class="cpq-qty d-flex">
                                     <button type="button" class="btn btn-primary btn-sm mx-2"
-                                        @click="removeQuantity(item, 1)">
+                                        :disabled="item.quantity == 1" @click="changeQuantity(item.quantity - 1, item)">
                                         <font-awesome-icon :icon="['fas', 'minus']" />
                                     </button>
                                     <input class="form-control form-control-sm" type="number" min="0" max="99999"
-                                        maxlength="5" :value="item.quantity" style="width: 100px; ">
+                                        @input="(ev) => changeQuantity(ev.target.value, item)" maxlength="5"
+                                        :value="item.quantity" style="width: 100px;">
                                     <button type="button" class="btn btn-primary btn-sm mx-2"
-                                        @click="addQuantity(item, 1)">
+                                        @click="changeQuantity(item.quantity + 1, item)">
                                         <font-awesome-icon :icon="['fas', 'plus']" />
                                     </button>
                                 </div>
@@ -115,9 +111,6 @@ const saveQuote = () => {
                         </tr>
                     </tbody>
                 </table>
-                <div v-if="isEdited" class="d-flex justify-content-end my-3">
-                    <button class="btn btn-primary" @click="saveQuote()">Save Quote</button>
-                </div>
                 <div class="cpq-total text-right">
                     <div class="row">
                         <div class="col"></div>
