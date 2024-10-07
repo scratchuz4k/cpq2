@@ -10,6 +10,7 @@
         "halaxa/json-machine": "^1.1",
         "inertiajs/inertia-laravel": "^1.0",
         "laravel/framework": "^11.9",
+        "laravel/horizon": "^5.29",
         "laravel/sanctum": "^4.0",
         "laravel/socialite": "^5.16",
         "laravel/tinker": "^2.9",
