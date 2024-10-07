@@ -11,6 +11,7 @@ use App\Http\Controllers\Web\DashboardController;
 use App\Http\Controllers\Web\ProductController;
 use App\Http\Controllers\Web\SupplierController;
 use App\Http\Controllers\Web\RegionController;
+use App\Http\Controllers\Web\UserController;
 use App\Http\Controllers\Web\SpaController;
 
 Route::middleware(['auth', 'verified'])->group(function () {
@@ -30,7 +31,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         'products' => ProductController::class,
         'suppliers' => SupplierController::class,
         'regions' => RegionController::class,
-        'spas' => SpaController::class
+        'spas' => SpaController::class,
+        'users' => UserController::class
     ]);
 
     Route::middleware('auth')->group(function () {

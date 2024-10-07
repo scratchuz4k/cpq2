@@ -9,10 +9,6 @@ class SpasService
 {
     public function store(array $array): Spa
     {
-//        if (isset($array['operation']) && isset($array['data'])) {
-//            $array['data'] = json_encode([$array['operation'] => $array['data']]);
-//        }
-
         return DB::transaction(function () use ($array) {
             $spa = Spa::create([
                 ...$array,

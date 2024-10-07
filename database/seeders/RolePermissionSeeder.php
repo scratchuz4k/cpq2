@@ -45,14 +45,15 @@ class RolePermissionSeeder extends Seeder
                 'region' => 'Region',
                 'brand' => 'Brand',
                 'supplier' => 'Supplier',
-                'spa' => 'Spa'
+                'spa' => 'Spa',
+                'user' => 'User'
             ],
         ];
 
         $roles = [
             'Super Admin' => [],
             'Support Agent' => ['merchant'],
-            'Company Admin' => ['order', 'order_items', 'merchant', 'account',  'price', 'product', 'region', 'tenant', 'brand', 'supplier', 'spa'],
+            'Company Admin' => ['order', 'order_items', 'merchant', 'account',  'price', 'product', 'region', 'tenant', 'brand', 'supplier', 'spa', 'user'],
             'Sales Rep' => ['order', 'order_items', 'account', 'brand', 'supplier']
         ];
 
