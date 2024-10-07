@@ -7,10 +7,11 @@ use JsonMachine\Items;
 use GuzzleHttp\Psr7\StreamWrapper;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Cache;
 use App\Helpers\Api\CloudMarketAddress;
+use Spatie\Multitenancy\Jobs\TenantAware;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Spatie\Multitenancy\Jobs\TenantAware;
 
 class CloudMarketConnectivityProducts implements ShouldQueue, TenantAware
 {
@@ -82,7 +83,7 @@ class CloudMarketConnectivityProducts implements ShouldQueue, TenantAware
                 'data' => $prices,
             ]);
 
-            $this->write($data, $this->path . $this->filename);
+            $this->write($data,);
         }
 
         $finalData = json_encode([
@@ -93,14 +94,20 @@ class CloudMarketConnectivityProducts implements ShouldQueue, TenantAware
             'data' => $prices,
         ]);
 
-        $this->write($finalData, $this->path . $this->filename);
+        $this->write($finalData,);
     }
-    private function write($data, $file)
+    private function write($data,)
     {
-        if (!file_exists($file)) {
-            throw new Exception("File $file not Found!");
+        Cache::put($this->filename, $data, 86400);
+
+        if (!env('APP_DEBUG')) {
+            return;
         }
-        file_put_contents($file, $data);
+
+        if (!file_exists($this->path . $this->filename)) {
+            throw new Exception("File  $this->filename not Found!");
+        }
+        file_put_contents($this->path . $this->filename, $data);
     }
 
     /**

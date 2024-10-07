@@ -3,6 +3,7 @@
 namespace App\Helpers\Api;
 
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 use App\Jobs\CloudMarketConnectivityProducts;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -23,7 +24,7 @@ class CloudMarketApi
         $path = storage_path("/app/products/");
         $filename =  $address->toString() . '.json';
 
-        if (!Storage::disk("products")->exists($filename)) {
+        if (!Cache::has($filename)) {
             if (!is_dir($path)) {
                 mkdir($path, 0777, true);
             }
@@ -34,12 +35,16 @@ class CloudMarketApi
                 'total' => 0,
                 'data' => [],
             ]);
-            file_put_contents($path . $filename, $starterData);
+
+            Cache::put($filename, $starterData, 86400);
+            if (env('APP_DEBUG')) {
+                file_put_contents($path . $filename, $starterData);
+            }
 
             CloudMarketConnectivityProducts::dispatch($path, $filename, $connectivityType, $address);
         }
 
-        $fileContent = json_decode(file_get_contents($path . $filename), true);
+        $fileContent = json_decode(Cache::get($filename), true);
 
         $filtersData = $this->processFilters($fileContent['data']);
         $items = $this->filterData($fileContent['data'], $filters);
