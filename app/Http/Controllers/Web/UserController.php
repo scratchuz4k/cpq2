@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\BaseController;
+use App\Http\Requests\UserImportRequest;
 use App\Http\Resources\UserResource;
 use App\Models\Role;
 use App\Models\User;
@@ -94,4 +95,18 @@ class UserController extends BaseController
     {
         //
     }
+
+    /**
+     * Import users from CSV file
+     */
+    public function importUsers(UserImportRequest $request)
+    {
+        try {
+            $messages = $this->usersService->import($request->all());
+        } catch (\Exception $e) {
+            throw new \Exception($e);
+        }
+
+        return redirect()->route('users.index', ['success' => $messages]);
+        }
 }
