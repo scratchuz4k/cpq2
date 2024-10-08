@@ -428,7 +428,8 @@ const AuraReformed = definePreset(Aura, {
                     padding: " .3rem"
                 }
             }
-        }
+        },
+        paginator: { nav: { button: { selected: { background: "{surface.100}", color: "{text.color}" } } } }
     }
 });
 
