@@ -11,8 +11,6 @@ const solutionsViews = {
     4: 'OrdersMobileTotalView',
     5: 'OrdersHardwareTotalView',
 }
-
-
 </script>
 
 <template>

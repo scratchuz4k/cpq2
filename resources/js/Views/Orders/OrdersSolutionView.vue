@@ -78,7 +78,7 @@ watch(addressPostCode, () => {
 
         <div class="row">
             <div class="col-8">
-                <p class="font-bold mb-3">Now, select an solution type</p>
+                <h5 class="font-bold mb-3">Now, select an solution type</h5>
                 <div class="mb-3">
                     <label class="form-label">Solution Type <span class="text-primary">*</span></label>
                     <select class="form-select" @change="solutionChange(modelValue)" v-model="modelValue.solutionType">

@@ -47,7 +47,8 @@ const items = ref([
     <Head title="Create a Quote" />
     <AuthenticatedLayout>
 
-        <Header title="Start a Quote" :breadcrumbs="items"></Header>
+        <Header title="Create a Quote" :breadcrumbs="items"></Header>
+        <h5 class="font-bold mb-3">Start a Quote</h5>
 
         <form @submit.prevent="submit">
             <div class="row mb-3">
@@ -55,7 +56,7 @@ const items = ref([
                     <div class="panel mb-3 ">
                         <div class="row">
                             <div class="col-8">
-                                <p class="font-bold mb-3">Select an account</p>
+                                <h5 class="font-bold mb-3">Select an account</h5>
                                 <div class="mb-3">
                                     <label for="account_id" class="form-label">Account <span
                                             class="text-primary">*</span></label>
