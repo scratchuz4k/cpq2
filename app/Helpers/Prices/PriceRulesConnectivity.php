@@ -7,7 +7,6 @@ use App\Models\User;
 use Money\Currencies\ISOCurrencies;
 use Illuminate\Support\Facades\Auth;
 use Money\Formatter\DecimalMoneyFormatter;
-use App\Models\Spa;
 use App\Models\Supplier;
 use Money\Parser\IntlLocalizedDecimalParser;
 
