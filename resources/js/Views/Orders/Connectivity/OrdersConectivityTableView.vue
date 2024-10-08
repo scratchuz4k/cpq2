@@ -8,6 +8,7 @@ const props = defineProps({
     modelValue: Object
 })
 
+const isLoading = ref(true)
 const showLowestCost = ref(true)
 const showQuoted = ref(false)
 const showFilters = ref(true)
@@ -73,6 +74,7 @@ const subProviders = {
 };
 
 const getArticles = async () => {
+    isLoading.value = true
     let temp = []
     Object.keys(filters).forEach((key) => {
         temp.push({ column: key, operator: filters[key].operator, value: filters[key].value })
@@ -104,6 +106,7 @@ const getArticles = async () => {
     let res = await axios.post('/api/external/get-articles-from-cloud-market', query)
     resolveGetProducts(!!res.data.finished_at)
     articles.value = res.data.data
+    isLoading.value = !articles.value.length
     meta.first = (meta.page - 1) * meta.limit
     meta.total = res.data.total
     meta.isUpdating = !!res.data.finished_at
@@ -148,8 +151,8 @@ const resetFilters = () => {
         filters[key].value = null
     })
 
-    filters['bearer'].value = [0,10000000]
-    filters['speed'].value = [0,10000000]
+    filters['bearer'].value = [0, 10000000]
+    filters['speed'].value = [0, 10000000]
     showLowestCost.value = true
 }
 
@@ -302,111 +305,119 @@ getArticles()
                         </div>
                     </div>
                 </div>
-                <Loader v-if="articles.value"></Loader>
-                <table v-else id="table_products" class="table  table-bordered table-hover">
-                    <thead>
-                        <tr>
-                            <th></th>
-                            <th :style="{
-                                whiteSpace: 'nowrap',
-                                textDecoration: sort.field == 'productName' ? 'underline' : 'none',
-                                width: '30%'
-                            }" @click="orderBy('productName')">
-                                Product
-                                <font-awesome-icon :icon="['fas', 'sort']" />
-                            </th>
-                            <th :style="{ whiteSpace: 'nowrap', textDecoration: sort.field == 'providerName' ? 'underline' : 'none' }"
-                                @click="orderBy('providerName')">
-                                Provider
-                                <font-awesome-icon :icon="['fas', 'sort']" />
-                            </th>
-                            <th :style="{ whiteSpace: 'nowrap', textDecoration: sort.field == 'connectivitySupplierName' ? 'underline' : 'none' }"
-                                @click="orderBy('connectivitySupplierName')">
-                                Subprovider
-                                <font-awesome-icon :icon="['fas', 'sort']"></font-awesome-icon>
-                            </th>
-                            <th :style="{
-                                whiteSpace: 'nowrap',
-                                textDecoration: sort.field == 'bearer' ? 'underline' : 'none'
-                            }" @click="orderBy('bearer')">
-                                Bearer
-                                <font-awesome-icon :icon="['fas', 'sort']" />
-                            </th>
-                            <th :style="{
-                                whiteSpace: 'nowrap',
-                                textDecoration: sort.field == 'speed' ? 'underline' : 'none'
-                            }" @click="orderBy('speed')">
-                                Speed
-                                <font-awesome-icon :icon="['fas', 'sort']" />
-                            </th>
-                            <th :style="{
-                                whiteSpace: 'nowrap',
-                                textDecoration: sort.field == 'priceInstall' ? 'underline' : 'none'
-                            }" @click="orderBy('priceInstall')">
-                                Set Up
-                                <font-awesome-icon :icon="['fas', 'sort']" />
-                            </th>
-                            <th :style="{
-                                whiteSpace: 'nowrap',
-                                textDecoration: sort.field == 'priceMonthly' ? 'underline' : 'none'
-                            }" @click="orderBy('priceMonthly')">
-                                Monthly
-                                <font-awesome-icon :icon="['fas', 'sort']" />
-                            </th>
-                            <th :style="{
-                                whiteSpace: 'nowrap',
-                                textDecoration: sort.field == 'priceECC' ? 'underline' : 'none'
-                            }" @click="orderBy('priceECC')">
-                                ECC
-                                <font-awesome-icon :icon="['fas', 'sort']" />
-                            </th>
-                            <th :style="{
-                                whiteSpace: 'nowrap',
-                                textDecoration: sort.field == 'contractTermMonths' ? 'underline' : 'none'
-                            }" @click="orderBy('contractTermMonths')">
-                                Contract Term
-                                <font-awesome-icon :icon="['fas', 'sort']" />
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-for="article in articles" style="text-align: center;">
-                            <td>
-                                <input type="checkbox" class="form-check-input" @input="checkProduct(article)"
-                                    :checked="modelValue.items.find((item) => item.data.productCode == article.productCode || item.data.quoteId == article.quoteId)">
-                            </td>
-                            <td style="text-align: left;">
-                                {{ article.productName }}
-                                <span v-if="article.additionalInfo['Primary Router Model']" title="Primary Router Model"
-                                    class="badge border border-secondary text-secondary opacity-75 ms-1">
-                                    <font-awesome-icon :icon="['fas', 'plug']"></font-awesome-icon>
-                                    {{ article.additionalInfo['Primary Router Model'] }}
-                                </span>
-                            </td>
-                            <td><img class="img-provider" @error="setAltImg"
-                                    :src="`/images/providers/${article.providerKey}.png`" :alt="article.providerName"
-                                    :title="article.providerName" /> </td>
-                            <td>
-                                <img class="img-subprovider" @error="setAltImg"
-                                    :src="`/images/providers/${subProviders[article.connectivitySupplierName?.toLowerCase()]}.png`"
-                                    :alt="article.connectivitySupplierName" :title="article.connectivitySupplierName" />
-                            </td>
-                            <td>{{ bytesFormatter(article.bearer) }} </td>
-                            <td>{{ bytesFormatter(article.speed) }} </td>
-                            <td>{{ GBP.format(article.priceInstall) }} </td>
-                            <td>{{ GBP.format(article.priceMonthly) }} </td>
-                            <td>
-                                <template v-if="article.priceECC">
-                                    {{ GBP.format(article.priceECC) }}
-                                </template>
-                                <span v-else title="Subject to Survey" class="h6">
-                                    <font-awesome-icon :icon="['far', 'circle-question']"></font-awesome-icon>
-                                </span>
-                            </td>
-                            <td>{{ article.contractTermMonths }} Months </td>
-                        </tr>
-                    </tbody>
-                </table>
+                <div class="table-wrapper">
+                    <div v-if="isLoading" class="table-blocker">
+                        <div class="spinner-border" style="width: 5rem; height: 5rem;" role="status">
+                            <span class="sr-only">Loading...</span>
+                        </div>
+                    </div>
+                    <table id="table_products" class="table  table-bordered table-hover">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th :style="{
+                                    whiteSpace: 'nowrap',
+                                    textDecoration: sort.field == 'productName' ? 'underline' : 'none',
+                                    width: '30%'
+                                }" @click="orderBy('productName')">
+                                    Product
+                                    <font-awesome-icon :icon="['fas', 'sort']" />
+                                </th>
+                                <th :style="{ whiteSpace: 'nowrap', textDecoration: sort.field == 'providerName' ? 'underline' : 'none' }"
+                                    @click="orderBy('providerName')">
+                                    Provider
+                                    <font-awesome-icon :icon="['fas', 'sort']" />
+                                </th>
+                                <th :style="{ whiteSpace: 'nowrap', textDecoration: sort.field == 'connectivitySupplierName' ? 'underline' : 'none' }"
+                                    @click="orderBy('connectivitySupplierName')">
+                                    Subprovider
+                                    <font-awesome-icon :icon="['fas', 'sort']"></font-awesome-icon>
+                                </th>
+                                <th :style="{
+                                    whiteSpace: 'nowrap',
+                                    textDecoration: sort.field == 'bearer' ? 'underline' : 'none'
+                                }" @click="orderBy('bearer')">
+                                    Bearer
+                                    <font-awesome-icon :icon="['fas', 'sort']" />
+                                </th>
+                                <th :style="{
+                                    whiteSpace: 'nowrap',
+                                    textDecoration: sort.field == 'speed' ? 'underline' : 'none'
+                                }" @click="orderBy('speed')">
+                                    Speed
+                                    <font-awesome-icon :icon="['fas', 'sort']" />
+                                </th>
+                                <th :style="{
+                                    whiteSpace: 'nowrap',
+                                    textDecoration: sort.field == 'priceInstall' ? 'underline' : 'none'
+                                }" @click="orderBy('priceInstall')">
+                                    Set Up
+                                    <font-awesome-icon :icon="['fas', 'sort']" />
+                                </th>
+                                <th :style="{
+                                    whiteSpace: 'nowrap',
+                                    textDecoration: sort.field == 'priceMonthly' ? 'underline' : 'none'
+                                }" @click="orderBy('priceMonthly')">
+                                    Monthly
+                                    <font-awesome-icon :icon="['fas', 'sort']" />
+                                </th>
+                                <th :style="{
+                                    whiteSpace: 'nowrap',
+                                    textDecoration: sort.field == 'priceECC' ? 'underline' : 'none'
+                                }" @click="orderBy('priceECC')">
+                                    ECC
+                                    <font-awesome-icon :icon="['fas', 'sort']" />
+                                </th>
+                                <th :style="{
+                                    whiteSpace: 'nowrap',
+                                    textDecoration: sort.field == 'contractTermMonths' ? 'underline' : 'none'
+                                }" @click="orderBy('contractTermMonths')">
+                                    Contract Term
+                                    <font-awesome-icon :icon="['fas', 'sort']" />
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="article in articles" style="text-align: center;">
+                                <td>
+                                    <input type="checkbox" class="form-check-input" @input="checkProduct(article)"
+                                        :checked="modelValue.items.find((item) => item.data.productCode == article.productCode || item.data.quoteId == article.quoteId)">
+                                </td>
+                                <td style="text-align: left;">
+                                    {{ article.productName }}
+                                    <span v-if="article.additionalInfo['Primary Router Model']"
+                                        title="Primary Router Model"
+                                        class="badge border border-secondary text-secondary opacity-75 ms-1">
+                                        <font-awesome-icon :icon="['fas', 'plug']"></font-awesome-icon>
+                                        {{ article.additionalInfo['Primary Router Model'] }}
+                                    </span>
+                                </td>
+                                <td><img class="img-provider" @error="setAltImg"
+                                        :src="`/images/providers/${article.providerKey}.png`"
+                                        :alt="article.providerName" :title="article.providerName" /> </td>
+                                <td>
+                                    <img class="img-subprovider" @error="setAltImg"
+                                        :src="`/images/providers/${subProviders[article.connectivitySupplierName?.toLowerCase()]}.png`"
+                                        :alt="article.connectivitySupplierName"
+                                        :title="article.connectivitySupplierName" />
+                                </td>
+                                <td>{{ bytesFormatter(article.bearer) }} </td>
+                                <td>{{ bytesFormatter(article.speed) }} </td>
+                                <td>{{ GBP.format(article.priceInstall) }} </td>
+                                <td>{{ GBP.format(article.priceMonthly) }} </td>
+                                <td>
+                                    <template v-if="article.priceECC">
+                                        {{ GBP.format(article.priceECC) }}
+                                    </template>
+                                    <span v-else title="Subject to Survey" class="h6">
+                                        <font-awesome-icon :icon="['far', 'circle-question']"></font-awesome-icon>
+                                    </span>
+                                </td>
+                                <td>{{ article.contractTermMonths }} Months </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
                 <Paginator v-model:first="meta.first" :rows="meta.limit" :totalRecords="meta.total"
                     :rowsPerPageOptions="[20, 30, 50]" @page="handlePaginator">
                 </Paginator>
@@ -418,5 +429,23 @@ getArticles()
 <style scoped>
 tr.active td {
     background-color: var(--light-teal);
+}
+
+.table-wrapper {
+    position: relative;
+}
+
+.table-blocker {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background-color: lightblue;
+    z-index: 10;
+    opacity: .5;
 }
 </style>
