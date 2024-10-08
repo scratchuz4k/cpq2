@@ -22,6 +22,14 @@ class Spa extends Model
         "data",
     ];
 
+
+    protected function casts(): array
+    {
+        return [
+            'data' => 'object',
+        ];
+    }
+
     protected static function booted(): void
     {
         static::addGlobalScope(new TenantScope);
