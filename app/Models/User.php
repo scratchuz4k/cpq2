@@ -3,6 +3,7 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Models\Spa;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Traits\HasRoles;
@@ -60,6 +61,13 @@ class User extends Authenticatable
     /**
      * Get the children users of this user.
      */
+    public function spas()
+    {
+        return $this->hasMany( Spa::class, 'user_id', 'id');
+    }
+    /**
+     * Get the children users of this user.
+     */
     public function children()
     {
         return $this->hasMany(User::class, 'parent_id', 'id');
@@ -70,45 +78,45 @@ class User extends Authenticatable
         return $this->belongsToMany(Tenant::class);
     }
 
-    // public static function ancestors()
-    // {
-    //     return static::with([implode('.', array_fill(0, 10, 'parent'))]);
-    // }
+    public static function ancestors($id)
+    {
+        return static::with([implode('.', array_fill(0, 10, 'parent'))])->where('id', $id)->get();
+    }
 
     public static function descendants($id)
     {
         return static::with([implode('.', array_fill(0, 10, 'children'))])->where('id', $id)->get();
     }
 
-    public static function ancestors(int $user_id): array
-    {
-        $ancestor_ids = [];
+    // public static function ancestors(int $user_id): array
+    // {
+    //     $ancestor_ids = [];
 
-        $user_ids = TenantUser::select('user_id')->get()->pluck('user_id')->toArray();
+    //     $user_ids = TenantUser::select('user_id')->get()->pluck('user_id')->toArray();
 
-        if ($user_ids) {
-            $sql = "with recursive cte as (
-                select id, parent_id, 1 lvl from users
-                where id in (" . implode(',', $user_ids) . ")
-                union all
-                select c.id, t.parent_id, lvl + 1
-                from cte c
-                inner join users t on t.id = c.parent_id
-            )
-            select id, group_concat(parent_id order by lvl) parents
-            from cte
-            where id = " . $user_id . "
-            group by id";
-            $ancestor_ids = array_filter(explode(',', DB::select($sql)[0]?->parents ?? ''));
-            if (!empty($ancestor_ids)) {
-                $ancestor_ids = array_map(function ($value) {
-                    return (int) $value;
-                }, $ancestor_ids);
-            }
-        }
+    //     if ($user_ids) {
+    //         $sql = "with recursive cte as (
+    //             select id, parent_id, 1 lvl from users
+    //             where id in (" . implode(',', $user_ids) . ")
+    //             union all
+    //             select c.id, t.parent_id, lvl + 1
+    //             from cte c
+    //             inner join users t on t.id = c.parent_id
+    //         )
+    //         select id, group_concat(parent_id order by lvl) parents
+    //         from cte
+    //         where id = " . $user_id . "
+    //         group by id";
+    //         $ancestor_ids = array_filter(explode(',', DB::select($sql)[0]?->parents ?? ''));
+    //         if (!empty($ancestor_ids)) {
+    //             $ancestor_ids = array_map(function ($value) {
+    //                 return (int) $value;
+    //             }, $ancestor_ids);
+    //         }
+    //     }
 
-        return $ancestor_ids ?? [];
-    }
+    //     return $ancestor_ids ?? [];
+    // }
 
 
     // public static function descendants(int $user_id): array

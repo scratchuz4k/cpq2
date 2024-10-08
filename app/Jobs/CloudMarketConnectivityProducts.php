@@ -4,6 +4,7 @@ namespace App\Jobs;
 
 use Exception;
 use JsonMachine\Items;
+use App\Helpers\Prices\PriceRules;
 use GuzzleHttp\Psr7\StreamWrapper;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
@@ -73,7 +74,8 @@ class CloudMarketConnectivityProducts implements ShouldQueue, TenantAware
             if (empty($value->providerKey)) {
                 continue;
             }
-            $prices[] =  (array)$value;
+
+            $prices[] = (array)$value;
 
             $data = json_encode([
                 'wating_task' => false,

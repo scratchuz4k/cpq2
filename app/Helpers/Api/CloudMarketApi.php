@@ -2,7 +2,9 @@
 
 namespace App\Helpers\Api;
 
+use App\Models\Product;
 use Illuminate\Support\Str;
+use App\Helpers\Prices\PriceRulesConnectivity;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 use App\Jobs\CloudMarketConnectivityProducts;
@@ -45,8 +47,7 @@ class CloudMarketApi
         }
 
         $fileContent = json_decode(Cache::get($filename), true);
-
-        $filtersData = $this->processFilters($fileContent['data']);
+        $filtersData = $this->processPricesndFilters($fileContent['data']);
         $items = $this->filterData($fileContent['data'], $filters);
 
         $order = request()->input('order', 'asc');
@@ -68,7 +69,7 @@ class CloudMarketApi
         ];
     }
 
-    private function processFilters($data)
+    private function processPricesndFilters(&$data)
     {
         $filters = [
             "providerName" => [],
@@ -78,17 +79,19 @@ class CloudMarketApi
             "speed" => []
         ];
 
-        foreach ($data as $value) {
-            foreach ($filters as $key => $items) {
-                if (!array_key_exists($key, $value) || !$value[$key]) {
+        $priceRules = new PriceRulesConnectivity();
+        foreach ($data as $key =>  $value) {
+            foreach ($filters as $filterKey => $items) {
+                if (!array_key_exists($filterKey, $value) || !$value[$filterKey]) {
                     continue;
                 }
 
-                if (in_array($value[$key], $items)) {
+                if (in_array($value[$filterKey], $items)) {
                     continue;
                 }
-                array_push($filters[$key], $value[$key]);
+                array_push($filters[$filterKey], $value[$filterKey]);
             }
+            $data[$key] = $priceRules->calculate($value);
         }
         return $filters;
     }
