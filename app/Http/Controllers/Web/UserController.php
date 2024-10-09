@@ -102,13 +102,13 @@ class UserController extends BaseController
     public function importUsers(UserImportRequest $request)
     {
         try {
-            $messages = $this->usersService->import($request->all());
+            $results = $this->usersService->import($request->all());
         } catch (\Exception $e) {
             throw new \Exception($e);
         }
 
-        return Inertia::render('Users/Index', [
-            'success' => $messages
+        return Inertia::render('Users/Import', [
+            'results' => $results
         ]);
     }
 }

@@ -3,24 +3,28 @@
 namespace App\Imports;
 
 use App\Models\User;
-use Illuminate\Database\QueryException;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Hash;
-use Maatwebsite\Excel\Concerns\SkipsOnFailure;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\ValidationException;
+use Maatwebsite\Excel\Concerns\SkipsErrors;
 use Maatwebsite\Excel\Concerns\WithBatchInserts;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
-use Maatwebsite\Excel\Validators\Failure;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Maatwebsite\Excel\Concerns\ToCollection;
 
-class UsersImport implements ToCollection, WithHeadingRow, WithBatchInserts, SkipsOnFailure
+class UsersImport implements ToCollection, WithHeadingRow, WithBatchInserts
 {
-    private $rowsProcessed = 0;
-    private $rowsSkipped = 0;
-    private $rowsSuccess = 0;
-    private $rowsFailures = 0;
-    private $failures = [];
+
+    use SkipsErrors;
+
+    public $results = [
+        'processed' => 0,
+        'success' => 0,
+        'skipped' => 0,
+        'errors' => [],
+    ];
     private $usersWithManagers = [];
 
     /**
@@ -48,7 +52,7 @@ class UsersImport implements ToCollection, WithHeadingRow, WithBatchInserts, Ski
             $this->insertUser($currentUser, $manager->id);
         } else {
             $managerKey = array_search($currentUser['managername'], array_column($this->usersWithManagers, 'name'), false);
-            //
+
             if ($managerKey !== false) {
                 $this->processUsersWithManagers($managerKey);
 
@@ -57,7 +61,6 @@ class UsersImport implements ToCollection, WithHeadingRow, WithBatchInserts, Ski
                     $this->insertUser($currentUser, $newManager->id);
                 }
             } else {
-                $this->rowsSuccess = 0;
                 throw new \Exception('Manager "' . $currentUser['managername'] . '" not found, associated to "' . $currentUser['name'] . '" (' . $currentUser['email'] . ')');
             }
         }
@@ -77,6 +80,16 @@ class UsersImport implements ToCollection, WithHeadingRow, WithBatchInserts, Ski
     private function insertUser(array $user, ?int $managerId = null)
     {
         try {
+            $validator = Validator::make($user, [
+                'name' => 'required|string|max:255',
+                'email' => 'required|email|unique:users,email',
+            ]);
+
+            if ($validator->fails()) {
+                $this->results['skipped']++;
+                return null;
+            }
+
             $newUser = User::create([
                 'parent_id' => $managerId,
                 'name'     => $user['name'] ?? '',
@@ -97,11 +110,15 @@ class UsersImport implements ToCollection, WithHeadingRow, WithBatchInserts, Ski
 
                 $newUser->assignRole(User::$default_role);
 
-                $this->rowsSuccess++;
+                $this->results['success']++;
             }
-        } catch (QueryException $e) {
-            $this->rowsSkipped++;
+        } catch (ValidationException $e) {
+            $this->results['errors'][] = ['row' => $user, 'error' => $e->errors()];
+        } catch (\Exception $e) {
+            $this->results['errors'][] = ['row' => $user, 'error' => $e->getMessage()];
         }
+
+        return null;
     }
 
     /**
@@ -112,8 +129,7 @@ class UsersImport implements ToCollection, WithHeadingRow, WithBatchInserts, Ski
     {
         foreach ($rows as $row) {
             $row = $row->toArray();
-            $this->rowsProcessed++;
-
+            $this->results['processed']++;
             if (empty($row['managername'])) {
                 $this->insertUser($row);
             } else {
@@ -128,21 +144,6 @@ class UsersImport implements ToCollection, WithHeadingRow, WithBatchInserts, Ski
         return 500;
     }
 
-    public function onFailure(Failure ...$failures)
-    {
-        $this->rowsFailures += count($failures);
-        $this->failures = array_merge($this->failures, $failures);
-    }
-
-    public function getRowCounts()
-    {
-        return [
-            'Lines Processed' => $this->rowsProcessed,
-            'Lines Success' => $this->rowsSuccess,
-            'Lines Skipped' => $this->rowsSkipped,  // Added skipped rows count to output
-            'Failures' => $this->failures ?? [],
-        ];
-    }
 
     /**
      * @return int
@@ -158,5 +159,13 @@ class UsersImport implements ToCollection, WithHeadingRow, WithBatchInserts, Ski
     public function headingRow(): int
     {
         return 1;
+    }
+
+    public function rules(): array
+    {
+        return [
+            '*.email' => 'required|email|unique:users,email',
+            '*.name' => 'required|string|max:255',
+        ];
     }
 }

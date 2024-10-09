@@ -58,14 +58,9 @@ class UsersService
     {
         return DB::transaction(function () use ($array) {
             $import = new UsersImport();
-            $errors = [];
-            try {
-                Excel::import($import, $array['file']);
-            } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
-                $errors[] = $e->failures();
-            }
+            Excel::import($import, $array['file']);
 
-            return $import->getRowCounts();
+            return $import->results;
         });
     }
 }

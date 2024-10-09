@@ -4,7 +4,10 @@ import {Head, Link, router} from "@inertiajs/vue3";
 import {reactive, ref} from 'vue';
 
 const props = defineProps({
-  success: Array
+    results: {
+        type: Object,
+        default: null
+    }
 })
 
 const items = ref([
@@ -12,25 +15,25 @@ const items = ref([
 ]);
 
 const showForm = ref(false)
-
+const isLoading = ref(false);
 const onFileChange = (event) => {
     formFile.file = event.target.files[0];
 };
 
 const formFile = reactive({
-    file: null
+    file: null,
 });
 
 const submitFileForm = () => {
+    isLoading.value = true
     router.post(`/users/import`,
         {
             file: formFile.file
         },
         {
-            onSuccess: (page) => {
-                for (const [key, value] of Object.entries(props.success)) {
-                    notyf.success(`${key}: ${value}`)
-                }
+            onSuccess: () => {
+                notyf.success(`File imported successfully`)
+                isLoading.value = false
             },
             onError: (errors) => {
                 let string = ''
@@ -38,6 +41,7 @@ const submitFileForm = () => {
                     string += errors[key] + '<br>'
                 })
                 notyf.error(string)
+                isLoading.value = false
             },
         }
     )
@@ -50,7 +54,7 @@ const submitFileForm = () => {
         <div class="panel">
             <Header title="Users" :breadcrumbs="items">
                 <template #buttons>
-                    <Link href="/users/create" class="btn p-0 me-2">
+                    <Link :href="route('users.create')" class="btn p-0 me-2">
                         <font-awesome-icon :icon="['fas', 'plus']"></font-awesome-icon> New User
                     </Link>
                     <div class="btn p-0 me-2" @click.prevent="showForm = !showForm">
@@ -63,7 +67,13 @@ const submitFileForm = () => {
                     <h4>Import Users from CSV</h4>
                     <p>Your CSV must contain the following columns: name*, email*, password, sso, managername. * must not be blank</p>
                     <input type="file" accept=".csv" required @input="onFileChange" />
-                    <button type="submit" class="btn btn-success">Upload</button>
+                    <button type="submit" class="btn btn-success ms-2"  :disabled="isLoading">
+                        <span v-if="isLoading">
+                            <font-awesome-icon :icon="['fa', 'spinner']" class="fa-spin"></font-awesome-icon>
+                            Uploading...
+                        </span>
+                        <span v-else>Upload</span>
+                    </button>
                 </form>
             </div>
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
