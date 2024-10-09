@@ -22,7 +22,6 @@ const form = useForm({
 const submit = () => {
     form.post(route('login.sso.post'));
 };
-console.log(props.canGoogleLogin);
 </script>
 
 <template>
@@ -43,9 +42,9 @@ console.log(props.canGoogleLogin);
                             <div class="row overflow-hidden">
                                 <div class="mb-3">
                                     <span><InputLabel for="email" value="Email" /></span>
-                                    <TextInput id="email" type="email" :class="{'error': 'is-invalid'}" v-model="form.email" required autofocus
+                                    <TextInput id="email" type="email" :class="{'is-invalid': form.errors.email}" v-model="form.email" required autofocus
                                         autocomplete="username" />
-                                    <InputError class="mt-2" :message="form.errors.email" />
+                                    <InputError class="invalid-feedback" :message="form.errors.email" />
                                 </div>
                                 <div class="d-grid">
                                     <PrimaryButton id="btn-login" :class="{ 'opacity-25': form.processing }"

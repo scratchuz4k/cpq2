@@ -50,16 +50,16 @@ const submit = () => {
                             <div class="row overflow-hidden">
                                 <div class="mb-3">
                                     <span><InputLabel for="email" value="Email" /></span>
-                                    <TextInput id="email" type="email" :class="{'error': 'is-invalid'}" v-model="form.email" required autofocus
+                                    <TextInput id="email" type="email" :class="{'is-invalid': form.errors.email}" v-model="form.email" required autofocus
                                         autocomplete="username" />
-                                    <InputError class="mt-2" :message="form.errors.email" />
+                                    <InputError class="invalid-feedback" :message="form.errors.email" />
                                 </div>
                                 <div>
                                     <span><InputLabel for="password" value="Password" /></span>
                                     <TextInput id="password" type="password" v-model="form.password" required
                                         autocomplete="current-password" />
 
-                                    <InputError class="mt-2" :message="form.errors.password" />
+                                    <InputError class="invalid-feedback" :message="form.errors.password" />
                                 </div>
 
                                 <div class="mb-3 d-flex align-items-center justify-content-between">

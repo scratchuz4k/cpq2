@@ -24,20 +24,7 @@ class AuthenticatedSessionController extends Controller
             'status' => session('status'),
         ]);
     }
-    /*
-    protected function authenticated(Request $request, $user)
-    {
-        if ($user->sso) {
-            Auth::logout();
-            return redirect('/login')->withErrors(['email' => __('Your account is registered for SSO sign-in only, please select the correct sign-in option below.')]);
-        }
 
-        if ($firstTenant = $user->tenants()?->first()) {
-            Log::debug("First tenant will be set in session: {$firstTenant->id}");
-            session(['tenant_id' => $firstTenant->id]);
-        }
-    }
-    */
     /**
      * Handle an incoming authentication request.
      */
