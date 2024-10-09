@@ -61,8 +61,8 @@ class UsersService
             $errors = [];
             try {
                 Excel::import($import, $array['file']);
-            } catch (\Exception $e) {
-                $errors[] = $e->getMessage();
+            } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
+                $errors[] = $e->failures();
             }
 
             return $import->getRowCounts();

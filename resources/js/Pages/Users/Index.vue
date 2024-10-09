@@ -3,6 +3,10 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import {Head, Link, router} from "@inertiajs/vue3";
 import {reactive, ref} from 'vue';
 
+const props = defineProps({
+  success: Array
+})
+
 const items = ref([
     { label: 'My Account', url: '/myaccount' }
 ]);
@@ -24,11 +28,11 @@ const submitFileForm = () => {
         },
         {
             onSuccess: (page) => {
-                debugger
-                notyf.success("Updated with Success")
+                for (const [key, value] of Object.entries(props.success)) {
+                    notyf.success(`${key}: ${value}`)
+                }
             },
             onError: (errors) => {
-                debugger
                 let string = ''
                 Object.keys(errors).forEach((key) => {
                     string += errors[key] + '<br>'

@@ -107,6 +107,8 @@ class UserController extends BaseController
             throw new \Exception($e);
         }
 
-        return redirect()->route('users.index', ['success' => $messages]);
-        }
+        return Inertia::render('Users/Index', [
+            'success' => $messages
+        ]);
+    }
 }

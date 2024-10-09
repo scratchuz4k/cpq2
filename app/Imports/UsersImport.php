@@ -3,67 +3,129 @@
 namespace App\Imports;
 
 use App\Models\User;
+use Illuminate\Database\QueryException;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
-use Maatwebsite\Excel\Concerns\ToModel;
+use Maatwebsite\Excel\Concerns\SkipsOnFailure;
+use Maatwebsite\Excel\Concerns\WithBatchInserts;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Validators\Failure;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
+use Maatwebsite\Excel\Concerns\ToCollection;
 
-class UsersImport implements ToModel, WithHeadingRow
+class UsersImport implements ToCollection, WithHeadingRow, WithBatchInserts, SkipsOnFailure
 {
-
-    private $rowsCreated = 0;
-    private $rowsUpdated = 0;
+    private $rowsProcessed = 0;
+    private $rowsSkipped = 0;
+    private $rowsSuccess = 0;
     private $rowsFailures = 0;
     private $failures = [];
+    private $usersWithManagers = [];
 
     /**
-    * @param array $row
-    *
-    * @return \Illuminate\Database\Eloquent\Model|null
-    */
-    public function model(array $row)
+     * Recursively processes and inserts users with missing managers.
+     *
+     * @param array $usersWithManagers
+     * @return void
+     */
+    private function processUsersWithManagers(?int $managerIndex = null)
     {
-        $user = User::where('email', $row['email'])->first();
-        try {
-            if ($user) {
-                $user->update([
-                    'name'      => $row['name'],
-                    'password'  =>  !empty($row['password']) ? Hash::make($row['password']) : '',
-                    'sso'       => isset($user['sso']) && (int)$user['sso'] === 1 ? 1 : 0,
-                    'parent_id' => User::where('name', $row['managername'])->first()?->id
-                ]);
-                $this->rowsUpdated++;
+
+        if (empty($this->usersWithManagers)) {
+            return;
+        }
+        if ($managerIndex !== null) {
+            $currentUser = $this->usersWithManagers[$managerIndex];
+            array_splice($this->usersWithManagers, $managerIndex, 1);
+        } else {
+            $currentUser = array_shift($this->usersWithManagers);
+        }
+
+        $manager = User::where('name', $currentUser['managername'])->first();
+
+        if ($manager) {
+            $this->insertUser($currentUser, $manager->id);
+        } else {
+            $managerKey = array_search($currentUser['managername'], array_column($this->usersWithManagers, 'name'), false);
+            //
+            if ($managerKey !== false) {
+                $this->processUsersWithManagers($managerKey);
+
+                $newManager = User::where('name', $currentUser['managername'])->first();
+                if (!empty($newManager)) {
+                    $this->insertUser($currentUser, $newManager->id);
+                }
             } else {
-                $user = User::create([
-                    'name'      => $row['name'],
-                    'email'     => $row['email'],
-                    'password'  => !empty($row['password']) ? Hash::make($row['password']) : '',
-                    'sso'       => isset($row['sso']) && (int)$row['sso'] === 1 ? 1 : 0,
-                    'parent_id' => User::where('name', $row['managername'])->first()?->id
-                ]);
-                $this->rowsCreated++;
+                $this->rowsSuccess = 0;
+                throw new \Exception('Manager "' . $currentUser['managername'] . '" not found, associated to "' . $currentUser['name'] . '" (' . $currentUser['email'] . ')');
             }
+        }
 
-
-            if (!empty($user->id)) {
-                $tenant = app('currentTenant')->id;
-                $user->tenants()->sync($tenant);
-
-                $user->assignRole(User::$default_role);
-            }
-        } catch (\Exception $e) {
-            throw new \Exception($e);
+        if ($managerIndex === null) {
+            $this->processUsersWithManagers();
         }
     }
 
-    public function getRowCounts()
+    /**
+     * Insert a new user with a specific manager.
+     *
+     * @param array $user
+     * @param int|null $managerId
+     * @return void
+     */
+    private function insertUser(array $user, ?int $managerId = null)
     {
-        return [
-            'Lines updated' => $this->rowsUpdated,
-            'Lines created' => $this->rowsCreated,
-            'Failures' => $this->failures ?? [],
-        ];
+        try {
+            $newUser = User::create([
+                'parent_id' => $managerId,
+                'name'     => $user['name'] ?? '',
+                'email'    => $user['email'] ?? '',
+                'password' => !empty($user['password']) ? Hash::make($user['password']) : Hash::make(Str::random(12)),
+                'sso'      => isset($user['sso']) && (int)$user['sso'] === 1 ? 1 : 0,
+            ]);
+
+            $newUser->save();
+
+            if (!empty($newUser->id)) {
+
+                $currentTenantId = app('currentTenant')->id;
+                DB::table('tenant_user')->insert([
+                    'tenant_id' => $currentTenantId,
+                    'user_id' => $newUser->id,
+                ]);
+
+                $newUser->assignRole(User::$default_role);
+
+                $this->rowsSuccess++;
+            }
+        } catch (QueryException $e) {
+            $this->rowsSkipped++;
+        }
+    }
+
+    /**
+     * @param Collection $rows
+     * @return void
+     */
+    public function collection(Collection $rows): void
+    {
+        foreach ($rows as $row) {
+            $row = $row->toArray();
+            $this->rowsProcessed++;
+
+            if (empty($row['managername'])) {
+                $this->insertUser($row);
+            } else {
+                $this->usersWithManagers[] = $row;
+            }
+        }
+        $this->processUsersWithManagers();
+    }
+
+    public function batchSize(): int
+    {
+        return 500;
     }
 
     public function onFailure(Failure ...$failures)
@@ -72,12 +134,14 @@ class UsersImport implements ToModel, WithHeadingRow
         $this->failures = array_merge($this->failures, $failures);
     }
 
-    /**
-     * @return int
-     */
-    public function batchSize(): int
+    public function getRowCounts()
     {
-        return 500;
+        return [
+            'Lines Processed' => $this->rowsProcessed,
+            'Lines Success' => $this->rowsSuccess,
+            'Lines Skipped' => $this->rowsSkipped,  // Added skipped rows count to output
+            'Failures' => $this->failures ?? [],
+        ];
     }
 
     /**
@@ -86,5 +150,13 @@ class UsersImport implements ToModel, WithHeadingRow
     public function chunkSize(): int
     {
         return 500;
+    }
+
+    /**
+     * @return int
+     */
+    public function headingRow(): int
+    {
+        return 1;
     }
 }
