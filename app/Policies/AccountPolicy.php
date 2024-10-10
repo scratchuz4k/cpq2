@@ -58,9 +58,6 @@ class AccountPolicy
      */
     public function delete(User $user, Account $account): bool
     {
-        if ($user->account->id == $account->id) {
-            return false;
-        }
         if (!$user->can("delete $this->model")) {
             return false;
         }
