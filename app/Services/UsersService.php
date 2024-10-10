@@ -19,7 +19,7 @@ class UsersService
 
             $user = User::create([
                 ...$array,
-                "tenant_id" => app("currentTenant")->id,
+                "tenant_id" => session()->get('tenant_id'),
             ]);
 
             if (array_key_exists('role_id', $array) && !empty($array['role_id'])) {
@@ -49,7 +49,7 @@ class UsersService
             $user->update(
                 [
                     ...$array,
-                    'tenant_id' => app('currentTenant')->id,
+                    'tenant_id' => session()->get('tenant_id'),
                 ]
             );
 

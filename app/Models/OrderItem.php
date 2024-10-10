@@ -36,7 +36,7 @@ class OrderItem extends Model
     public function save(array $options = []): bool
     {
         if (empty($this->tenant_id)) {
-            $this->tenant_id = app('currentTenant')->id;
+            $this->tenant_id = session()->get('tenant_id');
         }
 
         return parent::save($options);

@@ -29,7 +29,7 @@ class TenantPolicy
             return true;
         }
 
-        if ($tenant->id !=  app("currentTenant")->id) {
+        if ($tenant->id !=  session()->get('tenant_id')) {
             return false;
         }
 

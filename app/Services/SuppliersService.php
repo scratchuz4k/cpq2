@@ -12,7 +12,7 @@ class SuppliersService
         return DB::transaction(function () use ($array) {
             $supplier = Supplier::create([
                 ...$array,
-                "tenant_id" => app("currentTenant")->id,
+                "tenant_id" => session()->get('tenant_id'),
             ]);
 
 
@@ -26,7 +26,7 @@ class SuppliersService
             $supplier->update(
                 [
                     ...$array,
-                    'tenant_id' => app('currentTenant')->id,
+                    'tenant_id' => session()->get('tenant_id'),
                 ]
             );
 

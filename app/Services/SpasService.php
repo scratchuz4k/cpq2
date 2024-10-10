@@ -12,7 +12,7 @@ class SpasService
         return DB::transaction(function () use ($array) {
             $spa = Spa::create([
                 ...$array,
-                "tenant_id" => app("currentTenant")->id,
+                "tenant_id" => session()->get('tenant_id'),
             ]);
 
             return $spa;
@@ -25,7 +25,7 @@ class SpasService
             $spa->update(
                 [
                     ...$array,
-                    'tenant_id' => app('currentTenant')->id,
+                    'tenant_id' => session()->get('tenant_id'),
                 ]
             );
 

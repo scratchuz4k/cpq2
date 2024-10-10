@@ -35,7 +35,7 @@ class GoogleController extends Controller
             if ($user && $user->tenants->count()) {
                 $firstTenant = $user->tenants->first();
                 $firstTenant->makeCurrent();
-                session(['tenant_id' => $firstTenant->id]);
+                session(['tenant' => $firstTenant->id]);
                 Auth::login($user);
                 return redirect('/');
             } else {

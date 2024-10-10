@@ -26,7 +26,7 @@ class TenantController extends BaseController
         $isSuperAdmin = auth()->user()->hasRole('Super Admin');
         $tenants = $isSuperAdmin
             ? Tenant::with('file')->get()
-            : Tenant::with('file')->findOrFail(app('currentTenant')->id);
+            : Tenant::with('file')->findOrFail(session()->get('tenant_id'));
 
         return Inertia::render('Tenant/Index', [
             'isSuperAdmin' => $isSuperAdmin,
@@ -88,5 +88,15 @@ class TenantController extends BaseController
     public function destroy(Tenant $tenant)
     {
         //
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function switch(Request $request, Tenant $tenant)
+    {
+        $tenant->makeCurrent();
+        session(['tenant_id' => $tenant->id]);
+        return Inertia::location("/myaccount");
     }
 }

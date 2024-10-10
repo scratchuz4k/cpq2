@@ -12,7 +12,7 @@ class PriceService
         return DB::transaction(function () use ($array) {
             $price = Price::create([
                 ...$array,
-                "tenant_id" => app("currentTenant")->id,
+                "tenant_id" => session()->get('tenant_id'),
             ]);
 
 
@@ -26,7 +26,7 @@ class PriceService
             $price->update(
                 [
                     ...$array,
-                    'tenant_id' => app('currentTenant')->id,
+                    'tenant_id' => session()->get('tenant_id'),
                 ]
             );
 

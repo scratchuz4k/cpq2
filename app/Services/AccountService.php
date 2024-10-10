@@ -15,7 +15,7 @@ class AccountService
             $account = Account::create(
                 [
                     ...$array,
-                    'tenant_id' => app('currentTenant')->id,
+                    'tenant_id' => session()->get('tenant_id'),
                 ]
             );
 
@@ -33,7 +33,7 @@ class AccountService
             $account->update(
                 [
                     ...$array,
-                    'tenant_id' => app('currentTenant')->id,
+                    'tenant_id' => session()->get('tenant_id'),
                 ]
             );
 

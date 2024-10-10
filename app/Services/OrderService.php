@@ -13,7 +13,7 @@ class OrderService
             $order = Order::create(
                 [
                     ...$array,
-                    'tenant_id' => app('currentTenant')->id,
+                    'tenant_id' => session()->get('tenant_id'),
                 ]
             );
 
@@ -27,7 +27,7 @@ class OrderService
             $order->update(
                 [
                     ...$array,
-                    'tenant_id' => app('currentTenant')->id,
+                    'tenant_id' => session()->get('tenant_id'),
                     'name' => 'WIP'
                 ]
             );
