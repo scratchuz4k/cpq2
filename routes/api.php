@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\ExternalController;
 use App\Http\Controllers\Api\OrderItemController;
 use App\Http\Controllers\Api\PermissionController;
+use App\Http\Controllers\Api\TenantController;
 use App\Http\Controllers\Api\SolutionTypeController;
 use App\Http\Controllers\Auth\CreateTokenController;
 
@@ -27,6 +28,7 @@ Route::apiResources([
     "order-items" => OrderItemController::class,
     "solution-types" => SolutionTypeController::class,
     "permissions" => PermissionController::class,
+    "tenant" => TenantController::class,
     "accounts" => AccountController::class,
     "brands" => BrandController::class
 ]);

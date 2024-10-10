@@ -12,6 +12,8 @@ const props = defineProps({
 
 const ssoText = ref(props.modelValue?.file_content)
 const isLoading = ref(false);
+const inputFile = ref(null);
+
 /**
  * Handle file form
  */
@@ -43,9 +45,9 @@ const submitFileForm = () => {
             })
             notyf.error(string)
             isLoading.value = false
-        },
+        }
     }
-)};
+};
 
 const submitTextForm = () => {
     router.post(`/tenant/${props.tenant.id}`,

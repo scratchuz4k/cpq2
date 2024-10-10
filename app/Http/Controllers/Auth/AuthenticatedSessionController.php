@@ -24,26 +24,19 @@ class AuthenticatedSessionController extends Controller
             'status' => session('status'),
         ]);
     }
-    /*
-    protected function authenticated(Request $request, $user)
-    {
-        if ($user->sso) {
-            Auth::logout();
-            return redirect('/login')->withErrors(['email' => __('Your account is registered for SSO sign-in only, please select the correct sign-in option below.')]);
-        }
 
-        if ($firstTenant = $user->tenants()?->first()) {
-            Log::debug("First tenant will be set in session: {$firstTenant->id}");
-            session(['tenant_id' => $firstTenant->id]);
-        }
-    }
-    */
     /**
      * Handle an incoming authentication request.
      */
     public function store(LoginRequest $request): RedirectResponse
     {
-        $request->authenticate();
+        try {
+            $request->authenticate();
+        } catch (\Exception $e) {
+            return back()->with([
+                'status' => $e->getMessage(),
+            ]);
+        }
 
         $request->session()->regenerate();
 
@@ -53,7 +46,7 @@ class AuthenticatedSessionController extends Controller
     /**
      * Destroy an authenticated session.
      */
-    public function destroy(Request $request): RedirectResponse
+    public function destroy(Request $request)
     {
         Auth::guard('web')->logout();
 
@@ -61,6 +54,6 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerateToken();
 
-        return redirect('/');
+        return Inertia::location('/');
     }
 }
