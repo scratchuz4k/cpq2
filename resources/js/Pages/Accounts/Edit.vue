@@ -51,7 +51,7 @@ const saveAccount = () => {
     )
 }
 const items = ref([
-    { label: 'My', url: '/myaccount' },
+    { label: 'My Account', url: '/myaccount' },
     { label: 'Accounts', url: '/accounts' },
 ]);
 

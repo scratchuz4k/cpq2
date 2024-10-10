@@ -3,7 +3,7 @@ import { ref } from "vue";
 import Breadcrumb from 'primevue/breadcrumb';
 import Button from 'primevue/button';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head, useForm } from "@inertiajs/vue3";
+import {Head, router, useForm} from "@inertiajs/vue3";
 
 const supplier = useForm({
     name: null,
@@ -11,7 +11,19 @@ const supplier = useForm({
 })
 
 const saveSupplier = () => {
-    supplier.post("/suppliers", supplier)
+    router.post("/suppliers", supplier,
+        {
+            onSuccess: (page) => {
+                notyf.success("Created with Success")
+            },
+            onError: (errors) => {
+                let string = ''
+                Object.keys(errors).forEach((key) => {
+                    string += errors[key] + '<br>'
+                })
+                notyf.error(string)
+            },
+        })
 }
 const items = ref([
     { label: 'My Account', url: '/myaccount' },

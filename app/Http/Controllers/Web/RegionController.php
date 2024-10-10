@@ -3,12 +3,13 @@
 namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\BaseController;
+use App\Http\Requests\RegionCreateRequest;
+use App\Http\Requests\RegionUpdateRequest;
 use App\Http\Resources\RegionResource;
 use App\Models\Merchant;
 use App\Models\Region;
 use App\Models\User;
 use App\Services\RegionsService;
-use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class RegionController extends BaseController
@@ -42,7 +43,7 @@ class RegionController extends BaseController
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(RegionCreateRequest $request)
     {
         try {
             $region = $this->regionsService->store($request->all());
@@ -76,7 +77,7 @@ class RegionController extends BaseController
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Region $region)
+    public function update(RegionUpdateRequest $request, Region $region)
     {
         try {
             $region = $this->regionsService->update($region, $request->all());

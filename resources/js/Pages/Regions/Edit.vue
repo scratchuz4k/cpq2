@@ -46,20 +46,20 @@ const items = ref([
                     </Button>
                 </template>
             </Header>
-            <div class="row mb-3">
-                <label for="merchant-name" class="form-label">Merchant:</label>
-                <select class="form-select" v-model="region.merchant_id">
-                    <option v-for="merchant in merchants" :value="merchant.id">{{ merchant.name }}</option>
-                </select>
-            </div>
-            <div class="row mb-3">
-                <label for="user-name" class="form-label">User:</label>
-                <select class="form-select" v-model="region.user_id">
-                    <option v-for="user in users" :value="user.id">{{ user.name }}</option>
-                </select>
-            </div>
-            <div class="row mb-3">
-                <div class="col">
+            <div class="col-6">
+                <div class="row mb-3">
+                    <label for="merchant-name" class="form-label">Merchant:</label>
+                    <select class="form-select" v-model="region.merchant_id">
+                        <option v-for="merchant in merchants" :value="merchant.id">{{ merchant.name }}</option>
+                    </select>
+                </div>
+                <div class="row mb-3">
+                    <label for="user-name" class="form-label">User:</label>
+                    <select class="form-select" v-model="region.user_id">
+                        <option v-for="user in users" :value="user.id">{{ user.name }}</option>
+                    </select>
+                </div>
+                <div class="row mb-3">
                     <label for="region-name" class="form-label">Name:</label>
                     <input id="region-name" class="form-control" v-model="region.name">
                 </div>

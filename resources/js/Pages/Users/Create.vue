@@ -21,7 +21,7 @@ const saveUser = () => {
     router.post(`/users`, user,
         {
             onSuccess: (page) => {
-                notyf.success("Updated with Success")
+                notyf.success("Created with Success")
             },
             onError: (errors) => {
                 let string = ''
@@ -35,7 +35,7 @@ const saveUser = () => {
 }
 const items = ref([
     { label: 'My Account', url: '/myaccount' },
-    { label: 'Users', url: '/user' },
+    { label: 'Users', url: '/users' },
 ]);
 
 </script>
@@ -52,25 +52,19 @@ const items = ref([
             </Header>
             <div class="col-6">
                 <div class="row mb-3">
-                    <div class="col-6">
-                        <label for="user-name" class="form-label">Name:</label>
-                        <input id="user-name" class="form-control" v-model="user.name" required>
-                        <div class="text-danger" v-if="user.errors.name">{{ user.errors.name }}</div>
-                    </div>
+                    <label for="user-name" class="form-label">Name:</label>
+                    <input id="user-name" class="form-control" v-model="user.name" required>
+                    <div class="text-danger" v-if="user.errors.name">{{ user.errors.name }}</div>
                 </div>
                 <div class="row mb-3">
-                    <div class="col-6">
-                        <label for="user-email" class="form-label">Email:</label>
-                        <input id="user-email" type="email" class="form-control" v-model="user.email" required>
-                        <div class="text-danger" v-if="user.errors.email">{{ user.errors.email }}</div>
-                    </div>
+                    <label for="user-email" class="form-label">Email:</label>
+                    <input id="user-email" type="email" class="form-control" v-model="user.email" required>
+                    <div class="text-danger" v-if="user.errors.email">{{ user.errors.email }}</div>
                 </div>
                 <div class="row mb-3">
-                    <div class="col-6">
-                        <label for="user-password" class="form-label">Password:</label>
-                        <input id="user-password" type="password" class="form-control" v-model="user.password" required>
-                        <div class="text-danger" v-if="user.errors.password">{{ user.errors.password }}</div>
-                    </div>
+                    <label for="user-password" class="form-label">Password:</label>
+                    <input id="user-password" type="password" class="form-control" v-model="user.password" required>
+                    <div class="text-danger" v-if="user.errors.password">{{ user.errors.password }}</div>
                 </div>
                 <div class="row mb-3">
                     <label for="supplier-name" class="form-label">Role:</label>

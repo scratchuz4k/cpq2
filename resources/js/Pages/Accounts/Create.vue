@@ -21,7 +21,7 @@ const addContact = () => {
 const saveAccount = () => {
     router.post("/accounts", account, {
         onSuccess: (page) => {
-            notyf.success("Updated with Success")
+            notyf.success("Created with Success")
         },
         onError: (errors) => {
             let string = ''
@@ -52,7 +52,7 @@ const removeContact = (key) => {
 }
 
 const items = ref([
-    { label: 'My', url: '/myaccount' },
+    { label: 'My Account', url: '/myaccount' },
     { label: 'Accounts', url: '/accounts' },
 ]);
 

@@ -16,6 +16,7 @@ const spa = reactive({
     },
     supplier_id: null,
     user_id: null,
+    name: null
 })
 
 const operations = [
@@ -28,7 +29,7 @@ const saveSpa = () => {
     router.post(`/spas`, spa,
         {
             onSuccess: (page) => {
-                notyf.success("Updated with Success")
+                notyf.success("Created with Success")
             },
             onError: (errors) => {
                 let string = ''
@@ -42,7 +43,7 @@ const saveSpa = () => {
 }
 const items = ref([
     { label: 'My Account', url: '/myaccount' },
-    { label: 'Spas', url: '/spa' },
+    { label: 'Spas', url: '/spas' },
 ]);
 
 </script>
@@ -59,19 +60,23 @@ const items = ref([
             </Header>
             <div class="col-6">
                 <div class="row mb-3">
-                    <label for="spa-name" class="form-label">User:</label>
+                    <label for="spa-name" class="form-label">Name:</label>
+                    <input id="spa-name" class="form-control" v-model="spa.name">
+                </div>
+                <div class="row mb-3">
+                    <label class="form-label">User:</label>
                     <select class="form-select" v-model="spa.user_id">
                         <option v-for="user in users" :value="user.id">{{ user.name }}</option>
                     </select>
                 </div>
                 <div class="row mb-3">
-                    <label for="supplier-name" class="form-label">Supplier:</label>
+                    <label class="form-label">Supplier:</label>
                     <select class="form-select" v-model="spa.supplier_id">
                         <option v-for="supplier in suppliers" :value="supplier.id">{{ supplier.name }}</option>
                     </select>
                 </div>
                 <div class="row mb-3">
-                    <label for="supplier-name" class="form-label">Pricing Rules:</label>
+                    <label class="form-label">Pricing Rules:</label>
                     <div class="d-flex p-0">
                         <select class="form-select w-50" v-model="spa.data.operation">
                             <option v-for="operation in operations" :value="operation">{{ operation}}</option>

@@ -3,7 +3,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link } from "@inertiajs/vue3";
 import { ref } from 'vue';
 const items = ref([
-    { label: 'My', url: '/myaccount' }
+    { label: 'My Account', url: '/myaccount' }
 ]);
 
 </script>
@@ -25,9 +25,13 @@ const items = ref([
                     link: false,
                 }" :columns="[
                     { data: 'id', title: '#' },
-                    { data: 'name', title: 'Name' },
-                    { data: 'reference', title: 'Reference' },
-                    { data: 'tenant.name', title: 'Tenant' },
+                    { data: 'tenant_id', title: 'Tenant' },
+                    { data: 'spa_id', title: 'Spa' },
+                    { data: 'product_id', title: 'Product' },
+                    { data: 'tax_rate', title: 'tax_rate' },
+                    { data: 'net', title: 'Net' },
+                    { data: 'tax', title: 'Tax' },
+                    { data: 'gross', title: 'Gross' },
                     { data: 'created_at', title: 'Created At' },
                     { data: 'updated_at', title: 'Updated At' },
                 ]" route="/prices">

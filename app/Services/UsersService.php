@@ -22,8 +22,10 @@ class UsersService
                 "tenant_id" => app("currentTenant")->id,
             ]);
 
-            if (array_key_exists('role_id', $array)) {
+            if (array_key_exists('role_id', $array) && !empty($array['role_id'])) {
                 $user->assignRole($array['role_id']);
+            } else {
+                $user->assignRole(User::$default_role);
             }
 
             return $user;
@@ -32,7 +34,12 @@ class UsersService
 
     public function update(User $user, array $array): User
     {
-        $array['password'] = Hash::make($array['password']);
+        if (array_key_exists('password', $array) && !empty($array['password'])) {
+            $array['password'] = Hash::make($array['password']);
+        } else {
+            $array['password'] = $user->password;
+        }
+
         return DB::transaction(function () use ($user, $array) {
 
             if (array_key_exists('password', $array) && !empty($array['password'])) {

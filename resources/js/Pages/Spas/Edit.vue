@@ -54,6 +54,10 @@ const items = ref([
             <div class="row mb-3">
                 <div class="col-6">
                     <div class="row mb-3">
+                        <label for="spa-name" class="form-label">Name:</label>
+                        <input id="spa-name" class="form-control" v-model="spa.name">
+                    </div>
+                    <div class="row mb-3">
                         <label for="spa-name" class="form-label">User:</label>
                         <select class="form-select" v-model="spa.user_id">
                             <option v-for="user in users" :value="user.id">{{ user.name }}</option>
