@@ -85,7 +85,7 @@ const submitFileForm = () => {
                     { data: 'id', title: '#' },
                     { data: 'name', title: 'Name' },
                     { data: 'email', title: 'Email' },
-                    { data: 'role', title: 'Role' },
+                    { data: 'roles.name', title: 'Role' },
                     { data: 'created_at', title: 'Created At' },
                     { data: 'updated_at', title: 'Updated At' },
                 ]" route="/users">

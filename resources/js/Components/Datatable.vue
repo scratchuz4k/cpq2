@@ -176,9 +176,12 @@ getData()
                     <b v-if="column.data.split('.').length > 1" class="column-title">
                         {{ column.title }}
                     </b>
-                    <b v-else class="column-title sortable" @click="sortBy(column.data)">
+                    <b v-else class="column-title sortable" @click="sortBy(column.data)" :style="{textDecoration: column.data == form.orderBy ? 'underline': 'none'}">
                         {{ column.title }}
-                        <font-awesome-icon :icon="['fas', 'sort']" />
+                        <template v-if="column.data == form.orderBy">
+                            <font-awesome-icon v-if="form.order == 'desc'" :icon="['fas', 'sort-down']" />
+                            <font-awesome-icon v-else :icon="['fas', 'sort-up']" />
+                        </template>
                     </b>
                     <div v-if="activeFilters" style="position: relative;z-index: 1000">
                         <button class="btn btn-sm btn-filter">
