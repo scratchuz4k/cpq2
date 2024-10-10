@@ -86,7 +86,7 @@ class SsoController extends Controller
                 foreach ($user->tenants as $tenant) {
                     if ($tenant->domain === $domain) {
                         $tenant->makeCurrent();
-                        session(['tenant' => $tenant->id]);
+                        session(['tenant_id' => $tenant->id]);
                         Auth::login($user);
                         Cache::forget("saml2.metadata");
                         return redirect('/');
