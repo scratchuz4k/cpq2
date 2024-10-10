@@ -5,11 +5,13 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, router } from "@inertiajs/vue3";
 
 const props = defineProps({
-    price: Object
+    price: Object,
+    spas: Object,
+    products: Object
 })
 
 const savePrice = () => {
-    router.post(`/prices/${props.price.id}`, props.price,
+    router.put(`/prices/${props.price.id}`, props.price,
         {
             onSuccess: (page) => {
                 notyf.success("Updated with Success")
@@ -25,8 +27,8 @@ const savePrice = () => {
     )
 }
 const items = ref([
-    { label: 'My', url: '/myaccount' },
-    { label: 'Prices', url: '/brands' },
+    { label: 'My Account', url: '/myaccount' },
+    { label: 'Prices', url: '/prices' },
 ]);
 
 </script>
@@ -71,7 +73,7 @@ const items = ref([
                     <div class="mb-3">
                         <label for="price-name" class="form-label">Product:</label>
                         <select class="form-select" v-model="price.product_id">
-                            <option v-for="product in products" :value="product.id">{{ product }}</option>
+                            <option v-for="product in products" :value="product.id">{{ product.name }}</option>
                         </select>
                     </div>
                 </div>

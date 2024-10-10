@@ -27,7 +27,7 @@ const saveBrand = () => {
 }
 
 const items = ref([
-    { label: 'My', url: '/myaccount' },
+    { label: 'My Account', url: '/myaccount' },
     { label: 'Brands', url: '/brands' },
 ]);
 
@@ -45,7 +45,7 @@ const items = ref([
                 </template>
             </Header>
             <div class="row mb-3">
-                <div class="col">
+                <div class="col-6">
                     <label for="brand-name" class="form-label">Name:</label>
                     <input id="brand-name" class="form-control" v-model="brand.name">
                 </div>

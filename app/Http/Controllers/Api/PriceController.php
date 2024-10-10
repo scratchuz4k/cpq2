@@ -20,7 +20,6 @@ class PriceController extends BaseController
      */
     public function index()
     {
-
         $dataProvider = new DataProvider(Price::class);
         try {
             $data = $dataProvider->get();
@@ -61,6 +60,6 @@ class PriceController extends BaseController
      */
     public function destroy(Price $price)
     {
-        //
+        $price->delete();
     }
 }

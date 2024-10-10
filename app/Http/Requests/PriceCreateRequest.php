@@ -22,10 +22,10 @@ class PriceCreateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "tax_rate" => "required|number",
-            "net" => "required|number",
-            "tax" => "required|number",
-            "gross" => "required|number",
+            "tax_rate" => "required|numeric",
+            "net" => "required|numeric",
+            "tax" => "required|numeric",
+            "gross" => "required|numeric",
             "spa_id" => "required|exists:spas,id",
             "product_id" => "required|exists:products,id",
         ];

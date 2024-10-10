@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\Web;
 
+use App\Models\Product;
 use App\Models\Spa;
 use Inertia\Inertia;
 use App\Models\Price;
-use Illuminate\Http\Request;
 use App\Services\PriceService;
 use Illuminate\Support\Facades\Log;
 use App\Http\Resources\PriceResource;
@@ -35,7 +35,8 @@ class PriceController extends BaseController
     public function create()
     {
         return Inertia::render('Prices/Create', [
-            "spas" => Spa::all()
+            'spas' => Spa::all(),
+            'products' => Product::all()
         ]);
     }
 
@@ -52,7 +53,7 @@ class PriceController extends BaseController
             }
             throw new \Exception($e);
         }
-        return redirect()->route('prices.edit', ['price' => $price->id]);
+        return redirect()->route('prices.index');
     }
 
     /**
@@ -70,8 +71,11 @@ class PriceController extends BaseController
      */
     public function edit(Price $price)
     {
+        $temp = new PriceResource($price);
         return Inertia::render('Prices/Edit', [
-            'price' => new PriceResource($price)
+            'price' => $temp->toArray(request()),
+            'spas' => Spa::all(),
+            'products' => Product::all()
         ]);
     }
 
@@ -88,7 +92,7 @@ class PriceController extends BaseController
             }
             throw new \Exception($e);
         }
-        return redirect()->route('prices.edit', ['price' => $price->id]);
+        return redirect()->route('prices.index');
     }
 
     /**

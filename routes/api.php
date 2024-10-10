@@ -15,6 +15,7 @@ use App\Http\Controllers\Api\SupplierController;
 use App\Http\Controllers\Api\RegionController;
 use App\Http\Controllers\Api\SpaController;
 use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\Api\PriceController;
 use App\Http\Controllers\Auth\CreateTokenController;
 
 Route::prefix("external")->group(function () {
@@ -34,6 +35,7 @@ Route::apiResources([
     'permissions' => PermissionController::class,
     'accounts' => AccountController::class,
     'brands' => BrandController::class,
+    'prices' => PriceController::class,
     'suppliers' => SupplierController::class,
     'regions' => RegionController::class,
     'spas' => SpaController::class,
