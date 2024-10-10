@@ -22,6 +22,7 @@ class AccountUpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'name' => 'required',
             'reference' => 'unique:accounts,reference,' . $this->id
         ];
     }

@@ -22,7 +22,8 @@ class AccountCreateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'reference' => 'unique:accounts'
+            'name' => 'required',
+            'reference' => 'required|unique:accounts'
         ];
     }
 }
