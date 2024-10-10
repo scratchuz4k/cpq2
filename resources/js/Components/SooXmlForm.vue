@@ -46,7 +46,7 @@ const submitFileForm = () => {
             notyf.error(string)
             isLoading.value = false
         }
-    }
+    })
 };
 
 const submitTextForm = () => {
