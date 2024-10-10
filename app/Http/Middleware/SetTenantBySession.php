@@ -18,6 +18,9 @@ class SetTenantBySession
             return $next($request);
         }
 
+        $tenant = Tenant::findOrFail(1);
+        session(['tenant_id' => $tenant->id]);
+        $tenant->makeCurrent();
 
         return $next($request);
     }

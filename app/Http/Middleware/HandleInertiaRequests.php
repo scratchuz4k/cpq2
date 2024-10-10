@@ -37,7 +37,7 @@ class HandleInertiaRequests extends Middleware
                 'permissions' => $request->user() ? $request->user()->getAllPermissions() : [],
                 'roles' =>  $request->user() ? $request->user()->getRoleNames() : [],
             ],
-            'tenant' =>  Tenant::findOrFail(session()->get('tenant_id'))
+            'tenant' =>  Tenant::find(session()->get('tenant_id'))
         ];
     }
 }
