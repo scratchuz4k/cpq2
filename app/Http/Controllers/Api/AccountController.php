@@ -10,6 +10,8 @@ use App\Services\AccountService;
 use Illuminate\Support\Facades\Log;
 use App\Http\Resources\AccountResource;
 use App\Http\Controllers\BaseController;
+use App\Http\Requests\AccountCreateRequest;
+use App\Http\Requests\AccountUpdateRequest;
 
 class AccountController extends BaseController
 {
@@ -38,7 +40,7 @@ class AccountController extends BaseController
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(AccountCreateRequest $request)
     {
         try {
             $account = $this->accountService->store($request->all());
@@ -63,7 +65,7 @@ class AccountController extends BaseController
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Account $account)
+    public function update(AccountUpdateRequest $request, Account $account)
     {
         try {
             $account = $this->accountService->update($account, $request->all());

@@ -23,7 +23,9 @@ class AccountCreateRequest extends FormRequest
     {
         return [
             'name' => 'required',
-            'reference' => 'required|unique:accounts'
+            'reference' => 'required|unique:accounts',
+            'contacts.*.name' => 'nullable',
+            'contacts.*.email' => 'nullable|email'
         ];
     }
 }

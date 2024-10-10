@@ -12,10 +12,6 @@ class AccountRepository
         $oldContacts = $account->contacts;
 
         foreach ($contacts as $item) {
-            if (!isset($item["email"])) {
-                continue;
-            }
-
             if (array_key_exists('id', $item)) {
                 $contact = Contact::find($item['id']);
 

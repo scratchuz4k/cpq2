@@ -23,7 +23,9 @@ class AccountUpdateRequest extends FormRequest
     {
         return [
             'name' => 'required',
-            'reference' => 'unique:accounts,reference,' . $this->id
+            'reference' => 'unique:accounts,reference,' . $this->id,
+            'contacts.*.name' => 'nullable',
+            'contacts.*.email' => 'nullable|email'
         ];
     }
 }
