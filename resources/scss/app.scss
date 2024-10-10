@@ -171,8 +171,26 @@ body {
         background-color: var(--info-light);
         border-left: var(--info-dark) 5px solid;
 
-        .fa {
+        .fa,.svg-inline--fa {
             color: var(--info-dark);
+        }
+
+        h4 {
+            font-size: 18px;
+        }
+
+        p {
+            font-size: 14px;
+        }
+    }
+
+    .error-box {
+
+        background-color: var(--light-red);
+        border-left: var(--highlight) 5px solid;
+
+        .fa, .svg-inline--fa {
+            color: var(--highlight);
         }
 
         h4 {

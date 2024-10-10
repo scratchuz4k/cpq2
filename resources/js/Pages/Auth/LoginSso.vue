@@ -22,7 +22,6 @@ const form = useForm({
 const submit = () => {
     form.post(route('login.sso.post'));
 };
-console.log(props.canGoogleLogin);
 </script>
 
 <template>
@@ -30,22 +29,24 @@ console.log(props.canGoogleLogin);
 
         <Head title="Login with SSO" />
 
-        <div v-if="status" class="mb-4 font-medium text-sm text-green-600">
-            {{ status }}
-        </div>
-
         <div class="panel-login row justify-content-center">
             <div class="col-12 col-md-8 col-lg-6 col-xl-4">
                 <div class="card">
                     <div class="card-header">Login with SSO</div>
                     <div class="card-body p-4">
+                        <div v-if="status" class="error-box d-flex p-2 mb-2">
+                            <font-awesome-icon :class="['p-1']" :icon="['fas', 'circle-info']" />
+                            <p class="my-0 ps-2 my-auto">
+                                {{ status }}
+                            </p>
+                        </div>
                         <form @submit.prevent="submit">
                             <div class="row overflow-hidden">
                                 <div class="mb-3">
                                     <span><InputLabel for="email" value="Email" /></span>
-                                    <TextInput id="email" type="email" :class="{'error': 'is-invalid'}" v-model="form.email" required autofocus
+                                    <TextInput id="email" type="email" :class="{'is-invalid': form.errors.email}" v-model="form.email" required autofocus
                                         autocomplete="username" />
-                                    <InputError class="mt-2" :message="form.errors.email" />
+                                    <InputError class="invalid-feedback" :message="form.errors.email" />
                                 </div>
                                 <div class="d-grid">
                                     <PrimaryButton id="btn-login" :class="{ 'opacity-25': form.processing }"

@@ -50,6 +50,21 @@ class LoginRequest extends FormRequest
         }
 
         RateLimiter::clear($this->throttleKey());
+
+        $user = Auth::user();
+
+        if ($user->sso) {
+            Auth::guard('web')->logout();
+
+            throw ValidationException::withMessages([
+                'email' => __('Your account is registered for SSO sign-in only, please select the correct sign-in option below.'),
+            ]);
+        }
+
+        if ($firstTenant = $user->tenants()?->first()) {
+            $firstTenant->makeCurrent();
+            session(['tenant_id' => $firstTenant->id]);
+        }
     }
 
     /**
