@@ -4,10 +4,11 @@ namespace App\Jobs;
 
 use Exception;
 use JsonMachine\Items;
-use App\Helpers\Prices\PriceRules;
+use Illuminate\Support\Str;
 use GuzzleHttp\Psr7\StreamWrapper;
+use App\Helpers\Api\CloudMarketApi;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Http;
+use App\Helpers\Api\CloudMarketFile;
 use Illuminate\Support\Facades\Cache;
 use App\Helpers\Api\CloudMarketAddress;
 use Spatie\Multitenancy\Jobs\TenantAware;
@@ -22,50 +23,17 @@ class CloudMarketConnectivityProducts implements ShouldQueue, TenantAware
     /**
      * Create a new job instance.
      */
-    public function __construct(protected $path, protected $filename, protected $connectivityType, protected CloudMarketAddress $address)
-    {
-        //
-    }
+    public function __construct(protected CloudMarketFile $file, protected $connectivityType, protected CloudMarketAddress $address) {}
 
     /**
      * Execute the job.
      */
     public function handle(): void
     {
-        Log::debug("Fetching produts for: " . $this->address->toString());
-        $res = Http::withOptions(['stream' => true])->timeout(360)->withToken(env('ALPNET_API_TOKEN'))
-            ->get(
-                env('PARTNER_QUOTE_SERVICE_URL', 'https://cpq-poc-uat-api.cloudmarket.com') . '/PartnerQuoteService/' . env('PARTNER_QUOTE_SERVICE_ENDPOINT', 'TestNoParams'),
-                [
-                    'ConnectivityType' => $this->connectivityType,
-                    'Address1.Postcode' => $this->address->postCode,
-                    'Address1.Latitude' => $this->address->lat,
-                    'Address1.Longitude' => $this->address->lon,
-
-                    "Address1.UPRN" =>  $this->address->uprn,
-                    "Address1.AddressKey" =>  $this->address->addressKey,
-                    "Address1.BuildingName" =>  $this->address->buildingName,
-                    "Address1.BuildingNumber" =>  $this->address->buildingNumber,
-                    "Address1.SubPremises" =>  $this->address->subPremises,
-                    "Address1.Street" =>  $this->address->street,
-                    "Address1.Town" =>  $this->address->town,
-
-                    "ManagedOption" => 1,
-
-                    'SupplierApiConnections.Its_Connection.Its_AccessKey' => env('ITS_CONNECTION_ITS_ACCESSKEY', '328736h87y78g823'),
-                    'SupplierApiConnections.Virtual1_Connection.Username' => env('VIRTUAL1_CONNECTION_USERNAME', 'JenniferLawrence'),
-                    'SupplierApiConnections.Virtual1_Connection.Password' => env('VIRTUAL1_CONNECTION_PASSWORD', 'secretpass'),
-                    'SupplierApiConnections.Gamma_Connection.Username' => env('GAMMA_CONNECTION_USERNAME', 'AdamSandler'),
-                    'SupplierApiConnections.Gamma_Connection.Password' => env('GAMMA_CONNECTION_PASSWORD', 'specialpass'),
-                    'SupplierApiConnections.Gamma_Connection.ClientId' => env('GAMMA_CONNECTION_CLIENTID', '134213'),
-                    'SupplierApiConnections.Giacom_Connection.Username' => env('GIACOM_CONNECTION_USERNAME', 'MasterWoo'),
-                    'SupplierApiConnections.Giacom_Connection.Password' => env('GIACOM_CONNECTION_PASSWORD', '2345678'),
-                ]
-            );
-
+        $res = CloudMarketApi::getQuotes($this->connectivityType, $this->address);
         $started_at = now();
-        if (!file_exists($this->path . $this->filename)) {
-            throw new Exception("File " . $this->path . $this->filename . " not Found!");
+        if (!$this->file->exists()) {
+            throw new Exception("CloudMarketConnectivityProducts: File was not Found!");
         }
 
         $prices = [];
@@ -74,42 +42,19 @@ class CloudMarketConnectivityProducts implements ShouldQueue, TenantAware
             if (empty($value->providerKey)) {
                 continue;
             }
-
-            $prices[] = (array)$value;
-
-            $data = json_encode([
-                'wating_task' => false,
-                'started_at' => $started_at,
-                'finished_at' => null,
-                'total' => count($prices),
-                'data' => $prices,
-            ]);
-
-            $this->write($data,);
+            $temp = (array)$value;
+            $temp['code'] = '';
+            foreach (array_keys($temp) as $key) {
+                if (!(is_string($temp[$key]) || is_numeric($temp[$key]))) {
+                    continue;
+                }
+                $temp['code'] .= $temp[$key];
+            }
+            $prices[] = [...$temp, 'code' => md5(Str::slug($temp['code']))];
+            $this->file->write($prices, false, null, $started_at);
         }
 
-        $finalData = json_encode([
-            'wating_task' => false,
-            'started_at' => $started_at,
-            'finished_at' => now(),
-            'total' => count($prices),
-            'data' => $prices,
-        ]);
-
-        $this->write($finalData,);
-    }
-    private function write($data,)
-    {
-        Cache::put($this->filename, $data, 86400);
-
-        if (!env('APP_DEBUG')) {
-            return;
-        }
-
-        if (!file_exists($this->path . $this->filename)) {
-            throw new Exception("File  $this->filename not Found!");
-        }
-        file_put_contents($this->path . $this->filename, $data);
+        $this->file->write($prices, false, now(), $started_at);
     }
 
     /**
