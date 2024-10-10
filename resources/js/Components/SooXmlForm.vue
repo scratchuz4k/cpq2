@@ -11,6 +11,7 @@ const props = defineProps({
 });
 
 const ssoText = ref(props.modelValue?.file_content)
+const inputFile = ref(null);
 
 /**
  * Handle file form
@@ -23,13 +24,19 @@ const formFile = reactive({
     file: null
 });
 
-const submitFileForm = () => {
-    router.post(`/tenant/${props.tenant.id}`,
-    {
-        _method: "PUT",
-        file: formFile.file
+const submitFileForm = async (event) => {
+    try {
+        const form  = new FormData()
+        form.append("_method", "put")
+        form.append("file", formFile.file)
+        let res = await axios.post(`/api/tenant/${props.tenant.id}`,form)
+
+        ssoText.value = res.data.file?.file_content;
+        inputFile.value = null;
+    } catch (ex) {
+        alert(ex.response.data.message)
     }
-)};
+};
 
 const submitTextForm = () => {
     router.post(`/tenant/${props.tenant.id}`,
@@ -47,7 +54,7 @@ const submitTextForm = () => {
     <p>The file to upload must be a .xml</p>
 
     <form @submit.prevent="submitFileForm" enctype="multipart/form-data">
-        <input type="file" accept=".xml" required @input="onFileChange" />
+        <input type="file" accept=".xml" :value="inputFile" required @input="onFileChange" />
         <button type="submit" class="btn btn-success">Upload</button>
     </form>
     <div class="separator pt-4"> OR </div>
