@@ -89,4 +89,14 @@ class TenantController extends BaseController
     {
         //
     }
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function switch(Request $request, Tenant $tenant)
+    {
+        $tenant->makeCurrent();
+        session(['tenant_id' => $tenant->id]);
+        return Inertia::location("/myaccount");
+    }
 }

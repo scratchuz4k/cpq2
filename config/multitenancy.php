@@ -20,7 +20,7 @@ return [
      * This class should extend `Spatie\Multitenancy\TenantFinder\TenantFinder`
      *
      */
-    'tenant_finder' => RebateTenantFinder::class,
+    'tenant_finder' => null,
 
     /*
      * These fields are used by tenant:artisan command to match one or more tenant.

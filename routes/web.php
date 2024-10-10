@@ -20,6 +20,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/myaccount', [DashboardController::class, 'myAccount'])->name('myaccount');
 
 
+    Route::get('/tenant/{tenant}/make-current', [TenantController::class, 'switch'])->name('tenant.make-current');
+
     Route::get('/orders/{order}/download', [OrderController::class, 'download'])->name('orders.download');
     Route::get('/orders/{order}/configure', [OrderController::class, 'configure'])->name('orders.configure');
 

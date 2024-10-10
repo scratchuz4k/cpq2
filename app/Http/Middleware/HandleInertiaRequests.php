@@ -2,8 +2,9 @@
 
 namespace App\Http\Middleware;
 
-use Illuminate\Http\Request;
+use App\Models\Tenant;
 use Inertia\Middleware;
+use Illuminate\Http\Request;
 
 class HandleInertiaRequests extends Middleware
 {
@@ -33,10 +34,10 @@ class HandleInertiaRequests extends Middleware
             ...parent::share($request),
             'auth' => [
                 'user' => $request->user(),
-                'permissions' => $request->user() ? $request->user()->getAllPermissions(): [],
-                'roles' =>  $request->user() ? $request->user()->getRoleNames(): [],
+                'permissions' => $request->user() ? $request->user()->getAllPermissions() : [],
+                'roles' =>  $request->user() ? $request->user()->getRoleNames() : [],
             ],
-            'tenant' => app('currentTenant')
+            'tenant' =>  Tenant::findOrFail(session()->get('tenant_id'))
         ];
     }
 }

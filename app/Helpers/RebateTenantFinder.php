@@ -41,6 +41,6 @@ class RebateTenantFinder extends TenantFinder
             }
         }
 
-        return \App\Models\Tenant::find(1);
+        return null;
     }
 }

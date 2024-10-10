@@ -29,7 +29,11 @@ defineProps({
 
                         <h2 v-if="true">Company Accounts</h2>
                         <ul>
-                            <li v-for="tenant in tenants"> {{ tenant.name }} (T{{ tenant.id }})</li>
+                            <li v-for="tenant in tenants">
+                                <Link :href="route('tenant.make-current', { tenant: tenant.id })">
+                                {{ tenant.name }} (T{{ tenant.id }})
+                                </Link>
+                            </li>
                         </ul>
 
                         <h2>User Roles</h2>
@@ -56,13 +60,27 @@ defineProps({
                             <li>
                                 <Link :href="route('accounts.index')">Accounts</Link>
                             </li>
-                            <li><Link :href="route('brands.index')">Brands</Link></li>
-                            <li><Link :href="route('prices.index')">Prices</Link></li>
-                            <li><Link :href="route('products.index')">Products</Link></li>
-                            <li><Link :href="route('regions.index')">Regions</Link></li>
-                            <li><Link :href="route('suppliers.index')">Suppliers</Link></li>
-                            <li><Link :href="route('spas.index')">SPAs</Link></li>
-                            <li><Link :href="route('users.index')">Users</Link></li>
+                            <li>
+                                <Link :href="route('brands.index')">Brands</Link>
+                            </li>
+                            <li>
+                                <Link :href="route('prices.index')">Prices</Link>
+                            </li>
+                            <li>
+                                <Link :href="route('products.index')">Products</Link>
+                            </li>
+                            <li>
+                                <Link :href="route('regions.index')">Regions</Link>
+                            </li>
+                            <li>
+                                <Link :href="route('suppliers.index')">Suppliers</Link>
+                            </li>
+                            <li>
+                                <Link :href="route('spas.index')">SPAs</Link>
+                            </li>
+                            <li>
+                                <Link :href="route('users.index')">Users</Link>
+                            </li>
                         </ul>
                     </div>
                 </div>
