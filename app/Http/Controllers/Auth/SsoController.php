@@ -35,17 +35,23 @@ class SsoController extends Controller
         $domain = substr(strrchr($email, "@"), 1);
         $domainRecord = Tenant::where('domain', $domain)->first();
         if (!$domainRecord || !$domainRecord->config_id) {
-            return redirect()->back()->withErrors(['email' => __('No SSO provider was found for your domain.')]);
+            return back()->with([
+                'status' => __('No SSO provider was found for your domain'),
+            ]);
         }
 
         $resourceFile = Resource::where('id', $domainRecord->config_id)->where('tenant_id', $domainRecord->id)->first();
         if (!$resourceFile || !Storage::exists($resourceFile->getRouteValue())) {
-            return redirect()->back()->withErrors(['email' => __('No SSO provider was found for your domain.')]);
+            return back()->with([
+                'status' => __('No SSO provider was found for your domain'),
+            ]);
         }
 
         $ssoXmlContent = Storage::get($resourceFile->getRouteValue());
         if (!simplexml_load_string($ssoXmlContent)) {
-            return redirect()->back()->withErrors(['email' => __('The SSO configuration found for your domain is invalid.')]);
+            return back()->with([
+                'status' => __('The SSO configuration found for your domain is invalid'),
+            ]);
         }
 
         Cache::put("saml2.metadata", $ssoXmlContent, now()->addMinutes(5));
@@ -55,7 +61,9 @@ class SsoController extends Controller
             return Inertia::location(Socialite::driver('saml2')->redirect());
         } catch (\Exception $e) {
             Log::debug("Error on socialite saml2 redirect: " . $e->getMessage());
-            return redirect()->back()->withErrors(['email' => __('An error occurred while redirecting to your SSO provider, please contact your administrator.')]);
+            return back()->with([
+                'status' => __('An error occurred while redirecting to your SSO provider, please contact your administrator'),
+            ]);
         }
     }
 
@@ -90,7 +98,7 @@ class SsoController extends Controller
             throw new \Exception("SSO ERROR: SSO account not linked to tenant");
         } catch (\Exception $e) {
             Log::debug("Error on socialite saml2 callback: " . $e->getMessage());
-            return redirect('/login/sso')->withErrors(['email' => __('We were unable to log into your account using SSO, please contact your administrator.')]);
+            return redirect()->route('login.sso')->with(['status' => __('We were unable to log into your account using SSO, please contact your administrator')]);
         }
     }
 

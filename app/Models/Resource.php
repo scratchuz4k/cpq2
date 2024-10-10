@@ -43,7 +43,7 @@ class Resource extends Model
 
     public function getContent(): string
     {
-        return Storage::get($this->route);
+        return Storage::get($this->route) ?? '';
     }
 
 

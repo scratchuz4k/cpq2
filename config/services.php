@@ -35,12 +35,13 @@ return [
         ],
     ],
     'saml2' => [
-        'metadata' => null
+        'metadata' => null,
+        'sp_acs' => env('APP_URL').'/login/sso/callback',
     ],
 
     'google' => [
         'client_id' => env('GOOGLE_OIDC_CLIENT_ID'),
         'client_secret' => env('GOOGLE_OIDC_CLIENT_SECRET'),
-        'redirect' => env('APP_URL').'/auth/google/callback',
+        'redirect' => env('APP_URL').'/login/google/callback',
     ]
 ];

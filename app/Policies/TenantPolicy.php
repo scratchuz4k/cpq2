@@ -13,7 +13,7 @@ class TenantPolicy
      */
     public function viewAny(User $user): bool
     {
-        if (!$user->hasRole("Super Admin")) {
+        if (!$user->can("view $this->model")) {
             return false;
         }
 

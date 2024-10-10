@@ -4,7 +4,6 @@ import SooXmlForm from "@/Components/SooXmlForm.vue";
 import Tabs from "@/Components/Tabs.vue";
 import Tab from "@/Components/Tab.vue";
 
-
 defineProps({
     isSuperAdmin: String,
     tenants: Array
@@ -32,9 +31,9 @@ defineProps({
                         </div>
                         <div v-else>
                             <SooXmlForm
-                                v-model="tenants[0].file"
-                                :tenant="tenants[0]"
-                                :tenant-name="tenants[0].name"
+                                v-model="tenants.file"
+                                :tenant="tenants"
+                                :tenant-name="tenants.name"
                             />
                         </div>
                     </div>
