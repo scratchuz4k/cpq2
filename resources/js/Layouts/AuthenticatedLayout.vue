@@ -154,7 +154,7 @@ watch(search, () => {
             </div>
         </div>
     </nav>
-    <Dialog v-model:visible="visible" modal :style="{ width: '50rem', marginTop:'4rem' }"
+    <Dialog v-model:visible="visible" modal :style="{ width: '50rem', marginTop: '4rem' }"
         :breakpoints="{ '1199px': '75vw', '575px': '90vw' }" :draggable="false" position="top">
         <template #header>
             <div class="d-flex align-items-center w-100">
@@ -193,6 +193,11 @@ watch(search, () => {
                     </p>
                 </div>
             </a>
+        </template>
+        <template v-if="!results.accounts.length && !results.orders.length">
+            <p class="m-0">
+                <b>No results found!</b>
+            </p>
         </template>
     </Dialog>
     <!-- Page Content -->
