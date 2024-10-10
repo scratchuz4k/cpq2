@@ -2,8 +2,9 @@
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Application;
-use App\Http\Middleware\HandleInertiaRequests;
+use App\Http\Middleware\SetTenantByRequest;
 use App\Http\Middleware\SetTenantBySession;
+use App\Http\Middleware\HandleInertiaRequests;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Spatie\Multitenancy\Http\Middleware\NeedsTenant;
@@ -39,7 +40,8 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->api(append: [
             EnsureFrontendRequestsAreStateful::class,
             SubstituteBindings::class,
-            NeedsTenant::class,
+            SetTenantByRequest::class,
+            // NeedsTenant::class,
         ]);
         $middleware->validateCsrfTokens(except: [
             'login/sso/callback'
