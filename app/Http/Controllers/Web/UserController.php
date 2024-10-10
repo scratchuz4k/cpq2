@@ -3,12 +3,13 @@
 namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\BaseController;
+use App\Http\Requests\UserCreateRequest;
 use App\Http\Requests\UserImportRequest;
+use App\Http\Requests\UserUpdateRequest;
 use App\Http\Resources\UserResource;
 use App\Models\Role;
 use App\Models\User;
 use App\Services\UsersService;
-use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class UserController extends BaseController
@@ -41,7 +42,7 @@ class UserController extends BaseController
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(UserCreateRequest $request)
     {
         try {
             $user = $this->usersService->store($request->all());
@@ -77,7 +78,7 @@ class UserController extends BaseController
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, User $user)
+    public function update(UserUpdateRequest $request, User $user)
     {
         try {
             $user = $this->usersService->update($user, $request->all());

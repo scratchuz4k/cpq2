@@ -3,14 +3,13 @@
 namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\BaseController;
-use App\Http\Controllers\Controller;
+use App\Http\Requests\SpaCreateRequest;
+use App\Http\Requests\SpaUpdateRequest;
 use App\Http\Resources\SpaResource;
 use App\Models\Spa;
 use App\Models\Supplier;
 use App\Models\User;
 use App\Services\SpasService;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 
 class SpaController extends BaseController
@@ -43,7 +42,7 @@ class SpaController extends BaseController
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(SpaCreateRequest $request)
     {
         try {
             $spa = $this->spasService->store($request->all());
@@ -78,7 +77,7 @@ class SpaController extends BaseController
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Spa $spa)
+    public function update(SpaUpdateRequest $request, Spa $spa)
     {
         try {
             $spa = $this->spasService->update($spa, $request->all());

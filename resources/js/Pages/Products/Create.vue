@@ -19,7 +19,7 @@ const saveProduct = () => {
     router.post(`/products`, product,
         {
             onSuccess: (page) => {
-                notyf.success("Updated with Success")
+                notyf.success("Created with Success")
             },
             onError: (errors) => {
                 let string = ''
@@ -33,7 +33,7 @@ const saveProduct = () => {
 }
 const items = ref([
     { label: 'My Account', url: '/myaccount' },
-    { label: 'Products', url: '/product' },
+    { label: 'Products', url: '/products' },
 ]);
 
 </script>

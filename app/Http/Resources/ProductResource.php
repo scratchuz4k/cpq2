@@ -14,6 +14,10 @@ class ProductResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return parent::toArray($request);
+        return [
+            ...$this->resource->toArray(),
+            'updated_at' => format_date($this->updated_at),
+            'created_at' => format_date($this->created_at)
+        ];
     }
 }

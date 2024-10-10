@@ -3,7 +3,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link } from "@inertiajs/vue3";
 import { ref } from 'vue';
 const items = ref([
-    { label: 'My', url: '/myaccount' }
+    { label: 'My Account', url: '/myaccount' }
 ]);
 
 

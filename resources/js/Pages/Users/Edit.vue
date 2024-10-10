@@ -49,22 +49,16 @@ const items = ref([
             <div class="row mb-3">
                 <div class="col-6">
                     <div class="row mb-3">
-                        <div class="col-6">
-                            <label for="user-name" class="form-label">Name:</label>
-                            <input id="user-name" class="form-control" v-model="user.name" required>
-                        </div>
+                        <label for="user-name" class="form-label">Name:</label>
+                        <input id="user-name" class="form-control" v-model="user.name" required>
                     </div>
                     <div class="row mb-3">
-                        <div class="col-6">
-                            <label for="user-email" class="form-label">Email:</label>
-                            <input id="user-email" type="email" class="form-control" v-model="user.email" required>
-                        </div>
+                        <label for="user-email" class="form-label">Email:</label>
+                        <input id="user-email" type="email" class="form-control" v-model="user.email" required>
                     </div>
                     <div class="row mb-3">
-                        <div class="col-6">
-                            <label for="user-password" class="form-label">Password:</label>
-                            <input id="user-password" type="password" class="form-control" v-model="user.password" required>
-                        </div>
+                        <label for="user-password" class="form-label">Password:</label>
+                        <input id="user-password" type="password" class="form-control" v-model="user.password" required>
                     </div>
                     <div class="row mb-3">
                         <label for="supplier-name" class="form-label">Role:</label>

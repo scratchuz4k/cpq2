@@ -27,6 +27,7 @@ const items = ref([
                     { data: 'id', title: '#' },
                     { data: 'supplier_id', title: 'Supplier' },
                     { data: 'user_id', title: 'User' },
+                    { data: 'name', title: 'Name' },
                     { data: 'data', title: 'Data' },
                     { data: 'created_at', title: 'Created At' },
                     { data: 'updated_at', title: 'Updated At' },

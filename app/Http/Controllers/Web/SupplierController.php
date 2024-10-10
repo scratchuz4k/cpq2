@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers\Web;
 
+use App\Http\Requests\SupplierCreateRequest;
+use App\Http\Requests\SupplieUpdateRequest;
 use App\Http\Resources\SupplierResource;
 use App\Models\Supplier;
 use App\Services\SuppliersService;
 use Inertia\Inertia;
-use Illuminate\Http\Request;
 use App\Http\Controllers\BaseController;
 
 class SupplierController extends BaseController
@@ -36,7 +37,7 @@ class SupplierController extends BaseController
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(SupplierCreateRequest $request)
     {
         try {
             $supplier = $this->suppliersService->store($request->all());
@@ -68,7 +69,7 @@ class SupplierController extends BaseController
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Supplier $supplier)
+    public function update(SupplieUpdateRequest $request, Supplier $supplier)
     {
         try {
             $supplier = $this->suppliersService->update($supplier, $request->all());
