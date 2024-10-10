@@ -1,9 +1,9 @@
 <template>
-    <Range v-if="options.length" v-bind="{
+    <Range v-bind="{
         id: 'bearerSlider',
         config: bearerSliderConfig,
         options: props.options,
-
+        disabled: props.disabled
     }" v-model="range" />
 </template>
 
@@ -12,11 +12,12 @@ import { ref, watch } from 'vue';
 
 const props = defineProps({
     options: Array,
-    modelValue: Object
+    modelValue: Array,
+    disabled: Boolean,
 })
 const emit = defineEmits(["update:modelValue"])
 
-const range = ref([])
+const range = ref([...props.modelValue])
 watch(range, () => {
     emit("update:modelValue", range.value)
 })
@@ -47,7 +48,7 @@ const bearerSpeedFormatter = (value) => {
 }
 const bearerSliderConfig = {
     snap: true,
-    start: [0, 10000],
+    start: props.modelValue ?? [0, 10000],
     connect: true,
     range: {
         min: [100, 100],

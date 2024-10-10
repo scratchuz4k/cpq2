@@ -2,12 +2,14 @@
 
 namespace App\Helpers\Api;
 
+use Illuminate\Support\Str;
+
 
 class CloudMarketAddress
 {
     public function __construct(
         public $postCode,
-        public $uprn,
+        public $uprn = null,
         public $lat = null,
         public $lon = null,
         public $addressKey = null,
@@ -18,8 +20,8 @@ class CloudMarketAddress
         public $town = null,
     ) {}
 
-    public function all(): string
+    public function toString(): string
     {
-        return $this->postCode . $this->uprn . $this->lat . $this->lon;
+        return Str::slug($this->postCode . $this->uprn . $this->street . $this->town);
     }
 }

@@ -18,7 +18,7 @@ const solutionsViews = {
 <template>
 
     <Head :title="'Quote #' + order.id" />
-    <AuthenticatedLayout  :order="order">
+    <AuthenticatedLayout :order="order">
         <div class="row mb-3">
             <div class="col d-flex">
                 <div class="me-3">
@@ -30,7 +30,15 @@ const solutionsViews = {
                             {{ order.account?.name }}
                         </span>
                     </p>
-                    <h1 class="m-0" style="font-size:18px;font-weight:bold">{{ order.solution_type.code == 5 ? 'Configure Hardware' : 'Price'}}</h1>
+                    <h1 class="m-0" style="font-size:18px;font-weight:bold">{{ order.solution_type.code == 5 ?
+                        'Configure Hardware' : 'Price' }}</h1>
+                </div>
+            </div>
+            <div class="col d-flex justify-content-end">
+                <div>
+                    <a class="btn btn-primary" type="submit" :href="route('orders.show', { order: order.id })">
+                        Save Quote
+                    </a>
                 </div>
             </div>
         </div>

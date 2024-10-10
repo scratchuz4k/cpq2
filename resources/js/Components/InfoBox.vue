@@ -1,25 +1,24 @@
 <script setup>
-import { Link } from '@inertiajs/vue3';
-
 const props = defineProps({
-    order: Object,
+    severity: {
+        type: String,
+        default: 'default'
+    },
 })
+const options = {
+    default: { first: "#67236A", second: '#E1D3E1' }
+}
+
+const current = Object.keys(options).includes(props.severity) ? options[props.severity] : options.default
+
 </script>
 <template>
-    <div class="row mb-4">
-        <div class="col">
-            <div class="price_header d-flex justify-content-between">
-                <div>
-                    <p class="mb-0">
-                        <b>Solution Type:</b> {{ order?.solution_type.name }}
-                        <Link :href="route('orders.configure', { order: order.id })" class="btn btn-sm btn-secondary py-0">Edit</Link>
-                    </p>
-                    <p class="mb-0" v-if="order?.address_line1">
-                        <b>Address:</b> {{ order?.address_line1 }}
-                        <Link :href="route('orders.configure', { order: order.id })" class="btn btn-sm btn-secondary py-0">Edit address</Link>
-                    </p>
-                </div>
-            </div>
+    <div class="info-box d-flex mb-4 py-3" :style="{ backgroundColor: current.second, borderColor: current.first }">
+        <div class="px-3">
+            <font-awesome-icon :icon="['fas', 'circle-info']" :style="{ color: current.first, fontSize: '20px' }" />
+        </div>
+        <div>
+            <slot></slot>
         </div>
     </div>
 </template>

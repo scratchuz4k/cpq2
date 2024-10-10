@@ -18,8 +18,6 @@ const form = reactive({
     solutionCheck: true
 })
 
-const step = ref(0)
-
 const submit = () => {
     try {
         router.post('/orders',
@@ -36,6 +34,11 @@ const submit = () => {
         alert(ex.response.data.message)
     }
 }
+const items = ref([
+    { label: 'Home', url: '/dashboard' },
+    { label: 'Create a Quote' },
+]);
+
 
 </script>
 
@@ -43,47 +46,42 @@ const submit = () => {
 
     <Head title="Create a Quote" />
     <AuthenticatedLayout>
-        <div class="d-flex justify-content-between" style="justify-content: space-between;">
-            <h1>Create a Quote<span>.</span></h1>
-        </div>
 
-        <div class="panel">
-            <form @submit.prevent="submit">
-                <template v-if="step == 0">
-                    <div class="row mb-3">
-                        <div class="col-6">
-                            <div class="mb-3">
-                                <label for="account_id" class="form-label">Select the Account:</label>
-                                <select id="account_id" class="form-select" v-model="form.account">
-                                    <option :value="null">Select an account</option>
-                                    <option v-for="account in accounts" :value="account">{{ account.name }}</option>
-                                </select>
+        <Header title="Create a Quote" :breadcrumbs="items"></Header>
+        <h5 class="font-bold mb-3">Start a Quote</h5>
+
+        <form @submit.prevent="submit">
+            <div class="row mb-3">
+                <div class="col-6">
+                    <div class="panel mb-3 ">
+                        <div class="row">
+                            <div class="col-8">
+                                <h5 class="font-bold mb-3">Select an account</h5>
+                                <div class="mb-3">
+                                    <label for="account_id" class="form-label">Account <span
+                                            class="text-primary">*</span></label>
+                                    <select id="account_id" class="form-select" v-model="form.account">
+                                        <option :value="null">Select an account</option>
+                                        <option v-for="account in accounts" :value="account">{{ account.name }}</option>
+                                    </select>
+                                </div>
+                                or create a <a href="/accounts/create" class="text-primary">new account</a>
                             </div>
-                            Didnt find the account? <a href="/accounts/create"> Create new!</a>
                         </div>
                     </div>
-                    <div class="row mb-3">
-                        <div class="col ">
-                            <button class="btn btn-primary" :disabled="form.account == null" type="button"
-                                @click="() => step++">Continue</button>
-                        </div>
-                    </div>
-                </template>
-                <template v-if="step == 1">
-                    <div class="row mb-3">
-                        <div class="col d-flex  justify-content-end">
-                            <button class="btn btn-primary" type="button" @click="() => step--">Back</button>
+                    <OrdersSolutionView v-model="form" :solution_types="solution_types"></OrdersSolutionView>
+                    <div class="row mb-3 ">
+                        <div class="col d-flex justify-content-end">
                             <button class="btn btn-primary mx-2" type="submit" :disabled="form.solutionCheck">
-                                Create
+                                <font-awesome-icon :icon="['fas', 'plus']" class="me-2"></font-awesome-icon>Create quote
                                 <div v-if="form.isLoading" class="spinner-border  spinner-border-sm" role="status">
                                     <span class="visually-hidden">Loading...</span>
                                 </div>
                             </button>
                         </div>
                     </div>
-                    <OrdersSolutionView v-model="form" :solution_types="solution_types"></OrdersSolutionView>
-                </template>
-            </form>
-        </div>
+                </div>
+            </div>
+        </form>
     </AuthenticatedLayout>
 </template>

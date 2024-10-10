@@ -50,6 +50,12 @@ return [
             'visibility' => 'private',
             'throw' => true,
         ],
+        'products' => [
+            'driver' => 'local',
+            'root' => storage_path('app/products'),
+            'visibility' => 'public',
+            'throw' => true,
+        ],
 
         's3' => [
             'driver' => 's3',

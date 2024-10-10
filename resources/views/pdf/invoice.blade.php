@@ -168,10 +168,10 @@
                             <td>
                                 {{$key}}
                             </td>
-                            <td class="text-center"><img class="img-provider" style="max-width: 60px; max-height: 20px; width: auto; height: auto;" src="{{ $item->image ?? env('APP_URL').'/images/providers/' . $item->data?->providerKey. '.png' }}"></td>
+                            {{-- <td class="text-center"><img class="img-provider" style="max-width: 60px; max-height: 20px; width: auto; height: auto;" src="{{ $item->image ?? env('APP_URL').'/images/providers/' . $item->data?->providerKey. '.png' }}"></td>
                             <td>
                                 {{ $item->name }}
-                                {{-- !empty($item['data']['additionalInfo']['Primary Router Model']) ? '<br/><span data-bs-toggle="tooltip" data-bs-title="Primary Router Model" data-bs-custom-class="tooltip-small" class="badge border border-secondary text-secondary opacity-75"><i class="d-print-none fa-solid fa-plug me-1"></i>' . $item['data']['additionalInfo']['Primary Router Model'] . '</span>' : '' --}}
+
                             </td>
                             <td>{{ $item->data?->quoteId }}</td>
                             <td>Pay Monthly</td>
@@ -184,7 +184,8 @@
                             </td>
                             <td class="text-end">
                                 {{$item->quantity * ($item->data?->priceMonthly?? 0) +  ($item->data?->priceInstall?? 0)}}
-                            </td>
+                            </td> --}}
+                            {{-- !empty($item['data']['additionalInfo']['Primary Router Model']) ? '<br/><span data-bs-toggle="tooltip" data-bs-title="Primary Router Model" data-bs-custom-class="tooltip-small" class="badge border border-secondary text-secondary opacity-75"><i class="d-print-none fa-solid fa-plug me-1"></i>' . $item['data']['additionalInfo']['Primary Router Model'] . '</span>' : '' --}}
                         </tr>
                         @endforeach
 

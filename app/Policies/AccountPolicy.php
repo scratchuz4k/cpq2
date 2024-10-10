@@ -8,8 +8,6 @@ use Illuminate\Auth\Access\Response;
 
 class AccountPolicy
 {
-
-
     private string $model = "account";
     /**
      * Determine whether the user can view any models.

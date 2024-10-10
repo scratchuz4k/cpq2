@@ -1,9 +1,10 @@
 <template>
-    <Range v-if="options.length" v-bind="{
+    <Range v-bind="{
         id: 'speedSlider',
         mode: 'range',
         config: speedsliderConfig,
-        options: props.options
+        options: props.options,
+        disabled: props.disabled
     }" v-model="range" />
 </template>
 
@@ -12,11 +13,12 @@ import { ref, watch } from 'vue';
 
 const props = defineProps({
     options: Array,
-    modelValue: Object
+    modelValue: Array,
+    disabled: Boolean,
 })
 const emit = defineEmits(["update:modelValue"])
 
-const range = ref([])
+const range = ref([...props.modelValue])
 watch(range, () => {
     emit("update:modelValue", range.value)
 })
@@ -47,7 +49,7 @@ const speedFormatter = (value) => {
 }
 
 const speedsliderConfig = {
-    start: [0, 10000],
+    start: props.modelValue ?? [100, 1000],
     connect: true,
     range: {
         min: [0, 10],

@@ -409,6 +409,7 @@ const AuraReformed = definePreset(Aura, {
             }
         },
         breadcrumb: {
+            background: "none",
             padding: ".5rem 0"
         },
         multiselect: {
@@ -427,7 +428,8 @@ const AuraReformed = definePreset(Aura, {
                     padding: " .3rem"
                 }
             }
-        }
+        },
+        paginator: { nav: { button: { selected: { background: "{surface.100}", color: "{text.color}" } } } }
     }
 });
 

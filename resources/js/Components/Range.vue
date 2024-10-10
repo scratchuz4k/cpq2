@@ -1,10 +1,10 @@
 <template>
-    <div :id="id" class="mt-2 slider"></div>
+    <div :id="id" class="mt-2 slider" :disabled="props.disabled ? true : null"></div>
 </template>
 <script setup>
 import noUiSlider from 'nouislider/dist/nouislider.mjs';
 import 'nouislider/dist/nouislider.css';
-import { onMounted, ref } from 'vue';
+import { onMounted } from 'vue';
 import { v4 as uuidv4 } from 'uuid';
 
 const props = defineProps({
@@ -14,6 +14,7 @@ const props = defineProps({
             return `${uuidv4()}`
         }
     },
+    disabled: Boolean,
     options: Array,
     range: Object,
     step: Number,
@@ -31,7 +32,7 @@ onMounted(() => {
     let slider = document.getElementById(props.id)
     let conf = props.config ? props.config :
         {
-            start: [0, props.options.length - 1],
+            start: props.modelValue ?? [0, props.options.length - 1],
             connect: true,
             range: range,
             step: step,
@@ -48,4 +49,15 @@ onMounted(() => {
         emit('update:modelValue', items)
     });
 })
+
+emitter.on(`${props.id}-reset`, (e) => {
+    let slider = document.getElementById(props.id)
+    slider.noUiSlider.reset();
+    let items = slider.noUiSlider.get()
+    Object.keys(items).forEach((key) => {
+        items[key] = items[key] * 1
+    })
+    emit('update:modelValue', items)
+})
+
 </script>

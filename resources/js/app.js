@@ -27,6 +27,11 @@ window.notyf = new Notyf({
 
 window.notyf = notyf;
 
+
+import mitt from 'mitt'
+
+window.emitter = mitt()
+
 /* import the fontawesome core */
 import { library } from '@fortawesome/fontawesome-svg-core'
 

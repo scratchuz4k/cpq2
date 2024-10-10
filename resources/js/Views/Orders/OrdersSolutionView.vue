@@ -1,14 +1,16 @@
 <script setup>
-import { ref } from "vue"
+import _ from "lodash";
+import { ref, watch } from "vue"
 
 
-defineProps({
+const props = defineProps({
     solution_types: Object,
     modelValue: Object
 })
 
 const GOOGLE_MAPS_API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY
 const solutionChange = (form) => {
+    addressPostCode.value = ''
     form.postCode = ''
     form.address = null
     form.position = null
@@ -28,10 +30,10 @@ const solutionChange = (form) => {
     form.solutionCheck = false
 }
 
+const addressPostCode = ref('')
 const addresses = ref([])
-const addressSearch = async (form) => {
+const addressSearch = _.debounce(async (form) => {
     if (!form.postCode) {
-        alert("Post Code is required")
         return
     }
 
@@ -50,9 +52,9 @@ const addressSearch = async (form) => {
         addresses.value = res.data.body.addresses
 
     } catch (ex) {
-        alert(ex.response.data.message)
+        notyf.error(ex.response.data.message)
     }
-}
+}, 1000)
 
 const addressSelect = async (form) => {
     form.isLoading = true
@@ -66,78 +68,72 @@ const addressSelect = async (form) => {
     }
 }
 
+watch(addressPostCode, () => {
+    props.modelValue.postCode = addressPostCode.value
+    addressSearch(props.modelValue)
+})
 </script>
 <template>
-    <p style="font-weight: bold;">Select a solution type and address to get started</p>
-    <div class="row">
-        <div class="col-6">
-            <div class="mb-3">
-                <label class="form-label">Solution Type</label>
-                <select class="form-select" @change="solutionChange(modelValue)" v-model="modelValue.solutionType">
-                    <option :value="null">Select an option</option>
-                    <option v-for="(solution, key) in solution_types" :value="solution">
-                        {{ solution.name }}
-                    </option>
-                </select>
-            </div>
+    <div class="panel mb-3">
 
-            <template v-if="modelValue.solutionType?.code == 3">
-                <div class="mb-3 " id="postcode">
-                    <label for="input_address" class="form-label">Enter postcode</label>
-                    <div class="d-flex">
-                        <input class="form-control me-3" id="input_address" placeholder="B11 1SH" name="postcode"
-                            v-model="modelValue.postCode">
-                        <button type="button" class="btn btn-secondary"
-                            @click="addressSearch(modelValue)">Search</button>
-                    </div>
-                </div>
-
-                <div class="mb-3" id="address" v-if="addresses.length">
-                    <label for="select_address">Select address</label>
-                    <select class="form-select" id="select_address" @change="addressSelect(modelValue)"
-                        v-model="modelValue.address">
-                        <option :value="null">Select address</option>
-                        <option v-for="(address, key) in addresses" :value="address">{{ address.label }}
+        <div class="row">
+            <div class="col-8">
+                <h5 class="font-bold mb-3">Now, select an solution type</h5>
+                <div class="mb-3">
+                    <label class="form-label">Solution Type <span class="text-primary">*</span></label>
+                    <select class="form-select" @change="solutionChange(modelValue)" v-model="modelValue.solutionType">
+                        <option :value="null">Select an option</option>
+                        <option v-for="(solution, key) in solution_types" :value="solution">
+                            {{ solution.name }}
                         </option>
                     </select>
                 </div>
-            </template>
-        </div>
-        <div class="col-6">
-            <div v-if="modelValue.address" class="row p-3" id="location">
-                <div class="col">
-                    <p style="font-weight: bold;">Location summary</p>
-                    <div class="d-flex flex-column flex-lg-row justify-content-between mb-3">
-                        <div>
-                            <p id="location_company" class="mb-2">
-                                <b>{{ modelValue.account?.name }}</b>
-                            </p>
-                            <p id="location_address">
-                                <b>{{ modelValue.address.addressparts.PremisesName }}</b>
-                                {{ modelValue.address.addressparts.ThoroughfareName }},
-                                {{ modelValue.address.addressparts.ThoroughfareNumber }},
-                                {{ modelValue.address.addressparts.SubPremises }}
-                                <br>
-                                {{ modelValue.address.addressparts.PostCode }}
-                                {{ modelValue.address.addressparts.PostTown }}
-                                <br>
-                                <br>
-                                {{ modelValue.address.addressparts.Country }}
-                                <br>
-                                <br>
-                                <font-awesome-icon :icon="['fas','map-pin']" class="me-2"></font-awesome-icon>{{ modelValue.position?.lat }}, {{ modelValue.position?.lon }}
-                            </p>
-                            <p><i class="fa fa-location-dot"></i> <span id="location_geo"></span></p>
+                <template v-if="modelValue.solutionType?.code == 3">
+                    <div class="mb-3" id="postcode">
+                        <label for="input_address" class="form-label">Enter postcode <span
+                                class="text-primary">*</span></label>
+                        <div class="d-flex">
+                            <input class="form-control" id="input_address" placeholder="B11 1SH" name="postcode"
+                                v-model="addressPostCode">
                         </div>
                     </div>
-                </div>
-                <div class="col">
-                    <iframe v-if="modelValue.position" class="map" width="250" height="250" frameborder="0" style="border:0"
-                        referrerpolicy="no-referrer-when-downgrade"
-                        :src="`https://www.google.com/maps/embed/v1/place?key=${GOOGLE_MAPS_API_KEY}&q=${modelValue.position.lat}, ${modelValue.position.lon}`" allowfullscreen>
-                    </iframe>
-                </div>
+
+                    <div class="mb-3" id="address" v-if="addresses.length">
+                        <label class="form-label" for="select_address">Select address <span
+                                class="text-primary">*</span></label>
+                        <select class="form-select" id="select_address" @change="addressSelect(modelValue)"
+                            v-model="modelValue.address">
+                            <option :value="null">Select address</option>
+                            <option v-for="(address, key) in addresses" :value="address">{{ address.label }}
+                            </option>
+                        </select>
+                    </div>
+                </template>
             </div>
         </div>
     </div>
+    <InfoBox v-if="modelValue.address">
+        <p id="location_company" class="mb-2">
+            {{ modelValue.account?.name }}
+        </p>
+        <p class="mb-0" id="location_address">
+            {{ modelValue.address.addressparts.PremisesName }}
+            {{ modelValue.address.addressparts.ThoroughfareName }},
+            {{ modelValue.address.addressparts.ThoroughfareNumber }},
+            {{ modelValue.address.addressparts.SubPremises }}
+            {{ modelValue.address.addressparts.PostCode }}
+            {{ modelValue.address.addressparts.PostTown }}
+            {{ modelValue.address.addressparts.Country }}
+            <br>
+            <font-awesome-icon :icon="['fas', 'map-pin']" class="me-2"></font-awesome-icon>{{
+                modelValue.position?.lat }}, {{ modelValue.position?.lon }}
+        </p>
+        <!--<p><i class="fa fa-location-dot"></i> <span id="location_geo"></span></p>
+        <iframe v-if="modelValue.position" class="map" width="250" height="250" frameborder="0" style="border:0"
+                referrerpolicy="no-referrer-when-downgrade"
+                :src="`https://www.google.com/maps/embed/v1/place?key=${GOOGLE_MAPS_API_KEY}&q=${modelValue.position.lat}, ${modelValue.position.lon}`"
+                allowfullscreen>
+            </iframe> -->
+    </InfoBox>
+
 </template>

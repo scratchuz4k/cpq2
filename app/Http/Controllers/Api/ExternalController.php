@@ -4,10 +4,9 @@ namespace App\Http\Controllers\Api;
 
 use App\Helpers\Api\CloudMarketAddress;
 use App\Helpers\Api\ShopBlocksApi;
-use App\Models\Price;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
-use App\Helpers\Api\CloudMarketApi;
+use App\Services\CloudMarketService;
 use App\Helpers\Api\OpenreachLookup;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Http;
@@ -15,6 +14,7 @@ use Illuminate\Support\Facades\Cache;
 
 class ExternalController extends Controller
 {
+    public function __construct(protected CloudMarketService $cloudMarketService){}
     /**
      * Request Openreach Api to get all address with a Postal Code.
      */
@@ -80,9 +80,7 @@ class ExternalController extends Controller
             town: $request->input('town', null),
         );
 
-        (new CloudMarketApi())->get($request->get('connectivityType'), $address);
-
-        // return $this->recalculatePrices($res);
+        return $this->cloudMarketService->get($request->get('connectivityType'), $address, $request->input('filters', []));
     }
 
     public function getArticlesFromShopBlocks(Request $request)
@@ -110,29 +108,5 @@ class ExternalController extends Controller
 
             return $products;
         });
-    }
-
-    private function recalculatePrices($prices)
-    {
-        foreach ($prices as $key => $data) {
-
-            if (empty($data->providerKey)) {
-                continue;
-            }
-
-            $params = [
-                'supplier' => $data->providerKey,
-                'prices' => [
-                    'priceMonthly',
-                    'priceAnnual',
-                    'priceInstall',
-                ],
-                'data' => json_decode(json_encode($data), 1),
-            ];
-
-            $prices[$key] = Price::calculate($params);
-        }
-
-        return $prices;
     }
 }

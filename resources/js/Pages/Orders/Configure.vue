@@ -1,7 +1,7 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, router } from '@inertiajs/vue3';
-import { reactive, ref } from 'vue'
+import { reactive } from 'vue'
 
 
 const props = defineProps({
@@ -39,7 +39,8 @@ const submit = () => {
 </script>
 
 <template>
-    <Head title="Create a Quote" />
+
+    <Head title="Configure a Quote" />
     <AuthenticatedLayout :order="order">
         <form @submit.prevent="submit">
             <div class="row mb-3">
@@ -65,8 +66,10 @@ const submit = () => {
                     </button>
                 </div>
             </div>
-            <div class="panel">
-                <OrdersSolutionView v-model="form" :solution_types="solution_types"></OrdersSolutionView>
+            <div class="row mb-3">
+                <div class="col-6">
+                    <OrdersSolutionView v-model="form" :solution_types="solution_types"></OrdersSolutionView>
+                </div>
             </div>
         </form>
     </AuthenticatedLayout>

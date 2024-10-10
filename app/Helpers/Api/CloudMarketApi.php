@@ -2,30 +2,24 @@
 
 namespace App\Helpers\Api;
 
-use JsonMachine\Items;
-use GuzzleHttp\Psr7\StreamWrapper;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Cache;
-use Symfony\Component\HttpFoundation\StreamedResponse;
+
 
 class CloudMarketApi
 {
-
     public function __construct() {}
 
-    public function get($connectivityType, CloudMarketAddress $address)
+    public static function getQuotes($connectivityType,  CloudMarketAddress $address)
     {
-        if (env('PARTNER_QUOTE_SERVICE_ENDPOINT') == 'mock') {
-            $mock_prices = storage_path('mocks/prices.json');
-            if (!is_file($mock_prices)) {
-                return [];
-            }
-            return json_decode(file_get_contents($mock_prices), true);
-        }
 
-        $res = Http::withOptions(['stream' => true])->timeout(360)->withToken(env('ALPNET_API_TOKEN'))
+        $url =  env('PARTNER_QUOTE_SERVICE_URL', 'https://cpq-poc-uat-api.cloudmarket.com');
+        $requestTimeout = 360;
+
+        Log::debug("Fetching produts for: " . $address->toString());
+        return Http::withOptions(['stream' => true])->timeout($requestTimeout)->withToken(env('ALPNET_API_TOKEN'))
             ->get(
-                env('PARTNER_QUOTE_SERVICE_URL', 'https://cpq-poc-uat-api.cloudmarket.com') . '/PartnerQuoteService/' . env('PARTNER_QUOTE_SERVICE_ENDPOINT', 'TestNoParams'),
+                $url . '/PartnerQuoteService/' . env('PARTNER_QUOTE_SERVICE_ENDPOINT', 'TestNoParams'),
                 [
                     'ConnectivityType' => $connectivityType,
                     'Address1.Postcode' => $address->postCode,
@@ -52,12 +46,5 @@ class CloudMarketApi
                     'SupplierApiConnections.Giacom_Connection.Password' => env('GIACOM_CONNECTION_PASSWORD', '2345678'),
                 ]
             );
-
-
-        $stream = StreamWrapper::getResource($res->toPsrResponse()->getBody());
-        foreach (Items::fromStream($stream) as $key => $value) {
-            $value = json_encode((array)$value);
-            echo "Key: {$value}. Value: {json_encode($value, true)}." . PHP_EOL;
-        }
     }
 }
