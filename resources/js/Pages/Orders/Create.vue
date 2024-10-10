@@ -51,12 +51,23 @@ const submit = () => {
             <form @submit.prevent="submit">
                 <template v-if="step == 0">
                     <div class="row mb-3">
-                        <div class="col d-flex justify-content-end">
+                        <div class="col-6">
+                            <div class="mb-3">
+                                <label for="account_id" class="form-label">Select the Account:</label>
+                                <select id="account_id" class="form-select" v-model="form.account">
+                                    <option :value="null">Select an account</option>
+                                    <option v-for="account in accounts" :value="account">{{ account.name }}</option>
+                                </select>
+                            </div>
+                            Didnt find the account? <a href="/accounts/create"> Create new!</a>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col ">
                             <button class="btn btn-primary" :disabled="form.account == null" type="button"
                                 @click="() => step++">Continue</button>
                         </div>
                     </div>
-                    <OrdersAccountView v-model="form" :accounts="accounts"></OrdersAccountView>
                 </template>
                 <template v-if="step == 1">
                     <div class="row mb-3">

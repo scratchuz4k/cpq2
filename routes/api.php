@@ -11,26 +11,33 @@ use App\Http\Controllers\Api\OrderItemController;
 use App\Http\Controllers\Api\PermissionController;
 use App\Http\Controllers\Api\TenantController;
 use App\Http\Controllers\Api\SolutionTypeController;
+use App\Http\Controllers\Api\SupplierController;
+use App\Http\Controllers\Api\RegionController;
+use App\Http\Controllers\Api\SpaController;
+use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Auth\CreateTokenController;
 
 Route::prefix("external")->group(function () {
     Route::post("get-address-by-postcode", [ExternalController::class, "getAddressesByPostCode"]);
     Route::post("get-position-by-address", [ExternalController::class, "getPositionByAddress"]);
-    Route::post("get-articles-from-cloud-market", [ExternalController::class, "getArticlesFromCloudMarket"]);
+    Route::get("get-articles-from-cloud-market", [ExternalController::class, "getArticlesFromCloudMarket"]);
     Route::post("get-articles-from-shop-blocks", [ExternalController::class, "getArticlesFromShopBlocks"]);
 });
 
 
 Route::apiResources([
-    "products" => ProductController::class,
-    "addresses" => AddressController::class,
-    "orders" => OrderController::class,
-    "order-items" => OrderItemController::class,
-    "solution-types" => SolutionTypeController::class,
-    "permissions" => PermissionController::class,
-    "tenant" => TenantController::class,
-    "accounts" => AccountController::class,
-    "brands" => BrandController::class
+    'products' => ProductController::class,
+    'addresses' => AddressController::class,
+    'orders' => OrderController::class,
+    'order-items' => OrderItemController::class,
+    'solution-types' => SolutionTypeController::class,
+    'permissions' => PermissionController::class,
+    'accounts' => AccountController::class,
+    'brands' => BrandController::class,
+    'suppliers' => SupplierController::class,
+    'regions' => RegionController::class,
+    'spas' => SpaController::class,
+    'users' => UserController::class
 ]);
 
 Route::controller(CreateTokenController::class)->group(function () {

@@ -24,7 +24,10 @@ class OrderPolicy
      */
     public function view(User $user, Order $order): bool
     {
-        return true;
+        if ($user->can("view $this->model")) {
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -32,7 +35,10 @@ class OrderPolicy
      */
     public function create(User $user): bool
     {
-        return  true;
+        if ($user->can("create $this->model")) {
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -40,7 +46,10 @@ class OrderPolicy
      */
     public function update(User $user, Order $order): bool
     {
-        return  true;
+        if ($user->can("update $this->model")) {
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -48,7 +57,10 @@ class OrderPolicy
      */
     public function delete(User $user, Order $order): bool
     {
-        return  true;
+        if ($user->can("delete $this->model")) {
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -56,7 +68,10 @@ class OrderPolicy
      */
     public function restore(User $user, Order $order): bool
     {
-        return  true;
+        if ($user->can("restore $this->model")) {
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -64,6 +79,9 @@ class OrderPolicy
      */
     public function forceDelete(User $user, Order $order): bool
     {
-        return  true;
+        if ($user->can("forceDelete $this->model")) {
+            return true;
+        }
+        return false;
     }
 }

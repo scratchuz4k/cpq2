@@ -8,7 +8,11 @@ use App\Http\Controllers\Web\TenantController;
 use App\Http\Controllers\Web\AccountController;
 use App\Http\Controllers\Web\ProfileController;
 use App\Http\Controllers\Web\DashboardController;
-
+use App\Http\Controllers\Web\ProductController;
+use App\Http\Controllers\Web\SupplierController;
+use App\Http\Controllers\Web\RegionController;
+use App\Http\Controllers\Web\UserController;
+use App\Http\Controllers\Web\SpaController;
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('index');
@@ -18,12 +22,20 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::get('/orders/{order}/download', [OrderController::class, 'download'])->name('orders.download');
     Route::get('/orders/{order}/configure', [OrderController::class, 'configure'])->name('orders.configure');
+
+    Route::post('/users/import', [UserController::class, 'importUsers'])->name('users.import');
+
     Route::resources([
         'prices' => PriceController::class,
         'orders' => OrderController::class,
         'accounts' => AccountController::class,
         'tenant' => TenantController::class,
-        'brands' => BrandController::class
+        'brands' => BrandController::class,
+        'products' => ProductController::class,
+        'suppliers' => SupplierController::class,
+        'regions' => RegionController::class,
+        'spas' => SpaController::class,
+        'users' => UserController::class
     ]);
 
     Route::middleware('auth')->group(function () {

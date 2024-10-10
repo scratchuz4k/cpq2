@@ -43,14 +43,18 @@ class RolePermissionSeeder extends Seeder
                 'price' => 'Price',
                 'product' => 'Product',
                 'region' => 'Region',
+                'brand' => 'Brand',
+                'supplier' => 'Supplier',
+                'spa' => 'Spa',
+                'user' => 'User'
             ],
         ];
 
         $roles = [
             'Super Admin' => [],
             'Support Agent' => ['merchant'],
-            'Company Admin' => ['order', 'order_items', 'merchant', 'account',  'price', 'product', 'region', 'tenant'],
-            'Sales Rep' => ['order', 'order_items', 'account']
+            'Company Admin' => ['order', 'order_items', 'merchant', 'account',  'price', 'product', 'region', 'tenant', 'brand', 'supplier', 'spa', 'user'],
+            'Sales Rep' => ['order', 'order_items', 'account', 'brand', 'supplier']
         ];
 
         foreach ($simplePermissions as $key => $pe) {

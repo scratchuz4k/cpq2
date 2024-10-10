@@ -2,19 +2,32 @@
 
 namespace App\Http\Controllers\Api;
 
-use Illuminate\Http\Request;
+use App\Helpers\DataProvider;
 use App\Http\Controllers\BaseController;
+use App\Http\Resources\ProductResource;
+use App\Models\Product;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class ProductController extends BaseController
 {
+    protected $model = Product::class;
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request)
+    public function index()
     {
-        //        
-    }
+        $dataProvider = new DataProvider(Product::class);
 
+        try {
+            $data = $dataProvider->get();
+        } catch (Exception $e) {
+            Log::debug($e->getMessage());
+            return $e->getMessage();
+        }
+
+        return ProductResource::collection($data);
+    }
 
     /**
      * Store a newly created resource in storage.
@@ -27,7 +40,7 @@ class ProductController extends BaseController
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Product $product)
     {
         //
     }
@@ -35,7 +48,7 @@ class ProductController extends BaseController
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Product $product)
     {
         //
     }
@@ -43,8 +56,9 @@ class ProductController extends BaseController
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Product $product)
     {
-        //
+        $product->delete();
     }
 }
+
