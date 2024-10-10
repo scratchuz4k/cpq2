@@ -25,7 +25,7 @@ class AccountRepository
                     return $contact->id === $item['id'];
                 });
             } else {
-                $contact = Contact::create([...$item, 'account_id' => $account->id]);
+                $contact = Contact::create([...$item, 'account_id' => $account->id, 'tenant_id' => app('currentTenant')->id]);
             }
         }
 

@@ -83,7 +83,7 @@ const items = ref([
             </div>
             <h2>Contacts</h2>
             <Accordion value="0">
-                <AccordionPanel v-for="(contact, key) in account.contacts" :key="key" :value="key">
+                <AccordionPanel v-for="(contact, key) in account.contacts" :key="'account-' + key" :value="key">
                     <AccordionHeader>
                         <div class="d-flex justify-content-between align-items-center w-100 pe-3">
                             <p class="m-0">
