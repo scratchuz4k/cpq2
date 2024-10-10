@@ -49,7 +49,7 @@ class AccountController extends BaseController
             }
             throw new \Exception($e);
         }
-        return redirect()->route('accounts.edit', ['account' => $account->id]);
+        return redirect()->route('accounts.index');
     }
 
     /**
@@ -84,7 +84,7 @@ class AccountController extends BaseController
             }
             throw new \Exception($e);
         }
-        return redirect()->route('accounts.edit', ['account' => $account->id]);
+        return redirect()->route('accounts.index');
     }
 
     /**
