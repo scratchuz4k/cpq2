@@ -18,7 +18,7 @@ class CreateTokenController extends BaseController
     public function create(Request $request)
     {
         if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
-            $tenant = Tenant::findOrFail( app("currentTenant")->id);
+            $tenant = Tenant::findOrFail( session()->get('tenant_id'));
             $success['name'] =  $tenant->name;
             $success['token'] = $tenant->createToken('CloudMarket')->plainTextToken;
 

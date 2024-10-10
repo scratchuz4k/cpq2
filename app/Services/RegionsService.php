@@ -12,7 +12,7 @@ class RegionsService
         return DB::transaction(function () use ($array) {
             $region = Region::create([
                 ...$array,
-                "tenant_id" => app("currentTenant")->id,
+                "tenant_id" => session()->get('tenant_id'),
             ]);
 
 
@@ -26,7 +26,7 @@ class RegionsService
             $region->update(
                 [
                     ...$array,
-                    'tenant_id' => app('currentTenant')->id,
+                    'tenant_id' => session()->get('tenant_id'),
                 ]
             );
 

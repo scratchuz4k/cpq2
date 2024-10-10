@@ -12,7 +12,7 @@ class BrandService
         return DB::transaction(function () use ($array) {
             $brand = Brand::create([
                 ...$array,
-                "tenant_id" => app("currentTenant")->id,
+                "tenant_id" => session()->get('tenant_id'),
             ]);
 
 
@@ -26,7 +26,7 @@ class BrandService
             $brand->update(
                 [
                     ...$array,
-                    'tenant_id' => app('currentTenant')->id,
+                    'tenant_id' => session()->get('tenant_id'),
                 ]
             );
 

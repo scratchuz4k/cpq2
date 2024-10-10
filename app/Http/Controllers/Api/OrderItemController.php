@@ -29,7 +29,7 @@ class OrderItemController extends BaseController
             $orderItem = DB::transaction(function () use ($request) {
                 $orderItem = OrderItem::create([
                     ...$request->all(),
-                    "tenant_id" => app("currentTenant")->id,
+                    "tenant_id" => session()->get('tenant_id'),
                 ]);
 
                 return $orderItem;
@@ -60,7 +60,7 @@ class OrderItemController extends BaseController
             $orderItem = DB::transaction(function () use ($request, $orderItem) {
                 $orderItem = $orderItem->update([
                     ...$request->all(),
-                    "tenant_id" => app("currentTenant")->id,
+                    "tenant_id" => session()->get('tenant_id'),
                 ]);
 
                 return $orderItem;

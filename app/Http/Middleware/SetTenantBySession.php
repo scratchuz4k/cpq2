@@ -6,7 +6,7 @@ use Closure;
 use App\Models\Tenant;
 use Illuminate\Support\Facades\Log;
 
-class SetTenant
+class SetTenantBySession
 {
     public function handle($request, Closure $next)
     {

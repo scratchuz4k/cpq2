@@ -1,6 +1,5 @@
 <?php
 
-use App\Helpers\RebateTenantFinder;
 use Illuminate\Broadcasting\BroadcastEvent;
 use Illuminate\Events\CallQueuedListener;
 use Illuminate\Mail\SendQueuedMailable;

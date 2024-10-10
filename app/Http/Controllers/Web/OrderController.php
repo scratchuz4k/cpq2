@@ -120,7 +120,7 @@ class OrderController extends BaseController
         $totals = $order->totals();
         $solution_types = SolutionType::get();
 
-        $dir = 'pdf/' . app('currentTenant')->id;
+        $dir = 'pdf/' . session()->get('tenant_id');
 
         if (!Storage::makeDirectory($dir)) {
             throw new \Exception("Could not create directory for PDFs");

@@ -26,7 +26,7 @@ class TenantController extends BaseController
         $isSuperAdmin = auth()->user()->hasRole('Super Admin');
         $tenants = $isSuperAdmin
             ? Tenant::with('file')->get()
-            : Tenant::with('file')->findOrFail(app('currentTenant')->id);
+            : Tenant::with('file')->findOrFail(session()->get('tenant_id'));
 
         return Inertia::render('Tenant/Index', [
             'isSuperAdmin' => $isSuperAdmin,
