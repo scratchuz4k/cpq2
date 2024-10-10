@@ -154,8 +154,8 @@ watch(search, () => {
             </div>
         </div>
     </nav>
-    <Dialog v-model:visible="visible" modal :style="{ width: '50rem' }"
-        :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
+    <Dialog v-model:visible="visible" modal :style="{ width: '50rem', marginTop:'4rem' }"
+        :breakpoints="{ '1199px': '75vw', '575px': '90vw' }" :draggable="false" position="top">
         <template #header>
             <div class="d-flex align-items-center w-100">
                 <div class="search-control  d-flex align-items-center w-100">
