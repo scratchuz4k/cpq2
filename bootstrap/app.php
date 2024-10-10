@@ -37,7 +37,7 @@ return Application::configure(basePath: dirname(__DIR__))
             SubstituteBindings::class
         ]);
 		$middleware->validateCsrfTokens(except: [
-            'auth/callback'
+            'login/sso/callback'
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

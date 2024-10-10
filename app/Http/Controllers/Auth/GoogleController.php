@@ -17,7 +17,9 @@ class GoogleController extends Controller
             return Inertia::location(Socialite::driver('google')->redirect());
         } catch (\Exception $e) {
             Log::debug("Error on socialite google redirect: " . $e->getMessage());
-            return redirect('/login')->withErrors(['email' => __('An error occurred while redirecting to Google, please contact your administrator.')]);
+            return redirect('/login')->with([
+                'status' => __('An error occurred while redirecting to Google, please contact your administrator'),
+            ]);
         }
     }
 
@@ -41,7 +43,9 @@ class GoogleController extends Controller
             }
         } catch (\Exception $e) {
             Log::debug("Error on socialite google callback: " . $e->getMessage());
-            return redirect('/login')->withErrors(['email' => __('We were unable to log into your account using Google, please contact your administrator.')]);
+            return redirect('/login')->with([
+                'status' => __('We were unable to log into your account using Google, please contact your administrator'),
+            ]);
         }
     }
 }

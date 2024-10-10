@@ -11,6 +11,8 @@ const props = defineProps({
 });
 
 const ssoText = ref(props.modelValue?.file_content)
+const isLoading = ref(false);
+const inputFile = ref(null);
 
 /**
  * Handle file form
@@ -24,12 +26,28 @@ const formFile = reactive({
 });
 
 const submitFileForm = () => {
+    isLoading.value = true
     router.post(`/tenant/${props.tenant.id}`,
     {
         _method: "PUT",
         file: formFile.file
-    }
-)};
+    },
+    {
+        onSuccess: () => {
+            notyf.success(`File uploaded successfully`)
+            isLoading.value = false
+            window.location.reload()
+        },
+        onError: (errors) => {
+            let string = ''
+            Object.keys(errors).forEach((key) => {
+                string += errors[key] + '<br>'
+            })
+            notyf.error(string)
+            isLoading.value = false
+        }
+    })
+};
 
 const submitTextForm = () => {
     router.post(`/tenant/${props.tenant.id}`,
@@ -48,7 +66,13 @@ const submitTextForm = () => {
 
     <form @submit.prevent="submitFileForm" enctype="multipart/form-data">
         <input type="file" accept=".xml" required @input="onFileChange" />
-        <button type="submit" class="btn btn-success">Upload</button>
+        <button type="submit" class="btn btn-success ms-2"  :disabled="isLoading">
+            <span v-if="isLoading">
+                <font-awesome-icon :icon="['fa', 'spinner']" class="fa-spin"></font-awesome-icon>
+                Uploading...
+            </span>
+            <span v-else>Upload</span>
+        </button>
     </form>
     <div class="separator pt-4"> OR </div>
     <div class="mt-4">

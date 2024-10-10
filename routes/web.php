@@ -22,6 +22,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::get('/orders/{order}/download', [OrderController::class, 'download'])->name('orders.download');
     Route::get('/orders/{order}/configure', [OrderController::class, 'configure'])->name('orders.configure');
+
+    Route::post('/users/import', [UserController::class, 'importUsers'])->name('users.import');
+
     Route::resources([
         'prices' => PriceController::class,
         'orders' => OrderController::class,

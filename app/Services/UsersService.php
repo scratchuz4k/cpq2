@@ -2,9 +2,11 @@
 
 namespace App\Services;
 
+use App\Imports\UsersImport;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Maatwebsite\Excel\Facades\Excel;
 
 class UsersService
 {
@@ -49,6 +51,16 @@ class UsersService
             }
 
             return $user;
+        });
+    }
+
+    public function import(array $array)
+    {
+        return DB::transaction(function () use ($array) {
+            $import = new UsersImport();
+            Excel::import($import, $array['file']);
+
+            return $import->results;
         });
     }
 }
