@@ -30,7 +30,13 @@ class AuthenticatedSessionController extends Controller
      */
     public function store(LoginRequest $request): RedirectResponse
     {
-        $request->authenticate();
+        try {
+            $request->authenticate();
+        } catch (\Exception $e) {
+            return back()->with([
+                'status' => $e->getMessage(),
+            ]);
+        }
 
         $request->session()->regenerate();
 
