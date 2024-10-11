@@ -28,10 +28,11 @@ class CloudMarketService
             if (!is_file($mock_prices)) {
                 return [];
             }
-            return json_decode(file_get_contents($mock_prices), true);
+            return $this->cloudMarketRepository->sendResponse(json_decode(file_get_contents($mock_prices), true), $filters);
         }
+
         $path = storage_path("/app/products/");
-        $filename =  $address->toString() . '.json';
+        $filename = $address->toString() . '.json';
         $file = new CloudMarketFile($path, $filename);
 
         if (!Cache::has($filename)) {
