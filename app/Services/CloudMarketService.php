@@ -65,6 +65,12 @@ class CloudMarketService
         $started_at = now();
 
         $prices = [];
+        $tempFilters = [
+            "providerName" => [],
+            "connectivitySupplierName" => [],
+            "contractTermMonths" => []
+        ];
+
         $stream = StreamWrapper::getResource($res->toPsrResponse()->getBody());
         foreach (Items::fromStream($stream) as $key => $value) {
             if (empty($value->providerKey)) {
@@ -79,15 +85,17 @@ class CloudMarketService
                 }
                 $temp['code'] .= $temp[$itemKey];
             }
+
             $prices[] = [...$temp, 'code' => md5(Str::slug($temp['code']))];
-            $file->write($prices, false, null, $started_at);
+            $tempFilters = $this->cloudMarketRepository->processFilters($tempFilters, $temp);
+            $file->write($prices, false, null, $started_at, $tempFilters);
 
             if (($key % 250) == 0) {
                 echo json_encode($this->cloudMarketRepository->sendResponse($file->getContent(), $filters));
             }
         }
 
-        $file->write($prices, false, now(), $started_at);
+        $file->write($prices, false, now(), $started_at, $tempFilters);
         echo json_encode($this->cloudMarketRepository->sendResponse($file->getContent(), $filters));
     }
 }

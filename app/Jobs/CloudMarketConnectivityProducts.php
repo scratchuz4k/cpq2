@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Log;
 use App\Helpers\Api\CloudMarketFile;
 use Illuminate\Support\Facades\Cache;
 use App\Helpers\Api\CloudMarketAddress;
+use App\Repositories\CloudMarketRepository;
 use Spatie\Multitenancy\Jobs\TenantAware;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -30,6 +31,7 @@ class CloudMarketConnectivityProducts implements ShouldQueue, TenantAware
      */
     public function handle(): void
     {
+        $cloudMarketRepository = new CloudMarketRepository();
         $res = CloudMarketApi::getQuotes($this->connectivityType, $this->address);
         $started_at = now();
         if (!$this->file->exists()) {
@@ -37,6 +39,12 @@ class CloudMarketConnectivityProducts implements ShouldQueue, TenantAware
         }
 
         $prices = [];
+        $filters = [
+            "providerName" => [],
+            "connectivitySupplierName" => [],
+            "contractTermMonths" => []
+        ];
+
         $stream = StreamWrapper::getResource($res->toPsrResponse()->getBody());
         foreach (Items::fromStream($stream) as $key => $value) {
             if (empty($value->providerKey)) {
@@ -51,10 +59,12 @@ class CloudMarketConnectivityProducts implements ShouldQueue, TenantAware
                 $temp['code'] .= $temp[$key];
             }
             $prices[] = [...$temp, 'code' => md5(Str::slug($temp['code']))];
-            $this->file->write($prices, false, null, $started_at);
+
+            $filters = $cloudMarketRepository->processFilters($filters, $temp);
+            $this->file->write($prices, false, null, $started_at, $filters);
         }
 
-        $this->file->write($prices, false, now(), $started_at);
+        $this->file->write($prices, false, now(), $started_at, $filters);
     }
 
     /**

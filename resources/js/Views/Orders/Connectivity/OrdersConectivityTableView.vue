@@ -143,11 +143,6 @@ const getArticles = _.debounce(async () => {
         }
     }
 
-    if (!meta.isUpdating) {
-        setTimeout(() => {
-            getArticles()
-        }, 5000)
-    }
 }, 800)
 
 
@@ -271,28 +266,32 @@ getArticles()
                             <div style="width:150px;" class="me-3">
                                 <label for="filter-subprovider" class="form-label">Provider:</label>
                                 <MultiSelect v-model="filters['providerName'].value" style="width:100%"
-                                    :options="filterList.providerName" placeholder="Select a provider" size="small"
-                                    :disabled="!meta.isUpdating">
+                                    :options="Object.keys(filterList.providerName)" placeholder="Select a provider"
+                                    size="small" :disabled="!meta.isUpdating">
                                     <template #option="slotProps">
-                                        <div style="font-size:14px;line-height: 1.5rem;">{{ slotProps.option }} </div>
+                                        <div style="font-size:14px;line-height: 1.5rem;">{{ slotProps.option }}
+                                            ( {{ filterList.providerName[slotProps.option] }} )
+                                        </div>
                                     </template>
                                 </MultiSelect>
                             </div>
                             <div style="width:150px;" class="me-3">
                                 <label for="filter-subprovider" class="form-label">Subprovider:</label>
                                 <MultiSelect v-model="filters['connectivitySupplierName'].value" style="width:100%"
-                                    :options="filterList.connectivitySupplierName" placeholder="Select a subprovider"
-                                    class="me-3 " :disabled="!meta.isUpdating">
+                                    :options="Object.keys(filterList.connectivitySupplierName)"
+                                    placeholder="Select a subprovider" class="me-3 " :disabled="!meta.isUpdating">
                                     <template #option="slotProps">
-                                        <div style="font-size:14px;line-height: 1.5rem;">{{ slotProps.option }}</div>
+                                        <div style="font-size:14px;line-height: 1.5rem;">{{ slotProps.option }}
+                                            ( {{ filterList.connectivitySupplierName[slotProps.option] }} )
+                                        </div>
                                     </template>
                                 </MultiSelect>
                             </div>
                             <div style="width:150px;" class="me-3">
                                 <label for="filter-contract" class="form-label">Contract Length:</label>
                                 <MultiSelect v-model="filters['contractTermMonths'].value" style="width:100%"
-                                    :options="filterList.contractTermMonths" placeholder="Select months" class="me-3 "
-                                    :disabled="!meta.isUpdating">
+                                    :options="Object.keys(filterList.contractTermMonths)" placeholder="Select months"
+                                    class="me-3 " :disabled="!meta.isUpdating">
                                     <template #option="slotProps">
                                         <div style="font-size:14px;line-height: 1.5rem;">{{ slotProps.option }} Months
                                         </div>
@@ -301,12 +300,12 @@ getArticles()
                             </div>
                             <div class="d-flex slider-wrapper me-4">
                                 <label for="bearerSlider" class="form-label">Bearer:</label>
-                                <BearerRange v-model="filters['bearer'].value" :options="filterList.bearer"
+                                <BearerRange v-model="filters['bearer'].value" :options="Object.keys(filterList.bearer)"
                                     :disabled="!meta.isUpdating" />
                             </div>
                             <div class="d-flex slider-wrapper me-5">
                                 <label for="speedSlider" class="form-label">Speed:</label>
-                                <SpeedRange v-model="filters['speed'].value" :options="filterList.speed"
+                                <SpeedRange v-model="filters['speed'].value" :options="Object.keys(filterList.speed)"
                                     :disabled="!meta.isUpdating" />
                             </div>
                             <div>
@@ -354,7 +353,7 @@ getArticles()
                     <div class="alert alert-info mt-3">No results match your filters. <button @click="resetFilters"
                             class="btn btn-primary  btn-sm js-clear-filters ms-3">Clear filters</button></div>
                 </div>
-                <div v-else class="table-wrapper">
+                <div v-if="articles.length" class="table-wrapper">
                     <table id="table_products" class="table  table-bordered table-hover">
                         <thead>
                             <tr>
