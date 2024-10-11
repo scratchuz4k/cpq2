@@ -35,11 +35,6 @@ class CloudMarketService
         $file = new CloudMarketFile($path, $filename);
 
         if (!Cache::has($filename)) {
-            if (!is_dir($path)) {
-                mkdir($path, 0777, true);
-            }
-
-            Cache::put($filename, json_encode(['updated_at' => now()]), 86400);
             $file->write([], true, null, now());
 
             if (env('PARTNER_QUOTE_AS_JOB')) {
@@ -83,7 +78,7 @@ class CloudMarketService
                 }
                 $temp['code'] .= $temp[$itemKey];
             }
-            $prices[] = [ ...$temp, 'code' => md5(Str::slug($temp['code']))];
+            $prices[] = [...$temp, 'code' => md5(Str::slug($temp['code']))];
             $file->write($prices, false, null, $started_at);
 
             if (($key % 250) == 0) {

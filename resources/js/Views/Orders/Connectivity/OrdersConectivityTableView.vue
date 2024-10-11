@@ -76,7 +76,7 @@ const subProviders = {
 
 const getArticles = async () => {
     isLoading.value = true
-    let temp = articles.value = []
+    let temp = []
     Object.keys(filters).forEach((key) => {
         temp.push({ column: key, operator: filters[key].operator, value: filters[key].value })
     })
@@ -163,7 +163,7 @@ const bytesFormatter = (value) => {
 }
 
 const sort = reactive({
-    field: "id",
+    field: "priceMonthly",
     order: "asc"
 })
 
@@ -346,8 +346,7 @@ getArticles()
                     <div class="cpq-bar"></div>
                     <div class="cpq-bar-text">
                         <font-awesome-icon :icon="['fas', 'refresh']" class="fa-spin"></font-awesome-icon>
-                        <i class="fa fa-refresh fa-spin"></i>
-                        Please wait... <span>( Total: {{ meta.overallTotal }} )</span>
+                        Please wait... <span>( {{ meta.overallTotal }} )</span>
                     </div>
                 </div>
                 <div id="no-results" v-else-if="!articles.length">
@@ -470,7 +469,11 @@ getArticles()
     </div>
 </template>
 
-<style scoped>
+<style>
+.p-multiselect-header {
+    display: none!important
+}
+
 tr.active td {
     background-color: var(--light-teal);
 }

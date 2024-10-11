@@ -62,7 +62,7 @@ class CloudMarketRepository
     {
         $data = collect($data);
         foreach ($filters as $filter) {
-            if (is_null($filter['value'])) {
+            if (!$filter['value']) {
                 continue;
             }
             $data = $this->resolveQuery($filter['operator'], $filter['column'], $filter['value'], $data);

@@ -94,12 +94,18 @@ watch(addressPostCode, () => {
                     </select>
                 </div>
                 <template v-if="modelValue.solutionType?.code == 3">
-                    <div class="mb-3" id="postcode">
-                        <label for="input_address" class="form-label">Enter postcode <span
-                                class="text-primary">*</span></label>
+                    <div class="mb-3" id="postcode" style="position: relative">
+                        <label for="input_address" class="form-label">Enter postcode
+                            <span class="text-primary">*</span>
+                            <font-awesome-icon v-if="modelValue.isLoading" :icon="['fas', 'refresh']"
+                                class="fa-spin ms-2"></font-awesome-icon>
+                        </label>
                         <div class="d-flex">
                             <input class="form-control" id="input_address" placeholder="B11 1SH" name="postcode"
                                 v-model="addressPostCode">
+                        </div>
+                        <div style="position: absolute;right: 10px;top: calc(50% + .2em);">
+
                         </div>
                     </div>
 
