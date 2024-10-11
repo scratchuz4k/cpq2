@@ -26,7 +26,7 @@ class TenantController extends BaseController
         $isSuperAdmin = auth()->user()->hasRole('Super Admin');
         $tenants = $isSuperAdmin
             ? Tenant::with('file')->get()
-            : Tenant::with('file')->findOrFail(session()->get('tenant_id'));
+            : [Tenant::with('file')->findOrFail(session()->get('tenant_id'))];
 
         return Inertia::render('Tenant/Index', [
             'isSuperAdmin' => $isSuperAdmin,
@@ -79,7 +79,7 @@ class TenantController extends BaseController
             }
             throw new \Exception($e);
         }
-        return redirect()->route('tenant.index', ['tenant' => $tenant->id]);
+        return to_route('tenant.index');
     }
 
     /**
