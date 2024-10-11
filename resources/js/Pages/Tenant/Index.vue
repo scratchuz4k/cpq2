@@ -17,16 +17,17 @@ const onFileChange = (event, tenant) => {
 
 const submitFileForm = (tenant) => {
     isLoading.value = true
+    if (tenant.temp_file === null) {
+        isLoading.value = false
+        return
+    }
     router.post(`/tenant/${tenant.id}`,
         {
             _method: "PUT",
             file: tenant.temp_file
-        },
-        {
-            onSuccess: () => {
-                notyf.success(`File uploaded successfully`)
-                isLoading.value = false
-
+        },{
+            onSuccess: (page) => {
+                notyf.success("Created with Success")
             },
             onError: (errors) => {
                 let string = ''
@@ -34,6 +35,9 @@ const submitFileForm = (tenant) => {
                     string += errors[key] + '<br>'
                 })
                 notyf.error(string)
+            },
+            onFinish: () => {
+                // tenant.temp_file_name = null
                 isLoading.value = false
             }
         })
@@ -47,7 +51,7 @@ const submitTextForm = (tenant) => {
             sso_text_area: tenant.file ? tenant.file?.file_content :tenant.sso_text
         },{
             onSuccess: () => {
-                notyf.success(`File uploaded successfully`)
+                notyf.success(`Content updated successfully`)
                 isLoading.value = false
 
             },
@@ -78,7 +82,7 @@ const submitTextForm = (tenant) => {
                                 <h4>Import XML file for {{ tenant.name }}</h4>
                                 <p>The file to upload must be a .xml</p>
                                 <form @submit.prevent="submitFileForm(tenant)" enctype="multipart/form-data">
-                                    <input type="file" accept=".xml" required @input="(ev) => onFileChange(ev, tenant)" />
+                                    <input type="file" accept=".xml" required @input="(ev) => onFileChange(ev, tenant)" :value="tenant.temp_file_name"/>
                                     <button type="submit" class="btn btn-success ms-2" :disabled="isLoading">
                                         <span v-if="isLoading">
                                             <font-awesome-icon :icon="['fa', 'spinner']" class="fa-spin"></font-awesome-icon>

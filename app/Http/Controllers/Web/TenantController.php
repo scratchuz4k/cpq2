@@ -3,12 +3,11 @@
 namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\BaseController;
-use App\Models\Resource;
+use App\Http\Requests\TenantUpdateRequest;
 use App\Models\Tenant;
 use App\Services\TenantService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
 class TenantController extends BaseController
@@ -69,7 +68,7 @@ class TenantController extends BaseController
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Tenant $tenant)
+    public function update(TenantUpdateRequest $request, Tenant $tenant)
     {
         try {
             $tenant = $this->tenantService->update($tenant, $request->all());
