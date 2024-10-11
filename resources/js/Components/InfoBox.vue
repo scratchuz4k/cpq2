@@ -13,11 +13,11 @@ const current = Object.keys(options).includes(props.severity) ? options[props.se
 
 </script>
 <template>
-    <div class="info-box d-flex mb-4 py-3" :style="{ backgroundColor: current.second, borderColor: current.first }">
+    <div class="info-box d-flex mb-4 py-3 pe-5" :style="{ backgroundColor: current.second, borderColor: current.first }">
         <div class="px-3">
             <font-awesome-icon :icon="['fas', 'circle-info']" :style="{ color: current.first, fontSize: '20px' }" />
         </div>
-        <div>
+        <div class="w-100">
             <slot></slot>
         </div>
     </div>

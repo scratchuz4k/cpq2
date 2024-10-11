@@ -3,6 +3,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, router } from '@inertiajs/vue3';
 import { reactive, ref } from 'vue'
 
+
 defineProps({
     accounts: Array,
     solution_types: Object,
@@ -69,22 +70,23 @@ const items = ref([
                             </div>
                         </div>
                     </div>
-                    <template v-if="form.account">
-                        <OrdersSolutionView v-model="form" :solution_types="solution_types"></OrdersSolutionView>
-                        <div class="row mb-3 ">
-                            <div class="col d-flex justify-content-end">
-                                <button class="btn btn-primary mx-2" type="submit" :disabled="form.solutionCheck">
-                                    <font-awesome-icon :icon="['fas', 'plus']" class="me-2"></font-awesome-icon>Create
-                                    quote
-                                    <div v-if="form.isLoading" class="spinner-border  spinner-border-sm" role="status">
-                                        <span class="visually-hidden">Loading...</span>
-                                    </div>
-                                </button>
-                            </div>
-                        </div>
-                    </template>
                 </div>
             </div>
+            <template v-if="form.account">
+                <OrdersSolutionView v-model="form" :solution_types="solution_types"></OrdersSolutionView>
+                <div class="row mb-3 ">
+                    <div class="col-6 d-flex justify-content-end">
+                        <button class="btn btn-primary mx-2" type="submit" :disabled="form.solutionCheck">
+                            <font-awesome-icon :icon="['fas', 'plus']" class="me-2"></font-awesome-icon>Create
+                            quote
+                            <div v-if="form.isLoading" class="spinner-border  spinner-border-sm" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+            </template>
+
         </form>
     </AuthenticatedLayout>
 </template>

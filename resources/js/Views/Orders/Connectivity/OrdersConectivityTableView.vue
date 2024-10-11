@@ -1,4 +1,5 @@
 <script setup>
+import _ from "lodash";
 import axios from 'axios';
 import Paginator from 'primevue/paginator';
 import { ref, reactive, watch } from 'vue'
@@ -74,7 +75,7 @@ const subProviders = {
     "vodafone": "vodafone",
 };
 
-const getArticles = async () => {
+const getArticles = _.debounce(async () => {
     isLoading.value = true
     let temp = []
     Object.keys(filters).forEach((key) => {
@@ -147,7 +148,7 @@ const getArticles = async () => {
             getArticles()
         }, 5000)
     }
-}
+}, 800)
 
 
 const setAltImg = (event) => {
@@ -471,7 +472,7 @@ getArticles()
 
 <style>
 .p-multiselect-header {
-    display: none!important
+    display: none !important
 }
 
 tr.active td {
