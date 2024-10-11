@@ -4,6 +4,7 @@ import { Head, Link } from '@inertiajs/vue3';
 
 const props = defineProps({
     order: Object,
+    modelValue: Object
 });
 
 const solutionsViews = {
@@ -32,18 +33,37 @@ const solutionsViews = {
                 </div>
             </div>
             <div class="col" style="text-align: right">
-<!--                <a :href="route('orders.download', { order: order.id })" class="btn btn-secondary mx-2">-->
-<!--                    <font-awesome-icon :icon="['fas', 'file-pdf']"></font-awesome-icon>-->
-<!--                    Download PDF-->
-<!--                </a>-->
+                <template v-if="order.solution_type.code==3">
+                    <a :href="route('orders.preview', { order: order.id })" class="btn btn-secondary mx-2">
+                        <font-awesome-icon :icon="['fas', 'file-pdf']"></font-awesome-icon>
+                        Preview PDF
+                    </a>
+                </template>
                 <button class="btn btn-primary">Email this quote
                     <font-awesome-icon :icon="['fas', 'arrow-right']"></font-awesome-icon></button>
             </div>
         </div>
-
-        <component :is="solutionsViews[order.solution_type.code]" v-bind="{
-            modelValue: order
-        }"></component>
-
+        <template v-if="order.solution_type.code==3">
+            <div class="panel">
+                <InfoConnectivity :order="order"></InfoConnectivity>
+                <div class="row mb-4" style="min-height: 50vh;">
+                    <div class="col">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h2>Items</h2>
+                        </div>
+                        <component :is="solutionsViews[order.solution_type.code]" v-bind="{
+                            modelValue: order,
+                            preview: false
+                        }"></component>
+                    </div>
+                </div>
+            </div>
+        </template>
+        <template v-else>
+            <component :is="solutionsViews[order.solution_type.code]" v-bind="{
+                modelValue: order,
+                preview: false
+            }"></component>
+        </template>
     </AuthenticatedLayout>
 </template>

@@ -444,7 +444,13 @@ watch(activeFilters, () => {
                             <font-awesome-icon :icon="['fas', 'arrow-left']" /> Back
                         </button>
                         <div>
-                            <span id="total_add_ons">Add <span>0</span> add-ons</span>
+                            <span id="total_add_ons">
+                                Add {{ hardwareProducts.reduce((acc, item) => acc += item.quantity, 0) }}
+                                add-ons
+                            </span>
+                            <button class="ms-3 btn btn-primary step-nav" type="button" @click="saveQuote()">Next
+                                <i class="fa fa-arrow-right"></i>
+                            </button>
                         </div>
                     </div>
                 </div>
