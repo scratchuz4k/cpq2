@@ -17,6 +17,11 @@ const solutionChange = (form) => {
     form.articles = []
     addresses.value = []
 
+    if (!form.account) {
+        form.solutionCheck = true
+        return
+    }
+
     if (!form.solutionType) {
         form.solutionCheck = true
         return
