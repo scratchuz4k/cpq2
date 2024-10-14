@@ -96,35 +96,39 @@ const items = ref([
                     </AccordionHeader>
                     <AccordionContent>
                         <div class="row">
-                            <div class="col">
-                                <div class=" mb-3">
-                                    <label :for="'contact-name-' + key" class="form-label">
-                                        Primary Contact Name:
-                                    </label>
-                                    <input type="text" :id="'contact-name-' + key" class="form-control"
-                                        v-model="contact.primary_contact_name">
-                                </div>
-                                <div class=" mb-3">
-                                    <label :for="'contact-address-' + key" class="form-label">Address:</label>
-                                    <input :id="'contact-address-' + key" class="form-control"
-                                        v-model="contact.address_1">
-                                </div>
-                                <div class=" mb-3">
-                                    <label :for="'contact-post-code-' + key" class="form-label">Post Code:</label>
-                                    <input :id="'contact-post-code-' + key" class="form-control"
-                                        v-model="contact.postcode">
-                                </div>
+                            <div class="col-6 mb-3">
+                                <label :for="'contact-name-' + key" class="form-label">
+                                    Primary Contact Name:
+                                </label>
+                                <input type="text" :id="'contact-name-' + key" class="form-control"
+                                    v-model="contact.primary_contact_name">
                             </div>
-                            <div class="col">
-                                <div class=" mb-3">
-                                    <label :for="'contact-email-' + key" class="form-label">Email:</label>
-                                    <input type="email" :id="'contact-email-' + key" class="form-control"
-                                        v-model="contact.email">
-                                </div>
-                                <div class=" mb-3">
-                                    <label :for="'contact-city-' + key" class="form-label">City:</label>
-                                    <input :id="'contact-city-' + key" class="form-control" v-model="contact.city">
-                                </div>
+                            <div class="col-6 mb-3">
+                                <label :for="'contact-email-' + key" class="form-label">
+                                    Email:
+                                </label>
+                                <input type="email" :id="'contact-email-' + key" class="form-control"
+                                       v-model="contact.email">
+                            </div>
+                            <div class="col-6 mb-3">
+                                <label :for="'contact-address-' + key" class="form-label">
+                                    Address:
+                                </label>
+                                <input :id="'contact-address-' + key" class="form-control"
+                                    v-model="contact.address_1">
+                            </div>
+                            <div class="col-6 mb-3">
+                                <label :for="'contact-city-' + key" class="form-label">
+                                    City:
+                                </label>
+                                <input :id="'contact-city-' + key" class="form-control" v-model="contact.city">
+                            </div>
+                            <div class="col-6 mb-3">
+                                <label :for="'contact-post-code-' + key" class="form-label">
+                                    Post Code:
+                                </label>
+                                <input :id="'contact-post-code-' + key" class="form-control"
+                                        v-model="contact.postcode">
                             </div>
                         </div>
                     </AccordionContent>

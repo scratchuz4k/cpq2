@@ -259,6 +259,11 @@ getData()
     </Paginator>
 </template>
 <style>
+.p-select-option.p-select-option-selected.p-focus {
+    background-color: #ec008c!important;
+    color: white!important;
+}
+
 .p-datatable {
     z-index: 1;
 }
