@@ -12,7 +12,7 @@ defineProps({
 const form = reactive({
     isLoading: false,
     account: null,
-    solution_type: { id: null },
+    solution_type: null,
     address: null,
     postCode: null,
     position: null,

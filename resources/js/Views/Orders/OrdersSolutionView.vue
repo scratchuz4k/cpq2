@@ -22,12 +22,12 @@ const solutionChange = (form) => {
         return
     }
 
-    if (!form.solutionType) {
+    if (!form.solution_type) {
         form.solutionCheck = true
         return
     }
 
-    if (form.solutionType?.code == 3) {
+    if (form.solution_type?.code == 3) {
         form.solutionCheck = true
         return
     }
@@ -88,9 +88,9 @@ watch(addressPostCode, () => {
                         <div class="mb-3">
                             <label class="form-label">Solution Type <span class="text-primary">*</span></label>
                             <select class="form-select" @change="solutionChange(modelValue)"
-                                v-model="modelValue.solution_type.id">
+                                v-model="modelValue.solution_type">
                                 <option :value="null">Select an option</option>
-                                <option v-for="(solution, key) in solution_types" :value="solution.id">
+                                <option v-for="(solution, key) in solution_types" :value="solution">
                                     {{ solution.name }}
                                 </option>
                             </select>

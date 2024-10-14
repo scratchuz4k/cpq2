@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Models\OrderItem;
 use Illuminate\Http\Request;
+use App\Services\OrderItemService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\BaseController;
@@ -12,6 +13,11 @@ use App\Http\Requests\OrderItemUpdateRequest;
 
 class OrderItemController extends BaseController
 {
+    protected $model = OrderItem::class;
+    public function __construct(protected OrderItemService $orderItemService)
+    {
+        parent::__construct();
+    }
     /**
      * Display a listing of the resource.
      */
@@ -26,14 +32,7 @@ class OrderItemController extends BaseController
     public function store(OrderItemCreateRequest $request)
     {
         try {
-            $orderItem = DB::transaction(function () use ($request) {
-                $orderItem = OrderItem::create([
-                    ...$request->all(),
-                    "tenant_id" => session()->get('tenant_id'),
-                ]);
-
-                return $orderItem;
-            });
+            $orderItem = $this->orderItemService->store($request->all());
         } catch (\Exception $e) {
             if (!env("APP_DEBUG")) {
                 Log::error($e->getMessage());
@@ -57,14 +56,7 @@ class OrderItemController extends BaseController
     public function update(OrderItemUpdateRequest $request, OrderItem $orderItem)
     {
         try {
-            $orderItem = DB::transaction(function () use ($request, $orderItem) {
-                $orderItem = $orderItem->update([
-                    ...$request->all(),
-                    "tenant_id" => session()->get('tenant_id'),
-                ]);
-
-                return $orderItem;
-            });
+            $orderItem = $this->orderItemService->update($orderItem, $request->all());
         } catch (\Exception $e) {
             if (!env("APP_DEBUG")) {
                 Log::error($e->getMessage());

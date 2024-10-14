@@ -22,8 +22,11 @@ class OrderUpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'account_id' => 'exists:accounts,id',
-            'solution_type_id' => 'exists:solution_types,id'
+            'account_id' => 'nullable|exists:accounts,id',
+            'solution_type_id' => 'nullable|exists:solution_types,id',
+            'items' => 'nullable|array',
+            'items.*.quantity' => 'required|numeric',
+            'items.*.name' => 'required|string',
         ];
     }
 }

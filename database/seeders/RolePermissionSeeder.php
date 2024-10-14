@@ -37,6 +37,7 @@ class RolePermissionSeeder extends Seeder
             'Website' => [
                 'tenant' => 'Tenant',
                 'order' => 'Order',
+                'order_item' => 'Order Item',
                 'merchant' => 'Merchant',
                 'account' => 'Account',
                 'order_items' => 'Order Items',

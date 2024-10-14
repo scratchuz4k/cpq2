@@ -1,15 +1,18 @@
 <script setup>
 import _ from 'lodash'
 import { router } from '@inertiajs/vue3';
+import { reactive } from 'vue';
 const props = defineProps({
     modelValue: Object
 })
 
+const order = reactive(props.modelValue)
+
 const remove = async (id) => {
-    let index = props.modelValue.items.findIndex((item) => item.id == id)
     try {
         await axios.delete(`/api/order-items/${id}`)
-        props.modelValue.items.splice(index, 1)
+        let res = await axios.get(`/api/orders/${order.id}`)
+        Object.assign(order, res.data)
     } catch (ex) {
         alert(ex.response.data.message)
     }
@@ -22,17 +25,11 @@ const changeQuantity = (quantity, product) => {
 
 const saveQuote = _.debounce(async () => {
     try {
-        props.modelValue.items.forEach(async (article) => {
-            let url = article.id ? `/api/order-items/${article.id}` : '/api/order-items';
-            let method = article.id ? 'put' : 'post';
-            await axios[method](url,
-                {
-                    order_id: props.modelValue.id,
-                    quantity: article.quantity,
-                    name: article.name,
-                })
-        })
-        router.get(`/orders/${props.modelValue.id}`)
+        let res = await axios.put(`/api/orders/${order.id}`,
+            {
+                items: order.items,
+            })
+        Object.assign(order, res.data)
     } catch (ex) {
         alert(ex.response.data.message)
     }
@@ -42,7 +39,7 @@ const saveQuote = _.debounce(async () => {
 <template>
     <div class="panel">
 
-        <InfoConnectivity :order="modelValue"></InfoConnectivity>
+        <InfoConnectivity :order="order"></InfoConnectivity>
         <div class="row mb-4" style="min-height: 50vh;">
             <div class="col">
                 <div class="d-flex justify-content-between align-items-center">
@@ -67,7 +64,7 @@ const saveQuote = _.debounce(async () => {
                         </tr>
                     </thead>
                     <tbody>
-                        <tr class="item-row" v-for="item in modelValue.items" style="vertical-align: middle;">
+                        <tr class="item-row" v-for="item in order.items" style="vertical-align: middle;">
                             <td class="position-relative" style="width:40px">
                                 <button class="btn btn-secondary btn-sm" @click="remove(item.id)">
                                     <font-awesome-icon :icon="['fas', 'trash']"></font-awesome-icon>
@@ -128,25 +125,25 @@ const saveQuote = _.debounce(async () => {
                                     <tr>
                                         <th>Total Monthly</th>
                                         <td id="total_monthly_net" class="text-end">
-                                            {{ GBP.format(modelValue.totals.monthly_net) }}
+                                            {{ GBP.format(order.totals.monthly_net) }}
                                         </td>
                                         <td id="total_monthly_vat" class="text-end">
-                                            {{ GBP.format(modelValue.totals.monthly_vat) }}
+                                            {{ GBP.format(order.totals.monthly_vat) }}
                                         </td>
                                         <td id="total_monthly_gross" class="text-end">
-                                            {{ GBP.format(modelValue.totals.monthly_gross) }}
+                                            {{ GBP.format(order.totals.monthly_gross) }}
                                         </td>
                                     </tr>
                                     <tr>
                                         <th>Total One-off Costs</th>
                                         <td id="total_oneoff_net" class="text-end">
-                                            {{ GBP.format(modelValue.totals.oneoff_net) }}
+                                            {{ GBP.format(order.totals.oneoff_net) }}
                                         </td>
                                         <td id="total_oneoff_vat" class="text-end">
-                                            {{ GBP.format(modelValue.totals.oneoff_vat) }}
+                                            {{ GBP.format(order.totals.oneoff_vat) }}
                                         </td>
                                         <td id="total_oneoff_gross" class="text-end">
-                                            {{ GBP.format(modelValue.totals.oneoff_gross) }}
+                                            {{ GBP.format(order.totals.oneoff_gross) }}
                                         </td>
                                     </tr>
                                 </tbody>
