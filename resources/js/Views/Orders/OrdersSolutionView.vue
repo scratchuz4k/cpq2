@@ -79,7 +79,6 @@ watch(addressPostCode, () => {
 })
 </script>
 <template>
-
     <div class="row mb-3 ">
         <div class="col-6">
             <div class="panel">
@@ -89,14 +88,14 @@ watch(addressPostCode, () => {
                         <div class="mb-3">
                             <label class="form-label">Solution Type <span class="text-primary">*</span></label>
                             <select class="form-select" @change="solutionChange(modelValue)"
-                                v-model="modelValue.solutionType">
+                                v-model="modelValue.solution_type.id">
                                 <option :value="null">Select an option</option>
-                                <option v-for="(solution, key) in solution_types" :value="solution">
+                                <option v-for="(solution, key) in solution_types" :value="solution.id">
                                     {{ solution.name }}
                                 </option>
                             </select>
                         </div>
-                        <template v-if="modelValue.solutionType?.code == 3">
+                        <template v-if="modelValue.solution_type?.code == 3">
                             <div class="mb-3" id="postcode" style="position: relative">
                                 <label for="input_address" class="form-label">Enter postcode
                                     <span class="text-primary">*</span>
@@ -106,9 +105,6 @@ watch(addressPostCode, () => {
                                 <div class="d-flex">
                                     <input class="form-control" id="input_address" placeholder="B11 1SH" name="postcode"
                                         v-model="addressPostCode">
-                                </div>
-                                <div style="position: absolute;right: 10px;top: calc(50% + .2em);">
-
                                 </div>
                             </div>
 

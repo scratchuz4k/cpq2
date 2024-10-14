@@ -12,8 +12,8 @@ const props = defineProps({
 
 const form = reactive({
     isLoading: false,
-    account: null,
-    solutionType: null,
+    account: props.order.account ?? null,
+    solution_type:  props.order.solution_type ?? null,
     address: null,
     postCode: null,
     position: null,
@@ -66,11 +66,7 @@ const submit = () => {
                     </button>
                 </div>
             </div>
-            <div class="row mb-3">
-                <div class="col-6">
-                    <OrdersSolutionView v-model="form" :solution_types="solution_types"></OrdersSolutionView>
-                </div>
-            </div>
+            <OrdersSolutionView v-model="form" :solution_types="solution_types"></OrdersSolutionView>
         </form>
     </AuthenticatedLayout>
 </template>
