@@ -79,10 +79,10 @@ const getArticles = _.debounce(async () => {
     isLoading.value = true
     let temp = []
     Object.keys(filters).forEach((key) => {
-        temp.push({ column: key, operator: filters[key].operator, value: filters[key].value ?? null})
+        temp.push({ column: key, operator: filters[key].operator, value: filters[key].value ?? null })
     })
     if (showQuoted.value) {
-        let items = props.modelValue.items.length ?props.modelValue.items.filter((item) => item.data.code).map((item) => item.data.code): ['#']
+        let items = props.modelValue.items.length ? props.modelValue.items.filter((item) => item.data.code).map((item) => item.data.code) : ['#']
         temp.push({ column: 'code', operator: 'in', value: items })
     }
     if (showLowestCost.value) {
@@ -364,59 +364,86 @@ getArticles()
                                     width: '30%'
                                 }" @click="orderBy('productName')">
                                     Product
-                                    <font-awesome-icon :icon="['fas', 'sort']" />
+                                    <template v-if="sort.field == 'productName'">
+                                        <font-awesome-icon v-if="sort.order == 'desc'" :icon="['fas', 'sort-down']" />
+                                        <font-awesome-icon v-else :icon="['fas', 'sort-up']" />
+                                    </template>
                                 </th>
                                 <th :style="{ whiteSpace: 'nowrap', textDecoration: sort.field == 'providerName' ? 'underline' : 'none' }"
                                     @click="orderBy('providerName')">
                                     Provider
-                                    <font-awesome-icon :icon="['fas', 'sort']" />
+                                    <template v-if="sort.field == 'providerName'">
+                                        <font-awesome-icon v-if="sort.order == 'desc'" :icon="['fas', 'sort-down']" />
+                                        <font-awesome-icon v-else :icon="['fas', 'sort-up']" />
+                                    </template>
                                 </th>
                                 <th :style="{ whiteSpace: 'nowrap', textDecoration: sort.field == 'connectivitySupplierName' ? 'underline' : 'none' }"
                                     @click="orderBy('connectivitySupplierName')">
                                     Subprovider
-                                    <font-awesome-icon :icon="['fas', 'sort']"></font-awesome-icon>
+                                    <template v-if="sort.field == 'connectivitySupplierName'">
+                                        <font-awesome-icon v-if="sort.order == 'desc'" :icon="['fas', 'sort-down']" />
+                                        <font-awesome-icon v-else :icon="['fas', 'sort-up']" />
+                                    </template>
                                 </th>
                                 <th :style="{
                                     whiteSpace: 'nowrap',
                                     textDecoration: sort.field == 'bearer' ? 'underline' : 'none'
                                 }" @click="orderBy('bearer')">
                                     Bearer
-                                    <font-awesome-icon :icon="['fas', 'sort']" />
+                                    <template v-if="sort.field == 'bearer'">
+                                        <font-awesome-icon v-if="sort.order == 'desc'" :icon="['fas', 'sort-down']" />
+                                        <font-awesome-icon v-else :icon="['fas', 'sort-up']" />
+                                    </template>
                                 </th>
                                 <th :style="{
                                     whiteSpace: 'nowrap',
                                     textDecoration: sort.field == 'speed' ? 'underline' : 'none'
                                 }" @click="orderBy('speed')">
                                     Speed
-                                    <font-awesome-icon :icon="['fas', 'sort']" />
+                                    <template v-if="sort.field == 'speed'">
+                                        <font-awesome-icon v-if="sort.order == 'desc'" :icon="['fas', 'sort-down']" />
+                                        <font-awesome-icon v-else :icon="['fas', 'sort-up']" />
+                                    </template>
                                 </th>
                                 <th :style="{
                                     whiteSpace: 'nowrap',
                                     textDecoration: sort.field == 'priceInstall' ? 'underline' : 'none'
                                 }" @click="orderBy('priceInstall')">
                                     Set Up
-                                    <font-awesome-icon :icon="['fas', 'sort']" />
+                                    <template v-if="sort.field == 'priceInstall'">
+                                        <font-awesome-icon v-if="sort.order == 'desc'" :icon="['fas', 'sort-down']" />
+                                        <font-awesome-icon v-else :icon="['fas', 'sort-up']" />
+                                    </template>
                                 </th>
                                 <th :style="{
                                     whiteSpace: 'nowrap',
                                     textDecoration: sort.field == 'priceMonthly' ? 'underline' : 'none'
                                 }" @click="orderBy('priceMonthly')">
                                     Monthly
-                                    <font-awesome-icon :icon="['fas', 'sort']" />
+                                    <template v-if="sort.field == 'priceMonthly'">
+                                        <font-awesome-icon v-if="sort.order == 'desc'" :icon="['fas', 'sort-down']" />
+                                        <font-awesome-icon v-else :icon="['fas', 'sort-up']" />
+                                    </template>
                                 </th>
                                 <th :style="{
                                     whiteSpace: 'nowrap',
                                     textDecoration: sort.field == 'priceECC' ? 'underline' : 'none'
                                 }" @click="orderBy('priceECC')">
                                     ECC
-                                    <font-awesome-icon :icon="['fas', 'sort']" />
+                                    <template v-if="sort.field == 'priceECC'">
+                                        <font-awesome-icon v-if="sort.order == 'desc'" :icon="['fas', 'sort-down']" />
+                                        <font-awesome-icon v-else :icon="['fas', 'sort-up']" />
+                                    </template>
                                 </th>
                                 <th :style="{
                                     whiteSpace: 'nowrap',
                                     textDecoration: sort.field == 'contractTermMonths' ? 'underline' : 'none'
                                 }" @click="orderBy('contractTermMonths')">
                                     Contract Term
-                                    <font-awesome-icon :icon="['fas', 'sort']" />
+                                    <template v-if="sort.field == 'contractTermMonths'">
+                                        <font-awesome-icon v-if="sort.order == 'desc'" :icon="['fas', 'sort-down']" />
+                                        <font-awesome-icon v-else :icon="['fas', 'sort-up']" />
+                                    </template>
                                 </th>
                             </tr>
                         </thead>
