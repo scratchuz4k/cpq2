@@ -54,11 +54,11 @@ const submitFileForm = () => {
         <div class="panel">
             <Header title="Users" :breadcrumbs="items">
                 <template #buttons>
-                    <Link :href="route('users.create')" class="btn p-0 me-2">
+                    <Link :href="route('users.create')" class="btn btn-primary me-2">
                         <font-awesome-icon :icon="['fas', 'plus']"></font-awesome-icon> New User
                     </Link>
-                    <div class="btn p-0 me-2" @click.prevent="showForm = !showForm">
-                        <font-awesome-icon :icon="['fas', 'file']"></font-awesome-icon>Import from CSV
+                    <div class="btn btn-secondary me-2" @click.prevent="showForm = !showForm">
+                        <font-awesome-icon :icon="['fas', 'file']"></font-awesome-icon> Import from CSV
                     </div>
                 </template>
             </Header>

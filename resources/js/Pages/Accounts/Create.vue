@@ -12,10 +12,13 @@ import { reactive, ref } from 'vue';
 const account = reactive({
     name: null,
     reference: null,
-    contacts: []
+    contacts: [],
+    activePanel: 0
 })
+
 const addContact = () => {
-    account.contacts.push({})
+    account.contacts.push({});
+    account.activePanel = account.contacts.length - 1;
 }
 
 const saveAccount = () => {
@@ -44,7 +47,7 @@ const removeContact = (key) => {
         confirmButtonText: 'Yes, delete!'
     }).then(async (result) => {
         if (['cancel', 'backdrop'].includes(result.dismiss)) {
-            bulkOperation.value = ''
+            //bulkOperation.value = ''
             return
         }
         account.contacts.splice(key, 1)
@@ -82,7 +85,7 @@ const items = ref([
                 </div>
             </div>
             <h2>Contacts</h2>
-            <Accordion value="0">
+            <Accordion v-model:value="account.activePanel">
                 <AccordionPanel v-for="(contact, key) in account.contacts" :key="'account-' + key" :value="key">
                     <AccordionHeader>
                         <div class="d-flex justify-content-between align-items-center w-100 pe-3">
@@ -91,7 +94,7 @@ const items = ref([
                                 {{ contact.primary_contact_name ? ' - ' + contact.primary_contact_name : '' }}
 
                             </p>
-                            <Button size="small" @click="removeContact(key)">Delete</Button>
+                            <Button size="small" @click.stop="removeContact(key)">Delete</Button>
                         </div>
                     </AccordionHeader>
                     <AccordionContent>

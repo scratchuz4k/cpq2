@@ -7,14 +7,19 @@ import AccordionPanel from 'primevue/accordionpanel';
 import AccordionHeader from 'primevue/accordionheader';
 import AccordionContent from 'primevue/accordioncontent';
 import Swal from 'sweetalert2';
-import { ref } from 'vue';
+import { ref, reactive } from 'vue';
 
 const props = defineProps({
     account: Object
 })
 
+const activePanel = reactive({
+    value: 0
+});
+
 const addContact = () => {
-    props.account.contacts.push({})
+    props.account.contacts.push({});
+    activePanel.value = props.account.contacts.length - 1;
 }
 const removeContact = (key) => {
     Swal.fire({
@@ -27,7 +32,7 @@ const removeContact = (key) => {
         confirmButtonText: 'Yes, delete!'
     }).then(async (result) => {
         if (['cancel', 'backdrop'].includes(result.dismiss)) {
-            bulkOperation.value = ''
+            //bulkOperation.value = ''
             return
         }
         props.account.contacts.splice(key, 1)
@@ -81,7 +86,7 @@ const items = ref([
                 </div>
             </div>
             <h2>Contacts</h2>
-            <Accordion value="0">
+            <Accordion v-model:value="activePanel.value">
                 <AccordionPanel v-for="(contact, key) in account.contacts" :key="'account-' + key" :value="key">
                     <AccordionHeader>
                         <div class="d-flex justify-content-between align-items-center w-100 pe-3">
@@ -90,7 +95,7 @@ const items = ref([
                                 {{ contact.primary_contact_name ? ' - ' + contact.primary_contact_name : '' }}
 
                             </p>
-                            <Button size="small" @click="removeContact(key)">Delete</Button>
+                            <Button size="small" @click.stop="removeContact(key)">Delete</Button>
                         </div>
                     </AccordionHeader>
                     <AccordionContent>
