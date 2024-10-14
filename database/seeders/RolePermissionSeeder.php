@@ -51,10 +51,10 @@ class RolePermissionSeeder extends Seeder
         ];
 
         $roles = [
-            'Super Admin' => [],
-            'Support Agent' => ['merchant'],
-            'Company Admin' => ['order', 'order_items', 'merchant', 'account',  'price', 'product', 'region', 'tenant', 'brand', 'supplier', 'spa', 'user'],
-            'Sales Rep' => ['order', 'order_items', 'account', 'brand', 'supplier']
+            'Super Admin' => ['parent' => null,'permissions' => []],
+            'Support Agent' => ['parent' => 'Super Admin','permissions' => ['merchant']],
+            'Company Admin' => ['parent' => 'Super Admin','permissions' => ['order', 'order_items', 'merchant', 'account',  'price', 'product', 'region', 'tenant', 'brand', 'supplier', 'spa', 'user']],
+            'Sales Rep' => ['parent' => 'Company Admin','permissions' => ['order', 'order_items', 'account', 'brand', 'supplier']]
         ];
 
         foreach ($simplePermissions as $key => $pe) {
@@ -81,10 +81,16 @@ class RolePermissionSeeder extends Seeder
             }
         }
 
-        foreach ($roles as $role => $groups) {
+        foreach ($roles as $role => $item) {
             $permissions = [];
-            $role = Role::updateOrCreate(['name' => $role, 'guard_name' => 'web']);
-            foreach ($groups as $group) {
+            $temp = null;
+
+            if (!is_null($item['parent'])) {
+                $temp = Role::where('name', $item['parent'])->firstOrFail();
+            }
+
+            $role = Role::updateOrCreate(['name' => $role],['parent_id' => $temp?->id, 'guard_name' => 'web']);
+            foreach ($item['permissions'] as $group) {
                 if (array_key_exists($group, $insertPermissions->toArray())) {
                     $permissions = array_merge($permissions, $insertPermissions->toArray()[$group]);
                 }

@@ -10,6 +10,7 @@ use App\Http\Resources\UserResource;
 use App\Models\Role;
 use App\Models\User;
 use App\Services\UsersService;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class UserController extends BaseController
@@ -33,8 +34,17 @@ class UserController extends BaseController
      */
     public function create()
     {
+        $temp_roles = Auth::user()->roles()->get();
+        $roles = collect([]);
+
+        do {
+            $current = $temp_roles->pop();
+            $roles->push($current);
+            $temp_roles->push(...$current->children);
+        } while (count($temp_roles));
+
         return Inertia::render('Users/Create', [
-            'roles'     => Role::all(),
+            'roles'     => $roles,
             'managers'  => User::all()
         ]);
     }
