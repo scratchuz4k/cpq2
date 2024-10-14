@@ -17,15 +17,15 @@ const articles = ref([])
 const filters = reactive({
     providerName: {
         operator: "in",
-        value: ""
+        value: null
     },
     connectivitySupplierName: {
         operator: "in",
-        value: ""
+        value: null
     },
     contractTermMonths: {
         operator: "in",
-        value: ""
+        value: null
     },
     bearer: {
         operator: "between",
@@ -79,10 +79,11 @@ const getArticles = _.debounce(async () => {
     isLoading.value = true
     let temp = []
     Object.keys(filters).forEach((key) => {
-        temp.push({ column: key, operator: filters[key].operator, value: filters[key].value })
+        temp.push({ column: key, operator: filters[key].operator, value: filters[key].value ?? null})
     })
     if (showQuoted.value) {
-        temp.push({ column: 'code', operator: 'in', value: props.modelValue.items.filter((item) => item.data.code).map((item) => item.data.code) })
+        let items = props.modelValue.items.length ?props.modelValue.items.filter((item) => item.data.code).map((item) => item.data.code): ['#']
+        temp.push({ column: 'code', operator: 'in', value: items })
     }
     if (showLowestCost.value) {
         temp.push({ column: '*', operator: 'lowest-cost', value: true })
@@ -120,7 +121,6 @@ const getArticles = _.debounce(async () => {
         })
     const reader = res.body.getReader();
     const decoder = new TextDecoder();
-    const chunks = [];
 
 
     while (true) {
