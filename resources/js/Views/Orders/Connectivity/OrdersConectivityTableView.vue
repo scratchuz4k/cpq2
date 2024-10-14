@@ -2,7 +2,7 @@
 import _ from "lodash";
 import axios from 'axios';
 import Paginator from 'primevue/paginator';
-import { ref, reactive, watch } from 'vue'
+import { ref, reactive, watch, onMounted } from 'vue'
 import MultiSelect from 'primevue/multiselect';
 
 const props = defineProps({
@@ -428,8 +428,8 @@ getArticles()
                                 </td>
                                 <td style="text-align: left;">
                                     {{ article.productName }}
-                                    <span v-if="article.additionalInfo['Primary Router Model']"
-                                        title="Primary Router Model"
+                                    <span v-if="article.additionalInfo['Primary Router Model']" v-tooltip
+                                        data-bs-toggle="tooltip" data-bs-placement="top" title="Primary Router Model"
                                         class="badge border border-secondary text-secondary opacity-75 ms-1">
                                         <font-awesome-icon :icon="['fas', 'plug']"></font-awesome-icon>
                                         {{ article.additionalInfo['Primary Router Model'] }}
@@ -437,12 +437,12 @@ getArticles()
                                 </td>
                                 <td><img class="img-provider" @error="setAltImg"
                                         :src="`/images/providers/${article.providerKey}.png`"
-                                        :alt="article.providerName" :title="article.providerName" /> </td>
+                                        :alt="article.providerName" :title="article.providerName" v-tooltip /> </td>
                                 <td>
                                     <img class="img-subprovider" @error="setAltImg"
                                         :src="`/images/providers/${subProviders[article.connectivitySupplierName?.toLowerCase()]}.png`"
                                         :alt="article.connectivitySupplierName"
-                                        :title="article.connectivitySupplierName" />
+                                        :title="article.connectivitySupplierName" v-tooltip />
                                 </td>
                                 <td>{{ bytesFormatter(article.bearer) }} </td>
                                 <td>{{ bytesFormatter(article.speed) }} </td>
