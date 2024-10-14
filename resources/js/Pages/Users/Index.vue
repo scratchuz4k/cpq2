@@ -86,7 +86,7 @@ const submitFileForm = () => {
                     { data: 'name', title: 'Name' },
                     { data: 'email', title: 'Email' },
                     { data: 'roles.name', title: 'Role' },
-                    { data: 'manager.name', title: 'Manager' }
+                    { data: 'parent.name', title: 'Manager' }
                 ]" route="/users">
                 </Datatable>
             </div>

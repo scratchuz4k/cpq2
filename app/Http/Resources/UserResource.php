@@ -17,7 +17,7 @@ class UserResource extends JsonResource
         return [
             ...$this->resource->toArray(),
             'roles' => $this->roles,
-            'manager' => $this->parent ?? ['name' => 'N/A'],
+            'parent' => $this->parent ?? ['name' => 'N/A'],
             'updated_at' => format_date($this->updated_at),
             'created_at' => format_date($this->created_at)
         ];
