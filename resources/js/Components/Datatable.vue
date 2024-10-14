@@ -21,7 +21,11 @@ const usedSlots = Object.keys(slots)
 const props = defineProps({
     route: String,
     columns: Array,
-    filters: Object,
+    filters: {
+        type: Object,
+        default: {
+        }
+    },
     allow: {
         type: Object,
         default: {
