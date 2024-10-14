@@ -23,8 +23,7 @@ const props = defineProps({
     columns: Array,
     filters: {
         type: Object,
-        default: {
-        }
+        default: {}
     },
     allow: {
         type: Object,
