@@ -24,12 +24,16 @@ const addContact = () => {
 const removeContact = (key) => {
     Swal.fire({
         title: 'Are you sure?',
-        icon: 'warning',
+        buttonsStyling: true,
         showCancelButton: true,
-        cancelButtonText: 'No, cancel.',
-        confirmButtonColor: '#2d72d9',
-        cancelButtonColor: '#E53A40',
-        confirmButtonText: 'Yes, delete!'
+        confirmButtonColor: '#ec008c',
+        width: '20em',
+        customClass: {
+            confirmButton: 'btn text-light btn-lg mr-2 fs-6',
+            cancelButton: 'btn btn-outline-primary border-light-purple btn-lg fs-6',
+            loader: 'custom-loader',
+            title: 'h3'
+        },
     }).then(async (result) => {
         if (['cancel', 'backdrop'].includes(result.dismiss)) {
             //bulkOperation.value = ''
