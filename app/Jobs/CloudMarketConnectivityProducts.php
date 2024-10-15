@@ -47,7 +47,7 @@ class CloudMarketConnectivityProducts implements ShouldQueue, TenantAware
 
         $stream = StreamWrapper::getResource($res->toPsrResponse()->getBody());
         foreach (Items::fromStream($stream) as $key => $value) {
-            if (empty($value->providerKey)) {
+            if (empty($value->providerKey)|| !$value->quoteId) {
                 continue;
             }
             $temp = (array)$value;

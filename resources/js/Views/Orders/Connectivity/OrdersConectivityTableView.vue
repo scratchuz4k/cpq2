@@ -29,7 +29,7 @@ const filters = reactive({
     },
     bearer: {
         operator: "between",
-        value: [0, 10000]
+        value: [100, 10000]
     },
     speed: {
         operator: "between",
@@ -54,26 +54,32 @@ const meta = reactive({
     isUpdating: false
 })
 
-const subProviders = {
-    "btw": "bt",
-    "bt": "bt",
-    "bt wholesale": "bt",
-    "cityfibre": "cityfibre",
-    "colt": "colt",
-    "gamma": "gamma",
-    "gamma openreach": "gamma",
-    "giacom": "giacom",
-    "glide": "glide",
-    "its": "its",
-    "neos networks": "neos",
-    "sky": "sky",
-    "talktalk": "talktalk",
-    "talktalk business": "talktalk",
-    "virgin media": "virgin",
-    "virgin": "virgin",
-    "virtual1": "virtual1",
-    "vodafone": "vodafone",
-};
+const getSubproviderImage = (img) => {
+    const subProviders = {
+        "btw": "bt",
+        "bt": "bt",
+        "bt wholesale": "bt",
+        "cityfibre": "cityfibre",
+        "colt": "colt",
+        "gamma": "gamma",
+        "gamma openreach": "gamma",
+        "giacom": "giacom",
+        "glide": "glide",
+        "its": "its",
+        "neos networks": "neos",
+        "sky": "sky",
+        "talktalk": "talktalk",
+        "talktalk business": "talktalk",
+        "virgin media": "virgin",
+        "virgin": "virgin",
+        "virtual1": "virtual1",
+        "vodafone": "vodafone",
+    };
+    if (Object.keys(subProviders).includes(img)) {
+        return subProviders[img]
+    }
+    return 'no_image'
+}
 
 const getArticles = _.debounce(async () => {
     isLoading.value = true
@@ -139,11 +145,10 @@ const getArticles = _.debounce(async () => {
             meta.isUpdating = !!data.finished_at
             Object.assign(filterList, data.filters)
         } catch (e) {
-            console.log(e)
         }
     }
 
-}, 800)
+}, 500)
 
 
 const setAltImg = (event) => {
@@ -235,7 +240,7 @@ getArticles()
     <div class="panel">
         <InfoConnectivity :order="modelValue"></InfoConnectivity>
         <div class="row mb-4" style="min-height: 50vh;">
-            <div class="col">
+            <div class="col position-relative">
                 <div class="d-flex justify-content-between align-items-center">
                     <div class="d-flex  align-items-center">
                         <h2 class="me-3">Live prices </h2>
@@ -267,8 +272,8 @@ getArticles()
                             <div style="width:150px;" class="me-3">
                                 <label for="filter-subprovider" class="form-label">Provider:</label>
                                 <MultiSelect v-model="filters['providerName'].value" style="width:100%"
-                                    :options="Object.keys(filterList.providerName)" placeholder="Select a provider"
-                                    size="small" :disabled="!meta.isUpdating">
+                                    :options="Object.keys(filterList.providerName)" placeholder="All" size="small"
+                                    :disabled="!meta.isUpdating">
                                     <template #option="slotProps">
                                         <div style="font-size:14px;line-height: 1.5rem;">{{ slotProps.option }}
                                             ( {{ filterList.providerName[slotProps.option] }} )
@@ -279,8 +284,8 @@ getArticles()
                             <div style="width:150px;" class="me-3">
                                 <label for="filter-subprovider" class="form-label">Subprovider:</label>
                                 <MultiSelect v-model="filters['connectivitySupplierName'].value" style="width:100%"
-                                    :options="Object.keys(filterList.connectivitySupplierName)"
-                                    placeholder="Select a subprovider" class="me-3 " :disabled="!meta.isUpdating">
+                                    :options="Object.keys(filterList.connectivitySupplierName)" placeholder="All"
+                                    class="me-3 " :disabled="!meta.isUpdating">
                                     <template #option="slotProps">
                                         <div style="font-size:14px;line-height: 1.5rem;">{{ slotProps.option }}
                                             ( {{ filterList.connectivitySupplierName[slotProps.option] }} )
@@ -291,7 +296,7 @@ getArticles()
                             <div style="width:150px;" class="me-3">
                                 <label for="filter-contract" class="form-label">Contract Length:</label>
                                 <MultiSelect v-model="filters['contractTermMonths'].value" style="width:100%"
-                                    :options="Object.keys(filterList.contractTermMonths)" placeholder="Select months"
+                                    :options="Object.keys(filterList.contractTermMonths)" placeholder="All"
                                     class="me-3 " :disabled="!meta.isUpdating">
                                     <template #option="slotProps">
                                         <div style="font-size:14px;line-height: 1.5rem;">{{ slotProps.option }} Months
@@ -343,9 +348,10 @@ getArticles()
                         </div>
                     </div>
                 </div>
-                <div v-if="isLoading || !meta.isUpdating" data-provider="loading" class="cpq-progress-bar">
+                <div v-if="isLoading || !meta.isUpdating" data-provider="loading" class="cpq-progress-bar"
+                    style="position: absolute;z-index: 9999; ">
                     <div class="cpq-bar"></div>
-                    <div class="cpq-bar-text">
+                    <div class="cpq-bar-text" v-if="!articles.length">
                         <font-awesome-icon :icon="['fas', 'refresh']" class="fa-spin"></font-awesome-icon>
                         Please wait... <span>( {{ meta.overallTotal }} )</span>
                     </div>
@@ -465,12 +471,14 @@ getArticles()
                                 </td>
                                 <td><img class="img-provider" @error="setAltImg"
                                         :src="`/images/providers/${article.providerKey}.png`"
-                                        :alt="article.providerName" :title="article.providerName" v-tooltip /> </td>
+                                        :alt="article.providerName" :title="article.providerName"
+                                        :data-bs-original-title="article.providerName" v-tooltip /> </td>
                                 <td>
                                     <img class="img-subprovider" @error="setAltImg"
-                                        :src="`/images/providers/${subProviders[article.connectivitySupplierName?.toLowerCase()]}.png`"
+                                        :src="`/images/providers/${getSubproviderImage(article.connectivitySupplierName?.toLowerCase())}.png`"
                                         :alt="article.connectivitySupplierName"
-                                        :title="article.connectivitySupplierName" v-tooltip />
+                                        :title="article.connectivitySupplierName"
+                                        :data-bs-original-title="article.connectivitySupplierName" v-tooltip />
                                 </td>
                                 <td>{{ bytesFormatter(article.bearer) }} </td>
                                 <td>{{ bytesFormatter(article.speed) }} </td>
@@ -480,7 +488,8 @@ getArticles()
                                     <template v-if="article.priceECC">
                                         {{ GBP.format(article.priceECC) }}
                                     </template>
-                                    <span v-else title="Subject to Survey" class="h6">
+                                    <span v-else title="Subject to Survey" class="h6"
+                                        data-bs-original-title="Subject to Survey" v-tooltip>
                                         <font-awesome-icon :icon="['far', 'circle-question']"></font-awesome-icon>
                                     </span>
                                 </td>
@@ -508,6 +517,7 @@ tr.active td {
 
 .table-wrapper {
     position: relative;
+    overflow-x: auto;
 }
 
 .table-blocker {
