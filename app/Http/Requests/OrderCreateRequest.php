@@ -23,7 +23,10 @@ class OrderCreateRequest extends FormRequest
     {
         return [
             'account_id' => 'required|exists:accounts,id',
-            'solution_type_id' => 'required|exists:solution_types,id'
+            'solution_type_id' => 'required|exists:solution_types,id',
+            'items' => 'nullable|array',
+            'items.*.quantity' => 'required|numeric',
+            'items.*.name' => 'required|string',
         ];
     }
 }

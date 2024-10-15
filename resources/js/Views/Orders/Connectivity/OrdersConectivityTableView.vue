@@ -1,7 +1,8 @@
 <script setup>
+import _ from "lodash";
 import axios from 'axios';
 import Paginator from 'primevue/paginator';
-import { ref, reactive, watch } from 'vue'
+import { ref, reactive, watch, onMounted } from 'vue'
 import MultiSelect from 'primevue/multiselect';
 
 const props = defineProps({
@@ -16,15 +17,15 @@ const articles = ref([])
 const filters = reactive({
     providerName: {
         operator: "in",
-        value: ""
+        value: null
     },
     connectivitySupplierName: {
         operator: "in",
-        value: ""
+        value: null
     },
     contractTermMonths: {
         operator: "in",
-        value: ""
+        value: null
     },
     bearer: {
         operator: "between",
@@ -74,14 +75,15 @@ const subProviders = {
     "vodafone": "vodafone",
 };
 
-const getArticles = async () => {
+const getArticles = _.debounce(async () => {
     isLoading.value = true
-    let temp = articles.value = []
+    let temp = []
     Object.keys(filters).forEach((key) => {
-        temp.push({ column: key, operator: filters[key].operator, value: filters[key].value })
+        temp.push({ column: key, operator: filters[key].operator, value: filters[key].value ?? null })
     })
     if (showQuoted.value) {
-        temp.push({ column: 'code', operator: 'in', value: props.modelValue.items.filter((item) => item.data.code).map((item) => item.data.code) })
+        let items = props.modelValue.items.length ? props.modelValue.items.filter((item) => item.data.code).map((item) => item.data.code) : ['#']
+        temp.push({ column: 'code', operator: 'in', value: items })
     }
     if (showLowestCost.value) {
         temp.push({ column: '*', operator: 'lowest-cost', value: true })
@@ -119,7 +121,6 @@ const getArticles = async () => {
         })
     const reader = res.body.getReader();
     const decoder = new TextDecoder();
-    const chunks = [];
 
 
     while (true) {
@@ -142,12 +143,7 @@ const getArticles = async () => {
         }
     }
 
-    if (!meta.isUpdating) {
-        setTimeout(() => {
-            getArticles()
-        }, 5000)
-    }
-}
+}, 800)
 
 
 const setAltImg = (event) => {
@@ -163,7 +159,7 @@ const bytesFormatter = (value) => {
 }
 
 const sort = reactive({
-    field: "id",
+    field: "priceMonthly",
     order: "asc"
 })
 
@@ -270,28 +266,32 @@ getArticles()
                             <div style="width:150px;" class="me-3">
                                 <label for="filter-subprovider" class="form-label">Provider:</label>
                                 <MultiSelect v-model="filters['providerName'].value" style="width:100%"
-                                    :options="filterList.providerName" placeholder="Select a provider" size="small"
-                                    :disabled="!meta.isUpdating">
+                                    :options="Object.keys(filterList.providerName)" placeholder="Select a provider"
+                                    size="small" :disabled="!meta.isUpdating">
                                     <template #option="slotProps">
-                                        <div style="font-size:14px;line-height: 1.5rem;">{{ slotProps.option }} </div>
+                                        <div style="font-size:14px;line-height: 1.5rem;">{{ slotProps.option }}
+                                            ( {{ filterList.providerName[slotProps.option] }} )
+                                        </div>
                                     </template>
                                 </MultiSelect>
                             </div>
                             <div style="width:150px;" class="me-3">
                                 <label for="filter-subprovider" class="form-label">Subprovider:</label>
                                 <MultiSelect v-model="filters['connectivitySupplierName'].value" style="width:100%"
-                                    :options="filterList.connectivitySupplierName" placeholder="Select a subprovider"
-                                    class="me-3 " :disabled="!meta.isUpdating">
+                                    :options="Object.keys(filterList.connectivitySupplierName)"
+                                    placeholder="Select a subprovider" class="me-3 " :disabled="!meta.isUpdating">
                                     <template #option="slotProps">
-                                        <div style="font-size:14px;line-height: 1.5rem;">{{ slotProps.option }}</div>
+                                        <div style="font-size:14px;line-height: 1.5rem;">{{ slotProps.option }}
+                                            ( {{ filterList.connectivitySupplierName[slotProps.option] }} )
+                                        </div>
                                     </template>
                                 </MultiSelect>
                             </div>
                             <div style="width:150px;" class="me-3">
                                 <label for="filter-contract" class="form-label">Contract Length:</label>
                                 <MultiSelect v-model="filters['contractTermMonths'].value" style="width:100%"
-                                    :options="filterList.contractTermMonths" placeholder="Select months" class="me-3 "
-                                    :disabled="!meta.isUpdating">
+                                    :options="Object.keys(filterList.contractTermMonths)" placeholder="Select months"
+                                    class="me-3 " :disabled="!meta.isUpdating">
                                     <template #option="slotProps">
                                         <div style="font-size:14px;line-height: 1.5rem;">{{ slotProps.option }} Months
                                         </div>
@@ -300,12 +300,12 @@ getArticles()
                             </div>
                             <div class="d-flex slider-wrapper me-4">
                                 <label for="bearerSlider" class="form-label">Bearer:</label>
-                                <BearerRange v-model="filters['bearer'].value" :options="filterList.bearer"
+                                <BearerRange v-model="filters['bearer'].value" :options="Object.keys(filterList.bearer)"
                                     :disabled="!meta.isUpdating" />
                             </div>
                             <div class="d-flex slider-wrapper me-5">
                                 <label for="speedSlider" class="form-label">Speed:</label>
-                                <SpeedRange v-model="filters['speed'].value" :options="filterList.speed"
+                                <SpeedRange v-model="filters['speed'].value" :options="Object.keys(filterList.speed)"
                                     :disabled="!meta.isUpdating" />
                             </div>
                             <div>
@@ -346,15 +346,14 @@ getArticles()
                     <div class="cpq-bar"></div>
                     <div class="cpq-bar-text">
                         <font-awesome-icon :icon="['fas', 'refresh']" class="fa-spin"></font-awesome-icon>
-                        <i class="fa fa-refresh fa-spin"></i>
-                        Please wait... <span>( Total: {{ meta.overallTotal }} )</span>
+                        Please wait... <span>( {{ meta.overallTotal }} )</span>
                     </div>
                 </div>
                 <div id="no-results" v-else-if="!articles.length">
                     <div class="alert alert-info mt-3">No results match your filters. <button @click="resetFilters"
                             class="btn btn-primary  btn-sm js-clear-filters ms-3">Clear filters</button></div>
                 </div>
-                <div v-else class="table-wrapper">
+                <div v-if="articles.length" class="table-wrapper">
                     <table id="table_products" class="table  table-bordered table-hover">
                         <thead>
                             <tr>
@@ -365,59 +364,86 @@ getArticles()
                                     width: '30%'
                                 }" @click="orderBy('productName')">
                                     Product
-                                    <font-awesome-icon :icon="['fas', 'sort']" />
+                                    <template v-if="sort.field == 'productName'">
+                                        <font-awesome-icon v-if="sort.order == 'desc'" :icon="['fas', 'sort-down']" />
+                                        <font-awesome-icon v-else :icon="['fas', 'sort-up']" />
+                                    </template>
                                 </th>
                                 <th :style="{ whiteSpace: 'nowrap', textDecoration: sort.field == 'providerName' ? 'underline' : 'none' }"
                                     @click="orderBy('providerName')">
                                     Provider
-                                    <font-awesome-icon :icon="['fas', 'sort']" />
+                                    <template v-if="sort.field == 'providerName'">
+                                        <font-awesome-icon v-if="sort.order == 'desc'" :icon="['fas', 'sort-down']" />
+                                        <font-awesome-icon v-else :icon="['fas', 'sort-up']" />
+                                    </template>
                                 </th>
                                 <th :style="{ whiteSpace: 'nowrap', textDecoration: sort.field == 'connectivitySupplierName' ? 'underline' : 'none' }"
                                     @click="orderBy('connectivitySupplierName')">
                                     Subprovider
-                                    <font-awesome-icon :icon="['fas', 'sort']"></font-awesome-icon>
+                                    <template v-if="sort.field == 'connectivitySupplierName'">
+                                        <font-awesome-icon v-if="sort.order == 'desc'" :icon="['fas', 'sort-down']" />
+                                        <font-awesome-icon v-else :icon="['fas', 'sort-up']" />
+                                    </template>
                                 </th>
                                 <th :style="{
                                     whiteSpace: 'nowrap',
                                     textDecoration: sort.field == 'bearer' ? 'underline' : 'none'
                                 }" @click="orderBy('bearer')">
                                     Bearer
-                                    <font-awesome-icon :icon="['fas', 'sort']" />
+                                    <template v-if="sort.field == 'bearer'">
+                                        <font-awesome-icon v-if="sort.order == 'desc'" :icon="['fas', 'sort-down']" />
+                                        <font-awesome-icon v-else :icon="['fas', 'sort-up']" />
+                                    </template>
                                 </th>
                                 <th :style="{
                                     whiteSpace: 'nowrap',
                                     textDecoration: sort.field == 'speed' ? 'underline' : 'none'
                                 }" @click="orderBy('speed')">
                                     Speed
-                                    <font-awesome-icon :icon="['fas', 'sort']" />
+                                    <template v-if="sort.field == 'speed'">
+                                        <font-awesome-icon v-if="sort.order == 'desc'" :icon="['fas', 'sort-down']" />
+                                        <font-awesome-icon v-else :icon="['fas', 'sort-up']" />
+                                    </template>
                                 </th>
                                 <th :style="{
                                     whiteSpace: 'nowrap',
                                     textDecoration: sort.field == 'priceInstall' ? 'underline' : 'none'
                                 }" @click="orderBy('priceInstall')">
                                     Set Up
-                                    <font-awesome-icon :icon="['fas', 'sort']" />
+                                    <template v-if="sort.field == 'priceInstall'">
+                                        <font-awesome-icon v-if="sort.order == 'desc'" :icon="['fas', 'sort-down']" />
+                                        <font-awesome-icon v-else :icon="['fas', 'sort-up']" />
+                                    </template>
                                 </th>
                                 <th :style="{
                                     whiteSpace: 'nowrap',
                                     textDecoration: sort.field == 'priceMonthly' ? 'underline' : 'none'
                                 }" @click="orderBy('priceMonthly')">
                                     Monthly
-                                    <font-awesome-icon :icon="['fas', 'sort']" />
+                                    <template v-if="sort.field == 'priceMonthly'">
+                                        <font-awesome-icon v-if="sort.order == 'desc'" :icon="['fas', 'sort-down']" />
+                                        <font-awesome-icon v-else :icon="['fas', 'sort-up']" />
+                                    </template>
                                 </th>
                                 <th :style="{
                                     whiteSpace: 'nowrap',
                                     textDecoration: sort.field == 'priceECC' ? 'underline' : 'none'
                                 }" @click="orderBy('priceECC')">
                                     ECC
-                                    <font-awesome-icon :icon="['fas', 'sort']" />
+                                    <template v-if="sort.field == 'priceECC'">
+                                        <font-awesome-icon v-if="sort.order == 'desc'" :icon="['fas', 'sort-down']" />
+                                        <font-awesome-icon v-else :icon="['fas', 'sort-up']" />
+                                    </template>
                                 </th>
                                 <th :style="{
                                     whiteSpace: 'nowrap',
                                     textDecoration: sort.field == 'contractTermMonths' ? 'underline' : 'none'
                                 }" @click="orderBy('contractTermMonths')">
                                     Contract Term
-                                    <font-awesome-icon :icon="['fas', 'sort']" />
+                                    <template v-if="sort.field == 'contractTermMonths'">
+                                        <font-awesome-icon v-if="sort.order == 'desc'" :icon="['fas', 'sort-down']" />
+                                        <font-awesome-icon v-else :icon="['fas', 'sort-up']" />
+                                    </template>
                                 </th>
                             </tr>
                         </thead>
@@ -429,8 +455,8 @@ getArticles()
                                 </td>
                                 <td style="text-align: left;">
                                     {{ article.productName }}
-                                    <span v-if="article.additionalInfo['Primary Router Model']"
-                                        title="Primary Router Model"
+                                    <span v-if="article.additionalInfo['Primary Router Model']" v-tooltip
+                                        data-bs-toggle="tooltip" data-bs-placement="top" title="Primary Router Model"
                                         class="badge border border-secondary text-secondary opacity-75 ms-1">
                                         <font-awesome-icon :icon="['fas', 'plug']"></font-awesome-icon>
                                         {{ article.additionalInfo['Primary Router Model'] }}
@@ -438,12 +464,12 @@ getArticles()
                                 </td>
                                 <td><img class="img-provider" @error="setAltImg"
                                         :src="`/images/providers/${article.providerKey}.png`"
-                                        :alt="article.providerName" :title="article.providerName" /> </td>
+                                        :alt="article.providerName" :title="article.providerName" v-tooltip /> </td>
                                 <td>
                                     <img class="img-subprovider" @error="setAltImg"
                                         :src="`/images/providers/${subProviders[article.connectivitySupplierName?.toLowerCase()]}.png`"
                                         :alt="article.connectivitySupplierName"
-                                        :title="article.connectivitySupplierName" />
+                                        :title="article.connectivitySupplierName" v-tooltip />
                                 </td>
                                 <td>{{ bytesFormatter(article.bearer) }} </td>
                                 <td>{{ bytesFormatter(article.speed) }} </td>
@@ -470,7 +496,11 @@ getArticles()
     </div>
 </template>
 
-<style scoped>
+<style>
+.p-multiselect-header {
+    display: none !important
+}
+
 tr.active td {
     background-color: var(--light-teal);
 }

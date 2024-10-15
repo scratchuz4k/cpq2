@@ -1,6 +1,7 @@
 import './bootstrap';
 import '../scss/app.scss';
-import * as bootstrap from 'bootstrap'
+import { tooltip } from './Composables/tooltip'
+
 
 // Import all of Bootstrap's JS
 
@@ -54,9 +55,10 @@ createInertiaApp({
 
 
         let app = createApp({ render: () => h(App, props) })
-            .use(plugin)
-            .use(ZiggyVue);
+        .use(plugin)
+        .use(ZiggyVue);
 
+        app.directive('tooltip', tooltip)
         app.component('font-awesome-icon', FontAwesomeIcon)
 
         const components = {

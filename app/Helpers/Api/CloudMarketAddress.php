@@ -22,6 +22,6 @@ class CloudMarketAddress
 
     public function toString(): string
     {
-        return Str::slug($this->postCode . $this->uprn . $this->street . $this->town);
+        return Str::slug($this->postCode) . '_' . md5($this->uprn . $this->street . $this->town);
     }
 }

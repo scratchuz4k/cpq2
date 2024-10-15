@@ -16,7 +16,6 @@ class CloudMarketApi
         $url =  env('PARTNER_QUOTE_SERVICE_URL', 'https://cpq-poc-uat-api.cloudmarket.com');
         $requestTimeout = 360;
 
-        Log::debug("Fetching produts for: " . $address->toString());
         return Http::withOptions(['stream' => true])->timeout($requestTimeout)->withToken(env('ALPNET_API_TOKEN'))
             ->get(
                 $url . '/PartnerQuoteService/' . env('PARTNER_QUOTE_SERVICE_ENDPOINT', 'TestNoParams'),

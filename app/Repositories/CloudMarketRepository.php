@@ -10,8 +10,15 @@ class CloudMarketRepository
 
     public function sendResponse($file, $filters)
     {
-        $filtersData = $this->processPricesAndFilters($file['data']);
+        $priceRules = new PriceRulesConnectivity();
+        foreach ($file['data'] as $key => $value) {
+            $file['data'][$key] = $priceRules->calculate($value);
+        }
+
         $items = $this->filterData($file['data'], $filters);
+        foreach ($items as $key => $value) {
+            $file['filters'] = $this->processFilters($file['filters'] , $value, true);
+        }
 
         $order = request()->input('order', 'asc');
         $orderBy = request()->input('orderBy', 'productName');
@@ -29,40 +36,15 @@ class CloudMarketRepository
             'overall_total' => $file['total'],
             'finished_at' => $file['finished_at'],
             'created_at' =>  $file['created_at'],
-            'filters' =>  $filtersData,
+            'filters' =>  $file['filters'],
         ];
     }
-    public function processPricesAndFilters(&$data)
-    {
-        $filters = [
-            "providerName" => [],
-            "connectivitySupplierName" => [],
-            "contractTermMonths" => [],
-            "bearer" => [],
-            "speed" => []
-        ];
 
-        $priceRules = new PriceRulesConnectivity();
-        foreach ($data as $key =>  $value) {
-            foreach ($filters as $filterKey => $items) {
-                if (!array_key_exists($filterKey, $value) || !$value[$filterKey]) {
-                    continue;
-                }
-
-                if (in_array($value[$filterKey], $items)) {
-                    continue;
-                }
-                array_push($filters[$filterKey], $value[$filterKey]);
-            }
-            $data[$key] = $priceRules->calculate($value);
-        }
-        return $filters;
-    }
     public function filterData($data, $filters)
     {
         $data = collect($data);
         foreach ($filters as $filter) {
-            if (is_null($filter['value'])) {
+            if (!$filter['value']) {
                 continue;
             }
             $data = $this->resolveQuery($filter['operator'], $filter['column'], $filter['value'], $data);
@@ -103,5 +85,24 @@ class CloudMarketRepository
             default:
                 return $data;
         }
+    }
+
+    public function processFilters($filters, $value, $addCount = false)
+    {
+        foreach ($filters as $filterKey => $items) {
+            if (!array_key_exists($filterKey, $value) || !$value[$filterKey]) {
+                continue;
+            }
+
+            if (array_key_exists($value[$filterKey], $items) && $addCount) {
+
+                $filters[$filterKey][$value[$filterKey]]++;
+                continue;
+            } else {
+                $filters[$filterKey][$value[$filterKey]] = 0;
+            }
+        }
+
+        return $filters;
     }
 }

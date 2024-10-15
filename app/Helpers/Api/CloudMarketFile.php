@@ -14,20 +14,22 @@ class CloudMarketFile
         public $filename,
     ) {}
 
-    public function write(array $data, bool $wating_task, $finished_at, $created_at)
+    public function write(array $data, bool $wating_task, $finished_at, $created_at, $filters = [])
     {
+        if (!is_dir($this->path)) {
+            mkdir($this->path, 0777, true);
+        }
+
         $dataString = json_encode([
             'data' => $data,
             'total' => count($data),
             'wating_task' => $wating_task,
             'created_at' => $created_at,
             'finished_at' => $finished_at,
+            'filters' => $filters,
         ]);
 
         Cache::put($this->filename, json_encode(['updated_at' => now()]), 86400);
-        if (!file_exists($this->path . $this->filename)) {
-            throw new Exception("File  $this->filename not Found!");
-        }
         file_put_contents($this->path . $this->filename, $dataString);
     }
 

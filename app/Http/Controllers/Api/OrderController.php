@@ -16,7 +16,8 @@ use App\Http\Requests\OrderUpdateRequest;
 class OrderController extends BaseController
 {
     protected $model = Order::class;
-    public function __construct(protected OrderService $orderService) {
+    public function __construct(protected OrderService $orderService)
+    {
         parent::__construct();
     }
     /**
@@ -53,7 +54,7 @@ class OrderController extends BaseController
      */
     public function show(Order $order)
     {
-        //
+        return new OrderResource($order);
     }
 
     /**
@@ -61,7 +62,16 @@ class OrderController extends BaseController
      */
     public function update(OrderUpdateRequest $request, Order $order)
     {
-        //
+        try {
+            $order = $this->orderService->update($order, $request->all());
+        } catch (Exception $e) {
+            if (!env('APP_DEBUG')) {
+                Log::error($e->getMessage());
+            }
+            throw new Exception($e);
+        }
+
+        return response()->json(new OrderResource($order));
     }
 
     /**
