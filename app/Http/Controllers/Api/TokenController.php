@@ -7,12 +7,17 @@ use App\Helpers\DataProvider;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\BaseController;
 use App\Http\Resources\TokenResource;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class TokenController extends BaseController
 {
 
+    protected $model = Token::class;
+
     /**
      * Display a listing of the resource.
+     * @response AnonymousResourceCollection<LengthAwarePaginator<TokenResource>>
      */
     public function index()
     {

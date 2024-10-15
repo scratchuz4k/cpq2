@@ -12,6 +12,8 @@ use App\Http\Requests\TokenCreateRequest;
 class TokenController extends BaseController
 {
 
+    protected $model = Token::class;
+
     /**
      * Display a listing of the resource.
      */

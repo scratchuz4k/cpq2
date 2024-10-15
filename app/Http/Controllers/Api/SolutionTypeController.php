@@ -14,7 +14,7 @@ class SolutionTypeController extends Controller
      */
     public function index()
     {
-        return SolutionType::get();
+        //
     }
 
     /**

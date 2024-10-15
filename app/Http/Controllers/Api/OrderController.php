@@ -12,6 +12,8 @@ use App\Http\Resources\OrderResource;
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\OrderCreateRequest;
 use App\Http\Requests\OrderUpdateRequest;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class OrderController extends BaseController
 {
@@ -22,6 +24,7 @@ class OrderController extends BaseController
     }
     /**
      * Display a listing of the resource.
+     * @response AnonymousResourceCollection<LengthAwarePaginator<OrderResource>>
      */
     public function index()
     {

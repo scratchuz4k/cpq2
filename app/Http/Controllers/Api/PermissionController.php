@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Models\Order;
 use App\Models\Permission;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -14,7 +13,7 @@ class PermissionController extends Controller
      */
     public function index()
     {
-        return Permission::all();
+        //
     }
 
     /**

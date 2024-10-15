@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Api;
 
 use Exception;
 use App\Models\Account;
-use Illuminate\Http\Request;
 use App\Helpers\DataProvider;
 use App\Services\AccountService;
 use Illuminate\Support\Facades\Log;
@@ -12,6 +11,8 @@ use App\Http\Resources\AccountResource;
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\AccountCreateRequest;
 use App\Http\Requests\AccountUpdateRequest;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class AccountController extends BaseController
 {
@@ -23,6 +24,7 @@ class AccountController extends BaseController
     }
     /**
      * Display a listing of the resource.
+     * @response AnonymousResourceCollection<LengthAwarePaginator<AccountResource>>
      */
     public function index()
     {

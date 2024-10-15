@@ -11,12 +11,15 @@ use App\Http\Resources\PriceResource;
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\PriceCreateRequest;
 use App\Http\Requests\PriceUpdateRequest;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class PriceController extends BaseController
 {
     protected $model = Price::class;
     /**
      * Display a listing of the resource.
+     * @response AnonymousResourceCollection<LengthAwarePaginator<PriceResource>>
      */
     public function index()
     {
