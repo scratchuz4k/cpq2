@@ -16,6 +16,7 @@ class SupplierResource extends JsonResource
     {
         return [
             ...$this->resource->toArray(),
+            'tenant' => $this->tenant,
             'updated_at' => format_date($this->updated_at),
             'created_at' => format_date($this->created_at)
         ];

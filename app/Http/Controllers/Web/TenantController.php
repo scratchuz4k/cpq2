@@ -3,12 +3,11 @@
 namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\BaseController;
-use App\Models\Resource;
+use App\Http\Requests\TenantUpdateRequest;
 use App\Models\Tenant;
 use App\Services\TenantService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
 class TenantController extends BaseController
@@ -26,7 +25,7 @@ class TenantController extends BaseController
         $isSuperAdmin = auth()->user()->hasRole('Super Admin');
         $tenants = $isSuperAdmin
             ? Tenant::with('file')->get()
-            : Tenant::with('file')->findOrFail(session()->get('tenant_id'));
+            : [Tenant::with('file')->findOrFail(session()->get('tenant_id'))];
 
         return Inertia::render('Tenant/Index', [
             'isSuperAdmin' => $isSuperAdmin,
@@ -69,7 +68,7 @@ class TenantController extends BaseController
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Tenant $tenant)
+    public function update(TenantUpdateRequest $request, Tenant $tenant)
     {
         try {
             $tenant = $this->tenantService->update($tenant, $request->all());
@@ -79,7 +78,7 @@ class TenantController extends BaseController
             }
             throw new \Exception($e);
         }
-        return redirect()->route('tenant.index', ['tenant' => $tenant->id]);
+        return to_route('tenant.index');
     }
 
     /**

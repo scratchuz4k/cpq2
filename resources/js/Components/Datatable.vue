@@ -21,7 +21,10 @@ const usedSlots = Object.keys(slots)
 const props = defineProps({
     route: String,
     columns: Array,
-    filters: Object,
+    filters: {
+        type: Object,
+        default: {}
+    },
     allow: {
         type: Object,
         default: {
@@ -259,6 +262,11 @@ getData()
     </Paginator>
 </template>
 <style>
+.p-select-option.p-select-option-selected.p-focus {
+    background-color: #ec008c!important;
+    color: white!important;
+}
+
 .p-datatable {
     z-index: 1;
 }

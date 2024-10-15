@@ -28,9 +28,9 @@ const items = ref([
                     link: false,
                 }" :columns="[
                     { data: 'id', title: '#' },
+                    { data: 'tenant.name', title: 'Tenant' },
                     { data: 'name', title: 'Name' },
                     { data: 'reference', title: 'Reference' },
-                    { data: 'tenant.name', title: 'Tenant' },
                     { data: 'created_at', title: 'Created At' },
                     { data: 'updated_at', title: 'Updated At' },
                 ]" route="/accounts">
