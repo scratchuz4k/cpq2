@@ -2,7 +2,6 @@
 import axios from 'axios';
 import { router } from '@inertiajs/vue3';
 import { reactive, ref, watch } from 'vue'
-import swal from "sweetalert2";
 
 const props = defineProps({
     modelValue: Object,
@@ -146,17 +145,7 @@ const addQuantity = (product, quantity) => {
     if (checkPlansHardwareQuantity() < 0) {
         swal.fire({
             title: 'Quantity exceeds plans limit',
-            subtitle: 'Your hardware quantity exceeds plans limit',
-            buttonsStyling: true,
-            showCancelButton: true,
-            confirmButtonColor: '#ec008c',
-            width: '20em',
-            customClass: {
-                confirmButton: 'btn text-light btn-lg mr-2 fs-6',
-                cancelButton: 'btn btn-outline-primary border-light-purple btn-lg fs-6',
-                loader: 'custom-loader',
-                title: 'h3'
-            },
+            subtitle: 'Your hardware quantity exceeds plans limit'
         }).then(async (result) => {
             if (['cancel', 'backdrop'].includes(result.dismiss)) {
                 product.quantity = oldQty
