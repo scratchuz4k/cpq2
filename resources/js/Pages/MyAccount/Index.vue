@@ -57,28 +57,28 @@ defineProps({
                                     Tenant
                                 </a>
                             </li>
-                            <li>
+                            <li v-if="hasRole('Super Admin') || hasRole('Company Admin') || hasRole('Sales Rep')">
                                 <Link :href="route('accounts.index')">Accounts</Link>
                             </li>
-                            <li>
+                            <li v-if="hasRole('Super Admin') || hasRole('Company Admin') || hasRole('Sales Rep')">
                                 <Link :href="route('brands.index')">Brands</Link>
                             </li>
-                            <li>
+                            <li v-if="hasRole('Super Admin') || hasRole('Company Admin')">
                                 <Link :href="route('prices.index')">Prices</Link>
                             </li>
-                            <li>
+                            <li v-if="hasRole('Super Admin') || hasRole('Company Admin')">
                                 <Link :href="route('products.index')">Products</Link>
                             </li>
-                            <li>
+                            <li v-if="hasRole('Super Admin') || hasRole('Company Admin')">
                                 <Link :href="route('regions.index')">Regions</Link>
                             </li>
-                            <li>
+                            <li v-if="hasRole('Super Admin') || hasRole('Company Admin') || hasRole('Sales Rep')">
                                 <Link :href="route('suppliers.index')">Suppliers</Link>
                             </li>
-                            <li>
+                            <li v-if="hasRole('Super Admin') || hasRole('Company Admin')">
                                 <Link :href="route('spas.index')">SPAs</Link>
                             </li>
-                            <li>
+                            <li v-if="hasRole('Super Admin') || hasRole('Company Admin')">
                                 <Link :href="route('users.index')">Users</Link>
                             </li>
                         </ul>

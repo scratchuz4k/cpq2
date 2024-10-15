@@ -7,11 +7,11 @@
                     <ul>
                         <li v-for="child in permission.children">
                             {{ child.title}}
-                            <ul>
+                            <!--<ul>
                                 <li v-for="child in child.children">
                                     {{ child.name}}
                                 </li>
-                            </ul>
+                            </ul>-->
                         </li>
                     </ul>
                 </li>

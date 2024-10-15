@@ -60,7 +60,7 @@ const submit = () => {
                                 <div class="mb-2">
                                     <div class="d-grid">
                                         <a :href="route('login')" class="btn btn-outline-secondary d-flex align-items-center">
-                                            <i class="fa-solid fa-key"></i>
+                                            <font-awesome-icon :icon="['fa-solid', 'fa-key']" />
                                             <span class="ms-2 fs-6 flex-grow-1">Continue with Login</span>
                                         </a>
                                     </div>
@@ -68,7 +68,7 @@ const submit = () => {
                                 <div v-if="canGoogleLogin">
                                     <div class="d-grid">
                                         <a :href="route('login.google')" class="btn btn-outline-secondary d-flex align-items-center">
-                                            <i class="fa-brands fa-google"></i>
+                                            <font-awesome-icon :icon="['fa-brands', 'fa-google']" />
                                             <span class="ms-2 fs-6 flex-grow-1">Continue with Google</span>
                                         </a>
                                     </div>
