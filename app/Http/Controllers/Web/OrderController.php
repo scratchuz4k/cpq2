@@ -115,6 +115,18 @@ class OrderController extends BaseController
         ]);
     }
 
+    public function preview(Order $order)
+    {
+        $totals = $order->totals();
+        $solution_types = SolutionType::get();
+
+        return Inertia::render('Orders/Preview', [
+            'accounts' => Account::all(),
+            'solution_types' => SolutionType::get(),
+            'order' => new OrderResource($order)
+        ]);
+    }
+
     public function download(Order $order)
     {
         $totals = $order->totals();
