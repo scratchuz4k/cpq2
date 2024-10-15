@@ -9,14 +9,13 @@ use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\ExternalController;
 use App\Http\Controllers\Api\OrderItemController;
 use App\Http\Controllers\Api\PermissionController;
-use App\Http\Controllers\Api\TenantController;
 use App\Http\Controllers\Api\SolutionTypeController;
 use App\Http\Controllers\Api\SupplierController;
 use App\Http\Controllers\Api\RegionController;
 use App\Http\Controllers\Api\SpaController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\PriceController;
-use App\Http\Controllers\Auth\CreateTokenController;
+use App\Http\Controllers\Api\TokenController;
 
 Route::prefix("external")->group(function () {
     Route::post("get-address-by-postcode", [ExternalController::class, "getAddressesByPostCode"]);
@@ -39,9 +38,6 @@ Route::apiResources([
     'suppliers' => SupplierController::class,
     'regions' => RegionController::class,
     'spas' => SpaController::class,
-    'users' => UserController::class
+    'users' => UserController::class,
+    'tokens' => TokenController::class
 ]);
-
-Route::controller(CreateTokenController::class)->group(function () {
-    Route::post('create/token', 'create');
-});

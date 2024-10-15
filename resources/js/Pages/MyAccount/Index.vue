@@ -49,6 +49,11 @@ defineProps({
                     </div>
                     <div class="col">
                         <ul>
+                            <li v-if="hasRole('Super Admin')">
+                                <a :href="route('tokens.index')">
+                                    Tokens
+                                </a>
+                            </li>
                             <li v-if="hasRole('Super Admin') || hasRole('Company Admin')">
                                 <a v-if="hasRole('Super Admin')" :href="route('tenant.index')">
                                     Tenants

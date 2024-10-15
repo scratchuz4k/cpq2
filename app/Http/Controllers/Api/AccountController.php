@@ -44,13 +44,13 @@ class AccountController extends BaseController
     {
         try {
             $account = $this->accountService->store($request->all());
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             if (!env('APP_DEBUG')) {
                 Log::error($e->getMessage());
             }
-            throw new \Exception($e);
+            throw new Exception($e);
         }
-        return redirect()->route('accounts.edit', ['account' => $account->id]);
+        return new AccountResource($account);
     }
 
     /**
@@ -75,7 +75,7 @@ class AccountController extends BaseController
             }
             throw new Exception($e);
         }
-        return redirect()->route('accounts.edit', ['account' => $account->id]);
+        return new AccountResource($account);
     }
 
     /**
