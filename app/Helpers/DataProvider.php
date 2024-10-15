@@ -58,7 +58,18 @@ class DataProvider
         $order = request()->input("order", "asc");
         $orderBy = request()->input("orderBy", "id");
 
-        return $this->builder->orderBy($orderBy, $order)->paginate(perPage: $limit, page: $page);
+        $orderByArray = explode('.', $orderBy);
+        if (count($orderByArray) == 1) {
+            return $this->builder->orderBy($orderBy, $order)->paginate(perPage: $limit, page: $page);
+        }
+        if (count($orderByArray) == 2) {
+            $table = $this->builder->getModel()->getTable();
+
+            $this->builder = $this->builder->select($table . '.*')->joinRelation(Str::camel($orderByArray[0]) . ' as ' . $orderByArray[0])
+                ->orderBy($orderByArray[0] . '.' . $orderByArray[1], $order);
+            return  $this->builder->paginate(perPage: $limit, page: $page);
+        }
+        return $this->builder->paginate(perPage: $limit, page: $page);
     }
 
     public function buildSearch($builder, $column, $operator, $value, $func)

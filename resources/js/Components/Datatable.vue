@@ -180,18 +180,13 @@ getData()
         </template>
         <Column v-for="(column, key) in columns.filter(x => !x.hide)" :field="column.data">
             <template #header>
-                <div class="d-flex justify-content-between align-items-center w-100 pe-3 position-relative">
-                    <b v-if="column.data.split('.').length > 1" class="column-title">
+                <div class="d-flex justify-content-between align-items-center w-100">
+                    <b class="column-title sortable" @click="sortBy(column.data)" :style="{textDecoration: column.data == form.orderBy ? 'underline': 'none'}">
                         {{ column.title }}
-                    </b>
-                    <b v-else class="column-title sortable d-inline-flex align-items-center" @click="sortBy(column.data)" :style="{textDecoration: column.data == form.orderBy ? 'underline': 'none'}">
-                        {{ column.title }}
-                        <span class="text-center" style="width: 20px;">
-                            <template v-if="column.data == form.orderBy">
-                                <font-awesome-icon v-if="form.order == 'desc'" :icon="['fas', 'sort-down']" />
-                                <font-awesome-icon v-else :icon="['fas', 'sort-up']" />
-                            </template>
-                        </span>
+                        <template v-if="column.data == form.orderBy">
+                            <font-awesome-icon v-if="form.order == 'desc'" :icon="['fas', 'sort-down']" />
+                            <font-awesome-icon v-else :icon="['fas', 'sort-up']" />
+                        </template>
                     </b>
                     <div v-if="activeFilters" style="position: absolute; right: 0; z-index: 10">
                         <button class="btn btn-sm btn-filter">
