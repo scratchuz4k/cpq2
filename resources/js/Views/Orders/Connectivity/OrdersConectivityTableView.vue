@@ -347,9 +347,10 @@ getArticles()
                         </div>
                     </div>
                 </div>
-                <div v-if="isLoading || !meta.isUpdating" data-provider="loading" class="cpq-progress-bar">
+                <div v-if="isLoading || !meta.isUpdating" data-provider="loading" class="cpq-progress-bar"
+                    style="position: absolute;z-index: 9999; ">
                     <div class="cpq-bar"></div>
-                    <div class="cpq-bar-text">
+                    <div class="cpq-bar-text" v-if="!articles.length">
                         <font-awesome-icon :icon="['fas', 'refresh']" class="fa-spin"></font-awesome-icon>
                         Please wait... <span>( {{ meta.overallTotal }} )</span>
                     </div>
