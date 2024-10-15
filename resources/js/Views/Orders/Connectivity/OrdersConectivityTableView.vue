@@ -29,7 +29,7 @@ const filters = reactive({
     },
     bearer: {
         operator: "between",
-        value: [0, 10000]
+        value: [100, 10000]
     },
     speed: {
         operator: "between",
@@ -239,7 +239,7 @@ getArticles()
     <div class="panel">
         <InfoConnectivity :order="modelValue"></InfoConnectivity>
         <div class="row mb-4" style="min-height: 50vh;">
-            <div class="col">
+            <div class="col position-relative">
                 <div class="d-flex justify-content-between align-items-center">
                     <div class="d-flex  align-items-center">
                         <h2 class="me-3">Live prices </h2>
@@ -516,6 +516,7 @@ tr.active td {
 
 .table-wrapper {
     position: relative;
+    overflow-x: auto;
 }
 
 .table-blocker {
