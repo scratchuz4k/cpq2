@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Web;
 
 use App\Http\Requests\SupplierCreateRequest;
-use App\Http\Requests\SupplieUpdateRequest;
+use App\Http\Requests\SupplierUpdateRequest;
 use App\Http\Resources\SupplierResource;
 use App\Models\Supplier;
 use App\Services\SuppliersService;
@@ -69,7 +69,7 @@ class SupplierController extends BaseController
     /**
      * Update the specified resource in storage.
      */
-    public function update(SupplieUpdateRequest $request, Supplier $supplier)
+    public function update(SupplierUpdateRequest $request, Supplier $supplier)
     {
         try {
             $supplier = $this->suppliersService->update($supplier, $request->all());

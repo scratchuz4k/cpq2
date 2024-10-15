@@ -28,14 +28,6 @@ class TenantRepository
             $file = new UploadedFile($path . 'temp_file.xml', '');
         }
 
-        if (!$xml_content || !simplexml_load_string($xml_content, null, LIBXML_NOERROR )) {
-            if (Storage::exists('temp/temp_file.xml')) {
-                Storage::delete('temp/temp_file.xml');
-            }
-
-            throw new \Exception(__('An error occurred while uploading the XML file.'));
-        }
-
         $path = $file->store('sso', 'local');
 
         $resource = Resource::create([
@@ -44,7 +36,6 @@ class TenantRepository
             'route' => $path,
             'tenant_id' => $tenant->id,
         ]);
-
 
         if (Storage::exists('temp/temp_file.xml')) {
             Storage::delete('temp/temp_file.xml');

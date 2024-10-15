@@ -3,7 +3,8 @@
 namespace App\Models;
 
 use App\Models\Scopes\TenantScope;
-use Illuminate\Database\Eloquent\Relations\Pivot;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
@@ -12,11 +13,9 @@ use Money\Currencies;
 use Money\Currencies\ISOCurrencies;
 use Money\Currency;
 use Money\Formatter\DecimalMoneyFormatter;
-use Money\Money;
 use Money\MoneyFormatter;
 use Money\MoneyParser;
 use Money\Parser\IntlLocalizedDecimalParser;
-use Money\Parser\IntlMoneyParser;
 
 /**
  * All financial data will be stored as integers to eradicate rounding/floating point issues
@@ -53,6 +52,20 @@ class Price extends Model
         static::addGlobalScope(new TenantScope);
     }
 
+    public function tenant(): BelongsTo
+    {
+        return $this->belongsTo(Tenant::class);
+    }
+
+    public function spa(): HasOne
+    {
+        return $this->hasOne(Spa::class, 'id', 'spa_id');
+    }
+
+    public function product(): HasOne
+    {
+        return $this->hasOne(Product::class, 'id', 'product_id');
+    }
     public static function calculate(array $params): array
     {
         $supplier = null;

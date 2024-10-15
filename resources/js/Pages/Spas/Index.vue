@@ -13,7 +13,7 @@ const items = ref([
         <div class="panel">
             <Header title="Spas" :breadcrumbs="items">
                 <template #buttons>
-                    <Link href="/spas/create" class="btn p-0 me-2">
+                    <Link href="/spas/create" class="btn btn-primary me-2">
                     <font-awesome-icon :icon="['fas', 'plus']"></font-awesome-icon> New SPA
                     </Link>
                 </template>
@@ -25,12 +25,10 @@ const items = ref([
                     link: false,
                 }" :columns="[
                     { data: 'id', title: '#' },
-                    { data: 'supplier_id', title: 'Supplier' },
-                    { data: 'user_id', title: 'User' },
+                    { data: 'supplier.name', title: 'Supplier' },
+                    { data: 'user.name', title: 'User' },
                     { data: 'name', title: 'Name' },
-                    { data: 'data', title: 'Data' },
-                    { data: 'created_at', title: 'Created At' },
-                    { data: 'updated_at', title: 'Updated At' },
+                    { data: 'data', title: 'Data' }
                 ]" route="/spas">
                 </Datatable>
             </div>

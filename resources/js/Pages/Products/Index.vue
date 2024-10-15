@@ -13,7 +13,7 @@ const items = ref([
         <div class="panel">
             <Header title="Products" :breadcrumbs="items">
                 <template #buttons>
-                    <Link href="/products/create" class="btn p-0 me-2">
+                    <Link href="/products/create" class="btn btn-primary me-2">
                     <font-awesome-icon :icon="['fas', 'plus']"></font-awesome-icon> New Product
                     </Link>
                 </template>

@@ -78,7 +78,7 @@ getHardwareProducts()
 
     <div class="panel panel-mobile">
         <div class="row">
-            <div class="col-lg-8 mb-5 price-summary">
+            <div class="col-lg-7 mb-5 price-summary">
                 <InfoOrder :order="modelValue"></InfoOrder>
                 <div class="mb-5">
                     <div
@@ -128,7 +128,21 @@ getHardwareProducts()
                         </div>
                     </div>
                 </div>
+                <div class="mb-5">
+                    <div>
+                        <p class="payment-info border-bottom px-5 pb-3">1 payment of {{ GBP.format(modelValue.totals.oneoff_vat) }} followed by 12 monthly payments of {{ GBP.format(modelValue.totals.monthly_vat) }}</p>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <a class="btn btn-outline-primary me-3" :href="route('orders.edit', { order: modelValue.id}) + '?step=3'">
+                            <font-awesome-icon :icon="['fas', 'arrow-left']"></font-awesome-icon> Back</a>
+                        <div>
+                            <button class="btn btn-primary">Email this quote
+                                <font-awesome-icon :icon="['fas', 'arrow-right']"></font-awesome-icon></button>
+                        </div>
+                    </div>
+                </div>
             </div>
+            <div class="col"></div>
             <div class="col-lg-4">
                 <div class="price-mobile-sidebar px-4 pt-4 pb-2 mb-3" style="position: sticky; top: 25px">
                     <h3 class="mb-3">Your quote: #{{ modelValue.id }}</h3>

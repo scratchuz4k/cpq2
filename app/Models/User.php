@@ -51,6 +51,14 @@ class User extends Authenticatable
     ];
 
     /**
+     * Get the children users of this user.
+     */
+    public function spas()
+    {
+        return $this->hasMany( Spa::class, 'user_id', 'id');
+    }
+
+    /**
      * Get the parent user of this user.
      */
     public function parent()
@@ -58,13 +66,6 @@ class User extends Authenticatable
         return $this->hasOne(User::class, 'id', 'parent_id');
     }
 
-    /**
-     * Get the children users of this user.
-     */
-    public function spas()
-    {
-        return $this->hasMany( Spa::class, 'user_id', 'id');
-    }
     /**
      * Get the children users of this user.
      */

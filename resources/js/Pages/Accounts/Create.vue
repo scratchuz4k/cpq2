@@ -12,10 +12,13 @@ import { reactive, ref } from 'vue';
 const account = reactive({
     name: null,
     reference: null,
-    contacts: []
+    contacts: [],
+    activePanel: 0
 })
+
 const addContact = () => {
-    account.contacts.push({})
+    account.contacts.push({});
+    account.activePanel = account.contacts.length - 1;
 }
 
 const saveAccount = () => {
@@ -44,7 +47,7 @@ const removeContact = (key) => {
         confirmButtonText: 'Yes, delete!'
     }).then(async (result) => {
         if (['cancel', 'backdrop'].includes(result.dismiss)) {
-            bulkOperation.value = ''
+            //bulkOperation.value = ''
             return
         }
         account.contacts.splice(key, 1)
@@ -82,7 +85,7 @@ const items = ref([
                 </div>
             </div>
             <h2>Contacts</h2>
-            <Accordion value="0">
+            <Accordion v-model:value="account.activePanel">
                 <AccordionPanel v-for="(contact, key) in account.contacts" :key="'account-' + key" :value="key">
                     <AccordionHeader>
                         <div class="d-flex justify-content-between align-items-center w-100 pe-3">
@@ -91,40 +94,44 @@ const items = ref([
                                 {{ contact.primary_contact_name ? ' - ' + contact.primary_contact_name : '' }}
 
                             </p>
-                            <Button size="small" @click="removeContact(key)">Delete</Button>
+                            <Button size="small" @click.stop="removeContact(key)">Delete</Button>
                         </div>
                     </AccordionHeader>
                     <AccordionContent>
                         <div class="row">
-                            <div class="col">
-                                <div class=" mb-3">
-                                    <label :for="'contact-name-' + key" class="form-label">
-                                        Primary Contact Name:
-                                    </label>
-                                    <input type="text" :id="'contact-name-' + key" class="form-control"
-                                        v-model="contact.primary_contact_name">
-                                </div>
-                                <div class=" mb-3">
-                                    <label :for="'contact-address-' + key" class="form-label">Address:</label>
-                                    <input :id="'contact-address-' + key" class="form-control"
-                                        v-model="contact.address_1">
-                                </div>
-                                <div class=" mb-3">
-                                    <label :for="'contact-post-code-' + key" class="form-label">Post Code:</label>
-                                    <input :id="'contact-post-code-' + key" class="form-control"
-                                        v-model="contact.postcode">
-                                </div>
+                            <div class="col-6 mb-3">
+                                <label :for="'contact-name-' + key" class="form-label">
+                                    Primary Contact Name:
+                                </label>
+                                <input type="text" :id="'contact-name-' + key" class="form-control"
+                                    v-model="contact.primary_contact_name">
                             </div>
-                            <div class="col">
-                                <div class=" mb-3">
-                                    <label :for="'contact-email-' + key" class="form-label">Email:</label>
-                                    <input type="email" :id="'contact-email-' + key" class="form-control"
-                                        v-model="contact.email">
-                                </div>
-                                <div class=" mb-3">
-                                    <label :for="'contact-city-' + key" class="form-label">City:</label>
-                                    <input :id="'contact-city-' + key" class="form-control" v-model="contact.city">
-                                </div>
+                            <div class="col-6 mb-3">
+                                <label :for="'contact-email-' + key" class="form-label">
+                                    Email:
+                                </label>
+                                <input type="email" :id="'contact-email-' + key" class="form-control"
+                                       v-model="contact.email">
+                            </div>
+                            <div class="col-6 mb-3">
+                                <label :for="'contact-address-' + key" class="form-label">
+                                    Address:
+                                </label>
+                                <input :id="'contact-address-' + key" class="form-control"
+                                    v-model="contact.address_1">
+                            </div>
+                            <div class="col-6 mb-3">
+                                <label :for="'contact-city-' + key" class="form-label">
+                                    City:
+                                </label>
+                                <input :id="'contact-city-' + key" class="form-control" v-model="contact.city">
+                            </div>
+                            <div class="col-6 mb-3">
+                                <label :for="'contact-post-code-' + key" class="form-label">
+                                    Post Code:
+                                </label>
+                                <input :id="'contact-post-code-' + key" class="form-control"
+                                        v-model="contact.postcode">
                             </div>
                         </div>
                     </AccordionContent>

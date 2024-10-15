@@ -21,7 +21,10 @@ const usedSlots = Object.keys(slots)
 const props = defineProps({
     route: String,
     columns: Array,
-    filters: Object,
+    filters: {
+        type: Object,
+        default: {}
+    },
     allow: {
         type: Object,
         default: {
@@ -54,7 +57,7 @@ const setFilters = () => {
     props.columns.forEach((el) => form.filters.push({ column: el.data, value: null, operator: 'contains' }))
 }
 
-const getData = _.debounce(async () => {
+const getData = async () => {
     meta.total = 0
     let string = queryString.stringify({
         ...form,
@@ -68,7 +71,7 @@ const getData = _.debounce(async () => {
     data.value = res.data.data
     meta.total = res.data.meta.total
     meta.first = (meta.page - 1) * form.limit
-}, 500)
+}
 
 const sortBy = (column) => {
     let changeSort = form.order == 'asc' ? 'desc' : 'asc'
@@ -136,15 +139,20 @@ const getValue = (item, key) => {
 
 setFilters()
 
-watch(form, () => {
+watch(() => [
+    form.order,
+    form.orderBy,
+    form.limit,
+], function() {
     meta.page = 1
     getData()
 })
 
-watch(global, () => {
+watch([global, form.filters], _.debounce(function() {
     meta.page = 1
     getData()
-})
+}, 500))
+
 getData()
 
 </script>
@@ -166,24 +174,26 @@ getData()
                     <InputIcon>
                         <font-awesome-icon :icon="['fas', 'search']" />
                     </InputIcon>
-                    <InputText v-model="global" placeholder="Keyword Search" />
+                    <InputText v-model="global" type="search" placeholder="Keyword Search" />
                 </IconField>
             </div>
         </template>
         <Column v-for="(column, key) in columns.filter(x => !x.hide)" :field="column.data">
             <template #header>
-                <div class="d-flex justify-content-between align-items-center w-100">
+                <div class="d-flex justify-content-between align-items-center w-100 pe-3 position-relative">
                     <b v-if="column.data.split('.').length > 1" class="column-title">
                         {{ column.title }}
                     </b>
-                    <b v-else class="column-title sortable" @click="sortBy(column.data)" :style="{textDecoration: column.data == form.orderBy ? 'underline': 'none'}">
+                    <b v-else class="column-title sortable d-inline-flex align-items-center" @click="sortBy(column.data)" :style="{textDecoration: column.data == form.orderBy ? 'underline': 'none'}">
                         {{ column.title }}
-                        <template v-if="column.data == form.orderBy">
-                            <font-awesome-icon v-if="form.order == 'desc'" :icon="['fas', 'sort-down']" />
-                            <font-awesome-icon v-else :icon="['fas', 'sort-up']" />
-                        </template>
+                        <span class="text-center" style="width: 20px;">
+                            <template v-if="column.data == form.orderBy">
+                                <font-awesome-icon v-if="form.order == 'desc'" :icon="['fas', 'sort-down']" />
+                                <font-awesome-icon v-else :icon="['fas', 'sort-up']" />
+                            </template>
+                        </span>
                     </b>
-                    <div v-if="activeFilters" style="position: relative;z-index: 1000">
+                    <div v-if="activeFilters" style="position: absolute; right: 0; z-index: 10">
                         <button class="btn btn-sm btn-filter">
                             <font-awesome-icon :icon="['fas', 'filter']" />
                         </button>
@@ -218,7 +228,7 @@ getData()
                             </template>
                             <div v-else class="mb-3">
                                 <label class="form-label" :for="`filter-value-${key}`">Search</label>
-                                <input :id="`filter-value-${key}`" class="form-control me-2 form-control-sm"
+                                <input :id="`filter-value-${key}`" type="search" class="form-control me-2 form-control-sm"
                                     v-model="form.filters[key].value" />
                             </div>
                         </div>
@@ -230,24 +240,24 @@ getData()
                 <template v-else>{{ getValue(data, field) }}</template>
             </template>
         </Column>
-        <Column v-if="allow.update || allow.link || allow.delete">
+        <Column v-if="allow.update || allow.link || allow.delete" :class="['p-0']">
             <template #body="{ data, index }">
-                <div class="d-flex text-right">
+                <div class="d-flex justify-content-center">
                     <template v-if="allow.update">
-                        <Link :href="props.route + '/' + data.id + '/edit'" class="btn p-0 me-2">
+                        <Link :href="props.route + '/' + data.id + '/edit'" class="btn p-2 mx-1 border-0">
                         <font-awesome-icon :icon="['fas', 'edit']" />
                         </Link>
                     </template>
 
                     <template v-if="allow.link">
-                        <Link :href="props.route + '/' + data.id" class="btn p-0 me-2">
+                        <Link :href="props.route + '/' + data.id" class="btn p-2 mx-1 border-0">
                         <font-awesome-icon :icon="['fas', 'eye']" />
                         </Link>
                     </template>
 
                     <template v-if="allow.delete">
-                        <button class="btn p-0" @click="deleteRecord(data.id)">
-                            <font-awesome-icon icon="fas fa-trash-alt"></font-awesome-icon>
+                        <button class="btn p-2 mx-1 border-0" @click="deleteRecord(data.id)">
+                            <font-awesome-icon icon="fas fa-trash-alt" />
                         </button>
                     </template>
                 </div>
@@ -259,12 +269,31 @@ getData()
     </Paginator>
 </template>
 <style>
+.p-select-option.p-select-option-selected.p-focus {
+    background-color: #ec008c!important;
+    color: white!important;
+}
+
 .p-datatable {
     z-index: 1;
 }
 
+.p-datatable-header {
+    padding: 0.75rem 0rem 0rem !important;
+    border-bottom: 0 !important;
+}
+
 .p-datatable-table-container {
     overflow: visible !important;
+}
+
+.p-datatable tr td:not(.p-0),
+.p-datatable tr th {
+    padding: 0.5rem .5rem !important;;
+}
+
+.column-title {
+    padding: 0.5rem 0.5rem 0.5rem 0;
 }
 
 .column-title {

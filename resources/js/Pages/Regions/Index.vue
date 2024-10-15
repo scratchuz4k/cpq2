@@ -13,7 +13,7 @@ const items = ref([
         <div class="panel">
             <Header title="Regions" :breadcrumbs="items">
                 <template #buttons>
-                    <Link href="/regions/create" class="btn p-0 me-2">
+                    <Link href="/regions/create" class="btn btn-primary me-2">
                     <font-awesome-icon :icon="['fas', 'plus']"></font-awesome-icon> New Region
                     </Link>
                 </template>
@@ -25,9 +25,9 @@ const items = ref([
                     link: false,
                 }" :columns="[
                     { data: 'id', title: '#' },
-                    { data: 'tenant_id', title: 'Tenant' },
+                    { data: 'tenant.name', title: 'Tenant' },
                     { data: 'merchant_id', title: 'Merchant' },
-                    { data: 'user_id', title: 'User' },
+                    { data: 'user.name', title: 'User' },
                     { data: 'name', title: 'Name' },
                     { data: 'created_at', title: 'Created At' },
                     { data: 'updated_at', title: 'Updated At' },

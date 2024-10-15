@@ -25,37 +25,81 @@ const submit = () => {
     <GuestLayout>
         <Head title="Forgot Password" />
 
-        <div class="mb-4 text-sm text-gray-600">
-            Forgot your password? No problem. Just let us know your email address and we will email you a password reset
-            link that will allow you to choose a new one.
-        </div>
-
-        <div v-if="status" class="mb-4 font-medium text-sm text-green-600">
-            {{ status }}
-        </div>
-
-        <form @submit.prevent="submit">
-            <div>
-                <InputLabel for="email" value="Email" />
-
-                <TextInput
-                    id="email"
-                    type="email"
-                    class="mt-1 block w-full"
-                    v-model="form.email"
-                    required
-                    autofocus
-                    autocomplete="username"
-                />
-
-                <InputError class="mt-2" :message="form.errors.email" />
+        <div class="panel-login row justify-content-center">
+            <div class="col-12 col-md-8 col-lg-6 col-xl-4">
+                <div class="card">
+                    <div class="card-header">Forgot Password?</div>
+                    <div class="card-body p-4">
+                        <div v-if="status" class="error-box d-flex p-2 mb-2">
+                            <font-awesome-icon :class="['p-1']" :icon="['fas', 'circle-info']" />
+                            <p class="my-0 ps-2 my-auto">
+                                {{ status }}
+                            </p>
+                        </div>
+                        <div class="mb-4 text-sm text-gray-600">
+                            Forgot your password? No problem. Just let us know your email address and we will email you a password reset
+                            link that will allow you to choose a new one.
+                        </div>
+                        <form @submit.prevent="submit">
+                            <div class="row overflow-hidden">
+                                <div class="mb-3">
+                                    <span><InputLabel for="email" value="Email" /></span>
+                                    <TextInput id="email" type="email" :class="{'is-invalid': form.errors.email}" v-model="form.email" required autofocus
+                                        autocomplete="username" />
+                                    <InputError class="invalid-feedback" :message="form.errors.email" />
+                                </div>
+                                <div class="d-grid">
+                                    <PrimaryButton :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
+                                        Email Password Reset Link
+                                    </PrimaryButton>
+                                </div>
+                                <div class="text-center my-3 d-block position-relative">
+                                    <span class="login-seperator">or</span>
+                                </div>
+                                <div class="mb-2">
+                                    <div class="d-grid">
+                                        <a :href="route('login')" class="btn btn-outline-secondary d-flex align-items-center">
+                                            <font-awesome-icon :icon="['fa-solid', 'fa-key']" />
+                                            <span class="ms-2 fs-6 flex-grow-1">Continue with Login</span>
+                                        </a>
+                                    </div>
+                                </div>
+                                <div v-if="canGoogleLogin">
+                                    <div class="d-grid">
+                                        <a :href="route('login.google')" class="btn btn-outline-secondary d-flex align-items-center">
+                                            <font-awesome-icon :icon="['fa-brands', 'fa-google']" />
+                                            <span class="ms-2 fs-6 flex-grow-1">Continue with Google</span>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
             </div>
-
-            <div class="flex items-center justify-end mt-4">
-                <PrimaryButton :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
-                    Email Password Reset Link
-                </PrimaryButton>
-            </div>
-        </form>
+        </div>
     </GuestLayout>
 </template>
+
+<style scoped>
+    .panel-login {
+        .login-seperator:before {
+            content: '';
+            width: 40%;
+            height:1px;
+            background-color:var(--light-grey);
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+        }
+        .login-seperator:after {
+            content: '';
+            width: 40%;
+            height:1px;
+            background-color:var(--light-grey);
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+        }
+    }
+</style>

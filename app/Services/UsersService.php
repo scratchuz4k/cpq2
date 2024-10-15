@@ -42,10 +42,6 @@ class UsersService
 
         return DB::transaction(function () use ($user, $array) {
 
-            if (array_key_exists('password', $array) && !empty($array['password'])) {
-                $array['password'] = Hash::make($array['password']);
-            }
-
             $user->update(
                 [
                     ...$array,

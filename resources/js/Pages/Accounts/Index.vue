@@ -16,7 +16,7 @@ const items = ref([
         <div class="panel">
             <Header title="Accounts" :breadcrumbs="items">
                 <template #buttons>
-                    <Link href="/accounts/create" class="btn p-0 me-2">
+                    <Link href="/accounts/create" class="btn btn-primary me-2">
                     <font-awesome-icon :icon="['fas', 'plus']"></font-awesome-icon> New Account
                     </Link>
                 </template>
@@ -28,9 +28,9 @@ const items = ref([
                     link: false,
                 }" :columns="[
                     { data: 'id', title: '#' },
+                    { data: 'tenant.name', title: 'Tenant' },
                     { data: 'name', title: 'Name' },
                     { data: 'reference', title: 'Reference' },
-                    { data: 'tenant.name', title: 'Tenant' },
                     { data: 'created_at', title: 'Created At' },
                     { data: 'updated_at', title: 'Updated At' },
                 ]" route="/accounts">

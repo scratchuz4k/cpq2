@@ -70,8 +70,6 @@ const items = ref([
                         <label for="price-name" class="form-label">Gross:</label>
                         <input id="price-name" type="number" class="form-control" v-model="price.gross">
                     </div>
-                </div>
-                <div class="col-6">
                     <div class="mb-3">
                         <label for="price-name" class="form-label">SPA:</label>
                         <select class="form-select" v-model="price.spa_id">
