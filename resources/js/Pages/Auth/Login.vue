@@ -43,7 +43,7 @@ const submit = () => {
                     <div class="card-header">Login</div>
                     <div class="card-body p-4">
                         <div v-if="status" class="error-box d-flex p-2 mb-2">
-                            <font-awesome-icon :class="['p-1']" :icon="['fas', 'circle-info']" />
+                            font-awesome-icon :class="['p-1']" :icon="['fas', 'circle-info']" />
                             <p class="my-0 ps-2 my-auto">
                                 {{ status }}
                             </p>
@@ -91,7 +91,7 @@ const submit = () => {
                                 <div class="mb-2">
                                     <div class="d-grid">
                                         <a :href="route('login.sso')" class="btn btn-outline-secondary d-flex align-items-center">
-                                            <i class="fa-solid fa-key"></i>
+                                            <font-awesome-icon :icon="['fa-solid', 'fa-key']" />
                                             <span class="ms-2 fs-6 flex-grow-1">Continue with SSO</span>
                                         </a>
                                     </div>
@@ -99,7 +99,7 @@ const submit = () => {
                                 <div v-if="canGoogleLogin">
                                     <div class="d-grid">
                                         <a :href="route('login.google')" class="btn btn-outline-secondary d-flex align-items-center">
-                                            <i class="fa-brands fa-google"></i>
+                                            <font-awesome-icon :icon="['fa-brands', 'fa-google']" />
                                             <span class="ms-2 fs-6 flex-grow-1">Continue with Google</span>
                                         </a>
                                     </div>
