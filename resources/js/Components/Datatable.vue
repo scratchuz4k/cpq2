@@ -1,6 +1,5 @@
 <script setup>
 import _ from "lodash";
-import swal from "sweetalert2";
 import { Link } from '@inertiajs/vue3';
 
 import DataTable from 'primevue/datatable';
@@ -89,16 +88,9 @@ const clearFilters = () => {
 }
 const deleteRecord = async (id) => {
     swal.fire({
-        title: 'Are you sure?',
-        icon: 'warning',
-        showCancelButton: true,
-        cancelButtonText: 'No, cancel.',
-        confirmButtonColor: '#2d72d9',
-        cancelButtonColor: '#E53A40',
-        confirmButtonText: 'Yes, delete!'
+        title: 'Are you sure?'
     }).then(async (result) => {
         if (['cancel', 'backdrop'].includes(result.dismiss)) {
-            bulkOperation.value = ''
             return
         }
         try {

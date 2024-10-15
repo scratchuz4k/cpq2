@@ -33,6 +33,22 @@ import mitt from 'mitt'
 
 window.emitter = mitt()
 
+import Swal from "sweetalert2";
+window.swal = Swal.mixin({
+    buttonsStyling: true,
+    showCancelButton: true,
+    confirmButtonColor: '#ec008c',
+    width: '20em',
+    customClass: {
+    confirmButton: 'btn text-light btn-lg mr-2 fs-6',
+        cancelButton: 'btn btn-outline-primary border-light-purple btn-lg fs-6',
+        loader: 'custom-loader',
+        title: 'h3'
+    }
+    }
+)
+
+
 /* import the fontawesome core */
 import { library } from '@fortawesome/fontawesome-svg-core'
 

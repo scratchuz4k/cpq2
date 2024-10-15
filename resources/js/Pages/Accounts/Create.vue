@@ -6,7 +6,6 @@ import Accordion from 'primevue/accordion';
 import AccordionPanel from 'primevue/accordionpanel';
 import AccordionHeader from 'primevue/accordionheader';
 import AccordionContent from 'primevue/accordioncontent';
-import Swal from 'sweetalert2';
 import { reactive, ref } from 'vue';
 
 const account = reactive({
@@ -38,13 +37,7 @@ const saveAccount = () => {
 
 const removeContact = (key) => {
     Swal.fire({
-        title: 'Are you sure?',
-        icon: 'warning',
-        showCancelButton: true,
-        cancelButtonText: 'No, cancel.',
-        confirmButtonColor: '#2d72d9',
-        cancelButtonColor: '#E53A40',
-        confirmButtonText: 'Yes, delete!'
+        title: 'Are you sure?'
     }).then(async (result) => {
         if (['cancel', 'backdrop'].includes(result.dismiss)) {
             //bulkOperation.value = ''
