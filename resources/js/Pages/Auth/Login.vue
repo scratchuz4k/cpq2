@@ -43,7 +43,7 @@ const submit = () => {
                     <div class="card-header">Login</div>
                     <div class="card-body p-4">
                         <div v-if="status" class="error-box d-flex p-2 mb-2">
-                            font-awesome-icon :class="['p-1']" :icon="['fas', 'circle-info']" />
+                            <font-awesome-icon :class="['p-1']" :icon="['fas', 'circle-info']" />
                             <p class="my-0 ps-2 my-auto">
                                 {{ status }}
                             </p>

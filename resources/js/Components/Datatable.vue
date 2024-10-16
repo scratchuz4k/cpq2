@@ -67,9 +67,9 @@ const getData = async () => {
     })
 
     let res = await axios.get('/api' + props.route + '?' + string)
-    data.value = res.data.data
-    meta.total = res.data.meta.total
-    meta.first = (meta.page - 1) * form.limit
+        data.value = res.data.data
+        meta.total = res.data.meta.total
+        meta.first = (meta.page - 1) * form.limit
 }
 
 const sortBy = (column) => {
@@ -229,7 +229,7 @@ getData()
                 <template v-else>{{ getValue(data, field) }}</template>
             </template>
         </Column>
-        <Column v-if="allow.update || allow.link || allow.delete" :class="['p-0']">
+        <Column v-if="allow.update || allow.link || allow.delete" :class="['p-0']" style="width: 140px;">
             <template #body="{ data, index }">
                 <div class="d-flex justify-content-center">
                     <template v-if="allow.update">

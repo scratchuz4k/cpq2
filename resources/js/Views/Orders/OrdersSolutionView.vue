@@ -141,7 +141,7 @@ watch(addressPostCode, () => {
                         modelValue.position?.lat }}, {{ modelValue.position?.lon }}
                 </p>
                 <p><i class="fa fa-location-dot"></i> <span id="location_geo"></span></p>
-                <iframe v-if="modelValue.position" class="map" width="100%" height="200" frameborder="0"
+                <iframe v-if="modelValue.position" class="map" width="100%" height="230" frameborder="0"
                     style="border:0" referrerpolicy="no-referrer-when-downgrade"
                     :src="`https://www.google.com/maps/embed/v1/place?key=${GOOGLE_MAPS_API_KEY}&q=${modelValue.position.lat}, ${modelValue.position.lon}`"
                     allowfullscreen>
