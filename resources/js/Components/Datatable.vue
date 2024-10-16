@@ -57,7 +57,7 @@ const setFilters = () => {
 }
 
 const getData = async () => {
-    meta.total = 0
+    //meta.total = 0
     let string = queryString.stringify({
         ...form,
         page: meta.page,

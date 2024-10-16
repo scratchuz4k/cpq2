@@ -171,7 +171,7 @@ const sort = reactive({
 
 const orderBy = (column) => {
     let changeSort = sort.order == 'asc' ? 'desc' : 'asc'
-    sort.order = sort.field === column ? changeSort : sort.order
+    sort.order = sort.field === column ? changeSort : (['speed', 'bearer'].includes(column) ? 'desc' : sort.order)
     sort.field = column
     getArticles()
 }
@@ -372,8 +372,8 @@ getArticles()
                                     Product
                                     <span class="text-center d-inline-block align-middle" style="width: 20px;">
                                         <template v-if="sort.field == 'productName'">
-                                            <font-awesome-icon v-if="sort.order == 'desc'" :icon="['fa-solid', 'fa-sort-amount-down-alt']" />
-                                            <font-awesome-icon v-else :icon="['fa-solid', 'fa-sort-amount-up-alt']" />
+                                            <font-awesome-icon v-if="sort.order == 'desc'" :icon="['fa-solid', 'fa-sort-amount-up-alt']" />
+                                            <font-awesome-icon v-else :icon="['fa-solid', 'fa-sort-amount-down-alt']" />
                                         </template>
                                         <template v-else>
                                             <font-awesome-icon :icon="['fa-solid', 'fa-sort']" />
@@ -385,8 +385,8 @@ getArticles()
                                     Provider
                                     <span class="text-center d-inline-block align-middle" style="width: 20px;">
                                         <template v-if="sort.field == 'providerName'">
-                                            <font-awesome-icon v-if="sort.order == 'desc'" :icon="['fa-solid', 'fa-sort-amount-down-alt']" />
-                                            <font-awesome-icon v-else :icon="['fa-solid', 'fa-sort-amount-up-alt']" />
+                                            <font-awesome-icon v-if="sort.order == 'desc'" :icon="['fa-solid', 'fa-sort-amount-up-alt']" />
+                                            <font-awesome-icon v-else :icon="['fa-solid', 'fa-sort-amount-down-alt']" />
                                         </template>
                                         <template v-else>
                                             <font-awesome-icon :icon="['fa-solid', 'fa-sort']" />
@@ -398,8 +398,8 @@ getArticles()
                                     Subprovider
                                     <span class="text-center d-inline-block align-middle" style="width: 20px;">
                                         <template v-if="sort.field == 'connectivitySupplierName'">
-                                            <font-awesome-icon v-if="sort.order == 'desc'" :icon="['fa-solid', 'fa-sort-amount-down-alt']" />
-                                            <font-awesome-icon v-else :icon="['fa-solid', 'fa-sort-amount-up-alt']" />
+                                            <font-awesome-icon v-if="sort.order == 'desc'" :icon="['fa-solid', 'fa-sort-amount-up-alt']" />
+                                            <font-awesome-icon v-else :icon="['fa-solid', 'fa-sort-amount-down-alt']" />
                                         </template>
                                         <template v-else>
                                             <font-awesome-icon :icon="['fa-solid', 'fa-sort']" />
@@ -412,8 +412,8 @@ getArticles()
                                     Bearer
                                     <span class="text-center d-inline-block align-middle" style="width: 20px;">
                                         <template v-if="sort.field == 'bearer'">
-                                            <font-awesome-icon v-if="sort.order == 'desc'" :icon="['fa-solid', 'fa-sort-amount-down-alt']" />
-                                            <font-awesome-icon v-else :icon="['fa-solid', 'fa-sort-amount-up-alt']" />
+                                            <font-awesome-icon v-if="sort.order == 'desc'" :icon="['fa-solid', 'fa-sort-amount-up-alt']" />
+                                            <font-awesome-icon v-else :icon="['fa-solid', 'fa-sort-amount-down-alt']" />
                                         </template>
                                         <template v-else>
                                             <font-awesome-icon :icon="['fa-solid', 'fa-sort']" />
@@ -426,8 +426,8 @@ getArticles()
                                     Speed
                                     <span class="text-center d-inline-block align-middle" style="width: 20px;">
                                         <template v-if="sort.field == 'speed'">
-                                            <font-awesome-icon v-if="sort.order == 'desc'" :icon="['fa-solid', 'fa-sort-amount-down-alt']" />
-                                            <font-awesome-icon v-else :icon="['fa-solid', 'fa-sort-amount-up-alt']" />
+                                            <font-awesome-icon v-if="sort.order == 'desc'" :icon="['fa-solid', 'fa-sort-amount-up-alt']" />
+                                            <font-awesome-icon v-else :icon="['fa-solid', 'fa-sort-amount-down-alt']" />
                                         </template>
                                         <template v-else>
                                             <font-awesome-icon :icon="['fa-solid', 'fa-sort']" />
@@ -440,8 +440,8 @@ getArticles()
                                     Set Up
                                     <span class="text-center d-inline-block align-middle" style="width: 20px;">
                                         <template v-if="sort.field == 'priceInstall'">
-                                            <font-awesome-icon v-if="sort.order == 'desc'" :icon="['fa-solid', 'fa-sort-amount-down-alt']" />
-                                            <font-awesome-icon v-else :icon="['fa-solid', 'fa-sort-amount-up-alt']" />
+                                            <font-awesome-icon v-if="sort.order == 'desc'" :icon="['fa-solid', 'fa-sort-amount-up-alt']" />
+                                            <font-awesome-icon v-else :icon="['fa-solid', 'fa-sort-amount-down-alt']" />
                                         </template>
                                         <template v-else>
                                             <font-awesome-icon :icon="['fa-solid', 'fa-sort']" />
@@ -454,8 +454,8 @@ getArticles()
                                     Monthly
                                     <span class="text-center d-inline-block align-middle" style="width: 20px;">
                                         <template v-if="sort.field == 'priceMonthly'">
-                                            <font-awesome-icon v-if="sort.order == 'desc'" :icon="['fa-solid', 'fa-sort-amount-down-alt']" />
-                                            <font-awesome-icon v-else :icon="['fa-solid', 'fa-sort-amount-up-alt']" />
+                                            <font-awesome-icon v-if="sort.order == 'desc'" :icon="['fa-solid', 'fa-sort-amount-up-alt']" />
+                                            <font-awesome-icon v-else :icon="['fa-solid', 'fa-sort-amount-down-alt']" />
                                         </template>
                                         <template v-else>
                                             <font-awesome-icon :icon="['fa-solid', 'fa-sort']" />
@@ -468,8 +468,8 @@ getArticles()
                                     ECC
                                     <span class="text-center d-inline-block align-middle" style="width: 20px;">
                                         <template v-if="sort.field == 'priceECC'">
-                                            <font-awesome-icon v-if="sort.order == 'desc'" :icon="['fa-solid', 'fa-sort-amount-down-alt']" />
-                                            <font-awesome-icon v-else :icon="['fa-solid', 'fa-sort-amount-up-alt']" />
+                                            <font-awesome-icon v-if="sort.order == 'desc'" :icon="['fa-solid', 'fa-sort-amount-up-alt']" />
+                                            <font-awesome-icon v-else :icon="['fa-solid', 'fa-sort-amount-down-alt']" />
                                         </template>
                                         <template v-else>
                                             <font-awesome-icon :icon="['fa-solid', 'fa-sort']" />
@@ -482,8 +482,8 @@ getArticles()
                                     Contract Term
                                     <span class="text-center d-inline-block align-middle" style="width: 20px;">
                                         <template v-if="sort.field == 'contractTermMonths'">
-                                            <font-awesome-icon v-if="sort.order == 'desc'" :icon="['fa-solid', 'fa-sort-amount-down-alt']" />
-                                            <font-awesome-icon v-else :icon="['fa-solid', 'fa-sort-amount-up-alt']" />
+                                            <font-awesome-icon v-if="sort.order == 'desc'" :icon="['fa-solid', 'fa-sort-amount-up-alt']" />
+                                            <font-awesome-icon v-else :icon="['fa-solid', 'fa-sort-amount-down-alt']" />
                                         </template>
                                         <template v-else>
                                             <font-awesome-icon :icon="['fa-solid', 'fa-sort']" />
