@@ -1,5 +1,5 @@
 <script setup>
-import { reactive, ref } from "vue";
+import {computed, reactive, ref} from "vue";
 import Button from 'primevue/button';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import {Head, router, useForm} from "@inertiajs/vue3";
@@ -15,7 +15,10 @@ const user = useForm({
     password: null,
     role_id: null,
     parent_id: null,
+    commission_rate: null
 })
+
+const showCommissionRate = computed(() => user.role_id === 4)
 
 const saveUser = () => {
     router.post(`/users`, user,
@@ -71,6 +74,13 @@ const items = ref([
                     <select class="form-select" v-model="user.role_id">
                         <option v-for="role in roles" :value="role.id">{{ role.name }}</option>
                     </select>
+                </div>
+                <div v-if="showCommissionRate">
+                    <div class="row mb-3">
+                        <label for="user-commission-rate" class="form-label">Commission Rate:</label>
+                        <input id="user-commission-rate" type="number" class="form-control" v-model="user.commission_rate">
+                        <div class="text-danger" v-if="user.errors.commission_rate">{{ user.errors.commission_rate }}</div>
+                    </div>
                 </div>
                 <div class="row mb-3">
                     <label for="user-name" class="form-label">Manager:</label>

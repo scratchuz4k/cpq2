@@ -29,6 +29,7 @@ class User extends Authenticatable
         'password',
         'parent_id', // Add parent_id to fillable attributes
         'sso', // Add sso to fillable attributes
+        'commission_rate'
     ];
 
     /**
