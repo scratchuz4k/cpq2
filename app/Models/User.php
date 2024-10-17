@@ -4,16 +4,18 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Models\Spa;
+use App\Trait\SetTenantId;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable, HasRoles;
+    use HasApiTokens, HasFactory, Notifiable, HasRoles, SetTenantId;
 
     public static $default_role = 'sales rep';
 
@@ -27,6 +29,7 @@ class User extends Authenticatable
         'email',
         'password',
         'parent_id', // Add parent_id to fillable attributes
+        'tenant_id',
         'sso', // Add sso to fillable attributes
     ];
 
@@ -54,7 +57,7 @@ class User extends Authenticatable
      */
     public function spas()
     {
-        return $this->hasMany( Spa::class, 'user_id', 'id');
+        return $this->hasMany(Spa::class, 'user_id', 'id');
     }
 
     /**
@@ -71,6 +74,10 @@ class User extends Authenticatable
     public function children()
     {
         return $this->hasMany(User::class, 'parent_id', 'id');
+    }
+    public function currentTenant(): HasOne
+    {
+        return $this->hasOne(Tenant::class, 'id', 'tenant_id');
     }
 
     public function tenants(): BelongsToMany

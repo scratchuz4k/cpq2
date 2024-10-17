@@ -41,10 +41,6 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        if ($firstTenant = $request->user()->tenants()?->first()) {
-            session(['tenant_id' => $firstTenant->id]);
-        }
-
         return redirect()->intended(route('dashboard', absolute: false));
     }
 

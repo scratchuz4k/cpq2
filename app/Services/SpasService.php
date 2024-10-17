@@ -10,10 +10,7 @@ class SpasService
     public function store(array $array): Spa
     {
         return DB::transaction(function () use ($array) {
-            $spa = Spa::create([
-                ...$array,
-                "tenant_id" => session()->get('tenant_id'),
-            ]);
+            $spa = Spa::create($array);
 
             return $spa;
         });
@@ -22,12 +19,7 @@ class SpasService
     public function update(Spa $spa, array $array): Spa
     {
         return DB::transaction(function () use ($spa, $array) {
-            $spa->update(
-                [
-                    ...$array,
-                    'tenant_id' => session()->get('tenant_id'),
-                ]
-            );
+            $spa->update($array);
 
             return $spa;
         });

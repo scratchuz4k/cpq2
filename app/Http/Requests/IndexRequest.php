@@ -14,6 +14,21 @@ class IndexRequest extends FormRequest
         return true;
     }
 
+    public function prepareForValidation()
+    {
+        // Example: Set a default value if 'tenant_id' is not present
+        if ($this->has('filters') && is_string($this->filters)) {
+            $this->merge([
+                'filters' => json_decode($this->filters, true),
+            ]);
+        }
+
+        // Example: Perform some checks or logging
+        if ($this->input('status') === 'active') {
+            // Do something if the status is 'active'
+        }
+    }
+
     /**
      * Get the validation rules that apply to the request.
      *
@@ -30,7 +45,7 @@ class IndexRequest extends FormRequest
             'filters' => 'nullable|array',
             'filters.*.column' => 'required|string',
             'filters.*.operator' => 'required|in:not_equals,equals,not_contains,contains,starts_with,ends_with,greater_than,less_than,greater_than_or_equal_to,less_than_or_equal_to,is_null,in,search',
-            'filters.*.value' => 'required',
+            'filters.*.value' => 'nullable',
             'filters.*.function' => 'nullable|in:where,orWhere',
         ];
     }

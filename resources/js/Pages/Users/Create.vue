@@ -14,7 +14,7 @@ const user = useForm({
     email: null,
     password: null,
     role_id: null,
-    parent_id: null,
+    parent_id: null
 })
 
 const saveUser = () => {

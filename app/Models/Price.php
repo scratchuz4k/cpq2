@@ -2,20 +2,22 @@
 
 namespace App\Models;
 
-use App\Models\Scopes\TenantScope;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
-use Money\Currencies;
-use Money\Currencies\ISOCurrencies;
 use Money\Currency;
-use Money\Formatter\DecimalMoneyFormatter;
-use Money\MoneyFormatter;
+use Money\Currencies;
 use Money\MoneyParser;
+
+use Money\MoneyFormatter;
+use App\Trait\SetTenantId;
+use App\Models\Scopes\TenantScope;
+use Illuminate\Support\Facades\Log;
+use Money\Currencies\ISOCurrencies;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Database\Eloquent\Model;
+use Money\Formatter\DecimalMoneyFormatter;
 use Money\Parser\IntlLocalizedDecimalParser;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
  * All financial data will be stored as integers to eradicate rounding/floating point issues
@@ -37,9 +39,9 @@ use Money\Parser\IntlLocalizedDecimalParser;
  */
 class Price extends Model
 {
-    use HasFactory;
+    use HasFactory, SetTenantId;
 
-    protected $fillable = ["tax_rate", "net", "tax", "gross", "spa_id", "product_id","tenant_id" ];
+    protected $fillable = ["tax_rate", "net", "tax", "gross", "spa_id", "product_id", "tenant_id"];
 
     protected static $supplier_cache = [];
     protected static $ancestor_cache = [];

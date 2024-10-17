@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
-use App\Models\Scopes\UserScope;
 use App\Observers\OrderObserver;
 use App\Models\Scopes\TenantScope;
+use App\Trait\SetTenantId;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -14,7 +14,7 @@ use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 #[ObservedBy([OrderObserver::class])]
 class Order extends Model
 {
-    use HasFactory;
+    use HasFactory, SetTenantId;
 
     protected $fillable = [
         "account_id",

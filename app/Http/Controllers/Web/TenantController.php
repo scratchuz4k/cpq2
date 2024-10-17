@@ -22,13 +22,14 @@ class TenantController extends BaseController
      */
     public function index()
     {
-        $isSuperAdmin = auth()->user()->hasRole('Super Admin');
-        $tenants = $isSuperAdmin
+        $user = request()->user();
+
+        $tenants = $user->hasRole('Super Admin')
             ? Tenant::with('file')->get()
-            : [Tenant::with('file')->findOrFail(session()->get('tenant_id'))];
+            : [$user->currentTenant->load('file')];
 
         return Inertia::render('Tenant/Index', [
-            'isSuperAdmin' => $isSuperAdmin,
+            'isSuperAdmin' => $user->hasRole('Super Admin'),
             'tenants' => $tenants,
         ]);
     }
@@ -94,8 +95,8 @@ class TenantController extends BaseController
      */
     public function switch(Request $request, Tenant $tenant)
     {
+        $request->user()->update(['tenant_id' => $tenant->id]);
         $tenant->makeCurrent();
-        session(['tenant_id' => $tenant->id]);
         return Inertia::location("/myaccount");
     }
 }

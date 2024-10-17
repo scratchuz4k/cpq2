@@ -10,12 +10,7 @@ class ProductsService
     public function store(array $array): Product
     {
         return DB::transaction(function () use ($array) {
-            $product = Product::create([
-                ...$array,
-                "tenant_id" => session()->get('tenant_id'),
-            ]);
-
-
+            $product = Product::create($array);
             return $product;
         });
     }
@@ -23,13 +18,7 @@ class ProductsService
     public function update(Product $product, array $array): Product
     {
         return DB::transaction(function () use ($product, $array) {
-            $product->update(
-                [
-                    ...$array,
-                    'tenant_id' => session()->get('tenant_id'),
-                ]
-            );
-
+            $product->update($array);
             return $product;
         });
     }
