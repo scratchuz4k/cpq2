@@ -40,7 +40,6 @@ class AppServiceProvider extends ServiceProvider
             $available = [
                 'api/account',
                 'api/contact',
-                'api/order',
             ];
             return Str::startsWith($route->uri, $available);
         });
