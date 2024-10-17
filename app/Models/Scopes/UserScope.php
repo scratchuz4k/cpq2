@@ -14,7 +14,7 @@ class UserScope implements Scope
      */
     public function apply(Builder $builder, Model $model): void
     {
-        $userDescedents = User::descendants(auth()->id());
+        $userDescedents = collect([auth()->user()]);
         $ids = collect([]);
         do {
             $current = $userDescedents->pop();
