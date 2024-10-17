@@ -82,11 +82,11 @@ const submitFileForm = () => {
                     delete: true,
                     link: false,
                 }" :columns="[
-                    { data: 'id', title: '#' },
-                    { data: 'name', title: 'Name' },
-                    { data: 'email', title: 'Email' },
-                    { data: 'roles.name', title: 'Role' },
-                    { data: 'parent.name', title: 'Manager' }
+                    { data: 'id', title: '#', width: '5%' },
+                    { data: 'name', title: 'Name', width: '25%' },
+                    { data: 'email', title: 'Email', width: '30%' },
+                    { data: 'roles.name', title: 'Role', width: '15%' },
+                    { data: 'parent.name', title: 'Manager', width: '15%' }
                 ]" route="/users">
                 </Datatable>
             </div>

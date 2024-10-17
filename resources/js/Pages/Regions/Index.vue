@@ -24,13 +24,13 @@ const items = ref([
                     delete: true,
                     link: false,
                 }" :columns="[
-                    { data: 'id', title: '#' },
-                    { data: 'tenant.name', title: 'Tenant' },
-                    { data: 'merchant_id', title: 'Merchant' },
-                    { data: 'user.name', title: 'User' },
-                    { data: 'name', title: 'Name' },
-                    { data: 'created_at', title: 'Created At' },
-                    { data: 'updated_at', title: 'Updated At' },
+                    { data: 'id', title: '#', width: '5%' },
+                    { data: 'tenant.name', title: 'Tenant', width: '10%' },
+                    { data: 'merchant_id', title: 'Merchant', width: '10%' },
+                    { data: 'user.name', title: 'User', width: '15%' },
+                    { data: 'name', title: 'Name', width: '20%' },
+                    { data: 'created_at', title: 'Created At', width: '15%' },
+                    { data: 'updated_at', title: 'Updated At', width: '15%' },
                 ]" route="/regions">
                 </Datatable>
             </div>

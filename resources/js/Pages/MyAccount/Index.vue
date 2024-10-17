@@ -72,11 +72,11 @@ defineProps({
                             <li v-if="hasRole('Super Admin') || hasRole('Company Admin')">
                                 <Link :href="route('regions.index')">Regions</Link>
                             </li>
-                            <li v-if="hasRole('Super Admin') || hasRole('Company Admin') || hasRole('Sales Rep')">
-                                <Link :href="route('suppliers.index')">Suppliers</Link>
-                            </li>
                             <li v-if="hasRole('Super Admin') || hasRole('Company Admin')">
                                 <Link :href="route('spas.index')">SPAs</Link>
+                            </li>
+                            <li v-if="hasRole('Super Admin') || hasRole('Company Admin') || hasRole('Sales Rep')">
+                                <Link :href="route('suppliers.index')">Suppliers</Link>
                             </li>
                             <li v-if="hasRole('Super Admin') || hasRole('Company Admin')">
                                 <Link :href="route('users.index')">Users</Link>

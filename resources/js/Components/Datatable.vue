@@ -170,7 +170,7 @@ getData()
                 </IconField>
             </div>
         </template>
-        <Column v-for="(column, key) in columns.filter(x => !x.hide)" :field="column.data">
+        <Column v-for="(column, key) in columns.filter(x => !x.hide)" :field="column.data" :style="{width: column.width}">
             <template #header>
                 <div class="d-flex justify-content-between align-items-center w-100 pe-3 position-relative">
                     <b class="column-title sortable d-inline-flex align-items-center" @click="sortBy(column.data)" :style="{textDecoration: column.data == form.orderBy ? 'underline': 'none'}">
@@ -229,7 +229,7 @@ getData()
                 <template v-else>{{ getValue(data, field) }}</template>
             </template>
         </Column>
-        <Column v-if="allow.update || allow.link || allow.delete" :class="['p-0']" style="width: 140px;">
+        <Column v-if="allow.update || allow.link || allow.delete" :class="['p-0']" style="width:10%;">
             <template #body="{ data, index }">
                 <div class="d-flex justify-content-center">
                     <template v-if="allow.update">
@@ -252,6 +252,9 @@ getData()
                 </div>
             </template>
         </Column>
+        <template #empty>
+            <div class="text-center my-1">No records found</div>
+        </template>
     </DataTable>
     <Paginator v-model:first="meta.first" :rows="form.limit" :totalRecords="meta.total"
         :rowsPerPageOptions="[20, 30, 50]" @page="handlePaginator">
@@ -273,7 +276,7 @@ getData()
 }
 
 .p-datatable-table-container {
-    overflow: visible !important;
+    overflow-x: auto;
 }
 
 .p-datatable tr td:not(.p-0),

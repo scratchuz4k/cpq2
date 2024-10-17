@@ -24,11 +24,11 @@ const items = ref([
                     delete: true,
                     link: false,
                 }" :columns="[
-                    { data: 'id', title: '#' },
-                    { data: 'supplier.name', title: 'Supplier' },
-                    { data: 'user.name', title: 'User' },
-                    { data: 'name', title: 'Name' },
-                    { data: 'data', title: 'Data' }
+                    { data: 'id', title: '#', width: '5%' },
+                    { data: 'supplier.name', title: 'Supplier', width: '15%' },
+                    { data: 'user.name', title: 'User', width: '15%' },
+                    { data: 'name', title: 'Name', width: '20%' },
+                    { data: 'data', title: 'Data', width: '35%' }
                 ]" route="/spas">
                 </Datatable>
             </div>
