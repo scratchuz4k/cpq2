@@ -14,6 +14,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
 
 class BrandController extends Controller
 {
+    protected $model = Brand::class;
     /**
      * Display a listing of the resource.
      * @response AnonymousResourceCollection<LengthAwarePaginator<BrandResource>>

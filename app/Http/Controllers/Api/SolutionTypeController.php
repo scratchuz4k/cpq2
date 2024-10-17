@@ -9,6 +9,7 @@ use App\Models\SolutionType;
 
 class SolutionTypeController extends Controller
 {
+    protected $model = SolutionType::class;
     /**
      * Display a listing of the resource.
      */

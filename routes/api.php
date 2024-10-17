@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\BrandController;
 use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\AccountController;
-use App\Http\Controllers\Api\AddressController;
+use App\Http\Controllers\Api\ContactController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\ExternalController;
 use App\Http\Controllers\Api\OrderItemController;
@@ -26,13 +26,13 @@ Route::prefix("external")->group(function () {
 
 
 Route::apiResources([
+    'accounts' => AccountController::class,
+    'contacts' => ContactController::class,
     'products' => ProductController::class,
-    'addresses' => AddressController::class,
     'orders' => OrderController::class,
     'order-items' => OrderItemController::class,
     'solution-types' => SolutionTypeController::class,
     'permissions' => PermissionController::class,
-    'accounts' => AccountController::class,
     'brands' => BrandController::class,
     'prices' => PriceController::class,
     'suppliers' => SupplierController::class,

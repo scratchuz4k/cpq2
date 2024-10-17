@@ -2,10 +2,13 @@
 
 namespace App\Providers;
 
+use Illuminate\Support\Str;
+use Dedoc\Scramble\Scramble;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Routing\Route;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
 use App\Providers\CustomResourceRegistrar;
-use Illuminate\Support\Facades\Event;
 use SocialiteProviders\Manager\SocialiteWasCalled;
 use SocialiteProviders\Saml2\Saml2ExtendSocialite;
 
@@ -30,8 +33,16 @@ class AppServiceProvider extends ServiceProvider
             return $user->hasRole('Super Admin') ? true : null;
         });
 
-		Event::listen(function (\SocialiteProviders\Manager\SocialiteWasCalled $event) {
+        Event::listen(function (\SocialiteProviders\Manager\SocialiteWasCalled $event) {
             $event->extendSocialite('saml2', \SocialiteProviders\Saml2\Provider::class);
+        });
+        Scramble::routes(function (Route $route) {
+            $available = [
+                'api/account',
+                'api/contact',
+                'api/order',
+            ];
+            return Str::startsWith($route->uri, $available);
         });
     }
 }
