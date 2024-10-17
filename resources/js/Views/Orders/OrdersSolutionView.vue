@@ -38,14 +38,15 @@ const solutionChange = (form) => {
 const addressPostCode = ref('')
 const addresses = ref([])
 const addressSearch = _.debounce(async (form) => {
-    if (!form.postCode) {
-        return
-    }
-
     addresses.value = []
     form.address = null
     form.solutionCheck = true
     form.isLoading = true
+
+    if (!form.postCode) {
+        form.isLoading = false
+        return
+    }
 
     try {
         let res = await axios.post(`/api/external/get-address-by-postcode`, { postCode: form.postCode })
@@ -57,6 +58,7 @@ const addressSearch = _.debounce(async (form) => {
         addresses.value = res.data.body.addresses
 
     } catch (ex) {
+        form.isLoading = false
         notyf.error(ex.response.data.message)
     }
 }, 1000)
