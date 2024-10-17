@@ -40,6 +40,7 @@ class RolePermissionSeeder extends Seeder
                 'order_item' => 'Order Item',
                 'merchant' => 'Merchant',
                 'account' => 'Account',
+                'contact' => 'Contact',
                 'order_items' => 'Order Items',
                 'price' => 'Price',
                 'product' => 'Product',
