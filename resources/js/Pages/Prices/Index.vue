@@ -24,16 +24,16 @@ const items = ref([
                     delete: true,
                     link: false,
                 }" :columns="[
-                    { data: 'id', title: '#', width: '5%' },
-                    { data: 'tenant.name', title: 'Tenant', width: '11%' },
-                    { data: 'spa.name', title: 'Spa', width: '12%' },
-                    { data: 'product.name', title: 'Product', width: '12%' },
-                    { data: 'tax_rate', title: 'Tax Rate', width: '5%' },
-                    { data: 'net', title: 'Net', width: '5%' },
-                    { data: 'tax', title: 'Tax', width: '5%' },
-                    { data: 'gross', title: 'Gross', width: '5%' },
-                    { data: 'created_at', title: 'Created At', width: '15%' },
-                    { data: 'updated_at', title: 'Updated At', width: '15%' },
+                    { data: 'id', title: '#', style: 'width:5%' },
+                    { data: 'tenant.name', title: 'Tenant', style: 'width:11%' },
+                    { data: 'spa.name', title: 'Spa', style: 'width:12%' },
+                    { data: 'product.name', title: 'Product', style: 'width:12%' },
+                    { data: 'tax_rate', title: 'Tax Rate', style: 'width:5%' },
+                    { data: 'net', title: 'Net', style: 'width:5%' },
+                    { data: 'tax', title: 'Tax', style: 'width:5%' },
+                    { data: 'gross', title: 'Gross', style: 'width:5%' },
+                    { data: 'created_at', title: 'Created At', style: 'width:15%' },
+                    { data: 'updated_at', title: 'Updated At', style: 'width:15%' },
                 ]" route="/prices">
                 </Datatable>
             </div>

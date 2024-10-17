@@ -24,13 +24,13 @@ const items = ref([
                     delete: true,
                     link: false,
                 }" :columns="[
-                    { data: 'id', title: '#', width: '5%' },
-                    { data: 'tenant_id', title: 'Tenant', width: '10%' },
-                    { data: 'supplier_id', title: 'Supplier', width: '10%' },
-                    { data: 'brand_id', title: 'Brand', width: '10%' },
-                    { data: 'name', title: 'Name', width: '25%' },
-                    { data: 'created_at', title: 'Created At', width: '15%' },
-                    { data: 'updated_at', title: 'Updated At', width: '15%' },
+                    { data: 'id', title: '#', style: 'width:5%' },
+                    { data: 'tenant_id', title: 'Tenant', style: 'width:10%' },
+                    { data: 'supplier_id', title: 'Supplier', style: 'width:10%' },
+                    { data: 'brand_id', title: 'Brand', style: 'width:10%' },
+                    { data: 'name', title: 'Name', style: 'width:25%' },
+                    { data: 'created_at', title: 'Created At', style: 'width:15%' },
+                    { data: 'updated_at', title: 'Updated At', style: 'width:15%' },
                 ]" route="/products">
                 </Datatable>
             </div>

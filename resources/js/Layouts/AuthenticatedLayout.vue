@@ -172,7 +172,7 @@ watch(search, () => {
                 <font-awesome-icon class="search-option-icon me-3" :icon="['far', 'file']"></font-awesome-icon>
                 <div class="w-100 m-0 d-flex justify-content-between">
                     <p class="m-0">
-                        <b>#{{ order.id }} - {{ order.account.name }} </b> / {{ order.solution_type.name }} <br>
+                        <b>#{{ order.id }} - {{ order.account?.name }} </b> / {{ order.solution_type.name }} <br>
                         <span style="font-size: 12px;"> {{ order.user.name }} - {{ order.updated_at }}</span>
                     </p>
                     <p class="m-0">
