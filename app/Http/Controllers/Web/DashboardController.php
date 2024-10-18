@@ -19,12 +19,7 @@ class DashboardController extends BaseController
 
         $users = collect([]);
         if (!$user->hasRole('Super Admin')) {
-            $userDescedents = collect([$user]);
-            do {
-                $current = $userDescedents->pop();
-                $users->push($current);
-                $userDescedents->push(...$current->children);
-            } while (count($userDescedents));
+            $users = User::descendants();
         }
 
         return Inertia::render('Dashboard', [

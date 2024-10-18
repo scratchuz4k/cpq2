@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Web;
 
+use App\Models\User;
 use Inertia\Inertia;
 use App\Models\Order;
 use App\Models\Account;
@@ -31,14 +32,10 @@ class OrderController extends BaseController
     {
         $user = request()->user();
 
+        
         $users = collect([]);
         if (!$user->hasRole('Super Admin')) {
-            $userDescedents = collect([$user]);
-            do {
-                $current = $userDescedents->pop();
-                $users->push($current);
-                $userDescedents->push(...$current->children);
-            } while (count($userDescedents));
+            $users = User::descendants();
         }
 
         return Inertia::render('Dashboard', [
