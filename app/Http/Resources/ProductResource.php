@@ -16,8 +16,8 @@ class ProductResource extends JsonResource
     {
         return [
             ...$this->resource->toArray(),
-            'updated_at' => format_date($this->updated_at),
-            'created_at' => format_date($this->created_at)
+            'updated_at' => $this->updated_at,
+            'created_at' => $this->created_at
         ];
     }
 }

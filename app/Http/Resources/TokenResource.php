@@ -17,9 +17,9 @@ class TokenResource extends JsonResource
         return [
             ...$this->resource->toArray(),
             'entity' => $this->tokenable,
-            'last_used_at' => format_date($this->last_used_at),
-            'expires_at' => format_date($this->expires_at),
-            'created_at' => format_date($this->created_at)
+            'last_used_at' => $this->last_used_at,
+            'expires_at' => $this->expires_at,
+            'created_at' => $this->created_at
         ];
     }
 }

@@ -21,7 +21,7 @@ class OrderResource extends JsonResource
             'solution_type' => $this->solutionType,
             'items' => $this->items,
             'totals' => $this->totals(),
-            'updated_at' => format_date($this->updated_at),
+            'updated_at' => $this->updated_at,
         ];
     }
 }

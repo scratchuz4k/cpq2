@@ -4,7 +4,6 @@ import { tooltip } from './Composables/tooltip'
 
 
 // Import all of Bootstrap's JS
-
 import { createApp, h } from 'vue';
 import { createInertiaApp } from '@inertiajs/vue3';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
@@ -40,12 +39,12 @@ window.swal = Swal.mixin({
     confirmButtonColor: '#ec008c',
     width: '20em',
     customClass: {
-    confirmButton: 'btn text-light btn-lg mr-2 fs-6',
+        confirmButton: 'btn text-light btn-lg mr-2 fs-6',
         cancelButton: 'btn btn-outline-primary border-light-purple btn-lg fs-6',
         loader: 'custom-loader',
         title: 'h3'
     }
-    }
+}
 )
 
 
@@ -64,6 +63,8 @@ library.add(fas)
 library.add(far)
 library.add(fab)
 
+import helpers from '@composables/helpers'
+
 createInertiaApp({
     title: (title) => `${title} - ${appName}`,
     resolve: (name) => resolvePageComponent(`./Pages/${name}.vue`, import.meta.glob('./Pages/**/*.vue')),
@@ -71,8 +72,8 @@ createInertiaApp({
 
 
         let app = createApp({ render: () => h(App, props) })
-        .use(plugin)
-        .use(ZiggyVue);
+            .use(plugin)
+            .use(ZiggyVue);
 
         app.directive('tooltip', tooltip)
         app.component('font-awesome-icon', FontAwesomeIcon)
@@ -118,6 +119,7 @@ createInertiaApp({
             }
         });
 
+        app.config.globalProperties.helpers = helpers
         app.config.globalProperties.GBP = new Intl.NumberFormat("en-GB", {
             style: "currency",
             currency: "GBP",

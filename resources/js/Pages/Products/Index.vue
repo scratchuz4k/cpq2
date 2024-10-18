@@ -32,6 +32,12 @@ const items = ref([
                     { data: 'created_at', title: 'Created At' },
                     { data: 'updated_at', title: 'Updated At' },
                 ]" route="/products">
+                    <template #updated_at="{ value }">
+                        {{ helpers.formatDate(value) }}
+                    </template>
+                    <template #created_at="{ value }">
+                        {{ helpers.formatDate(value) }}
+                    </template>
                 </Datatable>
             </div>
         </div>
