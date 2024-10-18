@@ -6,7 +6,6 @@ namespace App\Models;
 use App\Models\Spa;
 use App\Trait\SetTenantId;
 use Laravel\Sanctum\HasApiTokens;
-use App\Models\Scopes\TenantScope;
 use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -87,13 +86,29 @@ class User extends Authenticatable
         return $this->belongsToMany(Tenant::class);
     }
 
-    public static function ancestors($id)
+    public static function ancestors()
     {
-        return static::with([implode('.', array_fill(0, 10, 'parent'))])->where('id', $id)->get();
+        $users = collect([]);
+        $userAscendents = collect([request()->user()]);
+        do {
+            $current = $userAscendents->pop();
+            $users->push($current);
+            $userAscendents->push($current->parent);
+        } while (count($userAscendents));
+
+        return $users;
     }
 
-    public static function descendants($id)
+    public static function descendants()
     {
-        return static::with([implode('.', array_fill(0, 10, 'children'))])->where('id', $id)->get();
+        $users = collect([]);
+        $userDescedents = collect([request()->user()]);
+        do {
+            $current = $userDescedents->pop();
+            $users->push($current);
+            $userDescedents->push(...$current->children);
+        } while (count($userDescedents));
+
+        return $users;
     }
 }

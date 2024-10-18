@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use Exception;
+use App\Models\User;
 use App\Models\Order;
 use Illuminate\Http\Request;
 use App\Helpers\DataProvider;
@@ -12,8 +13,8 @@ use App\Http\Resources\OrderResource;
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\OrderCreateRequest;
 use App\Http\Requests\OrderUpdateRequest;
-use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class OrderController extends BaseController
 {
@@ -31,16 +32,12 @@ class OrderController extends BaseController
         $dataProvider = new DataProvider(Order::class);
 
         $user = request()->user();
-        $users = collect([]);
+
         if (!$user->hasRole('Super Admin')) {
-            $userDescedents = collect([$user]);
-            do {
-                $current = $userDescedents->pop();
-                $users->push($current->id);
-                $userDescedents->push(...$current->children);
-            } while (count($userDescedents));
-            $dataProvider->builder = $dataProvider->builder->whereIn('user_id', $users);
+            $users = User::descendants();
+            $dataProvider->builder = $dataProvider->builder->whereIn('user_id', $users->pluck('id'));
         }
+
         try {
             $data = $dataProvider->get();
         } catch (Exception $e) {

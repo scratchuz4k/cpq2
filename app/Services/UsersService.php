@@ -25,6 +25,10 @@ class UsersService
                 $user->assignRole(User::$default_role);
             }
 
+            if (array_key_exists('tenants', $array)) {
+                $user->tenants()->sync($array['tenants']);
+            }
+
             return $user;
         });
     }
@@ -42,6 +46,10 @@ class UsersService
             $user->update($array);
             if (array_key_exists('role_id', $array)) {
                 $user->syncRoles($array['role_id']);
+            }
+
+            if (array_key_exists('tenants', $array)) {
+                $user->tenants()->sync($array['tenants']);
             }
 
             return $user;

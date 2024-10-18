@@ -1,17 +1,21 @@
 <script setup>
-import { reactive, ref } from "vue";
+import MultiSelect from 'primevue/multiselect';
+import { ref } from "vue";
 import Button from 'primevue/button';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, router } from "@inertiajs/vue3";
+import { hasRole } from '@composables/useAuth'
 
 const props = defineProps({
     user: Object,
     roles: Object,
     managers: Object,
-    role_id: Number
+    role_id: Number,
+    tenants: Array
 })
 
 const saveUser = () => {
+    props.user.tenants = props.user.tenants
     router.put(`/users/${props.user.id}`, props.user,
         {
             onSuccess: (page) => {
@@ -71,6 +75,15 @@ const items = ref([
                         <select class="form-select" v-model="user.parent_id">
                             <option v-for="manager in managers" :value="manager.id">{{ manager.name }}</option>
                         </select>
+                    </div>
+                    <div class="row mb-3" v-if="hasRole('Super Admin')">
+                        <label for="user-name" class="form-label">Tenants:</label>
+                        <MultiSelect v-model="user.tenants" :options="tenants" optionLabel="name" optionValue="id">
+                            <template #option="slotProps">
+                                <div style="font-size:14px;line-height: 1.5rem;">{{ slotProps.option.name }}
+                                </div>
+                            </template>
+                        </MultiSelect>
                     </div>
                 </div>
             </div>
