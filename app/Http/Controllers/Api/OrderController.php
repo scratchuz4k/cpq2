@@ -29,6 +29,18 @@ class OrderController extends BaseController
     public function index()
     {
         $dataProvider = new DataProvider(Order::class);
+
+        $user = request()->user();
+        $users = collect([]);
+        if (!$user->hasRole('Super Admin')) {
+            $userDescedents = collect([$user]);
+            do {
+                $current = $userDescedents->pop();
+                $users->push($current->id);
+                $userDescedents->push(...$current->children);
+            } while (count($userDescedents));
+            $dataProvider->builder = $dataProvider->builder->whereIn('user_id', $users);
+        }
         try {
             $data = $dataProvider->get();
         } catch (Exception $e) {

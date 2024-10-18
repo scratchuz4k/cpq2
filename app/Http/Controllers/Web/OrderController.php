@@ -29,7 +29,23 @@ class OrderController extends BaseController
      */
     public function index()
     {
-        return Inertia::render('Dashboard');
+        $user = request()->user();
+
+        $users = collect([]);
+        if (!$user->hasRole('Super Admin')) {
+            $userDescedents = collect([$user]);
+            do {
+                $current = $userDescedents->pop();
+                $users->push($current);
+                $userDescedents->push(...$current->children);
+            } while (count($userDescedents));
+        }
+
+        return Inertia::render('Dashboard', [
+            "users" => $user->hasRole('Super Admin') ? User::all() : $users,
+            "solutions" => SolutionType::all(),
+            "status" => ["PRICE", "QUOTE", "CONFIGURE"]
+        ]);
     }
     /**
      * Show the form for creating a new resource.
