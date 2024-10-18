@@ -14,10 +14,11 @@ class TokenPolicy
      */
     public function viewAny(User $user): bool
     {
-        if ($user->hasRole("Super Admin")) {
-            return true;
+        if (!$user->can("viewAny $this->model")) {
+            return false;
         }
-        return false;
+
+        return true;
     }
 
     /**
@@ -25,11 +26,11 @@ class TokenPolicy
      */
     public function view(User $user, Token $token): bool
     {
-
-        if ($user->hasRole("Super Admin")) {
-            return true;
+        if (!$user->can("view $this->model")) {
+            return false;
         }
-        return false;
+
+        return true;
     }
 
     /**
@@ -37,11 +38,11 @@ class TokenPolicy
      */
     public function create(User $user): bool
     {
-
-        if ($user->hasRole("Super Admin")) {
-            return true;
+        if (!$user->can("create $this->model")) {
+            return false;
         }
-        return false;
+
+        return true;
     }
 
     /**
@@ -49,11 +50,11 @@ class TokenPolicy
      */
     public function update(User $user, Token $token): bool
     {
-
-        if ($user->hasRole("Super Admin")) {
-            return true;
+        if (!$user->can("update $this->model")) {
+            return false;
         }
-        return false;
+
+        return true;
     }
 
     /**
@@ -61,11 +62,11 @@ class TokenPolicy
      */
     public function delete(User $user, Token $token): bool
     {
-
-        if ($user->hasRole("Super Admin")) {
-            return true;
+        if (!$user->can("delete $this->model")) {
+            return false;
         }
-        return false;
+
+        return true;
     }
 
     /**
@@ -73,11 +74,11 @@ class TokenPolicy
      */
     public function restore(User $user, Token $token): bool
     {
-
-        if ($user->hasRole("Super Admin")) {
-            return true;
+        if (!$user->can("restore $this->model")) {
+            return false;
         }
-        return false;
+
+        return true;
     }
 
     /**
@@ -85,10 +86,10 @@ class TokenPolicy
      */
     public function forceDelete(User $user, Token $token): bool
     {
-
-        if ($user->hasRole("Super Admin")) {
-            return true;
+        if (!$user->can("forceDelete $this->model")) {
+            return false;
         }
-        return false;
+
+        return true;
     }
 }

@@ -32,7 +32,6 @@ class OrderController extends BaseController
         $dataProvider = new DataProvider(Order::class);
 
         $user = request()->user();
-
         if (!$user->hasRole('Super Admin')) {
             $users = User::descendants();
             $dataProvider->builder = $dataProvider->builder->whereIn('user_id', $users->pluck('id'));

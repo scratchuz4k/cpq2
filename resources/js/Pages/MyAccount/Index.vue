@@ -49,12 +49,12 @@ defineProps({
                     </div>
                     <div class="col">
                         <ul>
-                            <li v-if="hasRole('Super Admin')">
+                            <li v-if="hasRole('Super Admin') || can('viewAny token')">
                                 <a :href="route('tokens.index')">
                                     Tokens
                                 </a>
                             </li>
-                            <li v-if="hasRole('Super Admin') || hasRole('Company Admin')">
+                            <li v-if="hasRole('Super Admin') || can('viewAny tenant')">
                                 <a v-if="hasRole('Super Admin')" :href="route('tenant.index')">
                                     Tenants
                                 </a>
@@ -62,28 +62,28 @@ defineProps({
                                     Tenant
                                 </a>
                             </li>
-                            <li v-if="hasRole('Super Admin') || hasRole('Company Admin') || hasRole('Sales Rep')">
+                            <li v-if="hasRole('Super Admin') || can('viewAny account')">
                                 <Link :href="route('accounts.index')">Accounts</Link>
                             </li>
-                            <li v-if="hasRole('Super Admin') || hasRole('Company Admin') || hasRole('Sales Rep')">
+                            <li v-if="hasRole('Super Admin') || can('viewAny brand')">
                                 <Link :href="route('brands.index')">Brands</Link>
                             </li>
-                            <li v-if="hasRole('Super Admin') || hasRole('Company Admin')">
+                            <li v-if="hasRole('Super Admin') || can('viewAny price')">
                                 <Link :href="route('prices.index')">Prices</Link>
                             </li>
-                            <li v-if="hasRole('Super Admin') || hasRole('Company Admin')">
+                            <li v-if="hasRole('Super Admin') || can('viewAny product')">
                                 <Link :href="route('products.index')">Products</Link>
                             </li>
-                            <li v-if="hasRole('Super Admin') || hasRole('Company Admin')">
+                            <li v-if="hasRole('Super Admin') || can('viewAny region')">
                                 <Link :href="route('regions.index')">Regions</Link>
                             </li>
-                            <li v-if="hasRole('Super Admin') || hasRole('Company Admin') || hasRole('Sales Rep')">
+                            <li v-if="hasRole('Super Admin') || can('viewAny supplier')">
                                 <Link :href="route('suppliers.index')">Suppliers</Link>
                             </li>
-                            <li v-if="hasRole('Super Admin') || hasRole('Company Admin')">
+                            <li v-if="hasRole('Super Admin') || can('viewAny spa')">
                                 <Link :href="route('spas.index')">SPAs</Link>
                             </li>
-                            <li v-if="hasRole('Super Admin') || hasRole('Company Admin')">
+                            <li v-if="hasRole('Super Admin') || can('viewAny user')">
                                 <Link :href="route('users.index')">Users</Link>
                             </li>
                         </ul>
