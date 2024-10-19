@@ -1,6 +1,7 @@
 import './bootstrap';
 import '../scss/app.scss';
 import { tooltip } from './Composables/tooltip'
+import * as Sentry from "@sentry/vue";
 
 
 // Import all of Bootstrap's JS
@@ -40,12 +41,12 @@ window.swal = Swal.mixin({
     confirmButtonColor: '#ec008c',
     width: '20em',
     customClass: {
-    confirmButton: 'btn text-light btn-lg mr-2 fs-6',
+        confirmButton: 'btn text-light btn-lg mr-2 fs-6',
         cancelButton: 'btn btn-outline-primary border-light-purple btn-lg fs-6',
         loader: 'custom-loader',
         title: 'h3'
     }
-    }
+}
 )
 
 
@@ -71,8 +72,8 @@ createInertiaApp({
 
 
         let app = createApp({ render: () => h(App, props) })
-        .use(plugin)
-        .use(ZiggyVue);
+            .use(plugin)
+            .use(ZiggyVue);
 
         app.directive('tooltip', tooltip)
         app.component('font-awesome-icon', FontAwesomeIcon)
@@ -121,6 +122,38 @@ createInertiaApp({
         app.config.globalProperties.GBP = new Intl.NumberFormat("en-GB", {
             style: "currency",
             currency: "GBP",
+        });
+
+        Sentry.init({
+            app,
+            environment: "development",
+            dsn: "https://ff2c64612a62f755721e6d382b9b87fb@o4508149150908416.ingest.de.sentry.io/4508149152350288",
+            integrations: [
+                Sentry.browserTracingIntegration(),
+                Sentry.replayIntegration({
+                    maskAllText: false,
+                    blockAllMedia: false,
+                    networkDetailAllowUrls: [window.location.origin],
+                    networkRequestHeaders: ["Cache-Control"],
+                    networkResponseHeaders: ["Referrer-Policy"],
+                }),
+                Sentry.feedbackIntegration({
+                    showBranding: false,
+                    useSentryUser: {
+                        name: "fullName",
+                        email: "email",
+                    },
+                    // Additional SDK configuration goes in here, for example:
+                    colorScheme: "system",
+                }),
+            ],
+            // Tracing
+            tracesSampleRate: 1.0, //  Capture 100% of the transactions
+            // Set 'tracePropagationTargets' to control for which URLs distributed tracing should be enabled
+            tracePropagationTargets: ["localhost"],///^https:\/\/yourserver\.io\/api/
+            // Session Replay
+            replaysSessionSampleRate: 0.1, // This sets the sample rate at 10%. You may want to change it to 100% while in development and then sample at a lower rate in production.
+            replaysOnErrorSampleRate: 1.0, // If you're not already sampling the entire session, change the sample rate to 100% when sampling sessions where errors occur.
         });
 
 
