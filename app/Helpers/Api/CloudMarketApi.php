@@ -13,7 +13,7 @@ class CloudMarketApi
     public static function getQuotes($connectivityType,  CloudMarketAddress $address)
     {
 
-        $url =  env('PARTNER_QUOTE_SERVICE_URL', 'https://cpq-poc-uat-api.cloudmarket.com');
+        $url =  env('CLOUDMARKET_CONNECTION_SERVICE_URL', 'https://cpq-poc-uat-api.cloudmarket.com');
         $requestTimeout = 360;
 
         return Http::withOptions(['stream' => true])->timeout($requestTimeout)->withToken(env('ALPNET_API_TOKEN'))
@@ -35,7 +35,7 @@ class CloudMarketApi
 
                     "ManagedOption" => 1,
 
-                    'SupplierApiConnections.Its_Connection.Its_AccessKey' => env('ITS_CONNECTION_ITS_ACCESSKEY', '328736h87y78g823'),
+                    'SupplierApiConnections.Its_Connection.Its_AccessKey' => env('ITS_CONNECTION_ACCESSKEY', '328736h87y78g823'),
                     'SupplierApiConnections.Virtual1_Connection.Username' => env('VIRTUAL1_CONNECTION_USERNAME', 'JenniferLawrence'),
                     'SupplierApiConnections.Virtual1_Connection.Password' => env('VIRTUAL1_CONNECTION_PASSWORD', 'secretpass'),
                     'SupplierApiConnections.Gamma_Connection.Username' => env('GAMMA_CONNECTION_USERNAME', 'AdamSandler'),
