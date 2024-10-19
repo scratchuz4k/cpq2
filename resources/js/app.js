@@ -126,8 +126,8 @@ createInertiaApp({
 
         Sentry.init({
             app,
-            environment: "development",
-            dsn: "https://ff2c64612a62f755721e6d382b9b87fb@o4508149150908416.ingest.de.sentry.io/4508149152350288",
+            dsn: import.meta.env.VITE_SENTRY_DSN,
+            environment: import.meta.env.VITE_SENTRY_ENVIRONMENT,
             integrations: [
                 Sentry.browserTracingIntegration(),
                 Sentry.replayIntegration({

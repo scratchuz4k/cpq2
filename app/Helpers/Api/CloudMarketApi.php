@@ -18,7 +18,7 @@ class CloudMarketApi
 
         return Http::withOptions(['stream' => true])->timeout($requestTimeout)->withToken(env('ALPNET_API_TOKEN'))
             ->get(
-                $url . '/PartnerQuoteService/' . env('PARTNER_QUOTE_SERVICE_ENDPOINT', 'TestNoParams'),
+                $url . '/PartnerQuoteService/GetQuotes',
                 [
                     'ConnectivityType' => $connectivityType,
                     'Address1.Postcode' => $address->postCode,
