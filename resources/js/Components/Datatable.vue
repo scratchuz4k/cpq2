@@ -260,8 +260,8 @@ getData()
     </Paginator>
 </template>
 <style>
-.p-select-option.p-select-option-selected.p-focus {
-    background-color: #ec008c!important;
+.p-select-option.p-select-option-selected {
+    background-color: var(--color-violet)!important;
     color: white!important;
 }
 

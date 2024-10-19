@@ -21,9 +21,19 @@ window.notyf = new Notyf({
     ripple: false,
     dismissible: true,
     position: {
-        x: "right",
+        x: "center",
         y: "top",
     },
+    types: [
+        {
+          type: 'success',
+          className: 'notyf-success'
+        },
+        {
+          type: 'error',
+          className: 'notyf-error'
+        }
+      ]
 });
 
 window.notyf = notyf;
@@ -37,7 +47,7 @@ import Swal from "sweetalert2";
 window.swal = Swal.mixin({
     buttonsStyling: true,
     showCancelButton: true,
-    confirmButtonColor: '#ec008c',
+    confirmButtonColor: '#67236a',
     width: '20em',
     customClass: {
     confirmButton: 'btn text-light btn-lg mr-2 fs-6',

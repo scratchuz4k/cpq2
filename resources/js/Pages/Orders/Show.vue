@@ -34,7 +34,7 @@ const solutionsViews = {
             </div>
             <div class="col" style="text-align: right">
                 <template v-if="order.solution_type.code==3">
-                    <a :href="route('orders.preview', { order: order.id })" class="btn btn-secondary mx-2">
+                    <a :href="route('orders.preview', { order: order.id })" class="btn btn-outline-primary mx-2">
                         <font-awesome-icon :icon="['fas', 'file-pdf']"></font-awesome-icon>
                         Preview PDF
                     </a>

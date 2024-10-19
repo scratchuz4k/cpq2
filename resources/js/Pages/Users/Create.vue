@@ -1,6 +1,6 @@
 <script setup>
 import { reactive, ref } from "vue";
-import Button from 'primevue/button';
+import PrimaryButton from '@/Components/PrimaryButton.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import {Head, router, useForm} from "@inertiajs/vue3";
 
@@ -34,20 +34,22 @@ const saveUser = () => {
     )
 }
 const items = ref([
+    { label: 'Home', url: '/' },
     { label: 'My Account', url: '/myaccount' },
     { label: 'Users', url: '/users' },
+    { label: 'New User' },
 ]);
 
 </script>
 <template>
-    <Head title="Users" />
+    <Head title="New User" />
     <AuthenticatedLayout>
         <div class="panel">
             <Header title="New User" :breadcrumbs="items">
                 <template #buttons>
-                    <Button @click="saveUser()" size="small">
-                        <font-awesome-icon :icon="['fas', 'save']"></font-awesome-icon> Save
-                    </Button>
+                    <PrimaryButton @click="saveUser()">
+                        <font-awesome-icon class="me-2" :icon="['fas', 'save']"></font-awesome-icon> Save
+                    </PrimaryButton>
                 </template>
             </Header>
             <div class="col-6">

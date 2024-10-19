@@ -1,6 +1,6 @@
 <script setup>
 import { reactive, ref } from "vue";
-import Button from 'primevue/button';
+import PrimaryButton from '@/Components/PrimaryButton.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, router } from "@inertiajs/vue3";
 
@@ -27,21 +27,23 @@ const savePrice = () => {
     )
 }
 const items = ref([
+    { label: 'Home', url: '/' },
     { label: 'My Account', url: '/myaccount' },
     { label: 'Prices', url: '/prices' },
+    { label: 'Edit Price' },
 ]);
 
 </script>
 <template>
 
-    <Head title="Prices" />
+    <Head :title="'Edit Price #' + price.id" />
     <AuthenticatedLayout>
         <div class="panel">
-            <Header title="New Price" :breadcrumbs="items">
+            <Header :title="'Edit Price #' + price.id" :breadcrumbs="items">
                 <template #buttons>
-                    <Button @click="savePrice()" size="small">
-                        <font-awesome-icon :icon="['fas', 'save']"></font-awesome-icon> Save
-                    </Button>
+                    <PrimaryButton @click="savePrice()">
+                        <font-awesome-icon class="me-2" :icon="['fas', 'save']"></font-awesome-icon> Save
+                    </PrimaryButton>
                 </template>
             </Header>
             <div class="row mb-3">

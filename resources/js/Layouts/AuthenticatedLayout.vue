@@ -146,7 +146,7 @@ watch(search, () => {
                 <form class="d-md-flex d-none" @submit.prevent="showSearch()">
                     <div class="input-group">
                         <input type="search" class="form-control" placeholder="Type to search" v-model="search">
-                        <button class="btn btn-primary" type="submit" id="button-addon2">
+                        <button class="btn btn-primary btn-search" type="submit" id="button-addon2">
                             <font-awesome-icon :icon="['fas', 'magnifying-glass']" />
                         </button>
                     </div>

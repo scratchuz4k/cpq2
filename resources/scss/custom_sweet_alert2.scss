@@ -1,16 +1,24 @@
+.swal2-confirm.btn {
+    font-weight: 600;
+    padding-left:2rem;
+    padding-right:2rem;
+}
+
 .swal2-cancel.border-light-purple {
-    border-color: var(--light-purple);
-    color: var(--light-purple);
+    border-color: var(--color-purple);
+    color: var(--color-purple);
+    border-width: 0.175rem;
+    color: var(--color-purple);
+    font-weight: 600;
 
     &:hover, &:active{
-        border-color: var(--light-purple);
-        background-color: var(--light-purple);
-        color: var(--white);
+        border-color: var(--color-purple);
+        background-color: white;
+        color: var(--color-purple);
     }
 
     &:focus-visible {
-        background-color: var(--light-purple);
-        color: var(--white);
+        background-color: white;
         box-shadow: 0 0 0 0.25rem rgba(73, 58, 113, 0.125);
     }
 }
