@@ -47,4 +47,18 @@ class OrderItem extends Model
         related:
         return $this->belongsTo(Order::class);
     }
+
+    public function computeTotals()
+    {
+        $this->refresh();
+        $this->total = 0;
+        $this->total_monthly = 0;
+
+        $this->total = $this->price * $this->quantity;
+        $this->total_monthly = $this->price_monthly * $this->quantity;
+
+        $this->total = ($this->total - ($this->total * ($this->discount / 100))) + (($this->total * ($this->margin / 100)));
+        $this->total_monthly = ($this->total_monthly - ($this->total_monthly * ($this->discount / 100))) + (($this->total_monthly * ($this->margin / 100)));
+        $this->save();
+    }
 }

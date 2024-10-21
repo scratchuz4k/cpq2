@@ -15,12 +15,10 @@ return new class extends Migration
             $table->double('quantity')->default(0)->change();
             $table->double('price')->default(0);
             $table->double('price_monthly')->default(0);
-            $table->double('price_install')->default(0);
             $table->double('margin')->default(0);
             $table->double('discount')->default(0);
             $table->double('total')->default(0);
             $table->double('total_monthly')->default(0);
-            $table->double('total_install')->default(0);
         });
     }
 
@@ -34,12 +32,10 @@ return new class extends Migration
             $table->dropColumn([
                 'total',
                 'total_monthly',
-                'total_install',
                 'margin',
                 'discount',
                 'price',
                 'price_monthly',
-                'price_install',
             ]);
         });
     }

@@ -791,10 +791,6 @@ body {
             }
         }
 
-        .payment-info {
-            font-weight: bold;
-            text-align: center;
-        }
 
         .price-summary {
             .item {
@@ -820,6 +816,7 @@ body {
             }
 
             .payment-info {
+                font-weight: bold;
                 font-size: 24px;
             }
         }

@@ -184,6 +184,8 @@ const saveQuote = () => {
                     quantity: article.quantity,
                     name: article.name,
                     data: article,
+                    price: article.price ?? 0,
+                    price_monthly: article.priceMonthly ?? 0
                 })
         })
         router.get(`/orders/${props.modelValue.id}`)

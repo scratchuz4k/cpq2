@@ -23,8 +23,12 @@ class OrderItemUpdateRequest extends FormRequest
     {
         return [
             "order_id" => 'required',
-            "quantity" => 'required',
             "name" => 'required',
+            "quantity" => 'required|numeric',
+            'price' => 'required|numeric',
+            'price_monthly' => 'nullable|numeric',
+            'margin' => 'nullable|numeric|min:0|max:100',
+            'discount' => 'nullable|numeric|min:0|max:100',
         ];
     }
 }

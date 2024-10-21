@@ -16,7 +16,6 @@ return new class extends Migration
             $table->double('discount')->default(0);
             $table->double('total')->default(0);
             $table->double('total_monthly')->default(0);
-            $table->double('total_install')->default(0);
         });
     }
 
@@ -29,7 +28,6 @@ return new class extends Migration
             $table->dropColumn([
                 'total',
                 'total_monthly',
-                'total_install',
                 'margin',
                 'discount',
             ]);

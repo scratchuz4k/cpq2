@@ -24,9 +24,15 @@ class OrderCreateRequest extends FormRequest
         return [
             'account_id' => 'required|exists:accounts,id',
             'solution_type_id' => 'required|exists:solution_types,id',
+            'margin' => 'nullable|numeric|min:0|max:100',
+            'discount' => 'nullable|numeric|min:0|max:100',
             'items' => 'nullable|array',
             'items.*.quantity' => 'required|numeric',
             'items.*.name' => 'required|string',
+            'items.*.price' => 'required|numeric',
+            'items.*.price_monthly' => 'nullable|numeric',
+            'items.*.margin' => 'nullable|numeric|min:0|max:100',
+            'items.*.discount' => 'nullable|numeric|min:0|max:100',
         ];
     }
 }

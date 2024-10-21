@@ -20,7 +20,6 @@ class OrderService
                     $order_item['order_id'] = $order->id;
                     $this->orderItemService->store($order_item);
                 }
-                $order->computeTotals();
             }
 
             return $order;
@@ -46,7 +45,6 @@ class OrderService
                     }
                     $this->orderItemService->store($order_item);
                 }
-                $order->computeTotals();
             }
 
             return $order;

@@ -68,19 +68,18 @@ class Order extends Model
     }
     public function computeTotals()
     {
+        $this->refresh();
         $this->total = 0;
         $this->total_monthly = 0;
-        $this->total_install = 0;
 
         foreach ($this->items as $item) {
             $this->total += $item->total;
             $this->total_monthly += $item->total_monthly;
-            $this->total_install += $item->total_install;
         }
 
-        $this->total = ($this->total - ($this->total * $this->discount)) + (($this->total * $this->margin));
-        $this->total_monthly = ($this->total_monthly - ($this->total_monthly * $this->discount)) + (($this->total_monthly * $this->margin));
-        $this->total_install = ($this->total_install - ($this->total_install * $this->discount)) + (($this->total_install * $this->margin));
+        $this->total = ($this->total - ($this->total * ($this->discount / 100))) + (($this->total * ($this->margin / 100)));
+        $this->total_monthly = ($this->total_monthly - ($this->total_monthly * ($this->discount / 100))) + (($this->total_monthly * ($this->margin / 100)));
+        $this->save();
     }
 
     // public function totals()
