@@ -45,10 +45,27 @@ class ExternalController extends Controller
         return  Cache::remember($cache_key, 3600, function () use ($address) {
             $res = Http::get('https://api.tomtom.com/search/2/geocode/' . $address . '.json?key=' . env('TOMTOM_API_KEY') . '&countryCode=GB');
             $res = json_decode($res->body(), true);
+            $position = [];
             if (is_null($res) ||  !array_key_exists('results', $res) || !count($res['results'])) {
-                return [];
+                return $position;
             }
-            return $res['results'][0]['position'];
+
+            $highestScoreIndex = -1;
+            $highestScore = -1;
+
+            foreach ($res['results'] as $index => $item) {
+                if (isset($item['matchConfidence']['score']) && $item['matchConfidence']['score'] > $highestScore) {
+                    $highestScore = $item['matchConfidence']['score'];
+                    $highestScoreIndex = $index;
+                }
+            }
+            $highestScoreIndex = $highestScoreIndex >= 0 ? $highestScoreIndex : 0;
+
+            if (!empty($res['results'][$highestScoreIndex]['position'])) {
+                $position = $res['results'][$highestScoreIndex]['position'];
+            }
+
+            return $position;
         });
     }
 
