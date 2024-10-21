@@ -11,11 +11,7 @@ class OrderItemService
     public function store(array $array): OrderItem
     {
         return DB::transaction(function () use ($array) {
-            $orderItem = OrderItem::create([
-                ...$array,
-                "tenant_id" => session()->get('tenant_id'),
-            ]);
-
+            $orderItem = OrderItem::create($array);
             return $orderItem;
         });
     }
@@ -23,10 +19,7 @@ class OrderItemService
     public function update(OrderItem $orderItem, array $array): OrderItem
     {
         return DB::transaction(function () use ($array, $orderItem) {
-            $orderItem->update([
-                ...$array,
-                "tenant_id" => session()->get('tenant_id'),
-            ]);
+            $orderItem->update($array);
 
             return $orderItem;
         });

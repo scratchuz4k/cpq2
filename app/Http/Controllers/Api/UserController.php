@@ -18,6 +18,7 @@ class UserController extends Controller
     public function index()
     {
         $dataProvider = new DataProvider(User::class);
+        $dataProvider->builder = $dataProvider->builder->where('tenant_id', request()->user()->tenant_id);
         try {
             $data = $dataProvider->get();
         } catch (\Exception $e) {

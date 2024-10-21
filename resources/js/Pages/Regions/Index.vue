@@ -34,6 +34,12 @@ const items = ref([
                     { data: 'created_at', title: 'Created At', style: 'width:15%' },
                     { data: 'updated_at', title: 'Updated At', style: 'width:15%' },
                 ]" route="/regions">
+                    <template #updated_at="{ value }">
+                        {{ helpers.formatDate(value) }}
+                    </template>
+                    <template #created_at="{ value }">
+                        {{ helpers.formatDate(value) }}
+                    </template>
                 </Datatable>
             </div>
         </div>

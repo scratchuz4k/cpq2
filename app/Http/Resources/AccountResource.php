@@ -16,10 +16,9 @@ class AccountResource extends JsonResource
     {
         return [
             ...$this->resource->toArray(),
-            "tenant" => $this->tenant,
             "contacts" => $this->contacts,
-            'created_at' => format_date($this->created_at),
-            'updated_at' => format_date($this->updated_at),
+            'created_at' => $this->created_at,
+            'updated_at' => $this->updated_at,
         ];
     }
 }

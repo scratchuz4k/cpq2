@@ -6,12 +6,11 @@ use App\Http\Controllers\BaseController;
 use App\Http\Resources\SupplierResource;
 use App\Models\Supplier;
 use Exception;
-use App\Models\Brand;
 use Illuminate\Http\Request;
 use App\Helpers\DataProvider;
 use Illuminate\Support\Facades\Log;
-use App\Http\Controllers\Controller;
-use App\Http\Resources\BrandResource;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class SupplierController extends BaseController
 {
@@ -19,6 +18,7 @@ class SupplierController extends BaseController
 
     /**
      * Display a listing of the resource.
+     * @response AnonymousResourceCollection<LengthAwarePaginator<SupplierResource>>
      */
     public function index()
     {

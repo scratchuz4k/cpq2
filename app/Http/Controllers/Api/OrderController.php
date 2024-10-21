@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use Exception;
+use App\Models\User;
 use App\Models\Order;
 use Illuminate\Http\Request;
 use App\Helpers\DataProvider;
@@ -12,6 +13,8 @@ use App\Http\Resources\OrderResource;
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\OrderCreateRequest;
 use App\Http\Requests\OrderUpdateRequest;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class OrderController extends BaseController
 {
@@ -22,10 +25,18 @@ class OrderController extends BaseController
     }
     /**
      * Display a listing of the resource.
+     * @response AnonymousResourceCollection<LengthAwarePaginator<OrderResource>>
      */
     public function index()
     {
         $dataProvider = new DataProvider(Order::class);
+
+        $user = request()->user();
+        if (!$user->hasRole('Super Admin')) {
+            $users = User::descendants();
+            $dataProvider->builder = $dataProvider->builder->whereIn('user_id', $users->pluck('id'));
+        }
+
         try {
             $data = $dataProvider->get();
         } catch (Exception $e) {

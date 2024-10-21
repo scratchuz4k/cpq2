@@ -102,9 +102,9 @@ class UsersImport implements ToCollection, WithHeadingRow, WithBatchInserts
 
             if (!empty($newUser->id)) {
 
-                $currentTenantId = session()->get('tenant_id');
+                $user = request()->user();
                 DB::table('tenant_user')->insert([
-                    'tenant_id' => $currentTenantId,
+                    'tenant_id' => $user->currentTenant->id,
                     'user_id' => $newUser->id,
                 ]);
 

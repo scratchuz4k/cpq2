@@ -32,6 +32,7 @@ class InitTableSeeder extends Seeder
             'email' => 'super@example.com',
         ], [
             'name' => 'Super User',
+            'tenant_id' => $tenant->id,
             'password' => Hash::make('werwerwer'),
         ]);
 
@@ -39,6 +40,7 @@ class InitTableSeeder extends Seeder
             'email' => 'support@example.com',
         ], [
             'name' => 'Support User',
+            'tenant_id' => $tenant->id,
             'password' => Hash::make('werwerwer'),
         ]);
 
@@ -46,6 +48,7 @@ class InitTableSeeder extends Seeder
             'email' => 'companyadmin@example.com',
         ], [
             'name' => 'Company Admin User',
+            'tenant_id' => $tenant->id,
             'password' => Hash::make('werwerwer'),
         ]);
 
@@ -53,6 +56,7 @@ class InitTableSeeder extends Seeder
             'email' => 'sales@example.com',
         ], [
             'name' => 'Sales Rep',
+            'tenant_id' => $tenant->id,
             'password' => Hash::make('werwerwer'),
         ]);
 
