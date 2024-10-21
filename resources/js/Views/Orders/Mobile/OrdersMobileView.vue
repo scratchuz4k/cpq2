@@ -126,8 +126,6 @@ const filterData = (data) => {
             return acc
         }, false) : true
     })
-
-
 }
 
 const addQuantity = (product, quantity) => {

@@ -2,9 +2,6 @@
 import axios from 'axios';
 import { router } from '@inertiajs/vue3';
 import { reactive, ref, watch } from 'vue'
-import IconField from "primevue/iconfield";
-import InputIcon from "primevue/inputicon";
-import InputText from "primevue/inputtext";
 
 const props = defineProps({
     modelValue: Object
