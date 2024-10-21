@@ -42,8 +42,8 @@ const submit = () => {
                 <div class="card">
                     <div class="card-header">Login</div>
                     <div class="card-body p-4">
-                        <div v-if="status" class="error-box d-flex p-2 mb-2">
-                            font-awesome-icon :class="['p-1']" :icon="['fas', 'circle-info']" />
+                        <div v-if="status" class="info-box-primary d-flex p-2 mb-2">
+                            <font-awesome-icon :class="['p-1']" :icon="['fas', 'circle-info']" />
                             <p class="my-0 ps-2 my-auto">
                                 {{ status }}
                             </p>
@@ -80,7 +80,7 @@ const submit = () => {
                                     </div>
                                 </div>
                                 <div class="d-grid">
-                                    <PrimaryButton id="btn-login" :class="{ 'opacity-25': form.processing }"
+                                    <PrimaryButton id="btn-login" class="btn-login" :class="{ 'opacity-25': form.processing }"
                                         :disabled="form.processing">
                                         Login
                                     </PrimaryButton>

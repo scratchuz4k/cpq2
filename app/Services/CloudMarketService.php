@@ -48,7 +48,7 @@ class CloudMarketService
         $content = $file->getContent();
         $createdAt = Carbon::parse($content['created_at']);
 
-        if (is_null($content['finished_at']) && $createdAt->addMinutes(15)->isPast()) {
+        if (is_null($content['finished_at']) && $createdAt->addMinutes(2)->isPast()) {
             if (env('PARTNER_QUOTE_AS_JOB')) {
                 CloudMarketConnectivityProducts::dispatch($file, $connectivityType, $address);
             } else {

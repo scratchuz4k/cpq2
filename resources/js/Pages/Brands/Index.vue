@@ -3,7 +3,9 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link } from "@inertiajs/vue3";
 import { ref } from 'vue';
 const items = ref([
-    { label: 'My Account', url: '/myaccount' }
+    { label: 'Home', url: '/' },
+    { label: 'My Account', url: '/myaccount' },
+    { label: 'Brands' },
 ]);
 
 </script>
@@ -24,11 +26,11 @@ const items = ref([
                     delete: true,
                     link: false,
                 }" :columns="[
-                    { data: 'id', title: '#' },
-                    { data: 'tenant.name', title: 'Tenant' },
-                    { data: 'name', title: 'Name' },
-                    { data: 'created_at', title: 'Created At' },
-                    { data: 'updated_at', title: 'Updated At' },
+                    { data: 'id', title: '#', style: 'width:5%' },
+                    { data: 'tenant.name', title: 'Tenant', style: 'width:20%' },
+                    { data: 'name', title: 'Name', style: 'width:35%' },
+                    { data: 'created_at', title: 'Created At', style: 'width:15%' },
+                    { data: 'updated_at', title: 'Updated At', style: 'width:15%' },
                 ]" route="/brands">
                 </Datatable>
             </div>
