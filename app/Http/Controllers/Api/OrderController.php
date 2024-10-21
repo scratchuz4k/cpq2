@@ -71,7 +71,7 @@ class OrderController extends BaseController
             throw new Exception($e);
         }
 
-        return response()->json(new OrderResource($order));
+        return response()->json(new OrderResource($order->refresh()));
     }
 
     /**

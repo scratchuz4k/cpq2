@@ -1,7 +1,7 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, router } from "@inertiajs/vue3";
-import Button from 'primevue/button';
+import PrimaryButton from '@/Components/PrimaryButton.vue';
 import Accordion from 'primevue/accordion';
 import AccordionPanel from 'primevue/accordionpanel';
 import AccordionHeader from 'primevue/accordionheader';
@@ -21,7 +21,7 @@ const addContact = () => {
     activePanel.value = props.account.contacts.length - 1;
 }
 const removeContact = (key) => {
-    Swal.fire({
+    swal.fire({
         title: 'Are you sure?'
     }).then(async (result) => {
         if (['cancel', 'backdrop'].includes(result.dismiss)) {
@@ -49,23 +49,25 @@ const saveAccount = () => {
     )
 }
 const items = ref([
+    { label: 'Home', url: '/' },
     { label: 'My Account', url: '/myaccount' },
     { label: 'Accounts', url: '/accounts' },
+    { label: 'Edit Account' },
 ]);
 
 </script>
 
 <template>
 
-    <Head title="Accounts" />
+    <Head :title="'Edit Account #' + account.id" />
     <AuthenticatedLayout>
         <div class="panel">
 
-            <Header :title="'Edit Account - ' + account.name" :breadcrumbs="items">
+            <Header :title="'Edit Account #' + account.id" :breadcrumbs="items">
                 <template #buttons>
-                    <Button @click="saveAccount()" size="small">
-                        <font-awesome-icon :icon="['fas', 'save']"></font-awesome-icon> Save
-                    </Button>
+                    <PrimaryButton @click="saveAccount()">
+                        <font-awesome-icon class="me-2" :icon="['fas', 'save']"></font-awesome-icon> Save
+                    </PrimaryButton>
                 </template>
             </Header>
             <div class="row mb-3">
@@ -88,7 +90,7 @@ const items = ref([
                                 {{ contact.primary_contact_name ? ' - ' + contact.primary_contact_name : '' }}
 
                             </p>
-                            <Button size="small" @click.stop="removeContact(key)">Delete</Button>
+                            <PrimaryButton class="btn-sm btn-secondary" @click.stop="removeContact(key)">Delete</PrimaryButton>
                         </div>
                     </AccordionHeader>
                     <AccordionContent>

@@ -1,6 +1,6 @@
 <script setup>
 import { reactive, ref } from "vue";
-import Button from 'primevue/button';
+import PrimaryButton from '@/Components/PrimaryButton.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, router } from "@inertiajs/vue3";
 
@@ -42,20 +42,22 @@ const saveSpa = () => {
     )
 }
 const items = ref([
+    { label: 'Home', url: '/' },
     { label: 'My Account', url: '/myaccount' },
-    { label: 'Spas', url: '/spas' },
+    { label: 'SPAs', url: '/spas' },
+    { label: 'New SPA' },
 ]);
 
 </script>
 <template>
-    <Head title="Spas" />
+    <Head title="New SPA" />
     <AuthenticatedLayout>
         <div class="panel">
-            <Header title="New Spa" :breadcrumbs="items">
+            <Header title="New SPA" :breadcrumbs="items">
                 <template #buttons>
-                    <Button @click="saveSpa()" size="small">
-                        <font-awesome-icon :icon="['fas', 'save']"></font-awesome-icon> Save
-                    </Button>
+                    <PrimaryButton @click="saveSpa()">
+                        <font-awesome-icon class="me-2" :icon="['fas', 'save']"></font-awesome-icon> Save
+                    </PrimaryButton>
                 </template>
             </Header>
             <div class="col-6">

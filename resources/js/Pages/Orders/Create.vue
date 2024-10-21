@@ -60,7 +60,7 @@ const items = ref([
                                 <h5 class="font-bold mb-3">Select an account</h5>
                                 <div class="mb-3">
                                     <label for="account_id" class="form-label">Account <span
-                                            class="text-primary">*</span></label>
+                                            class="text-primary fw-bold">*</span></label>
                                     <select id="account_id" class="form-select" v-model="form.account">
                                         <option :value="null">Select an account</option>
                                         <option v-for="account in accounts" :value="account">{{ account.name }}</option>
@@ -76,7 +76,7 @@ const items = ref([
                 <OrdersSolutionView v-model="form" :solution_types="solution_types"></OrdersSolutionView>
                 <div class="row mb-3 ">
                     <div class="col-6 d-flex justify-content-end">
-                        <button class="btn btn-primary mx-2" type="submit" :disabled="form.solutionCheck">
+                        <button class="btn btn-primary" type="submit" :disabled="form.solutionCheck">
                             <font-awesome-icon :icon="['fas', 'plus']" class="me-2"></font-awesome-icon>Create
                             quote
                             <div v-if="form.isLoading" class="spinner-border  spinner-border-sm" role="status">

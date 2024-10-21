@@ -1,5 +1,4 @@
 <script setup>
-import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
@@ -20,6 +19,23 @@ const form = useForm({
     name: user.name,
     email: user.email,
 });
+
+const updateProfile = () => {
+    form.patch(route('profile.update'), {
+        preserveScroll: true,
+        onSuccess: () => {
+            notyf.success("Profile updated with Success")
+        },
+        onError: () => {
+            let string = ''
+            Object.keys(form.errors).forEach((key) => {
+                string += form.errors[key] + '<br>'
+            })
+            notyf.error(string)
+        },
+    });
+};
+
 </script>
 
 <template>
@@ -32,8 +48,8 @@ const form = useForm({
             </p>
         </header>
 
-        <form @submit.prevent="form.patch(route('profile.update'))" class="mt-6 space-y-6">
-            <div>
+        <form @submit.prevent="updateProfile" class="mt-6 space-y-6">
+            <div class="mt-2">
                 <InputLabel for="name" value="Name" />
 
                 <TextInput
@@ -46,10 +62,9 @@ const form = useForm({
                     autocomplete="name"
                 />
 
-                <InputError class="mt-2" :message="form.errors.name" />
             </div>
 
-            <div>
+            <div class="mt-2">
                 <InputLabel for="email" value="Email" />
 
                 <TextInput
@@ -59,9 +74,8 @@ const form = useForm({
                     v-model="form.email"
                     required
                     autocomplete="username"
+                    disabled
                 />
-
-                <InputError class="mt-2" :message="form.errors.email" />
             </div>
 
             <div v-if="mustVerifyEmail && user.email_verified_at === null">
@@ -85,17 +99,8 @@ const form = useForm({
                 </div>
             </div>
 
-            <div class="flex items-center gap-4">
+            <div class="flex items-center gap-4 mt-4">
                 <PrimaryButton :disabled="form.processing">Save</PrimaryButton>
-
-                <Transition
-                    enter-active-class="transition ease-in-out"
-                    enter-from-class="opacity-0"
-                    leave-active-class="transition ease-in-out"
-                    leave-to-class="opacity-0"
-                >
-                    <p v-if="form.recentlySuccessful" class="text-sm text-gray-600">Saved.</p>
-                </Transition>
             </div>
         </form>
     </section>
