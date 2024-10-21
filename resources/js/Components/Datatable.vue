@@ -275,7 +275,7 @@ getData()
 }
 
 .p-datatable-table-container {
-    overflow-x: auto;
+    overflow: visible !important;
 }
 
 .p-datatable tr td:not(.p-0),

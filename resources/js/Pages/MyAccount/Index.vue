@@ -40,7 +40,7 @@ const items = ref([
                         <h5 class="mt-2 mb-0">{{ $page.props.auth.user.name }}</h5>
                         <span>{{ $page.props.auth.user.email }}</span>
 
-                        <div v-if="false" class="buttons mt-3">
+                        <div v-if="true" class="buttons mt-3">
                             <Link class="btn btn-outline-primary px-4" :href="route('profile.edit')">Edit Profile</Link>
                         </div>
 
