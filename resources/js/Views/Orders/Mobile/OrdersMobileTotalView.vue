@@ -261,7 +261,14 @@ const items = ref([
                 </div>
             </div>
             <div class="col-lg-3">
-                <InfoBox :order="order"></InfoBox>
+                <InfoBox>
+                    <div style="font-size: 14px;">
+                        <b style="font-size: 16px;">Quote {{ order.id }} for {{ order.account.name }}</b>
+                        <br>
+                        Contact Number: 0124567890<br>
+                        Email: firstname.lastname@gmail.com
+                    </div>
+                </InfoBox>
                 <div class="price-mobile-sidebar px-4 pt-4 pb-2 mb-3" style="position: sticky; top: 25px">
                     <h3 class="mb-3">Your quote: #{{ order.id }}</h3>
 
