@@ -16,6 +16,8 @@ class OrderItemService
                 "tenant_id" => session()->get('tenant_id'),
             ]);
 
+            $orderItem->order->computeTotals();
+
             return $orderItem;
         });
     }
@@ -27,6 +29,8 @@ class OrderItemService
                 ...$array,
                 "tenant_id" => session()->get('tenant_id'),
             ]);
+
+            $orderItem->order->computeTotals();
 
             return $orderItem;
         });

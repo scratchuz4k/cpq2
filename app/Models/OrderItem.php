@@ -18,7 +18,15 @@ class OrderItem extends Model
         "product_id",
         "quantity",
         "name",
-        "data"
+        "data",
+        'price',
+        'price_monthly',
+        'price_install',
+        'margin',
+        'discount',
+        'total',
+        'total_monthly',
+        'total_install',
     ];
 
     protected function casts(): array
@@ -43,7 +51,8 @@ class OrderItem extends Model
     }
 
     public function order(): BelongsTo
-    {related:
+    {
+        related:
         return $this->belongsTo(Order::class);
     }
 }

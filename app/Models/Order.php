@@ -27,7 +27,12 @@ class Order extends Model
         "address_data",
         "solution_type_id",
         "tenant_id",
-        "name"
+        "name",
+        'total',
+        'total_monthly',
+        'total_install',
+        'margin',
+        'discount',
     ];
     protected function casts(): array
     {
@@ -41,7 +46,7 @@ class Order extends Model
     protected static function booted(): void
     {
         static::addGlobalScope(new TenantScope);
-//        static::addGlobalScope(new UserScope);
+        //        static::addGlobalScope(new UserScope);
     }
 
     public function user(): BelongsTo
@@ -62,24 +67,40 @@ class Order extends Model
     {
         return $this->hasMany(OrderItem::class);
     }
-
-    public function totals()
+    public function computeTotals()
     {
-        $subtotal = 0;
-        $subtotalOneoff = 0;
+        $this->total = 0;
+        $this->total_monthly = 0;
+        $this->total_install = 0;
 
         foreach ($this->items as $item) {
-            $subtotal += (float) $item->quantity * (float) ($item->data?->priceMonthly ?? 0);
-            $subtotalOneoff += (float) $item->quantity * (float) ($item->data?->price ?? $item->data?->priceInstall ?? 0);
+            $this->total += $item->total;
+            $this->total_monthly += $item->total_monthly;
+            $this->total_install += $item->total_install;
         }
 
-        $totals['monthly_net'] = $subtotal;
-        $totals['monthly_vat'] = $subtotal * 0.2;
-        $totals['monthly_gross'] = $subtotal * 1.2;
-        $totals['oneoff_net'] = $subtotalOneoff;
-        $totals['oneoff_vat'] = $subtotalOneoff * 0.2;
-        $totals['oneoff_gross'] = $subtotalOneoff * 1.2;
-
-        return $totals;
+        $this->total = ($this->total - ($this->total * $this->discount)) + (($this->total * $this->margin));
+        $this->total_monthly = ($this->total_monthly - ($this->total_monthly * $this->discount)) + (($this->total_monthly * $this->margin));
+        $this->total_install = ($this->total_install - ($this->total_install * $this->discount)) + (($this->total_install * $this->margin));
     }
+
+    // public function totals()
+    // {
+    //     $subtotal = 0;
+    //     $subtotalOneoff = 0;
+
+    //     foreach ($this->items as $item) {
+    //         $subtotal += (float) $item->quantity * (float) ($item->data?->priceMonthly ?? 0);
+    //         $subtotalOneoff += (float) $item->quantity * (float) ($item->data?->price ?? $item->data?->priceInstall ?? 0);
+    //     }
+
+    //     $totals['monthly_net'] = $subtotal;
+    //     $totals['monthly_vat'] = $subtotal * 0.2;
+    //     $totals['monthly_gross'] = $subtotal * 1.2;
+    //     $totals['oneoff_net'] = $subtotalOneoff;
+    //     $totals['oneoff_vat'] = $subtotalOneoff * 0.2;
+    //     $totals['oneoff_gross'] = $subtotalOneoff * 1.2;
+
+    //     return $totals;
+    // }
 }

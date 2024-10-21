@@ -25,6 +25,7 @@ class OrderService
                     $order_item['order_id'] = $order->id;
                     $this->orderItemService->store($order_item);
                 }
+                $order->computeTotals();
             }
 
             return $order;
@@ -42,7 +43,7 @@ class OrderService
                 ]
             );
 
-            if (array_key_exists('items', $array) ) {
+            if (array_key_exists('items', $array)) {
                 foreach ($array['items'] as $order_item) {
                     $order_item['order_id'] = $order->id;
                     if ($temp = OrderItem::find($order_item['id'])) {
@@ -51,6 +52,7 @@ class OrderService
                     }
                     $this->orderItemService->store($order_item);
                 }
+                $order->computeTotals();
             }
 
             return $order;
