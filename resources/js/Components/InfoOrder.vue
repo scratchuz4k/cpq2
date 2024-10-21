@@ -6,7 +6,7 @@ const props = defineProps({
 })
 </script>
 <template>
-    <div class="info-box d-flex mb-4">
+    <div class="info-box-primary d-flex mb-4">
         <div class="py-3 px-3">
             <font-awesome-icon :icon="['fas', 'circle-info']" />
         </div>

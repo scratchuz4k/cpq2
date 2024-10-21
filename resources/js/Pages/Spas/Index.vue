@@ -3,15 +3,17 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link } from "@inertiajs/vue3";
 import { ref } from 'vue';
 const items = ref([
-    { label: 'My Account', url: '/myaccount' }
+    { label: 'Home', url: '/' },
+    { label: 'My Account', url: '/myaccount' },
+    { label: 'SPAs' },
 ]);
 
 </script>
 <template>
-    <Head title="Spas" />
+    <Head title="SPAs" />
     <AuthenticatedLayout>
         <div class="panel">
-            <Header title="Spas" :breadcrumbs="items">
+            <Header title="SPAs" :breadcrumbs="items">
                 <template #buttons>
                     <Link href="/spas/create" class="btn btn-primary me-2">
                     <font-awesome-icon :icon="['fas', 'plus']"></font-awesome-icon> New SPA
@@ -24,11 +26,11 @@ const items = ref([
                     delete: true,
                     link: false,
                 }" :columns="[
-                    { data: 'id', title: '#' },
-                    { data: 'supplier.name', title: 'Supplier' },
-                    { data: 'user.name', title: 'User' },
-                    { data: 'name', title: 'Name' },
-                    { data: 'data', title: 'Data' }
+                    { data: 'id', title: '#', style: 'width:5%' },
+                    { data: 'supplier.name', title: 'Supplier', style: 'width:15%' },
+                    { data: 'user.name', title: 'User', style: 'width:15%' },
+                    { data: 'name', title: 'Name', style: 'width:20%' },
+                    { data: 'data', title: 'Data', style: 'width:35%' }
                 ]" route="/spas">
                 </Datatable>
             </div>

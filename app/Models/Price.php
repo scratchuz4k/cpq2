@@ -5,7 +5,6 @@ namespace App\Models;
 use Money\Currency;
 use Money\Currencies;
 use Money\MoneyParser;
-
 use Money\MoneyFormatter;
 use App\Trait\SetTenantId;
 use App\Models\Scopes\TenantScope;

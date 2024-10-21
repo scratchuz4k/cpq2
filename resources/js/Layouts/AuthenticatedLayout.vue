@@ -146,7 +146,7 @@ watch(search, () => {
                 <form class="d-md-flex d-none" @submit.prevent="showSearch()">
                     <div class="input-group">
                         <input type="search" class="form-control" placeholder="Type to search" v-model="search">
-                        <button class="btn btn-primary" type="submit" id="button-addon2">
+                        <button class="btn btn-primary btn-search" type="submit" id="button-addon2">
                             <font-awesome-icon :icon="['fas', 'magnifying-glass']" />
                         </button>
                     </div>
@@ -172,7 +172,7 @@ watch(search, () => {
                 <font-awesome-icon class="search-option-icon me-3" :icon="['far', 'file']"></font-awesome-icon>
                 <div class="w-100 m-0 d-flex justify-content-between">
                     <p class="m-0">
-                        <b>#{{ order.id }} - {{ order.account.name }} </b> / {{ order.solution_type.name }} <br>
+                        <b>#{{ order.id }} - {{ order.account?.name }} </b> / {{ order.solution_type.name }} <br>
                         <span style="font-size: 12px;"> {{ order.user.name }} - {{ order.updated_at }}</span>
                     </p>
                     <p class="m-0">

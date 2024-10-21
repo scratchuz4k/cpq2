@@ -1,5 +1,5 @@
 <script setup>
-import Button from 'primevue/button';
+import PrimaryButton from '@/Components/PrimaryButton.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, router } from "@inertiajs/vue3";
 import { ref } from 'vue';
@@ -29,21 +29,23 @@ const saveRegion= () => {
 }
 
 const items = ref([
+    { label: 'Home', url: '/' },
     { label: 'My Account', url: '/myaccount' },
     { label: 'Regions', url: '/regions' },
+    { label: 'Edit Region' },
 ]);
 
 </script>
 <template>
 
-    <Head title="Regions" />
+    <Head :title="'Edit Region #' + region.id" />
     <AuthenticatedLayout>
         <div class="panel">
             <Header :title="'Edit Region #' + region.id" :breadcrumbs="items">
                 <template #buttons>
-                    <Button @click="saveRegion()" size="small">
-                        <font-awesome-icon :icon="['fas', 'save']"></font-awesome-icon> Save
-                    </Button>
+                    <PrimaryButton @click="saveRegion()">
+                        <font-awesome-icon class="me-2" :icon="['fas', 'save']"></font-awesome-icon> Save
+                    </PrimaryButton>
                 </template>
             </Header>
             <div class="col-6">

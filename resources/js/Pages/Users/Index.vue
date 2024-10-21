@@ -10,9 +10,6 @@ const props = defineProps({
     }
 })
 
-const items = ref([
-    { label: 'My Account', url: '/myaccount' }
-]);
 
 const showForm = ref(false)
 const isLoading = ref(false);
@@ -46,7 +43,11 @@ const submitFileForm = () => {
         }
     )
 };
-
+const items = ref([
+    { label: 'Home', url: '/' },
+    { label: 'My Account', url: '/myaccount' },
+    { label: 'Users', url: '/users' },
+]);
 </script>
 <template>
     <Head title="Users" />
@@ -67,7 +68,7 @@ const submitFileForm = () => {
                     <h4>Import Users from CSV</h4>
                     <p>Your CSV must contain the following columns: name*, email*, password, sso, managername. * must not be blank</p>
                     <input type="file" accept=".csv" required @input="onFileChange" />
-                    <button type="submit" class="btn btn-success ms-2"  :disabled="isLoading">
+                    <button type="submit" class="btn btn-primary ms-2"  :disabled="isLoading">
                         <span v-if="isLoading">
                             <font-awesome-icon :icon="['fa', 'spinner']" class="fa-spin"></font-awesome-icon>
                             Uploading...
@@ -82,11 +83,11 @@ const submitFileForm = () => {
                     delete: true,
                     link: false,
                 }" :columns="[
-                    { data: 'id', title: '#' },
-                    { data: 'name', title: 'Name' },
-                    { data: 'email', title: 'Email' },
-                    { data: 'roles.name', title: 'Role' },
-                    { data: 'parent.name', title: 'Manager' }
+                    { data: 'id', title: '#', style: 'width:5%' },
+                    { data: 'name', title: 'Name', style: 'width:25%' },
+                    { data: 'email', title: 'Email', style: 'width:30%' },
+                    { data: 'roles.name', title: 'Role', style: 'width:15%' },
+                    { data: 'parent.name', title: 'Manager', style: 'width:15%' }
                 ]" route="/users">
                 </Datatable>
             </div>
