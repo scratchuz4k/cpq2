@@ -31,21 +31,23 @@ const saveToken = () => {
 }
 
 const items = ref([
+    { label: 'Home', url: '/' },
     { label: 'My Account', url: '/myaccount' },
     { label: 'Tokens', url: '/tokens' },
+    { label: 'New Token' },
 ]);
 
 </script>
 <template>
 
-    <Head title="Tokens" />
+    <Head title="New Token" />
     <AuthenticatedLayout>
         <div class="panel">
             <Header title="New Token" :breadcrumbs="items">
                 <template #buttons>
-                    <Button @click="saveToken()" size="small">
-                        <font-awesome-icon :icon="['fas', 'save']"></font-awesome-icon> Save
-                    </Button>
+                    <PrimaryButton @click="saveToken()">
+                        <font-awesome-icon class="me-2" :icon="['fas', 'save']"></font-awesome-icon> Save
+                    </PrimaryButton>
                 </template>
             </Header>
             <div class="col-6">

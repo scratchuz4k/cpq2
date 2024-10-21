@@ -17,13 +17,15 @@ class DashboardController extends BaseController
     {
         $user = request()->user();
 
-        $users = collect([]);
-        if (!$user->hasRole('Super Admin')) {
-            $users = User::descendants();
+        $users = User::descendants();
+        if (!$user->hasRole('Sales Rep')) {
+            $users = User::all();
         }
 
+        $users = $users->filter(fn ($user) => $user->orders->count() > 0);
+
         return Inertia::render('Dashboard', [
-            "users" => $user->hasRole('Super Admin') ? User::all() : $users,
+            "users" => $users->values(),
             "solutions" => SolutionType::all(),
             "status" => ["PRICE", "QUOTE", "CONFIGURE"]
         ]);

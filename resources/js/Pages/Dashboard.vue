@@ -4,8 +4,7 @@ import DataTablesCore from 'datatables.net-bs5';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head } from '@inertiajs/vue3';
 DataTable.use(DataTablesCore);
-
-defineProps({
+const props = defineProps({
     users: {
         type: Array,
         default: []

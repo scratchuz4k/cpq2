@@ -2,7 +2,7 @@
 import { reactive, ref } from "vue";
 import Button from 'primevue/button';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head, router } from "@inertiajs/vue3";
+import { Head, Link } from "@inertiajs/vue3";
 
 const props = defineProps({
     plainTextToken: String,
@@ -11,17 +11,25 @@ const props = defineProps({
 })
 
 const items = ref([
+    { label: 'Home', url: '/' },
     { label: 'My Account', url: '/myaccount' },
     { label: 'Tokens', url: '/tokens' },
+    { label: 'Show Token' },
 ]);
 
 </script>
 <template>
 
-    <Head title="Tokens" />
+    <Head :title="'Show Token #' + token.id" />
     <AuthenticatedLayout>
         <div class="panel">
-            <Header title="Token" :breadcrumbs="items"> </Header>
+            <Header :title="'Show Token #' + token.id" :breadcrumbs="items">
+                <template #buttons>
+                    <Link class="btn btn-primary" :href="route('tokens.index')">
+                        <font-awesome-icon class="me-2" :icon="['fa', 'arrow-left']"></font-awesome-icon> Back
+                    </Link>
+                </template>
+            </Header>
             <div class="col-6">
                 <div class="mb-3 alert alert-danger" v-if="plainTextToken">
                     <label for="token-name" class="form-label">Save this token for api usage:</label>

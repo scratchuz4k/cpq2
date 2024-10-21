@@ -3,7 +3,9 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link } from "@inertiajs/vue3";
 import { ref } from 'vue';
 const items = ref([
-    { label: 'My Account', url: '/myaccount' }
+    { label: 'Home', url: '/' },
+    { label: 'My Account', url: '/myaccount' },
+    { label: 'Tokens' },
 ]);
 </script>
 
@@ -14,8 +16,8 @@ const items = ref([
         <div class="panel">
             <Header title="Tokens" :breadcrumbs="items">
                 <template #buttons>
-                    <Link href="/tokens/create" class="btn btn-primary me-2">
-                    <font-awesome-icon :icon="['fas', 'plus']"></font-awesome-icon> New Token
+                    <Link :href="route('tokens.create')" class="btn btn-primary me-2">
+                        <font-awesome-icon :icon="['fas', 'plus']"></font-awesome-icon> New Token
                     </Link>
                 </template>
             </Header>
