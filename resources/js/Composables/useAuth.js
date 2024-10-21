@@ -5,10 +5,10 @@ import { usePage } from "@inertiajs/vue3";
 const page = usePage();
 
 export const can = (permission) => {
-    if (page.props.auth.roles.find(x => x == 'Super Admin')) {
+    if (page.props.auth.roles.find(x => x.name == 'Super Admin')) {
         return true
     }
-    if (page.props.auth.permissions.find(x => x == permission)) {
+    if (page.props.auth.permissions.find(x => x.name == permission)) {
         return true
     }
     return false

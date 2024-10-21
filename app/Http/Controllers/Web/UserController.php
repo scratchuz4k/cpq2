@@ -2,16 +2,17 @@
 
 namespace App\Http\Controllers\Web;
 
+use App\Models\Role;
+use App\Models\User;
+use Inertia\Inertia;
+use App\Models\Tenant;
+use App\Services\UsersService;
+use App\Http\Resources\UserResource;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\UserCreateRequest;
 use App\Http\Requests\UserImportRequest;
 use App\Http\Requests\UserUpdateRequest;
-use App\Http\Resources\UserResource;
-use App\Models\Role;
-use App\Models\User;
-use App\Services\UsersService;
-use Illuminate\Support\Facades\Auth;
-use Inertia\Inertia;
 
 class UserController extends BaseController
 {
@@ -45,7 +46,8 @@ class UserController extends BaseController
 
         return Inertia::render('Users/Create', [
             'roles'     => $roles,
-            'managers'  => User::all()
+            'managers'  => User::descendants(),
+            'tenants' => Tenant::all()
         ]);
     }
 
@@ -78,10 +80,13 @@ class UserController extends BaseController
     {
         $temp = new UserResource($user);
         $temp['role'] = $user->roles->first()->id;
+        $temp = [...$temp->toArray(request()), 'tenants' => $user->tenants->pluck('id')->toarray()];
+
         return Inertia::render('Users/Edit', [
-            'user'      => $temp->toArray(request()),
+            'user'      => $temp,
             'roles'     => Role::all(),
-            'managers'  => User::all()
+            'managers'  => User::descendants(),
+            'tenants' => Tenant::all()
         ]);
     }
 

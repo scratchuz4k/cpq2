@@ -10,10 +10,7 @@ class BrandService
     public function store(array $array): Brand
     {
         return DB::transaction(function () use ($array) {
-            $brand = Brand::create([
-                ...$array,
-                "tenant_id" => session()->get('tenant_id'),
-            ]);
+            $brand = Brand::create($array);
 
 
             return $brand;
@@ -23,12 +20,7 @@ class BrandService
     public function update(Brand $brand, array $array): Brand
     {
         return DB::transaction(function () use ($brand, $array) {
-            $brand->update(
-                [
-                    ...$array,
-                    'tenant_id' => session()->get('tenant_id'),
-                ]
-            );
+            $brand->update($array);
 
             return $brand;
         });

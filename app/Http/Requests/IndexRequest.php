@@ -1,0 +1,52 @@
+<?php
+
+namespace App\Http\Requests;
+
+use Illuminate\Foundation\Http\FormRequest;
+
+class IndexRequest extends FormRequest
+{
+    /**
+     * Determine if the user is authorized to make this request.
+     */
+    public function authorize(): bool
+    {
+        return true;
+    }
+
+    public function prepareForValidation()
+    {
+        // Example: Set a default value if 'tenant_id' is not present
+        if ($this->has('filters') && is_string($this->filters)) {
+            $this->merge([
+                'filters' => json_decode($this->filters, true),
+            ]);
+        }
+
+        // Example: Perform some checks or logging
+        if ($this->input('status') === 'active') {
+            // Do something if the status is 'active'
+        }
+    }
+
+    /**
+     * Get the validation rules that apply to the request.
+     *
+     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     */
+    public function rules(): array
+    {
+        return [
+            'order' => 'nullable|in:asc,desc',
+            'orderBy' => 'nullable',
+            'page' => 'nullable|numeric',
+            'limit' => 'nullable|numeric',
+            'search' => 'nullable|string',
+            'filters' => 'nullable|array',
+            'filters.*.column' => 'required|string',
+            'filters.*.operator' => 'required|in:not_equals,equals,not_contains,contains,starts_with,ends_with,greater_than,less_than,greater_than_or_equal_to,less_than_or_equal_to,is_null,in,search',
+            'filters.*.value' => 'nullable',
+            'filters.*.function' => 'nullable|in:where,orWhere',
+        ];
+    }
+}

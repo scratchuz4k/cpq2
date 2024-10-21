@@ -4,10 +4,9 @@ namespace App\Http\Controllers\Web;
 
 use App\Models\User;
 use Inertia\Inertia;
-use Illuminate\Support\Facades\Auth;
-use App\Http\Controllers\BaseController;
-use App\Models\Account;
+use App\Models\Tenant;
 use App\Models\SolutionType;
+use App\Http\Controllers\BaseController;
 
 class DashboardController extends BaseController
 {
@@ -16,16 +15,15 @@ class DashboardController extends BaseController
      */
     public function index()
     {
-        $userDescedents = User::descendants(auth()->id());
-        $users = collect([]);
-        do {
-            $current = $userDescedents->pop();
-            $users->push($current);
-            $userDescedents->push(...$current->children);
-        } while (count($userDescedents));
+        $user = request()->user();
 
-        return Inertia::render('Dashboard',[
-            "users" => $users,
+        $users = collect([]);
+        if (!$user->hasRole('Super Admin')) {
+            $users = User::descendants();
+        }
+
+        return Inertia::render('Dashboard', [
+            "users" => $user->hasRole('Super Admin') ? User::all() : $users,
             "solutions" => SolutionType::all(),
             "status" => ["PRICE", "QUOTE", "CONFIGURE"]
         ]);
@@ -36,8 +34,9 @@ class DashboardController extends BaseController
      */
     public function myAccount()
     {
-        $tenants = auth()->user()->tenants;
-        $permissions = auth()->user()->getAllPermissions();
+        $user = request()->user();
+        $tenants =  $user->hasRole('Super Admin') ? Tenant::all() : $user->tenants;
+        $permissions = $user->getAllPermissions();
         return Inertia::render('MyAccount/Index', [
             'permissions' => $permissions,
             'tenants' => $tenants,

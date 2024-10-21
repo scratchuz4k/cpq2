@@ -20,7 +20,7 @@ class OrderResource extends JsonResource
             'account' => $this->account,
             'solution_type' => $this->solutionType,
             'items' => $this->items,
-            'updated_at' => format_date($this->updated_at),
+            'updated_at' => $this->updated_at,
         ];
     }
 }

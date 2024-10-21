@@ -2,18 +2,22 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Helpers\DataProvider;
-use App\Http\Controllers\BaseController;
-use App\Http\Resources\ProductResource;
+use Exception;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use App\Helpers\DataProvider;
 use Illuminate\Support\Facades\Log;
+use App\Http\Resources\ProductResource;
+use App\Http\Controllers\BaseController;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class ProductController extends BaseController
 {
     protected $model = Product::class;
     /**
      * Display a listing of the resource.
+     * @response AnonymousResourceCollection<LengthAwarePaginator<ProductResource>>
      */
     public function index()
     {

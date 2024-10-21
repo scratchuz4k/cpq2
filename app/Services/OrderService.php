@@ -13,12 +13,7 @@ class OrderService
     public function store(array $array): Order
     {
         return DB::transaction(function () use ($array) {
-            $order = Order::create(
-                [
-                    ...$array,
-                    'tenant_id' => session()->get('tenant_id'),
-                ]
-            );
+            $order = Order::create($array);
 
             if (array_key_exists('items', $array)) {
                 foreach ($array['items'] as $order_item) {
@@ -38,8 +33,7 @@ class OrderService
             $order->update(
                 [
                     ...$array,
-                    'tenant_id' => session()->get('tenant_id'),
-                    'name' => 'WIP'
+                    'name' => ''
                 ]
             );
 

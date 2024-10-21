@@ -9,11 +9,15 @@ use App\Helpers\DataProvider;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\BrandResource;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class BrandController extends Controller
 {
+    protected $model = Brand::class;
     /**
      * Display a listing of the resource.
+     * @response AnonymousResourceCollection<LengthAwarePaginator<BrandResource>>
      */
     public function index()
     {

@@ -58,6 +58,9 @@ defineProps({
                     <template #status="{ value }">
                         <span class="badge text-bg-secondary">{{ value }}</span>
                     </template>
+                    <template #updated_at="{ value }">
+                        {{ helpers.formatDate(value) }}
+                    </template>
                 </Datatable>
             </div>
         </div>

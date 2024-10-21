@@ -25,10 +25,7 @@ class OrderItemService
     public function update(OrderItem $orderItem, array $array): OrderItem
     {
         return DB::transaction(function () use ($array, $orderItem) {
-            $orderItem->update([
-                ...$array,
-                "tenant_id" => session()->get('tenant_id'),
-            ]);
+            $orderItem->update($array);
 
             $orderItem->order->computeTotals();
 

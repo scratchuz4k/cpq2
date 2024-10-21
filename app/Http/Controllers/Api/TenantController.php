@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Log;
 
 class TenantController extends BaseController
 {
+    protected $model = Tenant::class;
     public function __construct(protected TenantService $tenantService)
     {
         parent::__construct();

@@ -8,6 +8,8 @@ use App\Http\Resources\RegionResource;
 use App\Models\Region;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class RegionController extends BaseController
 {
@@ -15,6 +17,7 @@ class RegionController extends BaseController
 
     /**
      * Display a listing of the resource.
+     * @response AnonymousResourceCollection<LengthAwarePaginator<RegionResource>>
      */
     public function index()
     {
