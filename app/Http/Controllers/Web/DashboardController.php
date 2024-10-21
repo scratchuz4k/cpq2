@@ -16,7 +16,7 @@ class DashboardController extends BaseController
      */
     public function index()
     {
-        $userDescedents = User::descendants(auth()->id());
+        $userDescedents = [User::descendants(auth()->id())];
         $users = collect([]);
         do {
             $current = $userDescedents->pop();
