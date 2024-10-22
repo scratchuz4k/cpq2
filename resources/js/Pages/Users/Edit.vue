@@ -3,17 +3,20 @@ import {computed, reactive, ref} from "vue";
 import Button from 'primevue/button';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, router } from "@inertiajs/vue3";
+import Permissions from "@/Components/Permissions.vue";
 
 const props = defineProps({
     user: Object,
     roles: Object,
     managers: Object,
-    role_id: Number
+    role_id: Number,
+    permissions: Array
 })
 
-const showCommissionRate = computed(() => props.user.role === 4)
-
+const role_id = ref(props.user.roles.length ? props.user.roles[0].id : { id: null})
 const saveUser = () => {
+
+    props.user.role = [role_id.value]
     router.put(`/users/${props.user.id}`, props.user,
         {
             onSuccess: (page) => {
@@ -63,13 +66,16 @@ const items = ref([
                     </div>
                     <div class="row mb-3">
                         <label for="supplier-name" class="form-label">Role:</label>
-                        <select class="form-select" v-model="user.role">
-                            <option v-for="role in roles" :value="role.id">{{ role.name }}</option>
+                        <select class="form-select" v-model="role_id"  @change="user.commission_rate = 0">
+                            <option v-for="tempRole in roles" :value="tempRole.id">{{ tempRole.name }}</option>
                         </select>
                     </div>
-                    <div v-show="showCommissionRate" class="row mb-3">
+                    <div v-if="roles.find((item) => item.id === role_id).name === 'Sales Rep'" class="row mb-3">
                         <label for="user-commission-rate" class="form-label">Commission Rate:</label>
-                        <input id="user-commission-rate" type="number" class="form-control" v-model="user.commission_rate">
+                        <div class="input-group p-0">
+                            <input id="user-commission-rate" type="number" class="form-control" v-model="user.commission_rate">
+                            <span class="input-group-text">%</span>
+                        </div>
                     </div>
                     <div class="row mb-3">
                         <label for="user-name" class="form-label">Manager:</label>
@@ -77,6 +83,10 @@ const items = ref([
                             <option v-for="manager in managers" :value="manager.id">{{ manager.name }}</option>
                         </select>
                     </div>
+                </div>
+                <div class="col-6">
+                    <h2>User Permissions</h2>
+                    <Permissions :permissions="permissions" />
                 </div>
             </div>
         </div>

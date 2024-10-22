@@ -547,7 +547,7 @@ body {
         }
 
         .form-check-input:focus {
-            border-color: --teal;
+            border-color: var(--teal);
             box-shadow: 0 0 0 0.25rem var(--light-teal);
         }
 
@@ -940,6 +940,49 @@ body {
                 background-color: var(--lighter-grey);
             }
         }
+    }
+}
+
+.p-dialog-content {
+    .btn-primary {
+        background-color: var(--primary-light);
+        border-color: var(--primary-light);
+        font-weight: bold;
+    }
+
+    .btn-primary:hover {
+        background-color: var(--primary-light);
+        border-color: var(--primary-light);
+    }
+
+    .btn-outline-primary {
+        border-color: var(--primary-light);
+        color: var(--primary-light);
+
+        &:hover {
+            background-color: var(--primary-light);
+            color: var(--white);
+        }
+    }
+
+    .btn-secondary {
+        background-color: var(--secondary-dark);
+        border-color: var(--secondary-dark);
+        font-weight: bold;
+    }
+
+    .btn-secondary:hover {
+        background-color: var(--secondary-dark-lighter);
+        border-color: var(--secondary-dark);
+    }
+
+    .btn-text {
+        background-color: transparent;
+        color: var(--secondary);
+    }
+
+    .text-primary {
+        color: var(--primary-light) !important;
     }
 }
 

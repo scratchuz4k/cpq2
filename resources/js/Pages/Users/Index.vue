@@ -2,6 +2,9 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import {Head, Link, router} from "@inertiajs/vue3";
 import {reactive, ref} from 'vue';
+import PrimaryButton from "@/Components/PrimaryButton.vue";
+import Button from "primevue/button";
+import Dialog from "primevue/dialog";
 
 const props = defineProps({
     results: {
@@ -10,12 +13,16 @@ const props = defineProps({
     }
 })
 
+const users = ref([]);
 const items = ref([
     { label: 'My Account', url: '/myaccount' }
 ]);
 
 const showForm = ref(false)
 const isLoading = ref(false);
+const selectedItems = ref([]);
+let showModal = ref(false);
+
 const onFileChange = (event) => {
     formFile.file = event.target.files[0];
 };
@@ -23,6 +30,8 @@ const onFileChange = (event) => {
 const formFile = reactive({
     file: null,
 });
+
+const commission = ref(0);
 
 const submitFileForm = () => {
     isLoading.value = true
@@ -47,6 +56,34 @@ const submitFileForm = () => {
     )
 };
 
+const saveCommission = (data) => {
+    data.commission_rate = commission.value
+
+    router.put(`/users/${data.id}`, data,
+        {
+            onSuccess: (page) => {
+                notyf.success("Updated with Success")
+            },
+            onError: (errors) => {
+                let string = ''
+                Object.keys(errors).forEach((key) => {
+                    string += errors[key] + '<br>'
+                })
+                notyf.error(string)
+            },
+        }
+    )
+}
+
+const saveCommissionBulk = (data) => {
+    data.forEach((item) => {
+        saveCommission(item)
+    })
+    showModal.value = false
+    commission.value = 0
+}
+
+
 </script>
 <template>
     <Head title="Users" />
@@ -54,6 +91,7 @@ const submitFileForm = () => {
         <div class="panel">
             <Header title="Users" :breadcrumbs="items">
                 <template #buttons>
+                    <PrimaryButton class="btn btn-secondary me-2" @click="showModal = true">Add Commission</PrimaryButton>
                     <Link :href="route('users.create')" class="btn btn-primary me-2">
                         <font-awesome-icon :icon="['fas', 'plus']"></font-awesome-icon> New User
                     </Link>
@@ -77,19 +115,63 @@ const submitFileForm = () => {
                 </form>
             </div>
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                <Datatable :allow="{
-                    update: true,
-                    delete: true,
-                    link: false,
-                }" :columns="[
-                    { data: 'id', title: '#' },
-                    { data: 'name', title: 'Name' },
-                    { data: 'email', title: 'Email' },
-                    { data: 'roles.name', title: 'Role' },
-                    { data: 'parent.name', title: 'Manager' }
-                ]" route="/users">
-                </Datatable>
+                <TreeTable
+                    :allow="{
+                        update: true,
+                        delete: true,
+                        link: false,
+                        commission: true
+                    }"
+                    :columns="[
+                        { data: 'id', title: '#' },
+                        { data: 'name', title: 'Name' },
+                        { data: 'email', title: 'Email' },
+                        { data: 'roles.name', title: 'Role' }
+                    ]" route="/users"
+                    v-model="selectedItems"
+                >
+                    <template #dialog_content="{data, toggleModal}">
+                        <div class="panel">
+                            <div class="row">
+                                <label for="user-commission-rate" class="form-label">Commission Rate:</label>
+                                <div class="input-group">
+                                    <input id="user-commission-rate" type="number" class="form-control" v-model="commission">
+                                    <span class="input-group-text">%</span>
+                                </div>
+                                <div class="d-flex justify-content-end mt-3">
+                                    <div class="btn btn-secondary me-2" @click="toggleModal()">
+                                        Cancel
+                                    </div>
+                                    <PrimaryButton class="btn btn-primary" @click="saveCommission(data)" >
+                                        Save
+                                    </PrimaryButton>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+                </TreeTable>
             </div>
         </div>
+        <Dialog v-model:visible="showModal" modal :style="{ marginTop: '4rem' }"
+                :breakpoints="{ '1199px': '75vw', '575px': '90vw' }" :draggable="false" position="top">
+            <div class="panel">
+                <div class="row">
+                    <div v-if="!(selectedItems.length > 0)" class="p-3 mb-2 text-danger">No Users selected.</div>
+                    <label for="user-bulk-commission-rate" class="form-label">Commission Rate:</label>
+                    <div class="input-group">
+                        <input id="user-bulk-commission-rate" type="number" class="form-control" v-model="commission">
+                        <span class="input-group-text">%</span>
+                    </div>
+                    <div class="d-flex justify-content-end mt-3">
+                        <div class="btn btn-secondary me-2" @click="showModal = false">
+                            Cancel
+                        </div>
+                            <PrimaryButton class="btn btn-primary" @click="saveCommissionBulk(selectedItems)" :disabled="!(selectedItems.length > 0)">
+                            Save
+                        </PrimaryButton>
+                    </div>
+                </div>
+            </div>
+        </Dialog>
     </AuthenticatedLayout>
 </template>

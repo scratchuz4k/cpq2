@@ -34,6 +34,7 @@ class UserController extends BaseController
      */
     public function create()
     {
+        //Child Roles
         $temp_roles = Auth::user()->roles()->get();
         $roles = collect([]);
 
@@ -43,9 +44,18 @@ class UserController extends BaseController
             $temp_roles->push(...$current->children);
         } while (count($temp_roles));
 
+        //Child Users
+        $users = collect([]);
+        $temp_users = collect([Auth::user()]);
+        do {
+            $current = $temp_users->pop();
+            $users->push($current);
+            $temp_users->push(...$current->children);
+        } while (count($temp_users));
+
         return Inertia::render('Users/Create', [
             'roles'     => $roles,
-            'managers'  => User::all()
+            'managers'  => $users
         ]);
     }
 
@@ -76,12 +86,32 @@ class UserController extends BaseController
      */
     public function edit(User $user)
     {
+        //Child Roles
+        $temp_roles = Auth::user()->roles()->get();
+        $roles = collect([]);
+
+        do {
+            $current = $temp_roles->pop();
+            $roles->push($current);
+            $temp_roles->push(...$current->children);
+        } while (count($temp_roles));
+
+        //Child Users
+        $users = collect([]);
+        $temp_users = collect([Auth::user()]);
+        do {
+            $current = $temp_users->pop();
+            $users->push($current);
+            $temp_users->push(...$current->children);
+        } while (count($temp_users));
+
         $temp = new UserResource($user);
-        $temp['role'] = $user->roles->first()->id;
+        $permissions = $user->getAllPermissions();
         return Inertia::render('Users/Edit', [
             'user'      => $temp->toArray(request()),
-            'roles'     => Role::all(),
-            'managers'  => User::all()
+            'roles'     => $roles,
+            'managers'  => $users,
+            'permissions'  => $permissions
         ]);
     }
 

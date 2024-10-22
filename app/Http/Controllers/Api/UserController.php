@@ -18,6 +18,16 @@ class UserController extends Controller
     public function index()
     {
         $dataProvider = new DataProvider(User::class);
+
+        $userDescedents = collect([auth()->user()]);
+        $ids = collect([]);
+        do {
+            $current = $userDescedents->pop();
+            $ids->push($current->id);
+            $userDescedents->push(...$current->children);
+        } while (count($userDescedents));
+
+        $dataProvider->builder = $dataProvider->builder->whereIn('id', $ids);
         try {
             $data = $dataProvider->get();
         } catch (\Exception $e) {

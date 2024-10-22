@@ -75,11 +75,12 @@ const items = ref([
                         <option v-for="role in roles" :value="role.id">{{ role.name }}</option>
                     </select>
                 </div>
-                <div v-if="showCommissionRate">
-                    <div class="row mb-3">
-                        <label for="user-commission-rate" class="form-label">Commission Rate:</label>
+                <div v-if="showCommissionRate" class="row mb-3">
+                    <label for="user-commission-rate" class="form-label">Commission Rate:</label>
+                    <div class="input-group p-0">
                         <input id="user-commission-rate" type="number" class="form-control" v-model="user.commission_rate">
                         <div class="text-danger" v-if="user.errors.commission_rate">{{ user.errors.commission_rate }}</div>
+                        <span class="input-group-text">%</span>
                     </div>
                 </div>
                 <div class="row mb-3">

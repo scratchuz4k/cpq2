@@ -49,8 +49,8 @@ class UsersService
                 ]
             );
 
-            if (array_key_exists('role_id', $array)) {
-                $user->syncRoles($array['role_id']);
+            if (array_key_exists('role', $array)) {
+                $user->syncRoles($array['role']);
             }
 
             return $user;

@@ -24,14 +24,7 @@ const props = defineProps({
         type: Object,
         default: {}
     },
-    allow: {
-        type: Object,
-        default: {
-            update: false,
-            delete: false,
-            link: false,
-        }
-    }
+    allow: Object
 })
 
 const activeFilters = ref(false)
@@ -234,7 +227,7 @@ getData()
                 <div class="d-flex justify-content-center">
                     <template v-if="allow.update">
                         <Link :href="props.route + '/' + data.id + '/edit'" class="btn p-2 mx-1 border-0">
-                        <font-awesome-icon :icon="['fas', 'edit']" />
+                            <font-awesome-icon icon="arrow-up-right-from-square" />
                         </Link>
                     </template>
 
