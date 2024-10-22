@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Foundation\Http\FormRequest;
 
 class OrderCreateRequest extends FormRequest
@@ -14,6 +15,13 @@ class OrderCreateRequest extends FormRequest
         return true;
     }
 
+
+    public function prepareForValidation()
+    {
+        $this->merge(['user_id' => Auth::id()]);
+        $this->merge(['status' => 'CONFIGURE']);
+    }
+
     /**
      * Get the validation rules that apply to the request.
      *
@@ -22,6 +30,7 @@ class OrderCreateRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'user_id' => 'required|exists:users,id',
             'account_id' => 'required|exists:accounts,id',
             'solution_type_id' => 'required|exists:solution_types,id',
             'margin' => 'nullable|numeric|min:0|max:100',

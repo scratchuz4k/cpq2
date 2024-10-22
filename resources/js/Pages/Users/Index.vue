@@ -84,10 +84,10 @@ const items = ref([
                     link: false,
                 }" :columns="[
                     { data: 'id', title: '#', style: 'width:5%' },
-                    { data: 'name', title: 'Name', style: 'width:25%' },
+                    { data: 'name', title: 'Name', style: 'width:20%' },
                     { data: 'email', title: 'Email', style: 'width:30%' },
                     { data: 'roles.name', title: 'Role', style: 'width:15%' },
-                    { data: 'parent.name', title: 'Manager', style: 'width:15%' }
+                    { data: 'parent.name', title: 'Manager', style: 'width:20%' }
                 ]" route="/users">
                 </Datatable>
             </div>

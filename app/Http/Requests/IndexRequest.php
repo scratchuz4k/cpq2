@@ -22,11 +22,6 @@ class IndexRequest extends FormRequest
                 'filters' => json_decode($this->filters, true),
             ]);
         }
-
-        // Example: Perform some checks or logging
-        if ($this->input('status') === 'active') {
-            // Do something if the status is 'active'
-        }
     }
 
     /**

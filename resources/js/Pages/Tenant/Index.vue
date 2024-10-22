@@ -91,7 +91,7 @@ const submitTextForm = (tenant) => {
                                         <span v-else>Upload</span>
                                     </button>
                                 </form>
-                                <div class="separator pt-4"> OR</div>
+                                <div class="seperator"> OR</div>
                                 <div class="mt-4">
                                     <h4>Input SSO configuration for {{ tenant.name }}</h4>
                                     <p>Please provide a valid xml syntax</p>
@@ -110,3 +110,29 @@ const submitTextForm = (tenant) => {
         </div>
     </AuthenticatedLayout>
 </template>
+
+<style scoped>
+    .seperator {
+        position: relative;
+        text-align: center;
+        margin: 2rem auto;
+    }
+    .seperator:before {
+        content: '';
+        width: 45%;
+        height:1px;
+        background-color:var(--light-grey);
+        position: absolute;
+        left:0;
+        top: 50%;
+    }
+    .seperator:after {
+        content: '';
+        width: 45%;
+        height:1px;
+        background-color:var(--light-grey);
+        position: absolute;
+        right: 0;
+        top: 50%;
+    }
+</style>

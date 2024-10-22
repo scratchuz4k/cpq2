@@ -4,13 +4,11 @@ namespace App\Models;
 
 use App\Trait\SetTenantId;
 use App\Models\Scopes\TenantScope;
-use App\Observers\OrderItemObserver;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 
-#[ObservedBy([OrderItemObserver::class])]
 class OrderItem extends Model
 {
     use HasFactory, SetTenantId;

@@ -114,6 +114,7 @@ const getArticles = async () => {
     };
 
     const csrfToken = document.head.querySelector("[name~=csrf-token][content]").content;
+	/*
     let res = await fetch('/api/external/get-articles-from-cloud-market',
         {
             headers: {
@@ -148,6 +149,16 @@ const getArticles = async () => {
         } catch (e) {
         }
     }
+	*/
+    let res = await axios.post('/api/external/get-articles-from-cloud-market',query)
+
+	articles.value = res.data.data
+	isLoading.value = false
+	meta.first = (meta.page - 1) * meta.limit
+	meta.total = res.data.total
+	meta.overallTotal = res.data.overall_total
+	meta.isUpdating = !!res.data.finished_at
+	Object.assign(filterList, res.data.filters)
 
 }
 
