@@ -13,13 +13,7 @@ const props = defineProps({
     }
 })
 
-<<<<<<< HEAD
 const users = ref([]);
-const items = ref([
-    { label: 'My Account', url: '/myaccount' }
-]);
-=======
->>>>>>> dev
 
 const showForm = ref(false)
 const isLoading = ref(false);
@@ -58,7 +52,7 @@ const submitFileForm = () => {
         }
     )
 };
-<<<<<<< HEAD
+
 
 const saveCommission = (data) => {
     data.commission_rate = commission.value
@@ -87,14 +81,11 @@ const saveCommissionBulk = (data) => {
     commission.value = 0
 }
 
-
-=======
 const items = ref([
     { label: 'Home', url: '/' },
     { label: 'My Account', url: '/myaccount' },
     { label: 'Users', url: '/users' },
 ]);
->>>>>>> dev
 </script>
 <template>
     <Head title="Users" />

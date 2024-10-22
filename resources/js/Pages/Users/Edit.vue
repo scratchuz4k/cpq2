@@ -19,7 +19,6 @@ const props = defineProps({
 const role_id = ref(props.user.roles.length ? props.user.roles[0].id : { id: null})
 const saveUser = () => {
     props.user.role = [role_id.value]
-    props.user.tenants = props.user.tenants
 
     router.put(`/users/${props.user.id}`, props.user,
         {
