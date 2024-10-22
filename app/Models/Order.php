@@ -26,7 +26,7 @@ class Order extends Model
         "address_data",
         "solution_type_id",
         "tenant_id",
-        'user_id'
+        "user_id",
         "name"
     ];
     protected function casts(): array
