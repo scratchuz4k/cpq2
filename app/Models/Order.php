@@ -32,6 +32,8 @@ class Order extends Model
         'total_install',
         'margin',
         'discount',
+        "status",
+        "user_id",
     ];
     protected function casts(): array
     {
