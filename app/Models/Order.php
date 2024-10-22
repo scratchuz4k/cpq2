@@ -11,7 +11,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 
-#[ObservedBy([OrderObserver::class])]
 class Order extends Model
 {
     use HasFactory, SetTenantId;

@@ -23,20 +23,16 @@ class OrderService
             }
 
             return $order;
-        });
+        }, 3);
     }
 
     public function update(Order $order, array $array): Order
     {
         return DB::transaction(function () use ($order, $array) {
-            $order->update(
-                [
-                    ...$array,
-                    'name' => ''
-                ]
-            );
 
-            if (array_key_exists('items', $array) ) {
+            $order->update($array);
+
+            if (array_key_exists('items', $array)) {
                 foreach ($array['items'] as $order_item) {
                     $order_item['order_id'] = $order->id;
                     if ($temp = OrderItem::find($order_item['id'])) {
@@ -48,6 +44,6 @@ class OrderService
             }
 
             return $order;
-        });
+        }, 3);
     }
 }
