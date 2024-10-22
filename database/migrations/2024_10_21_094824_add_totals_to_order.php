@@ -20,8 +20,9 @@ return new class extends Migration
             $table->double('total_monthly')->default(0);
             $table->double('total_monthly_tax')->default(0);
             $table->double('total_monthly_gross')->default(0);
-            $table->double('comission')->default(0);
-            $table->double('comission_tax')->default(0);
+            $table->double('comission_value')->default(0);
+            $table->double('tax_comission')->default(0);
+            $table->double('tax_order')->default(0);
         });
     }
 
@@ -32,10 +33,17 @@ return new class extends Migration
     {
         Schema::table('orders', function (Blueprint $table) {
             $table->dropColumn([
-                'total',
-                'total_monthly',
                 'margin',
                 'discount',
+                'total',
+                'total_tax',
+                'total_gross',
+                'total_monthly',
+                'total_monthly_tax',
+                'total_monthly_gross',
+                'comission_value',
+                'tax_comission',
+                'tax_order',
             ]);
         });
     }

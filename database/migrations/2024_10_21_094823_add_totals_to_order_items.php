@@ -25,6 +25,7 @@ return new class extends Migration
             $table->double('total_monthly')->default(0);
             $table->double('total_monthly_tax')->default(0);
             $table->double('total_monthly_gross')->default(0);
+            $table->double('tax_order_item')->default(0);
         });
     }
 
@@ -36,12 +37,19 @@ return new class extends Migration
         Schema::table('order_items', function (Blueprint $table) {
             $table->integer('quantity')->default(0)->change();
             $table->dropColumn([
-                'total',
-                'total_monthly',
-                'margin',
-                'discount',
+                'original_price',
+                'original_price_monthly',
                 'price',
                 'price_monthly',
+                'margin',
+                'discount',
+                'total',
+                'total_tax',
+                'total_gross',
+                'total_monthly',
+                'total_monthly_tax',
+                'total_monthly_gross',
+                'tax_order_item',
             ]);
         });
     }
