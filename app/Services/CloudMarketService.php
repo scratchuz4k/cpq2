@@ -23,7 +23,7 @@ class CloudMarketService
 
     public function get($connectivityType, CloudMarketAddress $address, $filters = [])
     {
-        if (env('PARTNER_QUOTE_SERVICE_ENDPOINT') == 'mock') {
+        if (!env('CLOUDMARKET_CONNECTION_LIVE_DATA')) {
             $mock_prices = storage_path('mocks/prices.json');
             if (!is_file($mock_prices)) {
                 return [];

@@ -22,6 +22,7 @@ class OrderService
                 }
             }
 
+            $order->update(['status' => get_order_status($order->refresh())]);
             return $order;
         }, 3);
     }
@@ -31,7 +32,6 @@ class OrderService
         return DB::transaction(function () use ($order, $array) {
 
             $order->update($array);
-
             if (array_key_exists('items', $array)) {
                 foreach ($array['items'] as $order_item) {
                     $order_item['order_id'] = $order->id;
@@ -43,6 +43,7 @@ class OrderService
                 }
             }
 
+            $order->update(['status' => get_order_status($order->refresh())]);
             return $order;
         }, 3);
     }

@@ -17,14 +17,6 @@ class OrderUpdateRequest extends FormRequest
     public function prepareForValidation()
     {
         $this->merge(['user_id' => Auth::id()]);
-
-        $this->merge(['status' => 'CONFIGURE']);
-        if ($this->has('items') && count($this->items)) {
-            $this->merge(['status' => 'QUOTE']);
-        }
-        if ($this->has('address_data') && !empty($this->address_data)) {
-            $this->merge(['status' => 'PRICE']);
-        }
     }
 
 

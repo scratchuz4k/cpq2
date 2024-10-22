@@ -12,6 +12,8 @@ class OrderItemService
     {
         return DB::transaction(function () use ($array) {
             $orderItem = OrderItem::create($array);
+
+            $orderItem->order->update(['status' => get_order_status($orderItem->order)]);
             return $orderItem;
         });
     }
@@ -21,6 +23,7 @@ class OrderItemService
         return DB::transaction(function () use ($array, $orderItem) {
             $orderItem->update($array);
 
+            $orderItem->order->update(['status' => get_order_status($orderItem->order)]);
             return $orderItem;
         });
     }
