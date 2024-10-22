@@ -1,5 +1,5 @@
 <script setup>
-import DangerButton from '@/Components/DangerButton.vue';
+import PrimaryButton from '@/Components/PrimaryButton.vue';
 import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import Modal from '@/Components/Modal.vue';
@@ -22,12 +22,14 @@ const confirmUserDeletion = () => {
 };
 
 const deleteUser = () => {
+    /*
     form.delete(route('profile.destroy'), {
         preserveScroll: true,
         onSuccess: () => closeModal(),
         onError: () => passwordInput.value.focus(),
         onFinish: () => form.reset(),
     });
+    */
 };
 
 const closeModal = () => {
@@ -48,7 +50,7 @@ const closeModal = () => {
             </p>
         </header>
 
-        <DangerButton @click="confirmUserDeletion">Delete Account</DangerButton>
+        <PrimaryButton @click="confirmUserDeletion" disabled>Delete Account</PrimaryButton>
 
         <Modal :show="confirmingUserDeletion" @close="closeModal">
             <div class="p-6">

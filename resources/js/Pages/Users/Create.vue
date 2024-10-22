@@ -1,13 +1,18 @@
 <script setup>
-import {computed, reactive, ref} from "vue";
-import Button from 'primevue/button';
+import {computed, reactive, ref} from "vue";import Button from 'primevue/button';
+import MultiSelect from 'primevue/multiselect';
+import PrimaryButton from '@/Components/PrimaryButton.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import {Head, router, useForm} from "@inertiajs/vue3";
+import { Head, router, useForm, usePage } from "@inertiajs/vue3";
+import { hasRole } from '@composables/useAuth'
+
+const page = usePage();
 
 const props = defineProps({
     roles: Object,
     managers: Object,
-    parent_id: Number
+    parent_id: Number,
+    tenants: Array
 })
 
 const user = useForm({
@@ -16,12 +21,14 @@ const user = useForm({
     password: null,
     role_id: null,
     parent_id: props.parent_id ?? null,
-    commission_rate: null
+    commission_rate: null,
+    tenants: [page.props.tenant.id]
 })
 
 const showCommissionRate = computed(() => user.role_id === 4)
 
 const saveUser = () => {
+    user.tenants = user.tenants
     router.post(`/users`, user,
         {
             onSuccess: (page) => {
@@ -38,20 +45,22 @@ const saveUser = () => {
     )
 }
 const items = ref([
+    { label: 'Home', url: '/' },
     { label: 'My Account', url: '/myaccount' },
     { label: 'Users', url: '/users' },
+    { label: 'New User' },
 ]);
 
 </script>
 <template>
-    <Head title="Users" />
+    <Head title="New User" />
     <AuthenticatedLayout>
         <div class="panel">
             <Header title="New User" :breadcrumbs="items">
                 <template #buttons>
-                    <Button @click="saveUser()" size="small">
-                        <font-awesome-icon :icon="['fas', 'save']"></font-awesome-icon> Save
-                    </Button>
+                    <PrimaryButton @click="saveUser()">
+                        <font-awesome-icon class="me-2" :icon="['fas', 'save']"></font-awesome-icon> Save
+                    </PrimaryButton>
                 </template>
             </Header>
             <div class="col-6">
@@ -89,6 +98,15 @@ const items = ref([
                     <select class="form-select" v-model="user.parent_id">
                         <option v-for="manager in managers" :value="manager.id">{{ manager.name }}</option>
                     </select>
+                </div>
+                <div class="row mb-3" v-if="hasRole('Super Admin')">
+                    <label for="user-name" class="form-label">Tenants:</label>
+                    <MultiSelect v-model="user.tenants" :options="tenants" optionLabel="name" optionValue="id">
+                        <template #option="slotProps">
+                            <div style="font-size:14px;line-height: 1.5rem;">{{ slotProps.option.name }}
+                            </div>
+                        </template>
+                    </MultiSelect>
                 </div>
             </div>
 

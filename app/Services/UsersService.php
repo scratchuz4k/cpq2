@@ -17,15 +17,16 @@ class UsersService
                 $array['password'] = Hash::make($array['password']);
             }
 
-            $user = User::create([
-                ...$array,
-                "tenant_id" => session()->get('tenant_id'),
-            ]);
+            $user = User::create($array);
 
             if (array_key_exists('role_id', $array) && !empty($array['role_id'])) {
                 $user->assignRole($array['role_id']);
             } else {
                 $user->assignRole(User::$default_role);
+            }
+
+            if (array_key_exists('tenants', $array)) {
+                $user->tenants()->sync($array['tenants']);
             }
 
             return $user;
@@ -42,15 +43,15 @@ class UsersService
 
         return DB::transaction(function () use ($user, $array) {
 
-            $user->update(
-                [
-                    ...$array,
-                    'tenant_id' => session()->get('tenant_id'),
-                ]
-            );
+            $user->update($array);
 
-            if (array_key_exists('role', $array)) {
-                $user->syncRoles($array['role']);
+            $user->update($array);
+            if (array_key_exists('role_id', $array)) {
+                $user->syncRoles($array['role_id']);
+            }
+
+            if (array_key_exists('tenants', $array)) {
+                $user->tenants()->sync($array['tenants']);
             }
 
             return $user;

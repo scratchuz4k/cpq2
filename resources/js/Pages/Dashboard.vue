@@ -4,8 +4,7 @@ import DataTablesCore from 'datatables.net-bs5';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head } from '@inertiajs/vue3';
 DataTable.use(DataTablesCore);
-
-defineProps({
+const props = defineProps({
     users: {
         type: Array,
         default: []
@@ -41,12 +40,12 @@ defineProps({
                     delete: true,
                     link: true,
                 }" :columns="[
-                    { data: 'id', title: '#' },
-                    { data: 'account.name', title: 'Account' },
-                    { data: 'solution_type.name', title: 'Solution' },
-                    { data: 'user.name', title: 'Owner' },
-                    { data: 'status', title: 'Status' },
-                    { data: 'updated_at', title: 'Last Updated' },
+                    { data: 'id', title: '#', style: 'width:5%' },
+                    { data: 'account.name', title: 'Account', style: 'width:15%' },
+                    { data: 'solution_type.name', title: 'Solution', style: 'width:25%' },
+                    { data: 'user.name', title: 'Owner', style: 'width:20%' },
+                    { data: 'status', title: 'Status', style: 'width:10%' },
+                    { data: 'updated_at', title: 'Last Updated', style: 'width:15%' },
                     { data: 'items.data', title: 'Last Updated', hide: true },
                     { data: 'items.name', title: 'Last Updated', hide: true },
                     { data: 'account.contacts.email', title: 'Last Updated', hide: true },
@@ -57,6 +56,9 @@ defineProps({
                 }" route="/orders">
                     <template #status="{ value }">
                         <span class="badge text-bg-secondary">{{ value }}</span>
+                    </template>
+                    <template #updated_at="{ value }">
+                        {{ helpers.formatDate(value) }}
                     </template>
                 </Datatable>
             </div>

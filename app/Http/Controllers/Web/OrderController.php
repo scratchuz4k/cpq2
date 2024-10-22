@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Web;
 
+use App\Models\User;
 use Inertia\Inertia;
 use App\Models\Order;
 use App\Models\Account;
@@ -29,7 +30,21 @@ class OrderController extends BaseController
      */
     public function index()
     {
-        return Inertia::render('Dashboard');
+        $user = request()->user();
+
+
+        $users = User::descendants();
+        if (!$user->hasRole('Sales Rep')) {
+            $users = User::all();
+        }
+
+        $users = $users->filter(fn ($user) => $user->orders->count() > 0);
+
+        return Inertia::render('Dashboard', [
+            "users" => $users->values(),
+            "solutions" => SolutionType::all(),
+            "status" => ["PRICE", "QUOTE", "CONFIGURE"]
+        ]);
     }
     /**
      * Show the form for creating a new resource.
@@ -131,8 +146,8 @@ class OrderController extends BaseController
     {
         $totals = $order->totals();
         $solution_types = SolutionType::get();
-
-        $dir = 'pdf/' . session()->get('tenant_id');
+        $user = request()->user();
+        $dir = 'pdf/' . $user->currentTenant->id;
 
         if (!Storage::makeDirectory($dir)) {
             throw new \Exception("Could not create directory for PDFs");

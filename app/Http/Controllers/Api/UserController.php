@@ -18,6 +18,7 @@ class UserController extends Controller
     public function index()
     {
         $dataProvider = new DataProvider(User::class);
+<<<<<<< HEAD
 
         $userDescedents = collect([auth()->user()]);
         $ids = collect([]);
@@ -28,6 +29,9 @@ class UserController extends Controller
         } while (count($userDescedents));
 
         $dataProvider->builder = $dataProvider->builder->whereIn('id', $ids);
+=======
+        $dataProvider->builder = $dataProvider->builder->where('tenant_id', request()->user()->tenant_id);
+>>>>>>> dev
         try {
             $data = $dataProvider->get();
         } catch (\Exception $e) {

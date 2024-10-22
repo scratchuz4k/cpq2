@@ -2,16 +2,17 @@
 
 namespace App\Http\Controllers\Web;
 
+use App\Models\Role;
+use App\Models\User;
+use Inertia\Inertia;
+use App\Models\Tenant;
+use App\Services\UsersService;
+use App\Http\Resources\UserResource;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\UserCreateRequest;
 use App\Http\Requests\UserImportRequest;
 use App\Http\Requests\UserUpdateRequest;
-use App\Http\Resources\UserResource;
-use App\Models\Role;
-use App\Models\User;
-use App\Services\UsersService;
-use Illuminate\Support\Facades\Auth;
-use Inertia\Inertia;
 
 class UserController extends BaseController
 {
@@ -55,7 +56,8 @@ class UserController extends BaseController
 
         $params = [
             'roles'     => $roles,
-            'managers'  => $users
+            'managers'  => $users,
+            'tenants'   => Tenant::all()
         ];
 
         if (request('parent_id')) {
@@ -111,12 +113,16 @@ class UserController extends BaseController
         } while (count($temp_users));
 
         $temp = new UserResource($user);
+        $temp['role'] = $user->roles->first()->id;
+        $temp = [...$temp->toArray(request()), 'tenants' => $user->tenants->pluck('id')->toarray()];
         $permissions = $user->getAllPermissions();
+
         return Inertia::render('Users/Edit', [
             'user'      => $temp->toArray(request()),
             'roles'     => $roles,
             'managers'  => $users,
-            'permissions'  => $permissions
+            'permissions'  => $permissions,
+            'tenants' => Tenant::all()
         ]);
     }
 

@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\OrderItemCreateRequest;
 use App\Http\Requests\OrderItemUpdateRequest;
+use App\Http\Resources\OrderItemResource;
 
 class OrderItemController extends BaseController
 {
@@ -47,7 +48,7 @@ class OrderItemController extends BaseController
      */
     public function show(OrderItem $orderItem)
     {
-        //
+        return new OrderItemResource($orderItem);
     }
 
     /**

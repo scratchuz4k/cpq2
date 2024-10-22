@@ -3,11 +3,14 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link } from "@inertiajs/vue3";
 import { ref } from 'vue';
 const items = ref([
-    { label: 'My Account', url: '/myaccount' }
+    { label: 'Home', url: '/' },
+    { label: 'My Account', url: '/myaccount' },
+    { label: 'Prices' },
 ]);
 
 </script>
 <template>
+
     <Head title="Prices" />
     <AuthenticatedLayout>
         <div class="panel">
@@ -24,17 +27,23 @@ const items = ref([
                     delete: true,
                     link: false,
                 }" :columns="[
-                    { data: 'id', title: '#' },
-                    { data: 'tenant.name', title: 'Tenant' },
-                    { data: 'spa.name', title: 'Spa' },
-                    { data: 'product.name', title: 'Product' },
-                    { data: 'tax_rate', title: 'Tax Rate' },
-                    { data: 'net', title: 'Net' },
-                    { data: 'tax', title: 'Tax' },
-                    { data: 'gross', title: 'Gross' },
-                    { data: 'created_at', title: 'Created At' },
-                    { data: 'updated_at', title: 'Updated At' },
+                    { data: 'id', title: '#', style: 'width:5%' },
+                    { data: 'tenant.name', title: 'Tenant', style: 'width:11%' },
+                    { data: 'spa.name', title: 'Spa', style: 'width:12%' },
+                    { data: 'product.name', title: 'Product', style: 'width:12%' },
+                    { data: 'tax_rate', title: 'Tax Rate', style: 'width:5%' },
+                    { data: 'net', title: 'Net', style: 'width:5%' },
+                    { data: 'tax', title: 'Tax', style: 'width:5%' },
+                    { data: 'gross', title: 'Gross', style: 'width:5%' },
+                    { data: 'created_at', title: 'Created At', style: 'width:15%' },
+                    { data: 'updated_at', title: 'Updated At', style: 'width:15%' },
                 ]" route="/prices">
+                    <template #updated_at="{ value }">
+                        {{ helpers.formatDate(value) }}
+                    </template>
+                    <template #created_at="{ value }">
+                        {{ helpers.formatDate(value) }}
+                    </template>
                 </Datatable>
             </div>
         </div>

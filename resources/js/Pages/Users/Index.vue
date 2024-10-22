@@ -13,10 +13,13 @@ const props = defineProps({
     }
 })
 
+<<<<<<< HEAD
 const users = ref([]);
 const items = ref([
     { label: 'My Account', url: '/myaccount' }
 ]);
+=======
+>>>>>>> dev
 
 const showForm = ref(false)
 const isLoading = ref(false);
@@ -55,6 +58,7 @@ const submitFileForm = () => {
         }
     )
 };
+<<<<<<< HEAD
 
 const saveCommission = (data) => {
     data.commission_rate = commission.value
@@ -84,6 +88,13 @@ const saveCommissionBulk = (data) => {
 }
 
 
+=======
+const items = ref([
+    { label: 'Home', url: '/' },
+    { label: 'My Account', url: '/myaccount' },
+    { label: 'Users', url: '/users' },
+]);
+>>>>>>> dev
 </script>
 <template>
     <Head title="Users" />
@@ -105,7 +116,7 @@ const saveCommissionBulk = (data) => {
                     <h4>Import Users from CSV</h4>
                     <p>Your CSV must contain the following columns: name*, email*, password, sso, managername. * must not be blank</p>
                     <input type="file" accept=".csv" required @input="onFileChange" />
-                    <button type="submit" class="btn btn-success ms-2"  :disabled="isLoading">
+                    <button type="submit" class="btn btn-primary ms-2"  :disabled="isLoading">
                         <span v-if="isLoading">
                             <font-awesome-icon :icon="['fa', 'spinner']" class="fa-spin"></font-awesome-icon>
                             Uploading...

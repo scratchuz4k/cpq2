@@ -1,7 +1,6 @@
 <script setup>
 import { ref } from "vue";
-import Breadcrumb from 'primevue/breadcrumb';
-import Button from 'primevue/button';
+import PrimaryButton from '@/Components/PrimaryButton.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import {Head, router, useForm} from "@inertiajs/vue3";
 
@@ -25,20 +24,22 @@ const saveBrand = () => {
         })
 }
 const items = ref([
+    { label: 'Home', url: '/' },
     { label: 'My Account', url: '/myaccount' },
     { label: 'Brands', url: '/brands' },
+    { label: 'New Brand' },
 ]);
 
 </script>
 <template>
-    <Head title="Brands" />
+    <Head title="new Brand" />
     <AuthenticatedLayout>
         <div class="panel">
             <Header title="New Brand" :breadcrumbs="items">
                 <template #buttons>
-                    <Button @click="saveBrand()" size="small">
-                        <font-awesome-icon :icon="['fas', 'save']"></font-awesome-icon> Save
-                    </Button>
+                    <PrimaryButton @click="saveBrand()">
+                        <font-awesome-icon class="me-2" :icon="['fas', 'save']"></font-awesome-icon> Save
+                    </PrimaryButton>
                 </template>
             </Header>
             <div class="row mb-3">

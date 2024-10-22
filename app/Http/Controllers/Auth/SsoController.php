@@ -79,23 +79,22 @@ class SsoController extends Controller
             if (!isset($userData['email'])) {
                 throw new \Exception("SSO ERROR: Email not provided in user data");
             }
-            $domain = substr(strrchr($userData['email'], "@"), 1);
             $user = User::where('email', $userData['email'])->where('sso', true)->first();
-
-            if ($user && $user->tenants->count()) {
-                foreach ($user->tenants as $tenant) {
-                    if ($tenant->domain === $domain) {
-                        $tenant->makeCurrent();
-                        session(['tenant_id' => $tenant->id]);
-                        Auth::login($user);
-                        Cache::forget("saml2.metadata");
-                        return redirect('/');
-                    }
-                }
-            } else {
-                throw new \Exception("SSO ERROR: Email domain not found");
+            if (!$user) {
+                throw new \Exception("User Not Found");
             }
-            throw new \Exception("SSO ERROR: SSO account not linked to tenant");
+
+            $domain = substr(strrchr($userData['email'], "@"), 1);
+            $currentTenant = $user->tenants->where('domain', $domain)->first();
+            if (!$currentTenant) {
+                throw new \Exception("User ($user->id) Not Assigned to Any Tenant");
+            }
+
+            $user->update(['tenant_id' => $currentTenant->id]);
+            $currentTenant->makeCurrent();
+            Auth::login($user);
+            Cache::forget("saml2.metadata");
+            return redirect('/');
         } catch (\Exception $e) {
             Log::debug("Error on socialite saml2 callback: " . $e->getMessage());
             return redirect()->route('login.sso')->with(['status' => __('We were unable to log into your account using SSO, please contact your administrator')]);
@@ -103,7 +102,8 @@ class SsoController extends Controller
     }
 
     // Get SSO user data
-    private function getSsoAttributes($ssoUser) {
+    private function getSsoAttributes($ssoUser)
+    {
         $attr = [];
         $attributes = $ssoUser->getRaw();
         foreach ($attributes as $attribute) {

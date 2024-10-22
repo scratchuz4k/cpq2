@@ -1,22 +1,26 @@
 <script setup>
-import {computed, reactive, ref} from "vue";
-import Button from 'primevue/button';
+import { ref } from "vue";
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, router } from "@inertiajs/vue3";
 import Permissions from "@/Components/Permissions.vue";
+import MultiSelect from 'primevue/multiselect';
+import PrimaryButton from '@/Components/PrimaryButton.vue';
+import { hasRole } from '@composables/useAuth'
 
 const props = defineProps({
     user: Object,
     roles: Object,
     managers: Object,
     role_id: Number,
-    permissions: Array
+    permissions: Array,
+    tenants: Array
 })
 
 const role_id = ref(props.user.roles.length ? props.user.roles[0].id : { id: null})
 const saveUser = () => {
-
     props.user.role = [role_id.value]
+    props.user.tenants = props.user.tenants
+
     router.put(`/users/${props.user.id}`, props.user,
         {
             onSuccess: (page) => {
@@ -33,21 +37,23 @@ const saveUser = () => {
     )
 }
 const items = ref([
+    { label: 'Home', url: '/' },
     { label: 'My Account', url: '/myaccount' },
     { label: 'Users', url: '/users' },
+    { label: 'Edit User' },
 ]);
 
 </script>
 <template>
 
-    <Head title="Users" />
+    <Head :title="'Edit User #' + user.id" />
     <AuthenticatedLayout>
         <div class="panel">
-            <Header title="New User" :breadcrumbs="items">
+            <Header :title="'Edit User #' + user.id" :breadcrumbs="items">
                 <template #buttons>
-                    <Button @click="saveUser()" size="small">
-                        <font-awesome-icon :icon="['fas', 'save']"></font-awesome-icon> Save
-                    </Button>
+                    <PrimaryButton @click="saveUser()">
+                        <font-awesome-icon class="me-2" :icon="['fas', 'save']"></font-awesome-icon> Save
+                    </PrimaryButton>
                 </template>
             </Header>
             <div class="row mb-3">
@@ -82,6 +88,15 @@ const items = ref([
                         <select class="form-select" v-model="user.parent_id">
                             <option v-for="manager in managers" :value="manager.id">{{ manager.name }}</option>
                         </select>
+                    </div>
+                    <div class="row mb-3" v-if="hasRole('Super Admin')">
+                        <label for="user-name" class="form-label">Tenants:</label>
+                        <MultiSelect v-model="user.tenants" :options="tenants" optionLabel="name" optionValue="id">
+                            <template #option="slotProps">
+                                <div style="font-size:14px;line-height: 1.5rem;">{{ slotProps.option.name }}
+                                </div>
+                            </template>
+                        </MultiSelect>
                     </div>
                 </div>
                 <div class="col-6">

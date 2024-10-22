@@ -141,7 +141,7 @@ watch(searchValue, () => {
                             <h4>Handsets</h4>
                             <div class="input-group w-auto">
                                 <input v-model="searchValue" type="text" class="form-control" placeholder="Type to search">
-                                <button class="btn btn-primary" type="button" id="button-addon2">
+                                <button class="btn btn-primary btn-search" type="button" id="button-addon2">
                                     <font-awesome-icon :icon="['fas', 'magnifying-glass']" />
                                 </button>
                             </div>

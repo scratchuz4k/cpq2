@@ -1,7 +1,6 @@
 <script setup>
 import { ref } from "vue";
-import Breadcrumb from 'primevue/breadcrumb';
-import Button from 'primevue/button';
+import PrimaryButton from '@/Components/PrimaryButton.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import {Head, router, useForm} from "@inertiajs/vue3";
 
@@ -32,21 +31,23 @@ const saveRegion = () => {
         })
 }
 const items = ref([
+    { label: 'Home', url: '/' },
     { label: 'My Account', url: '/myaccount' },
     { label: 'Regions', url: '/regions' },
+    { label: 'New Region' },
 ]);
 
 </script>
 <template>
  {{ merchants}}
-    <Head title="Regions" />
+    <Head title="New Region" />
     <AuthenticatedLayout>
         <div class="panel">
             <Header title="New Region" :breadcrumbs="items">
                 <template #buttons>
-                    <Button @click="saveRegion()" size="small">
-                        <font-awesome-icon :icon="['fas', 'save']"></font-awesome-icon> Save
-                    </Button>
+                    <PrimaryButton @click="saveRegion()">
+                        <font-awesome-icon class="me-2" :icon="['fas', 'save']"></font-awesome-icon> Save
+                    </PrimaryButton>
                 </template>
             </Header>
             <div class="col-6">

@@ -11,8 +11,10 @@ const props = defineProps({
 })
 
 const items = ref([
+    { label: 'Home', url: '/' },
     { label: 'My Account', url: '/myaccount' },
     { label: 'Users', url: '/users' },
+    { label: 'Import Users' },
 ]);
 
 </script>
@@ -22,8 +24,8 @@ const items = ref([
         <div class="panel">
             <Header title="Users" :breadcrumbs="items">
                 <template #buttons>
-                    <Link :href="route('users.index')" class="btn p-0 me-2">
-                        <font-awesome-icon :icon="['fa', 'arrow-left']"></font-awesome-icon> Users
+                    <Link class="btn btn-primary" :href="route('users.index')">
+                        <font-awesome-icon class="me-2" :icon="['fa', 'arrow-left']"></font-awesome-icon> Back
                     </Link>
                 </template>
             </Header>
