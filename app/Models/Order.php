@@ -26,6 +26,7 @@ class Order extends Model
         "address_data",
         "solution_type_id",
         "tenant_id",
+        "status",
         "user_id",
         "name"
     ];
