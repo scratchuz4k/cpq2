@@ -129,8 +129,14 @@ const showModal = (item) => {
                     {{ getValue(item, column.data) }}
                 </div>
             </td>
-            <td v-if="allow.update || allow.link || allow.delete || allow.commission" :class="['p-0']">
+            <td v-if="allow.update || allow.link || allow.delete || allow.commission || allow.create" :class="['p-0']">
                 <div class="d-flex justify-content-center">
+                    <template v-if="allow.create">
+                        <Link :href="props.route + '/create?parent_id=' + item.id" class="btn p-2 mx-1 border-0">
+                            <font-awesome-icon :icon="['fas', 'plus']" />
+                        </Link>
+                    </template>
+
                     <template v-if="allow.commission">
                         <button class="btn p-2 mx-1 border-0" @click="showModal(item)">
                             <font-awesome-icon :icon="['fas', 'edit']" />

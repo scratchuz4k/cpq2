@@ -53,10 +53,15 @@ class UserController extends BaseController
             $temp_users->push(...$current->children);
         } while (count($temp_users));
 
-        return Inertia::render('Users/Create', [
+        $params = [
             'roles'     => $roles,
             'managers'  => $users
-        ]);
+        ];
+
+        if (request('parent_id')) {
+            $params['parent_id'] = intval(request('parent_id'));
+        }
+        return Inertia::render('Users/Create', $params);
     }
 
     /**

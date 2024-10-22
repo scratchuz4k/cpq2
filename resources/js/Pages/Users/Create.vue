@@ -7,6 +7,7 @@ import {Head, router, useForm} from "@inertiajs/vue3";
 const props = defineProps({
     roles: Object,
     managers: Object,
+    parent_id: Number
 })
 
 const user = useForm({
@@ -14,7 +15,7 @@ const user = useForm({
     email: null,
     password: null,
     role_id: null,
-    parent_id: null,
+    parent_id: props.parent_id ?? null,
     commission_rate: null
 })
 

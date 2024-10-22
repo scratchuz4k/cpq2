@@ -120,7 +120,8 @@ const saveCommissionBulk = (data) => {
                         update: true,
                         delete: true,
                         link: false,
-                        commission: true
+                        commission: true,
+                        create: true
                     }"
                     :columns="[
                         { data: 'id', title: '#' },
