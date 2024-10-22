@@ -2,9 +2,10 @@
 
 namespace App\Models;
 
+use App\Trait\SetTenantId;
 use App\Observers\OrderObserver;
 use App\Models\Scopes\TenantScope;
-use App\Trait\SetTenantId;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -27,19 +28,24 @@ class Order extends Model
         "solution_type_id",
         "tenant_id",
         "name",
-        'total',
-        'total_monthly',
-        'total_install',
-        'margin',
-        'discount',
+        "total",
+        "total_tax",
+        "total_gross",
+        "total_monthly",
+        "total_monthly_tax",
+        "total_monthly_gross",
+        "comission_value",
+        "tax_comission",
+        "margin",
+        "discount",
         "status",
         "user_id",
     ];
     protected function casts(): array
     {
         return [
-            'address_position' => 'object',
-            'address_data' => 'object',
+            "address_position" => "object",
+            "address_data" => "object",
         ];
     }
 
@@ -70,36 +76,34 @@ class Order extends Model
     public function computeTotals()
     {
         $this->refresh();
+        $original_total = 0;
+        $original_total_monthly = 0;
         $this->total = 0;
+        $this->total_tax = 0;
+        $this->total_gross = 0;
         $this->total_monthly = 0;
+        $this->total_monthly_tax = 0;
+        $this->total_monthly_gross = 0;
 
         foreach ($this->items as $item) {
+            $original_total += $item->original_price * $item->quantity;
+            $original_total_monthly += $item->original_price_monthly * $item->quantity;
+
             $this->total += $item->total;
+            $this->total_tax += $item->total_tax;
+            $this->total_gross += $item->total_gross;
+
             $this->total_monthly += $item->total_monthly;
+            $this->total_monthly_tax  += $item->total_monthly_tax;
+            $this->total_monthly_gross += $item->total_monthly_gross;
         }
 
-        $this->total = ($this->total - ($this->total * ($this->discount / 100))) + (($this->total * ($this->margin / 100)));
-        $this->total_monthly = ($this->total_monthly - ($this->total_monthly * ($this->discount / 100))) + (($this->total_monthly * ($this->margin / 100)));
+        $total_cost = $original_total + $original_total_monthly;
+        $margin_value = (($this->total + $this->total_monthly) - $total_cost);
+
+        $this->margin = $total_cost ? ($margin_value / $total_cost) * 100 : 0;
+        $this->tax_comission = Auth::user()->tax_comission ?? 5;
+        $this->comission_value = $this->total * ($this->tax_comission / 100);
         $this->save();
     }
-
-    // public function totals()
-    // {
-    //     $subtotal = 0;
-    //     $subtotalOneoff = 0;
-
-    //     foreach ($this->items as $item) {
-    //         $subtotal += (float) $item->quantity * (float) ($item->data?->priceMonthly ?? 0);
-    //         $subtotalOneoff += (float) $item->quantity * (float) ($item->data?->price ?? $item->data?->priceInstall ?? 0);
-    //     }
-
-    //     $totals['monthly_net'] = $subtotal;
-    //     $totals['monthly_vat'] = $subtotal * 0.2;
-    //     $totals['monthly_gross'] = $subtotal * 1.2;
-    //     $totals['oneoff_net'] = $subtotalOneoff;
-    //     $totals['oneoff_vat'] = $subtotalOneoff * 0.2;
-    //     $totals['oneoff_gross'] = $subtotalOneoff * 1.2;
-
-    //     return $totals;
-    // }
 }

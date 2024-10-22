@@ -18,14 +18,19 @@ class OrderItem extends Model
         "quantity",
         "name",
         "data",
-        'price',
-        'price_monthly',
-        'price_install',
         'margin',
         'discount',
+        'price',
+        'price_monthly',
         'total',
+        'total_tax',
+        'total_gross',
         'total_monthly',
-        'total_install',
+        'total_monthly_tax',
+        'total_monthly_gross',
+        'original_price',
+        'original_price_monthly',
+        'tax_order_item',
     ];
 
     protected function casts(): array
@@ -49,14 +54,25 @@ class OrderItem extends Model
     public function computeTotals()
     {
         $this->refresh();
-        $this->total = 0;
-        $this->total_monthly = 0;
+        $price = $this->original_price + (($this->original_price * ($this->margin / 100)));
+        $price_monthly = ($this->original_price_monthly + (($this->original_price_monthly * ($this->margin / 100)))) ;
+
+        $discounts  = [$this->discount, $this->order->discount];
+        foreach ($discounts as $discount) {
+            $price = ($price * (1 - ($discount / 100)));
+            $price_monthly = ($price_monthly * (1 - ($discount / 100)));
+        }
+
+        $this->price = $price;
+        $this->price_monthly = $price_monthly;
 
         $this->total = $this->price * $this->quantity;
-        $this->total_monthly = $this->price_monthly * $this->quantity;
+        $this->total_tax = $this->total * ($this->tax_order_item / 100);
+        $this->total_gross = $this->total * (($this->tax_order_item / 100) + 1);
 
-        $this->total = ($this->total - ($this->total * ($this->discount / 100))) + (($this->total * ($this->margin / 100)));
-        $this->total_monthly = ($this->total_monthly - ($this->total_monthly * ($this->discount / 100))) + (($this->total_monthly * ($this->margin / 100)));
+        $this->total_monthly = $this->price_monthly * $this->quantity;
+        $this->total_monthly_tax = $this->total_monthly * ($this->tax_order_item / 100);
+        $this->total_monthly_gross = $this->total_monthly * (($this->tax_order_item / 100) + 1);
         $this->save();
     }
 }

@@ -23,7 +23,13 @@ class OrderService
             }
 
             $order->update(['status' => get_order_status($order->refresh())]);
-            return $order;
+
+            foreach ($order->items as $order_item) {
+                $order_item->computeTotals();
+            }
+            $order->computeTotals();
+
+            return $order->refresh();
         }, 3);
     }
 
@@ -44,7 +50,13 @@ class OrderService
             }
 
             $order->update(['status' => get_order_status($order->refresh())]);
-            return $order;
+
+            foreach ($order->items as $order_item) {
+                $order_item->computeTotals();
+            }
+            $order->computeTotals();
+
+            return $order->refresh();
         }, 3);
     }
 }

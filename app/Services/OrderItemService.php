@@ -11,7 +11,12 @@ class OrderItemService
     public function store(array $array): OrderItem
     {
         return DB::transaction(function () use ($array) {
-            $orderItem = OrderItem::create($array);
+            $orderItem = OrderItem::create([
+                ...$array,
+                'tax_order_item' => 20,
+                'original_price' => $array['price'],
+                'original_price_monthly' => $array['price_monthly'],
+            ]);
 
             $orderItem->computeTotals();
             $orderItem->order->computeTotals();

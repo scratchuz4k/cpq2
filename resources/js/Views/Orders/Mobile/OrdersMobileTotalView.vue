@@ -9,7 +9,8 @@ const props = defineProps({
 const order = reactive(props.modelValue)
 const temp = reactive({
     margin: 0,
-    discount: 0
+    discount: 0,
+    quantity: 0
 })
 
 const planProducts = ref([
@@ -86,12 +87,13 @@ const remove = async (id) => {
 }
 
 const edit = (p) => {
+    temp.quantity = p.quantity
     temp.discount = p.discount
     temp.margin = p.margin
     p.is_editing = !p.is_editing
 }
 const save = async (p) => {
-
+    p.quantity = temp.quantity
     p.discount = temp.discount
     p.margin = temp.margin
     try {
@@ -105,6 +107,20 @@ const save = async (p) => {
         notyf.error(ex.response.data.message)
     }
 }
+
+const saveDiscount = async (p) => {
+    try {
+        let res = await axios.put(`/api/orders/${order.id}`,
+            {
+                discount: order.discount,
+            })
+        Object.assign(order, res.data)
+    } catch (ex) {
+        notyf.error(ex.response.data.message)
+    }
+}
+
+
 
 const cancel = (p) => {
     p.is_editing = !p.is_editing
@@ -133,22 +149,29 @@ const items = ref([
                     <table class="table">
                         <thead>
                             <tr>
-                                <th style="width:50%">Product</th>
-                                <th> Qty </th>
-                                <th style="width:15%"> Your Price</th>
+                                <th style="width:40%">Product</th>
+                                <th class="text-center" style="width:15%"> Qty </th>
+                                <th style="width:10%"> Your Price</th>
                                 <th class="text-center" style="width:15%"> Discount</th>
                                 <th class="text-center" style="width:15%"> Margin</th>
-                                <th class="text-right" style="width:15%"> Sell Price</th>
-                                <th>
-                                </th>
+                                <th class="text-right" style="width:10%"> Sell Price</th>
+                                <th> </th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr v-for="p in order.items.filter((x) => x.price_monthly)" class="bg-light-grey ">
-                                <td><font-awesome-icon class="me-2" :icon="['fas', 'trash']" @click="remove()" /> {{
-                                    p.name }}</td>
-                                <td> x{{ p.quantity }}</td>
-                                <td> {{ GBP.format(p.price_monthly) }}</td>
+                                <td>
+                                    <!-- <font-awesome-icon class="me-2" :icon="['fas', 'trash']" @click="remove()" />  -->
+                                    {{ p.name }}
+                                </td>
+                                <td class="text-center">
+                                    <template v-if="!p.is_editing">
+                                        x{{ p.quantity }}
+                                    </template>
+                                    <input v-else class="form-control py-0" type="number" min="0" max="100"
+                                        v-model="temp.quantity">
+                                </td>
+                                <td> {{ GBP.format(p.original_price_monthly) }}</td>
                                 <td class="text-center">
                                     <template v-if="!p.is_editing">
                                         {{ p.discount }} %
@@ -163,14 +186,15 @@ const items = ref([
                                     <input v-else class="form-control py-0" type="number" min="0" max="100"
                                         v-model="temp.margin">
                                 </td>
-                                <td class="text-right" style="width:10%"> {{ GBP.format(p.total_monthly) }}</td>
+                                <td class="text-right" style="width:10%"> {{ GBP.format(p.price_monthly) }}</td>
                                 <td>
                                     <div class="d-flex">
                                         <template v-if="!p.is_editing">
-                                            <font-awesome-icon :icon="['fas', 'edit']" @click="edit(p)" />
+                                            <font-awesome-icon class="me-2" :icon="['fas', 'edit']" @click="edit(p)" />
+                                            <font-awesome-icon :icon="['fas', 'trash']" @click="remove()" />
                                         </template>
                                         <template v-else>
-                                            <font-awesome-icon class="me-3" :icon="['fas', 'cancel']"
+                                            <font-awesome-icon class="me-2" :icon="['fas', 'cancel']"
                                                 @click="cancel(p)" />
                                             <font-awesome-icon :icon="['fas', 'save']" @click="save(p)" />
                                         </template>
@@ -204,7 +228,7 @@ const items = ref([
                                 <td> <font-awesome-icon class="me-2" :icon="['fas', 'trash']" @click="remove()" /> {{
                                     p.name }}</td>
                                 <td> x{{ p.quantity }}</td>
-                                <td> {{ GBP.format(p.price) }}</td>
+                                <td> {{ GBP.format(p.original_price) }}</td>
                                 <td class="text-center">
                                     <template v-if="!p.is_editing">
                                         {{ p.discount }} %
@@ -219,7 +243,7 @@ const items = ref([
                                     <input v-else class="form-control py-0" type="number" min="0" max="100"
                                         v-model="temp.margin">
                                 </td>
-                                <td class="text-right"> {{ GBP.format(p.total) }}</td>
+                                <td class="text-right"> {{ GBP.format(p.price) }}</td>
                                 <td>
                                     <div class="d-flex">
                                         <template v-if="!p.is_editing">
@@ -261,51 +285,40 @@ const items = ref([
                 </div>
             </div>
             <div class="col-lg-3">
-                <InfoBox>
-                    <div style="font-size: 14px;">
-                        <b style="font-size: 16px;">Quote {{ order.id }} for {{ order.account.name }}</b>
-                        <br>
-                        Contact Number: 0124567890<br>
-                        Email: firstname.lastname@gmail.com
-                    </div>
-                </InfoBox>
-                <div class="price-mobile-sidebar px-4 pt-4 pb-2 mb-3" style="position: sticky; top: 25px">
-                    <h3 class="mb-3">Your quote: #{{ order.id }}</h3>
-
-                    <h4>Recurring charges</h4>
-                    <div class="sidebar_items border-bottom mb-2">
-                        <div v-for="p in planProducts" class="item mb-2">
-                            <span>{{ p.label }}</span><span class="badge bg-light-grey dark">
-                                {{ GBP.format(p.quantity * p.priceMonthly) }}
-                            </span>
+                <div style="position: sticky; top: 25px">
+                    <InfoBox>
+                        <div style="font-size: 14px;">
+                            <b style="font-size: 16px;">Quote {{ order.id }} for {{ order.account.name }}</b>
+                            <br>
+                            Contact Number: 0124567890<br>
+                            Email: firstname.lastname@gmail.com
                         </div>
-
-                        <div v-for="p in boltOnProducts" class="item mb-2">
-                            <span>{{ p.name }}</span>
-                            <span class="badge bg-light-grey dark">
-                                {{ GBP.format(p.quantity * p.priceMonthly) }}
-                            </span>
+                    </InfoBox>
+                    <div class="price-mobile-sidebar px-4 pt-4 pb-2 mb-3">
+                        <h3 class="mb-3">Overall Discount</h3>
+                        <div class="mb-3">
+                            <label class="form-label">Recurring charges</label>
+                            <input class="form-control" v-model="order.discount">
                         </div>
+                        <button class="btn btn-secondary w-100 mb-2" @click="saveDiscount()">Apply to quote</button>
+                        <button class="btn  w-100"> Reset quote</button>
                     </div>
-                    <div class="sidebar_items border-bottom mb-4">
-                        <div class="item mb-2">
-                            <span><b>Recurring Subtotal</b></span>
-                            <span class="badge bg-light-grey dark">
-                                {{ GBP.format(boltOnProducts.reduce((acc, p) => acc += p.quantity * p.priceMonthly, 0)
-                                    + planProducts.reduce((acc, p) => acc += p.quantity * p.priceMonthly, 0)) }}
-                            </span>
-                        </div>
-                    </div>
-
-                    <h4>One-off charges</h4>
-                    <div class="sidebar_items border-bottom mb-2">
-                        <div class="item mb-2">
-                            <span>Hardware</span>
-                            <span class="badge bg-light-grey dark">
-                                {{ GBP.format(hardwareProducts.reduce(
-                                    (acc, p) => acc += p.quantity * (p.data?.price ?? 0), 0))
-                                }}
-                            </span>
+                    <div class="price-mobile-sidebar px-4 pt-4 pb-2 mb-3">
+                        <h3 class="mb-3">Comission Calculator</h3>
+                        <p style="font-size: 14px;"> Currently, you will make {{ GBP.format(order.comission_value) }}
+                            commission and
+                            {{ order.margin.toFixed(2) }} %
+                            margin on
+                            this quote.</p>
+                        <div class="p-3" style="background: #E9EDF0;">
+                            <div class="mb-3">
+                                <label class="form-label">Margin</label>
+                                <input class="form-control" :value="order.margin.toFixed(2) + ' %'">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Comission</label>
+                                <input class="form-control" :value="GBP.format(order.comission_value)">
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -328,5 +341,17 @@ tr th {
 .table {
     font-size: 14px !important;
     vertical-align: middle;
+}
+
+/* For Chrome, Safari, Edge, Opera */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* For Firefox */
+input[type="number"] {
+    -moz-appearance: textfield;
 }
 </style>
