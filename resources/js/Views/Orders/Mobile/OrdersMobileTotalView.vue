@@ -225,8 +225,7 @@ const items = ref([
                         </thead>
                         <tbody>
                             <tr v-for="p in order.items.filter((x) => x.price)" class="bg-light-grey">
-                                <td> <font-awesome-icon class="me-2" :icon="['fas', 'trash']" @click="remove()" /> {{
-                                    p.name }}</td>
+                                <td>{{ p.name }}</td>
                                 <td> x{{ p.quantity }}</td>
                                 <td> {{ GBP.format(p.original_price) }}</td>
                                 <td class="text-center">
@@ -247,7 +246,8 @@ const items = ref([
                                 <td>
                                     <div class="d-flex">
                                         <template v-if="!p.is_editing">
-                                            <font-awesome-icon :icon="['fas', 'edit']" @click="edit(p)" />
+                                            <font-awesome-icon class="me-2" :icon="['fas', 'edit']" @click="edit(p)" />
+                                            <font-awesome-icon :icon="['fas', 'trash']" @click="remove()" />
                                         </template>
                                         <template v-else>
                                             <font-awesome-icon class="me-3" :icon="['fas', 'cancel']"

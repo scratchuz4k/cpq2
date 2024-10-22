@@ -226,7 +226,7 @@ watch(activeFilters, () => {
                         <p class="m-0 mb-2 text-primary bold">STEP 1/3</p>
                     </div>
 
-                    <div v-for="product in planProducts" class="mobile-item mobile-product mb-3">
+                    <div v-for="(product, index) in planProducts" class="mobile-item mobile-product mb-3">
                         <div class="d-flex justify-content-between">
                             <div class="d-flex align-items-center mb-2">
                                 <h4 class="m-0 ">{{ product.label }}</h4>
@@ -239,22 +239,26 @@ watch(activeFilters, () => {
                         <div class="mobile-product-quantity">
                             <label>Quantity</label>
                             <div class="d-flex align-items-center pb-3">
-                                <button class="btn btn-secondary btn-sm me-1" type="button"
-                                    @click="() => product.quantity--" :disabled="product.quantity <= 0">
+                                <button :id="'btn-plan-' + index + '-remove-1'" class="btn btn-secondary btn-sm me-1"
+                                    type="button" @click="() => product.quantity--" :disabled="product.quantity <= 0">
                                     <font-awesome-icon :icon="['fas', 'minus']" />
                                 </button>
-                                <input type="number" class="form-control form-control-sm text-center w-25 me-1"
+                                <input :id="'input-plan-' + index + '-quantity'" type="number"
+                                    class="form-control form-control-sm text-center w-25 me-1"
                                     v-model="product.quantity" min="0" @input="checkValue(product)" />
                                 <input type="hidden" />
-                                <button class="btn btn-secondary btn-sm me-3" type="button"
-                                    @click="() => product.quantity++">
+                                <button :id="'btn-plan-' + index + '-add-1'" class=" btn btn-secondary btn-sm me-3"
+                                    type="button" @click="() => product.quantity++">
                                     <font-awesome-icon :icon="['fas', 'plus']" />
                                 </button>
-                                <button type="button" class="badge border-0 text-bg-secondary"
+                                <button :id="'btn-plan-' + index + '-add-25'" type=" button"
+                                    class="badge border-0 text-bg-secondary"
                                     @click="() => product.quantity += 25">+25</button>
-                                <button type="button" class="badge border-0 text-bg-secondary mx-2"
+                                <button :id="'btn-plan-' + index + '-add-50'" type=" button"
+                                    class="badge border-0 text-bg-secondary mx-2"
                                     @click="() => product.quantity += 50">+50</button>
-                                <button type="button" class="badge border-0 text-bg-secondary"
+                                <button :id="'btn-plan-' + index + '-add-100'" type=" button"
+                                    class="badge border-0 text-bg-secondary"
                                     @click="() => product.quantity += 100">+100</button>
                             </div>
                         </div>
@@ -265,7 +269,8 @@ watch(activeFilters, () => {
                             Add {{ planProducts.reduce((acc, item) => acc += item.quantity, 0) }}
                             mobile users
                         </span>
-                        <button class="ms-3 btn btn-primary step-nav" type="button" @click="() => step++">Next
+                        <button :id="'btn-step-1-next'" class="ms-3 btn btn-primary step-nav" type="button"
+                            @click="() => step++">Next
                             <i class="fa fa-arrow-right"></i>
                         </button>
                     </div>
@@ -275,7 +280,7 @@ watch(activeFilters, () => {
                         <h3>Next, choose your bolt-ons</h3>
                         <p class="m-0 mb-2 text-primary bold">STEP 2/3</p>
                     </div>
-                    <div v-for="product in boltOnProducts" class="mobile-item mobile-product mb-3">
+                    <div v-for="(product, index) in boltOnProducts" class="mobile-item mobile-product mb-3">
                         <div class="d-flex justify-content-between">
                             <div class="d-flex align-items-center mb-2">
                                 <h4 class="m-0 ">{{ product.name }}</h4>
@@ -288,29 +293,34 @@ watch(activeFilters, () => {
                         <div class="mobile-product-quantity">
                             <label>Quantity</label>
                             <div class="d-flex align-items-center  pb-3">
-                                <button class="btn btn-secondary btn-sm me-1" type="button"
-                                    @click="() => product.quantity--" :disabled="product.quantity <= 0">
+                                <button :id="'btn-bolt-' + index + '-remove-1'" class="btn btn-secondary btn-sm me-1"
+                                    type="button" @click="() => product.quantity--" :disabled="product.quantity <= 0">
                                     <font-awesome-icon :icon="['fas', 'minus']" />
                                 </button>
-                                <input type="number" class="form-control form-control-sm text-center w-25 me-1"
+                                <input :id="'input-bolt-' + index + '-quantity'" type="number"
+                                    class="form-control form-control-sm text-center w-25 me-1"
                                     v-model="product.quantity" min="0" @input="checkValue(product)" />
                                 <input type="hidden" />
-                                <button class="btn btn-secondary btn-sm me-3" type="button"
-                                    @click="() => product.quantity++">
+                                <button :id="'btn-bolt-' + index + '-add-1'" class="btn btn-secondary btn-sm me-3"
+                                    type="button" @click="() => product.quantity++">
                                     <font-awesome-icon :icon="['fas', 'plus']" />
                                 </button>
-                                <button type="button" class="badge border-0 text-bg-secondary"
+                                <button :id="'btn-bolt-' + index + '-add-25'" type="button"
+                                    class="badge border-0 text-bg-secondary"
                                     @click="() => product.quantity += 25">+25</button>
-                                <button type="button" class="badge border-0 text-bg-secondary mx-2"
+                                <button :id="'btn-bolt-' + index + '-add-50'" type="button"
+                                    class="badge border-0 text-bg-secondary mx-2"
                                     @click="() => product.quantity += 50">+50</button>
-                                <button type="button" class="badge border-0 text-bg-secondary"
+                                <button :id="'btn-bolt-' + index + '-add-100'" type="button"
+                                    class="badge border-0 text-bg-secondary"
                                     @click="() => product.quantity += 100">+100</button>
                             </div>
                         </div>
                     </div>
 
                     <div class="d-flex justify-content-between align-items-center">
-                        <button class="btn btn-light step-nav btn-sm me-3" type="button" @click="() => step--">
+                        <button :id="'btn-step-2-previous'" class="btn btn-light step-nav btn-sm me-3" type="button"
+                            @click="() => step--">
                             <font-awesome-icon :icon="['fas', 'arrow-left']" /> Back
                         </button>
                         <div>
@@ -318,7 +328,8 @@ watch(activeFilters, () => {
                                 Add {{ boltOnProducts.reduce((acc, item) => acc += item.quantity, 0) }}
                                 bolt-ons
                             </span>
-                            <button class="ms-3 btn btn-primary step-nav" type="button" @click="() => step++">Next
+                            <button :id="'btn-step-2-next'" class="ms-3 btn btn-primary step-nav" type="button"
+                                @click="() => step++">Next
                                 <i class="fa fa-arrow-right"></i>
                             </button>
                         </div>
@@ -397,7 +408,7 @@ watch(activeFilters, () => {
 
                         <div class="hardware-products pb-3">
                             <div v-if="!hardwareProducts.length"> No Hardware Found</div>
-                            <div v-for="product in hardwareProducts" class="hardware-product">
+                            <div v-for="(product, index) in hardwareProducts" class="hardware-product">
                                 <div class="text-center">
                                     <a :href="product.url" target="_blank">
                                         <img :src="product.primary_image" style="height: 200px;object-fit: contain;">
@@ -407,9 +418,11 @@ watch(activeFilters, () => {
                                 <span>{{ product.sku }}</span>
                                 <span class="name mb-1">{{ product.name }}</span>
                                 <span class="price mb-2"> £{{ product.price }}</span>
-                                <span v-if="product.stock > 0" class="badge text-bg-warning">
-                                    {{ product.stock }} in stock
-                                </span>
+                                <p v-if="product.stock > 0" class="m-0 badge text-bg-warning">
+                                    <span :id="'hardware-' + index + '-stock'">
+                                        {{ product.stock }}
+                                    </span> in stock
+                                </p>
                                 <span v-else class="out-of-stock badge text-bg-danger">
                                     <font-awesome-icon :icon="['fa', 'warning']" />
                                     OUT OF STOCK
@@ -418,26 +431,31 @@ watch(activeFilters, () => {
                                 <div class="mobile-product-quantity pt-2">
                                     <label>Quantity</label>
                                     <div class="d-flex align-items-center mb-2">
-                                        <button class="btn btn-secondary btn-sm me-1" type="button"
+                                        <button :id="'btn-hardware-' + index + '-remove-1'"
+                                            class="btn btn-secondary btn-sm me-1" type="button"
                                             @click="removeQuantity(product, 1)" :disabled="!product.quantity">
                                             <font-awesome-icon :icon="['fas', 'minus']" />
                                         </button>
-                                        <input type="number" class="form-control text-center input-qty me-1"
-                                            v-model="product.quantity">
-                                        <button class="btn btn-secondary btn-sm" type="button"
+                                        <input :id="'input-hardware-' + index + '-quantity'" type="number"
+                                            class="form-control text-center input-qty me-1" v-model="product.quantity">
+                                        <button :id="'btn-hardware-' + index + '-add-1'"
+                                            class="btn btn-secondary btn-sm" type="button"
                                             @click="addQuantity(product, 1)"
                                             :disabled="checkPlansHardwareQuantity() <= 0">
                                             <font-awesome-icon :icon="['fas', 'plus']" />
                                         </button>
                                     </div>
 
-                                    <button class="badge text-bg-secondary badge-qty-add" style="text-decoration: none;"
+                                    <button :id="'btn-hardware-' + index + '-add-25'"
+                                        class="badge text-bg-secondary badge-qty-add" style="text-decoration: none;"
                                         @click="addQuantity(product, 25)"
                                         :disabled="checkPlansHardwareQuantity() <= 0">+25</button>
-                                    <button class="badge text-bg-secondary badge-qty-add mx-2"
+                                    <button :id="'btn-hardware-' + index + '-add-50'"
+                                        class="badge text-bg-secondary badge-qty-add mx-2"
                                         style="text-decoration: none;" @click="addQuantity(product, 50)"
                                         :disabled="checkPlansHardwareQuantity() <= 0">+50</button>
-                                    <button class="badge text-bg-secondary badge-qty-add" style="text-decoration: none;"
+                                    <button :id="'btn-hardware-' + index + '-add-100'"
+                                        class="badge text-bg-secondary badge-qty-add" style="text-decoration: none;"
                                         @click="addQuantity(product, 100)"
                                         :disabled="checkPlansHardwareQuantity() <= 0">+100</button>
                                 </div>
@@ -448,7 +466,8 @@ watch(activeFilters, () => {
                     </div>
 
                     <div class="d-flex justify-content-between align-items-center">
-                        <button class="btn btn-light step-nav btn-sm me-3" type="button" @click="() => step--">
+                        <button id="btn-step-3-previous" class="btn btn-light step-nav btn-sm me-3" type="button"
+                            @click="() => step--">
                             <font-awesome-icon :icon="['fas', 'arrow-left']" /> Back
                         </button>
                         <div>
@@ -456,7 +475,8 @@ watch(activeFilters, () => {
                                 Add {{ hardwareProducts.reduce((acc, item) => acc += item.quantity, 0) }}
                                 add-ons
                             </span>
-                            <button class="ms-3 btn btn-primary step-nav" type="button" @click="saveQuote()">Next
+                            <button id="btn-step-3-next" class="ms-3 btn btn-primary step-nav" type="button"
+                                @click="saveQuote()">Next
                                 <i class="fa fa-arrow-right"></i>
                             </button>
                         </div>

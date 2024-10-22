@@ -18,11 +18,9 @@ const solutionsViews = {
 
     <Head :title="'Quote #' + order.id" />
     <AuthenticatedLayout :order="order">
-        <OrdersMobileTotalView v-bind="{
+        <component :is="solutionsViews[order.solution_type.code]" v-bind="{
             modelValue: order,
             preview: false
-        }">
-        </OrdersMobileTotalView>
-        <!-- <component :is="solutionsViews[order.solution_type.code]" ></component> -->
+        }"></component>
     </AuthenticatedLayout>
 </template>

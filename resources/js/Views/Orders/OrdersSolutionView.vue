@@ -96,7 +96,7 @@ watch(addressPostCode, () => {
                         <h5 class="font-bold mb-3">Now, select an solution type</h5>
                         <div class="mb-3">
                             <label class="form-label">Solution Type <span class="text-primary fw-bold">*</span></label>
-                            <select class="form-select" @change="solutionChange(modelValue)"
+                            <select id="solution_id" class="form-select" @change="solutionChange(modelValue)"
                                 v-model="modelValue.solution_type">
                                 <option :value="null">Select an option</option>
                                 <option v-for="(solution, key) in solution_types" :value="solution">
