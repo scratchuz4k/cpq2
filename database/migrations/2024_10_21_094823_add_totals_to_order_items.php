@@ -13,12 +13,18 @@ return new class extends Migration
     {
         Schema::table('order_items', function (Blueprint $table) {
             $table->double('quantity')->default(0)->change();
+            $table->double('original_price')->default(0);
+            $table->double('original_price_monthly')->default(0);
             $table->double('price')->default(0);
             $table->double('price_monthly')->default(0);
             $table->double('margin')->default(0);
             $table->double('discount')->default(0);
             $table->double('total')->default(0);
+            $table->double('total_tax')->default(0);
+            $table->double('total_gross')->default(0);
             $table->double('total_monthly')->default(0);
+            $table->double('total_monthly_tax')->default(0);
+            $table->double('total_monthly_gross')->default(0);
         });
     }
 

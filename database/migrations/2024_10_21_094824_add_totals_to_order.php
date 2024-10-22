@@ -15,7 +15,13 @@ return new class extends Migration
             $table->double('margin')->default(0);
             $table->double('discount')->default(0);
             $table->double('total')->default(0);
+            $table->double('total_tax')->default(0);
+            $table->double('total_gross')->default(0);
             $table->double('total_monthly')->default(0);
+            $table->double('total_monthly_tax')->default(0);
+            $table->double('total_monthly_gross')->default(0);
+            $table->double('comission')->default(0);
+            $table->double('comission_tax')->default(0);
         });
     }
 
