@@ -15,6 +15,8 @@ class OrderItemService
 
             $orderItem->computeTotals();
             $orderItem->order->computeTotals();
+
+            $orderItem->order->update(['status' => get_order_status($orderItem->order)]);
             return $orderItem;
         });
     }
@@ -26,6 +28,7 @@ class OrderItemService
 
             $orderItem->computeTotals();
             $orderItem->order->computeTotals();
+            $orderItem->order->update(['status' => get_order_status($orderItem->order)]);
             return $orderItem;
         });
     }

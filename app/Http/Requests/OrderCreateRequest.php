@@ -19,7 +19,6 @@ class OrderCreateRequest extends FormRequest
     public function prepareForValidation()
     {
         $this->merge(['user_id' => Auth::id()]);
-        $this->merge(['status' => 'CONFIGURE']);
     }
 
     /**
