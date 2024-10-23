@@ -5,7 +5,7 @@ const emit = defineEmits(['update:checked']);
 
 const props = defineProps({
     checked: {
-        type: [Array, Boolean],
+        type: [Array, Boolean, Number],
         required: true,
     },
     value: {
@@ -15,11 +15,19 @@ const props = defineProps({
 
 const proxyChecked = computed({
     get() {
+        if (typeof props.checked === 'number') {
+            return props.checked === 1;
+        }
+
         return props.checked;
     },
 
     set(val) {
-        emit('update:checked', val);
+        if (typeof props.checked === 'number') {
+            emit('update:checked', val ? 1 : 0);
+        } else {
+            emit('update:checked', val);
+        }
     },
 });
 </script>
@@ -29,6 +37,6 @@ const proxyChecked = computed({
         type="checkbox"
         :value="value"
         v-model="proxyChecked"
-        class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500"
+        class="form-check-input"
     />
 </template>

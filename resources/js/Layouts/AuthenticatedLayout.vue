@@ -173,7 +173,7 @@ watch(search, () => {
                 <div class="w-100 m-0 d-flex justify-content-between">
                     <p class="m-0">
                         <b>#{{ order.id }} - {{ order.account?.name }} </b> / {{ order.solution_type.name }} <br>
-                        <span style="font-size: 12px;"> {{ order.user.name }} - {{ order.updated_at }}</span>
+                        <span style="font-size: 12px;"> {{ order.user.name }} - {{ helpers.formatDate(order.updated_at) }}</span>
                     </p>
                     <p class="m-0">
                         <span class="badge text-bg-secondary">{{ order.status }}</span>
@@ -189,7 +189,7 @@ watch(search, () => {
                 <div class="w-100 m-0 d-flex justify-content-between">
                     <p class="m-0">
                         <b>#{{ account.id }} - {{ account.name }} </b> / {{ account.reference }} <br>
-                        {{ account.updated_at }}
+                        {{ helpers.formatDate(account.updated_at) }}
                     </p>
                 </div>
             </a>

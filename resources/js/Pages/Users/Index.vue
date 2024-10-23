@@ -46,7 +46,7 @@ const submitFileForm = () => {
 const items = ref([
     { label: 'Home', url: '/' },
     { label: 'My Account', url: '/myaccount' },
-    { label: 'Users', url: '/users' },
+    { label: 'Users' },
 ]);
 </script>
 <template>
@@ -84,11 +84,24 @@ const items = ref([
                     link: false,
                 }" :columns="[
                     { data: 'id', title: '#', style: 'width:5%' },
-                    { data: 'name', title: 'Name', style: 'width:20%' },
-                    { data: 'email', title: 'Email', style: 'width:30%' },
+                    { data: 'sso', title: 'SSO', style: 'width:4%' },
+                    { data: 'name', title: 'Name', style: 'width:18%' },
+                    { data: 'email', title: 'Email', style: 'width:28%' },
                     { data: 'roles.name', title: 'Role', style: 'width:15%' },
-                    { data: 'parent.name', title: 'Manager', style: 'width:20%' }
-                ]" route="/users">
+                    { data: 'parent.name', title: 'Manager', style: 'width:20%' },
+                ]" :filters="{
+                    'sso': { type: 'options', options: [
+                        { value: 1, label: 'Yes' },
+                        { value: 0, label: 'No' }
+                    ] }
+                }" route="/users">
+                    <template #roles.name="{ value }">
+                        <span class="badge text-bg-secondary">{{ value }}</span>
+                    </template>
+                    <template #sso="{ value }">
+                        <font-awesome-icon v-if="value === 1" :icon="['fas', 'circle-check']" style="font-size:1.125rem;" class="text-primary" />
+                        <font-awesome-icon v-else :icon="['far', 'circle-xmark']" style="font-size:1.125rem;" class="text-secondary" />
+                    </template>
                 </Datatable>
             </div>
         </div>

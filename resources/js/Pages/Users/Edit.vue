@@ -51,7 +51,6 @@ const items = ref([
                     </PrimaryButton>
                 </template>
             </Header>
-            {{ role }}
             <div class="row mb-3">
                 <div class="col-6">
                     <div class="row mb-3">
@@ -86,6 +85,14 @@ const items = ref([
                                 </div>
                             </template>
                         </MultiSelect>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="form-check">
+                            <Checkbox id="user-sso" name="user-sso" class="form-check-input" v-model:checked="user.sso" />
+                            <label class="form-check-label" for="user-sso">
+                                Single sign-on (SSO) login only
+                            </label>
+                        </div>
                     </div>
                 </div>
             </div>
