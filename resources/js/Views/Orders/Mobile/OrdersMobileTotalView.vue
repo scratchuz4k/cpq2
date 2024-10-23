@@ -6,6 +6,7 @@ const props = defineProps({
     modelValue: Object
 })
 
+const isLoading = ref(false)
 const order = reactive(props.modelValue)
 const temp = reactive({
     margin: 0,
@@ -109,18 +110,44 @@ const save = async (p) => {
 }
 
 const saveDiscount = async (p) => {
+    isLoading.value = true
+    if (order.discount == '') {
+        return
+    }
     try {
         let res = await axios.put(`/api/orders/${order.id}`,
             {
                 discount: order.discount,
             })
         Object.assign(order, res.data)
+        isLoading.value = false
     } catch (ex) {
         notyf.error(ex.response.data.message)
     }
 }
 
+const resetQuote = async () => {
+    isLoading.value = true
+    let result = await swal.fire({
+        title: 'Are you sure?'
+    })
+    if (['cancel', 'backdrop'].includes(result.dismiss)) {
+        return
+    }
 
+    order.items.forEach((e) => { e.discount = 0; e.margin = 0; })
+    try {
+        let res = await axios.put(`/api/orders/${order.id}`,
+            {
+                discount: 0,
+                items: order.items,
+            })
+        Object.assign(order, res.data)
+        isLoading.value = false
+    } catch (ex) {
+        notyf.error(ex.response.data.message)
+    }
+}
 
 const cancel = (p) => {
     p.is_editing = !p.is_editing
@@ -314,10 +341,16 @@ const items = ref([
                         <h3 class="mb-3">Overall Discount</h3>
                         <div class="mb-3">
                             <label class="form-label">Recurring charges</label>
-                            <input class="form-control" v-model="order.discount">
+                            <input id="input-global-discount" type="number" class="form-control"
+                                v-model="order.discount">
                         </div>
-                        <button class="btn btn-secondary w-100 mb-2" @click="saveDiscount()">Apply to quote</button>
-                        <button class="btn  w-100"> Reset quote</button>
+                        <button id="btn-apply-global-discount" class="btn btn-secondary w-100 mb-2"
+                            @click="saveDiscount()" :disabled="isLoading">
+                            Apply to quote
+                        </button>
+                        <button id="btn-reset-quote" class="btn w-100" @click="resetQuote()" :disabled="isLoading">
+                            Reset quote
+                        </button>
                     </div>
                     <div class="price-mobile-sidebar px-4 pt-4 pb-2 mb-3">
                         <h3 class="mb-3">Comission Calculator</h3>
@@ -329,11 +362,13 @@ const items = ref([
                         <div class="p-3" style="background: #E9EDF0;">
                             <div class="mb-3">
                                 <label class="form-label">Margin</label>
-                                <input class="form-control" :value="order.margin.toFixed(2) + ' %'">
+                                <input id="input-margin-order" class="form-control"
+                                    :value="order.margin.toFixed(2) + ' %'">
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">Comission</label>
-                                <input class="form-control" :value="GBP.format(order.comission_value)">
+                                <input id="input-comission_value-order" class="form-control"
+                                    :value="GBP.format(order.comission_value)">
                             </div>
                         </div>
                     </div>
