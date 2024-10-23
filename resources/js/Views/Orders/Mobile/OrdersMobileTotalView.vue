@@ -144,7 +144,7 @@ const items = ref([
                     <div
                         class="mobile-price-group-heading border-bottom mb-3 d-flex justify-content-between align-items-center">
                         <h3>Recurring charges</h3>
-                        <h3>{{ GBP.format(order.total_monthly) }}</h3>
+                        <h3 id="recurring_total">{{ GBP.format(order.total_monthly) }}</h3>
                     </div>
                     <table class="table">
                         <thead>
@@ -159,44 +159,48 @@ const items = ref([
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="p in order.items.filter((x) => x.price_monthly)" class="bg-light-grey ">
+                            <tr v-for="(p, i) in order.items.filter((x) => x.price_monthly)" class="bg-light-grey ">
                                 <td>
-                                    <!-- <font-awesome-icon class="me-2" :icon="['fas', 'trash']" @click="remove()" />  -->
                                     {{ p.name }}
                                 </td>
                                 <td class="text-center">
-                                    <template v-if="!p.is_editing">
+                                    <span v-if="!p.is_editing" :id="'recurring-' + i + '-quantity'">
                                         x{{ p.quantity }}
-                                    </template>
-                                    <input v-else class="form-control py-0" type="number" min="0" max="100"
-                                        v-model="temp.quantity">
+                                    </span>
+                                    <input :id="'input-recurring-' + i + '-quantity'" v-else class="form-control py-0"
+                                        type="number" min="0" max="100" v-model="temp.quantity">
                                 </td>
                                 <td> {{ GBP.format(p.original_price_monthly) }}</td>
                                 <td class="text-center">
-                                    <template v-if="!p.is_editing">
+                                    <span v-if="!p.is_editing" :id="'recurring-' + i + '-discount'">
                                         {{ p.discount }} %
-                                    </template>
-                                    <input v-else class="form-control py-0" type="number" min="0" max="100"
-                                        v-model="temp.discount">
+                                    </span>
+                                    <input :id="'input-recurring-' + i + '-discount'" v-else class="form-control py-0"
+                                        type="number" min="0" max="100" v-model="temp.discount">
                                 </td>
                                 <td class="text-center">
-                                    <template v-if="!p.is_editing">
+                                    <span v-if="!p.is_editing" :id="'recurring-' + i + '-margin'">
                                         {{ p.margin }} %
-                                    </template>
-                                    <input v-else class="form-control py-0" type="number" min="0" max="100"
-                                        v-model="temp.margin">
+                                    </span>
+                                    <input :id="'input-recurring-' + i + '-margin'" v-else class="form-control py-0"
+                                        type="number" min="0" max="100" v-model="temp.margin">
                                 </td>
-                                <td class="text-right" style="width:10%"> {{ GBP.format(p.price_monthly) }}</td>
+                                <td class="text-right" style="width:10%">
+                                    {{ GBP.format(p.price_monthly) }}
+                                </td>
                                 <td>
                                     <div class="d-flex">
                                         <template v-if="!p.is_editing">
-                                            <font-awesome-icon class="me-2" :icon="['fas', 'edit']" @click="edit(p)" />
-                                            <font-awesome-icon :icon="['fas', 'trash']" @click="remove()" />
+                                            <font-awesome-icon :id="'btn-recurring-' + i + '-edit'" class="me-2"
+                                                :icon="['fas', 'edit']" @click="edit(p)" />
+                                            <font-awesome-icon :id="'btn-recurring-' + i + '-remove'"
+                                                :icon="['fas', 'trash']" @click="remove()" />
                                         </template>
                                         <template v-else>
-                                            <font-awesome-icon class="me-2" :icon="['fas', 'cancel']"
-                                                @click="cancel(p)" />
-                                            <font-awesome-icon :icon="['fas', 'save']" @click="save(p)" />
+                                            <font-awesome-icon :id="'btn-recurring-' + i + '-cancel'" class="me-2"
+                                                :icon="['fas', 'cancel']" @click="cancel(p)" />
+                                            <font-awesome-icon :id="'btn-recurring-' + i + '-save'"
+                                                :icon="['fas', 'save']" @click="save(p)" />
                                         </template>
                                     </div>
                                 </td>
@@ -208,51 +212,63 @@ const items = ref([
                     <div
                         class="mobile-price-group-heading border-bottom mb-3 d-flex justify-content-between align-items-center">
                         <h3>One off charges</h3>
-                        <h3>{{ GBP.format(order.total) }}</h3>
+                        <h3 id="one_off_total">{{ GBP.format(order.total) }}</h3>
                     </div>
                     <table class="table">
                         <thead>
                             <tr>
-                                <th style="width:50%">Product</th>
-                                <th> Qty </th>
-                                <th style="width:15%"> Your Price</th>
+                                <th style="width:40%">Product</th>
+                                <th class="text-center" style="width:15%"> Qty </th>
+                                <th style="width:10%"> Your Price</th>
                                 <th class="text-center" style="width:15%"> Discount</th>
                                 <th class="text-center" style="width:15%"> Margin</th>
-                                <th class="text-right" style="width:15%"> Sell Price</th>
-                                <th>
-                                </th>
+                                <th class="text-right" style="width:10%"> Sell Price</th>
+                                <th> </th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="p in order.items.filter((x) => x.price)" class="bg-light-grey">
+                            <tr v-for="(p, i) in order.items.filter((x) => x.price)" class="bg-light-grey">
                                 <td>{{ p.name }}</td>
-                                <td> x{{ p.quantity }}</td>
+                                <td class="text-center">
+                                    <span v-if="!p.is_editing" :id="'one_off-' + i + '-quantity'">
+                                        x{{ p.quantity }}
+                                    </span>
+                                    <input :id="'input-one_off-' + i + '-quantity'" v-else class="form-control py-0"
+                                        type="number" min="0" max="100" v-model="temp.quantity">
+                                </td>
                                 <td> {{ GBP.format(p.original_price) }}</td>
                                 <td class="text-center">
-                                    <template v-if="!p.is_editing">
+                                    <span v-if="!p.is_editing" :id="'one_off-' + i + '-discount'">
                                         {{ p.discount }} %
-                                    </template>
-                                    <input v-else class="form-control py-0" type="number" min="0" max="100"
-                                        v-model="temp.discount">
+                                    </span>
+                                    <input v-else :id="'input-one_off-' + i + '-discount'" class="form-control py-0"
+                                        type="number" min="0" max="100" v-model="temp.discount">
                                 </td>
                                 <td class="text-center">
-                                    <template v-if="!p.is_editing">
+                                    <span v-if="!p.is_editing" :id="'one_off-' + i + '-margin'">
                                         {{ p.margin }} %
-                                    </template>
-                                    <input v-else class="form-control py-0" type="number" min="0" max="100"
-                                        v-model="temp.margin">
+                                    </span>
+                                    <input v-else :id="'input-one_off-' + i + '-margin'" class="form-control py-0"
+                                        type="number" min="0" max="100" v-model="temp.margin">
                                 </td>
-                                <td class="text-right"> {{ GBP.format(p.price) }}</td>
+                                <td class="text-right">
+                                    <span :id="'input-one_off-' + i + '-price'">
+                                        {{ GBP.format(p.price) }}
+                                    </span>
+                                </td>
                                 <td>
                                     <div class="d-flex">
                                         <template v-if="!p.is_editing">
-                                            <font-awesome-icon class="me-2" :icon="['fas', 'edit']" @click="edit(p)" />
-                                            <font-awesome-icon :icon="['fas', 'trash']" @click="remove()" />
+                                            <font-awesome-icon :id="'btn-one_off-' + i + '-edit'" class="me-2"
+                                                :icon="['fas', 'edit']" @click="edit(p)" />
+                                            <font-awesome-icon :id="'btn-one_off-' + i + '-remove'"
+                                                :icon="['fas', 'trash']" @click="remove()" />
                                         </template>
                                         <template v-else>
-                                            <font-awesome-icon class="me-3" :icon="['fas', 'cancel']"
-                                                @click="cancel(p)" />
-                                            <font-awesome-icon :icon="['fas', 'save']" @click="save(p)" />
+                                            <font-awesome-icon :id="'btn-one_off-' + i + '-cancel'" class="me-3"
+                                                :icon="['fas', 'cancel']" @click="cancel(p)" />
+                                            <font-awesome-icon :id="'btn-one_off-' + i + '-save'"
+                                                :icon="['fas', 'save']" @click="save(p)" />
                                         </template>
                                     </div>
                                 </td>
