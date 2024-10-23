@@ -37,7 +37,7 @@ const submit = () => {
 }
 const items = ref([
     { label: 'Home', url: '/dashboard' },
-    { label: 'Create a Quote' },
+    { label: 'Create a quote' },
 ]);
 
 
@@ -45,11 +45,11 @@ const items = ref([
 
 <template>
 
-    <Head title="Create a Quote" />
+    <Head title="Create a quote" />
     <AuthenticatedLayout>
 
-        <Header title="Create a Quote" :breadcrumbs="items"></Header>
-        <h5 class="font-bold mb-3">Select an account to start a quote</h5>
+        <Header title="Create a quote" :breadcrumbs="items"></Header>
+        <h5 class="font-bold my-3">Select an account to start a quote</h5>
 
         <form @submit.prevent="submit">
             <div class="row mb-3">

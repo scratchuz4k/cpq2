@@ -2,8 +2,9 @@
 import _ from "lodash";
 import axios from 'axios';
 import Paginator from 'primevue/paginator';
-import { ref, reactive, watch, onMounted } from 'vue'
+import { ref, reactive, watch } from 'vue'
 import MultiSelect from 'primevue/multiselect';
+import {Link} from "@inertiajs/vue3";
 
 const props = defineProps({
     modelValue: Object
@@ -14,6 +15,7 @@ const showLowestCost = ref(true)
 const showQuoted = ref(false)
 const showFilters = ref(true)
 const articles = ref([])
+const selectedFilters = ref([]);
 const filters = reactive({
     providerName: {
         operator: "in",
@@ -159,7 +161,9 @@ const getArticles = async () => {
 	meta.overallTotal = res.data.overall_total
 	meta.isUpdating = !!res.data.finished_at
 	Object.assign(filterList, res.data.filters)
-
+    selectedFilters.value = Object.fromEntries(
+        Object.entries(filters).filter(([key, filter]) => filter.value !== null)
+    )
 }
 
 
@@ -247,28 +251,58 @@ getArticles()
 
 </script>
 <template>
-    <div class="panel">
+    <div>
         <InfoConnectivity :order="modelValue"></InfoConnectivity>
         <div class="row mb-4" style="min-height: 50vh;">
             <div class="col position-relative">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div class="d-flex  align-items-center">
-                        <h2 class="me-3 mb-0">Live prices </h2>
-                        <div v-if="!meta.isUpdating"
-                            class="badge badge-filter text-bg-danger m-0 d-flex align-items-center">
-                            <div class="spinner-border spinner-border-sm me-2" role="status">
-                                <span class="sr-only">Loading...</span>
-                            </div>
-                            Searching
-                        </div>
-                        <p v-else class="badge badge-filter text-bg-success m-0">Prices Updated</p>
+                <div class="d-flex justify-content-between align-items-center mb-5">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <p class="fs-4 me-3 mb-0"><b>Add products</b></p>
+                        <p class="mb-0 text-primary bold fs-5 pt-1">STEP 1/2</p>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <p class="fs-4 me-3 mb-0"><b>Add {{ modelValue.items.length }} products</b></p>
+                        <a class="btn btn-primary" type="submit" :href="route('orders.show', { order: modelValue.id })">
+                            Continue
+                            <font-awesome-icon :icon="['fas', 'arrow-right']"></font-awesome-icon>
+                        </a>
                     </div>
 
-                    <div>
-                        <button class="btn m-2" :class="[showFilters ? ' btn-light' : 'btn-primary']"
-                            @click="() => showFilters = !showFilters" :disabled="!meta.isUpdating">
-                            <font-awesome-icon :icon="['fas', 'filter']" />
-                        </button>
+<!--                    <div class="d-flex  align-items-center">-->
+<!--                        <h2 class="me-3 mb-0">Live prices </h2>-->
+<!--                        <div v-if="!meta.isUpdating"-->
+<!--                            class="badge badge-filter text-bg-danger m-0 d-flex align-items-center">-->
+<!--                            <div class="spinner-border spinner-border-sm me-2" role="status">-->
+<!--                                <span class="sr-only">Loading...</span>-->
+<!--                            </div>-->
+<!--                            Searching-->
+<!--                        </div>-->
+<!--                        <p v-else class="badge badge-filter text-bg-success m-0">Prices Updated</p>-->
+<!--                    </div>-->
+
+<!--                    <div>-->
+<!--                        <button class="btn m-2" :class="[showFilters ? ' btn-light' : 'btn-primary']"-->
+<!--                            @click="() => showFilters = !showFilters" :disabled="!meta.isUpdating">-->
+<!--                            <font-awesome-icon :icon="['fas', 'filter']" />-->
+<!--                        </button>-->
+<!--                    </div>-->
+                </div>
+                {{ filters}}
+                <div class="row">
+                    <div class="d-flex justify-content-between">
+                        <div class="filters d-flex">
+                            <p class="fs-5">
+                                Filters
+                            </p>
+                            <ul class="d-flex list-unstyled">
+                                <li v-for="selectedFilter in selectedFilters">
+                                    <Badge :value="selectedFilter.value[0]" />
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="clear-filter">
+                            <Link class="nav-link" @click="resetFilters">Clear filters</Link>
+                        </div>
                     </div>
                 </div>
                 <div class="row">
@@ -581,5 +615,9 @@ tr.active td {
     background-color: lightblue;
     z-index: 10;
     opacity: .5;
+}
+
+.clear-filter>p {
+    font-size: 14px;
 }
 </style>

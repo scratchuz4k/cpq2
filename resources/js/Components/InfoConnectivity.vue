@@ -1,5 +1,6 @@
 <script setup>
 import { Link } from '@inertiajs/vue3';
+import InfoBox from "@/Components/InfoBox.vue";
 
 const props = defineProps({
     order: Object,
@@ -8,18 +9,21 @@ const props = defineProps({
 <template>
     <div class="row mb-4">
         <div class="col">
-            <div class="price_header d-flex justify-content-between">
-                <div>
-                    <p class="mb-0">
-                        <b>Solution Type:</b> {{ order?.solution_type.name }}
-                        <Link :href="route('orders.configure', { order: order.id })" class="btn btn-sm btn-secondary py-0">Edit</Link>
-                    </p>
-                    <p class="mb-0" v-if="order?.address_line1">
-                        <b>Address:</b> {{ order?.address_line1 }}
-                        <Link :href="route('orders.configure', { order: order.id })" class="btn btn-sm btn-secondary py-0">Edit address</Link>
-                    </p>
-                </div>
-            </div>
+            <InfoBox>
+                <p class="mb-1">
+                    <b>Quote-{{ order?.id }} for {{ order?.account.name }}</b>
+                </p>
+                <p class="mb-0 fw-medium" v-if="order?.solution_type">
+                    <span>
+                        Solution Type: {{ order?.solution_type.name }}
+                        <Link :href="route('orders.configure', { order: order.id })" class="text-primary">Edit</Link>
+                    </span>
+                    |
+                    <span>
+                        Address: {{ order?.address_line1 }} <Link :href="route('orders.configure', { order: order.id })" class="text-primary">Edit</Link>
+                    </span>
+                </p>
+            </InfoBox>
         </div>
     </div>
 </template>
