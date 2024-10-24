@@ -28,18 +28,20 @@ class OrderUpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'user_id' => 'nullable|exists:users,id',
-            'account_id' => 'nullable|exists:accounts,id',
-            'solution_type_id' => 'nullable|exists:solution_types,id',
-            'margin' => 'nullable|numeric|min:0|max:100',
-            'discount' => 'nullable|numeric|min:0|max:100',
-            'items' => 'nullable|array',
+            'user_id' => 'exists:users,id',
+            'account_id' => 'exists:accounts,id',
+            'solution_type_id' => 'exists:solution_types,id',
+            'margin' => 'numeric|min:0|max:100',
+            'discount' => 'numeric|min:0|max:100',
+            'items' => 'array',
             'items.*.quantity' => 'required|numeric',
-            'items.*.name' => 'required|string',
-            'items.*.price' => 'required|numeric',
-            'items.*.price_monthly' => 'nullable|numeric',
-            'items.*.margin' => 'nullable|numeric|min:0|max:100',
-            'items.*.discount' => 'nullable|numeric|min:0|max:100',
+            'items.*.name' => 'string',
+            'items.*.raw_price' => 'numeric',
+            'items.*.raw_price_monthly' => 'numeric',
+            'items.*.price' => 'numeric',
+            'items.*.price_monthly' => 'numeric',
+            'items.*.margin' => 'numeric|min:0|max:100',
+            'items.*.discount' => 'numeric|min:0|max:100',
         ];
     }
 }

@@ -2,6 +2,7 @@
 import axios from 'axios';
 import { router } from '@inertiajs/vue3';
 import { reactive, ref, watch } from 'vue'
+import queryString from 'query-string';
 
 const props = defineProps({
     modelValue: Object,
@@ -17,57 +18,36 @@ const params = new Proxy(urlParams, {
 
 const step = ref(params["step"] ?? 1)
 
-const planProducts = ref([
-    {
-        id: props.modelValue.items.find(x => x.data?.name == 'Basic / 5 GB / 100min')?.id ?? null,
-        label: 'Basic',
-        name: 'Basic / 5 GB / 100min',
-        data: '5 GB',
-        minutes: 100,
-        priceMonthly: 10,
-        quantity: props.modelValue.items.find(x => x.data?.name == 'Basic / 5 GB / 100min')?.quantity ?? 0,
-    },
-    {
-        id: props.modelValue.items.find(x => x.data?.name == 'Premium / 20 GB / 500min')?.id ?? null,
-        label: 'Premium',
-        name: 'Premium / 20 GB / 500min',
-        data: '20 GB',
-        minutes: 500,
-        priceMonthly: 20,
-        quantity: props.modelValue.items.find(x => x.data?.name == 'Premium / 20 GB / 500min')?.quantity ?? 0,
-    },
-    {
-        id: props.modelValue.items.find(x => x.data?.name == 'Traveller / Unlimited / 1000min')?.id ?? null,
-        label: 'Traveller',
-        name: 'Traveller / Unlimited / 1000min',
-        data: 'Unlimited',
-        minutes: 1000,
-        priceMonthly: 30,
-        quantity: props.modelValue.items.find(x => x.data?.name == 'Traveller / Unlimited / 1000min')?.quantity ?? 0,
-    },
-]);
+const products = reactive({
+    plan: [],
+    bolt_on: [],
+})
+const productsHardware = ref([])
 
-const boltOnProducts = ref([
-    {
-        id: props.modelValue.items.find(x => x.data?.name == '500 UK minute bundle')?.id ?? null,
-        name: '500 UK minute bundle',
-        priceMonthly: 10,
-        quantity: props.modelValue.items.find(x => x.data?.name == '500 UK minute bundle')?.quantity ?? 0,
-    },
-    {
-        id: props.modelValue.items.find(x => x.data?.name == 'Share bundle')?.id ?? null,
-        name: 'Share bundle',
-        priceMonthly: 20,
-        quantity: props.modelValue.items.find(x => x.data?.name == 'Share bundle')?.quantity ?? 0,
-    },
-]);
+const getProducts = () => {
+    Object.keys(products).forEach(async (key) => {
+        let query = queryString.stringify({
+            limit: 100,
+            filters: JSON.stringify([{
+                column: 'categories.code',
+                operator: 'equals',
+                value: key
+            }]),
+        })
+        let res = await axios.get("/api/products" + '?' + query)
+        res.data.data.forEach((e) => {
+            let temp = props.modelValue.items.find(x => x.data?.name == e.name)
+            e.quantity = temp ? temp.quantity : 0
+        });
+        products[key] = res.data.data
+    })
+}
 
 
-const hardwareProducts = ref([])
 const checkPlansHardwareQuantity = () => {
-    let plansQty = planProducts.value.reduce((acc, x) => acc += x.quantity, 0)
-    let boltOnQty = boltOnProducts.value.reduce((acc, x) => acc += x.quantity, 0)
-    let hardwareQty = hardwareProducts.value.reduce((acc, x) => acc += x.quantity, 0)
+    let plansQty = products.plan.reduce((acc, x) => acc += x.quantity, 0)
+    let boltOnQty = products.bolt_on.reduce((acc, x) => acc += x.quantity, 0)
+    let hardwareQty = productsHardware.value.reduce((acc, x) => acc += x.quantity, 0)
 
     return (plansQty + boltOnQty) - hardwareQty
 }
@@ -87,7 +67,7 @@ const filters = reactive({
     storage: [],
 })
 
-const getProducts = async () => {
+const getProductsShopBlocks = async () => {
     let res = await axios.post("/api/external/get-articles-from-shop-blocks")
     data = res.data
     data.forEach(element => {
@@ -111,15 +91,14 @@ const addFilter = (items, item) => {
 }
 
 const filterData = (data) => {
-    hardwareProducts.value = data.filter((item) => {
+    productsHardware.value = data.filter((item) => {
         let l = activeFilters.models.length
         return l ? activeFilters.models.reduce((acc, num) => {
             acc = acc || item.model.toLowerCase().includes(num.toLowerCase())
             return acc
         }, false) : true
     })
-
-    hardwareProducts.value = hardwareProducts.value.filter((item) => {
+    productsHardware.value = productsHardware.value.filter((item) => {
         let l = activeFilters.storage.length
         return l ? activeFilters.storage.reduce((acc, num) => {
             acc = acc || item.name.toLowerCase().includes(num.toLowerCase())
@@ -169,21 +148,23 @@ const removeQuantity = (product, quantity) => {
 
 const saveQuote = () => {
     let items = []
-    items.push(...planProducts.value.filter(x => x.quantity || x.id))
-    items.push(...boltOnProducts.value.filter(x => x.quantity || x.id))
-    items.push(...hardwareProducts.value.filter(x => x.quantity || x.id))
+    items.push(...products.plan.filter(x => x.quantity))
+    items.push(...products.bolt_on.filter(x => x.quantity))
+    items.push(...productsHardware.value.filter(x => x.quantity))
     try {
         items.forEach(async (article) => {
-            let url = article.id ? `/api/order-items/${article.id}` : '/api/order-items';
-            let method = article.id ? !article.quantity ? 'delete' : 'put' : 'post';
+            let temp = props.modelValue.items.find(x => x.name == article.name)
+            let url = temp ? `/api/order-items/${temp.id}` : '/api/order-items';
+            let method = temp ? !article.quantity ? 'delete' : 'put' : 'post';
+
             await axios[method](url,
                 {
                     order_id: props.modelValue.id,
                     quantity: article.quantity,
                     name: article.name,
                     data: article,
-                    price: article.price ?? 0,
-                    price_monthly: article.priceMonthly ?? 0
+                    price: article.price ?? article.prices[0].net,
+                    price_monthly: article.priceMonthly ?? !article.prices ? 0 : article.prices[0].net_monthly
                 })
         })
         router.get(`/orders/${props.modelValue.id}`)
@@ -192,6 +173,7 @@ const saveQuote = () => {
     }
 }
 
+getProductsShopBlocks()
 getProducts()
 
 watch(activeFilters, () => {
@@ -226,12 +208,12 @@ watch(activeFilters, () => {
                         <p class="m-0 mb-2 text-primary bold">STEP 1/3</p>
                     </div>
 
-                    <div v-for="(product, index) in planProducts" class="mobile-item mobile-product mb-3">
+                    <div v-for="(product, index) in products.plan" class="mobile-item mobile-product mb-3">
                         <div class="d-flex justify-content-between">
                             <div class="d-flex align-items-center mb-2">
-                                <h4 class="m-0 ">{{ product.label }}</h4>
+                                <h4 class="m-0">{{ product.name }}</h4>
                                 <p class="m-0 ms-2">
-                                    {{ product.data }} data / {{ product.minutes }} mins / {{ product.priceMonthly }} £
+                                    {{ product.description }}
                                 </p>
                             </div>
                             <font-awesome-icon :icon="['fa', 'circle-info']" />
@@ -266,7 +248,7 @@ watch(activeFilters, () => {
 
                     <div class="d-flex justify-content-end align-items-center">
                         <span id="total_mobile_users">
-                            Add {{ planProducts.reduce((acc, item) => acc += item.quantity, 0) }}
+                            Add {{ products.plan.reduce((acc, item) => acc += item.quantity, 0) }}
                             mobile users
                         </span>
                         <button :id="'btn-step-1-next'" class="ms-3 btn btn-primary step-nav" type="button"
@@ -280,7 +262,7 @@ watch(activeFilters, () => {
                         <h3>Next, choose your bolt-ons</h3>
                         <p class="m-0 mb-2 text-primary bold">STEP 2/3</p>
                     </div>
-                    <div v-for="(product, index) in boltOnProducts" class="mobile-item mobile-product mb-3">
+                    <div v-for="(product, index) in products.bolt_on" class="mobile-item mobile-product mb-3">
                         <div class="d-flex justify-content-between">
                             <div class="d-flex align-items-center mb-2">
                                 <h4 class="m-0 ">{{ product.name }}</h4>
@@ -325,7 +307,7 @@ watch(activeFilters, () => {
                         </button>
                         <div>
                             <span id="total_mobile_users">
-                                Add {{ boltOnProducts.reduce((acc, item) => acc += item.quantity, 0) }}
+                                Add {{ products.bolt_on.reduce((acc, item) => acc += item.quantity, 0) }}
                                 bolt-ons
                             </span>
                             <button :id="'btn-step-2-next'" class="ms-3 btn btn-primary step-nav" type="button"
@@ -407,8 +389,8 @@ watch(activeFilters, () => {
                         </div>
 
                         <div class="hardware-products pb-3">
-                            <div v-if="!hardwareProducts.length"> No Hardware Found</div>
-                            <div v-for="(product, index) in hardwareProducts" class="hardware-product">
+                            <div v-if="!productsHardware.length"> No Hardware Found</div>
+                            <div v-for="(product, index) in productsHardware" class="hardware-product">
                                 <div class="text-center">
                                     <a :href="product.url" target="_blank">
                                         <img :src="product.primary_image" style="height: 200px;object-fit: contain;">
@@ -461,7 +443,7 @@ watch(activeFilters, () => {
                                 </div>
                             </div>
                         </div>
-                        <div class="label my-2" v-if="hardwareProducts.length"> Showing {{ hardwareProducts.length }}
+                        <div class="label my-2" v-if="productsHardware.length"> Showing {{ productsHardware.length }}
                             products</div>
                     </div>
 
@@ -472,7 +454,7 @@ watch(activeFilters, () => {
                         </button>
                         <div>
                             <span id="total_add_ons">
-                                Add {{ hardwareProducts.reduce((acc, item) => acc += item.quantity, 0) }}
+                                Add {{ productsHardware.reduce((acc, item) => acc += item.quantity, 0) }}
                                 add-ons
                             </span>
                             <button id="btn-step-3-next" class="ms-3 btn btn-primary step-nav" type="button"
@@ -487,8 +469,8 @@ watch(activeFilters, () => {
                 <div class="configure-mobile-sidebar px-4 py-4" style="position: sticky; top: 25px">
                     <h4 id="sidebar_products" data-total="0">1. Products</h4>
                     <div class="sidebar_items mb-3">
-                        <div v-for="product in planProducts" class="item mb-2">
-                            <span>{{ product.label }}</span>
+                        <div v-for="product in products.plan" class="item mb-2">
+                            <span>{{ product.name }}</span>
                             <span class="badge bg-light-grey dark">
                                 {{ product.quantity }}
                             </span>
@@ -496,7 +478,7 @@ watch(activeFilters, () => {
                     </div>
                     <h4>2. Bolt-ons</h4>
                     <div class="sidebar_bolt_ons mb-3">
-                        <div v-for="bolt in boltOnProducts" class="item mb-2">
+                        <div v-for="bolt in products.bolt_on" class="item mb-2">
                             <span>{{ bolt.name }}</span>
                             <span class="badge bg-light-grey dark">
                                 {{ bolt.quantity }}
@@ -507,7 +489,7 @@ watch(activeFilters, () => {
                     <div class="sidebar_add_ons mb-3">
                         <div class="item mb-2">
                             <span>Hardware</span><span class="badge bg-light-grey dark">
-                                {{ hardwareProducts.reduce((acc, x) => acc += !x.quantity ? 0 : x.quantity, 0) }}
+                                {{ productsHardware.reduce((acc, x) => acc += !x.quantity ? 0 : x.quantity, 0) }}
                             </span>
                         </div>
                     </div>

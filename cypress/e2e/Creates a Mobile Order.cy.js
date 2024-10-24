@@ -30,7 +30,6 @@ const temp = getCurrentDate()
 const account = { ref: generateHash(temp), name: temp }
 
 describe("Creates a Mobile Order", () => {
-
     beforeEach(() => {
         cy.login("companyadmin@example.com", "werwerwer")
     })

@@ -13,6 +13,8 @@ return new class extends Migration
     {
         Schema::table('order_items', function (Blueprint $table) {
             $table->double('quantity')->default(0)->change();
+            $table->double('raw_price')->default(0);
+            $table->double('raw_price_monthly')->default(0);
             $table->double('original_price')->default(0);
             $table->double('original_price_monthly')->default(0);
             $table->double('price')->default(0);

@@ -15,48 +15,9 @@ const temp = reactive({
 })
 
 const planProducts = ref([
-    {
-        id: order.items.find(x => x.data?.name == 'Basic / 5 GB / 100min')?.id ?? null,
-        label: 'Basic',
-        name: 'Basic / 5 GB / 100min',
-        data: '5 GB',
-        minutes: 100,
-        priceMonthly: 10,
-        quantity: order.items.find(x => x.data?.name == 'Basic / 5 GB / 100min')?.quantity ?? 0,
-    },
-    {
-        id: order.items.find(x => x.data?.name == 'Premium / 20 GB / 500min')?.id ?? null,
-        label: 'Premium',
-        name: 'Premium / 20 GB / 500min',
-        data: '20 GB',
-        minutes: 500,
-        priceMonthly: 20,
-        quantity: order.items.find(x => x.data?.name == 'Premium / 20 GB / 500min')?.quantity ?? 0,
-    },
-    {
-        id: order.items.find(x => x.data?.name == 'Traveller / Unlimited / 1000min')?.id ?? null,
-        label: 'Traveller',
-        name: 'Traveller / Unlimited / 1000min',
-        data: 'Unlimited',
-        minutes: 1000,
-        priceMonthly: 30,
-        quantity: order.items.find(x => x.data?.name == 'Traveller / Unlimited / 1000min')?.quantity ?? 0,
-    },
 ]);
 
 const boltOnProducts = ref([
-    {
-        id: order.items.find(x => x.data?.name == '500 UK minute bundle')?.id ?? null,
-        name: '500 UK minute bundle',
-        priceMonthly: 10,
-        quantity: order.items.find(x => x.data?.name == '500 UK minute bundle')?.quantity ?? 0,
-    },
-    {
-        id: order.items.find(x => x.data?.name == 'Share bundle')?.id ?? null,
-        name: 'Share bundle',
-        priceMonthly: 20,
-        quantity: order.items.find(x => x.data?.name == 'Share bundle')?.quantity ?? 0,
-    },
 ]);
 
 const hardwareProducts = ref([])
@@ -182,7 +143,10 @@ const items = ref([
                                 <th class="text-center" style="width:15%"> Discount</th>
                                 <th class="text-center" style="width:15%"> Margin</th>
                                 <th class="text-right" style="width:10%"> Sell Price</th>
-                                <th> </th>
+                                <th class="text-right">
+                                    <font-awesome-icon id="btn-recurring-add" :icon="['fas', 'plus']"
+                                        @click="addLine()" />
+                                </th>
                             </tr>
                         </thead>
                         <tbody>
@@ -221,7 +185,7 @@ const items = ref([
                                             <font-awesome-icon :id="'btn-recurring-' + i + '-edit'" class="me-2"
                                                 :icon="['fas', 'edit']" @click="edit(p)" />
                                             <font-awesome-icon :id="'btn-recurring-' + i + '-remove'"
-                                                :icon="['fas', 'trash']" @click="remove()" />
+                                                :icon="['fas', 'trash']" @click="remove(p.id)" />
                                         </template>
                                         <template v-else>
                                             <font-awesome-icon :id="'btn-recurring-' + i + '-cancel'" class="me-2"
@@ -289,7 +253,7 @@ const items = ref([
                                             <font-awesome-icon :id="'btn-one_off-' + i + '-edit'" class="me-2"
                                                 :icon="['fas', 'edit']" @click="edit(p)" />
                                             <font-awesome-icon :id="'btn-one_off-' + i + '-remove'"
-                                                :icon="['fas', 'trash']" @click="remove()" />
+                                                :icon="['fas', 'trash']" @click="remove(p.id)" />
                                         </template>
                                         <template v-else>
                                             <font-awesome-icon :id="'btn-one_off-' + i + '-cancel'" class="me-3"

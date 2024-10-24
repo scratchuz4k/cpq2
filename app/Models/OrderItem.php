@@ -20,6 +20,10 @@ class OrderItem extends Model
         "data",
         'margin',
         'discount',
+        'raw_price',
+        'raw_price_monthly',
+        'original_price',
+        'original_price_monthly',
         'price',
         'price_monthly',
         'total',
@@ -28,8 +32,6 @@ class OrderItem extends Model
         'total_monthly',
         'total_monthly_tax',
         'total_monthly_gross',
-        'original_price',
-        'original_price_monthly',
         'tax_order_item',
     ];
 
@@ -55,7 +57,7 @@ class OrderItem extends Model
     {
         $this->refresh();
         $price = $this->original_price + (($this->original_price * ($this->margin / 100)));
-        $price_monthly = ($this->original_price_monthly + (($this->original_price_monthly * ($this->margin / 100)))) ;
+        $price_monthly = ($this->original_price_monthly + (($this->original_price_monthly * ($this->margin / 100))));
 
         $discounts  = [$this->discount, $this->order->discount];
         foreach ($discounts as $discount) {
