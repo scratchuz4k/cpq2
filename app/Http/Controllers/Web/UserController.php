@@ -8,7 +8,6 @@ use Inertia\Inertia;
 use App\Models\Tenant;
 use App\Services\UsersService;
 use App\Http\Resources\UserResource;
-use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\UserCreateRequest;
 use App\Http\Requests\UserImportRequest;
@@ -35,11 +34,13 @@ class UserController extends BaseController
      */
     public function create()
     {
+        $users = $this->usersService->getChildAndOrphansUser();
+        $users = $users->where('tenant_id', request()->user()->tenant_id);
         return Inertia::render('Users/Create', [
             'roles'     => Role::descendants(),
-            'managers'  => User::descendants(),
+            'managers'  => $users->get(),
             'tenants'   => Tenant::all(),
-            'parent_id' => intval(request('parent_id')) ?? null
+            'parent_id' => $users->where('id', request('parent_id'))->first() ?  intval(request('parent_id')) : null
         ]);
     }
 
@@ -70,10 +71,13 @@ class UserController extends BaseController
      */
     public function edit(User $user)
     {
+        $users = $this->usersService->getChildAndOrphansUser();
+        $users = $users->where('tenant_id', request()->user()->tenant_id);
+
         return Inertia::render('Users/Edit', [
             'user'          => (new UserResource($user))->toArray(request()),
             'roles'         => Role::descendants(),
-            'managers'      => User::descendants(),
+            'managers'      => $users->get(),
             'permissions'   => $user->getAllPermissions(),
             'tenants'       => Tenant::all()
         ]);

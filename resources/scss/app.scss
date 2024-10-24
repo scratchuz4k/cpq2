@@ -251,6 +251,23 @@ body {
         border-radius: var(--radius);
         padding: 30px;
         margin-bottom: 30px;
+
+        .form-check-input {
+            margin: 0;
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .form-check-input:focus {
+            border-color: var(--color-purple);
+            box-shadow: 0 0 0 0.01rem var(--light-purple);
+        }
+
+        .form-check-input:checked {
+            background-color: var(--color-purple);
+            border-color: var(--color-purple);
+        }
     }
 
     .footer {

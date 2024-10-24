@@ -127,10 +127,12 @@ const items = ref([
                     }"
                     :columns="[
                         { data: 'id', title: '#' },
+                        { data: 'sso', title: 'SSO', style: 'width:4%' },
                         { data: 'name', title: 'Name' },
                         { data: 'email', title: 'Email' },
                         { data: 'roles.name', title: 'Role' }
-                    ]" route="/users"
+                    ]"
+                    route="/users"
                     v-model="selectedItems"
                 >
                     <template #dialog_content="{data, toggleModal}">
@@ -151,6 +153,10 @@ const items = ref([
                                 </div>
                             </div>
                         </div>
+                    </template>
+                    <template #sso="{ value }">
+                        <font-awesome-icon v-if="value === 1" :icon="['fas', 'circle-check']" style="font-size:1.125rem;" class="text-primary" />
+                        <font-awesome-icon v-else :icon="['far', 'circle-xmark']" style="font-size:1.125rem;" class="text-secondary" />
                     </template>
                 </TreeTable>
             </div>

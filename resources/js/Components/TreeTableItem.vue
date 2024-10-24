@@ -21,7 +21,8 @@ const props = defineProps({
             delete: false,
             link: false,
         }
-    }
+    },
+    usedSlots: Array
 })
 const getValue = (item, key) => {
     let data = key.split(".")
@@ -126,7 +127,7 @@ const showModal = (item) => {
                         </template>
                         <input class="form-check-input ms-2" v-if="columnKey === 0" type="checkbox" @click="selectItem(modelValue, item)" :checked="isChecked(item)" />
                     </div>
-                    {{ getValue(item, column.data) }}
+                    <slot :name="column.data" :value="getValue(item, column.data)" />
                 </div>
             </td>
             <td v-if="allow.update || allow.link || allow.delete || allow.commission || allow.create" :class="['p-0']">
@@ -172,7 +173,13 @@ const showModal = (item) => {
             :state="state"
             :allow="allow"
             v-model="props.modelValue"
-        ></TreeTableItem>
+            :usedSlots="props.usedSlots"
+        >
+            <template v-for="column in columns" #[column.data]="{ value }">
+                <slot v-if="usedSlots.includes(column.data)" :name="column.data" :value="value"></slot>
+                <template v-else>{{value}}</template>
+            </template>
+        </TreeTableItem>
     </template>
 </template>
 

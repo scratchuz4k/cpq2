@@ -14,7 +14,7 @@ const props = defineProps({
     permissions: Array,
     tenants: Array
 })
-debugger
+
 const page = usePage()
 const form = reactive({
     parent_id: props.user.parent_id,
@@ -106,9 +106,9 @@ const items = ref([
                         </MultiSelect>
                     </div>
                     <div class="row mb-3">
-                        <div class="form-check">
-                            <Checkbox id="user-sso" name="user-sso" class="form-check-input" v-model:checked="user.sso" />
-                            <label class="form-check-label" for="user-sso">
+                        <div class="form-check p-0">
+                            <input id="user-sso " type="checkbox" class="form-check-input" v-model="user.sso">
+                            <label class="form-check-label ms-2" for="user-sso">
                                 Single sign-on (SSO) login only
                             </label>
                         </div>

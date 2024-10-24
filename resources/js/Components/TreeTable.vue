@@ -2,13 +2,15 @@
 import TreeTableItem from "@/Components/TreeTableItem.vue";
 import queryString from "query-string";
 import axios from "axios";
-import {reactive, ref, watch} from "vue";
-import Modal from "@/Components/Modal.vue";
+import {reactive, ref, useSlots, watch} from "vue";
 import Dialog from "primevue/dialog";
 import IconField from "primevue/iconfield";
 import InputText from "primevue/inputtext";
 import InputIcon from "primevue/inputicon";
 import _ from "lodash";
+
+const slots = useSlots()
+const usedSlots = Object.keys(slots)
 
 const props = defineProps({
     route:String,
@@ -73,13 +75,16 @@ watch([global], _.debounce(function() {
                 <th v-for="(column, key) in columns" :key="key">
                     {{column.title}}
                 </th>
-                <th>
-
-                </th>
+                <th></th>
             </tr>
             </thead>
             <tbody>
-            <TreeTableItem :data="data" :columns="columns" :route="route" :state="state" v-model="props.modelValue" :allow="allow"></TreeTableItem>
+            <TreeTableItem :data="data" :columns="columns" :route="route" :state="state" v-model="props.modelValue" :allow="allow" :usedSlots="usedSlots">
+                <template v-for="column in columns" #[column.data]="{ value }">
+                    <slot v-if="usedSlots.includes(column.data)" :name="column.data" :value="value"></slot>
+                    <template v-else>{{value}}</template>
+                </template>
+            </TreeTableItem>
             </tbody>
         </table>
         <Dialog v-model:visible="showModal" modal :style="{ marginTop: '4rem' }"

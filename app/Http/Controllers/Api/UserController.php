@@ -3,40 +3,29 @@
 namespace App\Http\Controllers\Api;
 
 use App\Helpers\DataProvider;
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\BaseController;
 use App\Http\Resources\UserResource;
-use App\Models\Role;
 use App\Models\User;
+use App\Services\UsersService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
-class UserController extends Controller
+class UserController extends BaseController
 {
     protected $model = User::class;
+
+    public function __construct(protected UsersService $usersService)
+    {
+        parent::__construct();
+    }
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
         $dataProvider = new DataProvider(User::class);
-        $superUsers = collect([]);
-
-        if (!request()->user()->hasRole('Super Admin')) {
-            $superUsers = User::whereHas('roles', function ($query) {
-                return $query->whereIn('name', ['Super Admin']);
-            })->get();
-        }
-        $dataProvider->builder = $dataProvider->builder->whereNotIn('id', $superUsers->pluck('id'));
-
-        //Roles
-        $roles = Role::descendants();
-        $dataProvider->builder = $dataProvider->builder->whereHas('roles', function ($query) use ($roles) {
-            $query->whereIn('id', $roles->pluck('id'));
-        });
-
+        $dataProvider->builder = $this->usersService->getChildAndOrphansUser();
         $dataProvider->builder = $dataProvider->builder->where('tenant_id', request()->user()->tenant_id);
-
         try {
             $data = $dataProvider->get();
         } catch (\Exception $e) {

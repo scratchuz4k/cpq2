@@ -1,5 +1,5 @@
 <script setup>
-import {computed, reactive, ref} from "vue";import Button from 'primevue/button';
+import {computed, ref, watch} from "vue";import Button from 'primevue/button';
 import MultiSelect from 'primevue/multiselect';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
@@ -22,7 +22,8 @@ const user = useForm({
     role_id: null,
     parent_id: props.parent_id ?? null,
     commission_rate: 0,
-    tenants: [page.props.tenant.id]
+    tenants: [page.props.tenant.id],
+    sso: false
 })
 
 const showCommissionRate = computed(() => user.role_id === 4)
