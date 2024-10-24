@@ -28,6 +28,7 @@ const getCurrentDate = () => {
 }
 const temp = getCurrentDate()
 const account = { ref: generateHash(temp), name: temp }
+const quantities = []
 
 describe("Creates a Mobile Order", () => {
     beforeEach(() => {
@@ -68,6 +69,9 @@ describe("Creates a Mobile Order", () => {
         });
 
         cy.get("#btn-step-3-next").click()
+    })
+    it("Checking Quantities and Changing", () => {
+
     })
     it("I can change Margin and Discount", () => {
         cy.visit("/")
