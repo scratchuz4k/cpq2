@@ -21,7 +21,7 @@ const user = useForm({
     password: null,
     role_id: null,
     parent_id: props.parent_id ?? null,
-    commission_rate: null,
+    commission_rate: 0,
     tenants: [page.props.tenant.id]
 })
 
@@ -107,6 +107,14 @@ const items = ref([
                             </div>
                         </template>
                     </MultiSelect>
+                </div>
+                <div class="row mb-3">
+                    <div class="form-check">
+                        <Checkbox id="user-sso" name="user-sso" class="form-check-input" v-model:checked="user.sso" />
+                        <label class="form-check-label" for="user-sso">
+                            Single sign-on (SSO) login only
+                        </label>
+                    </div>
                 </div>
             </div>
 

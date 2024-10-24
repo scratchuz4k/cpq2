@@ -139,13 +139,13 @@ const showModal = (item) => {
 
                     <template v-if="allow.commission">
                         <button class="btn p-2 mx-1 border-0" @click="showModal(item)">
-                            <font-awesome-icon :icon="['fas', 'edit']" />
+                            <font-awesome-icon :icon="['fas', 'gear']" />
                         </button>
                     </template>
 
                     <template v-if="allow.update">
                         <Link :href="props.route + '/' + item.id + '/edit'" class="btn p-2 mx-1 border-0">
-                            <font-awesome-icon icon="arrow-up-right-from-square" />
+                            <font-awesome-icon :icon="['fas', 'edit']" />
                         </Link>
                     </template>
 

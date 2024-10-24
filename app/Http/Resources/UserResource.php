@@ -21,6 +21,7 @@ class UserResource extends JsonResource
             'updated_at' => format_date($this->updated_at),
             'created_at' => format_date($this->created_at),
             'has_children' => !!count($this->children),
+            'tenants' => $this->tenants
         ];
     }
 }

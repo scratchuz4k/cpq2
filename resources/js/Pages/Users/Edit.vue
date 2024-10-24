@@ -1,7 +1,7 @@
 <script setup>
-import { ref } from "vue";
+import {reactive, ref} from "vue";
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head, router } from "@inertiajs/vue3";
+import { Head, router, usePage } from "@inertiajs/vue3";
 import Permissions from "@/Components/Permissions.vue";
 import MultiSelect from 'primevue/multiselect';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
@@ -11,16 +11,25 @@ const props = defineProps({
     user: Object,
     roles: Object,
     managers: Object,
-    role_id: Number,
     permissions: Array,
     tenants: Array
+})
+debugger
+const page = usePage()
+const form = reactive({
+    parent_id: props.user.parent_id,
+    role_id: props.user.roles.length ? props.user.roles[0].id : null,
+    tenants: props.user.tenants.map((item) => item.id)
 })
 
 const role_id = ref(props.user.roles.length ? props.user.roles[0].id : { id: null})
 const saveUser = () => {
     props.user.role = [role_id.value]
 
-    router.put(`/users/${props.user.id}`, props.user,
+    router.put(`/users/${props.user.id}`, {
+            ...props.user,
+            ...form
+        },
         {
             onSuccess: (page) => {
                 notyf.success("Updated with Success")
@@ -41,7 +50,6 @@ const items = ref([
     { label: 'Users', url: '/users' },
     { label: 'Edit User' },
 ]);
-
 </script>
 <template>
 
@@ -71,7 +79,7 @@ const items = ref([
                     </div>
                     <div class="row mb-3">
                         <label for="supplier-name" class="form-label">Role:</label>
-                        <select class="form-select" v-model="role_id"  @change="user.commission_rate = 0">
+                        <select class="form-select" v-model="form.role_id"  @change="user.commission_rate = 0">
                             <option v-for="tempRole in roles" :value="tempRole.id">{{ tempRole.name }}</option>
                         </select>
                     </div>
@@ -84,18 +92,26 @@ const items = ref([
                     </div>
                     <div class="row mb-3">
                         <label for="user-name" class="form-label">Manager:</label>
-                        <select class="form-select" v-model="user.parent_id">
+                        <select class="form-select" v-model="form.parent_id">
                             <option v-for="manager in managers" :value="manager.id">{{ manager.name }}</option>
                         </select>
                     </div>
                     <div class="row mb-3" v-if="hasRole('Super Admin')">
                         <label for="user-name" class="form-label">Tenants:</label>
-                        <MultiSelect v-model="user.tenants" :options="tenants" optionLabel="name" optionValue="id">
+                        <MultiSelect v-model="form.tenants" :options="tenants" optionLabel="name" optionValue="id">
                             <template #option="slotProps">
                                 <div style="font-size:14px;line-height: 1.5rem;">{{ slotProps.option.name }}
                                 </div>
                             </template>
                         </MultiSelect>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="form-check">
+                            <Checkbox id="user-sso" name="user-sso" class="form-check-input" v-model:checked="user.sso" />
+                            <label class="form-check-label" for="user-sso">
+                                Single sign-on (SSO) login only
+                            </label>
+                        </div>
                     </div>
                 </div>
                 <div class="col-6">

@@ -93,7 +93,7 @@ const items = ref([
         <div class="panel">
             <Header title="Users" :breadcrumbs="items">
                 <template #buttons>
-                    <PrimaryButton class="btn btn-secondary me-2" @click="showModal = true">Add Commission</PrimaryButton>
+                    <PrimaryButton class="btn btn-secondary me-2" @click="showModal = true" :disabled="!(selectedItems.length > 0)">Add Commission</PrimaryButton>
                     <Link :href="route('users.create')" class="btn btn-primary me-2">
                         <font-awesome-icon :icon="['fas', 'plus']"></font-awesome-icon> New User
                     </Link>
@@ -159,7 +159,6 @@ const items = ref([
                 :breakpoints="{ '1199px': '75vw', '575px': '90vw' }" :draggable="false" position="top">
             <div class="panel">
                 <div class="row">
-                    <div v-if="!(selectedItems.length > 0)" class="p-3 mb-2 text-danger">No Users selected.</div>
                     <label for="user-bulk-commission-rate" class="form-label">Commission Rate:</label>
                     <div class="input-group">
                         <input id="user-bulk-commission-rate" type="number" class="form-control" v-model="commission">
