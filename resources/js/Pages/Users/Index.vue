@@ -155,7 +155,7 @@ const items = ref([
                         </div>
                     </template>
                     <template #sso="{ value }">
-                        <font-awesome-icon v-if="value === 1" :icon="['fas', 'circle-check']" style="font-size:1.125rem;" class="text-primary" />
+                        <font-awesome-icon v-if="value === true" :icon="['fas', 'circle-check']" style="font-size:1.125rem;" class="text-primary" />
                         <font-awesome-icon v-else :icon="['far', 'circle-xmark']" style="font-size:1.125rem;" class="text-secondary" />
                     </template>
                 </TreeTable>
