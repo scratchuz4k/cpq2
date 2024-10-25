@@ -150,7 +150,7 @@ const items = ref([
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="(p, i) in order.items.filter((x) => x.price_monthly)" class="bg-light-grey ">
+                            <tr v-for="(p, i) in order.items.filter((x) => x.price_monthly)" class="recurring-item bg-light-grey">
                                 <td>
                                     {{ p.name }}
                                 </td>
@@ -218,7 +218,7 @@ const items = ref([
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="(p, i) in order.items.filter((x) => x.price)" class="bg-light-grey">
+                            <tr v-for="(p, i) in order.items.filter((x) => x.price)" class="one_off-item bg-light-grey">
                                 <td>{{ p.name }}</td>
                                 <td class="text-center">
                                     <span v-if="!p.is_editing" :id="'one_off-' + i + '-quantity'">

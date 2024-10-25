@@ -156,15 +156,16 @@ const saveQuote = () => {
             let temp = props.modelValue.items.find(x => x.name == article.name)
             let url = temp ? `/api/order-items/${temp.id}` : '/api/order-items';
             let method = temp ? !article.quantity ? 'delete' : 'put' : 'post';
-
             await axios[method](url,
                 {
                     order_id: props.modelValue.id,
                     quantity: article.quantity,
                     name: article.name,
                     data: article,
-                    price: article.price ?? article.prices[0].net,
-                    price_monthly: article.priceMonthly ?? !article.prices ? 0 : article.prices[0].net_monthly
+                    raw_price: article.price ?? article.prices[0].net,
+                    raw_price_monthly: article.priceMonthly ?? !article.prices ? 0 : article.prices[0].net_monthly,
+                    price: article.price ?? article.prices[0].net_spa,
+                    price_monthly: article.priceMonthly ?? !article.prices ? 0 : article.prices[0].net_monthly_spa
                 })
         })
         router.get(`/orders/${props.modelValue.id}`)

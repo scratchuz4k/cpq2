@@ -69,9 +69,9 @@ describe("Creates a Mobile Order", () => {
         });
 
         cy.get("#btn-step-3-next").click()
-    })
-    it("Checking Quantities and Changing", () => {
-
+        
+        cy.get(".recurring-item").should('have.length', 4)
+        cy.get(".one_off-item").should('have.length', 1)
     })
     it("I can change Margin and Discount", () => {
         cy.visit("/")

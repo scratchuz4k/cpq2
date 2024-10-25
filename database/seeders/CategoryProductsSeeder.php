@@ -8,7 +8,6 @@ use App\Models\Category;
 use App\Models\Product;
 use App\Models\Tenant;
 use Illuminate\Database\Seeder;
-use Database\Seeders\InitTableSeeder;
 
 class CategoryProductsSeeder extends Seeder
 {

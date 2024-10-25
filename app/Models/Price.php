@@ -2,18 +2,9 @@
 
 namespace App\Models;
 
-use Money\Currency;
-use Money\Currencies;
-use Money\MoneyParser;
-use Money\MoneyFormatter;
 use App\Trait\SetTenantId;
 use App\Models\Scopes\TenantScope;
-use Illuminate\Support\Facades\Log;
-use Money\Currencies\ISOCurrencies;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Model;
-use Money\Formatter\DecimalMoneyFormatter;
-use Money\Parser\IntlLocalizedDecimalParser;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -42,11 +33,8 @@ class Price extends Model
 
     protected $fillable = ["code", "tax_rate", "net", "tax", "gross", "net_monthly", "tax_monthly", "gross_monthly", "spa_id", "product_id", "tenant_id"];
 
-    protected static $supplier_cache = [];
-    protected static $ancestor_cache = [];
-    protected static $spa_cache = [];
+    protected $appends = ['net_spa','net_monthly_spa'];
 
-    protected $table = 'prices';
 
     protected static function booted(): void
     {
@@ -78,4 +66,14 @@ class Price extends Model
         $this->gross_monthly = $this->net_monthly * (1 + ($this->tax_rate / 100));
         $this->save();
     }
+    public function getNetSpaAttribute()
+    {
+        return $this->net * 1.20;
+    }
+    public function getNetMonthlySpaAttribute()
+    {
+        return $this->net_monthly * 1.20;
+    }
+
+    
 }
