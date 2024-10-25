@@ -54,13 +54,13 @@ const submitFileForm = () => {
 };
 
 
-const saveCommission = (data) => {
-    data.commission_rate = commission.value
-
-    router.put(`/users/${data.id}`, data,
+const saveCommission = (data, toggleModal = null) => {
+    router.put(`/users/${data.id}`, { comission_rate: commission.value},
         {
             onSuccess: (page) => {
                 notyf.success("Updated with Success")
+                if (toggleModal !== null)
+                    toggleModal()
             },
             onError: (errors) => {
                 let string = ''
@@ -68,9 +68,12 @@ const saveCommission = (data) => {
                     string += errors[key] + '<br>'
                 })
                 notyf.error(string)
+                if (toggleModal !== null)
+                    toggleModal()
             },
         }
     )
+
 }
 
 const saveCommissionBulk = (data) => {
@@ -130,6 +133,7 @@ const items = ref([
                         { data: 'sso', title: 'SSO', style: 'width:4%' },
                         { data: 'name', title: 'Name' },
                         { data: 'email', title: 'Email' },
+                        { data: 'commission_rate', title: 'Commission' },
                         { data: 'roles.name', title: 'Role' }
                     ]"
                     route="/users"
@@ -147,7 +151,7 @@ const items = ref([
                                     <div class="btn btn-secondary me-2" @click="toggleModal()">
                                         Cancel
                                     </div>
-                                    <PrimaryButton class="btn btn-primary" @click="saveCommission(data)" >
+                                    <PrimaryButton class="btn btn-primary" @click="saveCommission(data, toggleModal)" >
                                         Save
                                     </PrimaryButton>
                                 </div>
@@ -157,6 +161,9 @@ const items = ref([
                     <template #sso="{ value }">
                         <font-awesome-icon v-if="value === true" :icon="['fas', 'circle-check']" style="font-size:1.125rem;" class="text-primary" />
                         <font-awesome-icon v-else :icon="['far', 'circle-xmark']" style="font-size:1.125rem;" class="text-secondary" />
+                    </template>
+                    <template #commission_rate="{ value }">
+                        {{ value }}%
                     </template>
                 </TreeTable>
             </div>
