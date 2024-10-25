@@ -226,7 +226,7 @@ getData()
                 <div class="d-flex justify-content-center">
                     <template v-if="allow.update">
                         <Link :href="props.route + '/' + data.id + '/edit'" class="btn p-2 mx-1 border-0">
-                            <font-awesome-icon icon="arrow-up-right-from-square" />
+                            <font-awesome-icon :icon="['fas', 'edit']" />
                         </Link>
                     </template>
 
