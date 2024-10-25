@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Helpers\Prices\PriceRulesSpa;
 use App\Trait\SetTenantId;
 use App\Models\Scopes\TenantScope;
 use Illuminate\Database\Eloquent\Model;
@@ -31,9 +32,14 @@ class Price extends Model
 {
     use HasFactory, SetTenantId;
 
+    public function __construct(protected PriceRulesSpa $priceRulesSpa)
+    {
+        parent::__construct();
+    }
+
     protected $fillable = ["code", "tax_rate", "net", "tax", "gross", "net_monthly", "tax_monthly", "gross_monthly", "spa_id", "product_id", "tenant_id"];
 
-    protected $appends = ['net_spa','net_monthly_spa'];
+    protected $appends = ["net_spa", "net_monthly_spa"];
 
 
     protected static function booted(): void
@@ -48,12 +54,12 @@ class Price extends Model
 
     public function spa(): HasOne
     {
-        return $this->hasOne(Spa::class, 'id', 'spa_id');
+        return $this->hasOne(Spa::class, "id", "spa_id");
     }
 
     public function product(): HasOne
     {
-        return $this->hasOne(Product::class, 'id', 'product_id');
+        return $this->hasOne(Product::class, "id", "product_id");
     }
 
     public function calculate()
@@ -68,12 +74,10 @@ class Price extends Model
     }
     public function getNetSpaAttribute()
     {
-        return $this->net * 1.20;
+        return $this->priceRulesSpa->calculate($this->net, $this->spa);
     }
     public function getNetMonthlySpaAttribute()
     {
-        return $this->net_monthly * 1.20;
+        return $this->priceRulesSpa->calculate($this->net_monthly, $this->spa);
     }
-
-    
 }

@@ -102,8 +102,8 @@ class Order extends Model
         $margin_value = (($this->total + $this->total_monthly) - $total_cost);
 
         $this->margin = $total_cost ? ($margin_value / $total_cost) * 100 : 0;
-        $this->tax_comission = Auth::user()->tax_comission ?? 5;
-        $this->comission_value = $this->total * ($this->tax_comission / 100);
+        $this->tax_comission = Auth::user()->tax_comission ?? 0;
+        $this->comission_value = $margin_value * ($this->tax_comission / 100);
         $this->save();
     }
 }
