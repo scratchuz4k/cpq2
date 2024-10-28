@@ -84,8 +84,8 @@ const items = ref([
                     <div class="text-danger" v-if="user.errors.password">{{ user.errors.password }}</div>
                 </div>
                 <div class="row mb-3">
-                    <label for="supplier-name" class="form-label">Role:</label>
-                    <select class="form-select" v-model="user.role_id">
+                    <label for="user-role" class="form-label">Role:</label>
+                    <select id="user-role" class="form-select" v-model="user.role_id">
                         <option v-for="role in roles" :value="role.id">{{ role.name }}</option>
                     </select>
                 </div>
@@ -98,14 +98,14 @@ const items = ref([
                     </div>
                 </div>
                 <div class="row mb-3">
-                    <label for="user-name" class="form-label">Manager:</label>
-                    <select class="form-select" v-model="user.parent_id">
+                    <label for="user-manager" class="form-label">Manager:</label>
+                    <select id="user-manager" class="form-select" v-model="user.parent_id">
                         <option value="0">No Manager</option>
                         <option v-for="manager in managers" :value="manager.id">{{ manager.name }}</option>
                     </select>
                 </div>
                 <div class="row mb-3" v-if="hasRole('Super Admin')">
-                    <label for="user-name" class="form-label">Tenants:</label>
+                    <label class="form-label">Tenants:</label>
                     <MultiSelect v-model="user.tenants" :options="tenants" optionLabel="name" optionValue="id">
                         <template #option="slotProps">
                             <div style="font-size:14px;line-height: 1.5rem;">{{ slotProps.option.name }}
