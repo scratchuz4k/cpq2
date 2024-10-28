@@ -46,7 +46,7 @@ const submitFileForm = () => {
 const items = ref([
     { label: 'Home', url: '/' },
     { label: 'My Account', url: '/myaccount' },
-    { label: 'Users', url: '/users' },
+    { label: 'Users' },
 ]);
 </script>
 <template>

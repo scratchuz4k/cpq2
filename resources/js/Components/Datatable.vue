@@ -210,8 +210,9 @@ getData()
                                     <select :id="`filter-value-${key}`" class="form-select w-100"
                                         v-model="form.filters[key].value">
                                         <option :value="null">All</option>
-                                        <option v-for="option in filters[column.data].options" :value="option">
-                                            {{ option }}
+                                        <option v-for="option in filters[column.data].options"
+                                            :value="typeof option === 'object' ? option.value : option">
+                                            {{ typeof option === 'object' ? option.label : option }}
                                         </option>
                                     </select>
                                 </div>
