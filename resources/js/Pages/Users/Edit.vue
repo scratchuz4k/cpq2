@@ -17,7 +17,7 @@ const props = defineProps({
 
 const page = usePage()
 const form = reactive({
-    parent_id: props.user.parent_id,
+    parent_id: props.user.parent_id ?? 0,
     role_id: props.user.roles.length ? props.user.roles[0].id : null,
     tenants: props.user.tenants.map((item) => item.id)
 })
@@ -93,6 +93,7 @@ const items = ref([
                     <div class="row mb-3">
                         <label for="user-name" class="form-label">Manager:</label>
                         <select class="form-select" v-model="form.parent_id">
+                            <option value="0">No Manager</option>
                             <option v-for="manager in managers" :value="manager.id">{{ manager.name }}</option>
                         </select>
                     </div>

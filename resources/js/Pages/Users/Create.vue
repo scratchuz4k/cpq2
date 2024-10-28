@@ -20,7 +20,7 @@ const user = useForm({
     email: null,
     password: null,
     role_id: null,
-    parent_id: props.parent_id ?? null,
+    parent_id: props.parent_id ?? 0,
     commission_rate: 0,
     tenants: [page.props.tenant.id],
     sso: false
@@ -97,6 +97,7 @@ const items = ref([
                 <div class="row mb-3">
                     <label for="user-name" class="form-label">Manager:</label>
                     <select class="form-select" v-model="user.parent_id">
+                        <option value="0">No Manager</option>
                         <option v-for="manager in managers" :value="manager.id">{{ manager.name }}</option>
                     </select>
                 </div>

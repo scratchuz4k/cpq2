@@ -19,6 +19,10 @@ class UsersService
                 $array['password'] = Hash::make($array['password']);
             }
 
+            if (array_key_exists('parent_id', $array) && $array['parent_id'] == 0) {
+                $array['parent_id'] = null;
+            }
+
             $user = User::create($array);
 
             if (array_key_exists('role_id', $array) && !empty($array['role_id'])) {
@@ -41,6 +45,10 @@ class UsersService
             $array['password'] = Hash::make($array['password']);
         } else {
             $array['password'] = $user->password;
+        }
+
+        if (array_key_exists('parent_id', $array) && $array['parent_id'] == 0) {
+            $array['parent_id'] = null;
         }
 
         return DB::transaction(function () use ($user, $array) {
