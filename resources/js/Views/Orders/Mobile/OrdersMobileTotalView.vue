@@ -8,6 +8,24 @@ const props = defineProps({
 
 const isLoading = ref(false)
 const order = reactive(props.modelValue)
+const recurringNewLine = reactive({
+    name: null,
+    margin: 0,
+    discount: 0,
+    quantity: 0,
+    price: 0,
+    price_monthly: 0,
+})
+const oneOffNewLine = reactive({
+    name: null,
+    margin: 0,
+    discount: 0,
+    quantity: 0,
+    price: 0,
+    price_monthly: 0,
+})
+
+
 const temp = reactive({
     margin: 0,
     discount: 0,
@@ -114,6 +132,27 @@ const cancel = (p) => {
     p.is_editing = !p.is_editing
 }
 
+const saveNewLine = async (item) => {
+    try {
+        let res = await axios.put(`/api/orders/${order.id}`,
+            {
+                items: [...order.items, item],
+            })
+        Object.assign(order, res.data)
+        item.show = false
+        Object.assign(item, {
+            name: null,
+            margin: 0,
+            discount: 0,
+            quantity: 0,
+            price: 0,
+            price_monthly: 0,
+        })
+    } catch (ex) {
+        notyf.error(ex.response.data.message)
+    }
+}
+
 getHardwareProducts()
 
 const items = ref([
@@ -138,19 +177,20 @@ const items = ref([
                         <thead>
                             <tr>
                                 <th style="width:40%">Product</th>
-                                <th class="text-center" style="width:15%"> Qty </th>
+                                <th class="text-center" style="width:10%"> Qty </th>
                                 <th style="width:10%"> Your Price</th>
                                 <th class="text-center" style="width:15%"> Discount</th>
                                 <th class="text-center" style="width:15%"> Margin</th>
                                 <th class="text-right" style="width:10%"> Sell Price</th>
                                 <th class="text-right">
                                     <font-awesome-icon id="btn-recurring-add" :icon="['fas', 'plus']"
-                                        @click="addLine()" />
+                                        @click="() => recurringNewLine.show = true" />
                                 </th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="(p, i) in order.items.filter((x) => x.price_monthly)" class="recurring-item bg-light-grey">
+                            <tr v-for="(p, i) in order.items.filter((x) => x.price_monthly)"
+                                class="recurring-item bg-light-grey">
                                 <td>
                                     {{ p.name }}
                                 </td>
@@ -181,7 +221,7 @@ const items = ref([
                                 </td>
                                 <td>
                                     <div class="d-flex">
-                                        <template v-if="!p.is_editing">
+                                        <template v-if="!p.is_editing && p.id">
                                             <font-awesome-icon :id="'btn-recurring-' + i + '-edit'" class="me-2"
                                                 :icon="['fas', 'edit']" @click="edit(p)" />
                                             <font-awesome-icon :id="'btn-recurring-' + i + '-remove'"
@@ -197,6 +237,38 @@ const items = ref([
                                 </td>
                             </tr>
                         </tbody>
+                        <tfoot v-if="recurringNewLine.show">
+                            <tr>
+                                <th>
+                                    <input :id="'input-new-recurring-name'" class="form-control py-0" type="text"
+                                        v-model="recurringNewLine.name">
+                                </th>
+                                <th class="text-center">
+                                    <input :id="'input-new-recurring-qty'" class="form-control py-0" type="number"
+                                        v-model="recurringNewLine.quantity">
+                                </th>
+                                <th>
+                                    <input :id="'input-new-recurring-original_price_monthly'" class="form-control py-0"
+                                        type="number" v-model="recurringNewLine.price_monthly">
+                                </th>
+                                <th class="text-center">
+                                    <input :id="'input-new-recurring-discount'" class="form-control py-0" type="number"
+                                        v-model="recurringNewLine.discount">
+                                </th>
+                                <th class="text-center">
+                                    <input :id="'input-new-recurring-margin'" class="form-control py-0" type="number"
+                                        v-model="recurringNewLine.margin">
+                                </th>
+                                <th class="text-right"> </th>
+                                <th class="text-right">
+                                    <font-awesome-icon :id="'btn-recurring-' + i + '-cancel'" class="me-2"
+                                        :icon="['fas', 'cancel']" @click="() => recurringNewLine.show = false" />
+                                    <font-awesome-icon id="btn-recurring-add" :icon="['fas', 'save']"
+                                        @click="saveNewLine(recurringNewLine)" />
+                                </th>
+                            </tr>
+                        </tfoot>
+
                     </table>
                 </div>
                 <div v-if="order.items.find((x) => x.price)" class="mb-5">
@@ -209,12 +281,15 @@ const items = ref([
                         <thead>
                             <tr>
                                 <th style="width:40%">Product</th>
-                                <th class="text-center" style="width:15%"> Qty </th>
+                                <th class="text-center" style="width:10%"> Qty </th>
                                 <th style="width:10%"> Your Price</th>
                                 <th class="text-center" style="width:15%"> Discount</th>
                                 <th class="text-center" style="width:15%"> Margin</th>
                                 <th class="text-right" style="width:10%"> Sell Price</th>
-                                <th> </th>
+                                <th class="text-right">
+                                    <font-awesome-icon id="btn-recurring-add" :icon="['fas', 'plus']"
+                                        @click="() => oneOffNewLine.show = true" />
+                                </th>
                             </tr>
                         </thead>
                         <tbody>
@@ -265,6 +340,37 @@ const items = ref([
                                 </td>
                             </tr>
                         </tbody>
+                        <tfoot v-if="oneOffNewLine.show">
+                            <tr>
+                                <th>
+                                    <input :id="'input-new-one_off-name'" class="form-control py-0" type="text"
+                                        v-model="oneOffNewLine.name">
+                                </th>
+                                <th class="text-center">
+                                    <input :id="'input-new-one_off-qty'" class="form-control py-0" type="number"
+                                        v-model="oneOffNewLine.quantity">
+                                </th>
+                                <th>
+                                    <input :id="'input-new-one_off-original_price'" class="form-control py-0"
+                                        type="number" v-model="oneOffNewLine.price">
+                                </th>
+                                <th class="text-center">
+                                    <input :id="'input-new-one_off-discount'" class="form-control py-0" type="number"
+                                        v-model="oneOffNewLine.discount">
+                                </th>
+                                <th class="text-center">
+                                    <input :id="'input-new-one_off-margin'" class="form-control py-0" type="number"
+                                        v-model="oneOffNewLine.margin">
+                                </th>
+                                <th class="text-right"> </th>
+                                <th class="text-right">
+                                    <font-awesome-icon :id="'btn-one_off-' + i + '-cancel'" class="me-2"
+                                        :icon="['fas', 'cancel']" @click="() => oneOffNewLine.show = false" />
+                                    <font-awesome-icon id="btn-one_off-add" :icon="['fas', 'save']"
+                                        @click="saveNewLine(oneOffNewLine)" />
+                                </th>
+                            </tr>
+                        </tfoot>
                     </table>
                 </div>
 

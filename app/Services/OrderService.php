@@ -41,7 +41,8 @@ class OrderService
             if (array_key_exists('items', $array)) {
                 foreach ($array['items'] as $order_item) {
                     $order_item['order_id'] = $order->id;
-                    if ($temp = OrderItem::find($order_item['id'])) {
+                    if (array_key_exists('id', $order_item)) {
+                        $temp = OrderItem::find($order_item['id']);
                         $this->orderItemService->update($temp, $order_item);
                         continue;
                     }
