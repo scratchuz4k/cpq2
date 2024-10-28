@@ -72,10 +72,10 @@ const selectItem = async (modelValue, item ) => {
     let index = modelValue.findIndex((temp) => temp.id === item.id)
 
     if (index === -1) {
-        let temp = {}
-        Object.assign(temp, item)
-        delete temp.children
-        modelValue.push(temp)
+        // let temp = {}
+        // Object.assign(temp, item)
+        // delete temp.children
+        modelValue.push(item)
     } else {
         modelValue.splice(index, 1)
     }

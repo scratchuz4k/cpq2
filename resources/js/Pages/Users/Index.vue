@@ -54,34 +54,27 @@ const submitFileForm = () => {
 };
 
 
-const saveCommission = (data, toggleModal = null) => {
-    router.put(`/users/${data.id}`, { comission_rate: commission.value},
-        {
-            onSuccess: (page) => {
-                notyf.success("Updated with Success")
-                if (toggleModal !== null)
-                    toggleModal()
-            },
-            onError: (errors) => {
-                let string = ''
-                Object.keys(errors).forEach((key) => {
-                    string += errors[key] + '<br>'
-                })
-                notyf.error(string)
-                if (toggleModal !== null)
-                    toggleModal()
-            },
-        }
-    )
-
+const saveCommission = async (data, commission, toggleModal = null) => {
+    try {
+        let res = await axios.put(`/api/users/${data.id}`, { commission_rate: commission})
+        data.commission_rate = commission;
+        if (toggleModal !== null)
+            toggleModal()
+    } catch (e) {
+        notyf.error(e.message)
+        if (toggleModal !== null)
+            toggleModal()
+    }
 }
 
-const saveCommissionBulk = (data) => {
-    data.forEach((item) => {
-        saveCommission(item)
+const saveCommissionBulk = (items, toggleModal = null) => {
+    items.forEach((item) => {
+        saveCommission(item, commission.value, toggleModal)
     })
     showModal.value = false
     commission.value = 0
+
+    notyf.success("Updated with Success")
 }
 
 const items = ref([
@@ -151,7 +144,7 @@ const items = ref([
                                     <div class="btn btn-secondary me-2" @click="toggleModal()">
                                         Cancel
                                     </div>
-                                    <PrimaryButton class="btn btn-primary" @click="saveCommission(data, toggleModal)" >
+                                    <PrimaryButton class="btn btn-primary" @click="saveCommissionBulk([data], toggleModal)" >
                                         Save
                                     </PrimaryButton>
                                 </div>
@@ -181,7 +174,7 @@ const items = ref([
                         <div class="btn btn-secondary me-2" @click="showModal = false">
                             Cancel
                         </div>
-                            <PrimaryButton class="btn btn-primary" @click="saveCommissionBulk(selectedItems)" :disabled="!(selectedItems.length > 0)">
+                        <PrimaryButton class="btn btn-primary" @click="saveCommissionBulk(selectedItems)" :disabled="!(selectedItems.length > 0)">
                             Save
                         </PrimaryButton>
                     </div>

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Helpers\DataProvider;
 use App\Http\Controllers\BaseController;
+use App\Http\Requests\UserUpdateRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use App\Services\UsersService;
@@ -71,9 +72,15 @@ class UserController extends BaseController
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, User $user)
+    public function update(UserUpdateRequest $request, User $user)
     {
-        //
+        try {
+            $user = $this->usersService->update($user, $request->all());
+        } catch (\Exception $e) {
+            throw new \Exception($e);
+        }
+
+        return new UserResource($user);
     }
 
     /**

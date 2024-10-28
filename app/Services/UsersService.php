@@ -47,7 +47,6 @@ class UsersService
 
             $user->update($array);
 
-            $user->update($array);
             if (array_key_exists('role_id', $array)) {
                 $user->syncRoles($array['role_id']);
             }
