@@ -36,7 +36,6 @@ class OrderService
     public function update(Order $order, array $array): Order
     {
         return DB::transaction(function () use ($order, $array) {
-
             $order->update($array);
             if (array_key_exists('items', $array)) {
                 foreach ($array['items'] as $order_item) {

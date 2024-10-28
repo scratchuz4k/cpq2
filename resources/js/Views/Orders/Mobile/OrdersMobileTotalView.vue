@@ -88,14 +88,15 @@ const save = async (p) => {
     }
 }
 
-const saveDiscount = async (p) => {
+const saveOrder = async (p) => {
     isLoading.value = true
-    if (order.discount == '') {
+    if (order.discount === '') {
         return
     }
     try {
         let res = await axios.put(`/api/orders/${order.id}`,
             {
+                contract_length: order.contract_length,
                 discount: order.discount,
             })
         Object.assign(order, res.data)
@@ -118,6 +119,7 @@ const resetQuote = async () => {
     try {
         let res = await axios.put(`/api/orders/${order.id}`,
             {
+                contract_length: 0,
                 discount: 0,
                 items: order.items,
             })
@@ -173,7 +175,7 @@ const items = ref([
                         <h3>Recurring charges</h3>
                         <h3 id="recurring_total">{{ GBP.format(order.total_monthly) }}</h3>
                     </div>
-                    <table class="table">
+                    <table id="table-recurring" class="table">
                         <thead>
                             <tr>
                                 <th style="width:40%">Product</th>
@@ -248,7 +250,7 @@ const items = ref([
                                         v-model="recurringNewLine.quantity">
                                 </th>
                                 <th>
-                                    <input :id="'input-new-recurring-original_price_monthly'" class="form-control py-0"
+                                    <input :id="'input-new-recurring-price_monthly'" class="form-control py-0"
                                         type="number" v-model="recurringNewLine.price_monthly">
                                 </th>
                                 <th class="text-center">
@@ -261,9 +263,9 @@ const items = ref([
                                 </th>
                                 <th class="text-right"> </th>
                                 <th class="text-right">
-                                    <font-awesome-icon :id="'btn-recurring-' + i + '-cancel'" class="me-2"
+                                    <font-awesome-icon :id="'btn-new-recurring-cancel'" class="me-2"
                                         :icon="['fas', 'cancel']" @click="() => recurringNewLine.show = false" />
-                                    <font-awesome-icon id="btn-recurring-add" :icon="['fas', 'save']"
+                                    <font-awesome-icon id="btn-new-recurring-add" :icon="['fas', 'save']"
                                         @click="saveNewLine(recurringNewLine)" />
                                 </th>
                             </tr>
@@ -277,7 +279,7 @@ const items = ref([
                         <h3>One off charges</h3>
                         <h3 id="one_off_total">{{ GBP.format(order.total) }}</h3>
                     </div>
-                    <table class="table">
+                    <table id="table-one_off" class="table">
                         <thead>
                             <tr>
                                 <th style="width:40%">Product</th>
@@ -287,7 +289,7 @@ const items = ref([
                                 <th class="text-center" style="width:15%"> Margin</th>
                                 <th class="text-right" style="width:10%"> Sell Price</th>
                                 <th class="text-right">
-                                    <font-awesome-icon id="btn-recurring-add" :icon="['fas', 'plus']"
+                                    <font-awesome-icon id="btn-one_off-add" :icon="['fas', 'plus']"
                                         @click="() => oneOffNewLine.show = true" />
                                 </th>
                             </tr>
@@ -351,7 +353,7 @@ const items = ref([
                                         v-model="oneOffNewLine.quantity">
                                 </th>
                                 <th>
-                                    <input :id="'input-new-one_off-original_price'" class="form-control py-0"
+                                    <input :id="'input-new-one_off-price'" class="form-control py-0"
                                         type="number" v-model="oneOffNewLine.price">
                                 </th>
                                 <th class="text-center">
@@ -364,9 +366,9 @@ const items = ref([
                                 </th>
                                 <th class="text-right"> </th>
                                 <th class="text-right">
-                                    <font-awesome-icon :id="'btn-one_off-' + i + '-cancel'" class="me-2"
+                                    <font-awesome-icon :id="'btn-new-one_off-cancel'" class="me-2"
                                         :icon="['fas', 'cancel']" @click="() => oneOffNewLine.show = false" />
-                                    <font-awesome-icon id="btn-one_off-add" :icon="['fas', 'save']"
+                                    <font-awesome-icon id="btn-new-one_off-add" :icon="['fas', 'save']"
                                         @click="saveNewLine(oneOffNewLine)" />
                                 </th>
                             </tr>
@@ -380,7 +382,7 @@ const items = ref([
                             <span class="text-primary">1 payment </span> of
                             {{ GBP.format(order.total) }}<br>
                             followed by
-                            <span class="text-primary">12 monthly payments</span> of
+                            <span class="text-primary"> {{ order.contract_length }} monthly payments</span> of
                             {{ GBP.format(order.total_monthly) }}
                         </p>
                     </div>
@@ -408,14 +410,19 @@ const items = ref([
                         </div>
                     </InfoBox>
                     <div class="price-mobile-sidebar px-4 pt-4 pb-2 mb-3">
-                        <h3 class="mb-3">Overall Discount</h3>
+                        <h3 class="mb-3">Overall Informations</h3>
                         <div class="mb-3">
-                            <label class="form-label">Recurring charges</label>
+                            <label class="form-label">Contract Length (Months)</label>
+                            <input id="input-global-contratct-length" type="number" class="form-control"
+                                v-model="order.contract_length">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Quote Discount</label>
                             <input id="input-global-discount" type="number" class="form-control"
                                 v-model="order.discount">
                         </div>
-                        <button id="btn-apply-global-discount" class="btn btn-secondary w-100 mb-2"
-                            @click="saveDiscount()" :disabled="isLoading">
+                        <button id="btn-apply-global-discount" class="btn btn-secondary w-100 mb-2" @click="saveOrder()"
+                            :disabled="isLoading">
                             Apply to quote
                         </button>
                         <button id="btn-reset-quote" class="btn w-100" @click="resetQuote()" :disabled="isLoading">

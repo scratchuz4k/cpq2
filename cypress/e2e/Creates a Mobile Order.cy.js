@@ -1,4 +1,4 @@
-const crypto = require('crypto');
+const crypto = require("crypto");
 const rand = (notAllowedNumber, max = 101) => {
     let randomNumber = Math.floor(Math.random() * max); // Generate a random number
 
@@ -10,16 +10,16 @@ const rand = (notAllowedNumber, max = 101) => {
 }
 // Function to generate hash
 const generateHash = (input) => {
-    return crypto.createHash('md5').update(input).digest('hex'); // SHA-256 hash
+    return crypto.createHash("md5").update(input).digest("hex"); // SHA-256 hash
 }
 const getCurrentDate = () => {
     const currentDate = new Date();
     const year = currentDate.getFullYear();
-    const month = String(currentDate.getMonth() + 1).padStart(2, '0');
-    const day = String(currentDate.getDate()).padStart(2, '0');
-    const hour = String(currentDate.getHours()).padStart(2, '0');
-    const minute = String(currentDate.getMinutes()).padStart(2, '0');
-    const millisecond = String(currentDate.getMilliseconds()).padStart(3, '0');
+    const month = String(currentDate.getMonth() + 1).padStart(2, "0");
+    const day = String(currentDate.getDate()).padStart(2, "0");
+    const hour = String(currentDate.getHours()).padStart(2, "0");
+    const minute = String(currentDate.getMinutes()).padStart(2, "0");
+    const millisecond = String(currentDate.getMilliseconds()).padStart(3, "0");
 
     // Create a readable date string
     const readableDate = `${year}-${month}-${day} ${hour}:${minute}:${millisecond}`;
@@ -69,9 +69,9 @@ describe("Creates a Mobile Order", () => {
         });
 
         cy.get("#btn-step-3-next").click()
-        
-        cy.get(".recurring-item").should('have.length', 4)
-        cy.get(".one_off-item").should('have.length', 1)
+
+        cy.get(".recurring-item").should("have.length", 4)
+        cy.get(".one_off-item").should("have.length", 1)
     })
     it("I can change Margin and Discount", () => {
         cy.visit("/")
@@ -136,7 +136,7 @@ describe("Creates a Mobile Order", () => {
         }).clear().type(rand(order.global));
 
         cy.get("#btn-apply-global-discount").click()
-        cy.get("#btn-apply-global-discount", { timeout: 3000 }).should('not.be.disabled');
+        cy.get("#btn-apply-global-discount", { timeout: 3000 }).should("not.be.disabled");
 
         cy.get("#input-margin-order").invoke("val")
             .then((val) => {
@@ -149,11 +149,46 @@ describe("Creates a Mobile Order", () => {
 
         cy.get("#btn-reset-quote").click()
         cy.get("body > div.swal2-container.swal2-center.swal2-backdrop-show > div > div.swal2-actions > button.swal2-confirm.btn.text-light.btn-lg.mr-2.fs-6.swal2-styled.swal2-default-outline").click()
-        cy.get("#btn-reset-quote", { timeout: 3000 }).should('not.be.disabled');
+        cy.get("#btn-reset-quote", { timeout: 3000 }).should("not.be.disabled");
         cy.get("#input-margin-order").invoke("val")
             .then((val) => {
                 expect(val).to.equal("0.00 %");
             });
+    })
+    it("I can add and delete a Custom Line", () => {
+        cy.visit("/")
+        cy.get("#datatable-btn-0-show").click()
+        cy.get("#btn-recurring-add").click()
+        cy.get("#input-new-recurring-name").type("Custom line recurring")
+        cy.get("#input-new-recurring-qty").type(10)
+        cy.get("#input-new-recurring-price_monthly").type(10)
+        cy.get("#input-new-recurring-discount").type(10)
+        cy.get("#input-new-recurring-margin").type(20)
+        cy.get("#btn-new-recurring-add").click()
+        cy.get("#table-recurring").contains("Custom line recurring")
+
+        cy.get("#btn-one_off-add").click()
+        cy.get("#input-new-one_off-name").type("Custom line one_off")
+        cy.get("#input-new-one_off-qty").type(10)
+        cy.get("#input-new-one_off-price").type(10)
+        cy.get("#input-new-one_off-discount").type(10)
+        cy.get("#input-new-one_off-margin").type(20)
+        cy.get("#btn-new-one_off-add").click()
+        cy.get("#table-one_off").contains("Custom line one_off")
+
+        cy.get(".recurring-item")
+            .its("length")
+            .then(count => {
+                cy.get(`#btn-recurring-${count - 1}-remove`).click()
+            });
+
+        cy.get("body > div.swal2-container.swal2-center.swal2-backdrop-show > div > div.swal2-actions > button.swal2-confirm.btn.text-light.btn-lg.mr-2.fs-6.swal2-styled.swal2-default-outline").click()
+        cy.get(".one_off-item")
+            .its("length")
+            .then(count => {
+                cy.get(`#btn-one_off-${count - 1}-remove`).click()
+            });
+        cy.get("body > div.swal2-container.swal2-center.swal2-backdrop-show > div > div.swal2-actions > button.swal2-confirm.btn.text-light.btn-lg.mr-2.fs-6.swal2-styled.swal2-default-outline").click()
     })
 });
 

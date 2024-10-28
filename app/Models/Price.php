@@ -32,11 +32,6 @@ class Price extends Model
 {
     use HasFactory, SetTenantId;
 
-    public function __construct(protected PriceRulesSpa $priceRulesSpa)
-    {
-        parent::__construct();
-    }
-
     protected $fillable = ["code", "tax_rate", "net", "tax", "gross", "net_monthly", "tax_monthly", "gross_monthly", "spa_id", "product_id", "tenant_id"];
 
     protected $appends = ["net_spa", "net_monthly_spa"];
@@ -74,10 +69,10 @@ class Price extends Model
     }
     public function getNetSpaAttribute()
     {
-        return $this->priceRulesSpa->calculate($this->net, $this->spa);
+        return $this->net * 1.20;
     }
     public function getNetMonthlySpaAttribute()
     {
-        return $this->priceRulesSpa->calculate($this->net_monthly, $this->spa);
+        return $this->net_monthly * 1.20;
     }
 }

@@ -14,11 +14,6 @@ class OrderUpdateRequest extends FormRequest
     {
         return true;
     }
-    public function prepareForValidation()
-    {
-        $this->merge(['user_id' => Auth::id()]);
-    }
-
 
     /**
      * Get the validation rules that apply to the request.
