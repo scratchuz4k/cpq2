@@ -44,7 +44,7 @@ class DataProvider
         }
 
         foreach ($filters as $filter) {
-            if (!$filter['value']) {
+            if (is_null($filter['value'])) {
                 continue;
             }
 
