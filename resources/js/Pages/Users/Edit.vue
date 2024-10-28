@@ -83,7 +83,7 @@ const items = ref([
                             <option v-for="tempRole in roles" :value="tempRole.id">{{ tempRole.name }}</option>
                         </select>
                     </div>
-                    <div v-if="roles.find((item) => item.id === role_id).name === 'Sales Rep'" class="row mb-3">
+                    <div v-if="roles.find((item) => item.id === form.role_id).name === 'Sales Rep'" class="row mb-3">
                         <label for="user-commission-rate" class="form-label">Commission Rate:</label>
                         <div class="input-group p-0">
                             <input id="user-commission-rate" type="number" class="form-control" v-model="user.commission_rate">

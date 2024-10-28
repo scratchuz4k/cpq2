@@ -19,14 +19,17 @@ const user = useForm({
     name: null,
     email: null,
     password: null,
-    role_id: null,
+    role_id: props.roles.find(role => role.name.toLowerCase() === 'sales rep').id,
     parent_id: props.parent_id ?? 0,
     commission_rate: 0,
     tenants: [page.props.tenant.id],
     sso: false
 })
 
-const showCommissionRate = computed(() => user.role_id === 4)
+const showCommissionRate = computed(() => {
+    let temp = props.roles.find((item) => item.name.toLowerCase() === 'sales rep')
+    return temp.id === user.role_id;
+})
 
 const saveUser = () => {
     user.tenants = user.tenants
@@ -111,15 +114,14 @@ const items = ref([
                     </MultiSelect>
                 </div>
                 <div class="row mb-3">
-                    <div class="form-check">
+                    <div class="form-check p-0">
                         <Checkbox id="user-sso" name="user-sso" class="form-check-input" v-model:checked="user.sso" />
-                        <label class="form-check-label" for="user-sso">
+                        <label class="form-check-label ms-2" for="user-sso">
                             Single sign-on (SSO) login only
                         </label>
                     </div>
                 </div>
             </div>
-
         </div>
     </AuthenticatedLayout>
 </template>

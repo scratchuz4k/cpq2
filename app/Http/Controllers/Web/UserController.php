@@ -73,6 +73,7 @@ class UserController extends BaseController
     {
         $users = $this->usersService->getChildAndOrphansUser();
         $users = $users->where('tenant_id', request()->user()->tenant_id);
+        $users = $users->where('id', '!=', $user->id);
 
         return Inertia::render('Users/Edit', [
             'user'          => (new UserResource($user))->toArray(request()),
