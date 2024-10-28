@@ -2,7 +2,6 @@
 import MultiSelect from 'primevue/multiselect';
 import { ref } from "vue";
 import PrimaryButton from '@/Components/PrimaryButton.vue';
-import Checkbox from '@/Components/Checkbox.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, router, useForm, usePage } from "@inertiajs/vue3";
 import { hasRole } from '@composables/useAuth'
@@ -19,7 +18,6 @@ const user = useForm({
     name: null,
     email: null,
     password: null,
-    sso: 0,
     role_id: null,
     parent_id: null,
     tenants: [page.props.tenant.id]
@@ -97,14 +95,6 @@ const items = ref([
                             </div>
                         </template>
                     </MultiSelect>
-                </div>
-                <div class="row mb-3">
-                    <div class="form-check">
-                        <Checkbox id="user-sso" name="user-sso" class="form-check-input" v-model:checked="user.sso" />
-                        <label class="form-check-label" for="user-sso">
-                            Single sign-on (SSO) login only
-                        </label>
-                    </div>
                 </div>
             </div>
 
