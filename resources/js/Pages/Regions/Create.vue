@@ -39,7 +39,6 @@ const items = ref([
 
 </script>
 <template>
- {{ merchants}}
     <Head title="New Region" />
     <AuthenticatedLayout>
         <div class="panel">
