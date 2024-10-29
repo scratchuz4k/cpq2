@@ -1,5 +1,6 @@
 <script setup>
 import MultiSelect from 'primevue/multiselect';
+import Paginator from 'primevue/paginator';
 import axios from 'axios';
 import { router } from '@inertiajs/vue3';
 import { reactive, ref, watch } from 'vue'
@@ -9,8 +10,15 @@ const props = defineProps({
     modelValue: Object,
 })
 
-let data = []
-const modelsLimit = ref(15)
+const meta = reactive({
+    page: 1,
+    total: 0,
+    overallTotal: 0,
+    first: 1,
+    limit: 20,
+    isLoading: false
+})
+
 
 const urlParams = new URLSearchParams(window.location.search)
 const params = new Proxy(urlParams, {
@@ -24,6 +32,22 @@ const products = reactive({
     bolt_on: [],
 })
 const productsHardware = ref([])
+const filters = reactive({
+    models: {
+        operator: "in",
+        value: null
+    },
+    storage: {
+        operator: "in",
+        value: null
+    },
+})
+
+const filterList = reactive({
+    models: [],
+    storage: ['1TB', '512 GB', '256 GB', '128 GB', '64 GB', '32 GB', '16 GB'],
+})
+
 
 const getProducts = () => {
     Object.keys(products).forEach(async (key) => {
@@ -58,45 +82,33 @@ const checkValue = (product) => {
         product.quantity = 0
     }
 }
-const activeFilters = reactive({
-    models: [],
-    storage: [],
-})
-
-const filters = reactive({
-    models: [],
-    storage: ['1TB', '512 GB', '256 GB', '128 GB', '64 GB', '32 GB', '16 GB'],
-})
 
 const getProductsShopBlocks = async () => {
-    let res = await axios.post("/api/external/get-articles-from-shop-blocks")
-    data = res.data
-    data.forEach(element => {
+    meta.isLoading = true
+    let query = {
+        page: meta.page,
+        perPage: meta.limit,
+    };
+    let res = await axios.post("/api/external/get-articles-from-shop-blocks", query)
+    productsHardware.value = res.data.data
+    productsHardware.value.forEach(element => {
         let orderItem = props.modelValue.items.find(x => x.data?.name == element.name)
         element.quantity = orderItem ? orderItem.quantity : 0
         element.id = orderItem ? orderItem.id : null
-        if (!filters.models.find(x => x == element.model)) {
-            filters.models.push(element.model)
+        if (!filterList.models.find(x => x == element.model)) {
+            filterList.models.push(element.model)
         }
     });
-    filterData(data)
+    meta.first = (meta.page - 1) * meta.limit
+    meta.total = res.data.total
+    meta.overallTotal = res.data.overall_total
+    meta.isLoading = false
 }
 
-const filterData = (data) => {
-    productsHardware.value = data.filter((item) => {
-        let l = activeFilters.models.length
-        return l ? activeFilters.models.reduce((acc, num) => {
-            acc = acc || item.model.toLowerCase().includes(num.toLowerCase())
-            return acc
-        }, false) : true
-    })
-    productsHardware.value = productsHardware.value.filter((item) => {
-        let l = activeFilters.storage.length
-        return l ? activeFilters.storage.reduce((acc, num) => {
-            acc = acc || item.name.toLowerCase().includes(num.toLowerCase())
-            return acc
-        }, false) : true
-    })
+const handlePaginator = (ev) => {
+    meta.limit = ev.rows
+    meta.page = ev.page + 1
+    getProductsShopBlocks()
 }
 
 const addQuantity = (product, quantity) => {
@@ -169,8 +181,8 @@ const saveQuote = () => {
 getProductsShopBlocks()
 getProducts()
 
-watch(activeFilters, () => {
-    filterData(data)
+watch(filterList, () => {
+    getProductsShopBlocks()
 })
 
 const items = ref([
@@ -316,23 +328,23 @@ const items = ref([
                             </button>
                         </div>
                         <div class="row">
-                            <div class="col">
+                            <div class="col-4">
                                 <label>Models</label>
-                                <MultiSelect v-model="activeFilters.models" :options="filters.models" placeholder="All"
+                                <MultiSelect v-model="filters.models.value" :options="filterList.models" placeholder="All"
                                     filter class="w-100">
                                 </MultiSelect>
                             </div>
-                            <div class="col">
+                            <div class="col-4">
                                 <label>Storage</label>
-                                <MultiSelect v-model="activeFilters.storage" :options="filters.storage"
+                                <MultiSelect v-model="filters.storage.value" :options="filterList.storage"
                                     placeholder="All" filter class="w-100">
                                 </MultiSelect>
                             </div>
-                            <div class="col">
+                            <div class="col-4">
                                 <label>Sort by</label>
-                                <MultiSelect v-model="activeFilters.models" :options="filters.models" placeholder="All"
+                                <!-- <MultiSelect v-model="activeFilters.models" :options="filters.models" placeholder="All"
                                     filter class="w-100">
-                                </MultiSelect>
+                                </MultiSelect> -->
                             </div>
                         </div>
                     </div>
@@ -382,7 +394,7 @@ const items = ref([
                                 </div>
                             </div>
 
-                            <div class="col d-flex justify-content-end">
+                            <div class="col-4 d-flex justify-content-end">
                                 <div class="me-3">
                                     <p v-if="product.stock > 0" class="badge text-bg-warning"
                                         style="--bs-bg-opacity: .5;">
@@ -401,9 +413,9 @@ const items = ref([
                             </div>
                         </div>
                     </div>
-                    <div class="label my-2" v-if="productsHardware.length">
-                        Showing {{ productsHardware.length }} products
-                    </div>
+                    <Paginator v-model:first="meta.first" :rows="meta.limit" :totalRecords="meta.total"
+                        :rowsPerPageOptions="[20, 30, 50]" @page="handlePaginator">
+                    </Paginator>
                     <div class="d-flex justify-content-between align-items-center">
                         <button id="btn-step-3-previous" class="btn btn-light step-nav btn-sm me-3" type="button"
                             @click="() => step--">
@@ -421,7 +433,6 @@ const items = ref([
                         </div>
                     </div>
                 </div>
-
             </div>
             <div class="col-lg-3 order-first order-lg-last mb-5">
                 <InfoBox>
