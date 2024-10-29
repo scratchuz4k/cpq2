@@ -1,4 +1,5 @@
 <script setup>
+import MultiSelect from 'primevue/multiselect';
 import axios from 'axios';
 import { router } from '@inertiajs/vue3';
 import { reactive, ref, watch } from 'vue'
@@ -64,7 +65,7 @@ const activeFilters = reactive({
 
 const filters = reactive({
     models: [],
-    storage: [],
+    storage: ['1TB', '512 GB', '256 GB', '128 GB', '64 GB', '32 GB', '16 GB'],
 })
 
 const getProductsShopBlocks = async () => {
@@ -79,15 +80,6 @@ const getProductsShopBlocks = async () => {
         }
     });
     filterData(data)
-}
-
-const addFilter = (items, item) => {
-    let index = items.findIndex(x => x == item)
-    if (index == -1) {
-        items.push(item)
-        return
-    }
-    items.splice(index, 1)
 }
 
 const filterData = (data) => {
@@ -181,32 +173,22 @@ watch(activeFilters, () => {
     filterData(data)
 })
 
+const items = ref([
+    { label: 'Home', url: '/' },
+    { label: 'Create a quote' },
+]);
+
+
 </script>
 <template>
     <div class="panel panel-mobile">
-        <div class="row">
-            <div class="col-lg-9">
-                <h2 class="mb-4">Create a quote</h2>
-                <InfoBox>
-                    <h4>Customer Details</h4>
-                    <p class="mb-0">
-                        <b>Name:</b> {{ modelValue.account?.name }}<br>
-
-                        <template v-if="modelValue?.address_line1">
-                            <b>Address:</b> {{ modelValue?.address_line1 }}<br>
-                        </template>
-                        <template v-if="modelValue.account?.primary_contact_name">
-                            <b>Primary Contact:</b> {{ modelValue.account?.primary_contact_name }}<br>
-                        </template>
-                        <template v-if="modelValue.account?.email">
-                            <b>Email:</b> {{ modelValue.account?.email }}<br>
-                        </template>
-                    </p>
-                </InfoBox>
+        <Header title="Create a Quote" :breadcrumbs="items"></Header>
+        <div class="row justify-content-between">
+            <div class="col-lg-7">
                 <div v-if="step == 1" id="mobile_step1" class="step">
                     <div class="d-flex justify-content-between mb-3">
-                        <h3>Select some products to get started</h3>
-                        <p class="m-0 mb-2 text-primary bold">STEP 1/3</p>
+                        <h2>Select some products to get started</h2>
+                        <p class="bigger bold text-primary">STEP 1/3</p>
                     </div>
 
                     <div v-for="(product, index) in products.plan" class="mobile-item mobile-product mb-3">
@@ -260,7 +242,7 @@ watch(activeFilters, () => {
                 </div>
                 <div v-if="step == 2" id="mobile_step2" class="step">
                     <div class="d-flex justify-content-between mb-3">
-                        <h3>Next, choose your bolt-ons</h3>
+                        <h2>Next, choose your bolt-ons</h2>
                         <p class="m-0 mb-2 text-primary bold">STEP 2/3</p>
                     </div>
                     <div v-for="(product, index) in products.bolt_on" class="mobile-item mobile-product mb-3">
@@ -319,135 +301,109 @@ watch(activeFilters, () => {
                     </div>
                 </div>
                 <div v-if="step == 3" id="mobile_step3" class="step">
-                    <div class="d-flex justify-content-between mb-3">
-                        <h3>Finally, choose your add-ons</h3>
-                        <p class="m-0 mb-2 text-primary bold">STEP 3/3</p>
+                    <div class="d-flex align-items-end mb-3">
+                        <h2 class="m-0">Finally, choose your add-ons</h2>
+                        <p class="m-0 ms-2 text-primary bold">STEP 3/3</p>
                     </div>
-                    <div class="mobile-item mobile-add-on mb-3">
-                        <div class="d-flex justify-content-between">
-                            <h4>Handsets</h4>
-                            <button class="btn btn-secondary btn-sm btn-clear-filters" type="button" disabled>Clear
-                                filters</button>
+                    <div class="d-flex justify-content-between mb-3">
+                        <h3>Handsets</h3>
+                    </div>
+                    <div class="panel mb-3">
+                        <div class="d-flex justify-content-between mb-3">
+                            <h4>Filters</h4>
+                            <button class="btn border-0 p-0 text-primary" type="button">
+                                Clear filters
+                            </button>
                         </div>
-                        <div class="hardware-labels mb-3">
-                            <p class="mb-0">Models</p>
-                            <div v-for="i in modelsLimit" class="badge badge-label me-1 mb-1"
-                                :class="[activeFilters.models.find(x => x == filters.models[i]) ? 'active' : 'text-bg-secondary']"
-                                @click="addFilter(activeFilters.models, filters.models[i])">
-                                {{ filters.models[i] }}
+                        <div class="row">
+                            <div class="col">
+                                <label>Models</label>
+                                <MultiSelect v-model="activeFilters.models" :options="filters.models" placeholder="All"
+                                    filter class="w-100">
+                                </MultiSelect>
                             </div>
-                            <div class="d-flex mb-1">
-                                <div>
-                                    <a v-if="modelsLimit > 0" class="me-1" style="font-size: 12px;cursor:pointer"
-                                        @click="() => modelsLimit -= 10">Show fewer...</a>
-                                    <a v-if="modelsLimit + 1 < filters.models.length" class="me-1"
-                                        style="font-size: 12px;cursor:pointer" @click="() => modelsLimit += 10">Show
-                                        more...</a>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="hardware-filters mb-3">
-                            <p class="mb-1">Filters</p>
-                            <div class="mobile-item-filter">
+                            <div class="col">
                                 <label>Storage</label>
-                                <div class="badge badge-filter text-bg-dark m-1"
-                                    :class="[activeFilters.storage.find(x => x == '1TB') ? 'active' : 'text-bg-secondary']"
-                                    @click="addFilter(activeFilters.storage, '1TB')">
-                                    1 TB
-                                </div>
-                                <div class="badge badge-filter text-bg-dark m-1"
-                                    :class="[activeFilters.storage.find(x => x == '512GB') ? 'active' : 'text-bg-secondary']"
-                                    @click="addFilter(activeFilters.storage, '512GB')">
-                                    512 GB
-                                </div>
-                                <div class="badge badge-filter text-bg-dark m-1"
-                                    :class="[activeFilters.storage.find(x => x == '256GB') ? 'active' : 'text-bg-secondary']"
-                                    @click="addFilter(activeFilters.storage, '256GB')">
-                                    256 GB
-                                </div>
-                                <div class="badge badge-filter text-bg-dark m-1"
-                                    :class="[activeFilters.storage.find(x => x == '128GB') ? 'active' : 'text-bg-secondary']"
-                                    @click="addFilter(activeFilters.storage, '128GB')">
-                                    128 GB
-                                </div>
-                                <div class="badge badge-filter text-bg-dark m-1"
-                                    :class="[activeFilters.storage.find(x => x == '64GB') ? 'active' : 'text-bg-secondary']"
-                                    @click="addFilter(activeFilters.storage, '64GB')">
-                                    64 GB
-                                </div>
-                                <div class="badge badge-filter text-bg-dark m-1"
-                                    :class="[activeFilters.storage.find(x => x == '32GB') ? 'active' : 'text-bg-secondary']"
-                                    @click="addFilter(activeFilters.storage, '32GB')">
-                                    32 GB
-                                </div>
-                                <div class="badge badge-filter text-bg-dark m-1"
-                                    :class="[activeFilters.storage.find(x => x == '16GB') ? 'active' : 'text-bg-secondary']"
-                                    @click="addFilter(activeFilters.storage, '16GB')">
-                                    16 GB
-                                </div>
+                                <MultiSelect v-model="activeFilters.storage" :options="filters.storage"
+                                    placeholder="All" filter class="w-100">
+                                </MultiSelect>
+                            </div>
+                            <div class="col">
+                                <label>Sort by</label>
+                                <MultiSelect v-model="activeFilters.models" :options="filters.models" placeholder="All"
+                                    filter class="w-100">
+                                </MultiSelect>
                             </div>
                         </div>
+                    </div>
 
-                        <div class="hardware-products pb-3">
-                            <div v-if="!productsHardware.length"> No Hardware Found</div>
-                            <div v-for="(product, index) in productsHardware" class="hardware-product">
-                                <div class="text-center">
-                                    <a :href="product.url" target="_blank">
-                                        <img :src="product.primary_image" style="height: 200px;object-fit: contain;">
-                                    </a>
-                                </div>
-                                <b class="label">{{ product.model }}</b>
-                                <span>{{ product.sku }}</span>
-                                <span class="name mb-1">{{ product.name }}</span>
-                                <span class="price mb-2"> £{{ product.price }}</span>
-                                <p v-if="product.stock > 0" class="m-0 badge text-bg-warning">
-                                    <span :id="'hardware-' + index + '-stock'">
-                                        {{ product.stock }}
-                                    </span> in stock
-                                </p>
-                                <span v-else class="out-of-stock badge text-bg-danger">
-                                    <font-awesome-icon :icon="['fa', 'warning']" />
-                                    OUT OF STOCK
-                                </span>
-
-                                <div class="mobile-product-quantity pt-2">
-                                    <label>Quantity</label>
+                    <div v-if="!productsHardware.length"> No Hardware Found</div>
+                    <div v-for="(product, index) in productsHardware" class="panel p-4 mb-3">
+                        <div class="row">
+                            <div class="col-2">
+                                <a :href="product.url" target="_blank">
+                                    <img :src="product.primary_image" style="width: 100%;object-fit: contain;">
+                                </a>
+                            </div>
+                            <div class="col-6">
+                                <p class="big bold">{{ product.model }}</p>
+                                <p style="white-space: nowrap;overflow:hidden;text-overflow: ellipsis;">
+                                    {{ product.sku }} - {{ product.name }}</p>
+                                <div class="pt-3">
+                                    <p style="font-weight: 500;">Quantity</p>
                                     <div class="d-flex align-items-center mb-2">
                                         <button :id="'btn-hardware-' + index + '-remove-1'"
-                                            class="btn btn-secondary btn-sm me-1" type="button"
+                                            class="btn-quantity btn-minus-quantity" type="button"
                                             @click="removeQuantity(product, 1)" :disabled="!product.quantity">
                                             <font-awesome-icon :icon="['fas', 'minus']" />
                                         </button>
                                         <input :id="'input-hardware-' + index + '-quantity'" type="number"
-                                            class="form-control text-center input-qty me-1" v-model="product.quantity">
+                                            class="input-quantity" v-model="product.quantity">
                                         <button :id="'btn-hardware-' + index + '-add-1'"
-                                            class="btn btn-secondary btn-sm" type="button"
+                                            class="btn-quantity btn-add-quantity" type="button"
                                             @click="addQuantity(product, 1)"
                                             :disabled="checkPlansHardwareQuantity() <= 0">
                                             <font-awesome-icon :icon="['fas', 'plus']" />
                                         </button>
-                                    </div>
 
-                                    <button :id="'btn-hardware-' + index + '-add-25'"
-                                        class="badge text-bg-secondary badge-qty-add" style="text-decoration: none;"
-                                        @click="addQuantity(product, 25)"
-                                        :disabled="checkPlansHardwareQuantity() <= 0">+25</button>
-                                    <button :id="'btn-hardware-' + index + '-add-50'"
-                                        class="badge text-bg-secondary badge-qty-add mx-2"
-                                        style="text-decoration: none;" @click="addQuantity(product, 50)"
-                                        :disabled="checkPlansHardwareQuantity() <= 0">+50</button>
-                                    <button :id="'btn-hardware-' + index + '-add-100'"
-                                        class="badge text-bg-secondary badge-qty-add" style="text-decoration: none;"
-                                        @click="addQuantity(product, 100)"
-                                        :disabled="checkPlansHardwareQuantity() <= 0">+100</button>
+                                        <button :id="'btn-hardware-' + index + '-add-25'"
+                                            class="btn btn-sm ms-4 btn-add-custom-quantity"
+                                            @click="addQuantity(product, 25)"
+                                            :disabled="checkPlansHardwareQuantity() <= 0">+25</button>
+                                        <button :id="'btn-hardware-' + index + '-add-50'"
+                                            class="btn btn-sm ms-2 btn-add-custom-quantity"
+                                            @click="addQuantity(product, 50)"
+                                            :disabled="checkPlansHardwareQuantity() <= 0">+50</button>
+                                        <button :id="'btn-hardware-' + index + '-add-100'"
+                                            class="btn btn-sm ms-2 btn-add-custom-quantity"
+                                            @click="addQuantity(product, 100)"
+                                            :disabled="checkPlansHardwareQuantity() <= 0">+100</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col d-flex justify-content-end">
+                                <div class="me-3">
+                                    <p v-if="product.stock > 0" class="badge text-bg-warning"
+                                        style="--bs-bg-opacity: .5;">
+                                        <span :id="'hardware-' + index + '-stock'">
+                                            {{ product.stock }}
+                                        </span> in stock
+                                    </p>
+                                    <p v-else class="badge text-bg-danger" style="--bs-bg-opacity: .5;">
+                                        <font-awesome-icon :icon="['fa', 'warning']" />
+                                        OUT OF STOCK
+                                    </p>
+                                </div>
+                                <div>
+                                    <p class="bold big mb-3"> £{{ product.price }}</p>
                                 </div>
                             </div>
                         </div>
-                        <div class="label my-2" v-if="productsHardware.length"> Showing {{ productsHardware.length }}
-                            products</div>
                     </div>
-
+                    <div class="label my-2" v-if="productsHardware.length">
+                        Showing {{ productsHardware.length }} products
+                    </div>
                     <div class="d-flex justify-content-between align-items-center">
                         <button id="btn-step-3-previous" class="btn btn-light step-nav btn-sm me-3" type="button"
                             @click="() => step--">
@@ -465,8 +421,17 @@ watch(activeFilters, () => {
                         </div>
                     </div>
                 </div>
+
             </div>
             <div class="col-lg-3 order-first order-lg-last mb-5">
+                <InfoBox>
+                    <div style="font-size: 14px;">
+                        <b style="font-size: 16px;">Quote {{ modelValue.id }} for {{ modelValue.account.name }}</b>
+                        <br>
+                        Contact Number: 0124567890<br>
+                        Email: firstname.lastname@gmail.com
+                    </div>
+                </InfoBox>
                 <div class="configure-mobile-sidebar px-4 py-4" style="position: sticky; top: 25px">
                     <h4 id="sidebar_products" data-total="0">1. Products</h4>
                     <div class="sidebar_items mb-3">
@@ -505,20 +470,48 @@ watch(activeFilters, () => {
 </template>
 
 <style scoped>
-tr.active td {
-    background-color: var(--light-teal);
+.input-quantity {
+    width: 101px;
+    height: 32px;
+    padding: 8px 12px 8px 12px;
+    gap: 8px;
+    border-width: 1px;
+    border-style: solid;
+    border-color: #BDBDBD;
 }
 
-.active {
-    background-color: var(--highlight-darker) !important
+.btn-quantity {
+    outline: none;
+    border-style: solid;
+    border-color: #BDBDBD;
 }
 
-button.badge {
-    font-size: 9px;
+.btn-minus-quantity {
+    width: 36px;
+    height: 32px;
+    gap: 0px;
+    border-radius: 6px 0px 0px 6px;
+    background: #FFFFFF;
+    border-width: 1px 0px 1px 1px;
+    border-style: solid;
+    border-color: #BDBDBD;
 }
 
-.badge:disabled {
-    background: lightgray !important;
-    pointer-events: none;
+.btn-add-quantity {
+    width: 36px;
+    height: 32px;
+    gap: 0px;
+    border-radius: 0px 6px 6px 0px;
+    background: #FFFFFF;
+    border-width: 1px 1px 1px 0px;
+}
+
+.btn-add-custom-quantity {
+    font-size: 12px;
+    font-weight: 600;
+    border-radius: 20px;
+    text-decoration: none;
+    background: #F5E5F3;
+    color: #A34996;
 }
 </style>

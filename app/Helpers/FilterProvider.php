@@ -1,0 +1,81 @@
+<?php
+
+namespace App\Helpers;
+
+use Illuminate\Support\Str;
+use Illuminate\Support\Collection;
+
+class FilterProvider
+{
+
+    public static function get(array $data, array $filters)
+    {
+        $data = collect($data);
+        foreach ($filters as $filter) {
+            if (is_null($filter['value']) || (is_array($filter['value']) && !count($filter['value']))) {
+                continue;
+            }
+            $data = static::resolveQuery($filter['operator'], $filter['column'], $filter['value'], $data);
+        }
+        return $data;
+    }
+
+    public static function paginate(Collection $items)
+    {
+        $order = request()->input('order', 'asc');
+        $orderBy = null;
+        if (count($items) && count(array_keys($items[0]))) {
+            $orderBy = array_keys($items[0])[0];
+        }
+        $orderBy = request()->input('orderBy', $orderBy);
+
+        $items = $order == 'asc' ? $items->sortBy($orderBy) : $items->sortByDesc($orderBy);
+        $perPage =  request()->input('perPage', 10);
+        $currentPage = request()->input('page', 1);
+        $temp = $items->slice(($currentPage - 1) * $perPage, $perPage)->values();
+
+        return [
+            "data" => $temp,
+            'current_page' => $currentPage,
+            'per_page' => $perPage,
+            'total' => $items->count(),
+        ];
+    }
+
+    private static function resolveQuery($operator,  $column, $value, $data)
+    {
+        switch ($operator) {
+            case "in":
+                return $data->whereIn($column, $value);
+            case "between":
+                return $data->whereBetween($column, $value);
+            case "lowest-cost":
+                // CONNECTIVITY SPECIFIC FILTER
+                $keys = [];
+                $temp = collect($data->reduce(function ($carry, array $item) use (&$keys) {
+                    $key = Str::slug(
+                        $item['productName'] .
+                            $item['providerName'] .
+                            $item['connectivitySupplierName'] .
+                            $item['bearer'] .
+                            $item['speed'] .
+                            $item['priceInstall'] .
+                            $item['priceECC'] .
+                            $item['contractTermMonths']
+                    );
+                    if (in_array($key, $keys)) {
+                        if ($item['priceMonthly'] < $carry[$key]['priceMonthly']) {
+                            $carry[$key] = $item;
+                        }
+                        return $carry;
+                    }
+                    array_push($keys, $key);
+                    $carry[$key] = $item;
+                    return $carry;
+                }, []));
+                return $temp->values();
+            default:
+                return $data;
+        }
+    }
+}

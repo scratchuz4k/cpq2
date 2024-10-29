@@ -8,13 +8,14 @@ use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Services\CloudMarketService;
 use App\Helpers\Api\OpenreachLookup;
+use App\Helpers\FilterProvider;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Cache;
 
 class ExternalController extends Controller
 {
-    public function __construct(protected CloudMarketService $cloudMarketService){}
+    public function __construct(protected CloudMarketService $cloudMarketService) {}
     /**
      * Request Openreach Api to get all address with a Postal Code.
      */
@@ -103,7 +104,7 @@ class ExternalController extends Controller
     public function getArticlesFromShopBlocks(Request $request)
     {
         $cache_key = md5("shop-blocks" . json_encode($request->all()));
-        return Cache::remember($cache_key, 3600, function () use ($request) {
+        $items = Cache::remember($cache_key, 3600, function () use ($request) {
             $products = [];
             $page = 0;
             do {
@@ -125,5 +126,9 @@ class ExternalController extends Controller
 
             return $products;
         });
+
+        $items = FilterProvider::get($items, request()->input('filters', []));
+        $meta = FilterProvider::paginate($items);
+        return $meta;
     }
 }
