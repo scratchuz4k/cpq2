@@ -43,7 +43,7 @@ Route::middleware('guest')->group(function () {
                 ->name('login.sso');
     Route::post('/login/sso', [SsoController::class, 'store'])
                 ->name('login.sso.post');
-    Route::post('/auth/saml2', [SsoController::class, 'callback'])
+    Route::post('/auth/callback', [SsoController::class, 'callback'])
                 ->name('login.sso.callback');
 
     //Google

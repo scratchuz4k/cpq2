@@ -36,7 +36,6 @@ return [
     ],
     'saml2' => [
         'metadata' => null,
-        'sp_acs' => env('APP_URL').'/auth/saml2',
     ],
 
     'google' => [
