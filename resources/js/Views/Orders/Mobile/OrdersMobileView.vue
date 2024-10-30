@@ -1,10 +1,12 @@
 <script setup>
+import Select from 'primevue/select';
 import MultiSelect from 'primevue/multiselect';
 import Paginator from 'primevue/paginator';
 import axios from 'axios';
 import { router } from '@inertiajs/vue3';
 import { reactive, ref, watch } from 'vue'
 import queryString from 'query-string';
+import InputQuantity from '@/Components/InputQuantity.vue';
 
 const props = defineProps({
     modelValue: Object,
@@ -15,10 +17,9 @@ const meta = reactive({
     total: 0,
     overallTotal: 0,
     first: 1,
-    limit: 20,
+    limit: 5,
     isLoading: false
 })
-
 
 const urlParams = new URLSearchParams(window.location.search)
 const params = new Proxy(urlParams, {
@@ -33,21 +34,43 @@ const products = reactive({
 })
 const productsHardware = ref([])
 const filters = reactive({
-    models: {
+    model: {
         operator: "in",
         value: null
     },
-    storage: {
-        operator: "in",
+    name: {
+        operator: "contains",
         value: null
     },
 })
 
 const filterList = reactive({
     models: [],
-    storage: ['1TB', '512 GB', '256 GB', '128 GB', '64 GB', '32 GB', '16 GB'],
-})
+    storage: [
+        { label: '1TB', value: '1TB' },
+        { label: '512 GB', value: '512 GB' },
+        { label: '256 GB', value: '256 GB' },
+        { label: '128 GB', value: '128 GB' },
+        { label: '64 GB', value: '64 GB' },
+        { label: '32 GB', value: '32 GB' },
+        { label: '16 GB', value: '16 GB' },
+    ],
 
+})
+const sorts = [
+    {
+        label: "Lowet Price",
+        order: "asc",
+        orderBy: "price",
+    },
+    {
+        label: "Hightest Price",
+        order: "desc",
+        orderBy: "price",
+    }
+]
+
+const sort = ref(sorts[1])
 
 const getProducts = () => {
     Object.keys(products).forEach(async (key) => {
@@ -77,17 +100,19 @@ const checkPlansHardwareQuantity = () => {
     return (plansQty + boltOnQty) - hardwareQty
 }
 
-const checkValue = (product) => {
-    if (product.quantity < 0) {
-        product.quantity = 0
-    }
-}
 
 const getProductsShopBlocks = async () => {
     meta.isLoading = true
+    let temp = []
+    Object.keys(filters).forEach((key) => {
+        temp.push({ column: key, operator: filters[key].operator, value: filters[key].value ?? null })
+    })
     let query = {
         page: meta.page,
         perPage: meta.limit,
+        filters: temp,
+        order: sort.value.order,
+        orderBy: sort.value.orderBy,
     };
     let res = await axios.post("/api/external/get-articles-from-shop-blocks", query)
     productsHardware.value = res.data.data
@@ -95,14 +120,12 @@ const getProductsShopBlocks = async () => {
         let orderItem = props.modelValue.items.find(x => x.data?.name == element.name)
         element.quantity = orderItem ? orderItem.quantity : 0
         element.id = orderItem ? orderItem.id : null
-        if (!filterList.models.find(x => x == element.model)) {
-            filterList.models.push(element.model)
-        }
     });
     meta.first = (meta.page - 1) * meta.limit
     meta.total = res.data.total
     meta.overallTotal = res.data.overall_total
     meta.isLoading = false
+    filterList.models = res.data.filters.model
 }
 
 const handlePaginator = (ev) => {
@@ -111,12 +134,11 @@ const handlePaginator = (ev) => {
     getProductsShopBlocks()
 }
 
-const addQuantity = (product, quantity) => {
+const checkQuantity = (product, temp) => {
     if (!Object.keys(product).includes('quantity')) {
         product.quantity = 0
     }
     let oldQty = product.quantity
-    let temp = product.quantity + quantity
     if (product.stock <= temp) {
         temp = product.stock
     }
@@ -181,9 +203,10 @@ const saveQuote = () => {
 getProductsShopBlocks()
 getProducts()
 
-watch(filterList, () => {
+watch([filters, sort], () => {
     getProductsShopBlocks()
 })
+
 
 const items = ref([
     { label: 'Home', url: '/' },
@@ -216,20 +239,9 @@ const items = ref([
                         <div class="mobile-product-quantity">
                             <label>Quantity</label>
                             <div class="d-flex align-items-center pb-3">
-                                <button :id="'btn-plan-' + index + '-remove-1'" class="btn btn-secondary btn-sm me-1"
-                                    type="button" @click="() => product.quantity--" :disabled="product.quantity <= 0">
-                                    <font-awesome-icon :icon="['fas', 'minus']" />
-                                </button>
-                                <input :id="'input-plan-' + index + '-quantity'" type="number"
-                                    class="form-control form-control-sm text-center w-25 me-1"
-                                    v-model="product.quantity" min="0" @input="checkValue(product)" />
-                                <input type="hidden" />
-                                <button :id="'btn-plan-' + index + '-add-1'" class=" btn btn-secondary btn-sm me-3"
-                                    type="button" @click="() => product.quantity++">
-                                    <font-awesome-icon :icon="['fas', 'plus']" />
-                                </button>
+                                <InputQuantity :id="'bolt-' + index" v-model="product.quantity" />
                                 <button :id="'btn-plan-' + index + '-add-25'" type=" button"
-                                    class="badge border-0 text-bg-secondary"
+                                    class="badge border-0 text-bg-secondary ms-4"
                                     @click="() => product.quantity += 25">+25</button>
                                 <button :id="'btn-plan-' + index + '-add-50'" type=" button"
                                     class="badge border-0 text-bg-secondary mx-2"
@@ -270,20 +282,10 @@ const items = ref([
                         <div class="mobile-product-quantity">
                             <label>Quantity</label>
                             <div class="d-flex align-items-center  pb-3">
-                                <button :id="'btn-bolt-' + index + '-remove-1'" class="btn btn-secondary btn-sm me-1"
-                                    type="button" @click="() => product.quantity--" :disabled="product.quantity <= 0">
-                                    <font-awesome-icon :icon="['fas', 'minus']" />
-                                </button>
-                                <input :id="'input-bolt-' + index + '-quantity'" type="number"
-                                    class="form-control form-control-sm text-center w-25 me-1"
-                                    v-model="product.quantity" min="0" @input="checkValue(product)" />
-                                <input type="hidden" />
-                                <button :id="'btn-bolt-' + index + '-add-1'" class="btn btn-secondary btn-sm me-3"
-                                    type="button" @click="() => product.quantity++">
-                                    <font-awesome-icon :icon="['fas', 'plus']" />
-                                </button>
+                                <InputQuantity :id="'bolt-' + index" v-model="product.quantity" />
+
                                 <button :id="'btn-bolt-' + index + '-add-25'" type="button"
-                                    class="badge border-0 text-bg-secondary"
+                                    class="badge border-0 text-bg-secondary ms-4"
                                     @click="() => product.quantity += 25">+25</button>
                                 <button :id="'btn-bolt-' + index + '-add-50'" type="button"
                                     class="badge border-0 text-bg-secondary mx-2"
@@ -321,30 +323,43 @@ const items = ref([
                         <h3>Handsets</h3>
                     </div>
                     <div class="panel mb-3">
-                        <div class="d-flex justify-content-between mb-3">
-                            <h4>Filters</h4>
-                            <button class="btn border-0 p-0 text-primary" type="button">
-                                Clear filters
-                            </button>
+                        <div class="d-flex justify-content-between mb-2">
+                            <div class="d-flex">
+                                <h4>Filters</h4>
+                                <ul style="list-style: none; display: flex; flex-wrap: wrap;">
+                                    <template v-for="filter in filters">
+                                        <li class="bullet me-2 mb-2" v-for="(item, index) in filter.value">
+                                            <p>{{ item }}
+                                                <span @click="() => filter.value.splice(index, 1)" style="cursor: pointer;">x </span>
+                                            </p>
+                                        </li>
+                                    </template>
+                                </ul>
+                            </div>
+                            <div>
+                                <button class="btn border-0 p-0 text-primary" type="button">
+                                    Clear filters
+                                </button>
+                            </div>
                         </div>
                         <div class="row">
                             <div class="col-4">
-                                <label>Models</label>
-                                <MultiSelect v-model="filters.models.value" :options="filterList.models" placeholder="All"
-                                    filter class="w-100">
-                                </MultiSelect>
-                            </div>
-                            <div class="col-4">
-                                <label>Storage</label>
-                                <MultiSelect v-model="filters.storage.value" :options="filterList.storage"
+                                <label class="mb-1">Models</label>
+                                <MultiSelect v-model="filters.model.value" :options="Object.keys(filterList.models)"
                                     placeholder="All" filter class="w-100">
                                 </MultiSelect>
                             </div>
                             <div class="col-4">
-                                <label>Sort by</label>
-                                <!-- <MultiSelect v-model="activeFilters.models" :options="filters.models" placeholder="All"
-                                    filter class="w-100">
-                                </MultiSelect> -->
+                                <label class="mb-1">Storage</label>
+                                <MultiSelect v-model="filters.name.value" :options="filterList.storage"
+                                    optionLabel="label" optionValue="value" placeholder="All" filter class="w-100">
+                                </MultiSelect>
+                            </div>
+                            <div class="col-4">
+                                <label class="mb-1">Sort by</label>
+                                <Select v-model="sort" :options="sorts" optionLabel="label" placeholder="All"
+                                    class="w-100">
+                                </Select>
                             </div>
                         </div>
                     </div>
@@ -364,31 +379,21 @@ const items = ref([
                                 <div class="pt-3">
                                     <p style="font-weight: 500;">Quantity</p>
                                     <div class="d-flex align-items-center mb-2">
-                                        <button :id="'btn-hardware-' + index + '-remove-1'"
-                                            class="btn-quantity btn-minus-quantity" type="button"
-                                            @click="removeQuantity(product, 1)" :disabled="!product.quantity">
-                                            <font-awesome-icon :icon="['fas', 'minus']" />
-                                        </button>
-                                        <input :id="'input-hardware-' + index + '-quantity'" type="number"
-                                            class="input-quantity" v-model="product.quantity">
-                                        <button :id="'btn-hardware-' + index + '-add-1'"
-                                            class="btn-quantity btn-add-quantity" type="button"
-                                            @click="addQuantity(product, 1)"
-                                            :disabled="checkPlansHardwareQuantity() <= 0">
-                                            <font-awesome-icon :icon="['fas', 'plus']" />
-                                        </button>
+                                        <InputQuantity :id="'hardware-' + index" v-model="product.quantity"
+                                            :disabled="checkPlansHardwareQuantity() <= 0"
+                                            @change="(val) => checkQuantity(product, val)" />
 
                                         <button :id="'btn-hardware-' + index + '-add-25'"
                                             class="btn btn-sm ms-4 btn-add-custom-quantity"
-                                            @click="addQuantity(product, 25)"
+                                            @click="checkQuantity(product, product.quantity + 25)"
                                             :disabled="checkPlansHardwareQuantity() <= 0">+25</button>
                                         <button :id="'btn-hardware-' + index + '-add-50'"
                                             class="btn btn-sm ms-2 btn-add-custom-quantity"
-                                            @click="addQuantity(product, 50)"
+                                            @click="checkQuantity(product, product.quantity + 50)"
                                             :disabled="checkPlansHardwareQuantity() <= 0">+50</button>
                                         <button :id="'btn-hardware-' + index + '-add-100'"
                                             class="btn btn-sm ms-2 btn-add-custom-quantity"
-                                            @click="addQuantity(product, 100)"
+                                            @click="checkQuantity(product, product.quantity + 100)"
                                             :disabled="checkPlansHardwareQuantity() <= 0">+100</button>
                                     </div>
                                 </div>
@@ -481,42 +486,6 @@ const items = ref([
 </template>
 
 <style scoped>
-.input-quantity {
-    width: 101px;
-    height: 32px;
-    padding: 8px 12px 8px 12px;
-    gap: 8px;
-    border-width: 1px;
-    border-style: solid;
-    border-color: #BDBDBD;
-}
-
-.btn-quantity {
-    outline: none;
-    border-style: solid;
-    border-color: #BDBDBD;
-}
-
-.btn-minus-quantity {
-    width: 36px;
-    height: 32px;
-    gap: 0px;
-    border-radius: 6px 0px 0px 6px;
-    background: #FFFFFF;
-    border-width: 1px 0px 1px 1px;
-    border-style: solid;
-    border-color: #BDBDBD;
-}
-
-.btn-add-quantity {
-    width: 36px;
-    height: 32px;
-    gap: 0px;
-    border-radius: 0px 6px 6px 0px;
-    background: #FFFFFF;
-    border-width: 1px 1px 1px 0px;
-}
-
 .btn-add-custom-quantity {
     font-size: 12px;
     font-weight: 600;
@@ -524,5 +493,12 @@ const items = ref([
     text-decoration: none;
     background: #F5E5F3;
     color: #A34996;
+}
+
+.bullet {
+    padding: 0px 12px 0px 12px;
+    border-radius: 20px;
+    opacity: 0px;
+    background: #F5F5F5;
 }
 </style>

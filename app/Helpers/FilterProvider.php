@@ -17,7 +17,7 @@ class FilterProvider
             }
             $data = static::resolveQuery($filter['operator'], $filter['column'], $filter['value'], $data);
         }
-        return $data;
+        return $data->values();
     }
 
     public static function paginate(Collection $items)
@@ -42,9 +42,31 @@ class FilterProvider
         ];
     }
 
+    public static function process($filters, $value, $addCount = false)
+    {
+        foreach ($filters as $filterKey => $items) {
+            if (!array_key_exists($filterKey, $value) || !$value[$filterKey]) {
+                continue;
+            }
+
+            if (array_key_exists($value[$filterKey], $items) && $addCount) {
+                $filters[$filterKey][$value[$filterKey]]++;
+                continue;
+            } else {
+                $filters[$filterKey][$value[$filterKey]] = 0;
+            }
+        }
+
+        return $filters;
+    }
+
     private static function resolveQuery($operator,  $column, $value, $data)
     {
         switch ($operator) {
+            case "contains":
+                return $data->filter(function ($item) use ($column, $value) {
+                    return Str::contains($item[$column], $value);
+                });
             case "in":
                 return $data->whereIn($column, $value);
             case "between":

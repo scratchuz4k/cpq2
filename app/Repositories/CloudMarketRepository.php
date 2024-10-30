@@ -19,7 +19,7 @@ class CloudMarketRepository
         $items = FilterProvider::get($file['data'], $filters);
 
         foreach ($items as $key => $value) {
-            $file['filters'] = $this->processFilters($file['filters'], $value, true);
+            $file['filters'] = FilterProvider::process($file['filters'], $value, true);
         }
 
         $meta = FilterProvider::paginate($items);
@@ -32,25 +32,5 @@ class CloudMarketRepository
                 'filters' =>  $file['filters'],
             ]
         );
-    }
-
-
-    public function processFilters($filters, $value, $addCount = false)
-    {
-        foreach ($filters as $filterKey => $items) {
-            if (!array_key_exists($filterKey, $value) || !$value[$filterKey]) {
-                continue;
-            }
-
-            if (array_key_exists($value[$filterKey], $items) && $addCount) {
-
-                $filters[$filterKey][$value[$filterKey]]++;
-                continue;
-            } else {
-                $filters[$filterKey][$value[$filterKey]] = 0;
-            }
-        }
-
-        return $filters;
     }
 }

@@ -412,16 +412,21 @@ const AuraReformed = definePreset(Aura, {
             background: "none",
             padding: ".5rem 0"
         },
-        multiselect: {
+        select: {
             padding: {
-                x: " .3rem",
+                x: " .5rem",
                 y: " .3rem"
             },
-            option: {
-                padding: {
-                    x: " .3rem",
-                    y: " .3rem"
+            list: {
+                header: {
+                    padding: " .3rem"
                 }
+            }
+        },
+        multiselect: {
+            padding: {
+                x: " .5rem",
+                y: " .3rem"
             },
             list: {
                 header: {
