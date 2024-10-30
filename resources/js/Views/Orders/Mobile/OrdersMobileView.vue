@@ -424,7 +424,7 @@ const items = ref([
                         </div>
                     </div>
                     <Paginator v-model:first="meta.first" :rows="meta.limit" :totalRecords="meta.total"
-                        :rowsPerPageOptions="[20, 30, 50]" @page="handlePaginator">
+                        :rowsPerPageOptions="[5, 10, 20]" @page="handlePaginator">
                     </Paginator>
                     <div class="d-flex justify-content-between align-items-center">
                         <button id="btn-step-3-previous" class="btn btn-light step-nav btn-sm me-3" type="button"
