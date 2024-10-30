@@ -75,16 +75,28 @@ class SsoController extends Controller
             $ssoUser = Socialite::driver('saml2')->stateless()->user();
             Log::debug("Socialite Callback Saml2 user: " . json_encode($ssoUser));
             $userData = $this->getSsoAttributes($ssoUser);
+            $userEmail = "";
 
             if (!isset($userData['email'])) {
-                throw new \Exception("SSO ERROR: Email not provided in user data");
+                if (!isset($userData['name'])) {
+                    throw new \Exception("SSO ERROR: Email not provided in user data");
+                } else {
+                    if (filter_var($userData['name'], FILTER_VALIDATE_EMAIL)) {
+                        $userEmail = $userData['name'];
+                    } else {
+                        throw new \Exception("SSO ERROR: Email not provided in user data and 'name' is not an email");
+                    }
+                }
+            } else {
+                $userEmail = $userData['email'];
             }
-            $user = User::where('email', $userData['email'])->where('sso', true)->first();
+
+            $user = User::where('email', $userEmail)->where('sso', true)->first();
             if (!$user) {
                 throw new \Exception("User Not Found");
             }
 
-            $domain = substr(strrchr($userData['email'], "@"), 1);
+            $domain = substr(strrchr($userEmail, "@"), 1);
             $currentTenant = $user->tenants->where('domain', $domain)->first();
             if (!$currentTenant) {
                 throw new \Exception("User ($user->id) Not Assigned to Any Tenant");
