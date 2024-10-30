@@ -128,6 +128,10 @@ const getProductsShopBlocks = async () => {
     filterList.models = res.data.filters.model
 }
 
+const clearFilters = () => {
+    Object.keys(filters).forEach((key) => filters[key].value = null)
+}
+
 const handlePaginator = (ev) => {
     meta.limit = ev.rows
     meta.page = ev.page + 1
@@ -330,14 +334,15 @@ const items = ref([
                                     <template v-for="filter in filters">
                                         <li class="bullet me-2 mb-2" v-for="(item, index) in filter.value">
                                             <p>{{ item }}
-                                                <span @click="() => filter.value.splice(index, 1)" style="cursor: pointer;">x </span>
+                                                <span @click="() => filter.value.splice(index, 1)"
+                                                    style="cursor: pointer;">x </span>
                                             </p>
                                         </li>
                                     </template>
                                 </ul>
                             </div>
                             <div>
-                                <button class="btn border-0 p-0 text-primary" type="button">
+                                <button @click="clearFilters()" class="btn border-0 p-0 text-primary" type="button">
                                     Clear filters
                                 </button>
                             </div>
