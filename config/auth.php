@@ -111,5 +111,9 @@ return [
     */
 
     'password_timeout' => env('AUTH_PASSWORD_TIMEOUT', 10800),
-
+    'sso' => [
+        'name_claim' => env('SSO_NAME_CLAIM_URL', 'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'),
+        'given_name_claim' => env('SSO_GIVEN_NAME_CLAIM_URL', 'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname'),
+        'surname_claim' => env('SSO_SURNAME_CLAIM_URL', 'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname'),
+    ],
 ];
