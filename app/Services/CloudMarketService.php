@@ -68,7 +68,9 @@ class CloudMarketService
         $tempFilters = [
             "providerName" => [],
             "connectivitySupplierName" => [],
-            "contractTermMonths" => []
+            "contractTermMonths" => [],
+            'bearer' => [],
+            'speed' => []
         ];
 
         $stream = StreamWrapper::getResource($res->toPsrResponse()->getBody());

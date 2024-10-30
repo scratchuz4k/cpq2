@@ -73,7 +73,7 @@ library.add(fas)
 library.add(far)
 library.add(fab)
 
-import helpers from '@composables/helpers'
+import format from '@composables/format'
 
 createInertiaApp({
     title: (title) => `${title} - ${appName}`,
@@ -129,7 +129,7 @@ createInertiaApp({
             }
         });
 
-        app.config.globalProperties.helpers = helpers
+        app.config.globalProperties.format = format
         app.config.globalProperties.GBP = new Intl.NumberFormat("en-GB", {
             style: "currency",
             currency: "GBP",

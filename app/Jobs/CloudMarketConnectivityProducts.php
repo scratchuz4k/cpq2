@@ -42,7 +42,9 @@ class CloudMarketConnectivityProducts implements ShouldQueue, TenantAware
         $filters = [
             "providerName" => [],
             "connectivitySupplierName" => [],
-            "contractTermMonths" => []
+            "contractTermMonths" => [],
+            'bearer' => [],
+            'speed' => []
         ];
 
         $stream = StreamWrapper::getResource($res->toPsrResponse()->getBody());

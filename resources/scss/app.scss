@@ -48,6 +48,8 @@
     --white: #fff;
     --radius: 6px;
     --font-primary: Montserrat, Helvetica, Arial, sans-serif;
+    --table-header-grey: #DCDCDC;
+    --table-header-dark-grey: #646464;
 }
 
 :root {
@@ -89,7 +91,7 @@ body {
         background-color: var(--color-purple);
         border-color: var(--color-purple);
         font-weight: 600;
-
+        border-width: 0.175rem;
     }
 
     .btn-primary:hover {
@@ -476,11 +478,10 @@ body {
     }
 
     #filters {
-        background: var(--grey-light);
         font-size: 13px;
         display: flex;
+        justify-content: space-between;
         align-items: center;
-        padding: 30px 15px 30px 15px;
         overflow-x: auto;
         overflow-y: hidden;
 
@@ -512,32 +513,35 @@ body {
         }
     }
 
-    #table_products {
+    #table_products, .table-hover, .cpq-total table thead {
 
         th {
-            text-align: center;
-            background: var(--secondary-dark);
-            color: var(--white);
-            font-size: 14px;
+            background: var(--table-header-grey);
+            color: var(--table-header-dark-grey);
+            font-size: 12px;
             vertical-align: middle;
             position: sticky;
             top: -1px;
             z-index: 1;
             cursor: pointer;
+            font-weight: normal;
+            border: none;
         }
 
         thead th:hover {
-            background: var(--secondary-light);
+            background: var(--color-purple-light);
         }
 
         thead th.sorted {
-            background: var(--secondary-light);
+            background: var(--color-purple-light);
         }
 
         td {
             position: relative;
             font-size: 14px;
+            font-weight: 500;
             vertical-align: middle;
+            border: none;
         }
 
         @media (max-width: 1200px) {
@@ -577,7 +581,7 @@ body {
         }
 
         .form-check-input:focus {
-            border-color: --teal;
+            border-color: var(--teal);
             box-shadow: 0 0 0 0.25rem var(--light-teal);
         }
 
@@ -988,7 +992,112 @@ body {
             }
         }
     }
+
+    .custom-paginator {
+        display: flex;
+        justify-content: end;
+
+        .p-paginator {
+            background: none;
+            padding: 0;
+        }
+        .p-paginator-page {
+            color: black;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-weight: 600;
+
+            &:hover {
+                background-color: var(--color-purple-light);
+            }
+
+            &.p-paginator-page-selected {
+                background-color: var(--purple);
+                color: white;
+                padding: 8px 12px;
+            }
+        }
+
+        .p-paginator-first, .p-paginator-last {
+            display: none;
+        }
+
+        .p-paginator-next, .p-paginator-prev {
+            border-radius: 4px;
+            font-weight: 400;
+
+            &:not(.p-disabled) {
+                &:hover {
+                    background-color: var(--color-purple-light);
+                }
+            }
+
+            .p-icon {
+                width: 1.5rem;
+            }
+        }
+
+        .p-select {
+            border-color: var(--purple);
+        }
+
+        .p-select-dropdown {
+            color: black;
+        }
+    }
+
+    .custom-multiselect {
+        .p-multiselect-label {
+            color: black;
+        }
+
+        &:not(.p-disabled) {
+            &:hover {
+                border-color: var(--purple);
+            }
+        }
+
+        .p-multiselect-dropdown {
+            color: black;
+        }
+    }
 }
+
+
+.p-multiselect-list-container {
+    .p-multiselect-option {
+        padding: 0.5rem;
+
+        &:not(.p-multiselect-option-selected) {
+            &:not(.p-disabled) {
+                color: black;
+
+                &.p-focus {
+                    color: black;
+                    background-color: var(--color-purple-light);
+                }
+
+                .p-checkbox-checked {
+                    .p-checkbox-box {
+                        background-color: var(--color-purple);
+                        border-color: var(--color-purple);
+
+                        svg {
+                            height: 12px;
+                            width: 12px;
+
+                            path {
+                                stroke: white;
+                                stroke-width: 3px;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
 
 @keyframes progressBar {
     0% {

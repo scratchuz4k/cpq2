@@ -9,7 +9,7 @@ const props = defineProps({
 <template>
     <span class="badge rounded-pill m-1">
         {{ value }}
-
+        <slot name="close-button"></slot>
     </span>
 </template>
 

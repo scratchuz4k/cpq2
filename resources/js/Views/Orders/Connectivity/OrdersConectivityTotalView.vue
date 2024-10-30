@@ -1,7 +1,7 @@
 <script setup>
 import _ from 'lodash'
-import { router } from '@inertiajs/vue3';
 import { reactive } from 'vue';
+import InputQuantity from "@/Components/InputQuantity.vue";
 const props = defineProps({
     modelValue: Object,
     preview: Boolean
@@ -40,37 +40,22 @@ const saveQuote = _.debounce(async () => {
 <template>
 <!-- Product List -->
 <!-- In a real application, this would be dynamically generated based on the selected solution type -->
-<table :class="{'table-hover': !preview}" class="table">
+<table :class="{'table-hover': !preview}" class="table table-bordered">
     <!-- Headers -->
     <thead>
         <tr>
-            <th>
-                <template v-if="preview">#</template>
-            </th>
             <th class="text-center d-none d-xl-table-cell">Provider</th>
-            <th>Name</th>
-            <th class="d-none d-xl-table-cell" style="white-space: nowrap;">Supplier Quote Ref.</th>
+            <th>Product</th>
+            <th class="d-none d-xl-table-cell" style="white-space: nowrap;">Supplier quote ref.</th>
             <th>Type</th>
-            <th class="text-center">Qty</th>
-            <th class="text-end" style="white-space: nowrap;">Monthly Price</th>
-            <th class="text-end" style="white-space: nowrap;">Install Price</th>
-            <template v-if="preview">
-                <th class="text-end" style="white-space: nowrap;">Total Price</th>
-            </template>
+            <th>Qty.</th>
+            <th style="white-space: nowrap;">Monthly price</th>
+            <th style="white-space: nowrap;">Install price</th>
+            <th>Remove</th>
         </tr>
     </thead>
     <tbody>
         <tr class="item-row" v-for="item in order.items" style="vertical-align: middle;">
-            <td class="position-relative" style="width:40px">
-                <template v-if="!preview">
-                    <button class="btn btn-secondary btn-sm" @click="remove(item.id)">
-                        <font-awesome-icon :icon="['fas', 'trash']"></font-awesome-icon>
-                    </button>
-                </template>
-                <template v-else>
-                    {{ order.items.indexOf(item) + 1 }}
-                </template>
-            </td>
             <td class="text-center d-none d-xl-table-cell">
                 <img v-if="item.data.providerKey" class="img-provider" @error="setAltImg"
                     :src="`/images/providers/${item.data.providerKey}.png`"
@@ -85,37 +70,32 @@ const saveQuote = _.debounce(async () => {
             <td>
                 Monthly
             </td>
-            <td class="text-center">
+            <td>
                 <template v-if="!preview">
-                <div class="cpq-qty d-flex justify-content-center">
-                    <button type="button" class="btn btn-primary btn-sm mx-2"
-                        :disabled="item.quantity == 1" @click="changeQuantity(item.quantity - 1, item)">
-                        <font-awesome-icon :icon="['fas', 'minus']" />
-                    </button>
-                    <input class="form-control form-control-sm" type="number" min="0" max="99999"
-                        @input="(ev) => changeQuantity(ev.target.value, item)" maxlength="5"
-                        :value="item.quantity" style="width: 100px;">
-                    <button type="button" class="btn btn-primary btn-sm mx-2"
-                        @click="changeQuantity(item.quantity + 1, item)">
-                        <font-awesome-icon :icon="['fas', 'plus']" />
-                    </button>
-                </div>
+                    <div class="cpq-qty d-flex input-group">
+                        <InputQuantity :id="'hardware-' + index" v-model="item.quantity" />
+                    </div>
                 </template>
                 <template v-else>
                     {{ item.quantity }}
                 </template>
             </td>
-            <td class="text-end">
+            <td>
                 {{ GBP.format(item.data?.priceMonthly ?? item.data?.price) }}
             </td>
-            <td class="text-end">
+            <td>
                 {{ GBP.format(item.data?.priceInstall ?? 0) }}
             </td>
-            <template v-if="preview">
-                <td class="text-end">
-                    {{ GBP.format((item.quantity * (item.data?.priceMonthly ?? 0 + item.data?.priceInstall ?? 0)) ?? 0) }}
-                </td>
-            </template>
+            <td class="position-relative" style="width:40px">
+                <template v-if="!preview">
+                    <button class="btn delete-btn w-100" @click="remove(item.id)">
+                        <font-awesome-icon :icon="['fas', 'trash']"></font-awesome-icon>
+                    </button>
+                </template>
+                <template v-else>
+                    {{ order.items.indexOf(item) + 1 }}
+                </template>
+            </td>
         </tr>
     </tbody>
 </table>
@@ -162,6 +142,51 @@ const saveQuote = _.debounce(async () => {
         </div>
     </div>
 </div>
-
-
 </template>
+
+<style>
+    .delete-btn {
+        all: unset;
+        height: 30px;
+        width: 30px;
+        color: var(--purple)
+    }
+
+    .cpq-qty {
+        button {
+            border: 2px solid var(--grey);
+            border-radius: 8px;
+
+            &:hover {
+                background-color: var(--purple);
+                border-color: var(--purple);
+            }
+
+            &.decrease {
+                border-top-right-radius: 0px;
+                border-bottom-right-radius: 0px;
+            }
+
+            &.increase {
+                border-top-left-radius: 0px;
+                border-bottom-left-radius: 0px;
+            }
+        }
+
+        .cpq-qty-input {
+            border-width: 2px!important;
+            border-color: var(--grey);
+        }
+    }
+
+    input[type="number"]::-webkit-outer-spin-button,
+    input[type="number"]::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    /* Remove arrows in Firefox */
+    input[type="number"] {
+        -moz-appearance: textfield;
+    }
+</style>

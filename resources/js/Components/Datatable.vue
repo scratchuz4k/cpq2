@@ -261,8 +261,15 @@ getData()
 </template>
 <style>
 .p-select-option.p-select-option-selected {
-    background-color: var(--color-violet)!important;
+    background-color: var(--color-purple)!important;
     color: white!important;
+}
+
+.p-select-option.p-select-option-selected:hover {
+    background-color: var(--color-purple)!important;
+}
+.p-select-option:hover {
+    background-color: var(--color-purple-light)!important;
 }
 
 .p-datatable {

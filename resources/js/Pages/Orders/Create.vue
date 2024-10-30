@@ -78,7 +78,7 @@ const items = ref([
                     <div class="col-6 d-flex justify-content-end">
                         <button class="btn btn-primary" type="submit" :disabled="form.solutionCheck">
                             Get prices
-                            <font-awesome-icon :icon="['fas', 'arrow-right']" class="mx-2"></font-awesome-icon>
+                            <font-awesome-icon :icon="['fas', 'arrow-right']" class="ms-2"></font-awesome-icon>
                             <div v-if="form.isLoading" class="spinner-border  spinner-border-sm" role="status">
                                 <span class="visually-hidden">Loading...</span>
                             </div>
