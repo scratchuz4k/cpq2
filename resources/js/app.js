@@ -156,7 +156,7 @@ createInertiaApp({
                         email: "email",
                     },
                     // Additional SDK configuration goes in here, for example:
-                    colorScheme: "system",
+                    colorScheme: "light",
                 }),
             ],
             // Tracing
