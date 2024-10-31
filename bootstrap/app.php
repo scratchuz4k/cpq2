@@ -47,7 +47,7 @@ return Application::configure(basePath: dirname(__DIR__))
             NeedsTenant::class,
         ]);
         $middleware->validateCsrfTokens(except: [
-            'login/sso/callback'
+            'auth/callback'
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

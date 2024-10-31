@@ -103,14 +103,5 @@ class RolePermissionSeeder extends Seeder
 
         $sAdmin = User::where('email', 'super@example.com')->first();
         $sAdmin->assignRole('Super Admin');
-
-        $supp = User::where('email', 'support@example.com')->first();
-        $supp->assignRole('Support Agent');
-
-        $cAdmin = User::where('email', 'companyadmin@example.com')->first();
-        $cAdmin->assignRole('Company Admin');
-
-        $salesR = User::where('email', 'sales@example.com')->first();
-        $salesR->assignRole('Sales Rep');
     }
 }

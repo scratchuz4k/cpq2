@@ -3,21 +3,29 @@
 namespace App\Http\Controllers\Api;
 
 use App\Helpers\DataProvider;
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\BaseController;
+use App\Http\Requests\UserUpdateRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
+use App\Services\UsersService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
-class UserController extends Controller
+class UserController extends BaseController
 {
     protected $model = User::class;
+
+    public function __construct(protected UsersService $usersService)
+    {
+        parent::__construct();
+    }
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
         $dataProvider = new DataProvider(User::class);
+        $dataProvider->builder = $this->usersService->getChildAndOrphansUser();
         $dataProvider->builder = $dataProvider->builder->where('tenant_id', request()->user()->tenant_id);
         try {
             $data = $dataProvider->get();
@@ -64,9 +72,15 @@ class UserController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, User $user)
+    public function update(UserUpdateRequest $request, User $user)
     {
-        //
+        try {
+            $user = $this->usersService->update($user, $request->all());
+        } catch (\Exception $e) {
+            throw new \Exception($e);
+        }
+
+        return new UserResource($user);
     }
 
     /**

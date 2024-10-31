@@ -39,8 +39,11 @@ class DataProvider
         $filters = is_string($filters) ? json_decode($filters, true) : $filters;
 
         if ($search) {
-            $columns = request()->get('columns') ? explode(",", request()->get('columns')) :  $this->builder->getModel()->getFillable();
-            $this->builder = $this->searchModel($this->builder, $columns, $search);
+            $getFillables = $this->builder->getModel()->getFillable();
+            $getHidden = $this->builder->getModel()->getHidden();
+            $visibleColumns = array_diff($getFillables, $getHidden);
+            $columns = request()->get('columns') ? explode(",", request()->get('columns')) : $visibleColumns;
+            $this->builder = $this->builder->where(function($query) use ($columns, $search) { return $this->searchModel($query, $columns, $search); });
         }
 
         foreach ($filters as $filter) {

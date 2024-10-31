@@ -8,7 +8,6 @@ use Inertia\Inertia;
 use App\Models\Tenant;
 use App\Services\UsersService;
 use App\Http\Resources\UserResource;
-use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\UserCreateRequest;
 use App\Http\Requests\UserImportRequest;
@@ -35,19 +34,13 @@ class UserController extends BaseController
      */
     public function create()
     {
-        $temp_roles = Auth::user()->roles()->get();
-        $roles = collect([]);
-
-        do {
-            $current = $temp_roles->pop();
-            $roles->push($current);
-            $temp_roles->push(...$current->children);
-        } while (count($temp_roles));
-
+        $users = $this->usersService->getChildAndOrphansUser();
+        $users = $users->where('tenant_id', request()->user()->tenant_id);
         return Inertia::render('Users/Create', [
-            'roles'     => $roles,
-            'managers'  => User::descendants(),
-            'tenants' => Tenant::all()
+            'roles'     => Role::descendants(),
+            'managers'  => $users->get(),
+            'tenants'   => Tenant::all(),
+            'parent_id' => $users->where('id', request('parent_id'))->first() ?  intval(request('parent_id')) : null
         ]);
     }
 
@@ -78,15 +71,16 @@ class UserController extends BaseController
      */
     public function edit(User $user)
     {
-        $temp = new UserResource($user);
-        $temp['role'] = $user->roles->first()->id;
-        $temp = [...$temp->toArray(request()), 'tenants' => $user->tenants->pluck('id')->toarray()];
+        $users = $this->usersService->getChildAndOrphansUser();
+        $users = $users->where('tenant_id', request()->user()->tenant_id);
+        $users = $users->where('id', '!=', $user->id);
 
         return Inertia::render('Users/Edit', [
-            'user'      => $temp,
-            'roles'     => Role::all(),
-            'managers'  => User::descendants(),
-            'tenants' => Tenant::all()
+            'user'          => (new UserResource($user))->toArray(request()),
+            'roles'         => Role::descendants(),
+            'managers'      => $users->get(),
+            'permissions'   => $user->getAllPermissions(),
+            'tenants'       => Tenant::all()
         ]);
     }
 
