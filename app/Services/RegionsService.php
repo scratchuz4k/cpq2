@@ -10,12 +10,7 @@ class RegionsService
     public function store(array $array): Region
     {
         return DB::transaction(function () use ($array) {
-            $region = Region::create([
-                ...$array,
-                "tenant_id" => session()->get('tenant_id'),
-            ]);
-
-
+            $region = Region::create($array);
             return $region;
         });
     }
@@ -23,13 +18,7 @@ class RegionsService
     public function update(Region $region, array $array): Region
     {
         return DB::transaction(function () use ($region, $array) {
-            $region->update(
-                [
-                    ...$array,
-                    'tenant_id' => session()->get('tenant_id'),
-                ]
-            );
-
+            $region->update($array);
             return $region;
         });
     }

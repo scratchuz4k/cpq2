@@ -5,7 +5,6 @@ import * as Sentry from "@sentry/vue";
 
 
 // Import all of Bootstrap's JS
-
 import { createApp, h } from 'vue';
 import { createInertiaApp } from '@inertiajs/vue3';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
@@ -22,9 +21,19 @@ window.notyf = new Notyf({
     ripple: false,
     dismissible: true,
     position: {
-        x: "right",
+        x: "center",
         y: "top",
     },
+    types: [
+        {
+          type: 'success',
+          className: 'notyf-success'
+        },
+        {
+          type: 'error',
+          className: 'notyf-error'
+        }
+      ]
 });
 
 window.notyf = notyf;
@@ -38,7 +47,7 @@ import Swal from "sweetalert2";
 window.swal = Swal.mixin({
     buttonsStyling: true,
     showCancelButton: true,
-    confirmButtonColor: '#ec008c',
+    confirmButtonColor: '#67236a',
     width: '20em',
     customClass: {
         confirmButton: 'btn text-light btn-lg mr-2 fs-6',
@@ -64,6 +73,8 @@ import AuraReformed from './Themes/Aura';
 library.add(fas)
 library.add(far)
 library.add(fab)
+
+import helpers from '@composables/helpers'
 
 createInertiaApp({
     title: (title) => `${title} - ${appName}`,
@@ -119,6 +130,7 @@ createInertiaApp({
             }
         });
 
+        app.config.globalProperties.helpers = helpers
         app.config.globalProperties.GBP = new Intl.NumberFormat("en-GB", {
             style: "currency",
             currency: "GBP",

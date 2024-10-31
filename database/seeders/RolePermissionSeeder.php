@@ -40,6 +40,7 @@ class RolePermissionSeeder extends Seeder
                 'order_item' => 'Order Item',
                 'merchant' => 'Merchant',
                 'account' => 'Account',
+                'contact' => 'Contact',
                 'order_items' => 'Order Items',
                 'price' => 'Price',
                 'product' => 'Product',
@@ -47,15 +48,16 @@ class RolePermissionSeeder extends Seeder
                 'brand' => 'Brand',
                 'supplier' => 'Supplier',
                 'spa' => 'Spa',
-                'user' => 'User'
+                'user' => 'User',
+                'token' => 'Token'
             ],
         ];
 
         $roles = [
-            'Super Admin' => ['parent' => null,'permissions' => []],
-            'Support Agent' => ['parent' => 'Super Admin','permissions' => ['merchant']],
-            'Company Admin' => ['parent' => 'Super Admin','permissions' => ['order', 'order_items', 'merchant', 'account',  'price', 'product', 'region', 'tenant', 'brand', 'supplier', 'spa', 'user']],
-            'Sales Rep' => ['parent' => 'Company Admin','permissions' => ['order', 'order_items', 'account', 'brand', 'supplier']]
+            'Super Admin' => ['parent' => null, 'permissions' => []],
+            'Support Agent' => ['parent' => 'Super Admin', 'permissions' => ['merchant', 'account', 'contact', 'token', 'order', 'order_items']],
+            'Company Admin' => ['parent' => 'Super Admin', 'permissions' => ['order', 'order_items', 'merchant', 'account', 'contact',  'price', 'product', 'region', 'tenant', 'brand', 'supplier', 'spa', 'user']],
+            'Sales Rep' => ['parent' => 'Company Admin', 'permissions' => ['order', 'order_items', 'account', 'contact', 'brand', 'supplier']]
         ];
 
         foreach ($simplePermissions as $key => $pe) {
@@ -90,7 +92,7 @@ class RolePermissionSeeder extends Seeder
                 $temp = Role::where('name', $item['parent'])->firstOrFail();
             }
 
-            $role = Role::updateOrCreate(['name' => $role],['parent_id' => $temp?->id, 'guard_name' => 'web']);
+            $role = Role::updateOrCreate(['name' => $role], ['parent_id' => $temp?->id, 'guard_name' => 'web']);
             foreach ($item['permissions'] as $group) {
                 if (array_key_exists($group, $insertPermissions->toArray())) {
                     $permissions = array_merge($permissions, $insertPermissions->toArray()[$group]);
@@ -101,14 +103,5 @@ class RolePermissionSeeder extends Seeder
 
         $sAdmin = User::where('email', 'super@example.com')->first();
         $sAdmin->assignRole('Super Admin');
-
-        $supp = User::where('email', 'support@example.com')->first();
-        $supp->assignRole('Support Agent');
-
-        $cAdmin = User::where('email', 'companyadmin@example.com')->first();
-        $cAdmin->assignRole('Company Admin');
-
-        $salesR = User::where('email', 'sales@example.com')->first();
-        $salesR->assignRole('Sales Rep');
     }
 }

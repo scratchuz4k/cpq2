@@ -60,11 +60,6 @@ class LoginRequest extends FormRequest
                 'email' => __('Your account is registered for SSO sign-in only, please select the correct sign-in option below.'),
             ]);
         }
-
-        if ($firstTenant = $user->tenants()?->first()) {
-            $firstTenant->makeCurrent();
-            session(['tenant_id' => $firstTenant->id]);
-        }
     }
 
     /**

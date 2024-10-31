@@ -32,31 +32,11 @@ class InitTableSeeder extends Seeder
             'email' => 'super@example.com',
         ], [
             'name' => 'Super User',
+            'tenant_id' => $tenant->id,
             'password' => Hash::make('werwerwer'),
         ]);
 
-        $support_user = User::updateOrCreate([
-            'email' => 'support@example.com',
-        ], [
-            'name' => 'Support User',
-            'password' => Hash::make('werwerwer'),
-        ]);
-
-        $company_admin_user = User::updateOrCreate([
-            'email' => 'companyadmin@example.com',
-        ], [
-            'name' => 'Company Admin User',
-            'password' => Hash::make('werwerwer'),
-        ]);
-
-        $sales_user = User::updateOrCreate([
-            'email' => 'sales@example.com',
-        ], [
-            'name' => 'Sales Rep',
-            'password' => Hash::make('werwerwer'),
-        ]);
-
-        $tenant->users()->sync([$super_user->id, $support_user->id, $company_admin_user->id,  $sales_user->id]);
+        $tenant->users()->sync([$super_user->id]);
 
         SolutionType::updateOrCreate([
             "code" => 3

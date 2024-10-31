@@ -3,11 +3,14 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link } from "@inertiajs/vue3";
 import { ref } from 'vue';
 const items = ref([
-    { label: 'My Account', url: '/myaccount' }
+    { label: 'Home', url: '/' },
+    { label: 'My Account', url: '/myaccount' },
+    { label: 'Suppliers' },
 ]);
 
 </script>
 <template>
+
     <Head title="Suppliers" />
     <AuthenticatedLayout>
         <div class="panel">
@@ -24,13 +27,18 @@ const items = ref([
                     delete: true,
                     link: false,
                 }" :columns="[
-                    { data: 'id', title: '#' },
-                    { data: 'tenant.name', title: 'Tenant' },
-                    { data: 'name', title: 'Name' },
-                    { data: 'reference', title: 'Reference' },
-                    { data: 'created_at', title: 'Created At' },
-                    { data: 'updated_at', title: 'Updated At' },
+                    { data: 'id', title: '#', style: 'width:5%' },
+                    { data: 'name', title: 'Name', style: 'width:30%' },
+                    { data: 'reference', title: 'Reference', style: 'width:25%' },
+                    { data: 'created_at', title: 'Created At', style: 'width:15%' },
+                    { data: 'updated_at', title: 'Updated At', style: 'width:15%' },
                 ]" route="/suppliers">
+                    <template #updated_at="{ value }">
+                        {{ helpers.formatDate(value) }}
+                    </template>
+                    <template #created_at="{ value }">
+                        {{ helpers.formatDate(value) }}
+                    </template>
                 </Datatable>
             </div>
         </div>

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Trait\SetTenantId;
 use App\Models\Scopes\TenantScope;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -9,7 +10,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Contact extends Model
 {
-    use HasFactory;
+    use HasFactory, SetTenantId;
 
     protected $fillable = ['primary_contact_name', 'email', 'address_1', 'city', 'postcode', 'account_id', 'tenant_id'];
 

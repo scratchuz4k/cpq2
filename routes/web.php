@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Web\TokenController;
 use App\Http\Controllers\Web\BrandController;
 use App\Http\Controllers\Web\OrderController;
 use App\Http\Controllers\Web\PriceController;
@@ -38,7 +39,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         'suppliers' => SupplierController::class,
         'regions' => RegionController::class,
         'spas' => SpaController::class,
-        'users' => UserController::class
+        'users' => UserController::class,
+        'tokens' => TokenController::class,
     ]);
 
     Route::middleware('auth')->group(function () {

@@ -1,19 +1,11 @@
 <template>
     <div>
         <div class="box" style="max-height: 400px; overflow: auto;">
-            <ul>
+            <ul class="nav flex-column">
                 <li v-for="permission in list">
-                    {{ permission.title }}
-                    <ul>
-                        <li v-for="child in permission.children">
-                            {{ child.title}}
-                            <!--<ul>
-                                <li v-for="child in child.children">
-                                    {{ child.name}}
-                                </li>
-                            </ul>-->
-                        </li>
-                    </ul>
+                    <span class="badge rounded-pill bg-light text-dark m-1" v-for="child in permission.children">
+                        {{ child.title}}
+                    </span>
                 </li>
             </ul>
         </div>

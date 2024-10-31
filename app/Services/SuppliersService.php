@@ -10,10 +10,7 @@ class SuppliersService
     public function store(array $array): Supplier
     {
         return DB::transaction(function () use ($array) {
-            $supplier = Supplier::create([
-                ...$array,
-                "tenant_id" => session()->get('tenant_id'),
-            ]);
+            $supplier = Supplier::create($array);
 
 
             return $supplier;
@@ -23,12 +20,7 @@ class SuppliersService
     public function update(Supplier $supplier, array $array): Supplier
     {
         return DB::transaction(function () use ($supplier, $array) {
-            $supplier->update(
-                [
-                    ...$array,
-                    'tenant_id' => session()->get('tenant_id'),
-                ]
-            );
+            $supplier->update($array);
 
             return $supplier;
         });

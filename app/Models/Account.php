@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use App\Models\Scopes\TenantScope;
-use App\Observers\AccountObserver;
+use App\Trait\SetTenantId;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Account extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, SetTenantId;
 
     protected $dateFormat = 'Y-m-d H:i:s.u';
 

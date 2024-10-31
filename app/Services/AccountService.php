@@ -12,12 +12,7 @@ class AccountService
     public function store(array $array): Account
     {
         return DB::transaction(function () use ($array) {
-            $account = Account::create(
-                [
-                    ...$array,
-                    'tenant_id' => session()->get('tenant_id'),
-                ]
-            );
+            $account = Account::create($array);
 
             if (isset($array['contacts']) && is_array($array['contacts'])) {
                 $this->accountRepository->syncContacts($account, $array['contacts']);
@@ -30,12 +25,7 @@ class AccountService
     public function update(Account $account, array $array): Account
     {
         return DB::transaction(function () use ($account, $array) {
-            $account->update(
-                [
-                    ...$array,
-                    'tenant_id' => session()->get('tenant_id'),
-                ]
-            );
+            $account->update($array);
 
             if (isset($array['contacts']) && is_array($array['contacts'])) {
                 $this->accountRepository->syncContacts($account, $array['contacts']);

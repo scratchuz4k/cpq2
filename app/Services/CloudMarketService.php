@@ -48,7 +48,7 @@ class CloudMarketService
         $content = $file->getContent();
         $createdAt = Carbon::parse($content['created_at']);
 
-        if (is_null($content['finished_at']) && $createdAt->addMinutes(15)->isPast()) {
+        if (is_null($content['finished_at']) && $createdAt->addMinutes(2)->isPast()) {
             if (env('CLOUDMARKET_CONNECTION_AS_JOB')) {
                 CloudMarketConnectivityProducts::dispatch($file, $connectivityType, $address);
             } else {
@@ -89,13 +89,14 @@ class CloudMarketService
             $prices[] = [...$temp, 'code' => md5(Str::slug($temp['code']))];
             $tempFilters = $this->cloudMarketRepository->processFilters($tempFilters, $temp);
             $file->write($prices, false, null, $started_at, $tempFilters);
-
+			/*
             if (($key % 250) == 0) {
                 echo json_encode($this->cloudMarketRepository->sendResponse($file->getContent(), $filters));
             }
+			*/
         }
 
         $file->write($prices, false, now(), $started_at, $tempFilters);
-        echo json_encode($this->cloudMarketRepository->sendResponse($file->getContent(), $filters));
+        //echo json_encode($this->cloudMarketRepository->sendResponse($file->getContent(), $filters));
     }
 }

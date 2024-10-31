@@ -24,14 +24,7 @@ const props = defineProps({
         type: Object,
         default: {}
     },
-    allow: {
-        type: Object,
-        default: {
-            update: false,
-            delete: false,
-            link: false,
-        }
-    }
+    allow: Object
 })
 
 const activeFilters = ref(false)
@@ -57,7 +50,6 @@ const setFilters = () => {
 }
 
 const getData = async () => {
-    meta.total = 0
     let string = queryString.stringify({
         ...form,
         page: meta.page,
@@ -67,9 +59,9 @@ const getData = async () => {
     })
 
     let res = await axios.get('/api' + props.route + '?' + string)
-    data.value = res.data.data
-    meta.total = res.data.meta.total
-    meta.first = (meta.page - 1) * form.limit
+        data.value = res.data.data
+        meta.total = res.data.meta.total
+        meta.first = (meta.page - 1) * form.limit
 }
 
 const sortBy = (column) => {
@@ -170,7 +162,7 @@ getData()
                 </IconField>
             </div>
         </template>
-        <Column v-for="(column, key) in columns.filter(x => !x.hide)" :field="column.data">
+        <Column v-for="(column, key) in columns.filter(x => !x.hide)" :field="column.data" :style="column.style">
             <template #header>
                 <div class="d-flex justify-content-between align-items-center w-100 pe-3 position-relative">
                     <b class="column-title sortable d-inline-flex align-items-center" @click="sortBy(column.data)" :style="{textDecoration: column.data == form.orderBy ? 'underline': 'none'}">
@@ -209,8 +201,9 @@ getData()
                                     <select :id="`filter-value-${key}`" class="form-select w-100"
                                         v-model="form.filters[key].value">
                                         <option :value="null">All</option>
-                                        <option v-for="option in filters[column.data].options" :value="option">
-                                            {{ option }}
+                                        <option v-for="option in filters[column.data].options"
+                                            :value="typeof option === 'object' ? option.value : option">
+                                            {{ typeof option === 'object' ? option.label : option }}
                                         </option>
                                     </select>
                                 </div>
@@ -229,12 +222,12 @@ getData()
                 <template v-else>{{ getValue(data, field) }}</template>
             </template>
         </Column>
-        <Column v-if="allow.update || allow.link || allow.delete" :class="['p-0']">
+        <Column v-if="allow.update || allow.link || allow.delete" :class="['p-0']" style="width:10%;">
             <template #body="{ data, index }">
                 <div class="d-flex justify-content-center">
                     <template v-if="allow.update">
                         <Link :href="props.route + '/' + data.id + '/edit'" class="btn p-2 mx-1 border-0">
-                        <font-awesome-icon :icon="['fas', 'edit']" />
+                            <font-awesome-icon :icon="['fas', 'edit']" />
                         </Link>
                     </template>
 
@@ -252,14 +245,17 @@ getData()
                 </div>
             </template>
         </Column>
+        <template #empty>
+            <div class="text-center my-1">No records found</div>
+        </template>
     </DataTable>
     <Paginator v-model:first="meta.first" :rows="form.limit" :totalRecords="meta.total"
         :rowsPerPageOptions="[20, 30, 50]" @page="handlePaginator">
     </Paginator>
 </template>
 <style>
-.p-select-option.p-select-option-selected.p-focus {
-    background-color: #ec008c!important;
+.p-select-option.p-select-option-selected {
+    background-color: var(--color-violet)!important;
     color: white!important;
 }
 

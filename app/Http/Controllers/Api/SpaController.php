@@ -8,12 +8,15 @@ use App\Http\Resources\SpaResource;
 use App\Models\Spa;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class SpaController extends Controller
 {
     protected $model = Spa::class;
     /**
      * Display a listing of the resource.
+     * @response AnonymousResourceCollection<LengthAwarePaginator<SpaResource>>
      */
     public function index()
     {

@@ -12,7 +12,8 @@ use Laravel\Socialite\Facades\Socialite;
 class GoogleController extends Controller
 {
     //Google Login
-    public function create(){
+    public function create()
+    {
         try {
             return Inertia::location(Socialite::driver('google')->redirect());
         } catch (\Exception $e) {
@@ -24,7 +25,8 @@ class GoogleController extends Controller
     }
 
     //Google Callback
-    public function callback(){
+    public function callback()
+    {
         try {
             $ssoUser = Socialite::driver('google')->stateless()->user();
             Log::debug("Socialite Callback Google user: " . json_encode($ssoUser));
@@ -32,15 +34,13 @@ class GoogleController extends Controller
                 throw new \Exception("SSO ERROR: Email not provided in user data");
             }
             $user = User::where('email', $ssoUser['email'])->first();
-            if ($user && $user->tenants->count()) {
-                $firstTenant = $user->tenants->first();
-                $firstTenant->makeCurrent();
-                session(['tenant_id' => $firstTenant->id]);
-                Auth::login($user);
-                return redirect('/');
-            } else {
-                throw new \Exception("SSO ERROR: Email domain not found");
+            if (!$user->currentTenant) {
+                throw new \Exception("User ($user->id) Not Assigned to Any Tenant");
             }
+
+            $user->currentTenant->makeCurrent();
+            Auth::login($user);
+            return redirect('/');
         } catch (\Exception $e) {
             Log::debug("Error on socialite google callback: " . $e->getMessage());
             return redirect('/login')->with([

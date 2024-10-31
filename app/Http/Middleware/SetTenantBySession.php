@@ -4,24 +4,36 @@ namespace App\Http\Middleware;
 
 use Closure;
 use App\Models\Tenant;
-use Illuminate\Support\Facades\Log;
 
 class SetTenantBySession
 {
     public function handle($request, Closure $next)
     {
-        if ($tenant_id = $request->session()->get('tenant_id')) {
-            $tenant = Tenant::findOrFail($tenant_id);
-            Log::debug("Tenant found for request via session: {$tenant->id}");
-            session(['tenant_id' => $tenant->id]);
-            $tenant->makeCurrent();
+        $user = $request->user();
+        if (!$user) {
+            $temp = Tenant::findOrFail(1);
+            $temp->makeCurrent();
             return $next($request);
         }
 
-        $tenant = Tenant::findOrFail(1);
-        session(['tenant_id' => $tenant->id]);
-        $tenant->makeCurrent();
+        if (!$user->currentTenant && $user->hasRole('Super Admin')) {
+            $temp = Tenant::findOrFail(1);
+            $user = $request->user();
+            $user->update(['tenant_id' => $temp->id]);
+            $user->refresh();
+        }
 
+        if (!$user->tenants->where('id', $user->tenant_id)->first()) {
+            $tenant = $user->tenants->first();
+            $user->update(['tenant_id' => $tenant->id]);
+            $user->refresh();
+        }
+
+        if (!$user->currentTenant) {
+            throw new \Exception("User ($user->id) Not Assigned to Any Tenant");
+        }
+
+        $user->currentTenant->makeCurrent();
         return $next($request);
     }
 }
