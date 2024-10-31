@@ -26,15 +26,20 @@ const urlParams = new URLSearchParams(window.location.search)
 const params = new Proxy(urlParams, {
     get: (searchParams, prop) => searchParams.get(prop),
 })
+const step = ref(params["step"] ?? 1)
 
 const search = ref(null)
-const step = ref(params["step"] ?? 1)
 
 const products = reactive({
     plan: [],
     bolt_on: [],
 })
 const productsHardware = ref([])
+const order = reactive({
+    items: props.modelValue.items,
+    new: []
+})
+
 const filters = reactive({
     model: {
         operator: "in",
@@ -86,7 +91,7 @@ const getProducts = () => {
         })
         let res = await axios.get("/api/products" + '?' + query)
         res.data.data.forEach((e) => {
-            let temp = props.modelValue.items.find(x => x.data?.name == e.name)
+            let temp = props.modelValue.items.find(x => x.product_code == e.code)
             e.quantity = temp ? temp.quantity : 0
         });
         products[key] = res.data.data
@@ -109,26 +114,17 @@ const getProductsShopBlocks = async () => {
     };
     let res = await axios.post("/api/external/get-articles-from-shop-blocks", query)
     productsHardware.value = res.data.data
-    productsHardware.value.forEach(element => {
-        let orderItem = props.modelValue.items.find(x => x.data?.name == element.name)
-        element.quantity = orderItem ? orderItem.quantity : 0
-        element.id = orderItem ? orderItem.id : null
+    productsHardware.value.forEach(e => {
+        let temp = props.modelValue.items.find(x => x.product_code == e.code)
+        e.quantity = temp ? temp.quantity : 0
     });
+
     meta.first = (meta.page - 1) * meta.limit
     meta.total = res.data.total
     meta.overallTotal = res.data.overall_total
     meta.isLoading = false
     filterList.models = res.data.filters.model
 }
-
-const checkPlansHardwareQuantity = () => {
-    let plansQty = products.plan.reduce((acc, x) => acc += x.quantity, 0)
-    let boltOnQty = products.bolt_on.reduce((acc, x) => acc += x.quantity, 0)
-    let hardwareQty = productsHardware.value.reduce((acc, x) => acc += x.quantity, 0)
-
-    return (plansQty + boltOnQty) - hardwareQty
-}
-
 
 const clearFilters = () => {
     Object.keys(filters).forEach((key) => filters[key].value = null)
@@ -140,10 +136,7 @@ const handlePaginator = (ev) => {
     getProductsShopBlocks()
 }
 
-const checkQuantity = (product, temp) => {
-    if (!Object.keys(product).includes('quantity')) {
-        product.quantity = 0
-    }
+const checkQuantity = async (product, temp, hardwareCheck = false) => {
     let oldQty = product.quantity
     if (product.stock <= temp) {
         temp = product.stock
@@ -151,46 +144,80 @@ const checkQuantity = (product, temp) => {
 
     product.quantity = temp
 
-    if (checkPlansHardwareQuantity() < 0) {
-        swal.fire({
+    if (checkPlansHardwareQuantity() <= 0 && hardwareCheck) {
+        let result = await swal.fire({
             title: 'Quantity exceeds plans limit',
-            subtitle: 'Your hardware quantity exceeds plans limit'
-        }).then(async (result) => {
-            if (['cancel', 'backdrop'].includes(result.dismiss)) {
-                product.quantity = oldQty
-                return
-            }
-            product.quantity += checkPlansHardwareQuantity()
+            text: 'Your hardware quantity exceeds plans limit'
         })
+
+        if (['cancel', 'backdrop'].includes(result.dismiss)) {
+            product.quantity = oldQty
+        } else {
+            product.quantity += checkPlansHardwareQuantity()
+        }
+    }
+
+    let indexItems = order.items.findIndex(x => x.product_code == product.code)
+    let indexNew = order.new.findIndex(x => x.code == product.code)
+
+    if (indexItems == -1 && indexNew == -1) {
+        order.new.push(product)
+        return
+    }
+
+    if (indexItems != -1) {
+        order.items[indexItems].quantity = product.quantity
+        return
+    }
+
+    if (indexNew != -1) {
+        order.new[indexNew].quantity = product.quantity
+        return
     }
 }
 
-const saveQuote = () => {
+const saveQuote = async () => {
     let items = []
-    items.push(...products.plan.filter(x => x.quantity))
-    items.push(...products.bolt_on.filter(x => x.quantity))
-    items.push(...productsHardware.value.filter(x => x.quantity))
+    order.items.filter(x => x.quantity).forEach((x) => { items.push(x) })
+
+    order.new.forEach((x) => {
+        if (!x.quantity) {
+            return
+        }
+        items.push({
+            product_code: x.code,
+            product_id: x.product_id,
+            quantity: x.quantity,
+            name: x.name,
+            raw_price: x.price ?? x.prices[0].net,
+            raw_price_monthly: x.priceMonthly ?? !x.prices ? 0 : x.prices[0].net_monthly,
+            price: x.price ?? x.prices[0].net_spa,
+            price_monthly: x.priceMonthly ?? !x.prices ? 0 : x.prices[0].net_monthly_spa
+        })
+    })
+
     try {
-        items.forEach(async (article) => {
-            let temp = props.modelValue.items.find(x => x.name == article.name)
-            let url = temp ? `/api/order-items/${temp.id}` : '/api/order-items';
-            let method = temp ? !article.quantity ? 'delete' : 'put' : 'post';
-            await axios[method](url,
-                {
-                    order_id: props.modelValue.id,
-                    quantity: article.quantity,
-                    name: article.name,
-                    data: article,
-                    raw_price: article.price ?? article.prices[0].net,
-                    raw_price_monthly: article.priceMonthly ?? !article.prices ? 0 : article.prices[0].net_monthly,
-                    price: article.price ?? article.prices[0].net_spa,
-                    price_monthly: article.priceMonthly ?? !article.prices ? 0 : article.prices[0].net_monthly_spa
-                })
+        await axios.put(`/api/orders/${props.modelValue.id}`, {
+            items: items
         })
         router.get(`/orders/${props.modelValue.id}`)
     } catch (ex) {
         alert(ex.response.data.message)
     }
+}
+
+const getHardwareProductsCount = () => {
+    let codes = [...products.bolt_on.map(x => x.code), ...products.plan.map(x => x.code)];
+    let items = [...order.items, ...order.new]
+    return items.filter(x => !(codes.includes(x.product_code) || codes.includes(x.code))).reduce((acc, i) => acc += i.quantity, 0)
+}
+
+const checkPlansHardwareQuantity = () => {
+    let plansQty = products.plan.reduce((acc, x) => acc += x.quantity, 0)
+    let boltOnQty = products.bolt_on.reduce((acc, x) => acc += x.quantity, 0)
+    let hardwareQty = getHardwareProductsCount()
+
+    return (plansQty + boltOnQty) - hardwareQty
 }
 
 getProductsShopBlocks()
@@ -236,16 +263,17 @@ const items = ref([
                         <div class="mobile-product-quantity">
                             <label>Quantity</label>
                             <div class="d-flex align-items-center pb-3">
-                                <InputQuantity :id="'bolt-' + index" v-model="product.quantity" />
+                                <InputQuantity :id="'bolt-' + index" v-model="product.quantity"
+                                    @change="(ev) => checkQuantity(product, ev)" />
                                 <button :id="'btn-plan-' + index + '-add-25'" type=" button"
                                     class="badge border-0 text-bg-secondary ms-4"
-                                    @click="() => product.quantity += 25">+25</button>
+                                    @click="checkQuantity(product, product.quantity + 25)">+25</button>
                                 <button :id="'btn-plan-' + index + '-add-50'" type=" button"
                                     class="badge border-0 text-bg-secondary mx-2"
-                                    @click="() => product.quantity += 50">+50</button>
+                                    @click="checkQuantity(product, product.quantity + 50)">+50</button>
                                 <button :id="'btn-plan-' + index + '-add-100'" type=" button"
                                     class="badge border-0 text-bg-secondary"
-                                    @click="() => product.quantity += 100">+100</button>
+                                    @click="checkQuantity(product, product.quantity + 100)">+100</button>
                             </div>
                         </div>
                     </div>
@@ -279,17 +307,18 @@ const items = ref([
                         <div class="mobile-product-quantity">
                             <label>Quantity</label>
                             <div class="d-flex align-items-center  pb-3">
-                                <InputQuantity :id="'bolt-' + index" v-model="product.quantity" />
+                                <InputQuantity :id="'bolt-' + index" v-model="product.quantity"
+                                    @change="(ev) => checkQuantity(product, ev)" />
 
                                 <button :id="'btn-bolt-' + index + '-add-25'" type="button"
                                     class="badge border-0 text-bg-secondary ms-4"
-                                    @click="() => product.quantity += 25">+25</button>
+                                    @click="checkQuantity(product, product.quantity + 25)">+25</button>
                                 <button :id="'btn-bolt-' + index + '-add-50'" type="button"
                                     class="badge border-0 text-bg-secondary mx-2"
-                                    @click="() => product.quantity += 50">+50</button>
+                                    @click="checkQuantity(product, product.quantity + 50)">+50</button>
                                 <button :id="'btn-bolt-' + index + '-add-100'" type="button"
                                     class="badge border-0 text-bg-secondary"
-                                    @click="() => product.quantity += 100">+100</button>
+                                    @click="checkQuantity(product, product.quantity + 100)">+100</button>
                             </div>
                         </div>
                     </div>
@@ -393,35 +422,35 @@ const items = ref([
                                             </p>
                                             <p v-else class="badge text-bg-danger" style="--bs-bg-opacity: .5;">
                                                 <font-awesome-icon :icon="['fa', 'warning']" />
+                                                <span :id="'hardware-' + index + '-stock'"></span>
                                                 OUT OF STOCK
                                             </p>
                                         </div>
                                         <div>
-                                            <p class="bold big mb-3"> £{{ product.price }}</p>
+                                            <p class="bold big"> £{{ product.price }}</p>
                                         </div>
                                     </div>
                                 </div>
-                                <p class="small" v-tooltip data-bs-toggle="tooltip" data-bs-placement="top"
-                                    :title="product.name">
+                                <p class="small">
                                     {{ product.sku }} - {{ product.name }}</p>
                                 <div class="pt-3">
                                     <p style="font-weight: 500;">Quantity</p>
                                     <div class="d-flex align-items-center mb-2">
                                         <InputQuantity :id="'hardware-' + index" v-model="product.quantity"
                                             :disabled="checkPlansHardwareQuantity() <= 0"
-                                            @change="(val) => checkQuantity(product, val)" />
+                                            @change="(val) => checkQuantity(product, val, true)" />
 
                                         <button :id="'btn-hardware-' + index + '-add-25'"
                                             class="btn btn-sm ms-4 btn-add-custom-quantity"
-                                            @click="checkQuantity(product, product.quantity + 25)"
+                                            @click="checkQuantity(product, product.quantity + 25, true)"
                                             :disabled="checkPlansHardwareQuantity() <= 0">+25</button>
                                         <button :id="'btn-hardware-' + index + '-add-50'"
                                             class="btn btn-sm ms-2 btn-add-custom-quantity"
-                                            @click="checkQuantity(product, product.quantity + 50)"
+                                            @click="checkQuantity(product, product.quantity + 50, true)"
                                             :disabled="checkPlansHardwareQuantity() <= 0">+50</button>
                                         <button :id="'btn-hardware-' + index + '-add-100'"
                                             class="btn btn-sm ms-2 btn-add-custom-quantity"
-                                            @click="checkQuantity(product, product.quantity + 100)"
+                                            @click="checkQuantity(product, product.quantity + 100, true)"
                                             :disabled="checkPlansHardwareQuantity() <= 0">+100</button>
                                     </div>
                                 </div>
@@ -482,7 +511,7 @@ const items = ref([
                     <div class="sidebar_add_ons mb-3">
                         <div class="item mb-2">
                             <span>Hardware</span><span class="badge bg-light-grey dark">
-                                {{ productsHardware.reduce((acc, x) => acc += !x.quantity ? 0 : x.quantity, 0) }}
+                                {{ getHardwareProductsCount() }}
                             </span>
                         </div>
                     </div>

@@ -123,7 +123,15 @@ class ExternalController extends Controller
             ];
 
             foreach ($products as $key => $product) {
+                $temp = '';
+                foreach (array_keys($product) as $itemKey) {
+                    if (!(is_string($product[$itemKey]) || is_numeric($product[$itemKey]))) {
+                        continue;
+                    }
+                    $temp .= $product[$itemKey];
+                }
                 $model = (string) Str::of($product['name'])->words(3, '');
+                $products[$key]['code'] = md5(Str::slug($temp));
                 $products[$key]['price'] = (float)$product['price'];
                 $products[$key]['model'] = $model;
                 $products[$key]['url'] = 'https://hardware.cloud.market/smartphones/' . $product['slug'];

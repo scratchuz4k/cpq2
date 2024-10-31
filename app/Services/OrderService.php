@@ -37,15 +37,23 @@ class OrderService
     {
         return DB::transaction(function () use ($order, $array) {
             $order->update($array);
-            if (array_key_exists('items', $array)) {
+            if (array_key_exists('items', $array) && is_array($array['items'])) {
+                $olderItems = collect($order->items);
                 foreach ($array['items'] as $order_item) {
-                    $order_item['order_id'] = $order->id;
-                    if (array_key_exists('id', $order_item)) {
+
+                    if (array_key_exists('id', $order_item) && !is_null($order_item['id'])) {
                         $temp = OrderItem::find($order_item['id']);
-                        $this->orderItemService->update($temp, $order_item);
-                        continue;
+                        $this->orderItemService->update($temp, [...$order_item, 'order_id' =>  $order->id]);
+
+                        $olderItems = $olderItems->reject(function ($temp) use ($order_item) {
+                            return $temp->id === $order_item['id'];
+                        });
+                    } else {
+                        $this->orderItemService->store([...$order_item, 'order_id' =>  $order->id]);
                     }
-                    $this->orderItemService->store($order_item);
+                }
+                foreach ($olderItems as $temp) {
+                    $temp->delete();
                 }
             }
 
