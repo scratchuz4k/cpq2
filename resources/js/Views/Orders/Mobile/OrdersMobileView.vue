@@ -1,4 +1,5 @@
 <script setup>
+import _ from "lodash";
 import Select from 'primevue/select';
 import MultiSelect from 'primevue/multiselect';
 import Paginator from 'primevue/paginator';
@@ -26,6 +27,7 @@ const params = new Proxy(urlParams, {
     get: (searchParams, prop) => searchParams.get(prop),
 })
 
+const search = ref(null)
 const step = ref(params["step"] ?? 1)
 
 const products = reactive({
@@ -91,16 +93,6 @@ const getProducts = () => {
     })
 }
 
-
-const checkPlansHardwareQuantity = () => {
-    let plansQty = products.plan.reduce((acc, x) => acc += x.quantity, 0)
-    let boltOnQty = products.bolt_on.reduce((acc, x) => acc += x.quantity, 0)
-    let hardwareQty = productsHardware.value.reduce((acc, x) => acc += x.quantity, 0)
-
-    return (plansQty + boltOnQty) - hardwareQty
-}
-
-
 const getProductsShopBlocks = async () => {
     meta.isLoading = true
     let temp = []
@@ -113,6 +105,7 @@ const getProductsShopBlocks = async () => {
         filters: temp,
         order: sort.value.order,
         orderBy: sort.value.orderBy,
+        search: search.value
     };
     let res = await axios.post("/api/external/get-articles-from-shop-blocks", query)
     productsHardware.value = res.data.data
@@ -127,6 +120,15 @@ const getProductsShopBlocks = async () => {
     meta.isLoading = false
     filterList.models = res.data.filters.model
 }
+
+const checkPlansHardwareQuantity = () => {
+    let plansQty = products.plan.reduce((acc, x) => acc += x.quantity, 0)
+    let boltOnQty = products.bolt_on.reduce((acc, x) => acc += x.quantity, 0)
+    let hardwareQty = productsHardware.value.reduce((acc, x) => acc += x.quantity, 0)
+
+    return (plansQty + boltOnQty) - hardwareQty
+}
+
 
 const clearFilters = () => {
     Object.keys(filters).forEach((key) => filters[key].value = null)
@@ -163,19 +165,6 @@ const checkQuantity = (product, temp) => {
     }
 }
 
-const removeQuantity = (product, quantity) => {
-    if (!Object.keys(product).includes('quantity')) {
-        product.quantity = 0
-        return
-    }
-
-    if (!product.stock) {
-        return
-    }
-    product.quantity -= quantity
-
-}
-
 const saveQuote = () => {
     let items = []
     items.push(...products.plan.filter(x => x.quantity))
@@ -210,6 +199,10 @@ getProducts()
 watch([filters, sort], () => {
     getProductsShopBlocks()
 })
+
+watch(search, _.debounce(() => {
+    getProductsShopBlocks()
+}, 300))
 
 
 const items = ref([
@@ -319,12 +312,21 @@ const items = ref([
                     </div>
                 </div>
                 <div v-if="step == 3" id="mobile_step3" class="step">
-                    <div class="d-flex align-items-end mb-3">
+                    <div class="d-flex align-items-end mb-4">
                         <h2 class="m-0">Finally, choose your add-ons</h2>
                         <p class="m-0 ms-2 text-primary bold">STEP 3/3</p>
                     </div>
                     <div class="d-flex justify-content-between mb-3">
                         <h3>Handsets</h3>
+                        <div>
+                            <div class="input-group">
+                                <input type="search" class="form-control" placeholder="Search Handsets"
+                                    v-model="search">
+                                <button class="btn btn-primary" type="submit" id="button-addon2">
+                                    <font-awesome-icon :icon="['fas', 'magnifying-glass']" />
+                                </button>
+                            </div>
+                        </div>
                     </div>
                     <div class="panel mb-3">
                         <div class="d-flex justify-content-between mb-2">
@@ -376,10 +378,31 @@ const items = ref([
                                 <a :href="product.url" target="_blank">
                                     <img :src="product.primary_image" style="width: 100%;object-fit: contain;">
                                 </a>
+
                             </div>
-                            <div class="col-6">
-                                <p class="big bold">{{ product.model }}</p>
-                                <p style="white-space: nowrap;overflow:hidden;text-overflow: ellipsis;">
+                            <div class="col-10">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <p class="big bold">{{ product.model }}</p>
+                                    <div class="d-flex justify-content-end">
+                                        <div class="me-3">
+                                            <p v-if="product.stock > 0" class="badge text-bg-warning"
+                                                style="--bs-bg-opacity: .5;">
+                                                <span :id="'hardware-' + index + '-stock'">
+                                                    {{ product.stock }}
+                                                </span> in stock
+                                            </p>
+                                            <p v-else class="badge text-bg-danger" style="--bs-bg-opacity: .5;">
+                                                <font-awesome-icon :icon="['fa', 'warning']" />
+                                                OUT OF STOCK
+                                            </p>
+                                        </div>
+                                        <div>
+                                            <p class="bold big mb-3"> £{{ product.price }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <p class="small" v-tooltip data-bs-toggle="tooltip" data-bs-placement="top"
+                                    :title="product.name">
                                     {{ product.sku }} - {{ product.name }}</p>
                                 <div class="pt-3">
                                     <p style="font-weight: 500;">Quantity</p>
@@ -404,23 +427,6 @@ const items = ref([
                                 </div>
                             </div>
 
-                            <div class="col-4 d-flex justify-content-end">
-                                <div class="me-3">
-                                    <p v-if="product.stock > 0" class="badge text-bg-warning"
-                                        style="--bs-bg-opacity: .5;">
-                                        <span :id="'hardware-' + index + '-stock'">
-                                            {{ product.stock }}
-                                        </span> in stock
-                                    </p>
-                                    <p v-else class="badge text-bg-danger" style="--bs-bg-opacity: .5;">
-                                        <font-awesome-icon :icon="['fa', 'warning']" />
-                                        OUT OF STOCK
-                                    </p>
-                                </div>
-                                <div>
-                                    <p class="bold big mb-3"> £{{ product.price }}</p>
-                                </div>
-                            </div>
                         </div>
                     </div>
                     <Paginator v-model:first="meta.first" :rows="meta.limit" :totalRecords="meta.total"

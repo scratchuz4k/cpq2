@@ -561,7 +561,7 @@ getArticles()
     </div>
 </template>
 
-<style>
+<style scoped>
 .p-multiselect-header {
     display: none !important
 }

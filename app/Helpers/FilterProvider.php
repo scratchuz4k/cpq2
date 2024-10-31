@@ -17,6 +17,13 @@ class FilterProvider
             }
             $data = static::resolveQuery($filter['operator'], $filter['column'], $filter['value'], $data);
         }
+        if (request()->has('search') && !is_null(request()->search)) {
+            $data = $data->filter(function ($item) {
+                return collect($item)->contains(function ($value) {
+                    return strpos(strtolower($value), strtolower(request()->search)) !== false;
+                });
+            });
+        }
         return $data->values();
     }
 
