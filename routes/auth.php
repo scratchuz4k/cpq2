@@ -43,13 +43,13 @@ Route::middleware('guest')->group(function () {
                 ->name('login.sso');
     Route::post('/login/sso', [SsoController::class, 'store'])
                 ->name('login.sso.post');
-    Route::post('/login/sso/callback', [SsoController::class, 'callback'])
+    Route::post('/auth/callback', [SsoController::class, 'callback'])
                 ->name('login.sso.callback');
 
     //Google
     Route::get('/login/google', [GoogleController::class, 'create'])
                 ->name('login.google');
-    Route::get('/login/google/callback', [GoogleController::class, 'callback'])
+    Route::get('/auth/google', [GoogleController::class, 'callback'])
                 ->name('login.google.callback');
 });
 

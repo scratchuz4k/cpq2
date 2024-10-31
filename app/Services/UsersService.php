@@ -3,7 +3,9 @@
 namespace App\Services;
 
 use App\Imports\UsersImport;
+use App\Models\Role;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Maatwebsite\Excel\Facades\Excel;
@@ -15,6 +17,10 @@ class UsersService
         return DB::transaction(function () use ($array) {
             if (array_key_exists('password', $array) && !empty($array['password'])) {
                 $array['password'] = Hash::make($array['password']);
+            }
+
+            if (array_key_exists('parent_id', $array) && $array['parent_id'] == 0) {
+                $array['parent_id'] = null;
             }
 
             $user = User::create($array);
@@ -41,9 +47,14 @@ class UsersService
             $array['password'] = $user->password;
         }
 
+        if (array_key_exists('parent_id', $array) && $array['parent_id'] == 0) {
+            $array['parent_id'] = null;
+        }
+
         return DB::transaction(function () use ($user, $array) {
 
             $user->update($array);
+
             if (array_key_exists('role_id', $array)) {
                 $user->syncRoles($array['role_id']);
             }
@@ -63,6 +74,23 @@ class UsersService
             Excel::import($import, $array['file']);
 
             return $import->results;
+        });
+    }
+
+    public function getChildAndOrphansUser(): Builder
+    {
+        $query = User::query();
+        $superUsers = collect([]);
+        if (!request()->user()->hasRole('Super Admin')) {
+            $superUsers = User::whereHas('roles', function ($query) {
+                return $query->whereIn('name', ['Super Admin']);
+            })->get();
+        }
+        $query = $query->whereNotIn('id', $superUsers->pluck('id'));
+
+        $roles = Role::descendants();
+        return $query->whereHas('roles', function ($query) use ($roles) {
+            $query->whereIn('id', $roles->pluck('id'));
         });
     }
 }

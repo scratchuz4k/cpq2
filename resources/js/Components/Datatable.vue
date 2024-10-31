@@ -25,14 +25,7 @@ const props = defineProps({
         type: Object,
         default: {}
     },
-    allow: {
-        type: Object,
-        default: {
-            update: false,
-            delete: false,
-            link: false,
-        }
-    }
+    allow: Object
 })
 
 const activeFilters = ref(false)
