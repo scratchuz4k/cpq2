@@ -53,7 +53,7 @@ const props = defineProps({
                     'user.name': { type: 'options', options: users.map(x => x.name) },
                     'solution_type.name': { type: 'options', options: solutions.map(x => x.name) },
                     'status': { type: 'options', options: status }
-                }" route="/orders">
+                }" route="/quotes">
                     <template #status="{ value }">
                         <span class="badge text-bg-secondary">{{ value }}</span>
                     </template>

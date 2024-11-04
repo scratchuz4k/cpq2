@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Quote #{{$order->id}}</title>
+    <title>Quote #{{$quote->id}}</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <style>
         :root {
@@ -112,14 +112,14 @@
                 <p>Insert Tagline</p>
             </div>
             <div class="col text-end" id="header_right">
-                <p>{{ $order->account->name }}<br>{{ $order->address_data?->label}}</p>
+                <p>{{ $quote->account->name }}<br>{{ $quote->address_data?->label}}</p>
                 <p>Tel: +44 (0) 191 300 700</p>
                 <p>Email: sales@example.com</p>
             </div>
         </div>
         <div class="cpq-summary row px-3" id="main">
             <div class="col">
-                <h1 class="mb-3">Quote Q-{{ $order['id'] }}</h1>
+                <h1 class="mb-3">Quote Q-{{ $quote['id'] }}</h1>
                 <div class="row mb-3">
                     <div class="col">
                         <p>Company address, city, state, post code<br>
@@ -127,7 +127,7 @@
                             +44 (0) 123 456 7890</p>
                     </div>
                     <div class="col">
-                        <p>Quote #{{ $order['id'] }}<br>
+                        <p>Quote #{{ $quote['id'] }}<br>
                             Quotation Date: {{ date('d/m/Y') }}<br>
                             Valid Date: {{ date('d/m/Y', strtotime('+7 days')) }}</p>
                     </div>
@@ -163,7 +163,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($order->items as $key => $item)
+                        @foreach ($quote->items as $key => $item)
                         <tr class="item-row">
 
                             <td>

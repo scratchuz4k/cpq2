@@ -1,6 +1,6 @@
 <?php
 
-use App\Models\Order;
+use App\Models\Quote;
 
 if (! function_exists('format_date')) {
     /**
@@ -31,13 +31,13 @@ if (! function_exists('format_date')) {
     }
 }
 
-if (! function_exists('get_order_status')) {
-    function get_order_status(Order $order)
+if (! function_exists('get_quote_status')) {
+    function get_quote_status(Quote $quote)
     {
-        if ($order->items->count()) {
+        if ($quote->items->count()) {
             return 'QUOTE';
         }
-        if (!empty($order->address_data)) {
+        if (!empty($quote->address_data)) {
             return 'PRICE';
         }
 

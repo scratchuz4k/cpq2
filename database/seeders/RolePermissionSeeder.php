@@ -49,15 +49,18 @@ class RolePermissionSeeder extends Seeder
                 'supplier' => 'Supplier',
                 'spa' => 'Spa',
                 'user' => 'User',
-                'token' => 'Token'
+                'token' => 'Token',
+                'quote' => 'Quote',
+                'quote_item' => 'Quote Item',
+                'quote_items' => 'Quote Items',
             ],
         ];
 
         $roles = [
             'Super Admin' => ['parent' => null, 'permissions' => []],
-            'Support Agent' => ['parent' => 'Super Admin', 'permissions' => ['merchant', 'account', 'contact', 'token', 'order', 'order_items']],
-            'Company Admin' => ['parent' => 'Super Admin', 'permissions' => ['order', 'order_items', 'merchant', 'account', 'contact',  'price', 'product', 'region', 'tenant', 'brand', 'supplier', 'spa', 'user']],
-            'Sales Rep' => ['parent' => 'Company Admin', 'permissions' => ['order', 'order_items', 'account', 'contact', 'brand', 'supplier']]
+            'Support Agent' => ['parent' => 'Super Admin', 'permissions' => ['merchant', 'account', 'contact', 'token', 'quote', 'quote_items']],
+            'Company Admin' => ['parent' => 'Super Admin', 'permissions' => ['quote', 'quote_items', 'merchant', 'account', 'contact',  'price', 'product', 'region', 'tenant', 'brand', 'supplier', 'spa', 'user']],
+            'Sales Rep' => ['parent' => 'Company Admin', 'permissions' => ['quote', 'quote_items', 'account', 'contact', 'brand', 'supplier']]
         ];
 
         foreach ($simplePermissions as $key => $pe) {

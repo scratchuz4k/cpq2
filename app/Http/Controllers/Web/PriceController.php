@@ -62,7 +62,7 @@ class PriceController extends BaseController
     public function show(Price $price)
     {
         return Inertia::render('Prices/Show', [
-            'order' => new PriceResource($price)
+            'quote' => new PriceResource($price)
         ]);
     }
 

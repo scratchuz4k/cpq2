@@ -22,7 +22,7 @@ class DashboardController extends BaseController
             $users = User::all();
         }
 
-        $users = $users->filter(fn ($user) => $user->orders->count() > 0);
+        $users = $users->filter(fn ($user) => $user->quotes->count() > 0);
 
         return Inertia::render('Dashboard', [
             "users" => $users->values(),
