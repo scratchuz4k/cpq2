@@ -31,11 +31,27 @@ getHardwareProducts()
     <div class="panel panel-mobile">
         <div class="row">
             <div class="col-lg-8 mb-5 price-summary">
-                <InfoQuote :quote="modelValue"></InfoQuote>
+                <InfoBox>
+                    <h4>Customer Details</h4>
+                    <p class="mb-0">
+                        <b>Name:</b> {{ modelValue.account?.name }}<br>
+
+                        <template v-if="modelValue?.address_line1">
+                            <b>Address:</b> {{ modelValue?.address_line1 }}<br>
+                        </template>
+                        <template v-if="modelValue.account?.primary_contact_name">
+                            <b>Primary Contact:</b> {{ modelValue.account?.primary_contact_name }}<br>
+                        </template>
+                        <template v-if="modelValue.account?.email">
+                            <b>Email:</b> {{ modelValue.account?.email }}<br>
+                        </template>
+                    </p>
+                </InfoBox>
                 <div class="mb-5">
                     <div
                         class="mobile-price-group-heading border-bottom mb-3 d-flex justify-content-between align-items-center">
                         <h3>Hardware</h3>
+                        <!-- <a href="/quotes/mobile/configure/{{ $order->id }}?s=3">Make a change</a> -->
                     </div>
                     <div>
                         <div v-for="p in hardwareProducts" class="item mb-2">
@@ -49,7 +65,8 @@ getHardwareProducts()
                         </div>
                     </div>
                     <div class="mt-5">
-                        <button :href="route('quotes.edit', { quote: modelValue.id })" class="btn btn-light step-nav btn-sm me-3" type="button" @click="() => step--">
+                        <button :href="route('quotes.edit', { quote: modelValue.id })"
+                            class="btn btn-light step-nav btn-sm me-3" type="button" @click="() => step--">
                             <font-awesome-icon :icon="['fas', 'arrow-left']" /> Back
                         </button>
                     </div>

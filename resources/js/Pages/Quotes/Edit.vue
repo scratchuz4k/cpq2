@@ -19,7 +19,7 @@ const solutionsViews = {
 
     <Head :title="'Quote #' + quote.id" />
     <AuthenticatedLayout :quote="quote">
-        <div class="row mb-3">
+        <!-- <div class="row mb-3">
             <div class="col d-flex">
                 <div class="me-3">
                     <font-awesome-icon class="fa-border" :icon="['fas', 'fa-wrench']"
@@ -41,7 +41,7 @@ const solutionsViews = {
                     </a>
                 </div>
             </div>
-        </div>
+        </div> -->
 
         <component :is="solutionsViews[quote.solution_type.code]" v-bind="{
             modelValue: quote

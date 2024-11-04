@@ -2,8 +2,9 @@
 
 namespace App\Models;
 
-use App\Models\Scopes\TenantScope;
 use App\Trait\SetTenantId;
+use App\Models\Scopes\TenantScope;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -25,15 +26,26 @@ class Quote extends Model
         "address_data",
         "solution_type_id",
         "tenant_id",
+        "name",
+        "contract_length",
+        "total",
+        "total_tax",
+        "total_gross",
+        "total_monthly",
+        "total_monthly_tax",
+        "total_monthly_gross",
+        "comission_value",
+        "tax_comission",
+        "margin",
+        "discount",
         "status",
-        "user_id",
-        "name"
+        "user_id"
     ];
     protected function casts(): array
     {
         return [
-            'address_position' => 'object',
-            'address_data' => 'object',
+            "address_position" => "object",
+            "address_data" => "object",
         ];
     }
 
@@ -61,24 +73,37 @@ class Quote extends Model
     {
         return $this->hasMany(QuoteItem::class);
     }
-
-    public function totals()
+    public function computeTotals()
     {
-        $subtotal = 0;
-        $subtotalOneoff = 0;
+        $this->refresh();
+        $original_total = 0;
+        $original_total_monthly = 0;
+        $this->total = 0;
+        $this->total_tax = 0;
+        $this->total_gross = 0;
+        $this->total_monthly = 0;
+        $this->total_monthly_tax = 0;
+        $this->total_monthly_gross = 0;
 
         foreach ($this->items as $item) {
-            $subtotal += (float) $item->quantity * (float) ($item->data?->priceMonthly ?? 0);
-            $subtotalOneoff += (float) $item->quantity * (float) ($item->data?->price ?? $item->data?->priceInstall ?? 0);
+            $original_total += $item->original_price * $item->quantity;
+            $original_total_monthly += $item->original_price_monthly * $item->quantity;
+
+            $this->total += $item->total;
+            $this->total_tax += $item->total_tax;
+            $this->total_gross += $item->total_gross;
+
+            $this->total_monthly += $item->total_monthly;
+            $this->total_monthly_tax  += $item->total_monthly_tax;
+            $this->total_monthly_gross += $item->total_monthly_gross;
         }
 
-        $totals['monthly_net'] = $subtotal;
-        $totals['monthly_vat'] = $subtotal * 0.2;
-        $totals['monthly_gross'] = $subtotal * 1.2;
-        $totals['oneoff_net'] = $subtotalOneoff;
-        $totals['oneoff_vat'] = $subtotalOneoff * 0.2;
-        $totals['oneoff_gross'] = $subtotalOneoff * 1.2;
+        $total_cost = $original_total + ($original_total_monthly * $this->contract_length);
+        $margin_value = (($this->total + $this->total_monthly * $this->contract_length) - $total_cost);
 
-        return $totals;
+        $this->margin = $total_cost ? ($margin_value / $total_cost) * 100 : 0;
+        $this->tax_comission = $this->user->commission_rate ?? 0;
+        $this->comission_value = $margin_value * ($this->tax_comission / 100);
+        $this->save();
     }
 }

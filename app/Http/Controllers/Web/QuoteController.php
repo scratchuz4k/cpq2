@@ -132,10 +132,7 @@ class QuoteController extends BaseController
 
     public function preview(Quote $quote)
     {
-        $totals = $quote->totals();
-        $solution_types = SolutionType::get();
-
-        return Inertia::render('Quotes/Preview', [
+        return Inertia::render('Orders/Preview', [
             'accounts' => Account::all(),
             'solution_types' => SolutionType::get(),
             'quote' => new QuoteResource($quote)
@@ -144,7 +141,6 @@ class QuoteController extends BaseController
 
     public function download(Quote $quote)
     {
-        $totals = $quote->totals();
         $solution_types = SolutionType::get();
         $user = request()->user();
         $dir = 'pdf/' . $user->currentTenant->id;
@@ -156,7 +152,7 @@ class QuoteController extends BaseController
         // return view('pdf.invoice', compact('order', 'totals', 'solution_types'));
 
         return pdf()
-            ->view('pdf.invoice', compact('quote', 'totals', 'solution_types'))
+            ->view('pdf.invoice', compact('quote', 'solution_types'))
             ->name('quote-' . $quote->id . '.pdf')
             ->download();
     }

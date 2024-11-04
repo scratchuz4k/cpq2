@@ -58,7 +58,7 @@ class QuoteController extends BaseController
         } catch (Exception $e) {
             return response($e->getMessage(), 500);
         }
-        return response()->json(new QuoteResource($quote));
+        return response()->json(new QuoteResource($quote->refresh()));
     }
 
     /**

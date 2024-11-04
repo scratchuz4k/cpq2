@@ -13,10 +13,10 @@ const solutionsViews = {
 }
 
 const showDate = (days = 0) => {
-   const dateObj = new Date();
-   dateObj.setDate(dateObj.getDate() + days);
-   const currentDate = dateObj.getDate()+"/"+(dateObj.getMonth()+1)+"/"+dateObj.getFullYear();
-   return currentDate;
+    const dateObj = new Date();
+    dateObj.setDate(dateObj.getDate() + days);
+    const currentDate = dateObj.getDate() + "/" + (dateObj.getMonth() + 1) + "/" + dateObj.getFullYear();
+    return currentDate;
 }
 
 </script>
@@ -71,7 +71,7 @@ const showDate = (days = 0) => {
                             <div class="col">
                                 <p>Quote #{{ quote.id }}<br>
                                     Quotation Date: {{ showDate() }}<br>
-                                    Valid Date: {{showDate(7) }}
+                                    Valid Date: {{ showDate(7) }}
                                 </p>
                             </div>
                         </div>
@@ -92,10 +92,113 @@ const showDate = (days = 0) => {
                             </div>
                         </div>
 
-                        <component :is="solutionsViews[quote.solution_type.code]" v-bind="{
-                            modelValue: quote,
-                            preview: true
-                        }"></component>
+                        <div class="panel">
+                            <div class="row mb-4" style="min-height: 50vh;">
+                                <div class="col">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <h2>Items</h2>
+                                    </div>
+                                    <!-- Product List -->
+                                    <!-- In a real application, this would be dynamically generated based on the selected solution type -->
+                                    <table class="table">
+                                        <!-- Headers -->
+                                        <thead>
+                                            <tr>
+                                                <th>#</th>
+                                                <th class="text-center d-none d-xl-table-cell">Provider</th>
+                                                <th>Name</th>
+                                                <th class="d-none d-xl-table-cell" style="white-space: nowrap;">Supplier
+                                                    Quote Ref.</th>
+                                                <th>Type</th>
+                                                <th class="text-center">Qty</th>
+                                                <th class="text-end" style="white-space: nowrap;">Monthly Price</th>
+                                                <th class="text-end" style="white-space: nowrap;">Install Price</th>
+                                                <th class="text-end" style="white-space: nowrap;">Total Price</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr class="item-row" v-for="item in order.items"
+                                                style="vertical-align: middle;">
+                                                <td class="position-relative" style="width:40px">
+                                                    {{ order.items.indexOf(item) + 1 }}
+                                                </td>
+                                                <td class="text-center d-none d-xl-table-cell">
+                                                    <img v-if="item.data.providerKey" class="img-provider"
+                                                        @error="setAltImg"
+                                                        :src="`/images/providers/${item.data.providerKey}.png`"
+                                                        :alt="item.data.providerName" :title="item.data.providerName" />
+                                                </td>
+                                                <td>
+                                                    {{ item.name }}
+                                                </td>
+                                                <td class="d-none d-xl-table-cell">
+                                                    {{ item.data?.productCode }}
+                                                </td>
+                                                <td>
+                                                    Monthly
+                                                </td>
+                                                <td class="text-center">
+                                                    {{ item.quantity }}
+                                                </td>
+                                                <td class="text-end">
+                                                    {{ GBP.format(item.data?.priceMonthly ?? item.data?.price) }}
+                                                </td>
+                                                <td class="text-end">
+                                                    {{ GBP.format(item.data?.priceInstall ?? 0) }}
+                                                </td>
+                                                <td class="text-end">
+                                                    {{ GBP.format(item.total_monthly) }}
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                    <div class="cpq-total text-right">
+                                        <div class="row">
+                                            <div class="col"></div>
+                                            <div class="col">
+                                                <table class="table">
+                                                    <thead>
+                                                        <tr>
+                                                            <th></th>
+                                                            <th>NET</th>
+                                                            <th>VAT (20%)</th>
+                                                            <th>GROSS</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr>
+                                                            <th>Total Monthly</th>
+                                                            <td id="total_monthly_net" class="text-end">
+                                                                {{ GBP.format(order.total_monthly) }}
+                                                            </td>
+                                                            <td id="total_monthly_vat" class="text-end">
+                                                                {{ GBP.format(order.total_monthly_vat) }}
+                                                            </td>
+                                                            <td id="total_monthly_gross" class="text-end">
+                                                                {{ GBP.format(order.total_monthly_gross) }}
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <th>Total One-off Costs</th>
+                                                            <td id="total_net" class="text-end">
+                                                                {{ GBP.format(order.total) }}
+                                                            </td>
+                                                            <td id="total_vat" class="text-end">
+                                                                {{ GBP.format(order.total_vat) }}
+                                                            </td>
+                                                            <td id="total_gross" class="text-end">
+                                                                {{ GBP.format(order.total_gross) }}
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
 
                     </div>
                 </div>

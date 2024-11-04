@@ -17,10 +17,13 @@ class QuoteResource extends JsonResource
         return [
             ...$this->resource->toArray(),
             'user' => $this->user,
+            'total_monthly_vat' => $this->total_monthly * 0.2,
+            'total_monthly_gross' => $this->total_monthly * 1.2,
+            'total_vat' => $this->total * 0.2,
+            'total_gross' => $this->total * 1.2,
             'account' => $this->account,
             'solution_type' => $this->solutionType,
             'items' => $this->items,
-            'totals' => $this->totals(),
             'updated_at' => $this->updated_at,
         ];
     }
