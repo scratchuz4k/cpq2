@@ -2,14 +2,15 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Models\User;
+use Illuminate\Http\Request;
 use App\Helpers\DataProvider;
+use App\Services\UsersService;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use App\Http\Resources\UserResource;
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\UserUpdateRequest;
-use App\Http\Resources\UserResource;
-use App\Models\User;
-use App\Services\UsersService;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 
 class UserController extends BaseController
 {
@@ -75,7 +76,9 @@ class UserController extends BaseController
     public function update(UserUpdateRequest $request, User $user)
     {
         try {
-            $user = $this->usersService->update($user, $request->all());
+            $user =  DB::transaction(function () use ($request, $user) {
+                return  $this->usersService->update($user, $request->all());
+            });
         } catch (\Exception $e) {
             throw new \Exception($e);
         }

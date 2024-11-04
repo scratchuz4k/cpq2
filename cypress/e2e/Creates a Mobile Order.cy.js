@@ -50,7 +50,7 @@ describe("Creates a Mobile Order", () => {
     it("Creates Mobile Order", () => {
         cy.visit("/")
         cy.get("#create-tab").click()
-        cy.get("#account_id").select(name)
+        cy.get("#account_id").select(account.name)
         cy.get("#solution_id").select("Mobile")
         cy.get("#btn-create-quote").click()
         cy.get("#btn-plan-0-add-25").click()

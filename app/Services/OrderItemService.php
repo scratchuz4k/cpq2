@@ -10,31 +10,27 @@ class OrderItemService
 
     public function store(array $array): OrderItem
     {
-        return DB::transaction(function () use ($array) {
-            $orderItem = OrderItem::create([
-                ...$array,
-                'tax_order_item' => 20,
-                'original_price' => $array['price'],
-                'original_price_monthly' => $array['price_monthly'],
-            ]);
+        $orderItem = OrderItem::create([
+            ...$array,
+            'tax_order_item' => 20,
+            'original_price' => $array['price'],
+            'original_price_monthly' => $array['price_monthly'],
+        ]);
 
-            $orderItem->computeTotals();
-            $orderItem->order->computeTotals();
+        $orderItem->computeTotals();
+        $orderItem->order->computeTotals();
 
-            $orderItem->order->update(['status' => get_order_status($orderItem->order)]);
-            return $orderItem;
-        });
+        $orderItem->order->update(['status' => get_order_status($orderItem->order)]);
+        return $orderItem;
     }
 
     public function update(OrderItem $orderItem, array $array): OrderItem
     {
-        return DB::transaction(function () use ($array, $orderItem) {
-            $orderItem->update($array);
+        $orderItem->update($array);
 
-            $orderItem->computeTotals();
-            $orderItem->order->computeTotals();
-            $orderItem->order->update(['status' => get_order_status($orderItem->order)]);
-            return $orderItem;
-        });
+        $orderItem->computeTotals();
+        $orderItem->order->computeTotals();
+        $orderItem->order->update(['status' => get_order_status($orderItem->order)]);
+        return $orderItem;
     }
 }

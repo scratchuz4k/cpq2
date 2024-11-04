@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers\Web;
 
-use App\Http\Requests\BrandCreateRequest;
-use App\Http\Requests\BrandUpdateRequest;
 use Inertia\Inertia;
 use App\Models\Brand;
 use App\Services\BrandService;
+use Illuminate\Support\Facades\DB;
 use App\Http\Resources\BrandResource;
 use App\Http\Controllers\BaseController;
+use App\Http\Requests\BrandCreateRequest;
+use App\Http\Requests\BrandUpdateRequest;
 
 class BrandController extends BaseController
 {
@@ -40,7 +41,9 @@ class BrandController extends BaseController
     public function store(BrandCreateRequest $request)
     {
         try {
-            $brand = $this->brandService->store($request->all());
+            $brand = DB::transaction(function () use ($request) {
+                return $this->brandService->store($request->all());
+            });
         } catch (\Exception $e) {
             throw new \Exception($e);
         }
@@ -72,7 +75,9 @@ class BrandController extends BaseController
     public function update(BrandUpdateRequest $request, Brand $brand)
     {
         try {
-            $brand = $this->brandService->update($brand, $request->all());
+            $brand = DB::transaction(function () use ($brand, $request) {
+                return $this->brandService->update($brand, $request->all());
+            });
         } catch (\Exception $e) {
             throw new \Exception($e);
         }

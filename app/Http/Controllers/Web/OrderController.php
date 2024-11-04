@@ -9,6 +9,7 @@ use App\Models\Account;
 use App\Models\SolutionType;
 use Illuminate\Http\Request;
 use App\Services\OrderService;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Http\Resources\OrderResource;
 use Illuminate\Support\Facades\Storage;
@@ -38,7 +39,7 @@ class OrderController extends BaseController
             $users = User::all();
         }
 
-        $users = $users->filter(fn ($user) => $user->orders->count() > 0);
+        $users = $users->filter(fn($user) => $user->orders->count() > 0);
 
         return Inertia::render('Dashboard', [
             "users" => $users->values(),
@@ -63,7 +64,9 @@ class OrderController extends BaseController
     public function store(OrderCreateRequest $request)
     {
         try {
-            $order = $this->orderService->store($request->all());
+            $order = DB::transaction(function () use ($request) {
+                return $this->orderService->store($request->all());
+            });
         } catch (\Exception $e) {
             if (!env('APP_DEBUG')) {
                 Log::error($e->getMessage());
@@ -101,7 +104,9 @@ class OrderController extends BaseController
     public function update(OrderUpdateRequest $request, Order $order)
     {
         try {
-            $order = $this->orderService->update($order, $request->all());
+            $order = DB::transaction(function () use ($request, $order) {
+                return $this->orderService->update($order, $request->all());
+            });
         } catch (\Exception $e) {
             if (!env('APP_DEBUG')) {
                 Log::error($e->getMessage());

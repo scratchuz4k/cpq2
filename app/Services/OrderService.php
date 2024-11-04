@@ -12,59 +12,55 @@ class OrderService
     public function __construct(protected OrderItemService $orderItemService) {}
     public function store(array $array): Order
     {
-        return DB::transaction(function () use ($array) {
-            $order = Order::create($array);
+        $order = Order::create($array);
 
-            if (array_key_exists('items', $array)) {
-                foreach ($array['items'] as $order_item) {
-                    $order_item['order_id'] = $order->id;
-                    $this->orderItemService->store($order_item);
-                }
+        if (array_key_exists('items', $array)) {
+            foreach ($array['items'] as $order_item) {
+                $order_item['order_id'] = $order->id;
+                $this->orderItemService->store($order_item);
             }
+        }
 
-            $order->update(['status' => get_order_status($order->refresh())]);
+        $order->update(['status' => get_order_status($order->refresh())]);
 
-            foreach ($order->items as $order_item) {
-                $order_item->computeTotals();
-            }
-            $order->computeTotals();
+        foreach ($order->items as $order_item) {
+            $order_item->computeTotals();
+        }
+        $order->computeTotals();
 
-            return $order->refresh();
-        }, 3);
+        return $order->refresh();
     }
 
     public function update(Order $order, array $array): Order
     {
-        return DB::transaction(function () use ($order, $array) {
-            $order->update($array);
-            if (array_key_exists('items', $array) && is_array($array['items'])) {
-                $olderItems = collect($order->items);
-                foreach ($array['items'] as $order_item) {
+        $order->update($array);
+        if (array_key_exists('items', $array) && is_array($array['items'])) {
+            $olderItems = collect($order->items);
+            foreach ($array['items'] as $order_item) {
 
-                    if (array_key_exists('id', $order_item) && !is_null($order_item['id'])) {
-                        $temp = OrderItem::find($order_item['id']);
-                        $this->orderItemService->update($temp, [...$order_item, 'order_id' =>  $order->id]);
+                if (array_key_exists('id', $order_item) && !is_null($order_item['id'])) {
+                    $temp = OrderItem::find($order_item['id']);
+                    $this->orderItemService->update($temp, [...$order_item, 'order_id' =>  $order->id]);
 
-                        $olderItems = $olderItems->reject(function ($temp) use ($order_item) {
-                            return $temp->id === $order_item['id'];
-                        });
-                    } else {
-                        $this->orderItemService->store([...$order_item, 'order_id' =>  $order->id]);
-                    }
-                }
-                foreach ($olderItems as $temp) {
-                    $temp->delete();
+                    $olderItems = $olderItems->reject(function ($temp) use ($order_item) {
+                        return $temp->id === $order_item['id'];
+                    });
+                } else {
+                    $this->orderItemService->store([...$order_item, 'order_id' =>  $order->id]);
                 }
             }
-
-            $order->update(['status' => get_order_status($order->refresh())]);
-
-            foreach ($order->items as $order_item) {
-                $order_item->computeTotals();
+            foreach ($olderItems as $temp) {
+                $temp->delete();
             }
-            $order->computeTotals();
+        }
 
-            return $order->refresh();
-        }, 3);
+        $order->update(['status' => get_order_status($order->refresh())]);
+
+        foreach ($order->items as $order_item) {
+            $order_item->computeTotals();
+        }
+        $order->computeTotals();
+
+        return $order->refresh();
     }
 }
