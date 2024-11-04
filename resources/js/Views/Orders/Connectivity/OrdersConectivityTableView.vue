@@ -106,6 +106,7 @@ const getArticles = async () => {
         town: props.modelValue.address_city,
         addressKey: props.modelValue.address_data?.value,
         buildingNumber: props.modelValue.address_data?.addressparts?.ThoroughfareNumber,
+        buildingName: props.modelValue.address_data?.addressparts?.PremisesName,
         page: meta.page,
         perPage: meta.limit,
         filters: temp,
@@ -114,7 +115,7 @@ const getArticles = async () => {
     };
 
     const csrfToken = document.head.querySelector("[name~=csrf-token][content]").content;
-	/*
+    /*
     let res = await fetch('/api/external/get-articles-from-cloud-market',
         {
             headers: {
@@ -149,16 +150,16 @@ const getArticles = async () => {
         } catch (e) {
         }
     }
-	*/
-    let res = await axios.post('/api/external/get-articles-from-cloud-market',query)
+    */
+    let res = await axios.post('/api/external/get-articles-from-cloud-market', query)
 
-	articles.value = res.data.data
-	isLoading.value = false
-	meta.first = (meta.page - 1) * meta.limit
-	meta.total = res.data.total
-	meta.overallTotal = res.data.overall_total
-	meta.isUpdating = !!res.data.finished_at
-	Object.assign(filterList, res.data.filters)
+    articles.value = res.data.data
+    isLoading.value = false
+    meta.first = (meta.page - 1) * meta.limit
+    meta.total = res.data.total
+    meta.overallTotal = res.data.overall_total
+    meta.isUpdating = !!res.data.finished_at
+    Object.assign(filterList, res.data.filters)
 
 }
 
@@ -238,7 +239,7 @@ const handlePaginator = (ev) => {
     getArticles()
 }
 
-watch([filters, showQuoted, showLowestCost], _.debounce(function() {
+watch([filters, showQuoted, showLowestCost], _.debounce(function () {
     getArticles()
 }, 500))
 
@@ -383,7 +384,8 @@ getArticles()
                                     Product
                                     <span class="text-center d-inline-block align-middle" style="width: 20px;">
                                         <template v-if="sort.field == 'productName'">
-                                            <font-awesome-icon v-if="sort.order == 'desc'" :icon="['fa-solid', 'fa-sort-amount-up-alt']" />
+                                            <font-awesome-icon v-if="sort.order == 'desc'"
+                                                :icon="['fa-solid', 'fa-sort-amount-up-alt']" />
                                             <font-awesome-icon v-else :icon="['fa-solid', 'fa-sort-amount-down-alt']" />
                                         </template>
                                         <template v-else>
@@ -391,12 +393,12 @@ getArticles()
                                         </template>
                                     </span>
                                 </th>
-                                <th :style="{ whiteSpace: 'nowrap' }"
-                                    @click="orderBy('providerName')">
+                                <th :style="{ whiteSpace: 'nowrap' }" @click="orderBy('providerName')">
                                     Provider
                                     <span class="text-center d-inline-block align-middle" style="width: 20px;">
                                         <template v-if="sort.field == 'providerName'">
-                                            <font-awesome-icon v-if="sort.order == 'desc'" :icon="['fa-solid', 'fa-sort-amount-up-alt']" />
+                                            <font-awesome-icon v-if="sort.order == 'desc'"
+                                                :icon="['fa-solid', 'fa-sort-amount-up-alt']" />
                                             <font-awesome-icon v-else :icon="['fa-solid', 'fa-sort-amount-down-alt']" />
                                         </template>
                                         <template v-else>
@@ -404,12 +406,12 @@ getArticles()
                                         </template>
                                     </span>
                                 </th>
-                                <th :style="{ whiteSpace: 'nowrap' }"
-                                    @click="orderBy('connectivitySupplierName')">
+                                <th :style="{ whiteSpace: 'nowrap' }" @click="orderBy('connectivitySupplierName')">
                                     Subprovider
                                     <span class="text-center d-inline-block align-middle" style="width: 20px;">
                                         <template v-if="sort.field == 'connectivitySupplierName'">
-                                            <font-awesome-icon v-if="sort.order == 'desc'" :icon="['fa-solid', 'fa-sort-amount-up-alt']" />
+                                            <font-awesome-icon v-if="sort.order == 'desc'"
+                                                :icon="['fa-solid', 'fa-sort-amount-up-alt']" />
                                             <font-awesome-icon v-else :icon="['fa-solid', 'fa-sort-amount-down-alt']" />
                                         </template>
                                         <template v-else>
@@ -423,7 +425,8 @@ getArticles()
                                     Bearer
                                     <span class="text-center d-inline-block align-middle" style="width: 20px;">
                                         <template v-if="sort.field == 'bearer'">
-                                            <font-awesome-icon v-if="sort.order == 'desc'" :icon="['fa-solid', 'fa-sort-amount-up-alt']" />
+                                            <font-awesome-icon v-if="sort.order == 'desc'"
+                                                :icon="['fa-solid', 'fa-sort-amount-up-alt']" />
                                             <font-awesome-icon v-else :icon="['fa-solid', 'fa-sort-amount-down-alt']" />
                                         </template>
                                         <template v-else>
@@ -437,7 +440,8 @@ getArticles()
                                     Speed
                                     <span class="text-center d-inline-block align-middle" style="width: 20px;">
                                         <template v-if="sort.field == 'speed'">
-                                            <font-awesome-icon v-if="sort.order == 'desc'" :icon="['fa-solid', 'fa-sort-amount-up-alt']" />
+                                            <font-awesome-icon v-if="sort.order == 'desc'"
+                                                :icon="['fa-solid', 'fa-sort-amount-up-alt']" />
                                             <font-awesome-icon v-else :icon="['fa-solid', 'fa-sort-amount-down-alt']" />
                                         </template>
                                         <template v-else>
@@ -451,7 +455,8 @@ getArticles()
                                     Set Up
                                     <span class="text-center d-inline-block align-middle" style="width: 20px;">
                                         <template v-if="sort.field == 'priceInstall'">
-                                            <font-awesome-icon v-if="sort.order == 'desc'" :icon="['fa-solid', 'fa-sort-amount-up-alt']" />
+                                            <font-awesome-icon v-if="sort.order == 'desc'"
+                                                :icon="['fa-solid', 'fa-sort-amount-up-alt']" />
                                             <font-awesome-icon v-else :icon="['fa-solid', 'fa-sort-amount-down-alt']" />
                                         </template>
                                         <template v-else>
@@ -465,7 +470,8 @@ getArticles()
                                     Monthly
                                     <span class="text-center d-inline-block align-middle" style="width: 20px;">
                                         <template v-if="sort.field == 'priceMonthly'">
-                                            <font-awesome-icon v-if="sort.order == 'desc'" :icon="['fa-solid', 'fa-sort-amount-up-alt']" />
+                                            <font-awesome-icon v-if="sort.order == 'desc'"
+                                                :icon="['fa-solid', 'fa-sort-amount-up-alt']" />
                                             <font-awesome-icon v-else :icon="['fa-solid', 'fa-sort-amount-down-alt']" />
                                         </template>
                                         <template v-else>
@@ -479,7 +485,8 @@ getArticles()
                                     ECC
                                     <span class="text-center d-inline-block align-middle" style="width: 20px;">
                                         <template v-if="sort.field == 'priceECC'">
-                                            <font-awesome-icon v-if="sort.order == 'desc'" :icon="['fa-solid', 'fa-sort-amount-up-alt']" />
+                                            <font-awesome-icon v-if="sort.order == 'desc'"
+                                                :icon="['fa-solid', 'fa-sort-amount-up-alt']" />
                                             <font-awesome-icon v-else :icon="['fa-solid', 'fa-sort-amount-down-alt']" />
                                         </template>
                                         <template v-else>
@@ -493,7 +500,8 @@ getArticles()
                                     Contract Term
                                     <span class="text-center d-inline-block align-middle" style="width: 20px;">
                                         <template v-if="sort.field == 'contractTermMonths'">
-                                            <font-awesome-icon v-if="sort.order == 'desc'" :icon="['fa-solid', 'fa-sort-amount-up-alt']" />
+                                            <font-awesome-icon v-if="sort.order == 'desc'"
+                                                :icon="['fa-solid', 'fa-sort-amount-up-alt']" />
                                             <font-awesome-icon v-else :icon="['fa-solid', 'fa-sort-amount-down-alt']" />
                                         </template>
                                         <template v-else>
