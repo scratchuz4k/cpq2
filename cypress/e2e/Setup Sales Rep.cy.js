@@ -71,7 +71,8 @@ describe("Setup Sales Rep.cy", () => {
         cy.get("#account_id").select(account.name)
         cy.get("#solution_id").select("Mobile")
         cy.get("#btn-create-quote").click()
-        cy.additems(account.name)
+        cy.visit("/")
+        cy.get("#datatable-btn-0-show").click()
         cy.get("#order-tax-comission").invoke("text")
             .then((text) => {
                 expect(text).to.not.equal(5);
