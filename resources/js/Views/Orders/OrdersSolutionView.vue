@@ -82,6 +82,8 @@ const addressSelect = async (form) => {
     }
 }
 
+solutionChange(props.modelValue)
+
 watch(addressPostCode, () => {
     props.modelValue.postCode = addressPostCode.value
     addressSearch(props.modelValue)

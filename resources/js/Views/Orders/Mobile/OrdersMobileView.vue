@@ -285,7 +285,7 @@ const items = ref([
                         </span>
                         <button :id="'btn-step-1-next'" class="ms-3 btn btn-primary step-nav" type="button"
                             @click="() => step++">Next
-                            <i class="fa fa-arrow-right"></i>
+                            <font-awesome-icon :icon="['fas', 'arrow-right']" />
                         </button>
                     </div>
                 </div>
@@ -324,18 +324,24 @@ const items = ref([
                     </div>
 
                     <div class="d-flex justify-content-between align-items-center">
-                        <button :id="'btn-step-2-previous'" class="btn btn-light step-nav btn-sm me-3" type="button"
-                            @click="() => step--">
-                            <font-awesome-icon :icon="['fas', 'arrow-left']" /> Back
-                        </button>
+                        <div>
+                            <button :id="'btn-step-2-previous'" class="btn btn-light step-nav btn-sm me-3" type="button"
+                                @click="() => step--">
+                                <font-awesome-icon :icon="['fas', 'arrow-left']" /> Back
+                            </button>
+                            <button class="btn btn-outline-primary text-primary " @click="saveQuote()"
+                                :disabled="checkPlansHardwareQuantity() < 0">
+                                Save
+                            </button>
+                        </div>
                         <div>
                             <span id="total_mobile_users">
                                 Add {{ products.bolt_on.reduce((acc, item) => acc += item.quantity, 0) }}
                                 bolt-ons
                             </span>
-                            <button :id="'btn-step-2-next'" class="ms-3 btn btn-primary step-nav" type="button"
+                            <button id="btn-step-2-next" class="ms-3 btn btn-primary step-nav" type="button"
                                 @click="() => step++">Next
-                                <i class="fa fa-arrow-right"></i>
+                                <font-awesome-icon :icon="['fas', 'arrow-right']" />
                             </button>
                         </div>
                     </div>
@@ -461,19 +467,25 @@ const items = ref([
                     <Paginator v-model:first="meta.first" :rows="meta.limit" :totalRecords="meta.total"
                         :rowsPerPageOptions="[5, 10, 20]" @page="handlePaginator">
                     </Paginator>
-                    <div class="d-flex justify-content-between align-items-center">
-                        <button id="btn-step-3-previous" class="btn btn-light step-nav btn-sm me-3" type="button"
-                            @click="() => step--">
-                            <font-awesome-icon :icon="['fas', 'arrow-left']" /> Back
-                        </button>
+                    <div class="d-flex justify-content-between align-items-center mt-3">
+                        <div>
+                            <button id="btn-step-3-previous" class="btn text-primary step-nav btn-sm me-3" type="button"
+                                @click="() => step--">
+                                <font-awesome-icon :icon="['fas', 'arrow-left']" /> Previous
+                            </button>
+                            <button class="btn btn-outline-primary text-primary " @click="saveQuote()"
+                                :disabled="checkPlansHardwareQuantity() < 0">
+                                Save
+                            </button>
+                        </div>
                         <div>
                             <span id="total_add_ons">
                                 Add {{ productsHardware.reduce((acc, item) => acc += item.quantity, 0) }}
-                                add-ons
+                                handsets
                             </span>
                             <button id="btn-step-3-next" class="ms-3 btn btn-primary step-nav" type="button"
                                 @click="saveQuote()">Next
-                                <i class="fa fa-arrow-right"></i>
+                                <font-awesome-icon :icon="['fas', 'arrow-right']" />
                             </button>
                         </div>
                     </div>
@@ -517,7 +529,7 @@ const items = ref([
                     </div>
                     <button class="btn btn-primary mt-2" @click="saveQuote()"
                         :disabled="checkPlansHardwareQuantity() < 0">
-                        Save Quote
+                        Save
                     </button>
                 </div>
             </div>
