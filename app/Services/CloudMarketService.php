@@ -23,7 +23,7 @@ class CloudMarketService
 
     public function get($connectivityType, CloudMarketAddress $address, $filters = [])
     {
-        if (env('PARTNER_QUOTE_SERVICE_ENDPOINT') == 'mock') {
+        if (!env('CLOUDMARKET_CONNECTION_LIVE_DATA')) {
             $mock_prices = storage_path('mocks/prices.json');
             if (!is_file($mock_prices)) {
                 return [];
@@ -38,7 +38,7 @@ class CloudMarketService
         if (!Cache::has($filename)) {
             $file->write([], true, null, now());
 
-            if (env('PARTNER_QUOTE_AS_JOB')) {
+            if (env('CLOUDMARKET_CONNECTION_AS_JOB')) {
                 CloudMarketConnectivityProducts::dispatch($file, $connectivityType, $address);
             } else {
                 $this->getConnectivityProducts($file, $connectivityType, $address, $filters);
@@ -49,7 +49,7 @@ class CloudMarketService
         $createdAt = Carbon::parse($content['created_at']);
 
         if (is_null($content['finished_at']) && $createdAt->addMinutes(2)->isPast()) {
-            if (env('PARTNER_QUOTE_AS_JOB')) {
+            if (env('CLOUDMARKET_CONNECTION_AS_JOB')) {
                 CloudMarketConnectivityProducts::dispatch($file, $connectivityType, $address);
             } else {
                 $this->getConnectivityProducts($file, $connectivityType, $address, $filters);

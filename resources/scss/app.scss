@@ -1105,3 +1105,10 @@ body {
 .notyf-success .notyf__dismiss {
     margin-right: auto!important;
 }
+
+
+#sentry-feedback {
+    --font-family: var(--font-primary);
+    --button-primary-background: var(--color-purple);
+    --button-primary-hover-background: var(--color-purple-dark);
+}
