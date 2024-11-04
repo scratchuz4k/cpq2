@@ -45,16 +45,16 @@ const saveQuote = _.debounce(async () => {
                     style="font-size:30px;color:var(--secondary-light);border-color:var(--secondary-light);border-width:4px;border-radius:12px" />
             </div>
             <div style="padding-top:1px">
-                <p class="m-0">Q-{{ order.id }} // <span id="account_name">
-                        {{ order.account?.name }}
+                <p class="m-0">Q-{{ quote.id }} // <span id="account_name">
+                        {{ quote.account?.name }}
                     </span>
                 </p>
                 <h1 class="m-0" style="font-size:18px;font-weight:bold">Quote</h1>
             </div>
         </div>
         <div class="col" style="text-align: right">
-            <template v-if="order.solution_type.code == 3">
-                <a :href="route('orders.preview', { order: order.id })" class="btn btn-outline-primary mx-2">
+            <template v-if="quote.solution_type.code == 3">
+                <a :href="route('quotes.preview', { quote: quote.id })" class="btn btn-outline-primary mx-2">
                     <font-awesome-icon :icon="['fas', 'file-pdf']"></font-awesome-icon>
                     Preview PDF
                 </a>
@@ -64,7 +64,7 @@ const saveQuote = _.debounce(async () => {
         </div>
     </div>
     <div class="panel">
-        <InfoConnectivity v-if="!preview" :order="order"></InfoConnectivity>
+        <InfoConnectivity v-if="!preview" :quote="quote"></InfoConnectivity>
         <div class="row mb-4" style="min-height: 50vh;">
             <div class="col">
                 <div class="d-flex justify-content-between align-items-center">
@@ -90,7 +90,7 @@ const saveQuote = _.debounce(async () => {
                         </tr>
                     </thead>
                     <tbody>
-                        <tr class="item-row" v-for="item in order.items" style="vertical-align: middle;">
+                        <tr class="item-row" v-for="item in quote.items" style="vertical-align: middle;">
                             <td class="position-relative" style="width:40px">
                                 <template v-if="!preview">
                                     <button class="btn btn-secondary btn-sm" @click="remove(item.id)">
@@ -98,7 +98,7 @@ const saveQuote = _.debounce(async () => {
                                     </button>
                                 </template>
                                 <template v-else>
-                                    {{ order.items.indexOf(item) + 1 }}
+                                    {{ quote.items.indexOf(item) + 1 }}
                                 </template>
                             </td>
                             <td class="text-center d-none d-xl-table-cell">
@@ -169,25 +169,25 @@ const saveQuote = _.debounce(async () => {
                                     <tr>
                                         <th>Total Monthly</th>
                                         <td id="total_monthly_net" class="text-end">
-                                            {{ GBP.format(order.total_monthly) }}
+                                            {{ GBP.format(quote.total_monthly) }}
                                         </td>
                                         <td id="total_monthly_vat" class="text-end">
-                                            {{ GBP.format(order.total_monthly_vat) }}
+                                            {{ GBP.format(quote.total_monthly_vat) }}
                                         </td>
                                         <td id="total_monthly_gross" class="text-end">
-                                            {{ GBP.format(order.total_monthly_gross) }}
+                                            {{ GBP.format(quote.total_monthly_gross) }}
                                         </td>
                                     </tr>
                                     <tr>
                                         <th>Total One-off Costs</th>
                                         <td id="total_net" class="text-end">
-                                            {{ GBP.format(order.total) }}
+                                            {{ GBP.format(quote.total) }}
                                         </td>
                                         <td id="total_vat" class="text-end">
-                                            {{ GBP.format(order.total_vat) }}
+                                            {{ GBP.format(quote.total_vat) }}
                                         </td>
                                         <td id="total_gross" class="text-end">
-                                            {{ GBP.format(order.total_gross) }}
+                                            {{ GBP.format(quote.total_gross) }}
                                         </td>
                                     </tr>
                                 </tbody>

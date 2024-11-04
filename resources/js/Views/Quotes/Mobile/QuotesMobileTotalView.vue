@@ -58,7 +58,7 @@ const remove = async (id) => {
 
         try {
             await axios.delete(`/api/quote-items/${id}`)
-            router.get(`/quotes/${order.id}`)
+            router.get(`/quotes/${quote.id}`)
         } catch (ex) {
             notyf.error(ex.response.data.message)
         }
@@ -77,29 +77,29 @@ const save = async (p) => {
     p.discount = temp.discount
     p.margin = temp.margin
     try {
-        let res = await axios.put(`/api/orders/${order.id}`,
+        let res = await axios.put(`/api/quotes/${quote.id}`,
             {
-                items: order.items,
+                items: quote.items,
             })
-        Object.assign(order, res.data)
+        Object.assign(quote, res.data)
         p.is_editing = !p.is_editing
     } catch (ex) {
         notyf.error(ex.response.data.message)
     }
 }
 
-const saveOrder = async (p) => {
+const saveQuote = async (p) => {
     isLoading.value = true
-    if (order.discount === '') {
+    if (quote.discount === '') {
         return
     }
     try {
-        let res = await axios.put(`/api/orders/${order.id}`,
+        let res = await axios.put(`/api/quotes/${quote.id}`,
             {
-                contract_length: order.contract_length,
-                discount: order.discount,
+                contract_length: quote.contract_length,
+                discount: quote.discount,
             })
-        Object.assign(order, res.data)
+        Object.assign(quote, res.data)
         isLoading.value = false
     } catch (ex) {
         notyf.error(ex.response.data.message)
@@ -115,15 +115,15 @@ const resetQuote = async () => {
         return
     }
 
-    order.items.forEach((e) => { e.discount = 0; e.margin = 0; })
+    quote.items.forEach((e) => { e.discount = 0; e.margin = 0; })
     try {
-        let res = await axios.put(`/api/orders/${order.id}`,
+        let res = await axios.put(`/api/quotes/${quote.id}`,
             {
                 contract_length: 0,
                 discount: 0,
-                items: order.items,
+                items: quote.items,
             })
-        Object.assign(order, res.data)
+        Object.assign(quote, res.data)
         isLoading.value = false
     } catch (ex) {
         notyf.error(ex.response.data.message)
@@ -136,11 +136,11 @@ const cancel = (p) => {
 
 const saveNewLine = async (item) => {
     try {
-        let res = await axios.put(`/api/orders/${order.id}`,
+        let res = await axios.put(`/api/quotes/${quote.id}`,
             {
-                items: [...order.items, item],
+                items: [...quote.items, item],
             })
-        Object.assign(order, res.data)
+        Object.assign(quote, res.data)
         item.show = false
         Object.assign(item, {
             name: null,
@@ -159,7 +159,7 @@ getHardwareProducts()
 
 const items = ref([
     { label: 'Home', url: '/' },
-    { label: 'Create a Quote', url: `/orders/${order.id}/edit` },
+    { label: 'Create a Quote', url: `/quotes/${quote.id}/edit` },
     { label: 'Summary of quote' },
 ]);
 
@@ -169,11 +169,11 @@ const items = ref([
         <div class="row justify-content-between">
             <div class="col-lg-8 mb-5 price-summary">
                 <Header title="Build your deal" :breadcrumbs="items"></Header>
-                <div v-if="order.items.find((x) => x.price_monthly)" class="mb-5">
+                <div v-if="quote.items.find((x) => x.price_monthly)" class="mb-5">
                     <div
                         class="mobile-price-group-heading border-bottom mb-3 d-flex justify-content-between align-items-center">
                         <h3>Recurring charges</h3>
-                        <h3 id="recurring_total">{{ GBP.format(order.total_monthly) }}</h3>
+                        <h3 id="recurring_total">{{ GBP.format(quote.total_monthly) }}</h3>
                     </div>
                     <table id="table-recurring" class="table">
                         <thead>
@@ -193,7 +193,7 @@ const items = ref([
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="(p, i) in order.items.filter((x) => x.price_monthly)"
+                            <tr v-for="(p, i) in quote.items.filter((x) => x.price_monthly)"
                                 class="recurring-item bg-light-grey">
                                 <td>
                                     {{ p.name }}
@@ -287,11 +287,11 @@ const items = ref([
 
                     </table>
                 </div>
-                <div v-if="order.items.find((x) => x.price)" class="mb-5">
+                <div v-if="quote.items.find((x) => x.price)" class="mb-5">
                     <div
                         class="mobile-price-group-heading border-bottom mb-3 d-flex justify-content-between align-items-center">
                         <h3>One off charges</h3>
-                        <h3 id="one_off_total">{{ GBP.format(order.total) }}</h3>
+                        <h3 id="one_off_total">{{ GBP.format(quote.total) }}</h3>
                     </div>
                     <table id="table-one_off" class="table">
                         <thead>
@@ -311,7 +311,7 @@ const items = ref([
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="(p, i) in order.items.filter((x) => x.price)" class="one_off-item bg-light-grey">
+                            <tr v-for="(p, i) in quote.items.filter((x) => x.price)" class="one_off-item bg-light-grey">
                                 <td>{{ p.name }}</td>
                                 <td class="text-center">
                                     <span v-if="!p.is_editing" :id="'one_off-' + i + '-quantity'">
@@ -404,14 +404,14 @@ const items = ref([
                     <div>
                         <p class="payment-info border-bottom pb-3">
                             <span class="text-primary">1 payment </span> of
-                            {{ GBP.format(order.total) }}<br>
+                            {{ GBP.format(quote.total) }}<br>
                             followed by
-                            <span class="text-primary"> {{ order.contract_length }} monthly payments</span> of
-                            {{ GBP.format(order.total_monthly) }}
+                            <span class="text-primary"> {{ quote.contract_length }} monthly payments</span> of
+                            {{ GBP.format(quote.total_monthly) }}
                         </p>
                     </div>
                     <div class="d-flex justify-content-between">
-                        <a class="btn text-primary" :href="route('orders.edit', { order: order.id }) + '?step=3'">
+                        <a class="btn text-primary" :href="route('quotes.edit', { quote: quote.id }) + '?step=3'">
                             <font-awesome-icon class="me-2" :icon="['fas', 'arrow-left']"></font-awesome-icon>
                             Previous</a>
                         <div>
@@ -427,7 +427,7 @@ const items = ref([
                 <div style="position: sticky; top: 25px">
                     <InfoBox>
                         <div style="font-size: 14px;">
-                            <b style="font-size: 16px;">Quote {{ order.id }} for {{ order.account.name }}</b>
+                            <b style="font-size: 16px;">Quote {{ quote.id }} for {{ quote.account.name }}</b>
                             <br>
                             Contact Number: 0124567890<br>
                             Email: firstname.lastname@gmail.com
@@ -438,14 +438,14 @@ const items = ref([
                         <div class="mb-3">
                             <label class="form-label">Contract Length (Months)</label>
                             <input id="input-global-contratct-length" type="number" class="form-control"
-                                v-model="order.contract_length">
+                                v-model="quote.contract_length">
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Quote Discount</label>
                             <input id="input-global-discount" type="number" class="form-control"
-                                v-model="order.discount">
+                                v-model="quote.discount">
                         </div>
-                        <button id="btn-apply-global-discount" class="btn btn-secondary w-100 mb-2" @click="saveOrder()"
+                        <button id="btn-apply-global-discount" class="btn btn-secondary w-100 mb-2" @click="saveQuote()"
                             :disabled="isLoading">
                             Apply to quote
                         </button>
@@ -455,22 +455,22 @@ const items = ref([
                     </div>
                     <div class="price-mobile-sidebar px-4 pt-4 pb-2 mb-3">
                         <h3 class="mb-3">Comission Calculator</h3>
-                        <p style="font-size: 14px;"> Currently, you will make {{ GBP.format(order.comission_value) }}
+                        <p style="font-size: 14px;"> Currently, you will make {{ GBP.format(quote.comission_value) }}
 
                             commission and
-                            {{ order.margin.toFixed(2) }} %
+                            {{ quote.margin.toFixed(2) }} %
                             margin on
                             this quote.</p>
                         <div class="p-3" style="background: #E9EDF0;">
                             <div class="mb-3">
                                 <label class="form-label">Margin</label>
                                 <input id="input-margin-order" class="form-control"
-                                    :value="order.margin.toFixed(2) + ' %'">
+                                    :value="quote.margin.toFixed(2) + ' %'">
                             </div>
                             <div class="mb-3">
-                                <label class="form-label">Comission (<span id="order-tax-comission">{{ order.tax_comission }}</span>%)</label>
+                                <label class="form-label">Comission (<span id="order-tax-comission">{{ quote.tax_comission }}</span>%)</label>
                                 <input id="input-comission_value-order" class="form-control"
-                                    :value="GBP.format(order.comission_value)">
+                                    :value="GBP.format(quote.comission_value)">
                             </div>
                         </div>
                     </div>

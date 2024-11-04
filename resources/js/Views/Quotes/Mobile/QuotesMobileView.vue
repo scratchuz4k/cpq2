@@ -35,7 +35,7 @@ const products = reactive({
     bolt_on: [],
 })
 const productsHardware = ref([])
-const order = reactive({
+const quote = reactive({
     items: props.modelValue.items,
     new: []
 })
@@ -96,7 +96,7 @@ const getProducts = () => {
         });
         products[key] = res.data.data
     })
-
+}
 const getProductsShopBlocks = async () => {
     meta.isLoading = true
     let temp = []
@@ -156,30 +156,30 @@ const checkQuantity = async (product, temp, hardwareCheck = false) => {
         }
     }
 
-    let indexItems = order.items.findIndex(x => x.product_code == product.code)
-    let indexNew = order.new.findIndex(x => x.code == product.code)
+    let indexItems = quote.items.findIndex(x => x.product_code == product.code)
+    let indexNew = quote.new.findIndex(x => x.code == product.code)
 
     if (indexItems == -1 && indexNew == -1) {
-        order.new.push(product)
+        quote.new.push(product)
         return
     }
 
     if (indexItems != -1) {
-        order.items[indexItems].quantity = product.quantity
+        quote.items[indexItems].quantity = product.quantity
         return
     }
 
     if (indexNew != -1) {
-        order.new[indexNew].quantity = product.quantity
+        quote.new[indexNew].quantity = product.quantity
         return
     }
 }
 
 const saveQuote = async () => {
     let items = []
-    order.items.filter(x => x.quantity).forEach((x) => { items.push(x) })
+    quote.items.filter(x => x.quantity).forEach((x) => { items.push(x) })
 
-    order.new.forEach((x) => {
+    quote.new.forEach((x) => {
         if (!x.quantity) {
             return
         }
@@ -196,7 +196,7 @@ const saveQuote = async () => {
     })
 
     try {
-        await axios.put(`/api/orders/${props.modelValue.id}`, {
+        await axios.put(`/api/quotes/${props.modelValue.id}`, {
             items: items
         })
         router.get(`/quotes/${props.modelValue.id}`)
@@ -207,7 +207,7 @@ const saveQuote = async () => {
 
 const getHardwareProductsCount = () => {
     let codes = [...products.bolt_on.map(x => x.code), ...products.plan.map(x => x.code)];
-    let items = [...order.items, ...order.new]
+    let items = [...quote.items, ...quote.new]
     return items.filter(x => !(codes.includes(x.product_code) || codes.includes(x.code))).reduce((acc, i) => acc += i.quantity, 0)
 }
 
