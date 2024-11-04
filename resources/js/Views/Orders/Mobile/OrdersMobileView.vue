@@ -255,7 +255,7 @@ const items = ref([
                             <div class="d-flex align-items-center mb-2">
                                 <h4 class="m-0">{{ product.name }}</h4>
                                 <p class="m-0 ms-2">
-                                    {{ product.description }}
+                                    {{ product.description }} / {{ GBP.format(product.prices[0].gross_monthly) }}
                                 </p>
                             </div>
                             <font-awesome-icon :icon="['fa', 'circle-info']" />
@@ -266,13 +266,13 @@ const items = ref([
                                 <InputQuantity :id="'bolt-' + index" v-model="product.quantity"
                                     @change="(ev) => checkQuantity(product, ev)" />
                                 <button :id="'btn-plan-' + index + '-add-25'" type=" button"
-                                    class="badge border-0 text-bg-secondary ms-4"
+                                    class="btn btn-sm ms-4 btn-add-custom-quantity"
                                     @click="checkQuantity(product, product.quantity + 25)">+25</button>
                                 <button :id="'btn-plan-' + index + '-add-50'" type=" button"
-                                    class="badge border-0 text-bg-secondary mx-2"
+                                    class="btn btn-sm mx-2 btn-add-custom-quantity"
                                     @click="checkQuantity(product, product.quantity + 50)">+50</button>
                                 <button :id="'btn-plan-' + index + '-add-100'" type=" button"
-                                    class="badge border-0 text-bg-secondary"
+                                    class="btn btn-sm btn-add-custom-quantity"
                                     @click="checkQuantity(product, product.quantity + 100)">+100</button>
                             </div>
                         </div>
@@ -299,7 +299,7 @@ const items = ref([
                             <div class="d-flex align-items-center mb-2">
                                 <h4 class="m-0 ">{{ product.name }}</h4>
                                 <p class="m-0 ms-2">
-                                    {{ product.priceMonthly }} £
+                                    {{ GBP.format(product.prices[0].gross_monthly) }}
                                 </p>
                             </div>
                             <font-awesome-icon :icon="['fa', 'circle-info']" />
@@ -311,13 +311,13 @@ const items = ref([
                                     @change="(ev) => checkQuantity(product, ev)" />
 
                                 <button :id="'btn-bolt-' + index + '-add-25'" type="button"
-                                    class="badge border-0 text-bg-secondary ms-4"
+                                    class="btn btn-sm ms-4 btn-add-custom-quantity"
                                     @click="checkQuantity(product, product.quantity + 25)">+25</button>
                                 <button :id="'btn-bolt-' + index + '-add-50'" type="button"
-                                    class="badge border-0 text-bg-secondary mx-2"
+                                    class="btn btn-sm mx-2 btn-add-custom-quantity"
                                     @click="checkQuantity(product, product.quantity + 50)">+50</button>
                                 <button :id="'btn-bolt-' + index + '-add-100'" type="button"
-                                    class="badge border-0 text-bg-secondary"
+                                    class="btn btn-sm btn-add-custom-quantity"
                                     @click="checkQuantity(product, product.quantity + 100)">+100</button>
                             </div>
                         </div>
@@ -427,7 +427,7 @@ const items = ref([
                                             </p>
                                         </div>
                                         <div>
-                                            <p class="bold big"> £{{ product.price }}</p>
+                                            <p class="bold big"> {{ GBP.format(product.price) }}</p>
                                         </div>
                                     </div>
                                 </div>
