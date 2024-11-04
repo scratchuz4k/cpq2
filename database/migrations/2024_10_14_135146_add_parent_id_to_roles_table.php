@@ -12,10 +12,12 @@ return new class extends Migration
      */
     public function up(): void
     {
+        /*
         Schema::table('roles', function (Blueprint $table) {
             $table->unsignedBigInteger('parent_id')->nullable()->after('id');
             $table->foreign('parent_id')->references('id')->on('roles')->onDelete('SET NULL');
         });
+        */
     }
 
     /**
