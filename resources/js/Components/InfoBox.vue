@@ -25,10 +25,3 @@ const current = Object.keys(options).includes(props.severity) ? options[props.se
         </div>
     </div>
 </template>
-<style>
-.price_header {
-    background: var(--tertiary-light);
-    border-radius: var(--radius);
-    padding: 15px;
-}
-</style>

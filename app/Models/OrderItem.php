@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Trait\SetTenantId;
 use App\Models\Scopes\TenantScope;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
@@ -14,6 +15,7 @@ class OrderItem extends Model
     use HasFactory, SetTenantId;
     protected $fillable = [
         "order_id",
+        "product_code",
         "product_id",
         "quantity",
         "name",
@@ -45,6 +47,10 @@ class OrderItem extends Model
     protected static function booted(): void
     {
         static::addGlobalScope(new TenantScope);
+    }
+    public function product(): HasOne
+    {
+        return $this->hasOne(Product::class);
     }
 
     public function order(): BelongsTo

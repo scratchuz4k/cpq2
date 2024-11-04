@@ -95,7 +95,7 @@ watch(search, () => {
                     </li>
 
                     <li class="nav-item">
-                        <a class="nav-link" :href="route('myaccount')">
+                        <a id="my-account" class="nav-link" :href="route('myaccount')">
                             <font-awesome-icon :icon="['far', 'user']" />
 
                         </a>

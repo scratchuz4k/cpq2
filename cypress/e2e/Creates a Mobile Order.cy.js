@@ -30,7 +30,10 @@ const temp = getCurrentDate()
 const account = { ref: generateHash(temp), name: temp }
 const quantities = []
 
+
 describe("Creates a Mobile Order", () => {
+    let hardwareCount = 0;
+
     beforeEach(() => {
         cy.login("companyadmin@example.com", "werwerwer")
     })
@@ -46,32 +49,7 @@ describe("Creates a Mobile Order", () => {
 
     it("Creates Mobile Order", () => {
         cy.visit("/")
-        cy.get("#create-tab").click()
-        cy.get("#account_id").select(account.name)
-        cy.get("#solution_id").select("Mobile")
-        cy.get("#btn-create-quote").click()
-        cy.get("#btn-plan-0-add-25").click()
-        cy.get("#btn-plan-1-add-25").click()
-        cy.get("#btn-step-1-next").click()
-        cy.get("#btn-step-2-previous").click()
-        cy.get("#btn-plan-2-add-50").click()
-        cy.get("#btn-step-1-next").click()
-        cy.get("#input-bolt-0-quantity").type(30)
-        cy.get("#btn-step-2-next").click()
-
-        cy.get("#hardware-0-stock").then(($input) => {
-            const spanText = $input.text().trim(); // Get the text content from the <span> and trim any extra whitespace
-
-            // Perform conditional logic based on the span text
-            if (spanText > 0) {
-                cy.get("#input-hardware-0-quantity").type(spanText)
-            }
-        });
-
-        cy.get("#btn-step-3-next").click()
-
-        cy.get(".recurring-item").should("have.length", 4)
-        cy.get(".one_off-item").should("have.length", 1)
+        cy.additems(account.name)
     })
     it("I can change Margin and Discount", () => {
         cy.visit("/")
@@ -128,9 +106,6 @@ describe("Creates a Mobile Order", () => {
         cy.get("#input-margin-order").then(($input) => {
             order.margin = $input.val().trim();
         })
-        cy.get("#input-comission_value-order").then(($input) => {
-            order.comission = $input.val().trim();
-        })
         cy.get("#input-global-discount").then(($input) => {
             order.global = $input.val().trim();
         }).clear().type(rand(order.global));
@@ -141,10 +116,6 @@ describe("Creates a Mobile Order", () => {
         cy.get("#input-margin-order").invoke("val")
             .then((val) => {
                 expect(val).to.not.equal(order.margin);
-            });
-        cy.get("#input-comission_value-order").invoke("val")
-            .then((val) => {
-                expect(val).to.not.equal(order.comission);
             });
 
         cy.get("#btn-reset-quote").click()

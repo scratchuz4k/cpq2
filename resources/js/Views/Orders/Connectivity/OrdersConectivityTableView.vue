@@ -231,9 +231,6 @@ const remove = async (item, index) => {
     }
 }
 
-
-
-
 const handlePaginator = (ev) => {
     meta.limit = ev.rows
     meta.page = ev.page + 1
@@ -564,7 +561,7 @@ getArticles()
     </div>
 </template>
 
-<style>
+<style scoped>
 .p-multiselect-header {
     display: none !important
 }
