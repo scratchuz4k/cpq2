@@ -186,8 +186,8 @@ const items = ref([
                                 <th class="text-right" style="width:10%"> Sell Price</th>
                                 <th class="text-right" style="width:10%">
                                     <div class="d-flex justify-content-center">
-                                    <font-awesome-icon id="btn-recurring-add" :icon="['fas', 'plus']" role="button" class="py-2 w-100"
-                                        @click="() => recurringNewLine.show = true" />
+                                        <font-awesome-icon id="btn-recurring-add" :icon="['fas', 'plus']" role="button"
+                                            class="py-2 w-100" @click="() => recurringNewLine.show = true" />
                                     </div>
                                 </th>
                             </tr>
@@ -202,23 +202,26 @@ const items = ref([
                                     <span v-if="!p.is_editing" :id="'recurring-' + i + '-quantity'">
                                         x{{ p.quantity }}
                                     </span>
-                                    <input :id="'input-recurring-' + i + '-quantity'" v-else class="form-control text-center py-1"
-                                        type="number" min="0" max="100" v-model="temp.quantity">
+                                    <input :id="'input-recurring-' + i + '-quantity'" v-else
+                                        class="form-control text-center py-1" type="number" min="0" max="100"
+                                        v-model="temp.quantity">
                                 </td>
                                 <td class="text-right"> {{ GBP.format(p.original_price_monthly) }}</td>
                                 <td class="text-center">
                                     <span v-if="!p.is_editing" :id="'recurring-' + i + '-discount'">
                                         {{ p.discount }} %
                                     </span>
-                                    <input :id="'input-recurring-' + i + '-discount'" v-else class="form-control text-center py-1"
-                                        type="number" min="0" max="100" v-model="temp.discount">
+                                    <input :id="'input-recurring-' + i + '-discount'" v-else
+                                        class="form-control text-center py-1" type="number" min="0" max="100"
+                                        v-model="temp.discount">
                                 </td>
                                 <td class="text-center">
                                     <span v-if="!p.is_editing" :id="'recurring-' + i + '-margin'">
                                         {{ p.margin }} %
                                     </span>
-                                    <input :id="'input-recurring-' + i + '-margin'" v-else class="form-control text-center py-1"
-                                        type="number" min="0" max="100" v-model="temp.margin">
+                                    <input :id="'input-recurring-' + i + '-margin'" v-else
+                                        class="form-control text-center py-1" type="number" min="0" max="100"
+                                        v-model="temp.margin">
                                 </td>
                                 <td class="text-right fw-bold">
                                     {{ GBP.format(p.price_monthly) }}
@@ -226,16 +229,20 @@ const items = ref([
                                 <td class="text-right">
                                     <div class="d-flex justify-content-center">
                                         <template v-if="!p.is_editing && p.id">
-                                            <font-awesome-icon :id="'btn-recurring-' + i + '-edit'" role="button" class="px-2 py-3 text-primary"
-                                                :icon="['fas', 'edit']" @click="edit(p)" />
-                                            <font-awesome-icon :id="'btn-recurring-' + i + '-remove'" role="button" class="px-2 py-3 text-secondary"
-                                                :icon="['fas', 'trash']" @click="remove(p.id)" />
+                                            <font-awesome-icon :id="'btn-recurring-' + i + '-edit'" role="button"
+                                                class="px-2 py-3 text-primary" :icon="['fas', 'edit']"
+                                                @click="edit(p)" />
+                                            <font-awesome-icon :id="'btn-recurring-' + i + '-remove'" role="button"
+                                                class="px-2 py-3 text-secondary" :icon="['fas', 'trash']"
+                                                @click="remove(p.id)" />
                                         </template>
                                         <template v-else>
-                                            <font-awesome-icon :id="'btn-recurring-' + i + '-cancel'" role="button" class="px-2 py-3 text-secondary"
-                                                :icon="['fas', 'cancel']" @click="cancel(p)" />
-                                            <font-awesome-icon :id="'btn-recurring-' + i + '-save'" role="button" class="px-2 py-3  text-primary"
-                                                :icon="['fas', 'save']" @click="save(p)" />
+                                            <font-awesome-icon :id="'btn-recurring-' + i + '-cancel'" role="button"
+                                                class="px-2 py-3 text-secondary" :icon="['fas', 'cancel']"
+                                                @click="cancel(p)" />
+                                            <font-awesome-icon :id="'btn-recurring-' + i + '-save'" role="button"
+                                                class="px-2 py-3  text-primary" :icon="['fas', 'save']"
+                                                @click="save(p)" />
                                         </template>
                                     </div>
                                 </td>
@@ -248,28 +255,31 @@ const items = ref([
                                         v-model="recurringNewLine.name">
                                 </th>
                                 <th class="text-center">
-                                    <input :id="'input-new-recurring-qty'" class="form-control text-center py-1" type="number"
-                                        v-model="recurringNewLine.quantity">
+                                    <input :id="'input-new-recurring-qty'" class="form-control text-center py-1"
+                                        type="number" v-model="recurringNewLine.quantity">
                                 </th>
                                 <th>
-                                    <input :id="'input-new-recurring-price_monthly'" class="form-control text-center py-1"
-                                        type="number" v-model="recurringNewLine.price_monthly">
+                                    <input :id="'input-new-recurring-price_monthly'"
+                                        class="form-control text-center py-1" type="number"
+                                        v-model="recurringNewLine.price_monthly">
                                 </th>
                                 <th class="text-center">
-                                    <input :id="'input-new-recurring-discount'" class="form-control text-center py-1" type="number"
-                                        v-model="recurringNewLine.discount">
+                                    <input :id="'input-new-recurring-discount'" class="form-control text-center py-1"
+                                        type="number" v-model="recurringNewLine.discount">
                                 </th>
                                 <th class="text-center">
-                                    <input :id="'input-new-recurring-margin'" class="form-control text-center py-1" type="number"
-                                        v-model="recurringNewLine.margin">
+                                    <input :id="'input-new-recurring-margin'" class="form-control text-center py-1"
+                                        type="number" v-model="recurringNewLine.margin">
                                 </th>
                                 <th class="text-right"> </th>
                                 <th class="text-right">
                                     <div class="d-flex justify-content-center">
-                                    <font-awesome-icon :id="'btn-new-recurring-cancel'" role="button" class="px-2 py-3 text-secondary"
-                                        :icon="['fas', 'cancel']" @click="() => recurringNewLine.show = false" />
-                                    <font-awesome-icon id="btn-new-recurring-add" :icon="['fas', 'save']" role="button" class="px-2 py-3 text-primary"
-                                        @click="saveNewLine(recurringNewLine)" />
+                                        <font-awesome-icon :id="'btn-new-recurring-cancel'" role="button"
+                                            class="px-2 py-3 text-secondary" :icon="['fas', 'cancel']"
+                                            @click="() => recurringNewLine.show = false" />
+                                        <font-awesome-icon id="btn-new-recurring-add" :icon="['fas', 'save']"
+                                            role="button" class="px-2 py-3 text-primary"
+                                            @click="saveNewLine(recurringNewLine)" />
                                     </div>
                                 </th>
                             </tr>
@@ -294,8 +304,8 @@ const items = ref([
                                 <th class="text-right" style="width:10%"> Sell Price</th>
                                 <th class="text-right" style="width:10%">
                                     <div class="d-flex justify-content-center">
-                                    <font-awesome-icon id="btn-one_off-add" :icon="['fas', 'plus']" role="button" class="py-2 w-100"
-                                        @click="() => oneOffNewLine.show = true" />
+                                        <font-awesome-icon id="btn-one_off-add" :icon="['fas', 'plus']" role="button"
+                                            class="py-2 w-100" @click="() => oneOffNewLine.show = true" />
                                     </div>
                                 </th>
                             </tr>
@@ -333,16 +343,20 @@ const items = ref([
                                 <td class="text-right">
                                     <div class="d-flex justify-content-center">
                                         <template v-if="!p.is_editing">
-                                            <font-awesome-icon :id="'btn-one_off-' + i + '-edit'" role="button" class="px-2 py-3 text-primary"
-                                                :icon="['fas', 'edit']" @click="edit(p)" />
-                                            <font-awesome-icon :id="'btn-one_off-' + i + '-remove'" role="button" class="px-2 py-3 text-secondary"
-                                                :icon="['fas', 'trash']" @click="remove(p.id)" />
+                                            <font-awesome-icon :id="'btn-one_off-' + i + '-edit'" role="button"
+                                                class="px-2 py-3 text-primary" :icon="['fas', 'edit']"
+                                                @click="edit(p)" />
+                                            <font-awesome-icon :id="'btn-one_off-' + i + '-remove'" role="button"
+                                                class="px-2 py-3 text-secondary" :icon="['fas', 'trash']"
+                                                @click="remove(p.id)" />
                                         </template>
                                         <template v-else>
-                                            <font-awesome-icon :id="'btn-one_off-' + i + '-cancel'" role="button" class="px-2 py-3 text-secondary"
-                                                :icon="['fas', 'cancel']" @click="cancel(p)" />
-                                            <font-awesome-icon :id="'btn-one_off-' + i + '-save'" role="button" class="px-2 py-3  text-primary"
-                                                :icon="['fas', 'save']" @click="save(p)" />
+                                            <font-awesome-icon :id="'btn-one_off-' + i + '-cancel'" role="button"
+                                                class="px-2 py-3 text-secondary" :icon="['fas', 'cancel']"
+                                                @click="cancel(p)" />
+                                            <font-awesome-icon :id="'btn-one_off-' + i + '-save'" role="button"
+                                                class="px-2 py-3  text-primary" :icon="['fas', 'save']"
+                                                @click="save(p)" />
                                         </template>
                                     </div>
                                 </td>
@@ -359,8 +373,8 @@ const items = ref([
                                         v-model="oneOffNewLine.quantity">
                                 </th>
                                 <th>
-                                    <input :id="'input-new-one_off-price'" class="form-control py-1"
-                                        type="number" v-model="oneOffNewLine.price">
+                                    <input :id="'input-new-one_off-price'" class="form-control py-1" type="number"
+                                        v-model="oneOffNewLine.price">
                                 </th>
                                 <th class="text-center">
                                     <input :id="'input-new-one_off-discount'" class="form-control py-1" type="number"
@@ -373,10 +387,12 @@ const items = ref([
                                 <th class="text-right"> </th>
                                 <th class="text-right">
                                     <div class="d-flex justify-content-center">
-                                    <font-awesome-icon :id="'btn-new-one_off-cancel'" role="button" class="px-2 py-3 text-secondary"
-                                        :icon="['fas', 'cancel']" @click="() => oneOffNewLine.show = false" />
-                                    <font-awesome-icon id="btn-new-one_off-add" :icon="['fas', 'save']" role="button" class="px-2 py-3 text-primary"
-                                        @click="saveNewLine(oneOffNewLine)" />
+                                        <font-awesome-icon :id="'btn-new-one_off-cancel'" role="button"
+                                            class="px-2 py-3 text-secondary" :icon="['fas', 'cancel']"
+                                            @click="() => oneOffNewLine.show = false" />
+                                        <font-awesome-icon id="btn-new-one_off-add" :icon="['fas', 'save']"
+                                            role="button" class="px-2 py-3 text-primary"
+                                            @click="saveNewLine(oneOffNewLine)" />
                                     </div>
                                 </th>
                             </tr>
@@ -440,6 +456,7 @@ const items = ref([
                     <div class="price-mobile-sidebar px-4 pt-4 pb-2 mb-3">
                         <h3 class="mb-3">Comission Calculator</h3>
                         <p style="font-size: 14px;"> Currently, you will make {{ GBP.format(order.comission_value) }}
+
                             commission and
                             {{ order.margin.toFixed(2) }} %
                             margin on
@@ -451,7 +468,7 @@ const items = ref([
                                     :value="order.margin.toFixed(2) + ' %'">
                             </div>
                             <div class="mb-3">
-                                <label class="form-label">Comission</label>
+                                <label class="form-label">Comission (<span id="order-tax-comission">{{ order.tax_comission }}</span>%)</label>
                                 <input id="input-comission_value-order" class="form-control"
                                     :value="GBP.format(order.comission_value)">
                             </div>
@@ -463,7 +480,6 @@ const items = ref([
     </div>
 </template>
 <style scoped>
-
 .table {
     font-size: 14px !important;
     vertical-align: middle;
@@ -473,13 +489,14 @@ tr td,
 tr th {
     padding: 0px 10px !important;
 }
+
 tr td:last-child,
 tr th:last-child {
     padding: 0px !important;
 }
 
 thead {
-    vertical-align: middle!important;
+    vertical-align: middle !important;
 }
 
 thead tr th {
@@ -504,5 +521,4 @@ input[type="number"] {
 [role=button]:hover {
     opacity: 0.75
 }
-
 </style>
