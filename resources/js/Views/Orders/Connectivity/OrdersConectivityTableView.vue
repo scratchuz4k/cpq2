@@ -323,10 +323,10 @@ getArticles()
                         </div>
                     </div>
                 </div>
-                <div class="row">
-                    <div class="col">
-                        <div id="filters" v-if="showFilters" class="mb-4">
-                            <div class="me-1 w-100">
+<!--                <div class="row">-->
+<!--                    <div class="col">-->
+                        <div id="filters" v-if="showFilters" class=" m-0 mb-4 row">
+                            <div class="col-lg-2 col-12 p-0 pe-1">
                                 <label for="filter-subprovider" class="form-label">Provider</label>
                                 <MultiSelect v-model="filters['providerName'].value" style="width:100%"
                                     :options="Object.keys(filterList.providerName)" placeholder="All" size="small"
@@ -340,7 +340,7 @@ getArticles()
                                     </template>
                                 </MultiSelect>
                             </div>
-                            <div class="me-1 w-100">
+                            <div class="col-lg-2 col-12 p-0 pe-1">
                                 <label for="filter-subprovider" class="form-label">Subprovider</label>
                                 <MultiSelect v-model="filters['connectivitySupplierName'].value" style="width:100%"
                                     :options="Object.keys(filterList.connectivitySupplierName)" placeholder="All"
@@ -352,7 +352,7 @@ getArticles()
                                     </template>
                                 </MultiSelect>
                             </div>
-                            <div class="me-1 w-100">
+                            <div class="col-lg-2 col-12 p-0 pe-1">
                                 <label for="filter-contract" class="form-label">Contract Length</label>
                                 <MultiSelect v-model="filters['contractTermMonths'].value" style="width:100%"
                                     :options="Object.keys(filterList.contractTermMonths)" placeholder="All"
@@ -363,7 +363,7 @@ getArticles()
                                     </template>
                                 </MultiSelect>
                             </div>
-                            <div class="me-1 w-100">
+                            <div class="col-lg-2 col-12 p-0 pe-1">
                                 <label for="filter-contract" class="form-label">Min. Bearer</label>
 
                                 <MultiSelect v-model="filters['bearer'].value" style="width:100%"
@@ -376,7 +376,7 @@ getArticles()
                                     </template>
                                 </MultiSelect>
                             </div>
-                            <div class="me-1 w-100">
+                            <div class="col-lg-2 col-12 p-0 pe-1">
                                 <label for="filter-contract" class="form-label">Min. Speed</label>
                                 <MultiSelect v-model="filters['speed'].value" style="width:100%"
                                              :options="filterList.speed" optionLabel="label" optionValue="value" placeholder="All"
@@ -388,7 +388,7 @@ getArticles()
                                     </template>
                                 </MultiSelect>
                             </div>
-                            <div class="d-flex align-self-end">
+                            <div class="col-lg-2 col-12 d-flex align-self-end justify-content-around">
                                 <button class="btn btn-secondary btn-sm mt-2 me-2" @click="resetFilters()"
                                         :disabled="!meta.isUpdating">Reset</button>
                                 <div class="advanced-settings pt-2">
@@ -420,8 +420,8 @@ getArticles()
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </div>
+<!--                    </div>-->
+<!--                </div>-->
                 <div v-if="isLoading || !meta.isUpdating" data-provider="loading" class="position-relative">
                     <div class="cpq-progress-bar" style="position: absolute;z-index: 2; ">
                         <div class="cpq-bar"></div>
