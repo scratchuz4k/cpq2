@@ -82,7 +82,7 @@ class OrderController extends BaseController
     public function show(Order $order)
     {
         return Inertia::render('Orders/Show', [
-            'order' => new OrderResource($order)
+            'order' => new OrderResource($order->load(['items']))
         ]);
     }
 
@@ -94,7 +94,7 @@ class OrderController extends BaseController
         return Inertia::render('Orders/Edit', [
             'accounts' => Account::all(),
             'solution_types' => SolutionType::get(),
-            'order' => new OrderResource($order)
+            'order' => new OrderResource($order->load(['items']))
         ]);
     }
 
@@ -131,7 +131,7 @@ class OrderController extends BaseController
         return Inertia::render('Orders/Configure', [
             'accounts' => Account::all(),
             'solution_types' => SolutionType::get(),
-            'order' => new OrderResource($order)
+            'order' => new OrderResource($order->load(['items']))
         ]);
     }
 
@@ -140,7 +140,7 @@ class OrderController extends BaseController
         return Inertia::render('Orders/Preview', [
             'accounts' => Account::all(),
             'solution_types' => SolutionType::get(),
-            'order' => new OrderResource($order)
+            'order' => new OrderResource($order->load(['items']))
         ]);
     }
 
