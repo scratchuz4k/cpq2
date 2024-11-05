@@ -7,6 +7,7 @@ use Exception;
 use JsonMachine\Items;
 use Illuminate\Support\Str;
 use Illuminate\Support\Carbon;
+use App\Helpers\FilterProvider;
 use GuzzleHttp\Psr7\StreamWrapper;
 use App\Helpers\Api\CloudMarketApi;
 use App\Helpers\Api\CloudMarketFile;
@@ -48,7 +49,7 @@ class CloudMarketService
         $content = $file->getContent();
         $createdAt = Carbon::parse($content['created_at']);
 
-        if (($file->exists() || is_null($content['finished_at'])) && $createdAt->addMinutes(2)->isPast()) {
+        if (!$file->exists() || (is_null($content['finished_at']) && $createdAt->addMinutes(2)->isPast())) {
             if (env('CLOUDMARKET_CONNECTION_AS_JOB')) {
                 CloudMarketConnectivityProducts::dispatch($file, $connectivityType, $address);
             } else {
@@ -87,7 +88,7 @@ class CloudMarketService
             }
 
             $prices[] = [...$temp, 'code' => md5(Str::slug($temp['code']))];
-            $tempFilters = $this->cloudMarketRepository->processFilters($tempFilters, $temp);
+            $tempFilters = FilterProvider::process($tempFilters, $temp);
             $file->write($prices, false, null, $started_at, $tempFilters);
             /*
             if (($key % 250) == 0) {
