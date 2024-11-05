@@ -172,7 +172,7 @@
                                 </td>
                                 <td class="text-center"><img class="img-provider"
                                         style="max-width: 60px; max-height: 20px; width: auto; height: auto;"
-                                        src="{{ $item->image ?? env('APP_URL') . '/images/providers/' . $item->data?->providerKey . '.png' }}">
+                                        src="{{ $item->image ?? '/images/providers/' . $item->data?->providerKey . '.png' }}">
                                 </td>
                                 <td>
                                     {{ $item->name }}
@@ -209,16 +209,16 @@
                             </tr>
                             <tr>
                                 <th>Total Monthly</th>
-                                <td class="text-end" id="total_monthly_net">£{{ $order['total_monthly'] }}</td>
-                                <td class="text-end" id="total_monthly_vat">£{{ $totals['total_monthly_vat'] }}</td>
-                                <td class="text-end" id="total_monthly_gross">£{{ $totals['total_monthly_gross'] }}
+                                <td class="text-end" id="total_monthly_net">£{{ $order->total_monthly }}</td>
+                                <td class="text-end" id="total_monthly_vat">£{{ $order->total_monthly_vat }}</td>
+                                <td class="text-end" id="total_monthly_gross">£{{ $order->total_monthly_gross }}
                                 </td>
                             </tr>
                             <tr>
                                 <th>Total One-off Costs</th>
-                                <td class="text-end" id="total">£{{ $order['total'] }}</td>
-                                <td class="text-end" id="total_vat">£{{ $totals['total_vat'] }}</td>
-                                <td class="text-end" id="total_gross">£{{ $totals['total_gross'] }}</td>
+                                <td class="text-end" id="total">£{{ $order->total }}</td>
+                                <td class="text-end" id="total_vat">£{{ $order->total_vat }}</td>
+                                <td class="text-end" id="total_gross">£{{ $order->total_gross }}</td>
                             </tr>
                         </table>
                     </div>
