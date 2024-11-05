@@ -469,9 +469,9 @@ const items = ref([
                                     :value="order.margin.toFixed(2) + ' %'" disabled>
                             </div>
                             <div class="mb-3">
-                                <label class="form-label">Comission (<span id="order-tax-comission">{{
-                                        order.tax_comission
-                                        }}</span>%)</label>
+                                <label class="form-label">Comission (<span id="order-tax-comission">
+                                        {{ order.commission_rate }}</span>%)
+                                </label>
                                 <input id="input-comission_value-order" class="form-control"
                                     :value="GBP.format(order.comission_value)" disabled>
                             </div>
