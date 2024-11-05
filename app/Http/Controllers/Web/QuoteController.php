@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Web;
 
 use App\Models\User;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use App\Models\Quote;
 use App\Models\Account;
@@ -63,7 +64,9 @@ class QuoteController extends BaseController
     public function store(QuoteCreateRequest $request)
     {
         try {
-            $quote = $this->quoteService->store($request->all());
+            $quote = DB::transaction(function () use ($request) {
+                return $this->quoteService->store($request->all());
+            });
         } catch (\Exception $e) {
             if (!env('APP_DEBUG')) {
                 Log::error($e->getMessage());
@@ -101,7 +104,9 @@ class QuoteController extends BaseController
     public function update(QuoteUpdateRequest $request, Quote $quote)
     {
         try {
-            $quote = $this->quoteService->update($quote, $request->all());
+            $quote = DB::transaction(function () use ($request, $quote) {
+                return $this->quoteService->update($quote, $request->all());
+            });
         } catch (\Exception $e) {
             if (!env('APP_DEBUG')) {
                 Log::error($e->getMessage());

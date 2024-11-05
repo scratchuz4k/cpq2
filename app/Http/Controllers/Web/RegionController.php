@@ -2,15 +2,16 @@
 
 namespace App\Http\Controllers\Web;
 
+use App\Models\User;
+use Inertia\Inertia;
+use App\Models\Region;
+use App\Models\Merchant;
+use App\Services\RegionsService;
+use Illuminate\Support\Facades\DB;
+use App\Http\Resources\RegionResource;
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\RegionCreateRequest;
 use App\Http\Requests\RegionUpdateRequest;
-use App\Http\Resources\RegionResource;
-use App\Models\Merchant;
-use App\Models\Region;
-use App\Models\User;
-use App\Services\RegionsService;
-use Inertia\Inertia;
 
 class RegionController extends BaseController
 {
@@ -46,7 +47,9 @@ class RegionController extends BaseController
     public function store(RegionCreateRequest $request)
     {
         try {
-            $region = $this->regionsService->store($request->all());
+            $region = DB::transaction(function () use ($request) {
+                return $this->regionsService->store($request->all());
+            });
         } catch (\Exception $e) {
             throw new \Exception($e);
         }
@@ -80,7 +83,9 @@ class RegionController extends BaseController
     public function update(RegionUpdateRequest $request, Region $region)
     {
         try {
-            $region = $this->regionsService->update($region, $request->all());
+            $region = DB::transaction(function () use ($region, $request) {
+                return $this->regionsService->update($region, $request->all());
+            });
         } catch (\Exception $e) {
             throw new \Exception($e);
         }

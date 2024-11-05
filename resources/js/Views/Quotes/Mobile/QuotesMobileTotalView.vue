@@ -70,6 +70,7 @@ const edit = (p) => {
     temp.quantity = p.quantity
     temp.discount = p.discount
     temp.margin = p.margin
+    order.items.forEach((e) => e.is_editing = false)
     p.is_editing = !p.is_editing
 }
 const save = async (p) => {
@@ -119,7 +120,6 @@ const resetQuote = async () => {
     try {
         let res = await axios.put(`/api/quotes/${quote.id}`,
             {
-                contract_length: 0,
                 discount: 0,
                 items: quote.items,
             })
@@ -465,12 +465,14 @@ const items = ref([
                             <div class="mb-3">
                                 <label class="form-label">Margin</label>
                                 <input id="input-margin-order" class="form-control"
-                                    :value="quote.margin.toFixed(2) + ' %'">
+                                    :value="quote.margin.toFixed(2) + ' %'" disabled>
                             </div>
                             <div class="mb-3">
-                                <label class="form-label">Comission (<span id="order-tax-comission">{{ quote.tax_comission }}</span>%)</label>
+                                <label class="form-label">Comission (<span id="order-tax-comission">{{
+                                        quote.tax_comission
+                                        }}</span>%)</label>
                                 <input id="input-comission_value-order" class="form-control"
-                                    :value="GBP.format(quote.comission_value)">
+                                    :value="GBP.format(quote.comission_value)" disabled>
                             </div>
                         </div>
                     </div>

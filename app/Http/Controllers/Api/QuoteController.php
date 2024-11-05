@@ -8,6 +8,8 @@ use App\Models\Quote;
 use Illuminate\Http\Request;
 use App\Helpers\DataProvider;
 use App\Services\QuoteService;
+use App\Services\OrderService;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Http\Resources\QuoteResource;
 use App\Http\Controllers\BaseController;
@@ -54,7 +56,9 @@ class QuoteController extends BaseController
     public function store(QuoteCreateRequest $request)
     {
         try {
-            $quote = $this->quoteService->store($request->all());
+            $quote = DB::transaction(function () use ($request) {
+                return $this->quoteService->store($request->all());
+            });
         } catch (Exception $e) {
             return response($e->getMessage(), 500);
         }
@@ -75,7 +79,9 @@ class QuoteController extends BaseController
     public function update(QuoteUpdateRequest $request, Quote $quote)
     {
         try {
-            $quote = $this->quoteService->update($quote, $request->all());
+            $quote = DB::transaction(function () use ($request, $quote) {
+                return $this->quoteService->update($quote, $request->all());
+            });
         } catch (Exception $e) {
             if (!env('APP_DEBUG')) {
                 Log::error($e->getMessage());

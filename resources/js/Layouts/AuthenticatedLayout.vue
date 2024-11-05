@@ -6,6 +6,17 @@ import axios from 'axios';
 import Dialog from 'primevue/dialog';
 import { reactive, ref, watch } from 'vue'
 import queryString from 'query-string';
+import { usePage } from "@inertiajs/vue3";
+
+
+const page = usePage();
+import * as Sentry from "@sentry/vue";
+Sentry.setUser({
+    fullName: page.props.auth.user.name,
+    email: page.props.auth.user.email,
+});
+
+
 defineProps({
     quote: Object
 })

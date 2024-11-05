@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers\Web;
 
-use App\Http\Requests\SupplierCreateRequest;
-use App\Http\Requests\SupplierUpdateRequest;
-use App\Http\Resources\SupplierResource;
+use Inertia\Inertia;
 use App\Models\Supplier;
 use App\Services\SuppliersService;
-use Inertia\Inertia;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\BaseController;
+use App\Http\Resources\SupplierResource;
+use App\Http\Requests\SupplierCreateRequest;
+use App\Http\Requests\SupplierUpdateRequest;
 
 class SupplierController extends BaseController
 {
@@ -40,7 +41,9 @@ class SupplierController extends BaseController
     public function store(SupplierCreateRequest $request)
     {
         try {
-            $supplier = $this->suppliersService->store($request->all());
+            $supplier = DB::transaction(function () use ($request) {
+                return $this->suppliersService->store($request->all());
+            });
         } catch (\Exception $e) {
             throw new \Exception($e);
         }
@@ -72,7 +75,9 @@ class SupplierController extends BaseController
     public function update(SupplierUpdateRequest $request, Supplier $supplier)
     {
         try {
-            $supplier = $this->suppliersService->update($supplier, $request->all());
+            $supplier = DB::transaction(function () use ($supplier, $request) {
+                return $this->suppliersService->update($supplier, $request->all());
+            });
         } catch (\Exception $e) {
             throw new \Exception($e);
         }

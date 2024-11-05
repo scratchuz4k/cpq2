@@ -10,17 +10,13 @@ class ContactService
 
     public function store(array $array): Contact
     {
-        return DB::transaction(function () use ($array) {
-            $contact = Contact::create($array,);
-            return $contact;
-        });
+        $contact = Contact::create($array,);
+        return $contact;
     }
 
     public function update(Contact $contact, array $array): Contact
     {
-        return DB::transaction(function () use ($contact, $array) {
-            $contact->update($array);
-            return $contact;
-        });
+        $contact->update($array);
+        return $contact;
     }
 }

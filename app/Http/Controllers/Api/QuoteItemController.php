@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Models\QuoteItem;
 use App\Services\QuoteItemService;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\QuoteItemCreateRequest;
@@ -31,7 +32,9 @@ class QuoteItemController extends BaseController
     public function store(QuoteItemCreateRequest $request)
     {
         try {
-            $quoteItem = $this->quoteItemService->store($request->all());
+            $quoteItem = DB::transaction(function () use ($request) {
+                return $this->quoteItemService->store($request->all());
+            });
         } catch (\Exception $e) {
             if (!env("APP_DEBUG")) {
                 Log::error($e->getMessage());
@@ -55,7 +58,9 @@ class QuoteItemController extends BaseController
     public function update(QuoteItemUpdateRequest $request, QuoteItem $quoteItem)
     {
         try {
-            $quoteItem = $this->quoteItemService->update($quoteItem, $request->all());
+            $quoteItem = DB::transaction(function () use ($request, $quoteItem) {
+                return $this->quoteItemService->update($quoteItem, $request->all());
+            });
         } catch (\Exception $e) {
             if (!env("APP_DEBUG")) {
                 Log::error($e->getMessage());

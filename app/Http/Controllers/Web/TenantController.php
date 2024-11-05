@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers\Web;
 
+use Inertia\Inertia;
+use App\Models\Tenant;
+use Illuminate\Http\Request;
+use App\Services\TenantService;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\TenantUpdateRequest;
-use App\Models\Tenant;
-use App\Services\TenantService;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
-use Inertia\Inertia;
 
 class TenantController extends BaseController
 {
@@ -72,7 +73,9 @@ class TenantController extends BaseController
     public function update(TenantUpdateRequest $request, Tenant $tenant)
     {
         try {
-            $tenant = $this->tenantService->update($tenant, $request->all());
+            $tenant = DB::transaction(function () use ($tenant, $request) {
+                return  $this->tenantService->update($tenant, $request->all());
+            });
         } catch (\Exception $e) {
             if (!env('APP_DEBUG')) {
                 Log::error($e->getMessage());

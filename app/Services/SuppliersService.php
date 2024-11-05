@@ -9,20 +9,14 @@ class SuppliersService
 {
     public function store(array $array): Supplier
     {
-        return DB::transaction(function () use ($array) {
-            $supplier = Supplier::create($array);
-
-
-            return $supplier;
-        });
+        $supplier = Supplier::create($array);
+        return $supplier;
     }
 
     public function update(Supplier $supplier, array $array): Supplier
     {
-        return DB::transaction(function () use ($supplier, $array) {
-            $supplier->update($array);
+        $supplier->update($array);
 
-            return $supplier;
-        });
+        return $supplier;
     }
 }

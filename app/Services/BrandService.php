@@ -9,20 +9,15 @@ class BrandService
 {
     public function store(array $array): Brand
     {
-        return DB::transaction(function () use ($array) {
-            $brand = Brand::create($array);
+        $brand = Brand::create($array);
 
-
-            return $brand;
-        });
+        return $brand;
     }
 
     public function update(Brand $brand, array $array): Brand
     {
-        return DB::transaction(function () use ($brand, $array) {
-            $brand->update($array);
+        $brand->update($array);
 
-            return $brand;
-        });
+        return $brand;
     }
 }
