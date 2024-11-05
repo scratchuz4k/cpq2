@@ -33,7 +33,7 @@ class QuoteItem extends Model
         'total_monthly',
         'total_monthly_tax',
         'total_monthly_gross',
-        'tax_order_item',
+        'tax_quote_item',
     ];
 
     protected function casts(): array
@@ -64,7 +64,7 @@ class QuoteItem extends Model
         $price = $this->original_price + (($this->original_price * ($this->margin / 100)));
         $price_monthly = ($this->original_price_monthly + (($this->original_price_monthly * ($this->margin / 100))));
 
-        $discounts  = [$this->discount, $this->order->discount];
+        $discounts  = [$this->discount, $this->quote->discount];
         foreach ($discounts as $discount) {
             $price = ($price * (1 - ($discount / 100)));
             $price_monthly = ($price_monthly * (1 - ($discount / 100)));
@@ -74,12 +74,12 @@ class QuoteItem extends Model
         $this->price_monthly = $price_monthly;
 
         $this->total = $this->price * $this->quantity;
-        $this->total_tax = $this->total * ($this->tax_order_item / 100);
-        $this->total_gross = $this->total * (($this->tax_order_item / 100) + 1);
+        $this->total_tax = $this->total * ($this->tax_quote_item / 100);
+        $this->total_gross = $this->total * (($this->tax_quote_item / 100) + 1);
 
         $this->total_monthly = $this->price_monthly * $this->quantity;
-        $this->total_monthly_tax = $this->total_monthly * ($this->tax_order_item / 100);
-        $this->total_monthly_gross = $this->total_monthly * (($this->tax_order_item / 100) + 1);
+        $this->total_monthly_tax = $this->total_monthly * ($this->tax_quote_item / 100);
+        $this->total_monthly_gross = $this->total_monthly * (($this->tax_quote_item / 100) + 1);
         $this->save();
     }
 }

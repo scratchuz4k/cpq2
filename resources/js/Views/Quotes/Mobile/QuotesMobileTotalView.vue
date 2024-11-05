@@ -70,7 +70,7 @@ const edit = (p) => {
     temp.quantity = p.quantity
     temp.discount = p.discount
     temp.margin = p.margin
-    order.items.forEach((e) => e.is_editing = false)
+    quote.items.forEach((e) => e.is_editing = false)
     p.is_editing = !p.is_editing
 }
 const save = async (p) => {
@@ -91,9 +91,7 @@ const save = async (p) => {
 
 const saveQuote = async (p) => {
     isLoading.value = true
-    if (quote.discount === '') {
-        return
-    }
+
     try {
         let res = await axios.put(`/api/quotes/${quote.id}`,
             {
@@ -104,6 +102,7 @@ const saveQuote = async (p) => {
         isLoading.value = false
     } catch (ex) {
         notyf.error(ex.response.data.message)
+        isLoading.value = false
     }
 }
 

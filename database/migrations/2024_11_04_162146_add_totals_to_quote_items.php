@@ -27,7 +27,8 @@ return new class extends Migration
             $table->double('total_monthly')->default(0);
             $table->double('total_monthly_tax')->default(0);
             $table->double('total_monthly_gross')->default(0);
-            $table->double('tax_order_item')->default(0);
+            $table->double('tax_quote_item')->default(0);
+            $table->string('product_code')->nullable();
         });
     }
 
@@ -51,7 +52,8 @@ return new class extends Migration
                 'total_monthly',
                 'total_monthly_tax',
                 'total_monthly_gross',
-                'tax_order_item',
+                'tax_quote_item',
+                'product_code',
             ]);
         });
     }

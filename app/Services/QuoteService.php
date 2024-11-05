@@ -23,7 +23,13 @@ class QuoteService
             }
 
             $quote->update(['status' => get_quote_status($quote->refresh())]);
-            return $quote;
+
+            foreach ($quote->items as $quote_item) {
+                $quote_item->computeTotals();
+            }
+            $quote->computeTotals();
+
+            return $quote->refresh();
         }, 3);
     }
 
@@ -33,18 +39,32 @@ class QuoteService
 
             $quote->update($array);
             if (array_key_exists('items', $array)) {
+                $olderItems = collect($quote->items);
                 foreach ($array['items'] as $quote_item) {
-                    $quote_item['quote_id'] = $quote->id;
-                    if ($temp = QuoteItem::find($quote_item['id'])) {
-                        $this->quoteItemService->update($temp, $quote_item);
-                        continue;
+                    if (array_key_exists('id', $quote_item) && !is_null($quote_item['id'])) {
+                        $temp = QuoteItem::find($quote_item['id']);
+                        $this->quoteItemService->update($temp, [...$quote_item, 'quote_id' =>  $quote->id]);
+
+                        $olderItems = $olderItems->reject(function ($temp) use ($quote_item) {
+                            return $temp->id === $quote_item['id'];
+                        });
+                    } else {
+                        $this->quoteItemService->store([...$quote_item, 'quote_id' =>  $quote->id]);
                     }
-                    $this->quoteItemService->store($quote_item);
+                }
+                foreach ($olderItems as $temp) {
+                    $temp->delete();
                 }
             }
 
             $quote->update(['status' => get_quote_status($quote->refresh())]);
-            return $quote;
+
+            foreach ($quote->items as $quote_item) {
+                $quote_item->computeTotals();
+            }
+            $quote->computeTotals();
+
+            return $quote->refresh();
         }, 3);
     }
 }
