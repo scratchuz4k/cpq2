@@ -403,7 +403,7 @@ const items = ref([
 
                 <div class="mb-5">
                     <div>
-                        <p class="payment-info border-bottom pb-3">
+                        <p class="payment-info border-bottom pb-3 big bold">
                             <span class="text-primary">1 payment </span> of
                             {{ GBP.format(order.total) }}<br>
                             followed by
