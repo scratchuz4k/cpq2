@@ -1,11 +1,11 @@
 <template>
     <button :id="'btn-' + props.id + '-remove-1'" class="btn-quantity btn-minus-quantity" type="button"
-            @click="() => proxyValue--" :disabled="!proxyValue">
+        @click="() => proxyValue--" :disabled="!proxyValue">
         <font-awesome-icon :icon="['fas', 'minus']" />
     </button>
     <input :id="'input-' + props.id + '-quantity'" type="number" class="input-quantity" v-model="proxyValue">
     <button :id="'btn-' + props.id + '-add-1'" class="btn-quantity btn-add-quantity" type="button"
-            @click="() => proxyValue++" :disabled="props.disabled">
+        @click="() => proxyValue++" :disabled="props.disabled">
         <font-awesome-icon :icon="['fas', 'plus']" />
     </button>
 </template>
@@ -30,7 +30,7 @@ const proxyValue = computed({
 </script>
 <style scoped>
 .input-quantity {
-    width: 101px;
+    width: 70px;
     height: 32px;
     padding: 8px 12px 8px 12px;
     gap: 8px;

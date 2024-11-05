@@ -32,6 +32,7 @@ class User extends Authenticatable
         'parent_id', // Add parent_id to fillable attributes
         'tenant_id',
         'sso', // Add sso to fillable attributes
+        'commission_rate'
     ];
 
     /**
@@ -51,6 +52,7 @@ class User extends Authenticatable
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
+        'sso' => 'boolean',
     ];
 
 

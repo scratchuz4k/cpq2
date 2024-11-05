@@ -6,6 +6,17 @@ import axios from 'axios';
 import Dialog from 'primevue/dialog';
 import { reactive, ref, watch } from 'vue'
 import queryString from 'query-string';
+import { usePage } from "@inertiajs/vue3";
+
+
+const page = usePage();
+import * as Sentry from "@sentry/vue";
+Sentry.setUser({
+    fullName: page.props.auth.user.name,
+    email: page.props.auth.user.email,
+});
+
+
 defineProps({
     order: Object
 })
@@ -95,7 +106,7 @@ watch(search, () => {
                     </li>
 
                     <li class="nav-item">
-                        <a class="nav-link" :href="route('myaccount')">
+                        <a id="my-account" class="nav-link" :href="route('myaccount')">
                             <font-awesome-icon :icon="['far', 'user']" />
 
                         </a>
@@ -173,7 +184,7 @@ watch(search, () => {
                 <div class="w-100 m-0 d-flex justify-content-between">
                     <p class="m-0">
                         <b>#{{ order.id }} - {{ order.account?.name }} </b> / {{ order.solution_type.name }} <br>
-                        <span style="font-size: 12px;"> {{ order.user.name }} - {{ order.updated_at }}</span>
+                        <span style="font-size: 12px;"> {{ order.user.name }} - {{ helpers.formatDate(order.updated_at) }}</span>
                     </p>
                     <p class="m-0">
                         <span class="badge text-bg-secondary">{{ order.status }}</span>
@@ -189,7 +200,7 @@ watch(search, () => {
                 <div class="w-100 m-0 d-flex justify-content-between">
                     <p class="m-0">
                         <b>#{{ account.id }} - {{ account.name }} </b> / {{ account.reference }} <br>
-                        {{ account.updated_at }}
+                        {{ helpers.formatDate(account.updated_at) }}
                     </p>
                 </div>
             </a>

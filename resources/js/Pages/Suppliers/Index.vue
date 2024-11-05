@@ -28,9 +28,8 @@ const items = ref([
                     link: false,
                 }" :columns="[
                     { data: 'id', title: '#', style: 'width:5%' },
-                    { data: 'tenant.name', title: 'Tenant', style: 'width:15%' },
-                    { data: 'name', title: 'Name', style: 'width:20%' },
-                    { data: 'reference', title: 'Reference', style: 'width:20%' },
+                    { data: 'name', title: 'Name', style: 'width:30%' },
+                    { data: 'reference', title: 'Reference', style: 'width:25%' },
                     { data: 'created_at', title: 'Created At', style: 'width:15%' },
                     { data: 'updated_at', title: 'Updated At', style: 'width:15%' },
                 ]" route="/suppliers">

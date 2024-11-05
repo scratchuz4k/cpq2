@@ -10,6 +10,10 @@ const props = defineProps({
     suppliers: Object
 })
 
+if(!props.spa.data) {
+    props.spa.data = {};
+}
+
 const operations = [
     'Add',
     'Subtract',

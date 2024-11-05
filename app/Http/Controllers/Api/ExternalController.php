@@ -8,13 +8,14 @@ use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Services\CloudMarketService;
 use App\Helpers\Api\OpenreachLookup;
+use App\Helpers\FilterProvider;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Cache;
 
 class ExternalController extends Controller
 {
-    public function __construct(protected CloudMarketService $cloudMarketService){}
+    public function __construct(protected CloudMarketService $cloudMarketService) {}
     /**
      * Request Openreach Api to get all address with a Postal Code.
      */
@@ -102,8 +103,8 @@ class ExternalController extends Controller
 
     public function getArticlesFromShopBlocks(Request $request)
     {
-        $cache_key = md5("shop-blocks" . json_encode($request->all()));
-        return Cache::remember($cache_key, 3600, function () use ($request) {
+        $cache_key = md5("shop-blocks" . $request->input('category_id', 22));
+        $res = Cache::remember($cache_key, 3600, function () use ($request) {
             $products = [];
             $page = 0;
             do {
@@ -117,13 +118,31 @@ class ExternalController extends Controller
                 $last_page = array_key_exists("meta", $res) ? $res["meta"]["last_page"] : 1;
             } while ($page != $last_page);
 
+            $tempFilters = [
+                "model" => [],
+            ];
+
             foreach ($products as $key => $product) {
+                $temp = '';
+                foreach (array_keys($product) as $itemKey) {
+                    if (!(is_string($product[$itemKey]) || is_numeric($product[$itemKey]))) {
+                        continue;
+                    }
+                    $temp .= $product[$itemKey];
+                }
                 $model = (string) Str::of($product['name'])->words(3, '');
+                $products[$key]['code'] = md5(Str::slug($temp));
+                $products[$key]['price'] = (float)$product['price'];
                 $products[$key]['model'] = $model;
                 $products[$key]['url'] = 'https://hardware.cloud.market/smartphones/' . $product['slug'];
+                $tempFilters = FilterProvider::process($tempFilters, $products[$key], true);
             }
 
-            return $products;
+            return ['items' => $products, 'filters' => $tempFilters];
         });
+
+        $items = FilterProvider::get($res['items'], request()->input('filters', []));
+        $meta = FilterProvider::paginate($items);
+        return [...$meta, 'filters' => $res['filters']];
     }
 }

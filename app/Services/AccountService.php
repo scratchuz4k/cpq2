@@ -11,27 +11,23 @@ class AccountService
     public function __construct(protected AccountRepository $accountRepository) {}
     public function store(array $array): Account
     {
-        return DB::transaction(function () use ($array) {
-            $account = Account::create($array);
+        $account = Account::create($array);
 
-            if (isset($array['contacts']) && is_array($array['contacts'])) {
-                $this->accountRepository->syncContacts($account, $array['contacts']);
-            }
+        if (isset($array['contacts']) && is_array($array['contacts'])) {
+            $this->accountRepository->syncContacts($account, $array['contacts']);
+        }
 
-            return $account;
-        });
+        return $account;
     }
 
     public function update(Account $account, array $array): Account
     {
-        return DB::transaction(function () use ($account, $array) {
-            $account->update($array);
+        $account->update($array);
 
-            if (isset($array['contacts']) && is_array($array['contacts'])) {
-                $this->accountRepository->syncContacts($account, $array['contacts']);
-            }
+        if (isset($array['contacts']) && is_array($array['contacts'])) {
+            $this->accountRepository->syncContacts($account, $array['contacts']);
+        }
 
-            return $account;
-        });
+        return $account;
     }
 }

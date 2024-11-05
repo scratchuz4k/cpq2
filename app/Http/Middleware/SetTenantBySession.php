@@ -17,9 +17,15 @@ class SetTenantBySession
         }
 
         if (!$user->currentTenant && $user->hasRole('Super Admin')) {
-            $temp =  Tenant::findOrFail(1);
+            $temp = Tenant::findOrFail(1);
             $user = $request->user();
             $user->update(['tenant_id' => $temp->id]);
+            $user->refresh();
+        }
+
+        if (!$user->tenants->where('id', $user->tenant_id)->first()) {
+            $tenant = $user->tenants->first();
+            $user->update(['tenant_id' => $tenant->id]);
             $user->refresh();
         }
 

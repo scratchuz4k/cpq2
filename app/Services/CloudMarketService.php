@@ -7,6 +7,7 @@ use Exception;
 use JsonMachine\Items;
 use Illuminate\Support\Str;
 use Illuminate\Support\Carbon;
+use App\Helpers\FilterProvider;
 use GuzzleHttp\Psr7\StreamWrapper;
 use App\Helpers\Api\CloudMarketApi;
 use App\Helpers\Api\CloudMarketFile;
@@ -23,7 +24,7 @@ class CloudMarketService
 
     public function get($connectivityType, CloudMarketAddress $address, $filters = [])
     {
-        if (env('PARTNER_QUOTE_SERVICE_ENDPOINT') == 'mock') {
+        if (!env('CLOUDMARKET_CONNECTION_LIVE_DATA')) {
             $mock_prices = storage_path('mocks/prices.json');
             if (!is_file($mock_prices)) {
                 return [];
@@ -38,7 +39,7 @@ class CloudMarketService
         if (!Cache::has($filename)) {
             $file->write([], true, null, now());
 
-            if (env('PARTNER_QUOTE_AS_JOB')) {
+            if (env('CLOUDMARKET_CONNECTION_AS_JOB')) {
                 CloudMarketConnectivityProducts::dispatch($file, $connectivityType, $address);
             } else {
                 $this->getConnectivityProducts($file, $connectivityType, $address, $filters);
@@ -48,8 +49,8 @@ class CloudMarketService
         $content = $file->getContent();
         $createdAt = Carbon::parse($content['created_at']);
 
-        if (is_null($content['finished_at']) && $createdAt->addMinutes(2)->isPast()) {
-            if (env('PARTNER_QUOTE_AS_JOB')) {
+        if (!$file->exists() || (is_null($content['finished_at']) && $createdAt->addMinutes(2)->isPast())) {
+            if (env('CLOUDMARKET_CONNECTION_AS_JOB')) {
                 CloudMarketConnectivityProducts::dispatch($file, $connectivityType, $address);
             } else {
                 $this->getConnectivityProducts($file, $connectivityType, $address, $filters);
@@ -89,9 +90,9 @@ class CloudMarketService
             }
 
             $prices[] = [...$temp, 'code' => md5(Str::slug($temp['code']))];
-            $tempFilters = $this->cloudMarketRepository->processFilters($tempFilters, $temp);
+            $tempFilters = FilterProvider::process($tempFilters, $temp);
             $file->write($prices, false, null, $started_at, $tempFilters);
-			/*
+            /*
             if (($key % 250) == 0) {
                 echo json_encode($this->cloudMarketRepository->sendResponse($file->getContent(), $filters));
             }

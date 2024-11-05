@@ -7,6 +7,7 @@ use App\Models\Contact;
 use Illuminate\Http\Request;
 use App\Helpers\DataProvider;
 use App\Services\ContactService;
+use Illuminate\Support\Facades\DB;
 use App\Http\Requests\IndexRequest;
 use Illuminate\Support\Facades\Log;
 use App\Http\Resources\ContactResource;
@@ -43,7 +44,9 @@ class ContactController extends BaseController
     public function store(ContactCreateRequest $request)
     {
         try {
-            $contact = $this->contactService->store($request->all());
+            $contact = DB::transaction(function () use ($request) {
+                return $this->contactService->store($request->all());
+            });
         } catch (Exception $e) {
             Log::debug($e->getMessage());
             throw new Exception($e);
@@ -65,7 +68,9 @@ class ContactController extends BaseController
     public function update(Request $request, Contact $contact)
     {
         try {
-            $contact = $this->contactService->update($contact, $request->all());
+            $contact =  DB::transaction(function () use ($contact, $request) {
+                return $this->contactService->update($contact, $request->all());
+            });
         } catch (Exception $e) {
             Log::debug($e->getMessage());
             throw new Exception($e);

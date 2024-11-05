@@ -66,7 +66,8 @@ const items = ref([
                                         <option v-for="account in accounts" :value="account">{{ account.name }}</option>
                                     </select>
                                 </div>
-                                or create a <a href="/accounts/create" class="text-primary">new account</a>
+                                or create a <a id="link-to-create-account" href="/accounts/create"
+                                    class="text-primary">new account</a>
                             </div>
                         </div>
                     </div>
@@ -76,7 +77,7 @@ const items = ref([
                 <OrdersSolutionView v-model="form" :solution_types="solution_types"></OrdersSolutionView>
                 <div class="row mb-3 ">
                     <div class="col-6 d-flex justify-content-end">
-                        <button class="btn btn-primary" type="submit" :disabled="form.solutionCheck">
+                        <button id="btn-create-quote" class="btn btn-primary" type="submit" :disabled="form.solutionCheck">
                             Get prices
                             <font-awesome-icon :icon="['fas', 'arrow-right']" class="ms-2"></font-awesome-icon>
                             <div v-if="form.isLoading" class="spinner-border  spinner-border-sm" role="status">

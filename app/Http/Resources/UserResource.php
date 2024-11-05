@@ -17,9 +17,11 @@ class UserResource extends JsonResource
         return [
             ...$this->resource->toArray(),
             'roles' => $this->roles,
-            'parent' => $this->parent ?? ['name' => 'N/A'],
+            'parent' => $this->parent,
             'updated_at' => $this->updated_at,
-            'created_at' => $this->created_at
+            'created_at' => $this->created_at,
+            'has_children' => !!count($this->children),
+            'tenants' => $this->tenants
         ];
     }
 }

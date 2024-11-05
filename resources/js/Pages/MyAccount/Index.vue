@@ -137,7 +137,7 @@ const items = ref([
                         </div>
                         <div class="col" v-if="hasRole('Super Admin') || can('viewAny user')">
                             <div class="card bg-light border-0">
-                                <a :href="route('users.index')" class="card-body text-center p-2 text-decoration-none">
+                                <a id="link-users" :href="route('users.index')" class="card-body text-center p-2 text-decoration-none">
                                     <font-awesome-icon class="py-3 opacity-25" :icon="['far', 'user']" size="2x"></font-awesome-icon>
                                     <span class="d-block h5">Users</span>
                                 </a>

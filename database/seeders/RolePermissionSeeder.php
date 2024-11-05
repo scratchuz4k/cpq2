@@ -54,10 +54,26 @@ class RolePermissionSeeder extends Seeder
         ];
 
         $roles = [
-            'Super Admin' => ['parent' => null, 'permissions' => []],
-            'Support Agent' => ['parent' => 'Super Admin', 'permissions' => ['merchant', 'account', 'contact', 'token', 'order', 'order_items']],
-            'Company Admin' => ['parent' => 'Super Admin', 'permissions' => ['order', 'order_items', 'merchant', 'account', 'contact',  'price', 'product', 'region', 'tenant', 'brand', 'supplier', 'spa', 'user']],
-            'Sales Rep' => ['parent' => 'Company Admin', 'permissions' => ['order', 'order_items', 'account', 'contact', 'brand', 'supplier']]
+            'Super Admin' => [
+                'parent' => null,
+                'permissions' => [],
+                'simple_permission' => []
+            ],
+            'Support Agent' => [
+                'parent' => 'Super Admin',
+                'permissions' => ['merchant', 'account', 'contact', 'token', 'order', 'order_items'],
+                'simple_permission' => ['viewAny product', 'view product']
+            ],
+            'Company Admin' => [
+                'parent' => 'Super Admin',
+                'permissions' => ['order', 'order_items', 'merchant', 'account', 'contact',  'price', 'product', 'region', 'tenant', 'brand', 'supplier', 'spa', 'user'],
+                'simple_permission' => []
+            ],
+            'Sales Rep' => [
+                'parent' => 'Company Admin',
+                'permissions' => ['order', 'order_items', 'account', 'contact', 'brand', 'supplier'],
+                'simple_permission' => ['viewAny product', 'view product']
+            ]
         ];
 
         foreach ($simplePermissions as $key => $pe) {
@@ -99,18 +115,13 @@ class RolePermissionSeeder extends Seeder
                 }
             }
             $role->syncPermissions($permissions);
+
+            foreach ($item['simple_permission'] as $simplePermission) {
+                $role->givePermissionTo($simplePermission);
+            }
         }
 
         $sAdmin = User::where('email', 'super@example.com')->first();
         $sAdmin->assignRole('Super Admin');
-
-        $supp = User::where('email', 'support@example.com')->first();
-        $supp->assignRole('Support Agent');
-
-        $cAdmin = User::where('email', 'companyadmin@example.com')->first();
-        $cAdmin->assignRole('Company Admin');
-
-        $salesR = User::where('email', 'sales@example.com')->first();
-        $salesR->assignRole('Sales Rep');
     }
 }

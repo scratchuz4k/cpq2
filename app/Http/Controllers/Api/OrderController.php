@@ -8,6 +8,7 @@ use App\Models\Order;
 use Illuminate\Http\Request;
 use App\Helpers\DataProvider;
 use App\Services\OrderService;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Http\Resources\OrderResource;
 use App\Http\Controllers\BaseController;
@@ -54,11 +55,13 @@ class OrderController extends BaseController
     public function store(OrderCreateRequest $request)
     {
         try {
-            $order = $this->orderService->store($request->all());
+            $order = DB::transaction(function () use ($request) {
+                return $this->orderService->store($request->all());
+            });
         } catch (Exception $e) {
             return response($e->getMessage(), 500);
         }
-        return response()->json(new OrderResource($order));
+        return response()->json(new OrderResource($order->refresh()));
     }
 
     /**
@@ -75,7 +78,9 @@ class OrderController extends BaseController
     public function update(OrderUpdateRequest $request, Order $order)
     {
         try {
-            $order = $this->orderService->update($order, $request->all());
+            $order = DB::transaction(function () use ($request, $order) {
+                return $this->orderService->update($order, $request->all());
+            });
         } catch (Exception $e) {
             if (!env('APP_DEBUG')) {
                 Log::error($e->getMessage());

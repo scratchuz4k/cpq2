@@ -2,15 +2,16 @@
 
 namespace App\Http\Controllers\Web;
 
-use App\Http\Controllers\BaseController;
+use App\Models\Spa;
+use App\Models\User;
+use Inertia\Inertia;
+use App\Models\Supplier;
+use App\Services\SpasService;
+use Illuminate\Support\Facades\DB;
+use App\Http\Resources\SpaResource;
 use App\Http\Requests\SpaCreateRequest;
 use App\Http\Requests\SpaUpdateRequest;
-use App\Http\Resources\SpaResource;
-use App\Models\Spa;
-use App\Models\Supplier;
-use App\Models\User;
-use App\Services\SpasService;
-use Inertia\Inertia;
+use App\Http\Controllers\BaseController;
 
 class SpaController extends BaseController
 {
@@ -45,7 +46,9 @@ class SpaController extends BaseController
     public function store(SpaCreateRequest $request)
     {
         try {
-            $spa = $this->spasService->store($request->all());
+            $spa = DB::transaction(function () use ($request) {
+                return $this->spasService->store($request->all());
+            });
         } catch (\Exception $e) {
             throw new \Exception($e);
         }
@@ -80,7 +83,9 @@ class SpaController extends BaseController
     public function update(SpaUpdateRequest $request, Spa $spa)
     {
         try {
-            $spa = $this->spasService->update($spa, $request->all());
+            $spa = DB::transaction(function () use ($spa, $request) {
+                return $this->spasService->update($spa, $request->all());
+            });
         } catch (\Exception $e) {
             throw new \Exception($e);
         }

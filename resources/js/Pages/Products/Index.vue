@@ -27,10 +27,9 @@ const items = ref([
                     link: false,
                 }" :columns="[
                     { data: 'id', title: '#', style: 'width:5%' },
-                    { data: 'tenant_id', title: 'Tenant', style: 'width:10%' },
-                    { data: 'supplier_id', title: 'Supplier', style: 'width:10%' },
-                    { data: 'brand_id', title: 'Brand', style: 'width:10%' },
-                    { data: 'name', title: 'Name', style: 'width:25%' },
+                    { data: 'supplier.name', title: 'Supplier', style: 'width:12%' },
+                    { data: 'brand.name', title: 'Brand', style: 'width:12%' },
+                    { data: 'name', title: 'Name', style: 'width:30%' },
                     { data: 'created_at', title: 'Created At', style: 'width:15%' },
                     { data: 'updated_at', title: 'Updated At', style: 'width:15%' },
                 ]" route="/products">
