@@ -100,7 +100,7 @@ class Order extends Model
         }
 
         $total_cost = $original_total + ($original_total_monthly * $this->contract_length);
-        $margin_value = (($this->total + $this->total_monthly * $this->contract_length) - $total_cost);
+        $margin_value = ($this->total + ($this->total_monthly * $this->contract_length)) - $total_cost;
 
         $this->margin = $total_cost ? ($margin_value / $total_cost) * 100 : 0;
         $this->comission_value = $margin_value * ($this->commission_rate / 100);

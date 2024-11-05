@@ -465,8 +465,8 @@ const items = ref([
                         <div class="p-3" style="background: #E9EDF0;">
                             <div class="mb-3">
                                 <label class="form-label">Margin</label>
-                                <input id="input-margin-order" class="form-control"
-                                    :value="order.margin.toFixed(2) + ' %'" disabled>
+                                <input id="input-margin-order" class="form-control" :value="order.margin.toFixed(2) + ' %'"
+                                    disabled>
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">Comission (<span id="order-tax-comission">
