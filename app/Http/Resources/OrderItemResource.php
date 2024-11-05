@@ -32,7 +32,6 @@ class OrderItemResource extends JsonResource
             'total_monthly_tax' => (float)$this->total_monthly_tax,
             'total_monthly_gross' => (float)$this->total_monthly_gross,
             'tax_order_item' => (float)$this->tax_order_item,
-            'data' => json_decode($this->data, true),
         ];
     }
 }

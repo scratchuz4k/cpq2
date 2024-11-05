@@ -27,7 +27,7 @@ class OrderResource extends JsonResource
             'total_gross' => $this->total * 1.2,
             'account' => $this->account,
             'solution_type' => $this->solutionType,
-            'items' => OrderItemResource::collection($this->items),
+            'items' => OrderItemResource::collection($this->whenLoaded('items')),
             'updated_at' => $this->updated_at,
         ];
     }
