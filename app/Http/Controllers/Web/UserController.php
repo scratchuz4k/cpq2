@@ -7,6 +7,7 @@ use App\Models\User;
 use Inertia\Inertia;
 use App\Models\Tenant;
 use App\Services\UsersService;
+use Illuminate\Support\Facades\DB;
 use App\Http\Resources\UserResource;
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\UserCreateRequest;
@@ -50,7 +51,9 @@ class UserController extends BaseController
     public function store(UserCreateRequest $request)
     {
         try {
-            $user = $this->usersService->store($request->all());
+            $user = DB::transaction(function () use ($request) {
+                return $this->usersService->store($request->all());
+            });
         } catch (\Exception $e) {
             throw new \Exception($e);
         }
@@ -90,7 +93,9 @@ class UserController extends BaseController
     public function update(UserUpdateRequest $request, User $user)
     {
         try {
-            $user = $this->usersService->update($user, $request->all());
+            $user = DB::transaction(function () use ($request, $user) {
+                return $this->usersService->update($user, $request->all());
+            });
         } catch (\Exception $e) {
             throw new \Exception($e);
         }
@@ -112,7 +117,9 @@ class UserController extends BaseController
     public function importUsers(UserImportRequest $request)
     {
         try {
-            $results = $this->usersService->import($request->all());
+            $results = DB::transaction(function () use ($request) {
+                return $this->usersService->import($request->all());
+            });
         } catch (\Exception $e) {
             throw new \Exception($e);
         }

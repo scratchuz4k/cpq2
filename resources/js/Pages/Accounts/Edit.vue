@@ -76,8 +76,8 @@ const items = ref([
                     <input id="account-name" class="form-control" v-model="account.name">
                 </div>
                 <div class="col">
-                    <label for="account-name" class="form-label">Reference:</label>
-                    <input id="account-name" class="form-control" v-model="account.reference">
+                    <label for="account-reference" class="form-label">Reference:</label>
+                    <input id="account-reference" class="form-control" v-model="account.reference">
                 </div>
             </div>
             <h2>Contacts</h2>

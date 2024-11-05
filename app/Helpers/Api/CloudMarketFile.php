@@ -40,6 +40,16 @@ class CloudMarketFile
 
     public function getContent()
     {
+        if (!$this->exists()) {
+            return [
+                'data' => [],
+                'total' => null,
+                'wating_task' => null,
+                'created_at' => null,
+                'finished_at' => null,
+                'filters' => null,
+            ];
+        }
         return json_decode(file_get_contents($this->path . $this->filename), true);
     }
 }

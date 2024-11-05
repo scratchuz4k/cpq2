@@ -36,7 +36,7 @@ class InitTableSeeder extends Seeder
             'password' => Hash::make('werwerwer'),
         ]);
 
-        $tenant->users()->sync([$super_user->id]);
+        $super_user->tenants()->sync([$super_user->id]);
 
         SolutionType::updateOrCreate([
             "code" => 3

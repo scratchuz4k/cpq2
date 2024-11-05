@@ -35,9 +35,10 @@ Cypress.Commands.add("login", (email, password) => {
         cy.get("#password").type(password, { force: true })
         cy.get("#btn-login").click()
         cy.location('pathname')
-           .should('eq', '/dashboard')
+            .should('eq', '/dashboard')
     },
-    {
-        cacheAcrossSpecs: true,
-    }
-)})
+        {
+            cacheAcrossSpecs: true,
+        }
+    )
+})

@@ -18,6 +18,7 @@ const slots = useSlots()
 const usedSlots = Object.keys(slots)
 
 const props = defineProps({
+    tableProps: Object,
     route: String,
     columns: Array,
     filters: {
@@ -59,9 +60,9 @@ const getData = async () => {
     })
 
     let res = await axios.get('/api' + props.route + '?' + string)
-        data.value = res.data.data
-        meta.total = res.data.meta.total
-        meta.first = (meta.page - 1) * form.limit
+    data.value = res.data.data
+    meta.total = res.data.meta.total
+    meta.first = (meta.page - 1) * form.limit
 }
 
 const sortBy = (column) => {
@@ -127,12 +128,12 @@ watch(() => [
     form.order,
     form.orderBy,
     form.limit,
-], function() {
+], function () {
     meta.page = 1
     getData()
 })
 
-watch([global, form.filters], _.debounce(function() {
+watch([global, form.filters], _.debounce(function () {
     meta.page = 1
     getData()
 }, 500))
@@ -141,7 +142,7 @@ getData()
 
 </script>
 <template>
-    <DataTable :value="data" :rows="form.limit" stripedRows :reorderableColumns="false">
+    <DataTable :tableProps="props.tableProps" :value="data" :rows="form.limit" stripedRows :reorderableColumns="false">
         <template #header>
             <div class="d-flex justify-content-between">
                 <div>
@@ -165,7 +166,8 @@ getData()
         <Column v-for="(column, key) in columns.filter(x => !x.hide)" :field="column.data" :style="column.style">
             <template #header>
                 <div class="d-flex justify-content-between align-items-center w-100 pe-3 position-relative">
-                    <b class="column-title sortable d-inline-flex align-items-center" @click="sortBy(column.data)" :style="{textDecoration: column.data == form.orderBy ? 'underline': 'none'}">
+                    <b class="column-title sortable d-inline-flex align-items-center" @click="sortBy(column.data)"
+                        :style="{ textDecoration: column.data == form.orderBy ? 'underline' : 'none' }">
                         {{ column.title }}
                         <span class="text-center" style="width: 20px;">
                             <template v-if="column.data == form.orderBy">
@@ -210,8 +212,8 @@ getData()
                             </template>
                             <div v-else class="mb-3">
                                 <label class="form-label" :for="`filter-value-${key}`">Search</label>
-                                <input :id="`filter-value-${key}`" type="search" class="form-control me-2 form-control-sm"
-                                    v-model="form.filters[key].value" />
+                                <input :id="`filter-value-${key}`" type="search"
+                                    class="form-control me-2 form-control-sm" v-model="form.filters[key].value" />
                             </div>
                         </div>
                     </div>
@@ -226,19 +228,21 @@ getData()
             <template #body="{ data, index }">
                 <div class="d-flex justify-content-center">
                     <template v-if="allow.update">
-                        <Link :href="props.route + '/' + data.id + '/edit'" class="btn p-2 mx-1 border-0">
-                            <font-awesome-icon :icon="['fas', 'edit']" />
+                        <Link :id="'datatable-btn-' + index + '-edit'" :href="props.route + '/' + data.id + '/edit'"
+                            class="btn p-2 mx-1 border-0">
+                        <font-awesome-icon :icon="['fas', 'edit']" />
                         </Link>
                     </template>
 
                     <template v-if="allow.link">
-                        <Link :href="props.route + '/' + data.id" class="btn p-2 mx-1 border-0">
+                        <Link :id="'datatable-btn-' + index + '-show'" :href="props.route + '/' + data.id"
+                            class="btn p-2 mx-1 border-0">
                         <font-awesome-icon :icon="['fas', 'eye']" />
                         </Link>
                     </template>
 
                     <template v-if="allow.delete">
-                        <button class="btn p-2 mx-1 border-0" @click="deleteRecord(data.id)">
+                        <button :id="'datatable-btn-' + index + '-delete'" class="btn p-2 mx-1 border-0" @click="deleteRecord(data.id)">
                             <font-awesome-icon icon="fas fa-trash-alt" />
                         </button>
                     </template>
@@ -255,8 +259,8 @@ getData()
 </template>
 <style>
 .p-select-option.p-select-option-selected {
-    background-color: var(--color-violet)!important;
-    color: white!important;
+    background-color: var(--color-violet) !important;
+    color: white !important;
 }
 
 .p-datatable {
@@ -274,7 +278,8 @@ getData()
 
 .p-datatable tr td:not(.p-0),
 .p-datatable tr th {
-    padding: 0.5rem .5rem !important;;
+    padding: 0.5rem .5rem !important;
+    ;
 }
 
 .column-title {

@@ -35,7 +35,7 @@ const props = defineProps({
             <h2>Quotes</h2>
 
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                <Datatable :allow="{
+                <Datatable :tableProps="{id:'dashboard-table'}" :allow="{
                     update: true,
                     delete: true,
                     link: true,

@@ -214,6 +214,8 @@ const add = async (article) => {
                 quantity: 1,
                 name: article.productName,
                 data: article,
+                price: article.priceInstall ?? 0,
+                price_monthly: article.priceMonthly ?? 0
             })
         props.modelValue.items.push(res.data)
     } catch (ex) {
@@ -229,9 +231,6 @@ const remove = async (item, index) => {
         alert(ex.response.data.message)
     }
 }
-
-
-
 
 const handlePaginator = (ev) => {
     meta.limit = ev.rows
@@ -563,7 +562,7 @@ getArticles()
     </div>
 </template>
 
-<style>
+<style scoped>
 .p-multiselect-header {
     display: none !important
 }

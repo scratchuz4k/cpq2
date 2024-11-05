@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\BaseController;
-use App\Http\Controllers\Controller;
 use App\Models\Tenant;
-use App\Services\TenantService;
 use Illuminate\Http\Request;
+use App\Services\TenantService;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use App\Http\Controllers\Controller;
+use App\Http\Controllers\BaseController;
 
 class TenantController extends BaseController
 {
@@ -46,14 +47,16 @@ class TenantController extends BaseController
     public function update(Request $request, Tenant $tenant)
     {
         try {
-            $tenant = $this->tenantService->update($tenant, $request->all());
+            $tenant = DB::transaction(function () use ($tenant, $request) {
+                return $this->tenantService->update($tenant, $request->all());
+            });
         } catch (\Exception $e) {
             if (!env('APP_DEBUG')) {
                 Log::error($e->getMessage());
             }
             throw new \Exception($e);
         }
-        return $tenant->load('file') ;
+        return $tenant->load('file');
     }
 
     /**
