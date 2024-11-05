@@ -13,13 +13,13 @@ return new class extends Migration
     {
         Schema::table('prices', function (Blueprint $table) {
             $table->string('code')->after('id');
-            $table->double('tax_rate')->default(0)->change();
-            $table->double('net')->default(0)->change();
-            $table->double('tax')->default(0)->change();
-            $table->double('gross')->default(0)->change();
-            $table->double('net_monthly')->default(0)->after('gross');;
-            $table->double('tax_monthly')->default(0)->after('net_monthly');;
-            $table->double('gross_monthly')->default(0)->after('tax_monthly');;
+            $table->decimal('tax_rate', 12, 2)->default(0)->change();
+            $table->decimal('net', 12, 2)->default(0)->change();
+            $table->decimal('tax', 12, 2)->default(0)->change();
+            $table->decimal('gross', 12, 2)->default(0)->change();
+            $table->decimal('net_monthly', 12, 2)->default(0)->after('gross');;
+            $table->decimal('tax_monthly', 12, 2)->default(0)->after('net_monthly');;
+            $table->decimal('gross_monthly', 12, 2)->default(0)->after('tax_monthly');;
         });
     }
 

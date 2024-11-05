@@ -12,22 +12,22 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('order_items', function (Blueprint $table) {
-            $table->double('quantity')->default(0)->change();
-            $table->double('raw_price')->default(0);
-            $table->double('raw_price_monthly')->default(0);
-            $table->double('original_price')->default(0);
-            $table->double('original_price_monthly')->default(0);
-            $table->double('price')->default(0);
-            $table->double('price_monthly')->default(0);
-            $table->double('margin')->default(0);
-            $table->double('discount')->default(0);
-            $table->double('total')->default(0);
-            $table->double('total_tax')->default(0);
-            $table->double('total_gross')->default(0);
-            $table->double('total_monthly')->default(0);
-            $table->double('total_monthly_tax')->default(0);
-            $table->double('total_monthly_gross')->default(0);
-            $table->double('tax_order_item')->default(0);
+            $table->decimal('quantity', 12, 4)->default(0)->change();
+            $table->decimal('raw_price', 12, 4)->default(0);
+            $table->decimal('raw_price_monthly', 12, 4)->default(0);
+            $table->decimal('original_price', 12, 4)->default(0);
+            $table->decimal('original_price_monthly', 12, 4)->default(0);
+            $table->decimal('price', 12, 4)->default(0);
+            $table->decimal('price_monthly', 12, 4)->default(0);
+            $table->decimal('margin', 12, 4)->default(0);
+            $table->decimal('discount', 12, 4)->default(0);
+            $table->decimal('total', 12, 4)->default(0);
+            $table->decimal('total_tax', 12, 4)->default(0);
+            $table->decimal('total_gross', 12, 4)->default(0);
+            $table->decimal('total_monthly', 12, 4)->default(0);
+            $table->decimal('total_monthly_tax', 12, 4)->default(0);
+            $table->decimal('total_monthly_gross', 12, 4)->default(0);
+            $table->decimal('tax_order_item', 12, 4)->default(0);
         });
     }
 

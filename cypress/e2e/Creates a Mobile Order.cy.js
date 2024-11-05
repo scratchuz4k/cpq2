@@ -104,10 +104,10 @@ describe("Creates a Mobile Order", () => {
             }).clear().type(rand(line1.qty));
             cy.get("#input-" + key + "-0-discount").then(($input) => {
                 line1.discount = $input.val().trim();
-            }).clear().type(rand(line1.discount, 11));
+            }).clear().type(rand(0, 11));
             cy.get("#input-" + key + "-0-margin").then(($input) => {
                 line1.margin = $input.val().trim();
-            }).clear().type(rand(line1.margin, 21));
+            }).clear().type(rand(0, 21));
 
 
             cy.get("#btn-" + key + "-0-save").click()
