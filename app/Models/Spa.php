@@ -18,8 +18,8 @@ class Spa extends Model
         "field_1",
         "field_2",
         "operation",
-        "discount_value",
-        "discount_percentage",
+        "value",
+        "percentage",
     ];
 
 

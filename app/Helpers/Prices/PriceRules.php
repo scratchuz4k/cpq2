@@ -3,16 +3,18 @@
 namespace App\Helpers\Prices;
 
 use App\Models\Spa;
-use App\Models\Price;
 use App\Models\Account;
 use App\Models\Product;
 use App\Models\Supplier;
 use Illuminate\Pipeline\Pipeline;
 use Illuminate\Support\Facades\Auth;
 use App\Helpers\Prices\Rules\RuleUser;
+use App\Helpers\Prices\PriceRulesObject;
 use App\Helpers\Prices\Rules\RuleAccount;
 use App\Helpers\Prices\Rules\RuleProduct;
 use App\Helpers\Prices\Rules\RuleSupplier;
+use App\Helpers\Prices\Rules\RuleUserAccount;
+use App\Helpers\Prices\Rules\RuleUserSupplier;
 use App\Helpers\Prices\Operations\OperationAdd;
 use App\Helpers\Prices\Rules\RuleAccountProduct;
 use App\Helpers\Prices\Rules\RuleAccountSupplier;
@@ -27,6 +29,8 @@ class PriceRules
         RuleAccountProduct::class,
         RuleAccountSupplier::class,
         RuleSupplierProduct::class,
+        RuleUserAccount::class,
+        RuleUserSupplier::class,
         RuleAccount::class,
         RuleSupplier::class,
         RuleProduct::class,
@@ -34,10 +38,10 @@ class PriceRules
     ];
 
     private $operations = [
-        1 => OperationAdd::class,
-        2 => OperationSubtract::class,
-        3 => OperationMultiply::class,
-        4 => OperationDivide::class,
+        OperationAdd::class,
+        OperationSubtract::class,
+        OperationMultiply::class,
+        OperationDivide::class,
     ];
 
     public function __construct() {}
@@ -45,8 +49,12 @@ class PriceRules
     public function calculate(float $price, Product $product = null, Account $account = null, Supplier $supplier = null): float
     {
         $object = new PriceRulesObject($product, Auth::user(), $supplier, $account);
-        $spa = app(Pipeline::class)->send($object)->through($this->orderRules)->thenReturn();
-        $price = app($this->operations[$spa->operation])->apply($price, $spa);
+        $object = app(Pipeline::class)->send($object)->through($this->orderRules)->thenReturn();
+        if (is_null($object->spa) || !in_array($object->spa->operation, $this->operations)) {
+            return $price;
+        }
+
+        $price = app($object->spa->operation)->apply($price, $object->spa);
         return $price;
     }
 }

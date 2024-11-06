@@ -7,8 +7,8 @@ use App\Models\Spa;
 class OperationAdd  implements _OperationInterface
 {
 
-    public function apply(float $value, Spa $spa): float
+    public function apply(float $value, ?Spa $spa): float
     {
-        return $value;
+        return $value + $spa->value;
     }
 }

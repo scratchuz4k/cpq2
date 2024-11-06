@@ -12,19 +12,18 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('spas', function (Blueprint $table) {
-            $table->dropForeign(['tenant_id']);
             $table->dropForeign(['supplier_id']);
             $table->dropForeign(['merchant_id']);
             $table->dropForeign(['account_id']);
-            $table->dropColumn(['name', 'data', 'tenant_id', 'supplier_id', 'merchant_id', 'account_id']);
+            $table->dropColumn(['name', 'data',  'supplier_id', 'merchant_id', 'account_id']);
 
             // First polymorphic relationship
             $table->unsignedBigInteger('rule_type')->after('id');
             $table->unsignedBigInteger('field_1')->after('rule_type');
-            $table->unsignedBigInteger('field_2')->after('field_1');
+            $table->unsignedBigInteger('field_2')->nullable()->after('field_1');
             $table->unsignedBigInteger('operation')->after('field_2');
-            $table->decimal('discount_value', 12, 4)->after('operation');
-            $table->decimal('discount_percentage', 12, 4)->after('discount_value');
+            $table->decimal('value', 12, 4)->after('operation')->default(0);
+            $table->decimal('percentage', 12, 4)->after('value')->default(0);
         });
     }
 
@@ -34,7 +33,6 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('spas', function (Blueprint $table) {
-            $table->foreignId('tenant_id')->constrained()->cascadeOnDelete();
             $table->foreignId('supplier_id')->constrained()->cascadeOnDelete();
             $table->foreignId('merchant_id')->nullable()->constrained()->nullOnDelete();
             $table->foreignId('account_id')->nullable()->constrained()->cascadeOnDelete();
