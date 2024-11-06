@@ -2,6 +2,7 @@
 import _ from 'lodash'
 import {reactive, ref} from 'vue';
 import InputQuantity from "@/Components/InputQuantity.vue";
+import {router} from "@inertiajs/vue3";
 const props = defineProps({
     modelValue: Object,
     preview: Boolean
@@ -10,15 +11,23 @@ const props = defineProps({
 const order = reactive(props.modelValue)
 
 const remove = async (index) => {
-    try {
-        order.items.splice(index, 1)
-        let res = await axios.put(`/api/orders/${order.id}`, {
-            items: order.items
-        })
-        Object.assign(order, res.data)
-    } catch (ex) {
-        alert(ex.response.data.message)
-    }
+    swal.fire({
+        title: 'Are you sure?'
+    }).then(async (result) => {
+        if (['cancel', 'backdrop'].includes(result.dismiss)) {
+            return
+        }
+
+        try {
+            order.items.splice(index, 1)
+            let res = await axios.put(`/api/orders/${order.id}`, {
+                items: order.items
+            })
+            Object.assign(order, res.data)
+        } catch (ex) {
+            alert(ex.response.data.message)
+        }
+    })
 }
 
 const saveQuote = _.debounce(async () => {
