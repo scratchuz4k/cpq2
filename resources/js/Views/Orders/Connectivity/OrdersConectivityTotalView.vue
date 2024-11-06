@@ -11,7 +11,7 @@ const order = reactive(props.modelValue)
 
 const remove = async (index) => {
     try {
-        order.items = order.items.splice(index, 1)
+        order.items.splice(index, 1)
         let res = await axios.put(`/api/orders/${order.id}`, {
             items: order.items
         })
