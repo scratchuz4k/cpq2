@@ -62,6 +62,6 @@ const proxyValue = computed({
     gap: 0px;
     border-radius: 0px 6px 6px 0px;
     background: #FFFFFF;
-    border-width: 1px 1px 1px 0px;
+    border-width: 1px;
 }
 </style>

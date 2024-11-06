@@ -18,7 +18,7 @@ const props = defineProps({
                         Solution Type: {{ order?.solution_type.name }}
                         <Link :href="route('orders.configure', { order: order.id })" class="text-primary">Edit</Link>
                     </span>
-                    |
+                    <span class="mx-3">|</span>
                     <span>
                         Address: {{ order?.address_line1 }} <Link :href="route('orders.configure', { order: order.id })" class="text-primary">Edit</Link>
                     </span>

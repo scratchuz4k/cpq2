@@ -267,7 +267,7 @@ const remove = async (item, index) => {
 
 
 const removeFilter = (selectedFilter, value) => {
-    let index = selectedFilter.value.find((x) => x === value)
+    let index = selectedFilter.value.findIndex((x) => x === value)
 
     selectedFilter.value.splice(index, 1)
 }
@@ -279,6 +279,7 @@ const handlePaginator = (ev) => {
 }
 
 watch([filters, showQuoted, showLowestCost], _.debounce(function () {
+    meta.page = 1
     getArticles()
 }, 500))
 
@@ -309,16 +310,24 @@ getArticles()
                         <div class="filters d-flex">
                             <p class="fs-5 bold mb-2">
                                 Filters
+                                <span class="fw-normal">({{ meta.overallTotal }})</span>
                             </p>
                             <ul class="d-flex list-unstyled ms-2">
-                                <li v-for="(selectedFilter, column) in selectedFilters">
-                                    <div>
-                                        <Badge v-for="value in selectedFilter.value" :value="['speed', 'bearer'].includes(column) ? format.speed(value) : value" class="px-3 py-1" data-toggle="tooltip" data-placement="top" :title="selectedFilter.name">
+                                <li>
+                                    <template v-for="(selectedFilter, column) in selectedFilters">
+                                        <Badge
+                                            v-for="value in selectedFilter.value"
+                                            :value="['speed', 'bearer'].includes(column) ? format.speed(value) : (['contractTermMonths'].includes(column) ? value + ' Months' : value)"
+                                            class="px-3 py-1"
+                                            data-toggle="tooltip"
+                                            data-placement="top"
+                                            :title="selectedFilter.name"
+                                        >
                                             <template #close-button>
                                                 <font-awesome-icon :icon="['fas', 'x']" class="ms-1 fs-7" @click="removeFilter(selectedFilter, value)"/>
                                             </template>
                                         </Badge>
-                                    </div>
+                                    </template>
                                 </li>
                             </ul>
                         </div>
@@ -580,7 +589,7 @@ getArticles()
                                     {{ article.productName }}
                                     <span v-if="article.additionalInfo['Primary Router Model']" v-tooltip
                                         data-bs-toggle="tooltip" data-bs-placement="top" title="Primary Router Model"
-                                        class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm">
+                                        class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm router-model">
                                         <font-awesome-icon :icon="['fas', 'plug']"></font-awesome-icon>
                                         {{ article.additionalInfo['Primary Router Model'] }}
                                     </span>
@@ -632,7 +641,6 @@ getArticles()
                         </tbody>
                     </table>
                     <Paginator
-                        v-if="meta.isUpdating"
                         v-model:first="meta.first"
                         :rows="meta.limit"
                         :pageLinkSize="5"
@@ -722,5 +730,9 @@ tr.active td {
     width: 0%;
     background-color: var(--purple);
     animation: progressBar 100s linear forwards;
+}
+
+.router-model {
+    font-size: .5rem;
 }
 </style>

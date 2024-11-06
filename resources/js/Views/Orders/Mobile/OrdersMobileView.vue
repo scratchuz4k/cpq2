@@ -241,7 +241,6 @@ const items = ref([
 </script>
 <template>
     <div class="panel panel-mobile">
-        <Header title="Create a Quote" :breadcrumbs="items"></Header>
         <div class="row justify-content-between">
             <div class="col-lg-7">
                 <div v-if="step == 1" id="mobile_step1" class="step">

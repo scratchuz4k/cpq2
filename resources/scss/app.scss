@@ -605,6 +605,12 @@ body {
 
     }
 
+    .cpq-total table {
+        th, td {
+            border: none;
+        }
+    }
+
     #table-quotes {
         .container-form-check-input {
             position: absolute;
