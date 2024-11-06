@@ -310,7 +310,7 @@ getArticles()
                         <div class="filters d-flex">
                             <p class="fs-5 bold mb-2">
                                 Filters
-                                <span class="fw-normal">({{ meta.overallTotal }})</span>
+                                <span class="fw-normal">({{ meta.total }})</span>
                             </p>
                             <ul class="d-flex list-unstyled ms-2">
                                 <li>

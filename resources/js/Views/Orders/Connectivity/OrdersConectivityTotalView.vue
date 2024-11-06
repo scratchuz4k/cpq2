@@ -9,19 +9,16 @@ const props = defineProps({
 
 const order = reactive(props.modelValue)
 
-const remove = async (id) => {
+const remove = async (index) => {
     try {
-        await axios.delete(`/api/order-items/${id}`)
-        let res = await axios.get(`/api/orders/${order.id}`)
+        order.items = order.items.splice(index, 1)
+        let res = await axios.put(`/api/orders/${order.id}`, {
+            items: order.items
+        })
         Object.assign(order, res.data)
     } catch (ex) {
         alert(ex.response.data.message)
     }
-}
-
-const changeQuantity = (quantity, product) => {
-    product.quantity = quantity
-    saveQuote()
 }
 
 const saveQuote = _.debounce(async () => {
@@ -35,6 +32,11 @@ const saveQuote = _.debounce(async () => {
         alert(ex.response.data.message)
     }
 }, 500)
+
+const changeQuantity = async (item, ev) => {
+    item.quantity = ev
+    saveQuote()
+}
 
 const items = ref([
     { label: 'Home', url: '/dashboard' },
@@ -56,7 +58,7 @@ const items = ref([
                 <font-awesome-icon :icon="['far', 'file-pdf']"></font-awesome-icon>
                 Preview PDF
             </a>
-            <a class="btn btn-primary" type="submit" >
+            <a :href="route('dashboard')" class="btn btn-primary" type="submit" >
                 Save and close
             </a>
         </div>
@@ -99,7 +101,9 @@ const items = ref([
                         <td>
                             <template v-if="!preview">
                                 <div class="cpq-qty d-flex input-group">
-                                    <InputQuantity :id="'line-' + index" v-model="item.quantity" />
+                                    <InputQuantity :id="'line-' + index" v-model="item.quantity"
+                                       @change="(ev) => changeQuantity(item, ev)"
+                                    />
                                 </div>
                             </template>
                             <template v-else>
@@ -114,7 +118,7 @@ const items = ref([
                         </td>
                         <td style="width:40px">
                             <template v-if="!preview">
-                                <button class="btn delete-btn w-100 px-0 text-start" @click="remove(item.id)">
+                                <button class="btn delete-btn w-100 px-0 text-start" @click="remove(index)">
                                     <font-awesome-icon :icon="['fas', 'trash']"></font-awesome-icon>
                                 </button>
                             </template>
