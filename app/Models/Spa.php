@@ -14,13 +14,12 @@ class Spa extends Model
     use HasFactory, SetTenantId;
 
     protected $fillable = [
-        "tenant_id",
-        "supplier_id",
-        "merchant_id",
-        "account_id",
-        "user_id",
-        "name",
-        "data",
+        "rule_type",
+        "field_1",
+        "field_2",
+        "operation",
+        "discount_value",
+        "discount_percentage",
     ];
 
 
