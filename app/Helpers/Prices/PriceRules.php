@@ -29,12 +29,12 @@ class PriceRules
         RuleAccountProduct::class,
         RuleAccountSupplier::class,
         RuleSupplierProduct::class,
-        RuleUserAccount::class,
-        RuleUserSupplier::class,
         RuleAccount::class,
         RuleSupplier::class,
         RuleProduct::class,
-        RuleUser::class,
+        // RuleUserAccount::class,
+        // RuleUserSupplier::class,
+        // RuleUser::class,
     ];
 
     private $operations = [
