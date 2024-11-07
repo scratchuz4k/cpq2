@@ -14,12 +14,13 @@ class CloudMarketRepository
         $priceRules = new PriceRules();
         foreach ($file['data'] as $key => $product) {
             $supplier = Supplier::where('reference', $product['providerKey'])->first();
+            $priceRules->find(supplier: $supplier);
             foreach (['priceMonthly', 'priceAnnual', 'priceInstall'] as $key) {
                 if (!array_key_exists($key, $product)) {
                     continue;
                 }
 
-                $product[$key] =  $priceRules->calculate($product[$key], supplier: $supplier);
+                $product[$key] =  $priceRules->apply($product[$key]);
             }
 
             $product['used_spas']  = $priceRules->getAppliedSpas();
