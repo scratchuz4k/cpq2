@@ -2,18 +2,28 @@
 
 namespace App\Repositories;
 
+use App\Models\Supplier;
 use App\Helpers\FilterProvider;
-use Illuminate\Support\Str;
-use App\Helpers\Prices\PriceRulesConnectivity;
+use App\Helpers\Prices\PriceRules;
 
 class CloudMarketRepository
 {
 
     public function sendResponse($file, $filters)
     {
-        $priceRules = new PriceRulesConnectivity();
-        foreach ($file['data'] as $key => $value) {
-            $file['data'][$key] = $priceRules->calculate($value);
+        $priceRules = new PriceRules();
+        foreach ($file['data'] as $key => $product) {
+            $supplier = Supplier::where('reference', $product['providerKey'])->first();
+            foreach (['priceMonthly', 'priceAnnual', 'priceInstall'] as $key) {
+                if (!array_key_exists($key, $product)) {
+                    continue;
+                }
+
+                $product[$key] =  $priceRules->calculate($product[$key], supplier: $supplier);
+            }
+
+            $product['used_spas']  = $priceRules->getAppliedSpas();
+            $file['data'][$key] = $product;
         }
 
         $items = FilterProvider::get($file['data'], $filters);
