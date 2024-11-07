@@ -15,10 +15,10 @@ class Spa extends Model
     use HasFactory, SetTenantId;
 
     protected $fillable = [
-        "rule_type",
+        "rule_id",
         "field_1",
         "field_2",
-        "operation",
+        "operation_id",
         "value",
         "percentage",
     ];
@@ -28,13 +28,13 @@ class Spa extends Model
         static::addGlobalScope(new TenantScope);
     }
 
-    public function rule(): HasOne
+    public function rule(): BelongsTo
     {
-        return $this->hasOne(SpaRule::class);
+        return $this->belongsTo(SpaRule::class);
     }
-    public function operation(): HasOne
+    public function operation(): BelongsTo
     {
-        return $this->hasOne(SpaOperation::class);
+        return $this->belongsTo(SpaOperation::class);
     }
     public function supplier(): BelongsTo
     {

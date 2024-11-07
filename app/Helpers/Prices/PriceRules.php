@@ -2,41 +2,37 @@
 
 namespace App\Helpers\Prices;
 
-use App\Helpers\Prices\Enums\SpaRulesEnum;
 use App\Models\Spa;
 use App\Models\Account;
 use App\Models\Product;
 use App\Models\Supplier;
 use Illuminate\Pipeline\Pipeline;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use App\Helpers\Prices\PriceRulesObject;
-use App\Helpers\Prices\Operations\OperationAdd;
-use App\Helpers\Prices\Operations\OperationDivide;
-use App\Helpers\Prices\Operations\OperationMultiply;
-use App\Helpers\Prices\Operations\OperationSubtract;
+use App\Helpers\Prices\Enums\SpaRulesEnum;
 
 class PriceRules
 {
-    private $operations = [
-        OperationAdd::class,
-        OperationSubtract::class,
-        OperationMultiply::class,
-        OperationDivide::class,
-    ];
 
-    public function __construct() {}
+    protected PriceRulesObject $object;
 
-    public function calculate(float $price, Product $product = null, Account $account = null, Supplier $supplier = null): float
+    public function calculate(float $price, int $product_id = null, int $supplier_id = null, int $account_id = null): float
     {
-        $object = new PriceRulesObject($product, Auth::user(), $supplier, $account);
+        $this->object = new PriceRulesObject($product_id, Auth::id(), $supplier_id, $account_id);
         $cases = array_map(fn($case) => $case->value, SpaRulesEnum::cases());
 
-        $object = app(Pipeline::class)->send($object)->through($cases)->thenReturn();
-        if (is_null($object->spa) || !in_array($object->spa->operation, $this->operations)) {
-            return $price;
+        $this->object = app(Pipeline::class)->send($this->object)->through($cases)->thenReturn();
+
+        foreach ($this->object->spas as $spa) {
+            $price = app($spa->operation->class)->apply($price, $spa);
         }
 
-        $price = app($object->spa->operation)->apply($price, $object->spa);
         return $price;
+    }
+
+    public function getAppliedSpas(): Collection
+    {
+        return $this->object->spas;
     }
 }

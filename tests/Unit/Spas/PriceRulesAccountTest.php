@@ -6,70 +6,73 @@ use App\Models\Tenant;
 use App\Models\Account;
 use App\Helpers\Prices\PriceRules;
 use Illuminate\Support\Facades\Auth;
-use App\Helpers\Prices\Rules\RuleUser;
 use App\Helpers\Prices\Enums\SpaRulesEnum;
 use App\Helpers\Prices\Enums\SpaOperationsEnum;
-use App\Helpers\Prices\Operations\OperationAdd;
-
-// test('Account without Spa', function () {
-//     $user = User::factory()->create();
-//     // Set the user as the authenticated user
-//     Auth::login($user);
-
-//     // Alternatively, you can use actingAs
-//     $this->actingAs($user);
-
-//     $prices = new PriceRules();
-//     $value = $prices->calculate(1);
-
-//     expect($value)->toBe(1.0);
-// });
+use App\Models\SpaOperation;
+use App\Models\SpaRule;
 
 
-test('Account with OperationAdd Spa', function () {
-    $user = User::factory()->create();
-    $tenant = Tenant::factory()->create();
-    $acc = Account::factory()->create();
+beforeEach(function () {
+    // Run all seeders
+    $this->artisan('db:seed');
+    $this->user = User::factory()->create();
+    $this->tenant = Tenant::factory()->create();
+    $this->acc = Account::factory()->create();
     // Set the user as the authenticated user
-    Auth::login($user);
-
+    Auth::login($this->user);
     // Alternatively, you can use actingAs
-    $this->actingAs($user);
+    $this->actingAs($this->user);
+});
 
-    $spa = new Spa();
-    $spa->tenant_id = $tenant->id;
-    $spa->rule_type = SpaRulesEnum::Account->name;
-    $spa->field_1 = $acc->id;
-    $spa->operation =  SpaOperationsEnum::Add->name;
-    $spa->value = 10;
-    $spa->save();
-
-
+test('Account without Spa', function () {
     $prices = new PriceRules();
     $value = $prices->calculate(1);
-    expect($value)->toBe(11.0);
+
+    expect($value)->toBe(1.0);
 });
 
 
-// test('User with OperationSubtract Spa', function () {
-//     $user = User::factory()->create();
-//     $tenant = Tenant::factory()->create();
-//     // Set the user as the authenticated user
-//     Auth::login($user);
+test('Account with OperationMargin Spa', function () {
+    $spa = new Spa();
+    $spa->tenant_id = $this->tenant->id;
+    $spa->rule_id = SpaRule::where('code', SpaRulesEnum::Account->name)->value('id');
+    $spa->field_1 = $this->acc->id;
+    $spa->operation_id = SpaOperation::where('code',  SpaOperationsEnum::Margin->name)->value('id');
+    $spa->value = 10;
+    $spa->save();
 
-//     // Alternatively, you can use actingAs
-//     $this->actingAs($user);
+    $prices = new PriceRules();
+    $value = $prices->calculate(10, account_id: $this->acc->id);
+    expect($value)->toBe(20.0);
+    expect(count($prices->getAppliedSpas()))->toBe(1);
 
-//     $spa = new Spa();
-//     $spa->tenant_id = $tenant->id;
-//     $spa->rule_type = RuleUser::class;
-//     $spa->field_1 = $user->id;
-//     $spa->operation = OperationAdd::class;
-//     $spa->value = 10;
-//     $spa->save();
+    $spa->value = 0;
+    $spa->percentage = 10;
+    $spa->save();
+    $value = $prices->calculate(10, account_id: $this->acc->id);
+    expect($value)->toBe(11.0);
+    expect(count($prices->getAppliedSpas()))->toBe(1);
+});
 
 
-//     $prices = new PriceRules();
-//     $value = $prices->calculate(1);
-//     expect($value)->toBe(11.0);
-// });
+test('Account with OperationDiscount Spa', function () {
+    $spa = new Spa();
+    $spa->tenant_id = $this->tenant->id;
+    $spa->rule_id = SpaRule::where('code', SpaRulesEnum::Account->name)->value('id');
+    $spa->field_1 = $this->acc->id;
+    $spa->operation_id = SpaOperation::where('code',  SpaOperationsEnum::Discount->name)->value('id');
+    $spa->value = 10;
+    $spa->save();
+
+    $prices = new PriceRules();
+    $value = $prices->calculate(10, account_id: $this->acc->id);
+    expect($value)->toBe(0.0);
+    expect(count($prices->getAppliedSpas()))->toBe(1);
+
+    $spa->value = 0;
+    $spa->percentage = 10;
+    $spa->save();
+    $value = $prices->calculate(10, account_id: $this->acc->id);
+    expect($value)->toBe(9.0);
+    expect(count($prices->getAppliedSpas()))->toBe(1);
+});
