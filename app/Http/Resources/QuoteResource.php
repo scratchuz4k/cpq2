@@ -16,6 +16,10 @@ class QuoteResource extends JsonResource
     {
         return [
             ...$this->resource->toArray(),
+            'margin' => (float)$this->margin,
+            'discount' => (float)$this->discount,
+            'commission_rate' => (float)$this->commission_rate,
+            'contract_length' => (float)$this->contract_length,
             'user' => $this->user,
             'total_monthly_vat' => $this->total_monthly * 0.2,
             'total_monthly_gross' => $this->total_monthly * 1.2,
@@ -23,7 +27,7 @@ class QuoteResource extends JsonResource
             'total_gross' => $this->total * 1.2,
             'account' => $this->account,
             'solution_type' => $this->solutionType,
-            'items' => $this->items,
+            'items' => OrderItemResource::collection($this->whenLoaded('items')),
             'updated_at' => $this->updated_at,
         ];
     }

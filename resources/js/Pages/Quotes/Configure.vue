@@ -1,7 +1,7 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, router } from '@inertiajs/vue3';
-import { reactive } from 'vue'
+import {reactive, ref} from 'vue'
 
 
 const props = defineProps({
@@ -12,8 +12,8 @@ const props = defineProps({
 
 const form = reactive({
     isLoading: false,
-    account: props.quote.account ?? null,
-    solution_type:  props.quote.solution_type ?? null,
+    account: props.order.account ?? null,
+    solution_type:  props.order.solution_type ?? null,
     address: null,
     postCode: null,
     position: null,
@@ -36,26 +36,20 @@ const submit = () => {
     }
 }
 
+const items = ref([
+    { label: 'Home', url: '/dashboard' },
+    { label: 'Edit a quote' },
+]);
+
 </script>
 
 <template>
-
-    <Head title="Configure a Quote" />
     <AuthenticatedLayout :quote="quote">
         <form @submit.prevent="submit">
             <div class="row mb-3">
-                <div class="col d-flex">
-                    <div class="me-3">
-                        <font-awesome-icon class="fa-border" :icon="['fas', 'wrench']"
-                            style="font-size:30px;color:var(--secondary-light);border-color:var(--secondary-light);border-width:4px;border-radius:12px" />
-                    </div>
-                    <div style="padding-top:1px">
-                        <p class="m-0">Q-{{ quote.id }} // <span id="account_name">
-                                {{ quote.account?.name }}
-                            </span>
-                        </p>
-                        <h1 class="m-0" style="font-size:18px;font-weight:bold">Configure</h1>
-                    </div>
+                <div class="col">
+                    <Header title="Create a quote" :breadcrumbs="items"></Header>
+                    <h5 class="font-bold my-3">Select an account to start a quote</h5>
                 </div>
                 <div class="col " style="text-align: right">
                     <button class="btn btn-primary" :disabled="form.solutionCheck" type="submit" @click="submit()">

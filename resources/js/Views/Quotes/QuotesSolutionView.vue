@@ -114,7 +114,7 @@ watch(addressPostCode, () => {
                                         class="fa-spin ms-2"></font-awesome-icon>
                                 </label>
                                 <div class="d-flex">
-                                    <input class="form-control d-flex" id="input_address" placeholder="B11 1SH" name="postcode"
+                                    <input class="form-control d-flex" id="input_address" placeholder="Enter postcode" name="postcode"
                                     v-model="addressPostCode">
                                     <span class="form-control-icon"><font-awesome-icon class="text-muted" :icon="['fas', 'search']"></font-awesome-icon></span>
                                 </div>

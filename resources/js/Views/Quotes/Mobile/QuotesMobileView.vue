@@ -240,7 +240,6 @@ const items = ref([
 </script>
 <template>
     <div class="panel panel-mobile">
-        <Header title="Create a Quote" :breadcrumbs="items"></Header>
         <div class="row justify-content-between">
             <div class="col-lg-7">
                 <div v-if="step == 1" id="mobile_step1" class="step">
@@ -366,12 +365,12 @@ const items = ref([
                         <div class="d-flex justify-content-between mb-2">
                             <div class="d-flex">
                                 <h4>Filters</h4>
-                                <ul style="list-style: none; display: flex; flex-wrap: wrap;">
+                                <ul class="mb-0" style="list-style: none; display: flex; flex-wrap: wrap;">
                                     <template v-for="filter in filters">
                                         <li class="bullet me-2 mb-2" v-for="(item, index) in filter.value">
-                                            <p>{{ item }}
+                                            <p class="small">{{ item }}
                                                 <span @click="() => filter.value.splice(index, 1)"
-                                                    style="cursor: pointer;">x </span>
+                                                    style="cursor: pointer;"> <font-awesome-icon :icon="['fas', 'xmark']" /></span>
                                             </p>
                                         </li>
                                     </template>
@@ -405,7 +404,7 @@ const items = ref([
                         </div>
                     </div>
 
-                    <div v-if="!productsHardware.length"> No Hardware Found</div>
+                    <div class="text-center pt-2 pb-4" v-if="!productsHardware.length"> No Results Found</div>
                     <div v-for="(product, index) in productsHardware" class="panel p-4 mb-3">
                         <div class="row">
                             <div class="col-2">
@@ -544,6 +543,8 @@ const items = ref([
     text-decoration: none;
     background: #F5E5F3;
     color: #A34996;
+    padding-left:15px;
+    padding-right:15px;
 }
 
 .bullet {

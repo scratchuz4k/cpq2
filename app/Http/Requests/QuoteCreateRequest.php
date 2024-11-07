@@ -19,7 +19,7 @@ class QuoteCreateRequest extends FormRequest
     public function prepareForValidation()
     {
         $this->merge(['user_id' => Auth::id()]);
-        $this->merge(['tax_comission' => Auth::user()->commission_rate]);
+        $this->merge(['commission_rate' => Auth::user()->commission_rate]);
     }
 
     /**

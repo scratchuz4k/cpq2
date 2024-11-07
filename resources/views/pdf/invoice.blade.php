@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Quote #{{$quote->id}}</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
-          integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <style>
         :root {
             --pdf-header-logo-width: 30px;
@@ -113,14 +113,14 @@
                 <p>Insert Tagline</p>
             </div>
             <div class="col text-end" id="header_right">
-                <p>{{ $order->account->name }}<br>{{ $order->address_data?->label}}</p>
+                <p>{{ $quote->account->name }}<br>{{ $quote->address_data?->label }}</p>
                 <p>Tel: +44 (0) 191 300 700</p>
                 <p>Email: sales@example.com</p>
             </div>
         </div>
         <div class="cpq-summary row px-3" id="main">
             <div class="col">
-                <h1 class="mb-3">Quote Q-{{ $order['id'] }}</h1>
+                <h1 class="mb-3">Quote Q-{{ $quote['id'] }}</h1>
                 <div class="row mb-3">
                     <div class="col">
                         <p>Company address, city, state, post code<br>
@@ -128,7 +128,7 @@
                             +44 (0) 123 456 7890</p>
                     </div>
                     <div class="col">
-                        <p>Quote #{{ $order['id'] }}<br>
+                        <p>Quote #{{ $quote['id'] }}<br>
                             Quotation Date: {{ date('d/m/Y') }}<br>
                             Valid Date: {{ date('d/m/Y', strtotime('+7 days')) }}</p>
                     </div>
@@ -164,30 +164,33 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($order->items as $key => $item)
-                        <tr class="item-row">
+                        @foreach ($quote->items as $key => $item)
+                            <tr class="item-row">
 
-                            <td>
-                                {{$key+1}}
-                            </td>
-                            <td class="text-center"><img class="img-provider" style="max-width: 60px; max-height: 20px; width: auto; height: auto;" src="{{ $item->image ?? env('APP_URL').'/images/providers/' . $item->data?->providerKey. '.png' }}"></td>
-                            <td>
-                                {{ $item->name }}
-                                {{ !empty($$item->data?->additionalInfo->{"Primary Router Model"}) ? '<br/><span data-bs-toggle="tooltip" data-bs-title="Primary Router Model" data-bs-custom-class="tooltip-small" class="badge border border-secondary text-secondary opacity-75"><i class="d-print-none fa-solid fa-plug me-1"></i>' . $item->data?->additionalInfo->{"Primary Router Model"} . '</span>' : '' }}
-                            </td>
-                            <td>{{ $item->data?->quoteId }}</td>
-                            <td>Pay Monthly</td>
-                            <td>{{ $item->quantity }}</td>
-                            <td class="text-end">
-                                {{$item->data?->priceMonthly}}
-                            </td>
-                            <td class="text-end">
-                                {{$item->data?->priceInstall}}
-                            </td>
-                            <td class="text-end">
-                                {{$item->quantity * ($item->data?->priceMonthly?? 0) +  ($item->data?->priceInstall?? 0)}}
-                            </td>
-                        </tr>
+                                <td>
+                                    {{ $key + 1 }}
+                                </td>
+                                <td class="text-center"><img class="img-provider"
+                                        style="max-width: 60px; max-height: 20px; width: auto; height: auto;"
+                                        src="{{ $item->image ?? '/images/providers/' . $item->data?->providerKey . '.png' }}">
+                                </td>
+                                <td>
+                                    {{ $item->name }}
+                                    {{ !empty($$item->data?->additionalInfo->{"Primary Router Model"}) ? '<br/><span data-bs-toggle="tooltip" data-bs-title="Primary Router Model" data-bs-custom-class="tooltip-small" class="badge border border-secondary text-secondary opacity-75"><i class="d-print-none fa-solid fa-plug me-1"></i>' . $item->data?->additionalInfo->{"Primary Router Model"} . '</span>' : '' }}
+                                </td>
+                                <td>{{ $item->data?->quoteId }}</td>
+                                <td>Pay Monthly</td>
+                                <td>{{ $item->quantity }}</td>
+                                <td class="text-end">
+                                    {{ $item->data?->priceMonthly }}
+                                </td>
+                                <td class="text-end">
+                                    {{ $item->data?->priceInstall }}
+                                </td>
+                                <td class="text-end">
+                                    {{ $item->quantity * ($item->data?->priceMonthly ?? 0) + ($item->data?->priceInstall ?? 0) }}
+                                </td>
+                            </tr>
                         @endforeach
 
 
@@ -206,15 +209,16 @@
                             </tr>
                             <tr>
                                 <th>Total Monthly</th>
-                                <td class="text-end" id="total_monthly_net">£{{ $totals['monthly_net'] }}</td>
-                                <td class="text-end" id="total_monthly_vat">£{{ $totals['monthly_vat'] }}</td>
-                                <td class="text-end" id="total_monthly_gross">£{{ $totals['monthly_gross'] }}</td>
+                                <td class="text-end" id="total_monthly_net">£{{ $quote->total_monthly }}</td>
+                                <td class="text-end" id="total_monthly_vat">£{{ $quote->total_monthly_vat }}</td>
+                                <td class="text-end" id="total_monthly_gross">£{{ $quote->total_monthly_gross }}
+                                </td>
                             </tr>
                             <tr>
                                 <th>Total One-off Costs</th>
-                                <td class="text-end" id="total_oneoff_net">£{{ $totals['oneoff_net'] }}</td>
-                                <td class="text-end" id="total_oneoff_vat">£{{ $totals['oneoff_vat'] }}</td>
-                                <td class="text-end" id="total_oneoff_gross">£{{ $totals['oneoff_gross'] }}</td>
+                                <td class="text-end" id="total">£{{ $quote->total }}</td>
+                                <td class="text-end" id="total_vat">£{{ $quote->total_vat }}</td>
+                                <td class="text-end" id="total_gross">£{{ $quote->total_gross }}</td>
                             </tr>
                         </table>
                     </div>

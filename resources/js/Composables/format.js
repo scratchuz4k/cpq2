@@ -1,6 +1,6 @@
 
-const helpers = {
-    formatDate: (date) => {
+const format = {
+    date: (date) => {
         if (!date) {
             return '';
         }
@@ -28,6 +28,30 @@ const helpers = {
         // Otherwise, return formatted date as 'Y-m-d H:i'
         const dt = new Date(parsedDate);
         return dt.toISOString().slice(0, 16).replace('T', ' '); // Y-m-d H:i format
+    },
+
+    speed: (value) => {
+        let number = value;
+        let suffix = "Mb";
+        let rounding = 10;
+
+        if (value < 1000) {
+            number = value;
+        } else if (value < 10000) {
+            number = value / 1000;
+            suffix = "Gb";
+            rounding = 1;
+        } else {
+            number = value / 1000;
+            suffix = "Gb";
+            rounding = 1;
+        }
+
+        let result = //TODO: remove round if value < 1000
+            parseInt(Math.ceil(number / rounding) * rounding) +
+            " " +
+            suffix;
+        return result;
     }
 }
 
@@ -60,4 +84,4 @@ function timeDiffForHumans(date) {
 }
 
 
-export default helpers
+export default format

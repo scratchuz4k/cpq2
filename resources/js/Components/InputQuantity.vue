@@ -30,13 +30,14 @@ const proxyValue = computed({
 </script>
 <style scoped>
 .input-quantity {
-    width: 101px;
+    width: 70px;
     height: 32px;
     padding: 8px 12px 8px 12px;
     gap: 8px;
     border-width: 1px;
     border-style: solid;
     border-color: #BDBDBD;
+    text-align: center;
 }
 
 .btn-quantity {
