@@ -28,6 +28,7 @@ const items = ref([
 </script>
 
 <template>
+    <Head :title="'Preview Quote #' + order.id" />
     <AuthenticatedLayout :order="order">
         <div class="row mb-3">
             <div class="col">
@@ -146,7 +147,7 @@ const items = ref([
                                             </tr>
                                         </tbody>
                                     </table>
-                                    <div class="cpq-total text-right">
+                                    <div class="text-right">
                                         <div class="row">
                                             <div class="col"></div>
                                             <div class="col">

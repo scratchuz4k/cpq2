@@ -60,7 +60,7 @@ const meta = reactive({
     total: 0,
     overallTotal: 0,
     first: 1,
-    limit: 20,
+    limit: 10,
     isUpdating: false
 })
 
@@ -290,9 +290,9 @@ getArticles()
 <template>
     <div>
         <InfoConnectivity :order="modelValue"></InfoConnectivity>
-        <div class="row mb-4" style="min-height: 50vh;">
+        <div class="row mb-4">
             <div class="col position-relative">
-                <div class="d-flex justify-content-between align-items-center mb-5">
+                <div class="d-flex justify-content-between align-items-center mb-4">
                     <div class="d-flex justify-content-between align-items-center">
                         <p class="fs-4 me-3 mb-0"><b>Add products</b></p>
                         <p class="mb-0 text-primary bold fs-5 pt-1">STEP 1/2</p>
@@ -312,7 +312,7 @@ getArticles()
                                 Filters
                                 <span class="fw-normal">({{ meta.total }})</span>
                             </p>
-                            <ul class="d-flex list-unstyled ms-2">
+                            <ul class="d-flex list-unstyled ms-2 mb-0">
                                 <li>
                                     <template v-for="(selectedFilter, column) in selectedFilters">
                                         <Badge
@@ -324,7 +324,7 @@ getArticles()
                                             :title="selectedFilter.name"
                                         >
                                             <template #close-button>
-                                                <font-awesome-icon :icon="['fas', 'x']" class="ms-1 fs-7" @click="removeFilter(selectedFilter, value)"/>
+                                                <font-awesome-icon :icon="['fas', 'x']" role="button" class="ms-1 fs-7" @click="removeFilter(selectedFilter, value)"/>
                                             </template>
                                         </Badge>
                                     </template>
@@ -336,7 +336,7 @@ getArticles()
                         </div>
                     </div>
                 </div>
-                    <div id="filters" v-if="showFilters" class="p-0 m-0 mb-4 row">
+                    <div id="filters" v-if="showFilters" class="p-0 m-0 mt-2 mb-4 row">
                         <div class="col-lg-2 col-12 p-0 pe-1">
                             <label for="filter-provider" class="form-label">Provider</label>
                             <MultiSelect v-model="filters['providerName'].value" style="width:100%"
@@ -375,7 +375,7 @@ getArticles()
                             </MultiSelect>
                         </div>
                         <div class="col-lg-2 col-12 p-0 pe-1">
-                            <label for="filter-contract" class="form-label">Min. Bearer</label>
+                            <label for="filter-contract" class="form-label">Bearer</label>
 
                             <MultiSelect v-model="filters['bearer'].value" style="width:100%"
                                          :options="filterList.bearer" optionLabel="label" optionValue="value" placeholder="All"
@@ -388,7 +388,7 @@ getArticles()
                             </MultiSelect>
                         </div>
                         <div class="col-lg-2 col-12 p-0 pe-1">
-                            <label for="filter-contract" class="form-label">Min. Speed</label>
+                            <label for="filter-contract" class="form-label">Speed</label>
                             <MultiSelect v-model="filters['speed'].value" style="width:100%"
                                          :options="filterList.speed" optionLabel="label" optionValue="value" placeholder="All"
                                          class="me-3 custom-multiselect " :disabled="!meta.isUpdating">
@@ -400,10 +400,10 @@ getArticles()
                             </MultiSelect>
                         </div>
                         <div class="col-lg-2 col-12 d-flex align-self-end justify-content-around">
-                            <button class="btn btn-secondary btn-sm mt-2 me-2" @click="resetFilters()"
+                            <button class="btn btn-secondary btn-sm mt-2 me-2 w-100" @click="resetFilters()"
                                     :disabled="!meta.isUpdating">Reset</button>
-                            <div class="advanced-settings pt-2">
-                                <button class="btn btn-secondary dropdown-toggle lh-1" type="button"
+                            <div class="advanced-settings pt-2 w-100">
+                                <button class="btn btn-secondary dropdown-toggle lh-1 w-100" type="button"
                                         data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside"
                                         :disabled="!meta.isUpdating">
                                     <font-awesome-icon :icon="['fas', 'gear']"></font-awesome-icon>
@@ -441,7 +441,7 @@ getArticles()
                     </div>
                 </div>
                 <div id="no-results" v-else-if="!articles.length">
-                    <div class="alert alert-info mt-3">No results match your filters. <button @click="resetFilters"
+                    <div class="alert alert-secondary mt-3">No results match your filters. <button @click="resetFilters"
                             class="btn btn-primary  btn-sm js-clear-filters ms-3">Clear filters</button></div>
                 </div>
                 <div v-if="articles.length" class="table-wrapper">
@@ -450,7 +450,7 @@ getArticles()
                             <tr>
                                 <th :style="{
                                     whiteSpace: 'nowrap',
-                                    width: '300px'
+                                    width: '380px'
                                 }" @click="orderBy('productName')">
                                     Product
                                     <span class="text-center d-inline-block align-middle" style="width: 20px;">
@@ -580,12 +580,14 @@ getArticles()
                                         </template>
                                     </span>
                                 </th>
-                                <th></th>
+                                <th :style="{
+                                    width: '130px'
+                                }"></th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr v-for="article in articles" style="text-align: center;">
-                                <td style="text-align: left; font-size:12px;">
+                                <td class="lh-sm text-left">
                                     {{ article.productName }}
                                     <span v-if="article.additionalInfo['Primary Router Model']" v-tooltip
                                         data-bs-toggle="tooltip" data-bs-placement="top" title="Primary Router Model"
@@ -594,7 +596,7 @@ getArticles()
                                         {{ article.additionalInfo['Primary Router Model'] }}
                                     </span>
                                 </td>
-                                <td class="text-left"><img class="img-provider" @error="setAltImg"
+                                <td><img class="img-provider" @error="setAltImg"
                                         :src="`/images/providers/${article.providerKey}.png`"
                                         :alt="article.providerName" :title="article.providerName"
                                         :data-bs-original-title="article.providerName" v-tooltip /> </td>
@@ -622,7 +624,7 @@ getArticles()
                                 <td class="text-end">
                                     <button
                                         v-if="modelValue.items.find((item) => item.data.code == article.code)"
-                                        class="btn btn-primary me-2"
+                                        class="btn btn-primary me-2 py-1"
                                         @click="checkProduct(article)"
                                     >
                                         <font-awesome-icon :icon="['fas', 'check']" />
@@ -630,7 +632,7 @@ getArticles()
                                     </button>
                                     <button
                                         v-else
-                                        class="btn btn-outline-primary me-2"
+                                        class="btn btn-outline-primary me-2 py-1"
                                         @click="checkProduct(article)"
                                     >
                                         <font-awesome-icon :icon="['fas', 'plus']" />
@@ -645,19 +647,18 @@ getArticles()
                         :rows="meta.limit"
                         :pageLinkSize="5"
                         :totalRecords="meta.total"
-                        :rowsPerPageOptions="[20, 30, 50]"
+                        :rowsPerPageOptions="[10, 25, 50]"
                         @page="handlePaginator"
                         class="custom-paginator"
                     >
                     </Paginator>
-
-                    <div class="d-flex justify-content-end align-items-center my-5">
-                        <p class="fs-4 me-3 mb-0"><b>Add {{ modelValue.items.length }} products</b></p>
-                        <a class="btn btn-primary" type="submit" :href="route('orders.show', { order: modelValue.id })">
-                            Continue
-                            <font-awesome-icon :icon="['fas', 'arrow-right']" class="ms-2"></font-awesome-icon>
-                        </a>
-                    </div>
+                </div>
+                <div class="d-flex justify-content-end align-items-center my-5">
+                    <p class="fs-4 me-3 mb-0"><b>Add {{ modelValue.items.length }} products</b></p>
+                    <a class="btn btn-primary" type="submit" :href="route('orders.show', { order: modelValue.id })">
+                        Continue
+                        <font-awesome-icon :icon="['fas', 'arrow-right']" class="ms-2"></font-awesome-icon>
+                    </a>
                 </div>
             </div>
         </div>
@@ -733,6 +734,6 @@ tr.active td {
 }
 
 .router-model {
-    font-size: .5rem;
+    font-size: .625rem;
 }
 </style>

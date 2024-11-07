@@ -57,7 +57,7 @@ const items = ref([
     <Header title="Create a quote" :breadcrumbs="items"></Header>
     <InfoConnectivity v-if="!preview" :order="order"></InfoConnectivity>
 
-    <div class="d-flex justify-content-between align-items-center mb-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
         <div class="d-flex justify-content-between align-items-center">
             <p class="fs-4 me-3 mb-0"><b>Your quote</b></p>
             <p class="mb-0 text-primary bold fs-5 pt-1">STEP 2/2</p>
@@ -73,7 +73,7 @@ const items = ref([
         </div>
     </div>
 
-    <div class="row mb-4" style="min-height: 50vh;">
+    <div class="row mb-4">
         <div class="col">
             <!-- Product List -->
             <!-- In a real application, this would be dynamically generated based on the selected solution type -->
@@ -88,7 +88,7 @@ const items = ref([
                         <th>Qty.</th>
                         <th style="white-space: nowrap;">Monthly price</th>
                         <th style="white-space: nowrap;">Install price</th>
-                        <th>Remove</th>
+                        <th style="width:60px" class="text-center"></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -109,7 +109,7 @@ const items = ref([
                         </td>
                         <td>
                             <template v-if="!preview">
-                                <div class="cpq-qty d-flex input-group">
+                                <div class="cpq-qty d-flex">
                                     <InputQuantity :id="'line-' + index" v-model="item.quantity"
                                        @change="(ev) => changeQuantity(item, ev)"
                                     />
@@ -125,9 +125,9 @@ const items = ref([
                         <td>
                             {{ GBP.format(item.data?.priceInstall ?? 0) }}
                         </td>
-                        <td style="width:40px">
+                        <td class="text-center p-0">
                             <template v-if="!preview">
-                                <button class="btn delete-btn w-100 px-0 text-start" @click="remove(index)">
+                                <button class="btn delete-btn w-100 border-0 py-2 px-0 text-center" @click="remove(index)">
                                     <font-awesome-icon :icon="['fas', 'trash']"></font-awesome-icon>
                                 </button>
                             </template>
@@ -191,7 +191,7 @@ const items = ref([
                 <font-awesome-icon :icon="['far', 'file-pdf']"></font-awesome-icon>
                 Preview PDF
             </a>
-            <a class="btn btn-primary" type="submit" >
+            <a :href="route('dashboard')" class="btn btn-primary" type="submit" >
                 Save and close
             </a>
         </div>
@@ -201,8 +201,7 @@ const items = ref([
 <style>
     .delete-btn {
         all: unset;
-        height: 30px;
-        width: 30px;
+        height: 25px;
         color: var(--purple);
 
         &:hover {
