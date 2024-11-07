@@ -25,7 +25,7 @@ beforeEach(function () {
 
 test('Account without Spa', function () {
     $prices = new PriceRules();
-    $value = $prices->calculate(1, account_id: $this->account->id);
+    $value = $prices->calculate(1, account: $this->account);
 
     expect($value)->toBe(1.0);
     expect(count($prices->getAppliedSpas()))->toBe(0);
@@ -42,14 +42,14 @@ test('Account with OperationMargin Spa', function () {
     $spa->save();
 
     $prices = new PriceRules();
-    $value = $prices->calculate(10, account_id: $this->account->id);
+    $value = $prices->calculate(10, account: $this->account);
     expect($value)->toBe(20.0);
     expect(count($prices->getAppliedSpas()))->toBe(1);
 
     $spa->value = 0;
     $spa->percentage = 10;
     $spa->save();
-    $value = $prices->calculate(10, account_id: $this->account->id);
+    $value = $prices->calculate(10, account: $this->account);
     expect($value)->toBe(11.0);
     expect(count($prices->getAppliedSpas()))->toBe(1);
 });
@@ -65,14 +65,14 @@ test('Account with OperationDiscount Spa', function () {
     $spa->save();
 
     $prices = new PriceRules();
-    $value = $prices->calculate(10, account_id: $this->account->id);
+    $value = $prices->calculate(10, account: $this->account);
     expect($value)->toBe(0.0);
     expect(count($prices->getAppliedSpas()))->toBe(1);
 
     $spa->value = 0;
     $spa->percentage = 10;
     $spa->save();
-    $value = $prices->calculate(10, account_id: $this->account->id);
+    $value = $prices->calculate(10, account: $this->account);
     expect($value)->toBe(9.0);
     expect(count($prices->getAppliedSpas()))->toBe(1);
 });

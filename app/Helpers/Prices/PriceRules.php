@@ -14,12 +14,11 @@ use App\Helpers\Prices\Enums\SpaRulesEnum;
 
 class PriceRules
 {
-
     protected PriceRulesObject $object;
 
-    public function calculate(float $price, int $product_id = null, int $supplier_id = null, int $account_id = null): float
+    public function calculate(float $price, Product $product = null, Supplier $supplier = null, Account $account = null): float
     {
-        $this->object = new PriceRulesObject($product_id, Auth::id(), $supplier_id, $account_id);
+        $this->object = new PriceRulesObject($product, Auth::user(), $supplier, $account);
         $cases = array_map(fn($case) => $case->value, SpaRulesEnum::cases());
 
         $this->object = app(Pipeline::class)->send($this->object)->through($cases)->thenReturn();

@@ -11,12 +11,12 @@ class RuleAccount
 {
     public function handle(PriceRulesObject $object, $next)
     {
-        if (is_null($object->account_id)) {
+        if (is_null($object->account)) {
             return $next($object);
         }
         $rule = SpaRule::where("code", SpaRulesEnum::Account->name)->first();
         $object->spas->push(
-            ...Spa::where('field_1', $object->account_id)
+            ...Spa::where('field_1', $object->account->id)
                 ->where('field_2', null)
                 ->where('rule_id',  $rule->id)
                 ->get()
