@@ -932,10 +932,6 @@ body {
             }
         }
 
-        .p-paginator-first, .p-paginator-last {
-            display: none;
-        }
-
         .p-paginator-next, .p-paginator-prev {
             border-radius: 4px;
             font-weight: 400;
@@ -953,6 +949,7 @@ body {
 
         .p-select {
             border-color: var(--purple);
+            margin: 0 1rem;
         }
 
         .p-select-dropdown {
@@ -983,7 +980,7 @@ body {
 
 .p-multiselect-list-container {
     .p-multiselect-option {
-        padding: 0.5rem;
+        padding: 0.25rem;
 
         &:not(.p-multiselect-option-selected) {
             &:not(.p-disabled) {
@@ -1001,7 +998,7 @@ body {
 
                         svg {
                             height: 12px;
-                            width: 12px;
+                            width: 14px;
 
                             path {
                                 stroke: white;
