@@ -2,8 +2,9 @@
 
 namespace Database\Factories;
 
-use Illuminate\Database\Eloquent\Factories\Factory;
+use App\Models\Merchant;
 use Illuminate\Support\Str;
+use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory
@@ -21,9 +22,9 @@ class RegionFactory extends Factory
         $area = rand(0, count($areas) - 1);
 
         return [
-            'tenant_id' => rand(1,3),
-            'merchant_id' => 1,
-            'user_id' => rand(2,4),
+            'tenant_id' => 1,
+            'merchant_id' => Merchant::factory()->create(),
+            'user_id' => 1,
             'name' => trim(fake()->city . ' ' . $areas[$area]),
         ];
     }

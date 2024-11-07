@@ -26,5 +26,6 @@ class PriceRulesObject
         $this->user = $user;
         $this->supplier = $supplier;
         $this->account = $account;
+        $this->spa = null;
     }
 }

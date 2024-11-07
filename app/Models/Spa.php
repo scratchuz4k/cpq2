@@ -2,12 +2,13 @@
 
 namespace App\Models;
 
-use App\Models\Scopes\TenantScope;
 use App\Models\Supplier;
 use App\Trait\SetTenantId;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Scopes\TenantScope;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Spa extends Model
 {
@@ -22,19 +23,19 @@ class Spa extends Model
         "percentage",
     ];
 
-
-    protected function casts(): array
-    {
-        return [
-            'data' => 'object',
-        ];
-    }
-
     protected static function booted(): void
     {
         static::addGlobalScope(new TenantScope);
     }
 
+    public function rule(): HasOne
+    {
+        return $this->hasOne(SpaRule::class);
+    }
+    public function operation(): HasOne
+    {
+        return $this->hasOne(SpaOperation::class);
+    }
     public function supplier(): BelongsTo
     {
         return $this->belongsTo(Supplier::class);

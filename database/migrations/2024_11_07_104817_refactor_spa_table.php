@@ -18,11 +18,12 @@ return new class extends Migration
             $table->dropColumn(['name', 'data',  'supplier_id', 'merchant_id', 'account_id']);
 
             // First polymorphic relationship
-            $table->unsignedBigInteger('rule_type')->after('id');
-            $table->unsignedBigInteger('field_1')->after('rule_type');
+
+            $table->foreignId('rule_id')->constrained('spa_rules', 'id')->cascadeOnDelete()->after('id');
+            $table->unsignedBigInteger('field_1')->after('rule_id');
             $table->unsignedBigInteger('field_2')->nullable()->after('field_1');
-            $table->unsignedBigInteger('operation')->after('field_2');
-            $table->decimal('value', 12, 4)->after('operation')->default(0);
+            $table->foreignId('operation_id')->constrained('spa_operations', 'id')->cascadeOnDelete()->after('field_2');
+            $table->decimal('value', 12, 4)->after('operation_id')->default(0);
             $table->decimal('percentage', 12, 4)->after('value')->default(0);
         });
     }
@@ -38,7 +39,9 @@ return new class extends Migration
             $table->foreignId('account_id')->nullable()->constrained()->cascadeOnDelete();
             $table->string('name', 100)->nullable();
             $table->text('data')->nullable();
-            $table->dropColumn(['field_1', 'field_2', 'rule_type', 'operation', 'discount_value', 'discount_percentage']);
+            $table->dropForeign(['rule_id']);
+            $table->dropForeign(['operation_id']);
+            $table->dropColumn(['field_1', 'field_2', 'rule_id', 'operation_id', 'value', 'percentage']);
         });
     }
 };
