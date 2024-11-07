@@ -17,6 +17,7 @@ class RuleAccount
         $rule = SpaRule::where("code", SpaRulesEnum::Account->name)->first();
         $object->spas->push(
             ...Spa::where('field_1', $object->account_id)
+                ->where('field_2', null)
                 ->where('rule_id',  $rule->id)
                 ->get()
         );

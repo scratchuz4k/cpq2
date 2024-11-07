@@ -8,71 +8,75 @@ use App\Helpers\Prices\PriceRules;
 use Illuminate\Support\Facades\Auth;
 use App\Helpers\Prices\Enums\SpaRulesEnum;
 use App\Helpers\Prices\Enums\SpaOperationsEnum;
+use App\Models\Product;
 use App\Models\SpaOperation;
 use App\Models\SpaRule;
 
-
 beforeEach(function () {
-    // Run all seeders
+    // Declaration of values
     $this->artisan('db:seed');
     $this->user = User::factory()->create();
     $this->tenant = Tenant::factory()->create();
-    $this->acc = Account::factory()->create();
+    $this->account = Account::factory()->create();
+    $this->product = Product::factory()->create();
+
     // Set the user as the authenticated user
     Auth::login($this->user);
-    // Alternatively, you can use actingAs
     $this->actingAs($this->user);
 });
 
-test('Account without Spa', function () {
+test('AccountProduct without Spa', function () {
     $prices = new PriceRules();
-    $value = $prices->calculate(1);
+    $value = $prices->calculate(1, account_id: $this->account->id, product_id: $this->product->id);
 
     expect($value)->toBe(1.0);
+    expect(count($prices->getAppliedSpas()))->toBe(0);
 });
 
 
-test('Account with OperationMargin Spa', function () {
+test('AccountProduct with OperationMargin Spa', function () {
     $spa = new Spa();
     $spa->tenant_id = $this->tenant->id;
-    $spa->rule_id = SpaRule::where('code', SpaRulesEnum::Account->name)->value('id');
-    $spa->field_1 = $this->acc->id;
+    $spa->rule_id = SpaRule::where('code', SpaRulesEnum::AccountProduct->name)->value('id');
+    $spa->field_1 = $this->account->id;
+    $spa->field_2 = $this->product->id;
     $spa->operation_id = SpaOperation::where('code',  SpaOperationsEnum::Margin->name)->value('id');
     $spa->value = 10;
     $spa->save();
 
     $prices = new PriceRules();
-    $value = $prices->calculate(10, account_id: $this->acc->id);
+    $value = $prices->calculate(10, account_id: $this->account->id, product_id: $this->product->id);
     expect($value)->toBe(20.0);
     expect(count($prices->getAppliedSpas()))->toBe(1);
 
     $spa->value = 0;
     $spa->percentage = 10;
     $spa->save();
-    $value = $prices->calculate(10, account_id: $this->acc->id);
+    $value = $prices->calculate(10, account_id: $this->account->id, product_id: $this->product->id);
     expect($value)->toBe(11.0);
     expect(count($prices->getAppliedSpas()))->toBe(1);
 });
 
 
-test('Account with OperationDiscount Spa', function () {
+test('AccountProduct with OperationDiscount Spa', function () {
     $spa = new Spa();
     $spa->tenant_id = $this->tenant->id;
-    $spa->rule_id = SpaRule::where('code', SpaRulesEnum::Account->name)->value('id');
-    $spa->field_1 = $this->acc->id;
+    $spa->rule_id = SpaRule::where('code', SpaRulesEnum::AccountProduct->name)->value('id');
+    $spa->field_1 = $this->account->id;
+    $spa->field_2 = $this->product->id;
     $spa->operation_id = SpaOperation::where('code',  SpaOperationsEnum::Discount->name)->value('id');
     $spa->value = 10;
     $spa->save();
 
     $prices = new PriceRules();
-    $value = $prices->calculate(10, account_id: $this->acc->id);
+    $value = $prices->calculate(10, account_id: $this->account->id, product_id: $this->product->id);
     expect($value)->toBe(0.0);
     expect(count($prices->getAppliedSpas()))->toBe(1);
 
     $spa->value = 0;
     $spa->percentage = 10;
     $spa->save();
-    $value = $prices->calculate(10, account_id: $this->acc->id);
+    $value = $prices->calculate(10, account_id: $this->account->id, product_id: $this->product->id);
     expect($value)->toBe(9.0);
     expect(count($prices->getAppliedSpas()))->toBe(1);
 });

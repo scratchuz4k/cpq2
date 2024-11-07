@@ -2,8 +2,9 @@
 
 namespace Database\Factories;
 
-use Illuminate\Database\Eloquent\Factories\Factory;
+use App\Models\Tenant;
 use Illuminate\Support\Str;
+use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory
@@ -18,7 +19,7 @@ class OrderFactory extends Factory
     public function definition()
     {
         return [
-            'tenant_id' => rand(1,3),
+            'tenant_id' => Tenant::where("name", "CloudMarket")->value('id'),
             'account_id' => 1,
             'user_id' => rand(2,4),
             'name' => 'example order',

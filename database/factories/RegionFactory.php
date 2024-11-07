@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Tenant;
 use App\Models\Merchant;
 use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -22,7 +23,7 @@ class RegionFactory extends Factory
         $area = rand(0, count($areas) - 1);
 
         return [
-            'tenant_id' => 1,
+            'tenant_id' => Tenant::where("name", "CloudMarket")->value('id'),
             'merchant_id' => Merchant::factory()->create(),
             'user_id' => 1,
             'name' => trim(fake()->city . ' ' . $areas[$area]),
