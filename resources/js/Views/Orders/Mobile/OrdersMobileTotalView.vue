@@ -160,8 +160,8 @@ getHardwareProducts()
 
 const items = ref([
     { label: 'Home', url: '/' },
-    { label: 'Create a Quote', url: `/orders/${order.id}/edit` },
-    { label: 'Summary of quote' },
+    { label: `Quote #${order?.id}`, url: order ? `/orders/${order.id}/edit` : '#' },
+    { label: 'Summary' },
 ]);
 
 </script>
