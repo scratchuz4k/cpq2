@@ -299,7 +299,11 @@ getArticles()
                     </div>
                     <div class="d-flex justify-content-between align-items-center">
                         <p class="fs-4 me-3 mb-0"><b>Add {{ modelValue.items.length }} products</b></p>
-                        <a class="btn btn-primary" type="submit" :href="route('orders.show', { order: modelValue.id })">
+                        <button v-if="modelValue.items.length == 0" class="btn btn-primary" type="button" disabled>
+                            Continue
+                            <font-awesome-icon :icon="['fas', 'arrow-right']" class="ms-2"></font-awesome-icon>
+                        </button>
+                        <a v-else class="btn btn-primary" type="submit" :href="route('orders.show', { order: modelValue.id })">
                             Continue
                             <font-awesome-icon :icon="['fas', 'arrow-right']" class="ms-2"></font-awesome-icon>
                         </a>
@@ -587,7 +591,7 @@ getArticles()
                         </thead>
                         <tbody>
                             <tr v-for="article in articles" style="text-align: center;">
-                                <td class="lh-sm text-left">
+                                <td class="lh-sm text-left ps-3">
                                     {{ article.productName }}
                                     <span v-if="article.additionalInfo['Primary Router Model']" v-tooltip
                                         data-bs-toggle="tooltip" data-bs-placement="top" title="Primary Router Model"
@@ -655,7 +659,11 @@ getArticles()
                 </div>
                 <div class="d-flex justify-content-end align-items-center my-5">
                     <p class="fs-4 me-3 mb-0"><b>Add {{ modelValue.items.length }} products</b></p>
-                    <a class="btn btn-primary" type="submit" :href="route('orders.show', { order: modelValue.id })">
+                    <button v-if="modelValue.items.length == 0" class="btn btn-primary" type="button" disabled>
+                        Continue
+                        <font-awesome-icon :icon="['fas', 'arrow-right']" class="ms-2"></font-awesome-icon>
+                    </button>
+                    <a v-else class="btn btn-primary" type="submit" :href="route('orders.show', { order: modelValue.id })">
                         Continue
                         <font-awesome-icon :icon="['fas', 'arrow-right']" class="ms-2"></font-awesome-icon>
                     </a>

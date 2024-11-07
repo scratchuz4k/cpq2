@@ -63,7 +63,11 @@ const items = ref([
             <p class="mb-0 text-primary bold fs-5 pt-1">STEP 2/2</p>
         </div>
         <div class="d-flex justify-content-between align-items-center">
-            <a class="btn btn-outline-primary me-2" type="submit" :href="route('orders.preview', { order: order.id })">
+            <button v-if="modelValue.items.length == 0" class="btn btn-outline-primary me-2" type="button" disabled>
+                <font-awesome-icon :icon="['far', 'file-pdf']"></font-awesome-icon>
+                Preview PDF
+            </button>
+            <a v-else class="btn btn-outline-primary me-2" type="submit" :href="route('orders.preview', { order: order.id })">
                 <font-awesome-icon :icon="['far', 'file-pdf']"></font-awesome-icon>
                 Preview PDF
             </a>
@@ -153,7 +157,7 @@ const items = ref([
                             </thead>
                             <tbody>
                                 <tr>
-                                    <th>Total monthly osts</th>
+                                    <th>Total monthly costs</th>
                                     <td id="total_monthly_net" class="text-end">
                                         {{ GBP.format(order.total_monthly) }}
                                     </td>
@@ -187,7 +191,11 @@ const items = ref([
 
     <div>
         <div class="d-flex justify-content-end align-items-center">
-            <a class="btn btn-outline-primary me-2" type="submit" :href="route('orders.preview', { order: order.id })">
+            <button v-if="modelValue.items.length == 0" class="btn btn-outline-primary me-2" type="button" disabled>
+                <font-awesome-icon :icon="['far', 'file-pdf']"></font-awesome-icon>
+                Preview PDF
+            </button>
+            <a v-else class="btn btn-outline-primary me-2" type="submit" :href="route('orders.preview', { order: order.id })">
                 <font-awesome-icon :icon="['far', 'file-pdf']"></font-awesome-icon>
                 Preview PDF
             </a>
@@ -246,5 +254,6 @@ const items = ref([
     /* Remove arrows in Firefox */
     input[type="number"] {
         -moz-appearance: textfield;
+        appearance: textfield;
     }
 </style>

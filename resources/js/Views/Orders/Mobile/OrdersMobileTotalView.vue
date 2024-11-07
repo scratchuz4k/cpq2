@@ -318,7 +318,7 @@ const items = ref([
                                     <span v-if="!p.is_editing" :id="'one_off-' + i + '-quantity'">
                                         x{{ p.quantity }}
                                     </span>
-                                    <input :id="'input-one_off-' + i + '-quantity'" v-else class="form-control py-1"
+                                    <input :id="'input-one_off-' + i + '-quantity'" v-else class="form-control text-center py-1"
                                         type="number" min="0" max="100" v-model="temp.quantity">
                                 </td>
                                 <td class="text-right"> {{ GBP.format(p.original_price) }}</td>
@@ -326,14 +326,14 @@ const items = ref([
                                     <span v-if="!p.is_editing" :id="'one_off-' + i + '-discount'">
                                         {{ p.discount }} %
                                     </span>
-                                    <input v-else :id="'input-one_off-' + i + '-discount'" class="form-control py-1"
+                                    <input v-else :id="'input-one_off-' + i + '-discount'" class="form-control text-center py-1"
                                         type="number" min="0" max="100" v-model="temp.discount">
                                 </td>
                                 <td class="text-center">
                                     <span v-if="!p.is_editing" :id="'one_off-' + i + '-margin'">
                                         {{ p.margin }} %
                                     </span>
-                                    <input v-else :id="'input-one_off-' + i + '-margin'" class="form-control py-1"
+                                    <input v-else :id="'input-one_off-' + i + '-margin'" class="form-control text-center py-1"
                                         type="number" min="0" max="100" v-model="temp.margin">
                                 </td>
                                 <td class="text-right fw-bold">
@@ -370,19 +370,19 @@ const items = ref([
                                         v-model="oneOffNewLine.name">
                                 </th>
                                 <th class="text-center">
-                                    <input :id="'input-new-one_off-qty'" class="form-control py-1" type="number"
+                                    <input :id="'input-new-one_off-qty'" class="form-control text-center py-1" type="number"
                                         v-model="oneOffNewLine.quantity">
                                 </th>
                                 <th>
-                                    <input :id="'input-new-one_off-price'" class="form-control py-1" type="number"
+                                    <input :id="'input-new-one_off-price'" class="form-control text-center py-1" type="number"
                                         v-model="oneOffNewLine.price">
                                 </th>
                                 <th class="text-center">
-                                    <input :id="'input-new-one_off-discount'" class="form-control py-1" type="number"
+                                    <input :id="'input-new-one_off-discount'" class="form-control text-center py-1" type="number"
                                         v-model="oneOffNewLine.discount">
                                 </th>
                                 <th class="text-center">
-                                    <input :id="'input-new-one_off-margin'" class="form-control py-1" type="number"
+                                    <input :id="'input-new-one_off-margin'" class="form-control text-center py-1" type="number"
                                         v-model="oneOffNewLine.margin">
                                 </th>
                                 <th class="text-right"> </th>
@@ -403,7 +403,7 @@ const items = ref([
 
                 <div class="mb-5">
                     <div>
-                        <p class="payment-info border-bottom pb-3 big bold">
+                        <p class="payment-info border-bottom pb-3 mb-3 big bold">
                             <span class="text-primary">1 payment </span> of
                             {{ GBP.format(order.total) }}<br>
                             followed by
@@ -519,6 +519,7 @@ input[type="number"]::-webkit-inner-spin-button {
 /* For Firefox */
 input[type="number"] {
     -moz-appearance: textfield;
+    appearance: textfield;
 }
 
 [role=button]:hover {

@@ -36,7 +36,7 @@ const global = ref(null)
 const form = reactive({
     filters: [],
     order: "desc",
-    orderBy: "id",
+    orderBy: "updated_at",
     limit: 20,
 })
 

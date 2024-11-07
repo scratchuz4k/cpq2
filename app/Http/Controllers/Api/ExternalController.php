@@ -43,7 +43,7 @@ class ExternalController extends Controller
         }
 
         $cache_key = 'address_lookup_' . Str::slug($address);
-        return  Cache::remember($cache_key, 3600, function () use ($address) {
+        return  Cache::remember($cache_key, 43200, function () use ($address) {
             $res = Http::get('https://api.tomtom.com/search/2/geocode/' . $address . '.json?key=' . env('TOMTOM_API_KEY') . '&countryCode=GB');
             $res = json_decode($res->body(), true);
             $position = [];
@@ -104,7 +104,7 @@ class ExternalController extends Controller
     public function getArticlesFromShopBlocks(Request $request)
     {
         $cache_key = md5("shop-blocks" . $request->input('category_id', 22));
-        $res = Cache::remember($cache_key, 3600, function () use ($request) {
+        $res = Cache::remember($cache_key, 43200, function () use ($request) {
             $products = [];
             $page = 0;
             do {
