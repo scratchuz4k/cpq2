@@ -22,7 +22,9 @@ const showDate = (days = 0) => {
 
 const items = ref([
     { label: 'Home', url: '/dashboard' },
-    { label: 'Create a quote' },
+    { label: `Quote #${props.order?.id}`, url: props.order ? `/orders/${props.order.id}/edit` : '#' },
+    { label: `Summary`, url: props.order ? `/orders/${props.order.id}` : '#' },
+    { label: 'Preview PDF' }
 ]);
 
 </script>
@@ -125,6 +127,12 @@ const items = ref([
                                                 </td>
                                                 <td>
                                                     {{ item.name }}
+                                                    <span v-if="item.data.additionalInfo['Primary Router Model']" v-tooltip
+                                                        data-bs-toggle="tooltip" data-bs-placement="top" title="Primary Router Model"
+                                                        class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm router-model">
+                                                        <font-awesome-icon :icon="['fas', 'plug']"></font-awesome-icon>
+                                                        {{ item.data.additionalInfo['Primary Router Model'] }}
+                                                    </span>
                                                 </td>
                                                 <td class="d-none d-xl-table-cell">
                                                     {{ item.data?.productCode }}

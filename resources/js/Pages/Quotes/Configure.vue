@@ -38,7 +38,7 @@ const submit = () => {
 
 const items = ref([
     { label: 'Home', url: '/dashboard' },
-    { label: 'Edit a quote' },
+    { label: `Quote #${props.order?.id}`},
 ]);
 
 </script>
@@ -48,7 +48,7 @@ const items = ref([
         <form @submit.prevent="submit">
             <div class="row mb-3">
                 <div class="col">
-                    <Header title="Create a quote" :breadcrumbs="items"></Header>
+                    <Header title="Edit quote" :breadcrumbs="items"></Header>
                     <h5 class="font-bold my-3">Select an account to start a quote</h5>
                 </div>
                 <div class="col " style="text-align: right">

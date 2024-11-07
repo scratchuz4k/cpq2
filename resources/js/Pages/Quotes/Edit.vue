@@ -3,7 +3,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link } from '@inertiajs/vue3';
 import {ref} from "vue";
 
-defineProps({
+const props = defineProps({
     accounts: Array,
     solution_types: Object,
     quote: Object
@@ -17,7 +17,7 @@ const solutionsViews = {
 
 const items = ref([
     { label: 'Home', url: '/' },
-    { label: 'Create a quote' },
+    { label: props.order ? `Quote #${props.order?.id}` : 'Create a quote'},
 ]);
 </script>
 

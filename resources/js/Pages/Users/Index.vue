@@ -187,3 +187,9 @@ const items = ref([
         </Dialog>
     </AuthenticatedLayout>
 </template>
+
+<style>
+#users-table thead tr th {
+    padding: 2.5rem .5rem !important;
+}
+</style>

@@ -72,6 +72,7 @@ const edit = (p) => {
     temp.margin = p.margin
     quote.items.forEach((e) => e.is_editing = false)
     p.is_editing = !p.is_editing
+
 }
 const save = async (p) => {
     p.quantity = temp.quantity
@@ -158,8 +159,8 @@ getHardwareProducts()
 
 const items = ref([
     { label: 'Home', url: '/' },
-    { label: 'Create a Quote', url: `/quotes/${quote.id}/edit` },
-    { label: 'Summary of quote' },
+    { label: `Quote #${quote?.id}`, url: quote ? `/quotes/${quote.id}/edit` : '#' },
+    { label: 'Summary' },
 ]);
 
 </script>

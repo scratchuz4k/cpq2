@@ -82,6 +82,7 @@ const getSubproviderImage = (img) => {
         "talktalk": "talktalk",
         "talktalk business": "talktalk",
         "virgin media": "virgin",
+        "virgin media business": "virgin_media_business",
         "virgin": "virgin",
         "virtual1": "virtual1",
         "vodafone": "vodafone",
@@ -451,7 +452,7 @@ getArticles()
                     <table id="table_products" class="table  table-bordered table-hover">
                         <thead>
                             <tr>
-                                <th :style="{
+                                <th class="ps-3" :style="{
                                     whiteSpace: 'nowrap',
                                     width: '380px'
                                 }" @click="orderBy('productName')">
@@ -467,7 +468,7 @@ getArticles()
                                         </template>
                                     </span>
                                 </th>
-                                <th :style="{ whiteSpace: 'nowrap' }" @click="orderBy('providerName')">
+                                <th class="text-center" :style="{ whiteSpace: 'nowrap' }" @click="orderBy('providerName')">
                                     Provider
                                     <span class="text-center d-inline-block align-middle" style="width: 20px;">
                                         <template v-if="sort.field == 'providerName'">
@@ -480,7 +481,7 @@ getArticles()
                                         </template>
                                     </span>
                                 </th>
-                                <th :style="{ whiteSpace: 'nowrap' }" @click="orderBy('connectivitySupplierName')">
+                                <th class="text-center" :style="{ whiteSpace: 'nowrap' }" @click="orderBy('connectivitySupplierName')">
                                     Subprovider
                                     <span class="text-center d-inline-block align-middle" style="width: 20px;">
                                         <template v-if="sort.field == 'connectivitySupplierName'">
@@ -493,7 +494,7 @@ getArticles()
                                         </template>
                                     </span>
                                 </th>
-                                <th :style="{
+                                <th class="text-center" :style="{
                                     whiteSpace: 'nowrap'
                                 }" @click="orderBy('bearer')">
                                     Bearer
@@ -508,7 +509,7 @@ getArticles()
                                         </template>
                                     </span>
                                 </th>
-                                <th :style="{
+                                <th class="text-center" :style="{
                                     whiteSpace: 'nowrap'
                                 }" @click="orderBy('speed')">
                                     Speed
@@ -523,7 +524,7 @@ getArticles()
                                         </template>
                                     </span>
                                 </th>
-                                <th :style="{
+                                <th class="text-center" :style="{
                                     whiteSpace: 'nowrap'
                                 }" @click="orderBy('priceInstall')">
                                     Set Up
@@ -538,7 +539,7 @@ getArticles()
                                         </template>
                                     </span>
                                 </th>
-                                <th :style="{
+                                <th class="text-center" :style="{
                                     whiteSpace: 'nowrap'
                                 }" @click="orderBy('priceMonthly')">
                                     Monthly
@@ -553,7 +554,7 @@ getArticles()
                                         </template>
                                     </span>
                                 </th>
-                                <th :style="{
+                                <th class="text-center" :style="{
                                     whiteSpace: 'nowrap'
                                 }" @click="orderBy('priceECC')">
                                     ECC
@@ -568,7 +569,7 @@ getArticles()
                                         </template>
                                     </span>
                                 </th>
-                                <th :style="{
+                                <th class="text-center" :style="{
                                     whiteSpace: 'nowrap'
                                 }" @click="orderBy('contractTermMonths')">
                                     Contract Term
@@ -740,7 +741,4 @@ tr.active td {
     animation: progressBar 100s linear forwards;
 }
 
-.router-model {
-    font-size: .625rem;
-}
 </style>
