@@ -1,6 +1,8 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link } from '@inertiajs/vue3';
+import {ref} from "vue";
+import InfoConnectivity from "@/Components/InfoConnectivity.vue";
 
 const props = defineProps({
     order: Object,
@@ -12,6 +14,11 @@ const solutionsViews = {
     4: 'OrdersMobileTotalView',
     5: 'OrdersHardwareTotalView',
 }
+
+const items = ref([
+    { label: 'Home', url: '/' },
+    { label: 'Create a quote' },
+]);
 </script>
 
 <template>

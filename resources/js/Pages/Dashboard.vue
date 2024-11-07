@@ -58,7 +58,7 @@ const props = defineProps({
                         <span class="badge text-bg-secondary">{{ value }}</span>
                     </template>
                     <template #updated_at="{ value }">
-                        {{ helpers.formatDate(value) }}
+                        {{ format.date(value) }}
                     </template>
                 </Datatable>
             </div>

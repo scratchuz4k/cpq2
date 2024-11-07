@@ -1,6 +1,7 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link } from '@inertiajs/vue3';
+import {ref} from "vue";
 
 const props = defineProps({
     order: Object,
@@ -19,25 +20,19 @@ const showDate = (days = 0) => {
     return currentDate;
 }
 
+const items = ref([
+    { label: 'Home', url: '/dashboard' },
+    { label: 'Create a quote' },
+]);
+
 </script>
 
 <template>
-
-    <Head :title="'Quote #' + order.id" />
+    <Head :title="'Preview Quote #' + order.id" />
     <AuthenticatedLayout :order="order">
         <div class="row mb-3">
-            <div class="col d-flex">
-                <div class="me-3">
-                    <font-awesome-icon class="fa-border" :icon="['fas', 'file-pdf']"
-                        style="font-size:30px;color:var(--secondary-light);border-color:var(--secondary-light);border-width:4px;border-radius:12px" />
-                </div>
-                <div style="padding-top:1px">
-                    <p class="m-0">Q-{{ order.id }} // <span id="account_name">
-                            {{ order.account?.name }}
-                        </span>
-                    </p>
-                    <h1 class="m-0" style="font-size:18px;font-weight:bold">PDF</h1>
-                </div>
+            <div class="col">
+                <Header title="Create a quote" :breadcrumbs="items"></Header>
             </div>
             <div class="col" style="text-align: right">
                 <a :href="route('orders.download', { order: order.id })" class="btn btn-secondary mx-2">
@@ -152,7 +147,7 @@ const showDate = (days = 0) => {
                                             </tr>
                                         </tbody>
                                     </table>
-                                    <div class="cpq-total text-right">
+                                    <div class="text-right">
                                         <div class="row">
                                             <div class="col"></div>
                                             <div class="col">
