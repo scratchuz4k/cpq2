@@ -12,7 +12,7 @@ class CloudMarketRepository
     public function sendResponse($file, $filters)
     {
         $priceRules = new PriceRules();
-        foreach ($file['data'] as $key => $product) {
+        foreach ($file['data'] as $index => $product) {
             $supplier = Supplier::where('reference', $product['providerKey'])->first();
             $priceRules->find(supplier: $supplier);
             foreach (['priceMonthly', 'priceAnnual', 'priceInstall'] as $key) {
@@ -20,11 +20,10 @@ class CloudMarketRepository
                     continue;
                 }
 
-                $product[$key] =  $priceRules->apply($product[$key]);
+                $file['data'][$index][$key] =  $priceRules->apply($product[$key]);
             }
 
-            $product['used_spas']  = $priceRules->getAppliedSpas();
-            $file['data'][$key] = $product;
+            $file['data'][$index]['active_spas']  = $priceRules->getAppliedSpas();
         }
 
         $items = FilterProvider::get($file['data'], $filters);

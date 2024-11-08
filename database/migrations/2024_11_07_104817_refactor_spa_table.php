@@ -15,7 +15,8 @@ return new class extends Migration
             $table->dropForeign(['supplier_id']);
             $table->dropForeign(['merchant_id']);
             $table->dropForeign(['account_id']);
-            $table->dropColumn(['name', 'data',  'supplier_id', 'merchant_id', 'account_id']);
+            $table->dropForeign(['spa_id']);
+            $table->dropColumn(['name', 'data',  'supplier_id', 'merchant_id', 'account_id','spa_id']);
 
             // First polymorphic relationship
 
@@ -34,6 +35,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('spas', function (Blueprint $table) {
+            $table->foreignId('spa_id')->constrained()->cascadeOnDelete();
             $table->foreignId('supplier_id')->constrained()->cascadeOnDelete();
             $table->foreignId('merchant_id')->nullable()->constrained()->nullOnDelete();
             $table->foreignId('account_id')->nullable()->constrained()->cascadeOnDelete();

@@ -93,6 +93,7 @@ const save = async (p) => {
 const saveOrder = async (p) => {
     isLoading.value = true
     if (order.discount === '') {
+        isLoading.value = false
         return
     }
     try {
@@ -104,6 +105,7 @@ const saveOrder = async (p) => {
         Object.assign(order, res.data)
         isLoading.value = false
     } catch (ex) {
+        isLoading.value = false
         notyf.error(ex.response.data.message)
     }
 }
@@ -114,6 +116,7 @@ const resetQuote = async () => {
         title: 'Are you sure?'
     })
     if (['cancel', 'backdrop'].includes(result.dismiss)) {
+        isLoading.value = false
         return
     }
 

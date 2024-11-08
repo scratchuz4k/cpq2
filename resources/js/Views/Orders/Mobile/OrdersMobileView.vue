@@ -255,7 +255,7 @@ const items = ref([
                             <div class="d-flex align-items-center mb-2">
                                 <h4 class="m-0">{{ product.name }}</h4>
                                 <p class="m-0 ms-2">
-                                    {{ product.description }} / {{ GBP.format(product.prices[0].gross_monthly) }}
+                                    {{ product.description }} / {{ GBP.format(product.prices[0].net_monthly_spa) }}
                                 </p>
                             </div>
                             <font-awesome-icon :icon="['fa', 'circle-info']" />
@@ -299,7 +299,7 @@ const items = ref([
                             <div class="d-flex align-items-center mb-2">
                                 <h4 class="m-0 ">{{ product.name }}</h4>
                                 <p class="m-0 ms-2">
-                                    {{ GBP.format(product.prices[0].gross_monthly) }}
+                                    {{ GBP.format(product.prices[0].net_monthly_spa) }}
                                 </p>
                             </div>
                             <font-awesome-icon :icon="['fa', 'circle-info']" />

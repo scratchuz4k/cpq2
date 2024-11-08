@@ -16,7 +16,6 @@ class BrandResource extends JsonResource
     {
         return [
             ...$this->resource->toArray(),
-            'tenant' => $this->tenant,
             'updated_at' => $this->updated_at,
             'created_at' => $this->created_at
         ];
