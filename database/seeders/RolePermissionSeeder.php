@@ -41,7 +41,6 @@ class RolePermissionSeeder extends Seeder
                 'merchant' => 'Merchant',
                 'account' => 'Account',
                 'contact' => 'Contact',
-                'order_items' => 'Order Items',
                 'price' => 'Price',
                 'product' => 'Product',
                 'region' => 'Region',
@@ -52,7 +51,6 @@ class RolePermissionSeeder extends Seeder
                 'token' => 'Token',
                 'quote' => 'Quote',
                 'quote_item' => 'Quote Item',
-                'quote_items' => 'Quote Items',
             ],
         ];
 
@@ -64,17 +62,17 @@ class RolePermissionSeeder extends Seeder
             ],
             'Support Agent' => [
                 'parent' => 'Super Admin',
-                'permissions' => ['merchant', 'account', 'contact', 'token', 'quote', 'quote_items'],
+                'permissions' => ['merchant', 'account', 'contact', 'token', 'quote', 'quote_item'],
                 'simple_permission' => ['viewAny product', 'view product']
             ],
             'Company Admin' => [
                 'parent' => 'Super Admin',
-                'permissions' => ['quote', 'quote_items', 'merchant', 'account', 'contact',  'price', 'product', 'region', 'tenant', 'brand', 'supplier', 'spa', 'user'],
+                'permissions' => ['quote', 'quote_item', 'merchant', 'account', 'contact',  'price', 'product', 'region', 'tenant', 'brand', 'supplier', 'spa', 'user'],
                 'simple_permission' => []
             ],
             'Sales Rep' => [
                 'parent' => 'Company Admin',
-                'permissions' => ['quote', 'quote_items', 'account', 'contact', 'brand', 'supplier'],
+                'permissions' => ['quote', 'quote_item', 'account', 'contact', 'brand', 'supplier'],
                 'simple_permission' => ['viewAny product', 'view product']
             ]
         ];

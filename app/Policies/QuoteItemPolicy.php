@@ -8,7 +8,7 @@ use Illuminate\Auth\Access\Response;
 
 class QuoteItemPolicy
 {
-    private string $model = "quote_items";
+    private string $model = "quote_item";
     /**
      * Determine whether the user can view any models.
      */
