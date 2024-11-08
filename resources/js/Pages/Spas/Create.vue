@@ -6,25 +6,31 @@ import { Head, router } from "@inertiajs/vue3";
 
 const props = defineProps({
     suppliers: Object,
-    users: Object,
+    rules: Array,
+    operations: Array,
 })
 
+const rules = {}
+props.rules.forEach(element => {
+    let str = element.code;
+    const splitResult = str.split(/(?=[A-Z])/);
+    if (!Object.keys(rules).includes(splitResult[0])) {
+        rules[splitResult[0]] = []
+    }
+
+    if (!rules[splitResult[0]].find(x => x === splitResult[1])) {
+        rules[splitResult[0]].push(splitResult[1] ?? null)
+    }
+});
+
 const spa = reactive({
-    data: {
-        operation: 'Add',
-        value: 0
-    },
+    entity_1: null,
+    entity_2: null,
     supplier_id: null,
     user_id: null,
     name: null
 })
 
-const operations = [
-    'Add',
-    'Subtract',
-    'Multiply',
-    'Divide'
-]
 const saveSpa = () => {
     router.post(`/spas`, spa,
         {
@@ -41,6 +47,13 @@ const saveSpa = () => {
         }
     )
 }
+
+const icons = {
+    'Product': ['far', 'rectangle-list'],
+    'Account': ['far', 'address-card'],
+    'Supplier': ['far', 'handshake'],
+    null: ['fas', 'fa-slash']
+}
 const items = ref([
     { label: 'Home', url: '/' },
     { label: 'My Account', url: '/myaccount' },
@@ -50,47 +63,69 @@ const items = ref([
 
 </script>
 <template>
+
     <Head title="New SPA" />
     <AuthenticatedLayout>
-        <div class="panel">
-            <Header title="New SPA" :breadcrumbs="items">
-                <template #buttons>
-                    <PrimaryButton @click="saveSpa()">
-                        <font-awesome-icon class="me-2" :icon="['fas', 'save']"></font-awesome-icon> Save
-                    </PrimaryButton>
-                </template>
-            </Header>
-            <div class="col-6">
-                <div class="row mb-3">
-                    <label for="spa-name" class="form-label">Name:</label>
-                    <input id="spa-name" class="form-control" v-model="spa.name">
-                </div>
-                <div class="row mb-3">
-                    <label class="form-label">User:</label>
-                    <select class="form-select" v-model="spa.user_id">
-                        <option v-for="user in users" :value="user.id">{{ user.name }}</option>
-                    </select>
-                </div>
-                <div class="row mb-3">
-                    <label class="form-label">Supplier:</label>
-                    <select class="form-select" v-model="spa.supplier_id">
-                        <option v-for="supplier in suppliers" :value="supplier.id">{{ supplier.name }}</option>
-                    </select>
-                </div>
-                <div class="row mb-3">
-                    <label class="form-label">Pricing Rules:</label>
-                    <div class="d-flex p-0">
-                        <select class="form-select w-50" v-model="spa.data.operation">
-                            <option v-for="operation in operations" :value="operation">{{ operation}}</option>
+        <Header title="New SPA" :breadcrumbs="items">
+            <template #buttons>
+                <PrimaryButton @click="saveSpa()">
+                    <font-awesome-icon class="me-2" :icon="['fas', 'save']"></font-awesome-icon> Save
+                </PrimaryButton>
+            </template>
+        </Header>
+        <div class="col-6">
+            <div class="panel">
+                <h5>Choose the first Entity</h5>
+                <ul class="d-flex flex-wrap p-0 m-0" style="list-style: none;">
+                    <li v-for="(rule, index) in rules">
+                        <div :class="{ 'active': spa.entity_1 === index }" class="rule d-flex flex-column p-2"
+                            @click="() => spa.entity_1 = index">
+                            <font-awesome-icon class="p-2 " :icon="icons[index]" size="2x"></font-awesome-icon>
+                            <p>{{ index }}</p>
+                        </div>
+                    </li>
+                </ul>
+                <template v-if="spa.entity_1">
+                    <h5 class="mt-3">Choose the Second Entity (if needed)</h5>
+                    <ul class="d-flex flex-wrap p-0 m-0" style="list-style: none;">
+                        <li v-for="rule in rules[spa.entity_1]">
+                            <div :class="{ 'active': spa.entity_2 === rule }" class="rule d-flex flex-column p-2"
+                                @click="() => spa.entity_2 = rule">
+                                <font-awesome-icon class="p-2 " :icon="icons[rule]" size="2x"></font-awesome-icon>
+                                <p>{{ rule ?? 'None' }}</p>
+                            </div>
+                        </li>
+                    </ul>
+                    <div class="row my-3">
+                        <label class="form-label">Operation:</label>
+                        <select class="form-select" v-model="spa.rule_id">
+                            <option v-for="operation in props.operations" :value="operation.id">{{ operation.code }}
+                            </option>
                         </select>
-                        <input id="spa-value" class="form-control w-50" v-model="spa.data.value">
                     </div>
-                    <div class="form-text px-0">
-                        Example: to increase prices by 20%, select the "MULTIPLY" operation and enter "1.2" as the value.
-                    </div>
-                </div>
+                </template>
             </div>
-
         </div>
+
     </AuthenticatedLayout>
 </template>
+<style scoped>
+.rule {
+    cursor: pointer;
+    margin-right: 5px;
+    border: 2px solid;
+    border-radius: 20px;
+    text-align: center;
+}
+
+.rule:hover {
+    border: 2px solid var(--primary-light);
+    color: var(--primary-light);
+    background: whitesmoke;
+}
+
+.rule.active {
+    border: 2px solid var(--primary-light);
+    color: var(--primary-light)
+}
+</style>

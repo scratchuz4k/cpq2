@@ -473,7 +473,7 @@ const items = ref([
                                 @click="() => step--">
                                 <font-awesome-icon :icon="['fas', 'arrow-left']" /> Previous
                             </button>
-                            <button class="btn btn-outline-primary text-primary " @click="saveQuote()"
+                            <button class="btn btn-outline-primary text-primary" @click="saveQuote()"
                                 :disabled="checkPlansHardwareQuantity() < 0">
                                 Save
                             </button>

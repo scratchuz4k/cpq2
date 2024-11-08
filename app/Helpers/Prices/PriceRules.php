@@ -2,7 +2,6 @@
 
 namespace App\Helpers\Prices;
 
-use App\Models\Spa;
 use App\Models\Account;
 use App\Models\Product;
 use App\Models\Supplier;

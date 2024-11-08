@@ -12,6 +12,8 @@ use App\Http\Resources\SpaResource;
 use App\Http\Requests\SpaCreateRequest;
 use App\Http\Requests\SpaUpdateRequest;
 use App\Http\Controllers\BaseController;
+use App\Models\SpaOperation;
+use App\Models\SpaRule;
 
 class SpaController extends BaseController
 {
@@ -35,8 +37,9 @@ class SpaController extends BaseController
     public function create()
     {
         return Inertia::render('Spas/Create', [
+            'rules' => SpaRule::all(),
+            'operations' => SpaOperation::all(),
             'suppliers' => Supplier::all(),
-            'users' => User::all()
         ]);
     }
 
