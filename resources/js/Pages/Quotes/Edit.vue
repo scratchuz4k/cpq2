@@ -26,8 +26,8 @@ const items = ref([
     <Head :title="'Quote #' + quote.id" />
     <AuthenticatedLayout :quote="quote">
         <Header title="Create a quote" :breadcrumbs="items"></Header>
-        <component :is="solutionsViews[order.solution_type.code]" v-bind="{
-            modelValue: order
+        <component :is="solutionsViews[quote.solution_type.code]" v-bind="{
+            modelValue: quote
         }"></component>
     </AuthenticatedLayout>
 </template>
