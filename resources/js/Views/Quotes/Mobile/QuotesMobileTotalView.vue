@@ -454,8 +454,8 @@ const items = ref([
                         </button>
                     </div>
                     <div class="price-mobile-sidebar px-4 pt-4 pb-2 mb-3">
-                        <h3 class="mb-3">Comission Calculator</h3>
-                        <p style="font-size: 14px;"> Currently, you will make {{ GBP.format(quote.comission_value) }}
+                        <h3 class="mb-3">Commission Calculator</h3>
+                        <p style="font-size: 14px;"> Currently, you will make {{ GBP.format(quote.commission_value) }}
 
                             commission and
                             {{ quote.margin.toFixed(2) }} %
@@ -468,11 +468,11 @@ const items = ref([
                                     disabled>
                             </div>
                             <div class="mb-3">
-                                <label class="form-label">Comission (<span id="order-tax-comission">
+                                <label class="form-label">Commission (<span id="order-tax-commission">
                                         {{ quote.commission_rate }}</span>%)
                                 </label>
-                                <input id="input-comission_value-order" class="form-control"
-                                    :value="GBP.format(quote.comission_value)" disabled>
+                                <input id="input-commission_value-order" class="form-control"
+                                    :value="GBP.format(quote.commission_value)" disabled>
                             </div>
                         </div>
                     </div>

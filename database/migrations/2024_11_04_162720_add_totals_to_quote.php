@@ -21,7 +21,7 @@ return new class extends Migration
             $table->double('total_monthly')->default(0);
             $table->double('total_monthly_tax')->default(0);
             $table->double('total_monthly_gross')->default(0);
-            $table->double('comission_value')->default(0);
+            $table->double('commission_value')->default(0);
             $table->double('commission_rate')->default(0);
         });
     }
@@ -42,8 +42,8 @@ return new class extends Migration
                 'total_monthly',
                 'total_monthly_tax',
                 'total_monthly_gross',
-                'comission_value',
-                'tax_comission',
+                'commission_value',
+                'tax_commission',
             ]);
         });
     }

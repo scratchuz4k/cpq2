@@ -34,7 +34,7 @@ class Quote extends Model
         "total_monthly",
         "total_monthly_tax",
         "total_monthly_gross",
-        "comission_value",
+        "commission_value",
         "commission_rate",
         "margin",
         "discount",
@@ -102,7 +102,7 @@ class Quote extends Model
         $margin_value = ($this->total + ($this->total_monthly * $this->contract_length)) - $total_cost;
 
         $this->margin = $total_cost ? ($margin_value / $total_cost) * 100 : 0;
-        $this->comission_value = $margin_value * ($this->commission_rate / 100);
+        $this->commission_value = $margin_value * ($this->commission_rate / 100);
         $this->save();
     }
 }
