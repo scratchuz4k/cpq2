@@ -49,7 +49,7 @@ const changeQuantity = async (item, ev) => {
 
 const items = ref([
     { label: 'Home', url: '/dashboard' },
-    { label: `Quote #${order?.id}`, url: order ? `/orders/${order.id}/edit` : '#' },
+    { label: `Quote #${quote?.id}`, url: quote ? `/quotes/${quote.id}/edit` : '#' },
     { label: 'Summary' }
 ]);
 
@@ -138,7 +138,7 @@ const items = ref([
                         </td>
                         <td class="text-center p-0">
                             <template v-if="!preview">
-                                <button class="btn delete-btn w-100 border-0 py-2 px-0 text-center" @click="remove(index)">
+                                <button :id="'delete-btn-' + index" class="btn delete-btn w-100 border-0 py-2 px-0 text-center" @click="remove(index)">
                                     <font-awesome-icon :icon="['fas', 'trash']"></font-awesome-icon>
                                 </button>
                             </template>

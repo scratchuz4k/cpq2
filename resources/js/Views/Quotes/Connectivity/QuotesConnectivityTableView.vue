@@ -299,11 +299,11 @@ getArticles()
                     </div>
                     <div class="d-flex justify-content-between align-items-center">
                         <p class="fs-4 me-3 mb-0"><b>Add {{ modelValue.items.length }} products</b></p>
-                        <button v-if="modelValue.items.length == 0" class="btn btn-primary" type="button" disabled>
+                        <button v-if="modelValue.items.length == 0" class="btn btn-primary continue-btn" type="button" disabled>
                             Continue
                             <font-awesome-icon :icon="['fas', 'arrow-right']" class="ms-2"></font-awesome-icon>
                         </button>
-                        <a v-else class="btn btn-primary" type="submit" :href="route('quotes.show', { quote: modelValue.id })">
+                        <a v-else class="btn btn-primary continue-btn" type="submit" :href="route('quotes.show', { quote: modelValue.id })">
                             Continue
                             <font-awesome-icon :icon="['fas', 'arrow-right']" class="ms-2"></font-awesome-icon>
                         </a>

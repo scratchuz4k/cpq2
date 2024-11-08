@@ -29,7 +29,7 @@ const props = defineProps({
     <Head title="Dashboard" />
 
     <AuthenticatedLayout>
-        <h1>Welcome {{ $page.props.auth.user.name }}<span>.</span></h1>
+        <h1 id="welcome-msg">Welcome {{ $page.props.auth.user.name }}<span>.</span></h1>
 
         <div class="panel">
             <h2>Quotes</h2>
