@@ -79,7 +79,7 @@ const items = ref([
                 <ul class="d-flex flex-wrap p-0 m-0" style="list-style: none;">
                     <li v-for="(rule, index) in rules">
                         <div :class="{ 'active': spa.entity_1 === index }" class="rule d-flex flex-column p-2"
-                            @click="() => spa.entity_1 = index">
+                            @click="() => { spa.entity_1 = index; spa.entity_2 = null }">
                             <font-awesome-icon class="p-2 " :icon="icons[index]" size="2x"></font-awesome-icon>
                             <p>{{ index }}</p>
                         </div>
@@ -113,19 +113,19 @@ const items = ref([
 .rule {
     cursor: pointer;
     margin-right: 5px;
-    border: 2px solid;
+    border: 1px solid;
     border-radius: 20px;
     text-align: center;
 }
 
 .rule:hover {
-    border: 2px solid var(--primary-light);
+    border: 1px solid var(--primary-light);
     color: var(--primary-light);
     background: whitesmoke;
 }
 
 .rule.active {
-    border: 2px solid var(--primary-light);
+    border: 1px solid var(--primary-light);
     color: var(--primary-light)
 }
 </style>
