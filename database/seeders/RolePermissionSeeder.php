@@ -73,6 +73,22 @@ class RolePermissionSeeder extends Seeder
                 'parent' => 'Company Admin',
                 'permissions' => ['order', 'order_items', 'account', 'contact', 'brand', 'supplier'],
                 'simple_permission' => ['viewAny product', 'view product']
+            ],
+            'Order Manager' => [
+                'parent' => 'Company Admin',
+                'permissions' => ['order', 'order_item'],
+                'simple_permission' => [
+                    'viewAny product',
+                    'view product',
+                    'viewAny account',
+                    'view account',
+                    'viewAny contact',
+                    'view contact',
+                    'viewAny brand',
+                    'view brand',
+                    'viewAny supplier',
+                    'view supplier'
+                ]
             ]
         ];
 
