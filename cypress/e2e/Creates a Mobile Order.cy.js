@@ -35,7 +35,7 @@ describe("Creates a Mobile Order", () => {
     let hardwareCount = 0;
 
     beforeEach(() => {
-        cy.login("companyadmin@example.com", "werwerwer")
+        cy.login("super@example.com", "werwerwer")
     })
     it("Creates an Account", () => {
         cy.visit("/")
