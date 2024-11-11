@@ -15,6 +15,8 @@ return new class extends Migration
             $table->id();
             $table->string('code')->unique();
             $table->string('class');
+            $table->string('entity_1');
+            $table->string('entity_2')->nullable();
             $table->timestamps();
         });
     }

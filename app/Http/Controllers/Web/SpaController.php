@@ -75,7 +75,8 @@ class SpaController extends BaseController
         $temp = new SpaResource($spa);
         return Inertia::render('Spas/Edit', [
             'spa' => $temp->toArray(request()),
-            'users' => User::all(),
+            'rules' => SpaRule::all(),
+            'operations' => SpaOperation::all(),
             'suppliers' => Supplier::all(),
         ]);
     }

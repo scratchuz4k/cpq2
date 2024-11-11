@@ -25,14 +25,28 @@ props.rules.forEach(element => {
 
 const spa = reactive({
     entity_1: null,
+    entity_1_value: null,
     entity_2: null,
-    supplier_id: null,
-    user_id: null,
-    name: null
+    entity_2_value: null,
+    operation_id: 1,
+    name: null,
+    value: 0,
+    percentage: 0
 })
 
 const saveSpa = () => {
-    router.post(`/spas`, spa,
+    let rule = props.rules.find(x => x.code == spa.entity_1 + '' + (spa.entity_2 ?? ''))
+
+    let item = {
+        rule_id: rule.id,
+        field_1: spa.entity_1_value?.id,
+        field_2: spa.entity_2_value?.id,
+        operation_id: spa.operation_id,
+        value: spa.value,
+        percentage: spa.percentage,
+    }
+
+    router.post(`/spas`, item,
         {
             onSuccess: (page) => {
                 notyf.success("Created with Success")
@@ -48,12 +62,6 @@ const saveSpa = () => {
     )
 }
 
-const icons = {
-    'Product': ['far', 'rectangle-list'],
-    'Account': ['far', 'address-card'],
-    'Supplier': ['far', 'handshake'],
-    null: ['fas', 'fa-slash']
-}
 const items = ref([
     { label: 'Home', url: '/' },
     { label: 'My Account', url: '/myaccount' },
@@ -73,39 +81,7 @@ const items = ref([
                 </PrimaryButton>
             </template>
         </Header>
-        <div class="col-6">
-            <div class="panel">
-                <h5>Choose the first Entity</h5>
-                <ul class="d-flex flex-wrap p-0 m-0" style="list-style: none;">
-                    <li v-for="(rule, index) in rules">
-                        <div :class="{ 'active': spa.entity_1 === index }" class="rule d-flex flex-column p-2"
-                            @click="() => { spa.entity_1 = index; spa.entity_2 = null }">
-                            <font-awesome-icon class="p-2 " :icon="icons[index]" size="2x"></font-awesome-icon>
-                            <p>{{ index }}</p>
-                        </div>
-                    </li>
-                </ul>
-                <template v-if="spa.entity_1">
-                    <h5 class="mt-3">Choose the Second Entity (if needed)</h5>
-                    <ul class="d-flex flex-wrap p-0 m-0" style="list-style: none;">
-                        <li v-for="rule in rules[spa.entity_1]">
-                            <div :class="{ 'active': spa.entity_2 === rule }" class="rule d-flex flex-column p-2"
-                                @click="() => spa.entity_2 = rule">
-                                <font-awesome-icon class="p-2 " :icon="icons[rule]" size="2x"></font-awesome-icon>
-                                <p>{{ rule ?? 'None' }}</p>
-                            </div>
-                        </li>
-                    </ul>
-                    <div class="row my-3">
-                        <label class="form-label">Operation:</label>
-                        <select class="form-select" v-model="spa.rule_id">
-                            <option v-for="operation in props.operations" :value="operation.id">{{ operation.code }}
-                            </option>
-                        </select>
-                    </div>
-                </template>
-            </div>
-        </div>
+        <SpaForm v-model="spa" :rules="rules" :operations="props.operations"></SpaForm>
 
     </AuthenticatedLayout>
 </template>

@@ -23,8 +23,8 @@ class ProductUpdateRequest extends FormRequest
     {
         return [
             "name" => "required|string|max:255",
-            "supplier_id" => "required|exists:suppliers,id",
-            "brand_id" => "required|exists:brands,id"
+            "supplier_id" => "nullable|exists:suppliers,id",
+            "brand_id" => "nullable|exists:brands,id"
         ];
     }
 }

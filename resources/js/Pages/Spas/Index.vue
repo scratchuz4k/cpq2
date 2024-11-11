@@ -10,6 +10,7 @@ const items = ref([
 
 </script>
 <template>
+
     <Head title="SPAs" />
     <AuthenticatedLayout>
         <div class="panel">
@@ -27,10 +28,12 @@ const items = ref([
                     link: false,
                 }" :columns="[
                     { data: 'id', title: '#', style: 'width:5%' },
-                    { data: 'supplier.name', title: 'Supplier', style: 'width:15%' },
-                    { data: 'user.name', title: 'User', style: 'width:15%' },
-                    { data: 'name', title: 'Name', style: 'width:20%' },
-                    { data: 'data', title: 'Data', style: 'width:35%' }
+                    { data: 'rule.code', title: 'Rule', style: 'width:15%' },
+                    { data: 'field_1.name', title: 'Field 1', style: 'width:15%' },
+                    { data: 'field_2.name', title: 'Field 2', style: 'width:15%' },
+                    { data: 'operation.code', title: 'Operation', style: 'width:15%' },
+                    { data: 'value', title: 'Value', style: 'width:15%' },
+                    { data: 'percentage', title: 'Percentage', style: 'width:15%' },
                 ]" route="/spas">
                 </Datatable>
             </div>

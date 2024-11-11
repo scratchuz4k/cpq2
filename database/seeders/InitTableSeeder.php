@@ -59,7 +59,7 @@ class InitTableSeeder extends Seeder
         ]);
 
         foreach (SpaRulesEnum::cases() as $case) {
-            SpaRule::updateOrCreate(['code' => $case->name], ['class' => $case->value]);
+            SpaRule::updateOrCreate(['code' => $case->name], ['class' => $case->value, ...$case->getTasks()]);
         }
 
         foreach (SpaOperationsEnum::cases() as $case) {
