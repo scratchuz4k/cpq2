@@ -22,8 +22,8 @@ const showDate = (days = 0) => {
 
 const items = ref([
     { label: 'Home', url: '/dashboard' },
-    { label: `Quote #${props.order?.id}`, url: props.order ? `/orders/${props.order.id}/edit` : '#' },
-    { label: `Summary`, url: props.order ? `/orders/${props.order.id}` : '#' },
+    { label: `Quote #${props.quote?.id}`, url: props.quote ? `/quotes/${props.quote.id}/edit` : '#' },
+    { label: `Summary`, url: props.quote ? `/quotes/${props.quote.id}` : '#' },
     { label: 'Preview PDF' }
 ]);
 
@@ -114,10 +114,10 @@ const items = ref([
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <tr class="item-row" v-for="item in order.items"
+                                            <tr class="item-row" v-for="item in quote.items"
                                                 style="vertical-align: middle;">
                                                 <td class="position-relative" style="width:40px">
-                                                    {{ order.items.indexOf(item) + 1 }}
+                                                    {{ quote.items.indexOf(item) + 1 }}
                                                 </td>
                                                 <td class="text-center d-none d-xl-table-cell">
                                                     <img v-if="item.data.providerKey" class="img-provider"
@@ -172,25 +172,25 @@ const items = ref([
                                                         <tr>
                                                             <th>Total Monthly</th>
                                                             <td id="total_monthly_net" class="text-end">
-                                                                {{ GBP.format(order.total_monthly) }}
+                                                                {{ GBP.format(quote.total_monthly) }}
                                                             </td>
                                                             <td id="total_monthly_vat" class="text-end">
-                                                                {{ GBP.format(order.total_monthly_vat) }}
+                                                                {{ GBP.format(quote.total_monthly_vat) }}
                                                             </td>
                                                             <td id="total_monthly_gross" class="text-end">
-                                                                {{ GBP.format(order.total_monthly_gross) }}
+                                                                {{ GBP.format(quote.total_monthly_gross) }}
                                                             </td>
                                                         </tr>
                                                         <tr>
                                                             <th>Total One-off Costs</th>
                                                             <td id="total_net" class="text-end">
-                                                                {{ GBP.format(order.total) }}
+                                                                {{ GBP.format(quote.total) }}
                                                             </td>
                                                             <td id="total_vat" class="text-end">
-                                                                {{ GBP.format(order.total_vat) }}
+                                                                {{ GBP.format(quote.total_vat) }}
                                                             </td>
                                                             <td id="total_gross" class="text-end">
-                                                                {{ GBP.format(order.total_gross) }}
+                                                                {{ GBP.format(quote.total_gross) }}
                                                             </td>
                                                         </tr>
                                                     </tbody>

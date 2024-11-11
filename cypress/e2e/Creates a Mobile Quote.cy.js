@@ -15,7 +15,7 @@ const account = { ref: generateHash(temp), name: temp }
 const quantities = []
 
 
-describe("Creates a Mobile Order", () => {
+describe("Creates a Mobile Quote", () => {
     let hardwareCount = 0;
 
     beforeEach(() => {
@@ -31,7 +31,7 @@ describe("Creates a Mobile Order", () => {
         cy.get(".notyf").contains("Created with Success")
     })
 
-    it("Creates Mobile Order", () => {
+    it("Creates Mobile Quote", () => {
         cy.visit("/")
         cy.get("#create-tab").click()
         cy.get("#account_id").select(account.name)
@@ -119,21 +119,21 @@ describe("Creates a Mobile Order", () => {
     it("I can change and reset Global Discount", () => {
         cy.visit("/")
         cy.get("#datatable-btn-0-show").click()
-        let order = { margin: null, commission: null, global: null }
+        let quote = { margin: null, commission: null, global: null }
 
         cy.get("#input-margin-order").then(($input) => {
-            order.margin = $input.val().trim();
+            quote.margin = $input.val().trim();
         })
         cy.get("#input-global-discount").then(($input) => {
-            order.global = $input.val().trim();
-        }).clear().type(rand(order.global));
+            quote.global = $input.val().trim();
+        }).clear().type(rand(quote.global));
 
         cy.get("#btn-apply-global-discount").click()
         cy.get("#btn-apply-global-discount", { timeout: 3000 }).should("not.be.disabled");
 
         cy.get("#input-margin-order").invoke("val")
             .then((val) => {
-                expect(val).to.not.equal(order.margin);
+                expect(val).to.not.equal(quote.margin);
             });
 
         cy.get("#btn-reset-quote").click()

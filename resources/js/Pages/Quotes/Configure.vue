@@ -12,8 +12,8 @@ const props = defineProps({
 
 const form = reactive({
     isLoading: false,
-    account: props.order.account ?? null,
-    solution_type:  props.order.solution_type ?? null,
+    account: props.quote.account ?? null,
+    solution_type:  props.quote.solution_type ?? null,
     address: null,
     postCode: null,
     position: null,
@@ -38,7 +38,7 @@ const submit = () => {
 
 const items = ref([
     { label: 'Home', url: '/dashboard' },
-    { label: `Quote #${props.order?.id}`},
+    { label: `Quote #${props.quote?.id}`},
 ]);
 
 </script>
