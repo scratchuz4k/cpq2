@@ -181,7 +181,7 @@ const saveQuote = async () => {
         }
         items.push({
             product_code: x.code,
-            product_id: x.product_id,
+            product_id: x.id,
             quantity: x.quantity,
             name: x.name,
             raw_price: x.price ?? x.prices[0].net,
