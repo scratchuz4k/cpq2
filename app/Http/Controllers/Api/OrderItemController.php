@@ -76,6 +76,9 @@ class OrderItemController extends BaseController
      */
     public function destroy(OrderItem $orderItem)
     {
-        return $orderItem->delete();
+        $order = $orderItem->order;
+        $orderItem->delete();
+        $order->computeTotals();
+        return response()->json(null, 200);
     }
 }
