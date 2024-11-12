@@ -2,9 +2,8 @@
 
 namespace App\Helpers\Prices\Enums;
 
-enum PriceTypeEnum: string
+enum PricePlanEnum: string
 {
-    case Anual = 'anual';
     case Montlhy = 'monthly';
     case Single = 'single';
 }

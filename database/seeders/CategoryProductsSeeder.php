@@ -5,6 +5,7 @@ namespace Database\Seeders;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 use App\Models\Category;
+use App\Models\PricePlan;
 use App\Models\Product;
 use App\Models\Tenant;
 use Illuminate\Database\Seeder;
@@ -63,6 +64,7 @@ class CategoryProductsSeeder extends Seeder
 
         foreach (Tenant::all() as $tenant) {
             $categories = [];
+            $pricePlan = PricePlan::where("code","monthly")->first();
             $categories["plan"]  = Category::updateOrCreate(["code" => "plan", "tenant_id" => $tenant->id], ["name" => "Plans"]);
             $categories["bolt_on"]  = Category::updateOrCreate(["code" => "bolt_on", "tenant_id" => $tenant->id], ["name" => "Bolt On"]);
 

@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
+use App\Helpers\Prices\Enums\PricePlanEnum;
 use App\Helpers\Prices\Enums\SpaOperationsEnum;
 use App\Models\User;
 use App\Models\Tenant;
@@ -13,6 +14,7 @@ use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Permission;
 use App\Helpers\Prices\Enums\SpaRulesEnum;
+use App\Models\PricePlan;
 use App\Models\SpaOperation;
 use App\Models\SpaRule;
 
@@ -64,6 +66,10 @@ class InitTableSeeder extends Seeder
 
         foreach (SpaOperationsEnum::cases() as $case) {
             SpaOperation::updateOrCreate(['code' => $case->name], ['class' => $case->value]);
+        }
+
+        foreach (PricePlanEnum::cases() as $case) {
+            PricePlan::updateOrCreate(['code' => $case->value], ['name' => $case->name]);
         }
     }
 }

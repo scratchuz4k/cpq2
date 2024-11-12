@@ -52,6 +52,12 @@ class QuoteItem extends Model
         return $this->belongsTo(Quote::class);
     }
 
+    public function pricePlan(): BelongsTo
+    {
+        related:
+        return $this->belongsTo(PricePlan::class);
+    }
+
     public function computeTotals()
     {
         $this->refresh();

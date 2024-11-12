@@ -2,10 +2,11 @@
 
 namespace App\Models;
 
-use App\Helpers\Prices\PriceRules;
-use App\Helpers\Prices\PriceRulesSpa;
+use App\Models\PricePlan;
 use App\Trait\SetTenantId;
+use App\Helpers\Prices\PriceRules;
 use App\Models\Scopes\TenantScope;
+use App\Helpers\Prices\PriceRulesSpa;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -77,6 +78,12 @@ class Price extends Model
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class, "product_id", "id");
+    }
+
+    public function pricePlan(): BelongsTo
+    {
+        related:
+        return $this->belongsTo(PricePlan::class);
     }
 
     public function calculate()
