@@ -73,9 +73,16 @@ const addressSelect = async (form) => {
     }
 
     try {
-        let res = await axios.post(`/api/external/get-position-by-address`, { fullAddress: form.address.label })
+        if (form.address.latitude && form.address.longitude) {
+            form.position = {
+                lat: form.address.latitude,
+                lon: form.address.longitude
+            }
+        } else {
+            let res = await axios.post(`/api/external/get-position-by-address`, { fullAddress: form.address.label })
+            form.position = res.data
+        }
         form.isLoading = false
-        form.position = res.data
         form.solutionCheck = false
     } catch (ex) {
         alert(ex.response.data.message)
