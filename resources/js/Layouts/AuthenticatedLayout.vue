@@ -184,7 +184,7 @@ watch(search, () => {
                 <div class="w-100 m-0 d-flex justify-content-between">
                     <p class="m-0">
                         <b>#{{ quote.id }} - {{ quote.account?.name }} </b> / {{ quote.solution_type.name }} <br>
-                        <span style="font-size: 12px;"> {{ quote.user.name }} - {{ helpers.formatDate(quote.updated_at) }}</span>
+                        <span style="font-size: 12px;"> {{ quote.user.name }} - {{ format.date(quote.updated_at) }}</span>
                     </p>
                     <p class="m-0">
                         <span class="badge text-bg-secondary">{{ quote.status }}</span>
@@ -200,7 +200,7 @@ watch(search, () => {
                 <div class="w-100 m-0 d-flex justify-content-between">
                     <p class="m-0">
                         <b>#{{ account.id }} - {{ account.name }} </b> / {{ account.reference }} <br>
-                        {{ helpers.formatDate(account.updated_at) }}
+                        {{ format.date(account.updated_at) }}
                     </p>
                 </div>
             </a>
