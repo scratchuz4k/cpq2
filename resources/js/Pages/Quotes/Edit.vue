@@ -17,7 +17,7 @@ const solutionsViews = {
 
 const items = ref([
     { label: 'Home', url: '/' },
-    { label: props.order ? `Quote #${props.order?.id}` : 'Create a quote'},
+    { label: props.quote ? `Quote #${props.quote?.id}` : 'Create a quote'},
 ]);
 </script>
 
