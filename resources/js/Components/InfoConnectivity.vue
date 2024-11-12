@@ -3,7 +3,7 @@ import { Link } from '@inertiajs/vue3';
 import InfoBox from "@/Components/InfoBox.vue";
 
 const props = defineProps({
-    order: Object,
+    quote: Object,
 })
 </script>
 <template>
@@ -11,16 +11,16 @@ const props = defineProps({
         <div class="col">
             <InfoBox>
                 <p class="mb-1">
-                    <b>Quote-{{ order?.id }} for {{ order?.account.name }}</b>
+                    <b>Quote-{{ quote?.id }} for {{ quote?.account.name }}</b>
                 </p>
-                <p class="mb-0 fw-medium" v-if="order?.solution_type">
+                <p class="mb-0 fw-medium" v-if="quote?.solution_type">
                     <span>
-                        Solution Type: {{ order?.solution_type.name }}
-                        <Link :href="route('orders.configure', { order: order.id })" class="text-primary">Edit</Link>
+                        Solution Type: {{ quote?.solution_type.name }}
+                        <Link :href="route('quotes.configure', { quote: quote.id })" class="text-primary">Edit</Link>
                     </span>
                     <span class="mx-3">|</span>
                     <span>
-                        Address: {{ order?.address_line1 }} <Link :href="route('orders.configure', { order: order.id })" class="text-primary">Edit</Link>
+                        Address: {{ quote?.address_line1 }} <Link :href="route('quotes.configure', { quote: quote.id })" class="text-primary">Edit</Link>
                     </span>
                 </p>
             </InfoBox>

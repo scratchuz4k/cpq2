@@ -26,9 +26,9 @@ class Account extends Model
     {
         return $this->belongsTo(Tenant::class);
     }
-    public function orders(): HasMany
+    public function quotes(): HasMany
     {
-        return $this->hasMany(Order::class);
+        return $this->hasMany(Quote::class);
     }
 
     public function contacts()

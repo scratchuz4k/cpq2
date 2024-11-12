@@ -29,7 +29,7 @@ const props = defineProps({
     <Head title="Dashboard" />
 
     <AuthenticatedLayout>
-        <h1>Welcome {{ $page.props.auth.user.name }}<span>.</span></h1>
+        <h1 id="welcome-msg">Welcome {{ $page.props.auth.user.name }}<span>.</span></h1>
 
         <div class="panel">
             <h2>Quotes</h2>
@@ -53,7 +53,7 @@ const props = defineProps({
                     'user.name': { type: 'options', options: users.map(x => x.name) },
                     'solution_type.name': { type: 'options', options: solutions.map(x => x.name) },
                     'status': { type: 'options', options: status }
-                }" route="/orders">
+                }" route="/quotes">
                     <template #status="{ value }">
                         <span class="badge text-bg-secondary">{{ value }}</span>
                     </template>

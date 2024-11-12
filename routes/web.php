@@ -3,7 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Web\TokenController;
 use App\Http\Controllers\Web\BrandController;
-use App\Http\Controllers\Web\OrderController;
+use App\Http\Controllers\Web\QuoteController;
 use App\Http\Controllers\Web\PriceController;
 use App\Http\Controllers\Web\TenantController;
 use App\Http\Controllers\Web\AccountController;
@@ -23,15 +23,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::get('/tenant/{tenant}/make-current', [TenantController::class, 'switch'])->name('tenant.make-current');
 
-    Route::get('/orders/{order}/preview', [OrderController::class, 'preview'])->name('orders.preview');
-    Route::get('/orders/{order}/download', [OrderController::class, 'download'])->name('orders.download');
-    Route::get('/orders/{order}/configure', [OrderController::class, 'configure'])->name('orders.configure');
+    Route::get('/quotes/{quote}/preview', [QuoteController::class, 'preview'])->name('quotes.preview');
+    Route::get('/quotes/{quote}/download', [QuoteController::class, 'download'])->name('quotes.download');
+    Route::get('/quotes/{quote}/configure', [QuoteController::class, 'configure'])->name('quotes.configure');
 
     Route::post('/users/import', [UserController::class, 'importUsers'])->name('users.import');
 
     Route::resources([
         'prices' => PriceController::class,
-        'orders' => OrderController::class,
+        'quotes' => QuoteController::class,
         'accounts' => AccountController::class,
         'tenant' => TenantController::class,
         'brands' => BrandController::class,
