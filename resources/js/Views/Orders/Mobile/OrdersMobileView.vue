@@ -30,10 +30,7 @@ const step = ref(params["step"] ?? 1)
 
 const search = ref(null)
 
-const products = reactive({
-    plan: [],
-    bolt_on: [],
-})
+const products = ref([])
 const productsHardware = ref([])
 const order = reactive({
     items: props.modelValue.items,
@@ -79,23 +76,21 @@ const sorts = [
 
 const sort = ref(sorts[1])
 
-const getProducts = () => {
-    Object.keys(products).forEach(async (key) => {
-        let query = queryString.stringify({
-            limit: 100,
-            filters: JSON.stringify([{
-                column: 'categories.code',
-                operator: 'equals',
-                value: key
-            }]),
-        })
-        let res = await axios.get("/api/products" + '?' + query)
-        res.data.data.forEach((e) => {
-            let temp = props.modelValue.items.find(x => x.product_code == e.code)
-            e.quantity = temp ? temp.quantity : 0
-        });
-        products[key] = res.data.data
+const getProducts = async () => {
+    let query = queryString.stringify({
+        limit: 100,
+        filters: JSON.stringify([{
+            column: 'categories.code',
+            operator: 'equals',
+            value: 'plan'
+        }]),
     })
+    let res = await axios.get("/api/products" + '?' + query)
+    res.data.data.forEach((e) => {
+        let temp = props.modelValue.items.find(x => x.product_code == e.code)
+        e.quantity = temp ? temp.quantity : 0
+    });
+    products.value = res.data.data
 }
 
 const getProductsShopBlocks = async () => {
@@ -207,17 +202,16 @@ const saveQuote = async () => {
 }
 
 const getHardwareProductsCount = () => {
-    let codes = [...products.bolt_on.map(x => x.code), ...products.plan.map(x => x.code)];
+    let codes = products.value.map(x => x.code);
     let items = [...order.items, ...order.new]
     return items.filter(x => !(codes.includes(x.product_code) || codes.includes(x.code))).reduce((acc, i) => acc += i.quantity, 0)
 }
 
 const checkPlansHardwareQuantity = () => {
-    let plansQty = products.plan.reduce((acc, x) => acc += x.quantity, 0)
-    let boltOnQty = products.bolt_on.reduce((acc, x) => acc += x.quantity, 0)
+    let plansQty = products.value.reduce((acc, x) => acc += x.quantity, 0)
     let hardwareQty = getHardwareProductsCount()
 
-    return (plansQty + boltOnQty) - hardwareQty
+    return plansQty - hardwareQty
 }
 
 getProductsShopBlocks()
@@ -246,10 +240,10 @@ const items = ref([
                 <div v-if="step == 1" id="mobile_step1" class="step">
                     <div class="d-flex justify-content-between mb-3">
                         <h2>Select some products to get started</h2>
-                        <p class="bigger bold text-primary">STEP 1/3</p>
+                        <p class="bigger bold text-primary">STEP 1/2</p>
                     </div>
 
-                    <div v-for="(product, index) in products.plan" class="mobile-item mobile-product mb-3">
+                    <div v-for="(product, index) in products" class="mobile-item mobile-product mb-3">
                         <div class="d-flex justify-content-between">
                             <div class="d-flex align-items-center mb-2">
                                 <h4 class="m-0">{{ product.name }}</h4>
@@ -279,7 +273,7 @@ const items = ref([
 
                     <div class="d-flex justify-content-end align-items-center">
                         <span id="total_mobile_users">
-                            Add {{ products.plan.reduce((acc, item) => acc += item.quantity, 0) }}
+                            Add {{ products.reduce((acc, item) => acc += item.quantity, 0) }}
                             mobile users
                         </span>
                         <button :id="'btn-step-1-next'" class="ms-3 btn btn-primary step-nav" type="button"
@@ -288,67 +282,10 @@ const items = ref([
                         </button>
                     </div>
                 </div>
-                <div v-if="step == 2" id="mobile_step2" class="step">
-                    <div class="d-flex justify-content-between mb-3">
-                        <h2>Next, choose your bolt-ons</h2>
-                        <p class="m-0 mb-2 text-primary bold">STEP 2/3</p>
-                    </div>
-                    <div v-for="(product, index) in products.bolt_on" class="mobile-item mobile-product mb-3">
-                        <div class="d-flex justify-content-between">
-                            <div class="d-flex align-items-center mb-2">
-                                <h4 class="m-0 ">{{ product.name }}</h4>
-                                <p class="m-0 ms-2">
-                                    {{ GBP.format(product.prices[0].gross_monthly) }}
-                                </p>
-                            </div>
-                            <font-awesome-icon :icon="['fa', 'circle-info']" />
-                        </div>
-                        <div class="mobile-product-quantity">
-                            <label>Quantity</label>
-                            <div class="d-flex align-items-center  pb-3">
-                                <InputQuantity :id="'bolt-' + index" v-model="product.quantity"
-                                    @change="(ev) => checkQuantity(product, ev)" />
-
-                                <button :id="'btn-bolt-' + index + '-add-25'" type="button"
-                                    class="btn btn-sm ms-4 btn-add-custom-quantity"
-                                    @click="checkQuantity(product, product.quantity + 25)">+25</button>
-                                <button :id="'btn-bolt-' + index + '-add-50'" type="button"
-                                    class="btn btn-sm mx-2 btn-add-custom-quantity"
-                                    @click="checkQuantity(product, product.quantity + 50)">+50</button>
-                                <button :id="'btn-bolt-' + index + '-add-100'" type="button"
-                                    class="btn btn-sm btn-add-custom-quantity"
-                                    @click="checkQuantity(product, product.quantity + 100)">+100</button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <button :id="'btn-step-2-previous'" class="btn btn-light step-nav btn-sm me-3" type="button"
-                                @click="() => step--">
-                                <font-awesome-icon :icon="['fas', 'arrow-left']" /> Back
-                            </button>
-                            <button class="btn btn-outline-primary text-primary " @click="saveQuote()"
-                                :disabled="checkPlansHardwareQuantity() < 0">
-                                Save
-                            </button>
-                        </div>
-                        <div>
-                            <span id="total_mobile_users">
-                                Add {{ products.bolt_on.reduce((acc, item) => acc += item.quantity, 0) }}
-                                bolt-ons
-                            </span>
-                            <button id="btn-step-2-next" class="ms-3 btn btn-primary step-nav" type="button"
-                                @click="() => step++">Next
-                                <font-awesome-icon :icon="['fas', 'arrow-right']" />
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                <div v-if="step == 3" id="mobile_step3" class="step">
-                    <div class="d-flex align-items-end mb-4">
+                <div v-if="step == 2" id="mobile_step3" class="step">
+                    <div class="d-flex justify-content-between mb-4">
                         <h2 class="m-0">Finally, choose your add-ons</h2>
-                        <p class="m-0 ms-2 text-primary bold">STEP 3/3</p>
+                        <p class="bigger text-primary bold">STEP 2/2</p>
                     </div>
                     <div class="d-flex justify-content-between mb-3">
                         <h3>Handsets</h3>
@@ -371,7 +308,8 @@ const items = ref([
                                         <li class="bullet me-2 mb-2" v-for="(item, index) in filter.value">
                                             <p class="small">{{ item }}
                                                 <span @click="() => filter.value.splice(index, 1)"
-                                                    style="cursor: pointer;"> <font-awesome-icon :icon="['fas', 'xmark']" /></span>
+                                                    style="cursor: pointer;"> <font-awesome-icon
+                                                        :icon="['fas', 'xmark']" /></span>
                                             </p>
                                         </li>
                                     </template>
@@ -468,7 +406,7 @@ const items = ref([
                     </Paginator>
                     <div class="d-flex justify-content-between align-items-center mt-3">
                         <div>
-                            <button id="btn-step-3-previous" class="btn text-primary step-nav btn-sm me-3" type="button"
+                            <button id="btn-step-2-previous" class="btn text-primary step-nav btn-sm me-3" type="button"
                                 @click="() => step--">
                                 <font-awesome-icon :icon="['fas', 'arrow-left']" /> Previous
                             </button>
@@ -482,7 +420,7 @@ const items = ref([
                                 Add {{ productsHardware.reduce((acc, item) => acc += item.quantity, 0) }}
                                 handsets
                             </span>
-                            <button id="btn-step-3-next" class="ms-3 btn btn-primary step-nav" type="button"
+                            <button id="btn-step-2-next" class="ms-3 btn btn-primary step-nav" type="button"
                                 @click="saveQuote()">Next
                                 <font-awesome-icon :icon="['fas', 'arrow-right']" />
                             </button>
@@ -500,25 +438,16 @@ const items = ref([
                     </div>
                 </InfoBox>
                 <div class="configure-mobile-sidebar px-4 py-4" style="position: sticky; top: 25px">
-                    <h4 id="sidebar_products" data-total="0">1. Products</h4>
+                    <h4 id="sidebar_products" data-total="0">1. planProducts</h4>
                     <div class="sidebar_items mb-3">
-                        <div v-for="product in products.plan" class="item mb-2">
+                        <div v-for="product in products" class="item mb-2">
                             <span>{{ product.name }}</span>
                             <span class="badge bg-light-grey dark">
                                 {{ product.quantity }}
                             </span>
                         </div>
                     </div>
-                    <h4>2. Bolt-ons</h4>
-                    <div class="sidebar_bolt_ons mb-3">
-                        <div v-for="bolt in products.bolt_on" class="item mb-2">
-                            <span>{{ bolt.name }}</span>
-                            <span class="badge bg-light-grey dark">
-                                {{ bolt.quantity }}
-                            </span>
-                        </div>
-                    </div>
-                    <h4>3. Add-ons</h4>
+                    <h4>2. Add-ons</h4>
                     <div class="sidebar_add_ons mb-3">
                         <div class="item mb-2">
                             <span>Hardware</span><span class="badge bg-light-grey dark">
@@ -544,8 +473,8 @@ const items = ref([
     text-decoration: none;
     background: #F5E5F3;
     color: #A34996;
-    padding-left:15px;
-    padding-right:15px;
+    padding-left: 15px;
+    padding-right: 15px;
 }
 
 .bullet {

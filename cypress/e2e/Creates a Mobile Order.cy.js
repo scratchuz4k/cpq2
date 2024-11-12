@@ -35,7 +35,7 @@ describe("Creates a Mobile Order", () => {
     let hardwareCount = 0;
 
     beforeEach(() => {
-        cy.login("companyadmin@example.com", "werwerwer")
+        cy.login("super@example.com", "werwerwer")
     })
     it("Creates an Account", () => {
         cy.visit("/")
@@ -56,11 +56,6 @@ describe("Creates a Mobile Order", () => {
         cy.get("#btn-plan-0-add-25").click()
         cy.get("#btn-plan-1-add-25").click()
         cy.get("#btn-step-1-next").click()
-        cy.get("#btn-step-2-previous").click()
-        cy.get("#btn-plan-2-add-50").click()
-        cy.get("#btn-step-1-next").click()
-        cy.get("#input-bolt-0-quantity").type(30)
-        cy.get("#btn-step-2-next").click()
         let hardwareCount = 0
         let keys = [0, 1, 2, 3, 4]
         keys.forEach((key) => {
@@ -76,9 +71,9 @@ describe("Creates a Mobile Order", () => {
             });
         })
 
-        cy.get("#btn-step-3-next").click()
+        cy.get("#btn-step-2-next").click()
 
-        cy.get(".recurring-item").should("have.length", 4)
+        cy.get(".recurring-item").should("have.length", 2)
         cy.get(".one_off-item").then(($items) => {
             cy.then(() => {
                 expect(hardwareCount).to.equal($items.length);

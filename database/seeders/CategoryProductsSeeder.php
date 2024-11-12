@@ -49,7 +49,7 @@ class CategoryProductsSeeder extends Seeder
                 "description" => null,
                 "price" => 0,
                 "priceMonthly" => 10,
-                "category" => "bolt_on",
+                "category" => "plan",
             ],
             [
                 "code" => "share_bundle",
@@ -57,14 +57,13 @@ class CategoryProductsSeeder extends Seeder
                 "description" => null,
                 "price" => 0,
                 "priceMonthly" => 20,
-                "category" => "bolt_on",
+                "category" => "plan",
             ],
         ];
 
         foreach (Tenant::all() as $tenant) {
             $categories = [];
             $categories["plan"]  = Category::updateOrCreate(["code" => "plan", "tenant_id" => $tenant->id], ["name" => "Plans"]);
-            $categories["bolt_on"]  = Category::updateOrCreate(["code" => "bolt_on", "tenant_id" => $tenant->id], ["name" => "Bolt On"]);
 
             foreach ($products as $temp) {
                 $product = Product::updateOrCreate([

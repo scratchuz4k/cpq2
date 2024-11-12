@@ -170,7 +170,7 @@ const items = ref([
         <div class="row justify-content-between">
             <div class="col-lg-8 mb-5 price-summary">
                 <Header title="Build your deal" :breadcrumbs="items"></Header>
-                <div v-if="order.items.find((x) => x.price_monthly)" class="mb-5">
+                <div class="mb-5">
                     <div
                         class="mobile-price-group-heading border-bottom mb-3 d-flex justify-content-between align-items-center">
                         <h3>Recurring charges</h3>
@@ -288,7 +288,7 @@ const items = ref([
 
                     </table>
                 </div>
-                <div v-if="order.items.find((x) => x.price)" class="mb-5">
+                <div class="mb-5">
                     <div
                         class="mobile-price-group-heading border-bottom mb-3 d-flex justify-content-between align-items-center">
                         <h3>One off charges</h3>
