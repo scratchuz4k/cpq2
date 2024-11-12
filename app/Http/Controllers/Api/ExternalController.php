@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\Api;
 
 use App\Helpers\Api\CloudMarketAddress;
-use App\Helpers\Api\OpenreachLookup;
+use App\Helpers\Api\OpenreachLookupApi;
 use App\Helpers\Api\ShopBlocksApi;
-use App\Helpers\Api\VirtualOneLookup;
+use App\Helpers\Api\VirtualOneLookupApi;
 use App\Helpers\FilterProvider;
 use App\Http\Controllers\Controller;
 use App\Services\CloudMarketService;
@@ -26,107 +26,18 @@ class ExternalController extends Controller
             "postCode" => "required|min:4",
         ]);
 
-        $virtualOneLookup = new VirtualOneLookup;
+        $virtualOneLookup = new VirtualOneLookupApi;
         $addressesByPostCode = $virtualOneLookup->findAddresses($request->postCode);
-        $addresses = [];
-        if (array_key_exists("address", $addressesByPostCode) && !empty($addressesByPostCode["address"])) {
-            foreach ($addressesByPostCode["address"] as $address) {
-                $labelAddress = "";
-                $labelAddressParts = [];
 
-                if (!empty($address["organisationName"])) {
-                    $labelAddressParts[] = $address["organisationName"];
-                }
-
-                if (!empty($address["subPremises"])) {
-                    $labelAddressParts[] = $address["subPremises"];
-                }
-
-                if (!empty($address["premisesName"])) {
-                    $labelAddressParts[] = $address["premisesName"];
-                }
-
-                if (!empty($address["thoroughfareNumber"])) {
-                    $labelAddressParts[] = $address["thoroughfareNumber"];
-                }
-
-                if (!empty($address["thoroughfareName"])) {
-                    $labelAddressParts[] = $address["thoroughfareName"];
-                }
-
-                if (!empty($address["dependentThoroughfareName"])) {
-                    $labelAddressParts[] = $address["dependentThoroughfareName"];
-                }
-
-                if (!empty($address["postTown"])) {
-                    $labelAddressParts[] = $address["postTown"];
-                }
-
-                if (!empty($address["postcode"])) {
-                    $labelAddressParts[] = $address["postcode"];
-                }
-
-                if (!empty($address["country"])) {
-                    $labelAddressParts[] = $address["country"];
-                }
-
-                $labelAddress = implode(', ', $labelAddressParts);
-
-                $addresses[] = [
-                    "addressKey" => $address["addressReferenceNum"] ?? null,
-                    "type" => $address["addressQualifier"] ?? null,
-                    "uprn" => $address["uprn"] ?? null,
-                    "districtCode" => $address["districtCode"] ?? null,
-                    "coordinatesEasting" => $address["coordinatesEasting"] ?? null,
-                    "coordinatesNorthing" => $address["coordinatesNorthing"] ?? null,
-                    "latitude" => $address["latitude"] ?? null,
-                    "longitude" => $address["longitude"] ?? null,
-                    "label" => $labelAddress ?? null,
-                    "organisationName" => $address["organisationName"] ?? null,
-                    "subPremises" => $address["subPremises"] ?? null,
-                    "premisesName" => $address["premisesName"] ?? null,
-                    "dependentThoroughfareName" => $address["dependentThoroughfareName"] ?? null,
-                    "thoroughfareNumber" => $address["thoroughfareNumber"] ?? null,
-                    "thoroughfareName" => $address["thoroughfareName"] ?? null,
-                    "postTown" => $address["postTown"] ?? null,
-                    "postCode" => $address["postcode"] ?? null,
-                    "country" => $address["country"] ?? null,
-                ];
-            }
-        }
-
-        if(empty($addresses)) {
-            $openreachLookup = new OpenreachLookup;
+        if(empty($addressesByPostCode)) {
+            $openreachLookup = new OpenreachLookupApi;
             $addressesByPostCode = $openreachLookup->findAddresses($request->postCode);
-            if (array_key_exists("body", $addressesByPostCode) && array_key_exists("addresses", $addressesByPostCode["body"]) && !empty($addressesByPostCode["body"]["addresses"])) {
-                foreach ($addressesByPostCode["body"]["addresses"] as $address) {
-                    $addresses[] = [
-                        "addressKey" => $address["value"] ?? null,
-                        "type" => $address["type"] ?? null,
-                        "uprn" => $address["uprn"] ?? null,
-                        "districtCode" => $address["district"] ?? null,
-                        "coordinatesEasting" => $address["addressparts"]["CoordinatesEasting"] ?? null,
-                        "coordinatesNorthing" => $address["addressparts"]["CoordinatesNorthing"] ?? null,
-                        "latitude" => $address["addressparts"]["Latitude"] ?? null,
-                        "longitude" => $address["addressparts"]["Longitude"] ?? null,
-                        "label" => $labelAddress["label"] ?? null,
-                        "organisationName" => $address["addressparts"]["OrganisationName"] ?? null,
-                        "subPremises" => $address["addressparts"]["SubPremises"] ?? null,
-                        "premisesName" => $address["addressparts"]["PremisesName"] ?? null,
-                        "dependentThoroughfareName" => $address["addressparts"]["DependentThoroughfareName"] ?? null,
-                        "thoroughfareNumber" => $address["addressparts"]["ThoroughfareNumber"] ?? null,
-                        "thoroughfareName" => $address["addressparts"]["ThoroughfareName"] ?? null,
-                        "postTown" => $address["addressparts"]["PostTown"] ?? null,
-                        "postcode" => $address["addressparts"]["PostCode"] ?? null,
-                        "country" => $address["addressparts"]["Country"] ?? null,
-                    ];
-                }
-            } else {
+            if(empty($addressesByPostCode)) {
                 return;
             }
         }
 
-        return collect($addresses)
+        return collect($addressesByPostCode)
             ->sortBy('label')
             ->values()
             ->all();

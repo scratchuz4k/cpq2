@@ -3,11 +3,11 @@
 namespace App\Helpers\Api;
 
 use GuzzleHttp\Client;
-use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
-class VirtualOneLookup
+class VirtualOneLookupApi
 {
     private function request($endpoint, $options)
     {
@@ -69,7 +69,7 @@ class VirtualOneLookup
 
         if (Cache::has($cache_key)) {
             Log::debug("Getting virtual1 address lookup from cache for {$cache_key}");
-            return Cache::get($cache_key);
+            $response = Cache::get($cache_key);
         } else {
             Log::debug("Getting virtual1 address lookup FRESH for {$cache_key}");
 
@@ -80,7 +80,54 @@ class VirtualOneLookup
             ]);
 
             Cache::put($cache_key, $response);
-            return $response;
         }
+
+        $addresses = [];
+        if (array_key_exists("address", $response) && !empty($response["address"])) {
+            foreach ($response["address"] as $address) {
+
+                $labelAddress = "";
+                $labelAddressParts = [];
+
+                $addressKeys = [
+                    "organisationName",
+                    "subPremises",
+                    "premisesName",
+                    "thoroughfareNumber",
+                    "thoroughfareName",
+                    "dependentThoroughfareName",
+                    "postTown",
+                    "postcode",
+                    "country",
+                ];
+                $labelAddressParts = array_filter(array_map(function($key) use ($address) {
+                    return $address[$key] ?? null;
+                }, $addressKeys));
+                $labelAddress = implode(', ', $labelAddressParts);
+
+                $addresses[] = [
+                    'addressKey' => $address['addressReferenceNum'] ?? null,
+                    'type' => $address["addressQualifier"] ?? null,
+                    'uprn' => $address["uprn"] ?? null,
+                    'districtCode' => $address["districtCode"] ?? null,
+                    'coordinatesEasting' => $address["coordinatesEasting"] ?? null,
+                    'coordinatesNorthing' => $address["coordinatesNorthing"] ?? null,
+                    'latitude' => $address["latitude"] ?? null,
+                    'longitude' => $address["longitude"] ?? null,
+                    'label' => $labelAddress ?? null,
+                    'organisationName' => $address["organisationName"] ?? null,
+                    'subPremises' => $address["subPremises"] ?? null,
+                    'premisesName' => $address["premisesName"] ?? null,
+                    'dependentThoroughfareName' => $address["dependentThoroughfareName"] ?? null,
+                    'thoroughfareNumber' => $address["thoroughfareNumber"] ?? null,
+                    'thoroughfareName' => $address["thoroughfareName"] ?? null,
+                    'postTown' => $address["postTown"] ?? null,
+                    'postCode' => $address["postcode"] ?? null,
+                    'country' => $address["country"] ?? null,
+                ];
+            }
+        }
+
+        return $addresses;
     }
 }
