@@ -91,26 +91,25 @@ class OpenreachLookupApi
         $addresses = [];
         if (array_key_exists("body", $response) && array_key_exists("addresses", $response["body"]) && !empty($response["body"]["addresses"])) {
             foreach ($response["body"]["addresses"] as $address) {
-                $addressParts = array_key_exists("addressparts", $address) ? $address["addressparts"] : [];
                 $addresses[] = [
-                    "addressKey" => array_key_exists("value", $address) ? $address["value"] : null,
-                    "type" => array_key_exists("type", $address) ? $address["type"] : null,
-                    "uprn" => array_key_exists("uprn", $address) ? $address["uprn"] : null,
-                    "districtCode" => array_key_exists("district", $address) ? $address["district"] : null,
-                    "label" => array_key_exists("label", $address) ? $address["label"] : null,
-                    "coordinatesEasting" => array_key_exists("CoordinatesEasting", $addressParts) ? $addressParts["CoordinatesEasting"] : null,
-                    "coordinatesNorthing" => array_key_exists("CoordinatesNorthing", $addressParts) ? $addressParts["CoordinatesNorthing"] : null,
-                    "latitude" => array_key_exists("Latitude", $addressParts) ? $addressParts["Latitude"] : null,
-                    "longitude" => array_key_exists("Longitude", $addressParts) ? $addressParts["Longitude"] : null,
-                    "organisationName" => array_key_exists("OrganisationName", $addressParts) ? $addressParts["OrganisationName"] : null,
-                    "subPremises" => array_key_exists("SubPremises", $addressParts) ? $addressParts["SubPremises"] : null,
-                    "premisesName" => array_key_exists("PremisesName", $addressParts) ? $addressParts["PremisesName"] : null,
-                    "dependentThoroughfareName" => array_key_exists("DependentThoroughfareName", $addressParts) ? $addressParts["DependentThoroughfareName"] : null,
-                    "thoroughfareNumber" => array_key_exists("ThoroughfareNumber", $addressParts) ? $addressParts["ThoroughfareNumber"] : null,
-                    "thoroughfareName" => array_key_exists("ThoroughfareName", $addressParts) ? $addressParts["ThoroughfareName"] : null,
-                    "postTown" => array_key_exists("PostTown", $addressParts) ? $addressParts["PostTown"] : null,
-                    "postCode" => array_key_exists("PostCode", $addressParts) ? $addressParts["PostCode"] : null,
-                    "country" => array_key_exists("Country", $addressParts) ? $addressParts["Country"] : null,
+                    "addressKey" => $address["value"] ?? null,
+                    "type" => $address["type"] ?? null,
+                    "uprn" => $address["uprn"] ?? null,
+                    "districtCode" => $address["district"] ?? null,
+                    "coordinatesEasting" => $address["addressparts"]["CoordinatesEasting"] ?? null,
+                    "coordinatesNorthing" => $address["addressparts"]["CoordinatesNorthing"] ?? null,
+                    "latitude" => $address["addressparts"]["Latitude"] ?? null,
+                    "longitude" => $address["addressparts"]["Longitude"] ?? null,
+                    "label" => $address["label"] ?? null,
+                    "organisationName" => $address["addressparts"]["OrganisationName"] ?? null,
+                    "subPremises" => $address["addressparts"]["SubPremises"] ?? null,
+                    "premisesName" => $address["addressparts"]["PremisesName"] ?? null,
+                    "dependentThoroughfareName" => $address["addressparts"]["DependentThoroughfareName"] ?? null,
+                    "thoroughfareNumber" => $address["addressparts"]["ThoroughfareNumber"] ?? null,
+                    "thoroughfareName" => $address["addressparts"]["ThoroughfareName"] ?? null,
+                    "postTown" => $address["addressparts"]["PostTown"] ?? null,
+                    "postCode" => $address["addressparts"]["PostCode"] ?? null,
+                    "country" => $address["addressparts"]["Country"] ?? null,
                 ];
             }
         }
