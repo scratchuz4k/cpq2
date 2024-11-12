@@ -7,7 +7,7 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Cache;
 
-class OpenreachLookup
+class OpenreachLookupApi
 {
     private function request($endpoint, $options)
     {
@@ -29,7 +29,7 @@ class OpenreachLookup
             }
 
             return json_decode($json, true);
-            
+
         } catch (\Exception $e) {
             return ['error' => $e->getMessage()];
         }
@@ -48,7 +48,7 @@ class OpenreachLookup
             $incode = substr($postcode, -3);
             $outcode = str_replace($incode, '', $postcode);
         } else {
-            // attempt Republic of Ireland validation if UK hasn't 
+            // attempt Republic of Ireland validation if UK hasn't
             $regex = "/^((?:^[AC-FHKNPRTV-Y][0-9]{2}|D6W))[ -]?([0-9A-FHKNPRTV-Y]{4})$/";
             if (preg_match($regex, $postcode, $match)) {
                 $outcode = $match[1];
@@ -71,7 +71,7 @@ class OpenreachLookup
 
         if (Cache::has($cache_key)) {
             Log::debug("Getting openreach lookup from cache for {$cache_key}");
-            return Cache::get($cache_key);
+            $response = Cache::get($cache_key);
         } else {
             Log::debug("Getting openreach lookup FRESH for {$cache_key}");
 
@@ -86,7 +86,33 @@ class OpenreachLookup
             ]);
 
             Cache::put($cache_key, $response);
-            return $response;
         }
+
+        $addresses = [];
+        if (array_key_exists("body", $response) && array_key_exists("addresses", $response["body"]) && !empty($response["body"]["addresses"])) {
+            foreach ($response["body"]["addresses"] as $address) {
+                $addresses[] = [
+                    "addressKey" => $address["value"] ?? null,
+                    "type" => $address["type"] ?? null,
+                    "uprn" => $address["uprn"] ?? null,
+                    "districtCode" => $address["district"] ?? null,
+                    "coordinatesEasting" => $address["addressparts"]["CoordinatesEasting"] ?? null,
+                    "coordinatesNorthing" => $address["addressparts"]["CoordinatesNorthing"] ?? null,
+                    "latitude" => $address["addressparts"]["Latitude"] ?? null,
+                    "longitude" => $address["addressparts"]["Longitude"] ?? null,
+                    "label" => $address["label"] ?? null,
+                    "organisationName" => $address["addressparts"]["OrganisationName"] ?? null,
+                    "subPremises" => $address["addressparts"]["SubPremises"] ?? null,
+                    "premisesName" => $address["addressparts"]["PremisesName"] ?? null,
+                    "dependentThoroughfareName" => $address["addressparts"]["DependentThoroughfareName"] ?? null,
+                    "thoroughfareNumber" => $address["addressparts"]["ThoroughfareNumber"] ?? null,
+                    "thoroughfareName" => $address["addressparts"]["ThoroughfareName"] ?? null,
+                    "postTown" => $address["addressparts"]["PostTown"] ?? null,
+                    "postCode" => $address["addressparts"]["PostCode"] ?? null,
+                    "country" => $address["addressparts"]["Country"] ?? null,
+                ];
+            }
+        }
+        return $addresses;
     }
 }
