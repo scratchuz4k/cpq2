@@ -51,11 +51,11 @@ const addressSearch = _.debounce(async (form) => {
     try {
         let res = await axios.post(`/api/external/get-address-by-postcode`, { postCode: form.postCode })
         form.isLoading = false
-        if (!res.data?.body?.addresses) {
+        if (!res.data) {
             notyf.error("Addresses not found!")
             return
         }
-        addresses.value = res.data.body.addresses
+        addresses.value = res.data
 
     } catch (ex) {
         form.isLoading = false
@@ -73,9 +73,16 @@ const addressSelect = async (form) => {
     }
 
     try {
-        let res = await axios.post(`/api/external/get-position-by-address`, { fullAddress: form.address.label })
+        if (form.address.latitude && form.address.longitude) {
+            form.position = {
+                lat: form.address.latitude,
+                lon: form.address.longitude
+            }
+        } else {
+            let res = await axios.post(`/api/external/get-position-by-address`, { fullAddress: form.address.label })
+            form.position = res.data
+        }
         form.isLoading = false
-        form.position = res.data
         form.solutionCheck = false
     } catch (ex) {
         alert(ex.response.data.message)
@@ -141,13 +148,7 @@ watch(addressPostCode, () => {
                                 {{ modelValue.account?.name }}
                             </p>
                             <p class="mb-0" id="location_address">
-                                {{ modelValue.address.addressparts.PremisesName }}
-                                {{ modelValue.address.addressparts.ThoroughfareName }},
-                                {{ modelValue.address.addressparts.ThoroughfareNumber }},
-                                {{ modelValue.address.addressparts.SubPremises }}
-                                {{ modelValue.address.addressparts.PostCode }}
-                                {{ modelValue.address.addressparts.PostTown }}
-                                {{ modelValue.address.addressparts.Country }}
+                                {{ modelValue.address.label }}
                                 <br>
                                 <font-awesome-icon :icon="['fas', 'map-pin']" class="me-2"></font-awesome-icon>{{
                                     modelValue.position?.lat }}, {{ modelValue.position?.lon }}

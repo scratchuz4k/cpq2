@@ -26,10 +26,10 @@ const submit = () => {
             {
                 account_id: form.account?.id,
                 address_position: form.position,
-                address_city: form.address?.addressparts?.PostTown,
+                address_city: form.address?.postTown,
                 address_data: form.address,
                 address_line1: form.address?.label,
-                address_postcode: form.address?.addressparts?.PostCode,
+                address_postcode: form.address?.postCode,
                 solution_type_id: form.solution_type.id
             })
     } catch (ex) {
