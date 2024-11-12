@@ -90,9 +90,9 @@ class User extends Authenticatable
         return $this->belongsToMany(Tenant::class);
     }
 
-    public function orders(): HasMany
+    public function quotes(): HasMany
     {
-        return $this->hasMany(Order::class);
+        return $this->hasMany(Quote::class);
     }
 
     public static function ancestors()

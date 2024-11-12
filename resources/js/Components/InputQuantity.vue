@@ -37,6 +37,7 @@ const proxyValue = computed({
     border-width: 1px;
     border-style: solid;
     border-color: #BDBDBD;
+    text-align: center;
 }
 
 .btn-quantity {

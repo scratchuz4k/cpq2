@@ -35,13 +35,13 @@ const items = ref([
                     { data: 'created_at', title: 'Created At' },
                 ]" route="/tokens">
                     <template #last_used_at="{ value }">
-                        {{ helpers.formatDate(value) }}
+                        {{ format.date(value) }}
                     </template>
                     <template #expires_at="{ value }">
-                        {{ helpers.formatDate(value) }}
+                        {{ format.date(value) }}
                     </template>
                     <template #created_at="{ value }">
-                        {{ helpers.formatDate(value) }}
+                        {{ format.date(value) }}
                     </template>
                 </Datatable>
             </div>

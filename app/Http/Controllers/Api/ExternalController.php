@@ -3,15 +3,16 @@
 namespace App\Http\Controllers\Api;
 
 use App\Helpers\Api\CloudMarketAddress;
+use App\Helpers\Api\OpenreachLookupApi;
 use App\Helpers\Api\ShopBlocksApi;
-use Illuminate\Support\Str;
-use Illuminate\Http\Request;
-use App\Services\CloudMarketService;
-use App\Helpers\Api\OpenreachLookup;
+use App\Helpers\Api\VirtualOneLookupApi;
 use App\Helpers\FilterProvider;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Http;
+use App\Services\CloudMarketService;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Str;
 
 class ExternalController extends Controller
 {
@@ -25,8 +26,21 @@ class ExternalController extends Controller
             "postCode" => "required|min:4",
         ]);
 
-        $openreachLookup = new OpenreachLookup;
-        return $openreachLookup->findAddresses($request->postCode);
+        $virtualOneLookup = new VirtualOneLookupApi;
+        $addressesByPostCode = $virtualOneLookup->findAddresses($request->postCode);
+
+        if(empty($addressesByPostCode)) {
+            $openreachLookup = new OpenreachLookupApi;
+            $addressesByPostCode = $openreachLookup->findAddresses($request->postCode);
+            if(empty($addressesByPostCode)) {
+                return;
+            }
+        }
+
+        return collect($addressesByPostCode)
+            ->sortBy('label')
+            ->values()
+            ->all();
     }
 
     /**
@@ -43,7 +57,7 @@ class ExternalController extends Controller
         }
 
         $cache_key = 'address_lookup_' . Str::slug($address);
-        return  Cache::remember($cache_key, 3600, function () use ($address) {
+        return  Cache::remember($cache_key, 43200, function () use ($address) {
             $res = Http::get('https://api.tomtom.com/search/2/geocode/' . $address . '.json?key=' . env('TOMTOM_API_KEY') . '&countryCode=GB');
             $res = json_decode($res->body(), true);
             $position = [];
@@ -104,7 +118,7 @@ class ExternalController extends Controller
     public function getArticlesFromShopBlocks(Request $request)
     {
         $cache_key = md5("shop-blocks" . $request->input('category_id', 22));
-        $res = Cache::remember($cache_key, 3600, function () use ($request) {
+        $res = Cache::remember($cache_key, 43200, function () use ($request) {
             $products = [];
             $page = 0;
             do {
