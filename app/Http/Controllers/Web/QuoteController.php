@@ -8,7 +8,6 @@ use Inertia\Inertia;
 use App\Models\Quote;
 use App\Models\Account;
 use App\Models\SolutionType;
-use Illuminate\Http\Request;
 use App\Services\QuoteService;
 use Illuminate\Support\Facades\Log;
 use App\Http\Resources\QuoteResource;
@@ -32,7 +31,6 @@ class QuoteController extends BaseController
     public function index()
     {
         $user = request()->user();
-
 
         $users = User::descendants();
         if (!$user->hasRole('Sales Rep')) {

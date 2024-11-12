@@ -17,7 +17,6 @@ class PriceResource extends JsonResource
         return [
             ...$this->resource->toArray(),
             'net' => (float)$this->net,
-            'net_monthly' => (float)$this->net_monthly,
             'tax_rate' => (float)$this->tax_rate,
             'updated_at' => $this->updated_at,
             'created_at' => $this->created_at

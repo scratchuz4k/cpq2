@@ -47,7 +47,6 @@ class Price extends Model
         static::retrieved(function ($model) {
             static::$priceRules->find($model->product, $model->product->supplier,);
             $model->setAttribute('net_spa', static::$priceRules->apply((float)$model->net));
-            $model->setAttribute('net_monthly_spa', static::$priceRules->apply((float)$model->net_monthly));
             $model->setAttribute('active_spas', static::$priceRules->getAppliedSpas());
             $model->calculate();
         });
@@ -59,9 +58,6 @@ class Price extends Model
         "net",
         "tax",
         "gross",
-        "net_monthly",
-        "tax_monthly",
-        "gross_monthly",
         "spa_id",
         "product_id",
         "tenant_id"
@@ -86,9 +82,6 @@ class Price extends Model
     public function calculate()
     {
         $this->tax = $this->net * ($this->tax_rate / 100);
-        $this->tax_monthly = $this->net_spa * ($this->tax_rate / 100);
-
         $this->gross = $this->net_spa * (1 + ($this->tax_rate / 100));
-        $this->gross_monthly = $this->net_monthly_spa * (1 + ($this->tax_rate / 100));
     }
 }

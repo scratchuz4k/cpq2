@@ -17,9 +17,9 @@ return new class extends Migration
             $table->decimal('net', 12, 2)->default(0)->change();
             $table->decimal('tax', 12, 2)->default(0)->change();
             $table->decimal('gross', 12, 2)->default(0)->change();
-            $table->decimal('net_monthly', 12, 2)->default(0)->after('gross');;
-            $table->decimal('tax_monthly', 12, 2)->default(0)->after('net_monthly');;
-            $table->decimal('gross_monthly', 12, 2)->default(0)->after('tax_monthly');;
+            $table->decimal('net_monthly', 12, 2)->default(0)->after('gross');
+            $table->decimal('tax_monthly', 12, 2)->default(0)->after('net_monthly');
+            $table->decimal('gross_monthly', 12, 2)->default(0)->after('tax_monthly');
         });
     }
 

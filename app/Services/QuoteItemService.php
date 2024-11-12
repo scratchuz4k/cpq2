@@ -15,7 +15,6 @@ class QuoteItemService
                 ...$array,
                 'tax_order_item' => 20,
                 'original_price' => $array['price'],
-                'original_price_monthly' => $array['price_monthly'],
             ]);
 
             $quoteItem->computeTotals();
