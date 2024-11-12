@@ -1,5 +1,5 @@
 const crypto = require("crypto");
-const {getCurrentDate, generateHash} = require("../support/utils.js");
+const {getCurrentDate, generateHash} = require("../../support/utils.js");
 const rand = (notAllowedNumber, max = 101) => {
     let randomNumber = Math.floor(Math.random() * max); // Generate a random number
 
