@@ -14,8 +14,9 @@ class QuoteItem extends Model
     use HasFactory, SetTenantId;
     protected $fillable = [
         "quote_id",
-        "product_code",
         "product_id",
+        "price_plan_id",
+        "product_code",
         "quantity",
         "name",
         "data",

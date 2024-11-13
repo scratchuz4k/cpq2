@@ -24,24 +24,21 @@ class CategoryProductsSeeder extends Seeder
                 "code" => "basic",
                 "name" => "Basic",
                 "description" => "Basic / 5 GB / 100min",
-                "price" => 0,
-                "priceMonthly" => 10,
+                "price" => 10,
                 "category" => "plan",
             ],
             [
                 "code" => "premium",
                 "name" => "Premium",
                 "description" => "Premium / 20 GB / 500min",
-                "price" => 0,
-                "priceMonthly" => 20,
+                "price" => 20,
                 "category" => "plan",
             ],
             [
                 "code" => "traveller",
                 "name" => "Traveller",
                 "description" => "Traveller / Unlimited / 1000min",
-                "price" => 0,
-                "priceMonthly" => 30,
+                "price" => 30,
                 "category" => "plan",
             ],
             [
@@ -64,7 +61,7 @@ class CategoryProductsSeeder extends Seeder
 
         foreach (Tenant::all() as $tenant) {
             $categories = [];
-            $pricePlan = PricePlan::where("code","monthly")->first();
+            $pricePlan = PricePlan::where("code", "monthly")->first();
             $categories["plan"]  = Category::updateOrCreate(["code" => "plan", "tenant_id" => $tenant->id], ["name" => "Plans"]);
 
             foreach ($products as $temp) {
@@ -77,11 +74,14 @@ class CategoryProductsSeeder extends Seeder
                 ]);
 
                 $price = $product->prices()->updateOrCreate(
-                    ["code" => 1, "tenant_id" => $tenant->id],
+                    [
+                        "code" => 1,
+                        "tenant_id" => $tenant->id
+                    ],
                     [
                         "tax_rate" => 20,
                         "net" => $temp["price"] ?? 0,
-                        "net_monthly" => $temp["priceMonthly"] ?? 0
+                        "price_plan_id" => $pricePlan->id
                     ]
                 );
 

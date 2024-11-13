@@ -184,9 +184,7 @@ const saveQuote = async () => {
             quantity: x.quantity,
             name: x.name,
             raw_price: x.price ?? x.prices[0].net,
-            raw_price_monthly: x.priceMonthly ?? !x.prices ? 0 : x.prices[0].net_monthly,
             price: x.price ?? x.prices[0].net_spa,
-            price_monthly: x.priceMonthly ?? !x.prices ? 0 : x.prices[0].net_monthly_spa
         })
     })
 
@@ -247,7 +245,7 @@ const items = ref([
                             <div class="d-flex align-items-center mb-2">
                                 <h4 class="m-0">{{ product.name }}</h4>
                                 <p class="m-0 ms-2">
-                                    {{ product.description }} / {{ GBP.format(product.prices[0].net_monthly_spa) }}
+                                    {{ product.description }} / {{ GBP.format(product.prices[0].net_spa) }}
                                 </p>
                             </div>
                             <font-awesome-icon :icon="['fa', 'circle-info']" />

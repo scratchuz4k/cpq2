@@ -34,7 +34,6 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('spas', function (Blueprint $table) {
-            $table->foreignId('spa_id')->constrained()->cascadeOnDelete();
             $table->foreignId('supplier_id')->constrained()->cascadeOnDelete();
             $table->foreignId('merchant_id')->nullable()->constrained()->nullOnDelete();
             $table->foreignId('account_id')->nullable()->constrained()->cascadeOnDelete();

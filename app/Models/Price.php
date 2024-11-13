@@ -51,6 +51,10 @@ class Price extends Model
             $model->setAttribute('active_spas', static::$priceRules->getAppliedSpas());
             $model->calculate();
         });
+        static::saving(function ($model) {
+            unset($model->attributes['net_spa']);
+            unset($model->attributes['active_spas']);
+        });
     }
 
     protected $fillable = [
@@ -60,6 +64,7 @@ class Price extends Model
         "tax",
         "gross",
         "spa_id",
+        "price_plan_id",
         "product_id",
         "tenant_id"
     ];
