@@ -1,4 +1,5 @@
 const crypto = require("crypto");
+const {getCurrentDate, generateHash} = require("../support/utils.js");
 const rand = (notAllowedNumber, max = 101) => {
     let randomNumber = Math.floor(Math.random() * max); // Generate a random number
 
@@ -7,24 +8,6 @@ const rand = (notAllowedNumber, max = 101) => {
         randomNumber = Math.floor(Math.random() * max);
     }
     return randomNumber
-}
-// Function to generate hash
-const generateHash = (input) => {
-    return crypto.createHash("md5").update(input).digest("hex"); // SHA-256 hash
-}
-const getCurrentDate = () => {
-    const currentDate = new Date();
-    const year = currentDate.getFullYear();
-    const month = String(currentDate.getMonth() + 1).padStart(2, "0");
-    const day = String(currentDate.getDate()).padStart(2, "0");
-    const hour = String(currentDate.getHours()).padStart(2, "0");
-    const minute = String(currentDate.getMinutes()).padStart(2, "0");
-    const millisecond = String(currentDate.getMilliseconds()).padStart(3, "0");
-
-    // Create a readable date string
-    const readableDate = `${year}-${month}-${day} ${hour}:${minute}:${millisecond}`;
-
-    return readableDate;
 }
 
 const slugify = (string) => {
@@ -57,7 +40,7 @@ describe("Setup Sales Rep.cy", () => {
         cy.get("#treetable-search").type(user.name)
         cy.get("#users-table").contains(user.name)
     })
-    it("Creates an Order and checks comission", () => {
+    it("Creates an Order and checks commission", () => {
         cy.login(user.email, user.password)
         cy.visit("/")
         cy.get("#create-tab").click()
@@ -73,7 +56,7 @@ describe("Setup Sales Rep.cy", () => {
         cy.get("#btn-create-quote").click()
         cy.visit("/")
         cy.get("#datatable-btn-0-show").click()
-        cy.get("#order-tax-comission").invoke("text")
+        cy.get("#order-tax-commission").invoke("text")
             .then((text) => {
                 expect(text).to.not.equal(5);
             });
