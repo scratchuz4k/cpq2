@@ -19,7 +19,6 @@ class QuoteResource extends JsonResource
             'margin' => (float)$this->margin,
             'discount' => (float)$this->discount,
             'commission_rate' => (float)$this->commission_rate,
-            'contract_length' => (float)$this->contract_length,
             'user' => $this->user,
             'total_vat' => $this->total * 0.2,
             'total_gross' => $this->total * 1.2,

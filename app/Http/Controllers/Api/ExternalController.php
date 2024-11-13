@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Models\Account;
+use App\Models\PricePlan;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Helpers\FilterProvider;
@@ -14,7 +16,6 @@ use Illuminate\Support\Facades\Cache;
 use App\Helpers\Api\CloudMarketAddress;
 use App\Helpers\Api\OpenreachLookupApi;
 use App\Helpers\Api\VirtualOneLookupApi;
-use App\Models\PricePlan;
 
 class ExternalController extends Controller
 {
@@ -120,6 +121,7 @@ class ExternalController extends Controller
     public function getArticlesFromShopBlocks(Request $request)
     {
         $cache_key = md5("shop-blocks" . $request->input('category_id', 22));
+
         $res = Cache::remember($cache_key, 43200, function () use ($request) {
             $products = [];
             $page = 0;
@@ -138,7 +140,6 @@ class ExternalController extends Controller
                 "model" => [],
             ];
 
-            $priceRules = new PriceRules();
             foreach ($products as $key => $product) {
                 $temp = '';
                 foreach (array_keys($product) as $itemKey) {
@@ -170,6 +171,18 @@ class ExternalController extends Controller
 
         $items = FilterProvider::get($res['items'], request()->input('filters', []));
         $meta = FilterProvider::paginate($items);
+
+        $priceRules = new PriceRules();
+        $account = Account::find($request->input('account_id', null));
+
+        $meta['data'] = $meta['data']->map(function ($item) use ($priceRules, $account) {
+            $net_spa = $priceRules->calculate($item['prices'][0]['net'], account: $account);
+            $item['prices'][0]['net_spa'] = $net_spa;
+            $item['prices'][0]["tax"] = $net_spa * 0.2;
+            $item['prices'][0]["gross"] = $net_spa * 1.2;
+            $item['prices'][0]["active_spas"] = $priceRules->getAppliedSpas();
+            return $item;
+        });
 
         return [...$meta, 'filters' => $res['filters']];
     }

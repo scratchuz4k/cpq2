@@ -27,7 +27,6 @@ class Quote extends Model
         "solution_type_id",
         "tenant_id",
         "name",
-        "contract_length",
         "total",
         "total_tax",
         "total_gross",
@@ -74,12 +73,14 @@ class Quote extends Model
     {
         $this->refresh();
         $original_total = 0;
+
+
         $this->total = 0;
         $this->total_tax = 0;
         $this->total_gross = 0;
 
         foreach ($this->items as $item) {
-            $original_total += $item->original_price * $item->quantity;
+            $original_total += ($item->original_price * $item->quantity) * $item->contract_length;
 
             $this->total += $item->total;
             $this->total_tax += $item->total_tax;

@@ -29,6 +29,7 @@ class QuoteItem extends Model
         'total_tax',
         'total_gross',
         'tax_quote_item',
+        "contract_length",
     ];
 
     protected function casts(): array
@@ -70,10 +71,9 @@ class QuoteItem extends Model
         }
 
         $this->price = $price;
-
-        $this->total = $this->price * $this->quantity;
-        $this->total_tax = $this->total * ($this->tax_quote_item / 100);
-        $this->total_gross = $this->total * (($this->tax_quote_item / 100) + 1);
+        $this->total = ($this->price * $this->quantity) * $this->contract_length;
+        $this->total_tax = ($this->total * ($this->tax_quote_item / 100)) * $this->contract_length;
+        $this->total_gross = ($this->total * (($this->tax_quote_item / 100) + 1)) * $this->contract_length;
         $this->save();
     }
 }

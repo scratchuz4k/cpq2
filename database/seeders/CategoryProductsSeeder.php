@@ -45,16 +45,14 @@ class CategoryProductsSeeder extends Seeder
                 "code" => "500_uk_minute_bundle",
                 "name" => "500 UK minute bundle",
                 "description" => null,
-                "price" => 0,
-                "priceMonthly" => 10,
+                "price" => 10,
                 "category" => "plan",
             ],
             [
                 "code" => "share_bundle",
                 "name" => "Share bundle",
                 "description" => null,
-                "price" => 0,
-                "priceMonthly" => 20,
+                "price" => 20,
                 "category" => "plan",
             ],
         ];

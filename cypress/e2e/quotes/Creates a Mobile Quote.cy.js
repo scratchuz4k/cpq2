@@ -50,7 +50,7 @@ describe("Creates a Mobile Quote", () => {
                 if (spanText > 0) {
                     hardwareCount += 1
                     cy.log(`Click count: ${hardwareCount}`);
-                    cy.get(`#input-hardware-${key}-quantity`).type(spanText)
+                    cy.get(`#input-hardware-${key}-quantity`).type(1)
                 }
             });
         })

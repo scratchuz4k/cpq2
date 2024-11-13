@@ -46,7 +46,9 @@ class Price extends Model
         parent::boot();
 
         static::retrieved(function ($model) {
-            static::$priceRules->find($model->product, $model->product->supplier,);
+            //TODO: switch to a account saved in the user model
+            $account = Account::find(request() ? request()->input("account_id", null) : null);
+            static::$priceRules->find($model->product, $model->product->supplier, $account);
             $model->setAttribute('net_spa', static::$priceRules->apply((float)$model->net));
             $model->setAttribute('active_spas', static::$priceRules->getAppliedSpas());
             $model->calculate();

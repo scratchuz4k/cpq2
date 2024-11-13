@@ -5,7 +5,7 @@ const account = { ref: generateHash(temp), name: temp }
 
 describe('Creates a Connectivity quote', () => {
     beforeEach(() => {
-        cy.login("companyadmin@example.com", "werwerwer")
+        cy.login("super@example.com", "werwerwer")
     })
 
     it("Creates an Account", () => {

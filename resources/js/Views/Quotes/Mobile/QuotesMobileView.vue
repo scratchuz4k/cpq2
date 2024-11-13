@@ -65,12 +65,12 @@ const sorts = [
     {
         label: "Lowet Price",
         order: "asc",
-        orderBy: "price",
+        orderBy: "prices.net",
     },
     {
         label: "Hightest Price",
         order: "desc",
-        orderBy: "price",
+        orderBy: "prices.net",
     }
 ]
 
@@ -84,6 +84,7 @@ const getProducts = async () => {
             operator: 'equals',
             value: 'plan'
         }]),
+        account_id: props.modelValue.account_id
     })
     let res = await axios.get("/api/products" + '?' + query)
     res.data.data.forEach((e) => {
@@ -92,6 +93,7 @@ const getProducts = async () => {
     });
     products.value = res.data.data
 }
+
 const getProductsShopBlocks = async () => {
     meta.isLoading = true
     let temp = []
@@ -104,7 +106,8 @@ const getProductsShopBlocks = async () => {
         filters: temp,
         order: sort.value.order,
         orderBy: sort.value.orderBy,
-        search: search.value
+        search: search.value,
+        account_id: props.modelValue.account_id
     };
     let res = await axios.post("/api/external/get-articles-from-shop-blocks", query)
     productsHardware.value = res.data.data
@@ -183,8 +186,8 @@ const saveQuote = async () => {
             product_id: x.id,
             quantity: x.quantity,
             name: x.name,
-            raw_price: x.price ?? x.prices[0].net,
-            price: x.price ?? x.prices[0].net_spa,
+            raw_price: x.prices ? x.prices[0].net : 0,
+            price: x.prices ? x.prices[0].net_spa : 0,
             price_plan_id: x.prices ? x.prices[0].price_plan_id : null,
         })
     })
@@ -246,7 +249,8 @@ const items = ref([
                             <div class="d-flex align-items-center mb-2">
                                 <h4 class="m-0">{{ product.name }}</h4>
                                 <p class="m-0 ms-2">
-                                    {{ product.description }} / {{ GBP.format(product.prices[0].net_spa) }}
+                                    {{ product.description }} /
+                                    {{ GBP.format(product.prices[0].net_spa) }}
                                 </p>
                             </div>
                             <font-awesome-icon :icon="['fa', 'circle-info']" />
@@ -368,7 +372,7 @@ const items = ref([
                                             </p>
                                         </div>
                                         <div>
-                                            <p class="bold big"> {{ GBP.format(product.prices[0].net) }}</p>
+                                            <p class="bold big"> {{ GBP.format(product.prices[0].net_spa) }}</p>
                                         </div>
                                     </div>
                                 </div>
@@ -436,7 +440,7 @@ const items = ref([
                     </div>
                 </InfoBox>
                 <div class="configure-mobile-sidebar px-4 py-4" style="position: sticky; top: 25px">
-                    <h4 id="sidebar_products" data-total="0">1. planProducts</h4>
+                    <h4 id="sidebar_products" data-total="0">1. Plans</h4>
                     <div class="sidebar_items mb-3">
                         <div v-for="product in products" class="item mb-2">
                             <span>{{ product.name }}</span>
