@@ -35,7 +35,7 @@ class QuoteUpdateRequest extends FormRequest
             'items.*.price' => 'numeric',
             'items.*.margin' => 'numeric|min:0|max:100',
             'items.*.discount' => 'numeric|min:0|max:100',
-            "items.*.price_plan_id" => "numeric|exists:price_plans,id",
+            "items.*.price_plan_id" => "nullable|numeric|exists:price_plans,id",
         ];
     }
 }

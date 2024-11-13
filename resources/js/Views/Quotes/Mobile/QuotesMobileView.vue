@@ -186,9 +186,9 @@ const saveQuote = async () => {
             product_id: x.id,
             quantity: x.quantity,
             name: x.name,
-            raw_price: x.prices ? x.prices[0].net : 0,
-            price: x.prices ? x.prices[0].net_spa : 0,
-            price_plan_id: x.prices ? x.prices[0].price_plan_id : null,
+            raw_price: x.price ? x.price.net : 0,
+            price: x.price ? x.price.net_spa : 0,
+            price_plan_id: x.price ? x.price.price_plan_id : null,
         })
     })
 
