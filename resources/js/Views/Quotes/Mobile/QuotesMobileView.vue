@@ -185,6 +185,7 @@ const saveQuote = async () => {
             name: x.name,
             raw_price: x.price ?? x.prices[0].net,
             price: x.price ?? x.prices[0].net_spa,
+            price_plan_id: x.prices ? x.prices[0].price_plan_id : null,
         })
     })
 
@@ -200,7 +201,7 @@ const saveQuote = async () => {
 
 const getHardwareProductsCount = () => {
     let codes = products.value.map(x => x.code);
-    let items = [...order.items, ...order.new]
+    let items = [...quote.items, ...quote.new]
     return items.filter(x => !(codes.includes(x.product_code) || codes.includes(x.code))).reduce((acc, i) => acc += i.quantity, 0)
 }
 
@@ -367,7 +368,7 @@ const items = ref([
                                             </p>
                                         </div>
                                         <div>
-                                            <p class="bold big"> {{ GBP.format(product.price) }}</p>
+                                            <p class="bold big"> {{ GBP.format(product.prices[0].net) }}</p>
                                         </div>
                                     </div>
                                 </div>

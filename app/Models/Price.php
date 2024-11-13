@@ -63,7 +63,6 @@ class Price extends Model
         "net",
         "tax",
         "gross",
-        "spa_id",
         "price_plan_id",
         "product_id",
         "tenant_id"

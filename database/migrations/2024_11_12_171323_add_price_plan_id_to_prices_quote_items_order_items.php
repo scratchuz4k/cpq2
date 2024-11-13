@@ -12,14 +12,14 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('prices', function (Blueprint $table) {
-            $table->foreignId('price_plan_id')->nullable()->constrained()->nullOnDelete();
+            $table->foreignId('price_plan_id')->after('product_id')->nullable()->constrained()->nullOnDelete();
         });
 
         Schema::table('quote_items', function (Blueprint $table) {
-            $table->foreignId('price_plan_id')->nullable()->constrained()->nullOnDelete();
+            $table->foreignId('price_plan_id')->after('product_id')->nullable()->constrained()->nullOnDelete();
         });
         Schema::table('order_items', function (Blueprint $table) {
-            $table->foreignId('price_plan_id')->nullable()->constrained()->nullOnDelete();
+            $table->foreignId('price_plan_id')->after('product_id')->nullable()->constrained()->nullOnDelete();
         });
     }
 
