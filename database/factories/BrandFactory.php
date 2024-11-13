@@ -2,8 +2,9 @@
 
 namespace Database\Factories;
 
-use Illuminate\Database\Eloquent\Factories\Factory;
+use App\Models\Tenant;
 use Illuminate\Support\Str;
+use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory
@@ -20,7 +21,7 @@ class BrandFactory extends Factory
         $brand_name = Str::ucfirst(Str::words(preg_replace('/[^A-Za-z]/', ' ', strtolower(fake()->company)), 1, ''));
 
         return [
-            'tenant_id' => rand(1,3),
+            'tenant_id' => Tenant::where("name", "CloudMarket")->value('id'),
             'name' => $brand_name,
         ];
     }

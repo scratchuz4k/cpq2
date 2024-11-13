@@ -2,9 +2,11 @@
 
 namespace App\Models;
 
-use App\Helpers\Prices\PriceRulesSpa;
+use App\Models\PricePlan;
 use App\Trait\SetTenantId;
+use App\Helpers\Prices\PriceRules;
 use App\Models\Scopes\TenantScope;
+use App\Helpers\Prices\PriceRulesSpa;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -32,9 +34,35 @@ class Price extends Model
 {
     use HasFactory, SetTenantId;
 
-    protected $fillable = ["code", "tax_rate", "net", "tax", "gross", "net_monthly", "tax_monthly", "gross_monthly", "spa_id", "product_id", "tenant_id"];
+    protected static PriceRules $priceRules;
 
-    protected $appends = ["net_spa", "net_monthly_spa"];
+    public function __construct()
+    {
+        parent::__construct();
+        static::$priceRules = new PriceRules();
+    }
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::retrieved(function ($model) {
+            static::$priceRules->find($model->product, $model->product->supplier,);
+            $model->setAttribute('net_spa', static::$priceRules->apply((float)$model->net));
+            $model->setAttribute('active_spas', static::$priceRules->getAppliedSpas());
+            $model->calculate();
+        });
+    }
+
+    protected $fillable = [
+        "code",
+        "tax_rate",
+        "net",
+        "tax",
+        "gross",
+        "spa_id",
+        "product_id",
+        "tenant_id"
+    ];
 
 
     protected static function booted(): void
@@ -47,32 +75,20 @@ class Price extends Model
         return $this->belongsTo(Tenant::class);
     }
 
-    public function spa(): HasOne
+    public function product(): BelongsTo
     {
-        return $this->hasOne(Spa::class, "id", "spa_id");
+        return $this->belongsTo(Product::class, "product_id", "id");
     }
 
-    public function product(): HasOne
+    public function pricePlan(): BelongsTo
     {
-        return $this->hasOne(Product::class, "id", "product_id");
+        related:
+        return $this->belongsTo(PricePlan::class);
     }
 
     public function calculate()
     {
-        $this->refresh();
         $this->tax = $this->net * ($this->tax_rate / 100);
-        $this->tax_monthly = $this->net_monthly * ($this->tax_rate / 100);
-
-        $this->gross = $this->net_monthly * (1 + ($this->tax_rate / 100));
-        $this->gross_monthly = $this->net_monthly * (1 + ($this->tax_rate / 100));
-        $this->save();
-    }
-    public function getNetSpaAttribute()
-    {
-        return $this->net * 1.20;
-    }
-    public function getNetMonthlySpaAttribute()
-    {
-        return $this->net_monthly * 1.20;
+        $this->gross = $this->net_spa * (1 + ($this->tax_rate / 100));
     }
 }

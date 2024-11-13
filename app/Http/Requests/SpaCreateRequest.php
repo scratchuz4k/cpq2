@@ -22,9 +22,12 @@ class SpaCreateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string|max:255',
-            'user_id' => 'required|exists:users,id',
-            'supplier_id' => 'required|exists:suppliers,id'
+            'rule_id' => 'required|exists:spa_rules,id',
+            'field_1' => 'required|numeric',
+            'field_2' => 'numeric',
+            'operation_id' => 'required|exists:spa_operations,id',
+            "value" => 'numeric',
+            "percentage" => 'numeric|min:0|max:100',
         ];
     }
 }

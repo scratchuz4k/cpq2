@@ -31,9 +31,6 @@ class Quote extends Model
         "total",
         "total_tax",
         "total_gross",
-        "total_monthly",
-        "total_monthly_tax",
-        "total_monthly_gross",
         "commission_value",
         "commission_rate",
         "margin",
@@ -77,29 +74,20 @@ class Quote extends Model
     {
         $this->refresh();
         $original_total = 0;
-        $original_total_monthly = 0;
         $this->total = 0;
         $this->total_tax = 0;
         $this->total_gross = 0;
-        $this->total_monthly = 0;
-        $this->total_monthly_tax = 0;
-        $this->total_monthly_gross = 0;
 
         foreach ($this->items as $item) {
             $original_total += $item->original_price * $item->quantity;
-            $original_total_monthly += $item->original_price_monthly * $item->quantity;
 
             $this->total += $item->total;
             $this->total_tax += $item->total_tax;
             $this->total_gross += $item->total_gross;
-
-            $this->total_monthly += $item->total_monthly;
-            $this->total_monthly_tax  += $item->total_monthly_tax;
-            $this->total_monthly_gross += $item->total_monthly_gross;
         }
 
-        $total_cost = $original_total + ($original_total_monthly * $this->contract_length);
-        $margin_value = ($this->total + ($this->total_monthly * $this->contract_length)) - $total_cost;
+        $total_cost = $original_total;
+        $margin_value = $this->total  - $total_cost;
 
         $this->margin = $total_cost ? ($margin_value / $total_cost) * 100 : 0;
         $this->commission_value = $margin_value * ($this->commission_rate / 100);

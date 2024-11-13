@@ -92,7 +92,10 @@ const save = async (p) => {
 
 const saveQuote = async (p) => {
     isLoading.value = true
-
+    if (order.discount === '') {
+        isLoading.value = false
+        return
+    }
     try {
         let res = await axios.put(`/api/quotes/${quote.id}`,
             {
@@ -102,6 +105,7 @@ const saveQuote = async (p) => {
         Object.assign(quote, res.data)
         isLoading.value = false
     } catch (ex) {
+        isLoading.value = false
         notyf.error(ex.response.data.message)
         isLoading.value = false
     }
@@ -113,6 +117,7 @@ const resetQuote = async () => {
         title: 'Are you sure?'
     })
     if (['cancel', 'backdrop'].includes(result.dismiss)) {
+        isLoading.value = false
         return
     }
 

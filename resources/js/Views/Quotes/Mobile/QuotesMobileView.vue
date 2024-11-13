@@ -247,7 +247,7 @@ const items = ref([
                             <div class="d-flex align-items-center mb-2">
                                 <h4 class="m-0">{{ product.name }}</h4>
                                 <p class="m-0 ms-2">
-                                    {{ product.description }} / {{ GBP.format(product.prices[0].gross_monthly) }}
+                                    {{ product.description }} / {{ GBP.format(product.prices[0].net_monthly_spa) }}
                                 </p>
                             </div>
                             <font-awesome-icon :icon="['fa', 'circle-info']" />
@@ -409,7 +409,7 @@ const items = ref([
                                 @click="() => step--">
                                 <font-awesome-icon :icon="['fas', 'arrow-left']" /> Previous
                             </button>
-                            <button class="btn btn-outline-primary text-primary " @click="saveQuote()"
+                            <button class="btn btn-outline-primary text-primary" @click="saveQuote()"
                                 :disabled="checkPlansHardwareQuantity() < 0">
                                 Save
                             </button>

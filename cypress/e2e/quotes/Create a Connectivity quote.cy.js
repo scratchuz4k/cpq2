@@ -1,4 +1,4 @@
-import {generateHash, getCurrentDate} from "../support/utils.js";
+import {generateHash, getCurrentDate} from "../../support/utils.js";
 
 const temp = getCurrentDate()
 const account = { ref: generateHash(temp), name: temp }
