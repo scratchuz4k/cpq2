@@ -65,12 +65,12 @@ const sorts = [
     {
         label: "Lowet Price",
         order: "asc",
-        orderBy: "prices.net",
+        orderBy: "price.net",
     },
     {
         label: "Hightest Price",
         order: "desc",
-        orderBy: "prices.net",
+        orderBy: "price.net",
     }
 ]
 
@@ -250,7 +250,7 @@ const items = ref([
                                 <h4 class="m-0">{{ product.name }}</h4>
                                 <p class="m-0 ms-2">
                                     {{ product.description }} /
-                                    {{ GBP.format(product.prices[0].net_spa) }}
+                                    {{ GBP.format(product.price.net_spa) }}
                                 </p>
                             </div>
                             <font-awesome-icon :icon="['fa', 'circle-info']" />
@@ -372,7 +372,7 @@ const items = ref([
                                             </p>
                                         </div>
                                         <div>
-                                            <p class="bold big"> {{ GBP.format(product.prices[0].net_spa) }}</p>
+                                            <p class="bold big"> {{ GBP.format(product.price.net_spa) }}</p>
                                         </div>
                                     </div>
                                 </div>

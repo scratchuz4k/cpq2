@@ -151,18 +151,15 @@ class ExternalController extends Controller
                 $model = (string) Str::of($product['name'])->words(3, '');
                 $products[$key]['code'] = md5(Str::slug($temp));
                 $products[$key]['model'] = $model;
-                $products[$key]['prices'] = [
-                    [
-                        "code" => 1,
-                        "tax_rate" => 20,
-                        "net" => (float)$product['price'],
-                        "tax" => (float)$product['price'] * 0.2,
-                        "gross" => (float)$product['price'] * 1.2,
-                        "price_plan_id" => PricePlan::where("code", "single")->value('id'),
-                    ]
+                $products[$key]['price'] = [
+                    "code" => 1,
+                    "tax_rate" => 20,
+                    "net" => (float)$product['price'],
+                    "tax" => (float)$product['price'] * 0.2,
+                    "gross" => (float)$product['price'] * 1.2,
+                    "price_plan_id" => PricePlan::where("code", "single")->value('id'),
                 ];
                 $products[$key]['url'] = 'https://hardware.cloud.market/smartphones/' . $product['slug'];
-                unset($products[$key]['price']);
                 $tempFilters = FilterProvider::process($tempFilters, $products[$key], true);
             }
 
@@ -176,11 +173,11 @@ class ExternalController extends Controller
         $account = Account::find($request->input('account_id', null));
 
         $meta['data'] = $meta['data']->map(function ($item) use ($priceRules, $account) {
-            $net_spa = $priceRules->calculate($item['prices'][0]['net'], account: $account);
-            $item['prices'][0]['net_spa'] = $net_spa;
-            $item['prices'][0]["tax"] = $net_spa * 0.2;
-            $item['prices'][0]["gross"] = $net_spa * 1.2;
-            $item['prices'][0]["active_spas"] = $priceRules->getAppliedSpas();
+            $net_spa = $priceRules->calculate($item['price']['net'], account: $account);
+            $item['price']['net_spa'] = $net_spa;
+            $item['price']["tax"] = $net_spa * 0.2;
+            $item['price']["gross"] = $net_spa * 1.2;
+            $item['price']["active_spas"] = $priceRules->getAppliedSpas();
             return $item;
         });
 

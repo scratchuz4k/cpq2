@@ -26,6 +26,10 @@ class Product extends Model
     {
         static::addGlobalScope(new TenantScope);
     }
+    public function activePrice(): Price
+    {
+        return $this->prices()->where('code', 1)->first();
+    }
     public function prices(): HasMany
     {
         return $this->hasMany(Price::class);
