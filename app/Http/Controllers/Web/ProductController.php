@@ -65,7 +65,7 @@ class ProductController extends BaseController
     public function show(Product $product)
     {
         return Inertia::render('Products/Show', [
-            'product' => new ProductResource($product)
+            'product' => new ProductResource($product->load('prices'))
         ]);
     }
 

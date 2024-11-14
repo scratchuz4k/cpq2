@@ -72,23 +72,22 @@ class Quote extends Model
     public function computeTotals()
     {
         $this->refresh();
-        $original_total = 0;
-
+        $raw_total = 0;
 
         $this->total = 0;
         $this->total_tax = 0;
         $this->total_gross = 0;
 
         foreach ($this->items as $item) {
-            $original_total += ($item->original_price * $item->quantity) * $item->contract_length;
+            $raw_total += ($item->raw_price * $item->quantity) * $item->contract_length;
 
             $this->total += $item->total;
             $this->total_tax += $item->total_tax;
             $this->total_gross += $item->total_gross;
         }
 
-        $total_cost = $original_total;
-        $margin_value = $this->total  - $total_cost;
+        $total_cost = $raw_total;
+        $margin_value = $this->total - $total_cost;
 
         $this->margin = $total_cost ? ($margin_value / $total_cost) * 100 : 0;
         $this->commission_value = $margin_value * ($this->commission_rate / 100);

@@ -1,5 +1,5 @@
 const crypto = require("crypto");
-const {getCurrentDate, generateHash} = require("../../support/utils.js");
+const { getCurrentDate, generateHash } = require("../../support/utils.js");
 const rand = (notAllowedNumber, max = 101) => {
     let randomNumber = Math.floor(Math.random() * max); // Generate a random number
 
@@ -84,9 +84,9 @@ describe("Creates a Mobile Quote", () => {
             cy.get("#input-" + key + "-0-discount").then(($input) => {
                 line1.discount = $input.val().trim();
             }).clear().type(rand(0, 11));
-            cy.get("#input-" + key + "-0-margin").then(($input) => {
-                line1.margin = $input.val().trim();
-            }).clear().type(rand(0, 21));
+            cy.get("#" + key + "-0-margin").then(($input) => {
+                line1.margin = $input.text().trim();
+            });
 
 
             cy.get("#btn-" + key + "-0-save").click()
@@ -99,7 +99,7 @@ describe("Creates a Mobile Quote", () => {
                 .then((inputValue) => {
                     expect(inputValue).to.not.equal(line1.discount);
                 });
-            cy.get("#input-" + key + "-0-margin").invoke("val")
+            cy.get("#" + key + "-0-margin").invoke("text")
                 .then((inputValue) => {
                     expect(inputValue).to.not.equal(line1.margin);
                 });
@@ -108,6 +108,8 @@ describe("Creates a Mobile Quote", () => {
                 .then((text) => {
                     expect(text).to.not.equal(total);
                 });
+            cy.get("#btn-" + key + "-0-save").click()
+            cy.get("#btn-" + key + "-0-edit").should('be.visible')
         })
     })
 
@@ -134,10 +136,14 @@ describe("Creates a Mobile Quote", () => {
         cy.get("#btn-reset-quote").click()
         cy.get("body > div.swal2-container.swal2-center.swal2-backdrop-show > div > div.swal2-actions > button.swal2-confirm.btn.text-light.btn-lg.mr-2.fs-6.swal2-styled.swal2-default-outline").click()
         cy.get("#btn-reset-quote", { timeout: 3000 }).should("not.be.disabled");
-        cy.get("#input-margin-order").invoke("val")
-            .then((val) => {
-                expect(val).to.equal("0.00 %");
-            });
+
+        cy.get(".recurring-item").each(($el, index, $list) => {
+            // You can perform actions on each element here
+            cy.get(`#recurring-${index}-discount`).invoke("text")
+                .then((text) => {
+                    expect(text).to.not.equal("0 %");
+                });
+        });
     })
     it("I can add and delete a Custom Line", () => {
         cy.visit("/")
@@ -147,7 +153,6 @@ describe("Creates a Mobile Quote", () => {
         cy.get("#input-new-recurring-qty").type(10)
         cy.get("#input-new-recurring-price_monthly").type(10)
         cy.get("#input-new-recurring-discount").type(10)
-        cy.get("#input-new-recurring-margin").type(20)
         cy.get("#btn-new-recurring-add").click()
         cy.get("#table-recurring").contains("Custom line recurring")
 
@@ -156,7 +161,6 @@ describe("Creates a Mobile Quote", () => {
         cy.get("#input-new-one_off-qty").type(10)
         cy.get("#input-new-one_off-price").type(10)
         cy.get("#input-new-one_off-discount").type(10)
-        cy.get("#input-new-one_off-margin").type(20)
         cy.get("#btn-new-one_off-add").click()
         cy.get("#table-one_off").contains("Custom line one_off")
 
@@ -174,5 +178,6 @@ describe("Creates a Mobile Quote", () => {
             });
         cy.get("body > div.swal2-container.swal2-center.swal2-backdrop-show > div > div.swal2-actions > button.swal2-confirm.btn.text-light.btn-lg.mr-2.fs-6.swal2-styled.swal2-default-outline").click()
     })
+
 });
 

@@ -3,6 +3,7 @@
 namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
+use App\Http\Resources\PriceResource;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class ProductResource extends JsonResource
@@ -19,7 +20,7 @@ class ProductResource extends JsonResource
             'supplier' => $this->supplier,
             'brand' => $this->brand,
             'price' => new PriceResource($this->activePrice()),
-            'prices' => PriceResource::collection($this->whenLoaded("prices")),
+            'prices' => PriceResource::collection($this->whenLoaded("prices", default: collect([]))),
             'updated_at' => $this->updated_at,
             'created_at' => $this->created_at
         ];
