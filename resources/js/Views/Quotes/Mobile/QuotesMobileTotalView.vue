@@ -120,7 +120,7 @@ const resetQuote = async () => {
         return
     }
 
-    quote.items.forEach((e) => { e.discount = 0; e.margin = 0; })
+    quote.items.forEach((e) => { e.discount = 0; })
     try {
         let res = await axios.put(`/api/quotes/${quote.id}`,
             {
@@ -278,7 +278,7 @@ const items = ref([
                                 </th>
                                 <th></th>
                                 <th class="text-center">
-                                    <input :id="'input-new-recurring-discount'"
+                                    <input :id="'input-new-recurring-contract_length'"
                                         class="form-control text-center p-0 px-1" type="number"
                                         v-model="recurringNewLine.contract_length">
                                 </th>
@@ -340,8 +340,8 @@ const items = ref([
                                 </td>
                                 <td class="text-right"> {{ GBP.format(p.original_price) }}</td>
                                 <td class="text-center">
-                                    <span v-if="!p.is_editing" :id="'one_off-' + i + '-margin'">
-                                        {{ GBP.format(p.original_price - p.price) }}
+                                    <span :id="'one_off-' + i + '-margin'">
+                                        {{ GBP.format(p.margin) }}
                                     </span>
                                 </td>
                                 <td class="text-center">
