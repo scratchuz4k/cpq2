@@ -63,7 +63,7 @@ class QuoteItem extends Model
     public function computeTotals()
     {
         $this->refresh();
-        $price = $this->original_price + (($this->original_price * ($this->margin / 100)));
+        $price = $this->original_price;
 
         $discounts  = [$this->discount, $this->quote->discount];
         foreach ($discounts as $discount) {
@@ -71,6 +71,7 @@ class QuoteItem extends Model
         }
 
         $this->price = $price;
+        $this->margin = $this->price - $this->raw_price;
         $this->total = ($this->price * $this->quantity) * $this->contract_length;
         $this->total_tax = ($this->total * ($this->tax_quote_item / 100)) * $this->contract_length;
         $this->total_gross = ($this->total * (($this->tax_quote_item / 100) + 1)) * $this->contract_length;
