@@ -65,6 +65,16 @@ const items = ref([
                             <option v-for="brand in brands" :value="brand.id">{{ brand.name }}</option>
                         </select>
                     </div>
+
+                    <div class="row mb-3">
+                        <label for="product-code" class="form-label">Code:</label>
+                        <input id="product-code" class="form-control" v-model="product.code">
+                    </div>
+
+                    <div class="row mb-3">
+                        <label for="product-description" class="form-label">Description:</label>
+                        <textarea id="product-description" class="form-control" v-model="product.description">{{ product.description }}</textarea>
+                    </div>
                 </div>
             </div>
 

@@ -19,3 +19,12 @@ export const getCurrentDate = () => {
 
     return readableDate;
 }
+
+export const slugify = (string) => {
+    return string
+        .toLowerCase() // Converte para letras minúsculas
+        .trim() // Remove espaços em branco no início e no final
+        .replace(/[^\w\s-]/g, '') // Remove caracteres especiais (exceto espaços e hífens)
+        .replace(/\s+/g, '-') // Substitui espaços por hífens
+        .replace(/-+/g, '-'); // Remove múltiplos hífens consecutivos
+}
