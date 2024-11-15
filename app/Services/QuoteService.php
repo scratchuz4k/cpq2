@@ -65,7 +65,7 @@ class QuoteService
                 $discounts = $array['discounts'];
                 if (array_key_exists('pricePlans', $discounts)) {
                     foreach ($discounts['pricePlans'] as $key => $discount) {
-                        $pricePlan = PricePlan::find($key);
+                        $pricePlan = PricePlan::where('code', $key)->first();
 
                         if (!$pricePlan) {
                             continue;

@@ -121,7 +121,7 @@ describe("Creates a Mobile Quote", () => {
         cy.get("#input-margin-order").then(($input) => {
             quote.margin = $input.val().trim();
         })
-        cy.get("#input-global-discount").then(($input) => {
+        cy.get("#input-global-monthly-discount").then(($input) => {
             quote.global = $input.val().trim();
         }).clear().type(rand(quote.global));
 

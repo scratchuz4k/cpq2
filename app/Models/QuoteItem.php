@@ -65,7 +65,9 @@ class QuoteItem extends Model
         $this->refresh();
         $price = $this->original_price;
 
-        $discounts  = [$this->discount, $this->quote->discount];
+        $discounts = $this->quote->discounts->where('discountable_type', PricePlan::class)->where('discountable_id', $this->pricePlan->id)->pluck('discount');
+        $discounts  = [$this->discount, ...$discounts];
+
         foreach ($discounts as $discount) {
             $price = ($price * (1 - ($discount / 100)));
         }

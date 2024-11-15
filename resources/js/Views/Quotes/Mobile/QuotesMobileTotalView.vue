@@ -11,6 +11,7 @@ const quote = reactive(props.modelValue)
 const discounts = reactive({
     pricePlans: {}
 })
+
 props.pricePlans.forEach((e) => {
     let discount = props.modelValue.discounts.find(x => x.entity?.code == e.code)
     discounts.pricePlans[e.code] = discount ? discount.discount : 0
