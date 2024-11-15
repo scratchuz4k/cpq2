@@ -17,8 +17,6 @@ return new class extends Migration
             $table->dropForeign(['account_id']);
             $table->dropColumn(['name', 'data',  'supplier_id', 'merchant_id', 'account_id']);
 
-            // First polymorphic relationship
-
             $table->foreignId('rule_id')->constrained('spa_rules', 'id')->cascadeOnDelete()->after('id');
             $table->unsignedBigInteger('field_1')->after('rule_id');
             $table->unsignedBigInteger('field_2')->nullable()->after('field_1');

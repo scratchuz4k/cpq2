@@ -11,17 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('order_price_plans', function (Blueprint $table) {
+        Schema::create('quote_discounts', function (Blueprint $table) {
             $table->id();
-            $table->string('order_id');
-            $table->string('price_plan_id');
-            $table->decimal('discount', 12, 4)->default(0);
-            $table->timestamps();
-        });
-        Schema::create('quote_price_plans', function (Blueprint $table) {
-            $table->id();
-            $table->string('quote_id');
-            $table->string('price_plan_id');
+            $table->foreignId('tenant_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('quote_id')->constrained()->cascadeOnDelete();
+            $table->morphs('discountable');
             $table->decimal('discount', 12, 4)->default(0);
             $table->timestamps();
         });
@@ -35,8 +29,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('order_price_plans');
-        Schema::dropIfExists('quote_price_plans');
+        Schema::dropIfExists('quote_discounts');
 
         Schema::table('quotes', function (Blueprint $table) {
             $table->decimal('discount', 12, 4)->default(0);

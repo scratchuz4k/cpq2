@@ -2,7 +2,9 @@
 
 namespace App\Services;
 
+use App\Models\PricePlan;
 use App\Models\Quote;
+use App\Models\QuoteDiscount;
 use App\Models\QuoteItem;
 use Illuminate\Support\Facades\DB;
 
@@ -58,6 +60,26 @@ class QuoteService
             }
 
             $quote->update(['status' => get_quote_status($quote->refresh())]);
+
+            if (array_key_exists('discounts', $array)) {
+                $discounts = $array['discounts'];
+                if (array_key_exists('pricePlans', $discounts)) {
+                    foreach ($discounts['pricePlans'] as $key => $discount) {
+                        $pricePlan = PricePlan::find($key);
+
+                        if (!$pricePlan) {
+                            continue;
+                        }
+
+                        $quote->discounts()->updateOrCreate([
+                            "discountable_type" => PricePlan::class,
+                            "discountable_id" => $pricePlan->id,
+                        ], [
+                            "discount" =>  $discount
+                        ]);
+                    }
+                }
+            }
 
             foreach ($quote->items as $quote_item) {
                 $quote_item->computeTotals();

@@ -9,8 +9,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Attributes\ObservedBy;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Quote extends Model
 {
@@ -34,7 +32,6 @@ class Quote extends Model
         "commission_value",
         "commission_rate",
         "margin",
-        "discount",
         "status",
         "user_id"
     ];
@@ -45,18 +42,14 @@ class Quote extends Model
             "address_data" => "object",
         ];
     }
-
-
     protected static function booted(): void
     {
         static::addGlobalScope(new TenantScope);
     }
-
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
-
     public function solutionType(): BelongsTo
     {
         return $this->belongsTo(SolutionType::class);
@@ -65,14 +58,13 @@ class Quote extends Model
     {
         return $this->belongsTo(Account::class)->withTrashed();
     }
-
     public function items(): HasMany
     {
         return $this->hasMany(QuoteItem::class);
     }
-    public function pricePlan(): BelongsToMany
+    public function discounts(): HasMany
     {
-        return $this->belongsToMany(PricePlan::class, 'price_plans');
+        return $this->hasMany(QuoteDiscount::class);
     }
     public function computeTotals()
     {

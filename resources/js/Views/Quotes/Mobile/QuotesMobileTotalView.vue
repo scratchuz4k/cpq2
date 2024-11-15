@@ -3,11 +3,19 @@ import { Link, router } from '@inertiajs/vue3';
 import { ref, reactive } from 'vue'
 
 const props = defineProps({
-    modelValue: Object
+    modelValue: Object,
+    pricePlans: Array
 })
-
 const isLoading = ref(false)
 const quote = reactive(props.modelValue)
+const discounts = reactive({
+    pricePlans: {}
+})
+props.pricePlans.forEach((e) => {
+    let discount = props.modelValue.discounts.find(x => x.entity?.code == e.code)
+    discounts.pricePlans[e.code] = discount ? discount.discount : 0
+})
+
 const recurringNewLine = reactive({
     name: null,
     contract_length: 1,
@@ -89,8 +97,7 @@ const save = async (p) => {
         notyf.error(ex.response.data.message)
     }
 }
-
-const saveQuote = async (p) => {
+const saveQuote = async () => {
     isLoading.value = true
     if (quote.discount === '') {
         isLoading.value = false
@@ -99,7 +106,7 @@ const saveQuote = async (p) => {
     try {
         let res = await axios.put(`/api/quotes/${quote.id}`,
             {
-                discount: quote.discount,
+                discounts: discounts,
             })
         Object.assign(quote, res.data)
         isLoading.value = false
@@ -449,10 +456,15 @@ const items = ref([
                     </InfoBox>
                     <div class="price-mobile-sidebar px-4 pt-4 pb-2 mb-3">
                         <h3 class="mb-3">Overall Informations</h3>
-                        <div class="mb-3">
-                            <label class="form-label">Quote Discount</label>
-                            <input id="input-global-discount" type="number" class="form-control"
-                                v-model="quote.discount">
+                        <div v-for="pricePlan in props.pricePlans" class="mb-3">
+                            <label class="form-label">{{ pricePlan.name }} Discount</label>
+
+                            <div class="input-group p-0">
+                                <input :id="`input-global-${pricePlan.code}-discount`" type="number" class="form-control"
+                                    v-model="discounts.pricePlans[pricePlan.code]">
+                                <span class="input-group-text">%</span>
+                            </div>
+
                         </div>
                         <button id="btn-apply-global-discount" class="btn btn-secondary w-100 mb-2" @click="saveQuote()"
                             :disabled="isLoading">
