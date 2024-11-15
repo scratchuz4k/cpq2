@@ -72,9 +72,9 @@ class QuoteItem extends Model
 
         $this->price = $price;
         $this->margin = $this->price - $this->raw_price;
-        $this->total = ($this->price * $this->quantity) * $this->contract_length;
-        $this->total_tax = ($this->total * ($this->tax_quote_item / 100)) * $this->contract_length;
-        $this->total_gross = ($this->total * (($this->tax_quote_item / 100) + 1)) * $this->contract_length;
+        $this->total = ($this->price * $this->quantity);
+        $this->total_tax = ($this->total * ($this->tax_quote_item / 100));
+        $this->total_gross = ($this->total * (($this->tax_quote_item / 100) + 1));
         $this->save();
     }
 }

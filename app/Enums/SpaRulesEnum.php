@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Helpers\Prices\Enums;
+namespace App\Enums;
 
 use App\Models\Account;
 use App\Helpers\Prices\Rules\RuleAccount;

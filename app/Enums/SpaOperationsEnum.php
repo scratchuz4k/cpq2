@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Helpers\Prices\Enums;
+namespace App\Enums;
 
 use App\Helpers\Prices\Operations\OperationMargin;
 use App\Helpers\Prices\Operations\OperationDiscount;

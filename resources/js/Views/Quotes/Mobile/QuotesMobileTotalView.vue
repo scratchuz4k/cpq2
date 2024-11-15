@@ -420,7 +420,7 @@ const items = ref([
                             <span class="text-primary">1 payment </span> of
                             {{ GBP.format(quoteTotal('single')) }}<br>
                             followed by
-                            <span class="text-primary"> {{ quote.contract_length }} monthly payments</span> of
+                            <span class="text-primary"> monthly payments</span> of
                             {{ GBP.format(quoteTotal('monthly')) }}
                         </p>
                     </div>

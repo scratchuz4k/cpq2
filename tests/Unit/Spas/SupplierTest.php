@@ -9,8 +9,8 @@ use App\Models\Supplier;
 use App\Models\SpaOperation;
 use App\Helpers\Prices\PriceRules;
 use Illuminate\Support\Facades\Auth;
-use App\Helpers\Prices\Enums\SpaRulesEnum;
-use App\Helpers\Prices\Enums\SpaOperationsEnum;
+use App\Enums\SpaRulesEnum;
+use App\Enums\SpaOperationsEnum;
 
 beforeEach(function () {
     // Declaration of values

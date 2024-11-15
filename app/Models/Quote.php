@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Quote extends Model
 {
@@ -69,6 +70,10 @@ class Quote extends Model
     {
         return $this->hasMany(QuoteItem::class);
     }
+    public function pricePlan(): BelongsToMany
+    {
+        return $this->belongsToMany(PricePlan::class, 'price_plans');
+    }
     public function computeTotals()
     {
         $this->refresh();
@@ -81,9 +86,9 @@ class Quote extends Model
         foreach ($this->items as $item) {
             $raw_total += ($item->raw_price * $item->quantity) * $item->contract_length;
 
-            $this->total += $item->total;
-            $this->total_tax += $item->total_tax;
-            $this->total_gross += $item->total_gross;
+            $this->total += $item->total * $item->contract_length;
+            $this->total_tax += $item->total_tax * $item->contract_length;
+            $this->total_gross += $item->total_gross * $item->contract_length;
         }
 
         $total_cost = $raw_total;

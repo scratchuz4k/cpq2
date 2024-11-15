@@ -4,7 +4,7 @@ namespace App\Helpers\Prices\Rules;
 
 use App\Models\Spa;
 use App\Models\SpaRule;
-use App\Helpers\Prices\Enums\SpaRulesEnum;
+use App\Enums\SpaRulesEnum;
 
 class RuleProduct
 {
