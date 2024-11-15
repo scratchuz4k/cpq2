@@ -4,6 +4,6 @@ namespace App\Enums;
 
 enum PricePlanEnum: string
 {
-    case montlhy = 'Recurring';
+    case monthly = 'Recurring';
     case single = 'One-Off';
 }

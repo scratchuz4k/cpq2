@@ -126,15 +126,15 @@ const getArticles = async () => {
     };
 
     const csrfToken = document.head.querySelector("[name~=csrf-token][content]").content;
-    let res = await axios.post('/api/external/get-articles-from-cloud-market',query)
+    let res = await axios.post('/api/external/get-articles-from-cloud-market', query)
 
-	articles.value = res.data.data
-	isLoading.value = false
-	meta.first = (meta.page - 1) * meta.limit
-	meta.total = res.data.total
-	meta.overallTotal = res.data.overall_total
-	meta.isUpdating = !!res.data.finished_at
-	Object.assign(filterList, res.data.filters)
+    articles.value = res.data.data
+    isLoading.value = false
+    meta.first = (meta.page - 1) * meta.limit
+    meta.total = res.data.total
+    meta.overallTotal = res.data.overall_total
+    meta.isUpdating = !!res.data.finished_at
+    Object.assign(filterList, res.data.filters)
 
     let bearerFilters = []
     Object.keys(filterList.bearer).forEach((key) => {
@@ -210,12 +210,22 @@ const add = async (article) => {
                 quote_id: props.modelValue.id,
                 product_id: null,
                 quantity: 1,
+                product_code: article.code,
                 name: article.productName,
                 data: article,
-                price_plan_code: 'monthly',
-                contract_length: article.contractTermMonths,
-                raw_price: article.priceMonthly ?? 0,
-                price: article.priceMonthly ?? 0,
+                children: [
+                    {
+                        price_plan_code: 'monthly',
+                        contract_length: article.contractTermMonths,
+                        raw_price: article.priceMonthly ?? 0,
+                        price: article.priceMonthly ?? 0,
+                    },
+                    {
+                        price_plan_code: 'single',
+                        raw_price: article.priceInstall ?? 0,
+                        price: article.priceInstall ?? 0,
+                    }
+                ]
             })
         props.modelValue.items.push(res.data)
     } catch (ex) {
@@ -266,11 +276,13 @@ getArticles()
                     </div>
                     <div class="d-flex justify-content-between align-items-center">
                         <p class="fs-4 me-3 mb-0"><b>Add {{ modelValue.items.length }} products</b></p>
-                        <button v-if="modelValue.items.length == 0" class="btn btn-primary continue-btn" type="button" disabled>
+                        <button v-if="modelValue.items.length == 0" class="btn btn-primary continue-btn" type="button"
+                            disabled>
                             Continue
                             <font-awesome-icon :icon="['fas', 'arrow-right']" class="ms-2"></font-awesome-icon>
                         </button>
-                        <a v-else class="btn btn-primary continue-btn" type="submit" :href="route('quotes.show', { quote: modelValue.id })">
+                        <a v-else class="btn btn-primary continue-btn" type="submit"
+                            :href="route('quotes.show', { quote: modelValue.id })">
                             Continue
                             <font-awesome-icon :icon="['fas', 'arrow-right']" class="ms-2"></font-awesome-icon>
                         </a>
@@ -286,16 +298,13 @@ getArticles()
                             <ul class="d-flex list-unstyled ms-2 mb-0">
                                 <li>
                                     <template v-for="(selectedFilter, column) in selectedFilters">
-                                        <Badge
-                                            v-for="value in selectedFilter.value"
+                                        <Badge v-for="value in selectedFilter.value"
                                             :value="['speed', 'bearer'].includes(column) ? format.speed(value) : (['contractTermMonths'].includes(column) ? value + ' Months' : value)"
-                                            class="px-3 py-1"
-                                            data-toggle="tooltip"
-                                            data-placement="top"
-                                            :title="selectedFilter.name"
-                                        >
+                                            class="px-3 py-1" data-toggle="tooltip" data-placement="top"
+                                            :title="selectedFilter.name">
                                             <template #close-button>
-                                                <font-awesome-icon :icon="['fas', 'x']" role="button" class="ms-1 fs-7" @click="removeFilter(selectedFilter, value)"/>
+                                                <font-awesome-icon :icon="['fas', 'x']" role="button" class="ms-1 fs-7"
+                                                    @click="removeFilter(selectedFilter, value)" />
                                             </template>
                                         </Badge>
                                     </template>
@@ -307,101 +316,97 @@ getArticles()
                         </div>
                     </div>
                 </div>
-                    <div id="filters" v-if="showFilters" class="p-0 m-0 mt-2 mb-4 row">
-                        <div class="col-lg-2 col-12 p-0 pe-1">
-                            <label for="filter-provider" class="form-label">Provider</label>
-                            <MultiSelect v-model="filters['providerName'].value" style="width:100%"
-                                :options="Object.keys(filterList.providerName)" placeholder="All" size="small"
-                                :disabled="!meta.isUpdating"
-                                class="custom-multiselect"
-                            >
-                                <template #option="slotProps">
-                                    <div style="font-size:14px;line-height: 1.5rem;">{{ slotProps.option }}
-                                        ( {{ filterList.providerName[slotProps.option] }} )
-                                    </div>
-                                </template>
-                            </MultiSelect>
-                        </div>
-                        <div class="col-lg-2 col-12 p-0 pe-1">
-                            <label for="filter-subprovider" class="form-label">Subprovider</label>
-                            <MultiSelect v-model="filters['connectivitySupplierName'].value" style="width:100%"
-                                :options="Object.keys(filterList.connectivitySupplierName)" placeholder="All"
-                                class="me-3 custom-multiselect" :disabled="!meta.isUpdating">
-                                <template #option="slotProps">
-                                    <div style="font-size:14px;line-height: 1.5rem;">{{ slotProps.option }}
-                                        ( {{ filterList.connectivitySupplierName[slotProps.option] }} )
-                                    </div>
-                                </template>
-                            </MultiSelect>
-                        </div>
-                        <div class="col-lg-2 col-12 p-0 pe-1">
-                            <label for="filter-contract" class="form-label">Contract Length</label>
-                            <MultiSelect v-model="filters['contractTermMonths'].value" style="width:100%"
-                                :options="Object.keys(filterList.contractTermMonths)" placeholder="All"
-                                class="me-3 custom-multiselect " :disabled="!meta.isUpdating">
-                                <template #option="slotProps">
-                                    <div style="font-size:14px;line-height: 1.5rem;">{{ slotProps.option }} Months
-                                    </div>
-                                </template>
-                            </MultiSelect>
-                        </div>
-                        <div class="col-lg-2 col-12 p-0 pe-1">
-                            <label for="filter-contract" class="form-label">Bearer</label>
+                <div id="filters" v-if="showFilters" class="p-0 m-0 mt-2 mb-4 row">
+                    <div class="col-lg-2 col-12 p-0 pe-1">
+                        <label for="filter-provider" class="form-label">Provider</label>
+                        <MultiSelect v-model="filters['providerName'].value" style="width:100%"
+                            :options="Object.keys(filterList.providerName)" placeholder="All" size="small"
+                            :disabled="!meta.isUpdating" class="custom-multiselect">
+                            <template #option="slotProps">
+                                <div style="font-size:14px;line-height: 1.5rem;">{{ slotProps.option }}
+                                    ( {{ filterList.providerName[slotProps.option] }} )
+                                </div>
+                            </template>
+                        </MultiSelect>
+                    </div>
+                    <div class="col-lg-2 col-12 p-0 pe-1">
+                        <label for="filter-subprovider" class="form-label">Subprovider</label>
+                        <MultiSelect v-model="filters['connectivitySupplierName'].value" style="width:100%"
+                            :options="Object.keys(filterList.connectivitySupplierName)" placeholder="All"
+                            class="me-3 custom-multiselect" :disabled="!meta.isUpdating">
+                            <template #option="slotProps">
+                                <div style="font-size:14px;line-height: 1.5rem;">{{ slotProps.option }}
+                                    ( {{ filterList.connectivitySupplierName[slotProps.option] }} )
+                                </div>
+                            </template>
+                        </MultiSelect>
+                    </div>
+                    <div class="col-lg-2 col-12 p-0 pe-1">
+                        <label for="filter-contract" class="form-label">Contract Length</label>
+                        <MultiSelect v-model="filters['contractTermMonths'].value" style="width:100%"
+                            :options="Object.keys(filterList.contractTermMonths)" placeholder="All"
+                            class="me-3 custom-multiselect " :disabled="!meta.isUpdating">
+                            <template #option="slotProps">
+                                <div style="font-size:14px;line-height: 1.5rem;">{{ slotProps.option }} Months
+                                </div>
+                            </template>
+                        </MultiSelect>
+                    </div>
+                    <div class="col-lg-2 col-12 p-0 pe-1">
+                        <label for="filter-contract" class="form-label">Bearer</label>
 
-                            <MultiSelect v-model="filters['bearer'].value" style="width:100%"
-                                         :options="filterList.bearer" optionLabel="label" optionValue="value" placeholder="All"
-                                         class="me-3 custom-multiselect " :disabled="!meta.isUpdating">
-                                <template #option="slotProps">
-                                    <div style="font-size:14px;line-height: 1.5rem;">
-                                        {{ slotProps.option.label }}
+                        <MultiSelect v-model="filters['bearer'].value" style="width:100%" :options="filterList.bearer"
+                            optionLabel="label" optionValue="value" placeholder="All" class="me-3 custom-multiselect "
+                            :disabled="!meta.isUpdating">
+                            <template #option="slotProps">
+                                <div style="font-size:14px;line-height: 1.5rem;">
+                                    {{ slotProps.option.label }}
+                                </div>
+                            </template>
+                        </MultiSelect>
+                    </div>
+                    <div class="col-lg-2 col-12 p-0 pe-1">
+                        <label for="filter-contract" class="form-label">Speed</label>
+                        <MultiSelect v-model="filters['speed'].value" style="width:100%" :options="filterList.speed"
+                            optionLabel="label" optionValue="value" placeholder="All" class="me-3 custom-multiselect "
+                            :disabled="!meta.isUpdating">
+                            <template #option="slotProps">
+                                <div style="font-size:14px;line-height: 1.5rem;">
+                                    {{ slotProps.option.label }}
+                                </div>
+                            </template>
+                        </MultiSelect>
+                    </div>
+                    <div class="col-lg-2 col-12 d-flex align-self-end justify-content-around">
+                        <button class="btn btn-secondary btn-sm mt-2 me-2 w-100" @click="resetFilters()"
+                            :disabled="!meta.isUpdating">Reset</button>
+                        <div class="advanced-settings pt-2 w-100">
+                            <button class="btn btn-secondary dropdown-toggle lh-1 w-100" type="button"
+                                data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside"
+                                :disabled="!meta.isUpdating">
+                                <font-awesome-icon :icon="['fas', 'gear']"></font-awesome-icon>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end p-1">
+                                <li>
+                                    <div class="checkbox d-flex px-3">
+                                        <input class="form-check-input me-2" type="checkbox" value="filter-lower-cost"
+                                            id="filter-lower-cost" v-model="showLowestCost">
+                                        <label class="form-check-label" for="filter-lower-cost">
+                                            Only show lowest cost router
+                                        </label>
                                     </div>
-                                </template>
-                            </MultiSelect>
-                        </div>
-                        <div class="col-lg-2 col-12 p-0 pe-1">
-                            <label for="filter-contract" class="form-label">Speed</label>
-                            <MultiSelect v-model="filters['speed'].value" style="width:100%"
-                                         :options="filterList.speed" optionLabel="label" optionValue="value" placeholder="All"
-                                         class="me-3 custom-multiselect " :disabled="!meta.isUpdating">
-                                <template #option="slotProps">
-                                    <div style="font-size:14px;line-height: 1.5rem;">
-                                        {{ slotProps.option.label }}
+                                    <div class="checkbox d-flex px-3">
+                                        <input class="form-check-input me-2" type="checkbox" value="filter-show-quoted"
+                                            id="filter-show-quoted" v-model="showQuoted">
+                                        <label class="form-check-label" for="filter-show-quoted">
+                                            Show quoted items
+                                        </label>
                                     </div>
-                                </template>
-                            </MultiSelect>
-                        </div>
-                        <div class="col-lg-2 col-12 d-flex align-self-end justify-content-around">
-                            <button class="btn btn-secondary btn-sm mt-2 me-2 w-100" @click="resetFilters()"
-                                    :disabled="!meta.isUpdating">Reset</button>
-                            <div class="advanced-settings pt-2 w-100">
-                                <button class="btn btn-secondary dropdown-toggle lh-1 w-100" type="button"
-                                        data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside"
-                                        :disabled="!meta.isUpdating">
-                                    <font-awesome-icon :icon="['fas', 'gear']"></font-awesome-icon>
-                                </button>
-                                <ul class="dropdown-menu dropdown-menu-end p-1">
-                                    <li>
-                                        <div class="checkbox d-flex px-3">
-                                            <input class="form-check-input me-2" type="checkbox"
-                                                   value="filter-lower-cost" id="filter-lower-cost"
-                                                   v-model="showLowestCost">
-                                            <label class="form-check-label" for="filter-lower-cost">
-                                                Only show lowest cost router
-                                            </label>
-                                        </div>
-                                        <div class="checkbox d-flex px-3">
-                                            <input class="form-check-input me-2" type="checkbox"
-                                                   value="filter-show-quoted" id="filter-show-quoted"
-                                                   v-model="showQuoted">
-                                            <label class="form-check-label" for="filter-show-quoted">
-                                                Show quoted items
-                                            </label>
-                                        </div>
-                                    </li>
-                                </ul>
-                            </div>
+                                </li>
+                            </ul>
                         </div>
                     </div>
+                </div>
                 <div v-if="isLoading || !meta.isUpdating" data-provider="loading" class="position-relative">
                     <div class="cpq-progress-bar" style="position: absolute;z-index: 2; ">
                         <div class="cpq-bar"></div>
@@ -435,7 +440,8 @@ getArticles()
                                         </template>
                                     </span>
                                 </th>
-                                <th class="text-center" :style="{ whiteSpace: 'nowrap' }" @click="orderBy('providerName')">
+                                <th class="text-center" :style="{ whiteSpace: 'nowrap' }"
+                                    @click="orderBy('providerName')">
                                     Provider
                                     <span class="text-center d-inline-block align-middle" style="width: 20px;">
                                         <template v-if="sort.field == 'providerName'">
@@ -448,7 +454,8 @@ getArticles()
                                         </template>
                                     </span>
                                 </th>
-                                <th class="text-center" :style="{ whiteSpace: 'nowrap' }" @click="orderBy('connectivitySupplierName')">
+                                <th class="text-center" :style="{ whiteSpace: 'nowrap' }"
+                                    @click="orderBy('connectivitySupplierName')">
                                     Subprovider
                                     <span class="text-center d-inline-block align-middle" style="width: 20px;">
                                         <template v-if="sort.field == 'connectivitySupplierName'">
@@ -593,19 +600,13 @@ getArticles()
                                 </td>
                                 <td>{{ article.contractTermMonths }} Months </td>
                                 <td class="text-end">
-                                    <button
-                                        v-if="modelValue.items.find((item) => item.data.code == article.code)"
-                                        class="btn btn-primary me-2 py-1"
-                                        @click="checkProduct(article)"
-                                    >
+                                    <button v-if="modelValue.items.find((item) => item.data.code == article.code)"
+                                        class="btn btn-primary me-2 py-1" @click="checkProduct(article)">
                                         <font-awesome-icon :icon="['fas', 'check']" />
                                         Added
                                     </button>
-                                    <button
-                                        v-else
-                                        class="btn btn-outline-primary me-2 py-1"
-                                        @click="checkProduct(article)"
-                                    >
+                                    <button v-else class="btn btn-outline-primary me-2 py-1"
+                                        @click="checkProduct(article)">
                                         <font-awesome-icon :icon="['fas', 'plus']" />
                                         Add
                                     </button>
@@ -613,15 +614,9 @@ getArticles()
                             </tr>
                         </tbody>
                     </table>
-                    <Paginator
-                        v-model:first="meta.first"
-                        :rows="meta.limit"
-                        :pageLinkSize="5"
-                        :totalRecords="meta.total"
-                        :rowsPerPageOptions="[10, 25, 50]"
-                        @page="handlePaginator"
-                        class="custom-paginator"
-                    >
+                    <Paginator v-model:first="meta.first" :rows="meta.limit" :pageLinkSize="5"
+                        :totalRecords="meta.total" :rowsPerPageOptions="[10, 25, 50]" @page="handlePaginator"
+                        class="custom-paginator">
                     </Paginator>
                 </div>
                 <div class="d-flex justify-content-end align-items-center my-5">
@@ -630,7 +625,8 @@ getArticles()
                         Continue
                         <font-awesome-icon :icon="['fas', 'arrow-right']" class="ms-2"></font-awesome-icon>
                     </button>
-                    <a v-else class="btn btn-primary" type="submit" :href="route('quotes.show', { quote: modelValue.id })">
+                    <a v-else class="btn btn-primary" type="submit"
+                        :href="route('quotes.show', { quote: modelValue.id })">
                         Continue
                         <font-awesome-icon :icon="['fas', 'arrow-right']" class="ms-2"></font-awesome-icon>
                     </a>
@@ -640,11 +636,11 @@ getArticles()
     </div>
 
     <Dialog v-model:visible="showLoadingModal" modal :show-header="false" class="loading-modal px-4"
-            :breakpoints="{ '1199px': '75vw', '575px': '90vw' }" :draggable="false">
+        :breakpoints="{ '1199px': '75vw', '575px': '90vw' }" :draggable="false">
         <div class="panel">
             <div class="row">
                 <div class="text-center">
-                    <Spinner class="mt-5 mb-4 d-flex justify-content-center"/>
+                    <Spinner class="mt-5 mb-4 d-flex justify-content-center" />
                     <h4><strong>Finding your available products</strong></h4>
                     <h6>This may take a few moments, the perfect <br> chance to grab a coffee!</h6>
                     <div class="cpq-bar-bg">
@@ -653,7 +649,7 @@ getArticles()
                     <p>
                         <strong>{{ meta.overallTotal }}</strong>
                         results retrieved so far
-                        <a href="#" class="text-dark" @click.prevent="showLoadingModal=false">view now</a>
+                        <a href="#" class="text-dark" @click.prevent="showLoadingModal = false">view now</a>
                     </p>
                 </div>
             </div>
@@ -707,5 +703,4 @@ tr.active td {
     background-color: var(--purple);
     animation: progressBar 100s linear forwards;
 }
-
 </style>

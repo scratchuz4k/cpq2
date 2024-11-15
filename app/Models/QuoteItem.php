@@ -43,6 +43,22 @@ class QuoteItem extends Model
     {
         static::addGlobalScope(new TenantScope);
     }
+    /**
+     * Get the parent user of this user.
+     */
+    public function parent()
+    {
+        return $this->hasOne(QuoteItem::class, 'id', 'parent_id');
+    }
+
+    /**
+     * Get the children users of this user.
+     */
+    public function children()
+    {
+        return $this->hasMany(QuoteItem::class, 'parent_id', 'id');
+    }
+
     public function product(): HasOne
     {
         return $this->hasOne(Product::class);
