@@ -126,42 +126,6 @@ const getArticles = async () => {
     };
 
     const csrfToken = document.head.querySelector("[name~=csrf-token][content]").content;
-	/*
-    let res = await fetch('/api/external/get-articles-from-cloud-market',
-        {
-            headers: {
-                "Content-Type": "application/json",
-                "Accept": "application/json",
-                "X-Requested-With": "XMLHttpRequest",
-                "X-CSRF-Token": csrfToken
-            },
-            method: "post",
-            credentials: "same-origin",
-            body: JSON.stringify(query)
-        })
-    const reader = res.body.getReader();
-    const decoder = new TextDecoder();
-
-
-    while (true) {
-        const { done, value } = await reader.read();
-        if (done) {
-            break;
-        }
-
-        try {
-            const data = JSON.parse(decoder.decode(value, { stream: true }));
-            articles.value = data.data
-            isLoading.value = false
-            meta.first = (meta.page - 1) * meta.limit
-            meta.total = data.total
-            meta.overallTotal = data.overall_total
-            meta.isUpdating = !!data.finished_at
-            Object.assign(filterList, data.filters)
-        } catch (e) {
-        }
-    }
-	*/
     let res = await axios.post('/api/external/get-articles-from-cloud-market',query)
 
 	articles.value = res.data.data
@@ -248,8 +212,10 @@ const add = async (article) => {
                 quantity: 1,
                 name: article.productName,
                 data: article,
-                price: article.priceInstall ?? 0,
-                price_monthly: article.priceMonthly ?? 0
+                price_plan_code: 'monthly',
+                contract_length: article.contractTermMonths,
+                raw_price: article.priceMonthly ?? 0,
+                price: article.priceMonthly ?? 0,
             })
         props.modelValue.items.push(res.data)
     } catch (ex) {
