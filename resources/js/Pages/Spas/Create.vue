@@ -76,7 +76,7 @@ const items = ref([
     <AuthenticatedLayout>
         <Header title="New SPA" :breadcrumbs="items">
             <template #buttons>
-                <PrimaryButton @click="saveSpa()">
+                <PrimaryButton id="save-spa" @click="saveSpa()">
                     <font-awesome-icon class="me-2" :icon="['fas', 'save']"></font-awesome-icon> Save
                 </PrimaryButton>
             </template>

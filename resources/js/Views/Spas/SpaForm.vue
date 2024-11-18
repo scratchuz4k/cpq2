@@ -33,19 +33,19 @@ const icons = {
             </ul>
             <div class="mb-3" v-if="modelValue.entity_1 == 'Account'">
                 <label class="form-label">Select the Account</label>
-                <InputSearch url="/accounts" :fields="['name']" v-model="modelValue.entity_1_value"
+                <InputSearch id="Account1" url="/accounts" :fields="['name']" v-model="modelValue.entity_1_value"
                     :is-multiple="false">
                 </InputSearch>
             </div>
             <div class="mb-3" v-if="modelValue.entity_1 == 'Supplier'">
                 <label class="form-label">Select the Supplier</label>
-                <InputSearch url="/suppliers" :fields="['name']" v-model="modelValue.entity_1_value"
+                <InputSearch id="Supplier1" url="/suppliers" :fields="['name']" v-model="modelValue.entity_1_value"
                     :is-multiple="false">
                 </InputSearch>
             </div>
             <div class="mb-3" v-if="modelValue.entity_1 == 'Product'">
                 <label class="form-label">Select the Product</label>
-                <InputSearch url="/products" :fields="['name']" v-model="modelValue.entity_1_value"
+                <InputSearch id="Product1"  url="/products" :fields="['name']" v-model="modelValue.entity_1_value"
                     :is-multiple="false">
                 </InputSearch>
             </div>
@@ -62,19 +62,19 @@ const icons = {
             <template v-if="modelValue.entity_2">
                 <div class="mb-3" v-if="modelValue.entity_2 == 'Account'">
                     <label class="form-label">Select the Account</label>
-                    <InputSearch url="/accounts" :fields="['name']" v-model="modelValue.entity_2_value"
+                    <InputSearch id="Account2" url="/accounts" :fields="['name']" v-model="modelValue.entity_2_value"
                         :is-multiple="false">
                     </InputSearch>
                 </div>
                 <div class="mb-3" v-if="modelValue.entity_2 == 'Supplier'">
                     <label class="form-label">Select the Supplier</label>
-                    <InputSearch url="/suppliers" :fields="['name']" v-model="modelValue.entity_2_value"
+                    <InputSearch id="Supplier2" url="/suppliers" :fields="['name']" v-model="modelValue.entity_2_value"
                         :is-multiple="false">
                     </InputSearch>
                 </div>
                 <div class="mb-3" v-if="modelValue.entity_2 == 'Product'">
                     <label class="form-label">Select the Product</label>
-                    <InputSearch url="/products" :fields="['name']" v-model="modelValue.entity_2_value"
+                    <InputSearch id="Product2" url="/products" :fields="['name']" v-model="modelValue.entity_2_value"
                         :is-multiple="false">
                     </InputSearch>
                 </div>
@@ -90,12 +90,12 @@ const icons = {
             <div class="row g-3">
                 <div class="col">
                     <label class="form-label">Percentage:</label>
-                    <input type="number" class="form-control" v-model="modelValue.percentage"
+                    <input id="spa-percentage" type="number" class="form-control" v-model="modelValue.percentage"
                         :disabled="check(modelValue.value)" min="0" max="100">
                 </div>
                 <div class="col">
                     <label class="form-label">Value:</label>
-                    <input type="number" class="form-control " v-model="modelValue.value"
+                    <input id="spa-value" type="number" class="form-control " v-model="modelValue.value"
                         :disabled="check(modelValue.percentage)">
                 </div>
             </div>

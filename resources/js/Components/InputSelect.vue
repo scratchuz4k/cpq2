@@ -1,6 +1,6 @@
 <template>
-    <div :id="'select-' + props.id" style="position: relative">
-        <div class="select-options input form-select p-1" @click="openOption()">
+    <div style="position: relative">
+        <div :id="'select-' + props.id" class="select-options input form-select p-1" @click="openOption()">
             <p v-if="proxyValue" class="select-option px-2">
                 <template v-for="(key, i) in props.fields">
                     <span v-if="i != 0"> | </span>
@@ -15,7 +15,7 @@
 
             <div class="mt-2">
                 <template v-if="options && options.length">
-                    <p class="select-item" :class="{ 'text-bold': checkIfExists(item) }"
+                    <p class="select-item" :class="[checkIfExists(item) ? 'text-bold' : null, 'select-item-' + key]"
                         v-for="( item, key ) in options " :key="key" @click="selectOption(item)">
                         <template v-for="(key, i) in props.fields">
                             <span v-if="i != 0"> | </span>

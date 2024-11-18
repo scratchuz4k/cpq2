@@ -17,9 +17,12 @@ return new class extends Migration
             $table->dropForeign(['account_id']);
             $table->dropColumn(['name', 'data',  'supplier_id', 'merchant_id', 'account_id']);
 
-            $table->foreignId('rule_id')->constrained('spa_rules', 'id')->cascadeOnDelete()->after('id');
+            $table->foreignId('rule_id')->after('id')->constrained('spa_rules', 'id')->cascadeOnDelete();
             $table->unsignedBigInteger('field_1')->after('rule_id');
             $table->unsignedBigInteger('field_2')->nullable()->after('field_1');
+            $table->unique(['rule_id', 'field_1']);
+            $table->unique(['rule_id', 'field_1', 'field_2']);
+
             $table->foreignId('operation_id')->constrained('spa_operations', 'id')->cascadeOnDelete()->after('field_2');
             $table->decimal('value', 12, 4)->after('operation_id')->default(0);
             $table->decimal('percentage', 12, 4)->after('value')->default(0);
