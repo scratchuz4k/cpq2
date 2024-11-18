@@ -66,6 +66,7 @@ class CloudMarketService
         $started_at = now();
 
         $prices = [];
+        $errors = [];
         $tempFilters = [
             "providerName" => [],
             "connectivitySupplierName" => [],
@@ -76,6 +77,17 @@ class CloudMarketService
 
         $stream = StreamWrapper::getResource($res->toPsrResponse()->getBody());
         foreach (Items::fromStream($stream) as $key => $value) {
+            if($value->hasErrors && $value->quoteResponseError) {
+                $error = [
+                    'provider' => $value->quoteResponseError->requestInfo->supplier,
+                    'response' => $value->quoteResponseError->errorMessage,
+                ];
+
+                if (!in_array($error, $errors)) {
+                    $errors[] = $error;
+                }
+            }
+
             if (empty($value->providerKey) || !$value->quoteId) {
                 continue;
             }
@@ -91,7 +103,7 @@ class CloudMarketService
 
             $prices[] = [...$temp, 'code' => md5(Str::slug($temp['code']))];
             $tempFilters = FilterProvider::process($tempFilters, $temp);
-            $file->write($prices, false, null, $started_at, $tempFilters);
+            $file->write($prices, false, null, $started_at, $tempFilters, $errors);
             /*
             if (($key % 250) == 0) {
                 echo json_encode($this->cloudMarketRepository->sendResponse($file->getContent(), $filters));
@@ -99,7 +111,7 @@ class CloudMarketService
 			*/
         }
 
-        $file->write($prices, false, now(), $started_at, $tempFilters);
+        $file->write($prices, false, now(), $started_at, $tempFilters, $errors);
         //echo json_encode($this->cloudMarketRepository->sendResponse($file->getContent(), $filters));
     }
 }

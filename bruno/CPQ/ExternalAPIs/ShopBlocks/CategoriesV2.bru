@@ -1,0 +1,22 @@
+meta {
+  name: CategoriesV2
+  type: http
+  seq: 3
+}
+
+get {
+  url: https://api.shopblocks.com/api/v2/categories
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIxMzQiLCJqdGkiOiJlNDJiOWU2NWRjMDE0NWQyNDhiYjg1OGYxY2Q5N2M0Mjc5MWI4M2JkODI5ZTE1NDNiYjYwZWEzZmRjNzgzMzM5ZjhjZDRhYjVmZGI5ZGFhNSIsImlhdCI6MTcxNDI0NzIzMC4yNzU2NzYsIm5iZiI6MTcxNDI0NzIzMC4yNzU2NzcsImV4cCI6NDg2OTkyMDgzMC4yNjEyOTksInN1YiI6IiIsInNjb3BlcyI6W119.OP2sZaMGpmyjsiBVizoNpKq9sHsTmEe-McAX5XQX6hxg5ydTYsqFe60TIDuCHCgesiOnn_JWaUWINcvE4NLHZRVRyOWLPp64ngxxkhjEQfYWBQJJ-qj4k-kl-AQFgCfeQ1FhJe3VUBv57doxPMdhQyHSmAQuEhYkqI9ikdQCAzuFAeS9G8BKLLNNf4VRgx3RfhSphRtxkgnkBMCUU3Do8KdHDRhygwV9zumF1c-8Q-CZzsL7CxsAdTAsZngtCs9zjJM_uR2r7lwIZiAFwvy4X6_umDU0w_7NUlAf55PZZ0Qhw_EOTGGANs4hEMa-izVDp4HwW36hjTWuWmhOQ5T0FQxfvKIaelBPy-JHlQ728bjI6wlV6M-zWvPlE5ftdf9tgoREy8FRajNOydjM7Mytz_tUxAbhLYoQKxQXE63rvVsLUkWd7rzOzhP96CFWGPwd3NFR0YIjwLPJaeAbJJwZR-9JRhObH8mAirLykMxuHlC_U7TVGCvtuyS7W3e4urwcwpt8xaXnGAan7_py3SdIl-OOeNTPSwNJi-qgIeRvWpvG9y2V1D506FKJmSlmGpSzdFdyM5-lDomfObQ514WVP2vtcINTl8uSbQde8UmJfXSRjXaZic3pxmxXr46MhVV87UMFr0tEa8aY66IwJ6-WCtOvW5wFR4Gcyq70O9-IC6g
+}
+
+body:json {
+  {
+    "page": 1,
+    "parentId":2
+  }
+}
