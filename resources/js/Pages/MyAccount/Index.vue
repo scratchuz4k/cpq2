@@ -65,7 +65,7 @@ const items = ref([
                     <div class="row row-cols-1 row-cols-md-3 g-4">
                         <div class="col" v-if="hasRole('Super Admin') || can('viewAny account')">
                             <div class="card bg-light border-0">
-                                <a :href="route('accounts.index')" class="card-body text-center p-2 text-decoration-none">
+                                <a id="link-accounts" :href="route('accounts.index')" class="card-body text-center p-2 text-decoration-none">
                                     <font-awesome-icon class="py-3 opacity-25" :icon="['far', 'address-card']" size="2x"></font-awesome-icon>
                                     <span class="d-block h5">Accounts</span>
                                 </a>
@@ -105,7 +105,7 @@ const items = ref([
                         </div>
                         <div class="col" v-if="hasRole('Super Admin') || can('viewAny spa')">
                             <div class="card bg-light border-0">
-                                <a :href="route('spas.index')" class="card-body text-center p-2 text-decoration-none">
+                                <a id="link-spas" :href="route('spas.index')" class="card-body text-center p-2 text-decoration-none">
                                     <font-awesome-icon class="py-3 opacity-25" :icon="['far', 'handshake']" size="2x"></font-awesome-icon>
                                     <span class="d-block h5">SPAs</span>
                                 </a>
@@ -113,7 +113,7 @@ const items = ref([
                         </div>
                         <div class="col" v-if="hasRole('Super Admin') || can('viewAny supplier')">
                             <div class="card bg-light border-0">
-                                <a :href="route('suppliers.index')" class="card-body text-center p-2 text-decoration-none">
+                                <a id="link-suppliers" :href="route('suppliers.index')" class="card-body text-center p-2 text-decoration-none">
                                     <font-awesome-icon class="py-3 opacity-25" :icon="['far', 'handshake']" size="2x"></font-awesome-icon>
                                     <span class="d-block h5">Suppliers</span>
                                 </a>

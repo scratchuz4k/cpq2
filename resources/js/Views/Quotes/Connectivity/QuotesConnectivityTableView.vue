@@ -205,6 +205,25 @@ const checkProduct = (article) => {
 
 const add = async (article) => {
     try {
+        let childs = []
+        if (article.priceMonthly_spa) {
+            childs.push({
+                name: article.productName,
+                price_plan_code: 'monthly',
+                contract_length: article.contractTermMonths,
+                raw_price: article.priceMonthly,
+                price: article.priceMonthly_spa,
+            })
+        }
+        if (article.priceInstall_spa) {
+            childs.push({
+                name: article.productName + ' (service install)',
+                price_plan_code: 'single',
+                raw_price: article.priceInstall,
+                price: article.priceInstall_spa,
+            })
+        }
+
         let res = await axios.post('/api/quote-items',
             {
                 quote_id: props.modelValue.id,
@@ -213,19 +232,7 @@ const add = async (article) => {
                 product_code: article.code,
                 name: article.productName,
                 data: article,
-                children: [
-                    {
-                        price_plan_code: 'monthly',
-                        contract_length: article.contractTermMonths,
-                        raw_price: article.priceMonthly ?? 0,
-                        price: article.priceMonthly ?? 0,
-                    },
-                    {
-                        price_plan_code: 'single',
-                        raw_price: article.priceInstall ?? 0,
-                        price: article.priceInstall ?? 0,
-                    }
-                ]
+                children: childs
             })
         props.modelValue.items.push(res.data)
     } catch (ex) {
@@ -319,9 +326,9 @@ getArticles()
                 <div id="filters" v-if="showFilters" class="p-0 m-0 mt-2 mb-4 row">
                     <div class="col-lg-2 col-12 p-0 pe-1">
                         <label for="filter-provider" class="form-label">Provider</label>
-                        <MultiSelect v-model="filters['providerName'].value" style="width:100%"
-                            :options="Object.keys(filterList.providerName)" placeholder="All" size="small"
-                            :disabled="!meta.isUpdating" class="custom-multiselect">
+                        <MultiSelect id="provider-multiselect" v-model="filters['providerName'].value"
+                            style="width:100%" :options="Object.keys(filterList.providerName)" placeholder="All"
+                            size="small" :disabled="!meta.isUpdating" class="custom-multiselect">
                             <template #option="slotProps">
                                 <div style="font-size:14px;line-height: 1.5rem;">{{ slotProps.option }}
                                     ( {{ filterList.providerName[slotProps.option] }} )
@@ -331,9 +338,9 @@ getArticles()
                     </div>
                     <div class="col-lg-2 col-12 p-0 pe-1">
                         <label for="filter-subprovider" class="form-label">Subprovider</label>
-                        <MultiSelect v-model="filters['connectivitySupplierName'].value" style="width:100%"
-                            :options="Object.keys(filterList.connectivitySupplierName)" placeholder="All"
-                            class="me-3 custom-multiselect" :disabled="!meta.isUpdating">
+                        <MultiSelect id="subprovider-multiselect" v-model="filters['connectivitySupplierName'].value"
+                            style="width:100%" :options="Object.keys(filterList.connectivitySupplierName)"
+                            placeholder="All" class="me-3 custom-multiselect" :disabled="!meta.isUpdating">
                             <template #option="slotProps">
                                 <div style="font-size:14px;line-height: 1.5rem;">{{ slotProps.option }}
                                     ( {{ filterList.connectivitySupplierName[slotProps.option] }} )
@@ -564,7 +571,7 @@ getArticles()
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="article in articles" style="text-align: center;">
+                            <tr v-for="(article, index) in articles" style="text-align: center;">
                                 <td class="lh-sm text-left ps-3">
                                     {{ article.productName }}
                                     <span v-if="article.additionalInfo['Primary Router Model']" v-tooltip
@@ -587,8 +594,10 @@ getArticles()
                                 </td>
                                 <td>{{ bytesFormatter(article.bearer) }} </td>
                                 <td>{{ bytesFormatter(article.speed) }} </td>
-                                <td>{{ GBP.format(article.priceInstall) }} </td>
-                                <td>{{ GBP.format(article.priceMonthly) }} </td>
+                                <td :id="'line-' + index + '-price-install'">{{ GBP.format(article.priceInstall_spa) }}
+                                </td>
+                                <td :id="'line-' + index + '-price-monthly'">{{ GBP.format(article.priceMonthly_spa) }}
+                                </td>
                                 <td>
                                     <template v-if="article.priceECC">
                                         {{ GBP.format(article.priceECC) }}
