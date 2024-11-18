@@ -6,27 +6,47 @@ import { Head, router } from "@inertiajs/vue3";
 
 const props = defineProps({
     suppliers: Object,
-    users: Object,
+    rules: Array,
+    operations: Array,
 })
+
+const rules = {}
+props.rules.forEach(element => {
+    let str = element.code;
+    const splitResult = str.split(/(?=[A-Z])/);
+    if (!Object.keys(rules).includes(splitResult[0])) {
+        rules[splitResult[0]] = []
+    }
+
+    if (!rules[splitResult[0]].find(x => x === splitResult[1])) {
+        rules[splitResult[0]].push(splitResult[1] ?? null)
+    }
+});
 
 const spa = reactive({
-    data: {
-        operation: 'Add',
-        value: 0
-    },
-    supplier_id: null,
-    user_id: null,
-    name: null
+    entity_1: null,
+    entity_1_value: null,
+    entity_2: null,
+    entity_2_value: null,
+    operation_id: 1,
+    name: null,
+    value: 0,
+    percentage: 0
 })
 
-const operations = [
-    'Add',
-    'Subtract',
-    'Multiply',
-    'Divide'
-]
 const saveSpa = () => {
-    router.post(`/spas`, spa,
+    let rule = props.rules.find(x => x.code == spa.entity_1 + '' + (spa.entity_2 ?? ''))
+
+    let item = {
+        rule_id: rule.id,
+        field_1: spa.entity_1_value?.id,
+        field_2: spa.entity_2_value?.id,
+        operation_id: spa.operation_id,
+        value: spa.value,
+        percentage: spa.percentage,
+    }
+
+    router.post(`/spas`, item,
         {
             onSuccess: (page) => {
                 notyf.success("Created with Success")
@@ -41,6 +61,7 @@ const saveSpa = () => {
         }
     )
 }
+
 const items = ref([
     { label: 'Home', url: '/' },
     { label: 'My Account', url: '/myaccount' },
@@ -50,47 +71,37 @@ const items = ref([
 
 </script>
 <template>
+
     <Head title="New SPA" />
     <AuthenticatedLayout>
-        <div class="panel">
-            <Header title="New SPA" :breadcrumbs="items">
-                <template #buttons>
-                    <PrimaryButton @click="saveSpa()">
-                        <font-awesome-icon class="me-2" :icon="['fas', 'save']"></font-awesome-icon> Save
-                    </PrimaryButton>
-                </template>
-            </Header>
-            <div class="col-6">
-                <div class="row mb-3">
-                    <label for="spa-name" class="form-label">Name:</label>
-                    <input id="spa-name" class="form-control" v-model="spa.name">
-                </div>
-                <div class="row mb-3">
-                    <label class="form-label">User:</label>
-                    <select class="form-select" v-model="spa.user_id">
-                        <option v-for="user in users" :value="user.id">{{ user.name }}</option>
-                    </select>
-                </div>
-                <div class="row mb-3">
-                    <label class="form-label">Supplier:</label>
-                    <select class="form-select" v-model="spa.supplier_id">
-                        <option v-for="supplier in suppliers" :value="supplier.id">{{ supplier.name }}</option>
-                    </select>
-                </div>
-                <div class="row mb-3">
-                    <label class="form-label">Pricing Rules:</label>
-                    <div class="d-flex p-0">
-                        <select class="form-select w-50" v-model="spa.data.operation">
-                            <option v-for="operation in operations" :value="operation">{{ operation}}</option>
-                        </select>
-                        <input id="spa-value" class="form-control w-50" v-model="spa.data.value">
-                    </div>
-                    <div class="form-text px-0">
-                        Example: to increase prices by 20%, select the "MULTIPLY" operation and enter "1.2" as the value.
-                    </div>
-                </div>
-            </div>
+        <Header title="New SPA" :breadcrumbs="items">
+            <template #buttons>
+                <PrimaryButton @click="saveSpa()">
+                    <font-awesome-icon class="me-2" :icon="['fas', 'save']"></font-awesome-icon> Save
+                </PrimaryButton>
+            </template>
+        </Header>
+        <SpaForm v-model="spa" :rules="rules" :operations="props.operations"></SpaForm>
 
-        </div>
     </AuthenticatedLayout>
 </template>
+<style scoped>
+.rule {
+    cursor: pointer;
+    margin-right: 5px;
+    border: 1px solid;
+    border-radius: 20px;
+    text-align: center;
+}
+
+.rule:hover {
+    border: 1px solid var(--primary-light);
+    color: var(--primary-light);
+    background: whitesmoke;
+}
+
+.rule.active {
+    border: 1px solid var(--primary-light);
+    color: var(--primary-light)
+}
+</style>

@@ -108,7 +108,7 @@ class CloudMarketService
             if (($key % 250) == 0) {
                 echo json_encode($this->cloudMarketRepository->sendResponse($file->getContent(), $filters));
             }
-			*/
+            */
         }
 
         $file->write($prices, false, now(), $started_at, $tempFilters, $errors);

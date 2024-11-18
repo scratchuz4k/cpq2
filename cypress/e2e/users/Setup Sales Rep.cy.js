@@ -1,5 +1,5 @@
 const crypto = require("crypto");
-const {getCurrentDate, generateHash} = require("../support/utils.js");
+const {getCurrentDate, generateHash} = require("../../support/utils.js");
 const rand = (notAllowedNumber, max = 101) => {
     let randomNumber = Math.floor(Math.random() * max); // Generate a random number
 
@@ -25,7 +25,7 @@ const account = { ref: generateHash(temp), name: temp }
 
 describe("Setup Sales Rep.cy", () => {
     it("Creates an User", () => {
-        cy.login("companyadmin@example.com", "werwerwer")
+        cy.login("super@example.com", "werwerwer")
         cy.visit("/")
         cy.get("#my-account").click()
         cy.get("#link-users").click()

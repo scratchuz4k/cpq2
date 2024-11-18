@@ -16,7 +16,6 @@ class RegionResource extends JsonResource
     {
         return [
             ...$this->resource->toArray(),
-            'tenant' => $this->tenant,
             'merchant' => $this->merchant,
             'user' => $this->user,
             'updated_at' => $this->updated_at,
