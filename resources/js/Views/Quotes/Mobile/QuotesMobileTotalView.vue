@@ -7,7 +7,26 @@ const props = defineProps({
     pricePlans: Array
 })
 const isLoading = ref(false)
+
+const getLeafNodesWithChildren = (objects) => {
+    let leaves = [];
+    const findLeaves = (items) => {
+        for (const item of items) {
+            if (item.children && item.children.length > 0) {
+                findLeaves(item.children);
+            } else {
+                leaves.push(item);
+            }
+        }
+    }
+
+    findLeaves(objects);
+    return leaves;
+}
+
 const quote = reactive(props.modelValue)
+Object.assign(quote.items, getLeafNodesWithChildren(quote.items))
+
 const discounts = reactive({
     pricePlans: {}
 })
@@ -57,22 +76,30 @@ const getHardwareProducts = () => {
         hardwareProducts.value.push(element)
     });
 }
-const remove = async (id) => {
-    swal.fire({
-        title: 'Are you sure?'
-    }).then(async (result) => {
-        if (['cancel', 'backdrop'].includes(result.dismiss)) {
-            return
-        }
+const remove = async (p) => {
+    let id = p.id
+    let result = null
+    if (p.parent_id) {
+        result = await swal.fire({
+            title: 'Are you sure?',
+            text: 'This line contains other associated lines, removing it dees all associated lines'
+        })
+        id = p.parent_id
+    } else {
+        result = await swal.fire({
+            title: 'Are you sure?'
+        })
+    }
 
-        try {
-            await axios.delete(`/api/quote-items/${id}`)
-            router.get(`/quotes/${quote.id}`)
-        } catch (ex) {
-            notyf.error(ex.response.data.message)
-        }
-
-    })
+    if (['cancel', 'backdrop'].includes(result.dismiss)) {
+        return
+    }
+    try {
+        await axios.delete(`/api/quote-items/${id}`)
+        router.get(`/quotes/${quote.id}`)
+    } catch (ex) {
+        notyf.error(ex.response.data.message)
+    }
 }
 
 const edit = (p) => {
@@ -110,6 +137,7 @@ const saveQuote = async () => {
                 discounts: discounts,
             })
         Object.assign(quote, res.data)
+        Object.assign(quote.items, getLeafNodesWithChildren(quote.items))
         isLoading.value = false
     } catch (ex) {
         isLoading.value = false
@@ -255,7 +283,7 @@ const items = ref([
                                                 @click="edit(p)" />
                                             <font-awesome-icon :id="'btn-recurring-' + i + '-remove'" role="button"
                                                 class="px-2 py-3 text-secondary" :icon="['fas', 'trash']"
-                                                @click="remove(p.id)" />
+                                                @click="remove(p)" />
                                         </template>
                                         <template v-else>
                                             <font-awesome-icon :id="'btn-recurring-' + i + '-cancel'" role="button"
@@ -373,7 +401,7 @@ const items = ref([
                                                 @click="edit(p)" />
                                             <font-awesome-icon :id="'btn-one_off-' + i + '-remove'" role="button"
                                                 class="px-2 py-3 text-secondary" :icon="['fas', 'trash']"
-                                                @click="remove(p.id)" />
+                                                @click="remove(p)" />
                                         </template>
                                         <template v-else>
                                             <font-awesome-icon :id="'btn-one_off-' + i + '-cancel'" role="button"
@@ -461,8 +489,8 @@ const items = ref([
                             <label class="form-label">{{ pricePlan.name }} Discount</label>
 
                             <div class="input-group p-0">
-                                <input :id="`input-global-${pricePlan.code}-discount`" type="number" class="form-control"
-                                    v-model="discounts.pricePlans[pricePlan.code]">
+                                <input :id="`input-global-${pricePlan.code}-discount`" type="number"
+                                    class="form-control" v-model="discounts.pricePlans[pricePlan.code]">
                                 <span class="input-group-text">%</span>
                             </div>
 

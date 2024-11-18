@@ -16,6 +16,7 @@ class QuoteItem extends Model
         "quote_id",
         "product_id",
         "price_plan_id",
+        "parent_id",
         "product_code",
         "quantity",
         "name",

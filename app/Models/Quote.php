@@ -60,7 +60,7 @@ class Quote extends Model
     }
     public function items(): HasMany
     {
-        return $this->hasMany(QuoteItem::class);
+        return $this->hasMany(QuoteItem::class)->whereNull('parent_id');
     }
     public function discounts(): HasMany
     {

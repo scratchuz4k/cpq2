@@ -11,7 +11,7 @@ const props = defineProps({
 });
 
 const solutionsViews = {
-    3: 'QuotesConnectivityTotalView', //QuotesConnectivityTotalView
+    3: 'QuotesMobileTotalView', //QuotesConnectivityTotalView
     4: 'QuotesMobileTotalView',
     5: 'QuotesHardwareTotalView',
 }
