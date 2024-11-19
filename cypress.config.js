@@ -6,6 +6,8 @@ export default defineConfig({
     watchForFileChanges: false,
     videosFolder: 'cypress/videos',
     screenshotsFolder: 'cypress/screenshots',
+    video: true,  // Optionally, enable videos for failed tests
+    screenshotOnRunFailure: true,  // Ensure screenshots are captured on test failure
     fixturesFolder: 'cypress/fixture',
     e2e: {
         baseUrl: 'http://localhost:8000',

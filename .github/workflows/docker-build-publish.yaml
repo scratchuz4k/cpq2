@@ -43,7 +43,7 @@ jobs:
           cp .env.example .env
           php artisan key:generate
           php artisan migrate --seed
-          php artisan DB:seed CategoryProductsSeeder
+          php artisan db:seed CategoryProductsSeeder
 
       - name: Install Node Dependencies
         run: |
@@ -63,7 +63,7 @@ jobs:
         if: failure()
         run: |
           # Zip the screenshot file
-          zip screenshot.zip cypress/screenshots
+          zip -r screenshot.zip cypress/screenshots/*
 
           # Send the screenshot to Discord
           curl -X POST "$DISCORD_WEBHOOK_URL" \
