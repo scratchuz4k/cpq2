@@ -14,7 +14,7 @@ env:
 jobs:
   tests:
     name: Build & Publish Docker Image
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     environment: staging
 
     permissions:
@@ -32,12 +32,13 @@ jobs:
           php_version: 8.3.10
           php_extensions: pcntl redis bcmath gd zip
           version: latest
+
       - name: Run laravel tests
         run: php artisan test
 
   # build:
   #   name: Build & Publish Docker Image
-  #   runs-on: ubuntu-latest
+  #   runs-on: ubuntu-24.04
   #   environment: staging
 
   #   permissions:
