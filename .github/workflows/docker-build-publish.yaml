@@ -38,11 +38,15 @@ jobs:
       - name: Install Composer Dependencies
         run: composer install -q --no-ansi --no-interaction --no-scripts --no-suggest --no-progress --prefer-dist
 
-      - name: Prepare Laravel env and db
+      - name: Prepare Laravel env, db and test
         run: |
           cp .env.example .env
           php artisan key:generate
-          php artisan migrate --seed
+          php artisan test
+
+      - name: Migrate and seed db
+        run: |
+          php artisan migrate:fresh --seed
           php artisan db:seed CategoryProductsSeeder
 
       - name: Install Node Dependencies
@@ -88,7 +92,7 @@ jobs:
           curl -X POST "$DISCORD_WEBHOOK_URL" \
             -H "Content-Type: multipart/form-data" \
             -F "file=@screenshot.zip" \
-            -F "payload_json={\"content\": \"<@$USER_ID>: Cypress test failed on branch $BRANCH_NAME ($REPO_OWNER)! Here are the screenshots:\"}"
+            -F "payload_json={\"content\": \"<@$USER_ID>: Test failed on branch $BRANCH_NAME ($REPO_OWNER)! Here are the screenshots:\"}"
         env:
           DISCORD_WEBHOOK_URL: https://discord.com/api/webhooks/1308426382472384655/mCq2fiiN5ydJenImCL0Y4AqCnIXZ2dudOpEPUWxP3GqXBRDa3lpDOTTDCzfffDuKuuUr
 
