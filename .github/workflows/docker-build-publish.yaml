@@ -38,7 +38,7 @@ jobs:
       - name: Install NPM Packages
         run: |
           npm install
-          npm run prod
+          npm run build
 
       # Create SQLite database file
       - name: Create SQLite Database
