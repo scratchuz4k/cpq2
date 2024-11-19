@@ -84,6 +84,7 @@ jobs:
 
       - name: Start Laravel Server
         run: |
+          cat /etc/nginx/sites-available/laravel
           echo "Application running at: http://localhost"
           sleep 5 # Allow Nginx to start fully
 
