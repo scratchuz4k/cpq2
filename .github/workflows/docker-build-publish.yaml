@@ -71,11 +71,27 @@ jobs:
           BRANCH_NAME="${GITHUB_REF#refs/heads/}"
           REPO_OWNER="${GITHUB_REPOSITORY%/*}"
 
+          # Define a list of users and their IDs
+          declare -A users
+          users["scratchuz4k"]="123456789012345678"
+
+          # Define the target username
+          TARGET_USER="$COMMIT_OWNER"
+
+          # Get the user ID from the array using the target username
+          USER_ID="${users[$TARGET_USER]}"
+
+          # Check if the user ID exists
+          if [ -z "$USER_ID" ]; then
+            echo "User $TARGET_USER not found!"
+            exit 1
+          fi
+
           # Send the screenshot to Discord
           curl -X POST "$DISCORD_WEBHOOK_URL" \
             -H "Content-Type: multipart/form-data" \
             -F "file=@screenshot.zip" \
-            -d '{"content": "<@113697281739456521>: Cypress test failed on branch $BRANCH_NAME ($REPO_OWNER)! Here are the screenshots:"}'
+            -F "payload_json={\"content\": \"<@$USER_ID>: Cypress test failed on branch $BRANCH_NAME ($REPO_OWNER)! Here are the screenshots:\"}"
         env:
           DISCORD_WEBHOOK_URL: https://discord.com/api/webhooks/1308426382472384655/mCq2fiiN5ydJenImCL0Y4AqCnIXZ2dudOpEPUWxP3GqXBRDa3lpDOTTDCzfffDuKuuUr
 
