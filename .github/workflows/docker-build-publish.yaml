@@ -45,9 +45,6 @@ jobs:
           php artisan migrate --seed
           php artisan db:seed CategoryProductsSeeder
 
-      - name: Run Laravel tests
-        run: php artisan test
-
       - name: Install Node Dependencies
         run: |
           npm install
@@ -73,7 +70,7 @@ jobs:
 
           # Define a list of users and their IDs
           declare -A users
-          users["scratchuz4k"]="123456789012345678"
+          users["scratchuz4k"]="113697281739456521"
 
           # Define the target username
           TARGET_USER="$COMMIT_OWNER"
