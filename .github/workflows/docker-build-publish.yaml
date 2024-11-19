@@ -44,12 +44,16 @@ jobs:
         run: |
           cp .env.example .env
           php artisan key:generate
+          php artisan migrate --seed
 
       - name: Run laravel tests
         run: php artisan test
 
       - name: Run Laravel Server
         run: php artisan serve &
+
+      - name: Check if Laravel App is Running
+        run: curl -I http://localhost:8000
 
       - name: Run Cypress Tests
         run: npx cypress run
