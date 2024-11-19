@@ -47,15 +47,20 @@ jobs:
           sudo apt-get install -y nginx php-fpm php-mysql php-sqlite3
           sudo systemctl start php8.3-fpm
 
-      - name: Configure Nginx
+      - name: Debug GITHUB_WORKSPACE
         run: |
-          # Create Nginx server block for Laravel
-          sudo bash -c 'cat > /etc/nginx/sites-available/laravel <<EOF
+          echo "GITHUB_WORKSPACE: $GITHUB_WORKSPACE"
+          ls -la $GITHUB_WORKSPACE
+
+      - name: Configure Nginx with Dynamic Root
+        run: |
+          export LARAVEL_ROOT=$GITHUB_WORKSPACE/public
+          echo "
           server {
               listen 8000;
               server_name localhost;
-              root $GITHUB_WORKSPACE/public;
 
+              root \$LARAVEL_ROOT;
               index index.php index.html;
 
               location / {
@@ -64,7 +69,7 @@ jobs:
 
               location ~ \.php\$ {
                   include snippets/fastcgi-php.conf;
-                  fastcgi_pass unix:/var/run/php/php8.3-fpm.sock;
+                  fastcgi_pass unix:/var/run/php/php8.1-fpm.sock;
                   fastcgi_param SCRIPT_FILENAME \$document_root\$fastcgi_script_name;
                   include fastcgi_params;
               }
@@ -73,13 +78,14 @@ jobs:
                   deny all;
               }
           }
-          EOF'
+          " | envsubst > /etc/nginx/sites-available/laravel
 
-          # Enable the server block and restart Nginx
           sudo ln -s /etc/nginx/sites-available/laravel /etc/nginx/sites-enabled/
           sudo rm /etc/nginx/sites-enabled/default
           sudo nginx -t
           sudo systemctl restart nginx
+        env:
+          GITHUB_WORKSPACE: ${{ github.workspace }}
 
       - name: Start Laravel Server
         run: |
