@@ -53,7 +53,12 @@ jobs:
         run: php artisan serve &
 
       - name: Check if Laravel App is Running
-        run: curl -I http://localhost:8000
+        run: curl -I http://localhost:8000/login
+
+      - name: Show Laravel Logs
+        run: |
+          echo "Laravel Log File:"
+          cat storage/logs/laravel.log || echo "No log file found"
 
       - name: Run Cypress Tests
         run: npx cypress run
