@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Events\QuoteStatusEvent;
 use App\Models\QuoteItem;
 use Illuminate\Support\Facades\DB;
 
@@ -20,7 +21,7 @@ class QuoteItemService
 
             $quoteItem->computeTotals();
             $quoteItem->quote->computeTotals();
-            $quoteItem->quote->update(['status' => get_quote_status($quoteItem->quote)]);
+            event(QuoteStatusEvent::class, $quoteItem->quote);
             return $quoteItem;
         });
     }
@@ -32,7 +33,7 @@ class QuoteItemService
 
             $quoteItem->computeTotals();
             $quoteItem->quote->computeTotals();
-            $quoteItem->quote->update(['status' => get_quote_status($quoteItem->quote)]);
+            event(QuoteStatusEvent::class, $quoteItem->quote);
             return $quoteItem;
         });
     }

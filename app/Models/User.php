@@ -94,6 +94,11 @@ class User extends Authenticatable
         return $this->hasMany(Quote::class);
     }
 
+    public function orders(): HasMany
+    {
+        return $this->hasMany(Order::class);
+    }
+
     public static function ancestors()
     {
         $users = collect([]);

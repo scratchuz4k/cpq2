@@ -18,7 +18,8 @@ Sentry.setUser({
 
 
 defineProps({
-    quote: Object
+    quote: Object,
+    order: Object
 })
 
 const visible = ref(false);
@@ -28,6 +29,11 @@ const results = reactive({
     quotes: [],
     accounts: []
 })
+const activeTab = ref(window.location.pathname.replace(/^\/|\/$/g, ''))
+
+const setActive = (menu) =>  {
+    activeTab.value = menu;
+}
 
 const showSearch = () => {
     if (!search.value) {
@@ -90,10 +96,10 @@ watch(search, () => {
                         <a class="nav-link" href="#">ASSETS</a>
                     </li>
                     <li class="nav-item d-md-none d-lg-block">
-                        <a class="nav-link active" aria-current="page" href="#">QUOTES</a>
+                        <a class="nav-link" :class="{ 'active': activeTab === 'quotes' }" aria-current="page" :href="route('quotes.index')">QUOTES</a>
                     </li>
                     <li class="nav-item d-md-none d-lg-block">
-                        <a class="nav-link" href="#">ORDER</a>
+                        <a class="nav-link" :class="{ 'active': activeTab === 'orders' }" aria-current="page" :href="route('orders.index')">ORDER</a>
                     </li>
                     <li class="nav-item d-md-none d-lg-block">
                         <a class="nav-link" href="#">BILLING</a>
@@ -131,7 +137,9 @@ watch(search, () => {
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
                         <a class="nav-link" id="dashboard-tab" data-toggle="tab" href="/" role="tab"
-                            aria-controls="dashboard" aria-selected="false">DASHBOARD</a>
+                            aria-controls="dashboard" aria-selected="false"
+                           :class="{ 'active': activeTab === ''}"
+                        >DASHBOARD</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" :class="{ 'active': $page.component == 'Quotes/Create' }" id="create-tab"

@@ -41,7 +41,7 @@ class QuoteController extends BaseController
 
         $users = $users->filter(fn ($user) => $user->quotes->count() > 0);
 
-        return Inertia::render('Dashboard', [
+        return Inertia::render('Quotes/Index', [
             "users" => $users->values(),
             "solutions" => SolutionType::all(),
             "status" => ["PRICE", "QUOTE", "CONFIGURE"]

@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Enums\OrderStatusesEnum;
+use App\Models\Order;
+use App\Models\OrderItem;
 use Exception;
 use App\Models\User;
 use App\Models\Quote;
@@ -86,7 +89,7 @@ class QuoteController extends BaseController
             if (!env('APP_DEBUG')) {
                 Log::error($e->getMessage());
             }
-            throw new Exception($e);
+            return response(['message' => $e->getMessage()], 500);
         }
 
         return response()->json(new QuoteResource($quote->refresh()));
@@ -98,5 +101,26 @@ class QuoteController extends BaseController
     public function destroy(Quote $quote)
     {
         $quote->delete();
+    }
+
+    public function createOrder(Quote $quote)
+    {
+        $quote->status = OrderStatusesEnum::REGISTRY;
+        $order = Order::updateOrCreate($quote->toArray());
+
+        foreach ($quote->items() as $item) {
+            OrderItem::updateOrCreate($item->toArray());
+        }
+
+
+//        try {
+//            $quote = DB::transaction(function () use ($request) {
+//                return $this->quoteService->store($request->all());
+//            });
+//        } catch (Exception $e) {
+//            return response($e->getMessage(), 500);
+//        }
+//        return response()->json(new QuoteResource($quote->refresh()));
+
     }
 }

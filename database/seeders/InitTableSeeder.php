@@ -4,6 +4,8 @@ namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
+use App\Enums\OrderStatusesEnum;
+use App\Models\OrderStatus;
 use App\Models\SolutionType;
 use App\Models\Tenant;
 use App\Models\User;
@@ -53,5 +55,15 @@ class InitTableSeeder extends Seeder
         ], [
             "name" => "Hardware",
         ]);
+
+
+
+        foreach (OrderStatusesEnum::cases() as $status) {
+            OrderStatus::updateOrCreate([
+                "code" => $status->name,
+            ],[
+                "name" => $status->value,
+            ]);
+        }
     }
 }

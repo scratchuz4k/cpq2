@@ -1,6 +1,7 @@
 <script setup>
 import { Link, router } from '@inertiajs/vue3';
 import { ref, reactive } from 'vue'
+import {createOrder} from "@/Composables/orders.js";
 
 const props = defineProps({
     modelValue: Object
@@ -415,6 +416,10 @@ const items = ref([
                             <font-awesome-icon class="me-2" :icon="['fas', 'arrow-left']"></font-awesome-icon>
                             Previous</a>
                         <div>
+                            <button class="btn btn-primary me-2" @click="createOrder(quote.id)">
+                                <font-awesome-icon class="me-2" :icon="['fas', 'thumbtack']">
+                                </font-awesome-icon> Create an order
+                            </button>
                             <button class="btn btn-primary">
                                 <font-awesome-icon class="me-2" :icon="['fas', 'envelope']">
                                 </font-awesome-icon> Email this quote

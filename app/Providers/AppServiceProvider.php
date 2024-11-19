@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Events\QuoteStatusEvent;
+use App\Listeners\QuoteStatusListener;
 use Illuminate\Support\Str;
 use Dedoc\Scramble\Scramble;
 use Illuminate\Support\Facades\Gate;
@@ -36,6 +38,12 @@ class AppServiceProvider extends ServiceProvider
         Event::listen(function (\SocialiteProviders\Manager\SocialiteWasCalled $event) {
             $event->extendSocialite('saml2', \SocialiteProviders\Saml2\Provider::class);
         });
+
+        Event::listen(
+            QuoteStatusEvent::class,
+            QuoteStatusListener::class
+        );
+
         Scramble::routes(function (Route $route) {
             $available = [
                 'api/account',
