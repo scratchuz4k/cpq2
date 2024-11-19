@@ -58,12 +58,21 @@ jobs:
 
       - name: Execute tests
         run: npm run cy:run
-      # - name: Upload Cypress screenshots
-      #   uses: actions/upload-artifact@v4
-      #   if: ${{ failure() }}
-      #   with:
-      #     name: cypress_screenshots
-      #     path: cypress/screenshots
+
+      - name: Check for failed Cypress tests and send screenshot to Discord
+        if: failure()
+        run: |
+          # Zip the screenshot file
+          zip screenshot.zip cypress/screenshots
+
+          # Send the screenshot to Discord
+          curl -X POST "$DISCORD_WEBHOOK_URL" \
+            -H "Content-Type: multipart/form-data" \
+            -F "file=@screenshot.zip" \
+            -F "payload_json={\"content\": \"Cypress test failed! Here's the screenshot:\"}"
+        env:
+          DISCORD_WEBHOOK_URL: https://discord.com/api/webhooks/1308426382472384655/mCq2fiiN5ydJenImCL0Y4AqCnIXZ2dudOpEPUWxP3GqXBRDa3lpDOTTDCzfffDuKuuUr
+
 
   # build:
   #   name: Build & Publish Docker Image
