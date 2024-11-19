@@ -42,12 +42,13 @@ jobs:
         run: |
           cp .env.example .env
           php artisan key:generate
-          php artisan test
+          php artisan migrate:fresh --seed
+          php artisan db:seed CategoryProductsSeeder
 
       - name: Migrate and seed db
         run: |
-          php artisan migrate:fresh --seed
-          php artisan db:seed CategoryProductsSeeder
+          touch database.sqlite
+          php artisan test
 
       - name: Install Node Dependencies
         run: |
@@ -75,6 +76,7 @@ jobs:
           # Define a list of users and their IDs
           declare -A users
           users["scratchuz4k"]="113697281739456521"
+          users["steveoliveira-evolve"]="1257232074172010496"
 
           # Define the target username
           TARGET_USER="$COMMIT_OWNER"
