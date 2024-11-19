@@ -14,9 +14,16 @@ class SpaResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $entity1 = app($this->rule->entity_1)::where('id', $this->field_1)->first();
+        $entity2 = $this->rule->entity_2 ? app($this->rule->entity_2)::where('id', $this->field_2)->first() : null;
         return [
             ...$this->resource->toArray(),
-            'supplier' => $this->supplier,
+            'field_1' => $entity1,
+            'field_2' => $entity2,
+            'value' => (float)$this->value,
+            'percentage' => (float) $this->percentage,
+            'rule' => $this->rule,
+            'operation' => $this->operation,
             'user' => $this->user
         ];
     }

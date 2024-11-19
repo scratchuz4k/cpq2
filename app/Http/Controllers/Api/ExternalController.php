@@ -2,17 +2,20 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Helpers\Api\CloudMarketAddress;
-use App\Helpers\Api\OpenreachLookupApi;
-use App\Helpers\Api\ShopBlocksApi;
-use App\Helpers\Api\VirtualOneLookupApi;
+use App\Models\Account;
+use App\Models\PricePlan;
+use Illuminate\Support\Str;
+use Illuminate\Http\Request;
 use App\Helpers\FilterProvider;
+use App\Helpers\Api\ShopBlocksApi;
+use App\Helpers\Prices\PriceRules;
 use App\Http\Controllers\Controller;
 use App\Services\CloudMarketService;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Cache;
+use App\Helpers\Api\CloudMarketAddress;
+use App\Helpers\Api\OpenreachLookupApi;
+use App\Helpers\Api\VirtualOneLookupApi;
 
 class ExternalController extends Controller
 {
@@ -29,10 +32,10 @@ class ExternalController extends Controller
         $virtualOneLookup = new VirtualOneLookupApi;
         $addressesByPostCode = $virtualOneLookup->findAddresses($request->postCode);
 
-        if(empty($addressesByPostCode)) {
+        if (empty($addressesByPostCode)) {
             $openreachLookup = new OpenreachLookupApi;
             $addressesByPostCode = $openreachLookup->findAddresses($request->postCode);
-            if(empty($addressesByPostCode)) {
+            if (empty($addressesByPostCode)) {
                 return;
             }
         }
@@ -118,6 +121,7 @@ class ExternalController extends Controller
     public function getArticlesFromShopBlocks(Request $request)
     {
         $cache_key = md5("shop-blocks" . $request->input('category_id', 22));
+
         $res = Cache::remember($cache_key, 43200, function () use ($request) {
             $products = [];
             $page = 0;
@@ -146,8 +150,15 @@ class ExternalController extends Controller
                 }
                 $model = (string) Str::of($product['name'])->words(3, '');
                 $products[$key]['code'] = md5(Str::slug($temp));
-                $products[$key]['price'] = (float)$product['price'];
                 $products[$key]['model'] = $model;
+                $products[$key]['price'] = [
+                    "code" => 1,
+                    "tax_rate" => 20,
+                    "net" => (float)$product['price'],
+                    "tax" => (float)$product['price'] * 0.2,
+                    "gross" => (float)$product['price'] * 1.2,
+                    "price_plan_id" => PricePlan::where("code", "single")->value('id'),
+                ];
                 $products[$key]['url'] = 'https://hardware.cloud.market/smartphones/' . $product['slug'];
                 $tempFilters = FilterProvider::process($tempFilters, $products[$key], true);
             }
@@ -157,6 +168,19 @@ class ExternalController extends Controller
 
         $items = FilterProvider::get($res['items'], request()->input('filters', []));
         $meta = FilterProvider::paginate($items);
+
+        $priceRules = new PriceRules();
+        $account = Account::find($request->input('account_id', null));
+
+        $meta['data'] = $meta['data']->map(function ($item) use ($priceRules, $account) {
+            $net_spa = $priceRules->calculate($item['price']['net'], account: $account);
+            $item['price']['net_spa'] = $net_spa;
+            $item['price']["tax"] = $net_spa * 0.2;
+            $item['price']["gross"] = $net_spa * 1.2;
+            $item['price']["active_spas"] = $priceRules->getAppliedSpas();
+            return $item;
+        });
+
         return [...$meta, 'filters' => $res['filters']];
     }
 }

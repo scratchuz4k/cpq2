@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\PricePlan;
 use Illuminate\Foundation\Http\FormRequest;
 
 class QuoteItemCreateRequest extends FormRequest
@@ -13,7 +14,12 @@ class QuoteItemCreateRequest extends FormRequest
     {
         return true;
     }
-
+    public function prepareForValidation()
+    {
+        if (!$this->has('price_plan_id')) {
+            $this->merge(['price_plan_id' => PricePlan::where('code', 'single')->value('id')]);
+        }
+    }
     /**
      * Get the validation rules that apply to the request.
      *
@@ -26,11 +32,10 @@ class QuoteItemCreateRequest extends FormRequest
             "name" => "required",
             "quantity" => "required|numeric",
             "raw_price" => "numeric",
-            "raw_price_monthly" => "numeric",
             "price" => "numeric",
-            "price_monthly" => "numeric",
             "margin" => "numeric|min:0|max:100",
             "discount" => "numeric|min:0|max:100",
+            "price_plan_id" => "nullable|numeric|exists:price_plans,id",
         ];
     }
 }

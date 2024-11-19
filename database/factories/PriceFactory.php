@@ -2,8 +2,9 @@
 
 namespace Database\Factories;
 
-use Illuminate\Database\Eloquent\Factories\Factory;
+use App\Models\Tenant;
 use Illuminate\Support\Str;
+use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory
@@ -22,7 +23,7 @@ class PriceFactory extends Factory
         $tax = round($net * $tax_rate, 2);
         $gross = round($net + $tax, 2);
         return [
-            'tenant_id' => rand(1,3),
+            'tenant_id' => Tenant::where("name", "CloudMarket")->value('id'),
             'spa_id' => 1,
             'product_id' => 1,
             'tax_rate' => $tax_rate,

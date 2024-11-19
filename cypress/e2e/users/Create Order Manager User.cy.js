@@ -12,10 +12,9 @@ const slugify = (string) => {
 const temp = getCurrentDate()
 const user = { name: slugify(temp), email: slugify(temp) + "@email.com", password: generateHash(temp) }
 
-
 describe("Create Order Manager User.cy", () => {
     it("Creates Order Manager User", () => {
-        cy.login("companyadmin@example.com", "werwerwer")
+        cy.login("super@example.com", "werwerwer")
         cy.visit("/users")
         cy.get("#link-to-create-user").click()
 
@@ -29,7 +28,7 @@ describe("Create Order Manager User.cy", () => {
     })
 
     it("Check if user was created", () => {
-        cy.login("companyadmin@example.com", "werwerwer")
+        cy.login("super@example.com", "werwerwer")
         cy.visit("/users")
         cy.get("#treetable-search").type(user.name)
         cy.get("#users-table").contains(user.name)
