@@ -47,6 +47,10 @@ jobs:
           sudo apt-get install -y nginx php-fpm php-mysql php-sqlite3
           sudo systemctl start php8.3-fpm
 
+      # Create SQLite database file
+      - name: Create SQLite Database
+        run: touch database/database.sqlite
+
       - name: Debug GITHUB_WORKSPACE
         run: |
           echo "GITHUB_WORKSPACE: $GITHUB_WORKSPACE"
@@ -96,12 +100,8 @@ jobs:
           echo "Application running at: http://localhost:8000"
           sleep 5 # Allow Nginx to start fully
           sudo chown -R www-data:www-data $GITHUB_WORKSPACE
+          sudo chmod -R 755 $GITHUB_WORKSPACE
           sudo systemctl status nginx
-
-
-      # Create SQLite database file
-      - name: Create SQLite Database
-        run: touch database/database.sqlite
 
       - name: Prepare Laravel Application
         run: |
