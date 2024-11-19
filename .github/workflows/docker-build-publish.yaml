@@ -51,7 +51,7 @@ jobs:
           # Create Nginx server block for Laravel
           sudo bash -c 'cat > /etc/nginx/sites-available/laravel <<EOF
           server {
-              listen 80;
+              listen 8000;
               server_name localhost;
               root $GITHUB_WORKSPACE/public;
 
@@ -101,7 +101,7 @@ jobs:
         run: php artisan test
 
       - name: Check if Laravel App is Running
-        run: curl -I http://localhost/login
+        run: curl -I http://localhost:8000/health
 
       - name: Show Laravel Logs
         run: |

@@ -15,6 +15,10 @@ use App\Http\Controllers\Web\RegionController;
 use App\Http\Controllers\Web\UserController;
 use App\Http\Controllers\Web\SpaController;
 
+Route::get('/health', function () {
+    return response("ok", 200);
+})->name('health');
+
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('index');
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
