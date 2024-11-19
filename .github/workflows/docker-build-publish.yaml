@@ -41,15 +41,19 @@ jobs:
           npm install
           npm run build
 
+      # Create SQLite database file
+      - name: Create SQLite Database
+        run: |
+          touch database/database.sqlite
+          cp .env.example .env
+          php artisan key:generate
+          php artisan migrate --seed
+
       - name: Install Nginx and PHP-FPM
         run: |
           sudo apt-get update
           sudo apt-get install -y nginx php-fpm php-mysql php-sqlite3
           sudo systemctl start php8.3-fpm
-
-      # Create SQLite database file
-      - name: Create SQLite Database
-        run: touch database/database.sqlite
 
       - name: Debug GITHUB_WORKSPACE
         run: |
@@ -102,12 +106,6 @@ jobs:
           sudo chown -R www-data:www-data $GITHUB_WORKSPACE
           sudo chmod -R 755 $GITHUB_WORKSPACE
           sudo systemctl status nginx
-
-      - name: Prepare Laravel Application
-        run: |
-          cp .env.example .env
-          php artisan key:generate
-          php artisan migrate --seed
           curl -I http://localhost:8000/health
 
       - name: Run laravel tests
