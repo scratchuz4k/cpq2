@@ -33,12 +33,26 @@ jobs:
           php_extensions: pcntl redis bcmath gd zip
           version: latest
 
+      - name: Install NPM Packages
+        run: npm install
+
       # Create SQLite database file
       - name: Create SQLite Database
         run: touch database/database.sqlite
 
+      - name: Prepare Laravel Application
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+
       - name: Run laravel tests
         run: php artisan test
+
+      - name: Run Laravel Server
+        run: php artisan serve &
+
+      - name: Run Cypress Tests
+        run: npx cypress run
 
   # build:
   #   name: Build & Publish Docker Image
