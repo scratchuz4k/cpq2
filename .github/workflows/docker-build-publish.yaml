@@ -57,7 +57,7 @@ jobs:
           export LARAVEL_ROOT=$GITHUB_WORKSPACE/public
           echo "
           server {
-              listen 8000;
+              listen 80;
               server_name localhost;
 
               root \$LARAVEL_ROOT;
@@ -73,7 +73,7 @@ jobs:
               location ~ \\.php\$ {
                   include snippets/fastcgi-php.conf;
                   fastcgi_pass unix:/var/run/php/php8.3-fpm.sock;
-                  fastcgi_param SCRIPT_FILENAME \$document_root\$fastcgi_script_name;
+                  fastcgi_param SCRIPT_FILENAME \$realpath_root\$fastcgi_script_name;
                   include fastcgi_params;
               }
 
@@ -105,17 +105,10 @@ jobs:
           cp .env.example .env
           php artisan key:generate
           php artisan migrate --seed
+          curl -I http://localhost/health
 
       - name: Run laravel tests
         run: php artisan test
-
-      - name: Check if Laravel App is Running
-        run: curl -I http://localhost:8000/health
-
-      - name: Show Laravel Logs
-        run: |
-          echo "Laravel Log File:"
-          cat storage/logs/laravel.log || echo "No log file found"
 
       - name: Run Cypress Tests
         run: npx cypress run
