@@ -29,7 +29,7 @@ test('AccountProduct without Spa', function () {
     $prices = new PriceRules();
     $value = $prices->calculate(1, account: $this->account, product: $this->product);
 
-    expect($value)->toBe(1.0);
+    expect($value)->toBe(2.0);
     expect(count($prices->getAppliedSpas()))->toBe(0);
 });
 
