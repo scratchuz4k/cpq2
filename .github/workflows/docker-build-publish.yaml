@@ -32,12 +32,8 @@ jobs:
           php-version: 8.3.10
           extensions: mbstring, bcmath, curl, sqlite3, fileinfo, pcntl, redis, bcmath, gd, zip
 
-      - name: Setup Composer
-        uses: php-actions/composer@v6
-        with:
-          php_version: 8.3.10
-          php_extensions: mbstring bcmath curl sqlite3 fileinfo pcntl redis bcmath gd zip
-          version: latest
+      - name: Install Dependencies
+        run: composer install
 
       - name: Install NPM Packages
         run: npm install
