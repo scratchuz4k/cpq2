@@ -40,6 +40,53 @@ jobs:
           npm install
           npm run build
 
+      - name: Install Nginx and PHP-FPM
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y nginx php-fpm php-mysql php-sqlite3
+          sudo systemctl start php8.3-fpm
+
+      - name: Configure Nginx
+        run: |
+          # Create Nginx server block for Laravel
+          sudo bash -c 'cat > /etc/nginx/sites-available/laravel <<EOF
+          server {
+              listen 80;
+              server_name localhost;
+              root $GITHUB_WORKSPACE/public;
+
+              index index.php index.html;
+
+              location / {
+                  try_files \$uri \$uri/ /index.php?\$query_string;
+              }
+
+              location ~ \.php\$ {
+                  include snippets/fastcgi-php.conf;
+                  fastcgi_pass unix:/var/run/php/php8.3-fpm.sock;
+                  fastcgi_param SCRIPT_FILENAME \$document_root\$fastcgi_script_name;
+                  include fastcgi_params;
+              }
+
+              location ~ /\.ht {
+                  deny all;
+              }
+          }
+          EOF'
+
+          # Enable the server block and restart Nginx
+          sudo ln -s /etc/nginx/sites-available/laravel /etc/nginx/sites-enabled/
+          sudo rm /etc/nginx/sites-enabled/default
+          sudo nginx -t
+          sudo systemctl restart nginx
+        env:
+          GITHUB_WORKSPACE: ${{ github.workspace }}
+
+      - name: Start Laravel Server
+        run: |
+          echo "Application running at: http://localhost"
+          sleep 5 # Allow Nginx to start fully
+
       # Create SQLite database file
       - name: Create SQLite Database
         run: touch database/database.sqlite
@@ -53,11 +100,8 @@ jobs:
       - name: Run laravel tests
         run: php artisan test
 
-      - name: Run Laravel Server
-        run: php artisan serve &
-
       - name: Check if Laravel App is Running
-        run: curl -I http://127.0.0.1:8000/login
+        run: curl -I http://localhost/login
 
       - name: Show Laravel Logs
         run: |
