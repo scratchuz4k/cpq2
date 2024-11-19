@@ -38,6 +38,11 @@ jobs:
       - name: Install Composer Dependencies
         run: composer install -q --no-ansi --no-interaction --no-scripts --no-suggest --no-progress --prefer-dist
 
+      - name: Migrate and seed db
+        run: |
+          touch database/database.sqlite
+          php artisan test
+
       - name: Prepare Laravel env, db and test
         run: |
           cp .env.example .env
@@ -45,10 +50,6 @@ jobs:
           php artisan migrate:fresh --seed
           php artisan db:seed CategoryProductsSeeder
 
-      - name: Migrate and seed db
-        run: |
-          touch database/database.sqlite
-          php artisan test
 
       - name: Install Node Dependencies
         run: |
