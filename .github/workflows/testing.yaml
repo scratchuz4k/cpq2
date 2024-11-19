@@ -32,12 +32,16 @@ jobs:
           php artisan key:generate
           php artisan migrate --seed
 
+      - name: Install Node Dependencies
+        run: |
+          npm install
+          npm run build
+
       - name: Run Laravel Server
         run: php artisan serve > /dev/null 2>&1 &
+
       - name: Check laravel local server
         run: curl http://localhost:8000/health
-      - name: Install Node Dependencies
-        run: npm build
       - name: Execute tests
         run: npm run cy:run
       # - name: Upload Cypress screenshots
