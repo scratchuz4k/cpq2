@@ -78,7 +78,7 @@ jobs:
                   deny all;
               }
           }
-          " | envsubst > /etc/nginx/sites-available/laravel
+          " > /etc/nginx/sites-available/laravel
 
           cat /etc/nginx/sites-available/laravel
           sudo ln -s /etc/nginx/sites-available/laravel /etc/nginx/sites-enabled/
