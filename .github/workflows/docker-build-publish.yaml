@@ -72,7 +72,7 @@ jobs:
           curl -X POST "$DISCORD_WEBHOOK_URL" \
             -H "Content-Type: multipart/form-data" \
             -F "file=@screenshot.zip" \
-            -F "payload_json={\"content\": \"$COMMIT_OWNER: Cypress test failed on branch $BRANCH_NAME ($REPO_OWNER)! Here are the screenshots:\"}"
+            -F "payload_json={\"content\": \"@$COMMIT_OWNER: Cypress test failed on branch $BRANCH_NAME ($REPO_OWNER)! Here are the screenshots:\"}"
         env:
           DISCORD_WEBHOOK_URL: https://discord.com/api/webhooks/1308426382472384655/mCq2fiiN5ydJenImCL0Y4AqCnIXZ2dudOpEPUWxP3GqXBRDa3lpDOTTDCzfffDuKuuUr
 
