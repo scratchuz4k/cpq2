@@ -36,7 +36,7 @@ jobs:
         uses: php-actions/composer@v6
         with:
           php_version: 8.3.10
-          php_extensions: mbstring, bcmath, curl, sqlite3, fileinfo, pcntl, redis, bcmath, gd, zip
+          php_extensions: mbstring bcmath curl sqlite3 fileinfo pcntl redis bcmath gd zip
           version: latest
 
       - name: Install NPM Packages
