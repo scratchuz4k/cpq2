@@ -47,7 +47,7 @@ jobs:
 
       - name: Migrate and seed db
         run: |
-          touch database.sqlite
+          touch database/database.sqlite
           php artisan test
 
       - name: Install Node Dependencies
@@ -77,6 +77,7 @@ jobs:
           declare -A users
           users["scratchuz4k"]="113697281739456521"
           users["steveoliveira-evolve"]="1257232074172010496"
+          users["crisguarda-evolve"]="1277909854903603283"
 
           # Define the target username
           TARGET_USER="$COMMIT_OWNER"
@@ -97,7 +98,6 @@ jobs:
             -F "payload_json={\"content\": \"<@$USER_ID>: Test failed on branch $BRANCH_NAME ($REPO_OWNER)! Here are the screenshots:\"}"
         env:
           DISCORD_WEBHOOK_URL: https://discord.com/api/webhooks/1308426382472384655/mCq2fiiN5ydJenImCL0Y4AqCnIXZ2dudOpEPUWxP3GqXBRDa3lpDOTTDCzfffDuKuuUr
-
 
   # build:
   #   name: Build & Publish Docker Image
