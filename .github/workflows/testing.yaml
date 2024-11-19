@@ -38,10 +38,11 @@ jobs:
           npm run build
 
       - name: Run Laravel Server
-        run: php artisan serve > /dev/null 2>&1 &
+        run: php artisan serve --port=8000 > /dev/null 2>&1 &
 
       - name: Check laravel local server
         run: curl http://localhost:8000/health
+
       - name: Execute tests
         run: npm run cy:run
       # - name: Upload Cypress screenshots
