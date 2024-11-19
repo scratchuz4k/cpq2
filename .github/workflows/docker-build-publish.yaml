@@ -33,6 +33,10 @@ jobs:
           php_extensions: pcntl redis bcmath gd zip
           version: latest
 
+      # Create SQLite database file
+      - name: Create SQLite Database
+        run: touch database/database.sqlite
+
       - name: Run laravel tests
         run: php artisan test
 
