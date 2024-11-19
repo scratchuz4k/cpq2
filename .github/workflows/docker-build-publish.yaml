@@ -1,11 +1,6 @@
 name: Docker Build & Publish
 
-on:
-  push:
-    branches: ["master"]
-    tags: ["*.*.*"]
-  # pull_request:
-  #   branches: ["master"]
+on: [push, pull_request]
 
 env:
   REGISTRY: ghcr.io
@@ -24,96 +19,51 @@ jobs:
       id-token: write
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Set Up PHP
-        uses: shivammathur/setup-php@v2
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
         with:
-          php-version: 8.3.10
-          extensions: mbstring, bcmath, curl, sqlite3, fileinfo, pcntl, redis, bcmath, gd, zip
+          php-version: 8.3
+          extensions: json, dom, libxml, mbstring, bcmath, curl, sqlite3, fileinfo, pcntl, redis, bcmath, gd, zip
+          coverage: none
+      - name: Setup NodeJS
+        uses: actions/setup-node@v4
 
-      - name: Install Dependencies
-        run: composer install
+      - name: Copy .env
+        run: cp .env.testing .env
+      - name: Create Database
+        run: |
+          sudo systemctl start mysql
+          mysql --user="root" --password="root" -e "CREATE DATABASE cypress character set UTF8mb4 collate utf8mb4_bin;"
+          mysql --user="root" --password="root" -e "ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'root'";
+      - name: Install Composer Dependencies
+        run: composer install -q --no-ansi --no-interaction --no-scripts --no-suggest --no-progress --prefer-dist
 
-      - name: Install NPM Packages
+      - name: Prepare Laravel env and db
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+          php artisan migrate --seed
+          php artisan DB:seed CategoryProductsSeeder
+
+      - name: Install Node Dependencies
         run: |
           npm install
           npm run build
 
-      # Create SQLite database file
-      - name: Prepare Laravel env and db
-        run: |
-          touch database/database.sqlite
-          cp .env.example .env
-          php artisan key:generate
-          php artisan migrate --seed
-
-      - name: Run laravel tests
-        run: php artisan test
-
-      - name: Run laravel local server
+      - name: Run Laravel Server
         run: php artisan serve --host=0.0.0.0 --port=8000 &
 
       - name: Check laravel local server
         run: curl http://localhost:8000/health
 
-      # - name: Install Nginx and PHP-FPM
-      #   run: |
-      #     sudo apt-get update
-      #     sudo apt-get install -y nginx php-fpm php-mysql php-sqlite3
-      #     sudo systemctl start php8.3-fpm
-
-      # - name: Configure Nginx with Dynamic Root
-      #   run: |
-      #     export LARAVEL_ROOT=$GITHUB_WORKSPACE/public
-      #     echo "
-      #     server {
-      #         listen 8000;
-      #         server_name localhost;
-
-      #         root \$LARAVEL_ROOT;
-      #     "| envsubst > /etc/nginx/sites-available/laravel
-
-      #     echo "
-      #         index index.php index.html;
-
-      #         location / {
-      #             try_files \$uri \$uri/ /index.php?\$query_string;
-      #         }
-
-      #         location ~ \\.php\$ {
-      #             include snippets/fastcgi-php.conf;
-      #             fastcgi_pass unix:/var/run/php/php8.3-fpm.sock;
-      #             fastcgi_param SCRIPT_FILENAME \$realpath_root\$fastcgi_script_name;
-      #             include fastcgi_params;
-      #         }
-
-      #         location ~ /\\.ht {
-      #             deny all;
-      #         }
-      #     }
-      #     " >> /etc/nginx/sites-available/laravel
-
-      #     cat /etc/nginx/sites-available/laravel
-      #     sudo ln -s /etc/nginx/sites-available/laravel /etc/nginx/sites-enabled/
-      #     sudo rm /etc/nginx/sites-enabled/default
-      #     sudo nginx -t
-      #     sudo systemctl restart nginx
-      #   env:
-      #     GITHUB_WORKSPACE: ${{ github.workspace }}
-
-      # - name: Start Laravel Server
-      #   run: |
-      #     echo "Application running at: http://localhost:8000"
-      #     sleep 5 # Allow Nginx to start fully
-      #     sudo chown -R www-data:www-data $GITHUB_WORKSPACE
-      #     sudo chmod -R 755 $GITHUB_WORKSPACE
-      #     sudo systemctl status nginx
-      #     curl -I http://localhost:8000/health
-
-      - name: Run Cypress Tests
-        run: npx cypress run
+      - name: Execute tests
+        run: npm run cy:run
+      # - name: Upload Cypress screenshots
+      #   uses: actions/upload-artifact@v4
+      #   if: ${{ failure() }}
+      #   with:
+      #     name: cypress_screenshots
+      #     path: cypress/screenshots
 
   # build:
   #   name: Build & Publish Docker Image
