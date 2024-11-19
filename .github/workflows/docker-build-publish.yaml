@@ -2,10 +2,10 @@ name: Docker Build & Publish
 
 on:
   push:
-    branches: ["*"]
-    tags: ["*.*.*"]
-  pull_request:
     branches: ["master"]
+    tags: ["*.*.*"]
+  # pull_request:
+  #   branches: ["master"]
 
 env:
   REGISTRY: ghcr.io
@@ -53,9 +53,10 @@ jobs:
         run: php artisan test
 
       - name: Run laravel local server
-        run: |
-          php artisan serve --host=0.0.0.0 --port=8000
-          curl http://0.0.0.0:8000/health
+        run: php artisan serve --host=0.0.0.0 --port=8000 &
+
+      - name: Check laravel local server
+        run: curl http://localhost:8000/health
 
       # - name: Install Nginx and PHP-FPM
       #   run: |
