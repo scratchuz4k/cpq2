@@ -25,8 +25,13 @@ jobs:
           mysql --user="root" --password="root" -e "ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'root'";
       - name: Install Composer Dependencies
         run: composer install -q --no-ansi --no-interaction --no-scripts --no-suggest --no-progress --prefer-dist
-      - name: Generate key
-        run: php artisan key:generate
+
+      - name: Prepare Laravel env and db
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+          php artisan migrate --seed
+
       - name: Run Laravel Server
         run: php artisan serve > /dev/null 2>&1 &
       - name: Check laravel local server
