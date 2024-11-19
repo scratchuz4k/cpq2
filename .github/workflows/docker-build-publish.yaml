@@ -63,7 +63,7 @@ jobs:
         if: failure()
         run: |
           # Zip the screenshot file
-          zip -r screenshot.zip cypress/screenshots/*
+          zip -r screenshot.zip cypress/output/*
           COMMIT_OWNER="${GITHUB_ACTOR}"
           BRANCH_NAME="${GITHUB_REF#refs/heads/}"
           REPO_OWNER="${GITHUB_REPOSITORY%/*}"
