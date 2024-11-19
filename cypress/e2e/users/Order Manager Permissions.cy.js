@@ -159,9 +159,9 @@ describe('Order Manager Permissions', () => {
             cy.login(user.email, user.password)
             cy.visit(`/${model.url}`)
 
-            cy.get(`#${model.name.toLowerCase()}-create-btn`).click()
-
             cy.intercept('GET', `create`).as(`create${model.name}`);
+
+            cy.get(`#${model.name.toLowerCase()}-create-btn`).click()
 
             cy.wait(`@create${model.name}`).then((interception) => {
                 const statusCode = interception.response.statusCode;
