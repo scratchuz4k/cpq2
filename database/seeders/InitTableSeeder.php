@@ -8,11 +8,17 @@ use App\Enums\OrderStatusesEnum;
 use App\Models\OrderStatus;
 use App\Models\SolutionType;
 use App\Models\Tenant;
+use App\Helpers\Prices\Enums\PricePlanEnum;
+use App\Helpers\Prices\Enums\SpaOperationsEnum;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Permission;
+use App\Helpers\Prices\Enums\SpaRulesEnum;
+use App\Models\PricePlan;
+use App\Models\SpaOperation;
+use App\Models\SpaRule;
 
 class InitTableSeeder extends Seeder
 {
@@ -25,7 +31,7 @@ class InitTableSeeder extends Seeder
     {
         $tenant = Tenant::updateOrCreate([
             "name" => "CloudMarket"
-        ],[
+        ], [
             "domain" => "localhost",
             "database" => "cloudmarket"
         ]);
@@ -55,6 +61,18 @@ class InitTableSeeder extends Seeder
         ], [
             "name" => "Hardware",
         ]);
+
+        foreach (SpaRulesEnum::cases() as $case) {
+            SpaRule::updateOrCreate(['code' => $case->name], ['class' => $case->value, ...$case->getTasks()]);
+        }
+
+        foreach (SpaOperationsEnum::cases() as $case) {
+            SpaOperation::updateOrCreate(['code' => $case->name], ['class' => $case->value]);
+        }
+
+        foreach (PricePlanEnum::cases() as $case) {
+            PricePlan::updateOrCreate(['code' => $case->value], ['name' => $case->name]);
+        }
 
 
 

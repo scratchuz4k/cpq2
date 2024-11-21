@@ -2,8 +2,9 @@
 
 namespace Database\Factories;
 
-use Illuminate\Database\Eloquent\Factories\Factory;
+use App\Models\Tenant;
 use Illuminate\Support\Str;
+use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory
@@ -22,10 +23,9 @@ class ProductFactory extends Factory
         $product_name = $brand_name . ' ' . fake()->word() . ' ' . fake()->buildingNumber();
 
         return [
-            'tenant_id' => rand(1,3),
-            'supplier_id' => 1,
-            'brand_id' => 1,
+            'tenant_id' => Tenant::where("name", "CloudMarket")->value('id'),
             'name' => $product_name,
+            'code' => Str::slug($product_name),
         ];
     }
 }

@@ -1,22 +1,5 @@
 const crypto = require("crypto");
-// Function to generate hash
-const generateHash = (input) => {
-    return crypto.createHash("md5").update(input).digest("hex"); // SHA-256 hash
-}
-const getCurrentDate = () => {
-    const currentDate = new Date();
-    const year = currentDate.getFullYear();
-    const month = String(currentDate.getMonth() + 1).padStart(2, "0");
-    const day = String(currentDate.getDate()).padStart(2, "0");
-    const hour = String(currentDate.getHours()).padStart(2, "0");
-    const minute = String(currentDate.getMinutes()).padStart(2, "0");
-    const millisecond = String(currentDate.getMilliseconds()).padStart(3, "0");
-
-    // Create a readable date string
-    const readableDate = `${year}-${month}-${day} ${hour}:${minute}:${millisecond}`;
-
-    return readableDate;
-}
+const {getCurrentDate, generateHash} = require("../../support/utils.js");
 
 const slugify = (string) => {
     return string
@@ -28,12 +11,10 @@ const slugify = (string) => {
 }
 const temp = getCurrentDate()
 const user = { name: slugify(temp), email: slugify(temp) + "@email.com", password: generateHash(temp) }
-const account = { ref: generateHash(temp), name: temp }
-
 
 describe("Create Order Manager User.cy", () => {
     it("Creates Order Manager User", () => {
-        cy.login("companyadmin@example.com", "werwerwer")
+        cy.login("super@example.com", "werwerwer")
         cy.visit("/users")
         cy.get("#link-to-create-user").click()
 
@@ -47,7 +28,7 @@ describe("Create Order Manager User.cy", () => {
     })
 
     it("Check if user was created", () => {
-        cy.login("companyadmin@example.com", "werwerwer")
+        cy.login("super@example.com", "werwerwer")
         cy.visit("/users")
         cy.get("#treetable-search").type(user.name)
         cy.get("#users-table").contains(user.name)

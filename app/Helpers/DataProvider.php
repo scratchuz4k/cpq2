@@ -96,6 +96,8 @@ class DataProvider
 
     protected function query($query, $column, $operator, $value, $func)
     {
+        $column = $query->getModel()->getTable().'.'.$column;
+
         if ($this->model->translatable && in_array($column, $this->model->translatable)) {
             $column = $column . '->' . app()->getLocale();
         }

@@ -1,5 +1,5 @@
 const crypto = require("crypto");
-const {getCurrentDate, generateHash} = require("../support/utils.js");
+const {getCurrentDate, generateHash} = require("../../support/utils.js");
 const rand = (notAllowedNumber, max = 101) => {
     let randomNumber = Math.floor(Math.random() * max); // Generate a random number
 
@@ -19,15 +19,15 @@ describe("Creates a Mobile Quote", () => {
     let hardwareCount = 0;
 
     beforeEach(() => {
-        cy.login("companyadmin@example.com", "werwerwer")
+         cy.login("super@example.com", "werwerwer")
     })
     it("Creates an Account", () => {
         cy.visit("/")
-        cy.get("#create-tab").click()
+        cy.get("#my-account").click()
         cy.get("#link-to-create-account").click()
         cy.get("#account-name").type(account.name)
         cy.get("#account-reference").type(account.ref)
-        cy.get("#save-account-button").click()
+        cy.get("#btn-save-account").click()
         cy.get(".notyf").contains("Created with Success")
     })
 

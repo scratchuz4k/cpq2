@@ -2,17 +2,17 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Http\Controllers\BaseController;
 use Exception;
 use App\Models\Brand;
 use Illuminate\Http\Request;
 use App\Helpers\DataProvider;
 use Illuminate\Support\Facades\Log;
-use App\Http\Controllers\Controller;
 use App\Http\Resources\BrandResource;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Pagination\LengthAwarePaginator;
 
-class BrandController extends Controller
+class BrandController extends BaseController
 {
     protected $model = Brand::class;
     /**

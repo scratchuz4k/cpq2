@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Tenant;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -18,7 +19,7 @@ class TenantUserFactory extends Factory
     {
         return [
             'user_id' => rand(2,4),
-            'tenant_id' => rand(1,3),
+            'tenant_id' => Tenant::where("name", "CloudMarket")->value('id'),
         ];
     }
 }

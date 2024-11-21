@@ -15,15 +15,16 @@ const recurringNewLine = reactive({
     discount: 0,
     quantity: 0,
     price: 0,
-    price_monthly: 0,
+    price_plan_code: 'monthly'
 })
+
 const oneOffNewLine = reactive({
     name: null,
     margin: 0,
     discount: 0,
     quantity: 0,
     price: 0,
-    price_monthly: 0,
+    price_plan_code: 'single'
 })
 
 
@@ -93,16 +94,19 @@ const save = async (p) => {
 
 const saveQuote = async (p) => {
     isLoading.value = true
-
+    if (quote.discount === '') {
+        isLoading.value = false
+        return
+    }
     try {
         let res = await axios.put(`/api/quotes/${quote.id}`,
             {
-                contract_length: quote.contract_length,
                 discount: quote.discount,
             })
         Object.assign(quote, res.data)
         isLoading.value = false
     } catch (ex) {
+        isLoading.value = false
         notyf.error(ex.response.data.message)
         isLoading.value = false
     }
@@ -114,6 +118,7 @@ const resetQuote = async () => {
         title: 'Are you sure?'
     })
     if (['cancel', 'backdrop'].includes(result.dismiss)) {
+        isLoading.value = false
         return
     }
 
@@ -149,11 +154,14 @@ const saveNewLine = async (item) => {
             discount: 0,
             quantity: 0,
             price: 0,
-            price_monthly: 0,
         })
     } catch (ex) {
         notyf.error(ex.response.data.message)
     }
+}
+
+const quoteTotal = (key) => {
+    return quote.items.filter((x) => x.price_plan && x.price_plan.code == key).reduce((acc, item) => acc += item.total, 0)
 }
 
 getHardwareProducts()
@@ -170,11 +178,11 @@ const items = ref([
         <div class="row justify-content-between">
             <div class="col-lg-8 mb-5 price-summary">
                 <Header title="Build your deal" :breadcrumbs="items"></Header>
-                <div v-if="quote.items.find((x) => x.price_monthly)" class="mb-5">
+                <div class="mb-5">
                     <div
                         class="mobile-price-group-heading border-bottom mb-3 d-flex justify-content-between align-items-center">
                         <h3>Recurring charges</h3>
-                        <h3 id="recurring_total">{{ GBP.format(quote.total_monthly) }}</h3>
+                        <h3 id="recurring_total">{{ GBP.format(quoteTotal('monthly')) }}</h3>
                     </div>
                     <table id="table-recurring" class="table">
                         <thead>
@@ -194,7 +202,7 @@ const items = ref([
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="(p, i) in quote.items.filter((x) => x.price_monthly)"
+                            <tr v-for="(p, i) in quote.items.filter((x) => x.price_plan && x.price_plan.code == 'monthly')"
                                 class="recurring-item bg-light-grey">
                                 <td>
                                     {{ p.name }}
@@ -207,7 +215,7 @@ const items = ref([
                                         class="form-control text-center py-1" type="number" min="0" max="100"
                                         v-model="temp.quantity">
                                 </td>
-                                <td class="text-right"> {{ GBP.format(p.original_price_monthly) }}</td>
+                                <td class="text-right"> {{ GBP.format(p.original_price) }}</td>
                                 <td class="text-center">
                                     <span v-if="!p.is_editing" :id="'recurring-' + i + '-discount'">
                                         {{ p.discount }} %
@@ -225,7 +233,7 @@ const items = ref([
                                         v-model="temp.margin">
                                 </td>
                                 <td class="text-right fw-bold">
-                                    {{ GBP.format(p.price_monthly) }}
+                                    {{ GBP.format(p.price) }}
                                 </td>
                                 <td class="text-right">
                                     <div class="d-flex justify-content-center">
@@ -262,7 +270,7 @@ const items = ref([
                                 <th>
                                     <input :id="'input-new-recurring-price_monthly'"
                                         class="form-control text-center py-1" type="number"
-                                        v-model="recurringNewLine.price_monthly">
+                                        v-model="recurringNewLine.price">
                                 </th>
                                 <th class="text-center">
                                     <input :id="'input-new-recurring-discount'" class="form-control text-center py-1"
@@ -288,11 +296,11 @@ const items = ref([
 
                     </table>
                 </div>
-                <div v-if="quote.items.find((x) => x.price)" class="mb-5">
+                <div class="mb-5">
                     <div
                         class="mobile-price-group-heading border-bottom mb-3 d-flex justify-content-between align-items-center">
                         <h3>One off charges</h3>
-                        <h3 id="one_off_total">{{ GBP.format(quote.total) }}</h3>
+                        <h3 id="one_off_total">{{ GBP.format(quoteTotal('single')) }}</h3>
                     </div>
                     <table id="table-one_off" class="table">
                         <thead>
@@ -312,29 +320,33 @@ const items = ref([
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="(p, i) in quote.items.filter((x) => x.price)" class="one_off-item bg-light-grey">
+                            <tr v-for="(p, i) in quote.items.filter((x) => !x.price_plan || x.price_plan?.code == 'single')"
+                                class="one_off-item bg-light-grey">
                                 <td>{{ p.name }}</td>
                                 <td class="text-center">
                                     <span v-if="!p.is_editing" :id="'one_off-' + i + '-quantity'">
                                         x{{ p.quantity }}
                                     </span>
-                                    <input :id="'input-one_off-' + i + '-quantity'" v-else class="form-control text-center py-1"
-                                        type="number" min="0" max="100" v-model="temp.quantity">
+                                    <input :id="'input-one_off-' + i + '-quantity'" v-else
+                                        class="form-control text-center py-1" type="number" min="0" max="100"
+                                        v-model="temp.quantity">
                                 </td>
                                 <td class="text-right"> {{ GBP.format(p.original_price) }}</td>
                                 <td class="text-center">
                                     <span v-if="!p.is_editing" :id="'one_off-' + i + '-discount'">
                                         {{ p.discount }} %
                                     </span>
-                                    <input v-else :id="'input-one_off-' + i + '-discount'" class="form-control text-center py-1"
-                                        type="number" min="0" max="100" v-model="temp.discount">
+                                    <input v-else :id="'input-one_off-' + i + '-discount'"
+                                        class="form-control text-center py-1" type="number" min="0" max="100"
+                                        v-model="temp.discount">
                                 </td>
                                 <td class="text-center">
                                     <span v-if="!p.is_editing" :id="'one_off-' + i + '-margin'">
                                         {{ p.margin }} %
                                     </span>
-                                    <input v-else :id="'input-one_off-' + i + '-margin'" class="form-control text-center py-1"
-                                        type="number" min="0" max="100" v-model="temp.margin">
+                                    <input v-else :id="'input-one_off-' + i + '-margin'"
+                                        class="form-control text-center py-1" type="number" min="0" max="100"
+                                        v-model="temp.margin">
                                 </td>
                                 <td class="text-right fw-bold">
                                     <span :id="'input-one_off-' + i + '-price'">
@@ -370,20 +382,20 @@ const items = ref([
                                         v-model="oneOffNewLine.name">
                                 </th>
                                 <th class="text-center">
-                                    <input :id="'input-new-one_off-qty'" class="form-control text-center py-1" type="number"
-                                        v-model="oneOffNewLine.quantity">
+                                    <input :id="'input-new-one_off-qty'" class="form-control text-center py-1"
+                                        type="number" v-model="oneOffNewLine.quantity">
                                 </th>
                                 <th>
-                                    <input :id="'input-new-one_off-price'" class="form-control text-center py-1" type="number"
-                                        v-model="oneOffNewLine.price">
+                                    <input :id="'input-new-one_off-price'" class="form-control text-center py-1"
+                                        type="number" v-model="oneOffNewLine.price">
                                 </th>
                                 <th class="text-center">
-                                    <input :id="'input-new-one_off-discount'" class="form-control text-center py-1" type="number"
-                                        v-model="oneOffNewLine.discount">
+                                    <input :id="'input-new-one_off-discount'" class="form-control text-center py-1"
+                                        type="number" v-model="oneOffNewLine.discount">
                                 </th>
                                 <th class="text-center">
-                                    <input :id="'input-new-one_off-margin'" class="form-control text-center py-1" type="number"
-                                        v-model="oneOffNewLine.margin">
+                                    <input :id="'input-new-one_off-margin'" class="form-control text-center py-1"
+                                        type="number" v-model="oneOffNewLine.margin">
                                 </th>
                                 <th class="text-right"> </th>
                                 <th class="text-right">
@@ -405,10 +417,10 @@ const items = ref([
                     <div>
                         <p class="payment-info border-bottom pb-3 mb-3 big bold">
                             <span class="text-primary">1 payment </span> of
-                            {{ GBP.format(quote.total) }}<br>
+                            {{ GBP.format(quoteTotal('single')) }}<br>
                             followed by
                             <span class="text-primary"> {{ quote.contract_length }} monthly payments</span> of
-                            {{ GBP.format(quote.total_monthly) }}
+                            {{ GBP.format(quoteTotal('monthly')) }}
                         </p>
                     </div>
                     <div class="d-flex justify-content-between">
@@ -441,11 +453,6 @@ const items = ref([
                     <div class="price-mobile-sidebar px-4 pt-4 pb-2 mb-3">
                         <h3 class="mb-3">Overall Informations</h3>
                         <div class="mb-3">
-                            <label class="form-label">Contract Length (Months)</label>
-                            <input id="input-global-contratct-length" type="number" class="form-control"
-                                v-model="quote.contract_length">
-                        </div>
-                        <div class="mb-3">
                             <label class="form-label">Quote Discount</label>
                             <input id="input-global-discount" type="number" class="form-control"
                                 v-model="quote.discount">
@@ -461,7 +468,6 @@ const items = ref([
                     <div class="price-mobile-sidebar px-4 pt-4 pb-2 mb-3">
                         <h3 class="mb-3">Commission Calculator</h3>
                         <p style="font-size: 14px;"> Currently, you will make {{ GBP.format(quote.commission_value) }}
-
                             commission and
                             {{ quote.margin.toFixed(2) }} %
                             margin on
@@ -469,8 +475,8 @@ const items = ref([
                         <div class="p-3" style="background: #E9EDF0;">
                             <div class="mb-3">
                                 <label class="form-label">Margin</label>
-                                <input id="input-margin-order" class="form-control" :value="quote.margin.toFixed(2) + ' %'"
-                                    disabled>
+                                <input id="input-margin-order" class="form-control"
+                                    :value="quote.margin.toFixed(2) + ' %'" disabled>
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">Commission (<span id="order-tax-commission">

@@ -32,11 +32,10 @@ class QuoteUpdateRequest extends FormRequest
             'items.*.quantity' => 'required|numeric',
             'items.*.name' => 'string',
             'items.*.raw_price' => 'numeric',
-            'items.*.raw_price_monthly' => 'numeric',
             'items.*.price' => 'numeric',
-            'items.*.price_monthly' => 'numeric',
             'items.*.margin' => 'numeric|min:0|max:100',
             'items.*.discount' => 'numeric|min:0|max:100',
+            "items.*.price_plan_id" => "nullable|numeric|exists:price_plans,id",
         ];
     }
 }

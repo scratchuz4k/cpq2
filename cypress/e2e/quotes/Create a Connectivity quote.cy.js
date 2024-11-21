@@ -1,11 +1,11 @@
-import {generateHash, getCurrentDate} from "../support/utils.js";
+import {generateHash, getCurrentDate} from "../../support/utils.js";
 
 const temp = getCurrentDate()
 const account = { ref: generateHash(temp), name: temp }
 
 describe('Creates a Connectivity quote', () => {
     beforeEach(() => {
-        cy.login("companyadmin@example.com", "werwerwer")
+        cy.login("super@example.com", "werwerwer")
     })
 
     it("Creates an Account", () => {
@@ -14,7 +14,7 @@ describe('Creates a Connectivity quote', () => {
         cy.get("#link-to-create-account").click()
         cy.get("#account-name").type(account.name)
         cy.get("#account-reference").type(account.ref)
-        cy.get("#save-account-button").click()
+        cy.get("#btn-save-account").click()
         cy.get(".notyf").contains("Created with Success")
     })
 

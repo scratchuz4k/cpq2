@@ -2,19 +2,20 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Models\QuoteItem;
-use App\Services\QuoteItemService;
+use App\Models\OrderItem;
+use Illuminate\Http\Request;
+use App\Services\OrderItemService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\BaseController;
-use App\Http\Requests\QuoteItemCreateRequest;
-use App\Http\Requests\QuoteItemUpdateRequest;
-use App\Http\Resources\QuoteItemResource;
+use App\Http\Requests\OrderItemCreateRequest;
+use App\Http\Requests\OrderItemUpdateRequest;
+use App\Http\Resources\OrderItemResource;
 
 class OrderItemController extends BaseController
 {
-    protected $model = QuoteItem::class;
-    public function __construct(protected QuoteItemService $quoteItemService)
+    protected $model = OrderItem::class;
+    public function __construct(protected OrderItemService $orderItemService)
     {
         parent::__construct();
     }
@@ -29,11 +30,11 @@ class OrderItemController extends BaseController
     /**
      * Store a newly created resource in storage.
      */
-    public function store(QuoteItemCreateRequest $request)
+    public function store(OrderItemCreateRequest $request)
     {
         try {
-            $quoteItem = DB::transaction(function () use ($request) {
-                return $this->quoteItemService->store($request->all());
+            $orderItem = DB::transaction(function () use ($request) {
+                return $this->orderItemService->store($request->all());
             });
         } catch (\Exception $e) {
             if (!env("APP_DEBUG")) {
@@ -41,25 +42,25 @@ class OrderItemController extends BaseController
             }
             throw new \Exception($e);
         }
-        return response()->json($quoteItem);
+        return response()->json($orderItem);
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(QuoteItem $quoteItem)
+    public function show(OrderItem $orderItem)
     {
-        return new QuoteItemResource($quoteItem);
+        return new OrderItemResource($orderItem);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(QuoteItemUpdateRequest $request, QuoteItem $quoteItem)
+    public function update(OrderItemUpdateRequest $request, OrderItem $orderItem)
     {
         try {
-            $quoteItem = DB::transaction(function () use ($request, $quoteItem) {
-                return $this->quoteItemService->update($quoteItem, $request->all());
+            $orderItem = DB::transaction(function () use ($request, $orderItem) {
+                return $this->orderItemService->update($orderItem, $request->all());
             });
         } catch (\Exception $e) {
             if (!env("APP_DEBUG")) {
@@ -67,14 +68,14 @@ class OrderItemController extends BaseController
             }
             throw new \Exception($e);
         }
-        return response()->json($quoteItem);
+        return response()->json($orderItem);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(QuoteItem $quoteItem)
+    public function destroy(OrderItem $orderItem)
     {
-        return $quoteItem->delete();
+        return $orderItem->delete();
     }
 }

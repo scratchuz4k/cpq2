@@ -159,7 +159,7 @@ getData()
                     <InputIcon>
                         <font-awesome-icon :icon="['fas', 'search']" />
                     </InputIcon>
-                    <InputText v-model="global" type="search" placeholder="Keyword Search" />
+                    <InputText id="data-table-search" v-model="global" type="search" placeholder="Keyword Search" />
                 </IconField>
             </div>
         </template>
@@ -220,7 +220,7 @@ getData()
                 </div>
             </template>
             <template #body="{ data, field, index }">
-                <slot v-if="usedSlots.includes(field)" :index="index" :data="data" :name="field" :getData="getData" :value="getValue(data, field)" />
+                <slot v-if="usedSlots.includes(field)" :index="index" :data="data" :name="field" :getData="getData" :value="getValue(data, field)" :id="`${field}-${index}`"/>
                 <template v-else>{{ getValue(data, field) }}</template>
             </template>
         </Column>

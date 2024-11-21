@@ -1,5 +1,5 @@
 const crypto = require("crypto");
-const {getCurrentDate, generateHash} = require("../support/utils.js");
+const {getCurrentDate, generateHash, slugify} = require("../../support/utils.js");
 const rand = (notAllowedNumber, max = 101) => {
     let randomNumber = Math.floor(Math.random() * max); // Generate a random number
 
@@ -10,14 +10,6 @@ const rand = (notAllowedNumber, max = 101) => {
     return randomNumber
 }
 
-const slugify = (string) => {
-    return string
-        .toLowerCase() // Converte para letras minúsculas
-        .trim() // Remove espaços em branco no início e no final
-        .replace(/[^\w\s-]/g, '') // Remove caracteres especiais (exceto espaços e hífens)
-        .replace(/\s+/g, '-') // Substitui espaços por hífens
-        .replace(/-+/g, '-'); // Remove múltiplos hífens consecutivos
-}
 const temp = getCurrentDate()
 const user = { name: slugify(temp), email: slugify(temp) + "@email.com", password: generateHash(temp) }
 const account = { ref: generateHash(temp), name: temp }
@@ -25,7 +17,7 @@ const account = { ref: generateHash(temp), name: temp }
 
 describe("Setup Sales Rep.cy", () => {
     it("Creates an User", () => {
-        cy.login("companyadmin@example.com", "werwerwer")
+        cy.login("super@example.com", "werwerwer")
         cy.visit("/")
         cy.get("#my-account").click()
         cy.get("#link-users").click()
@@ -47,7 +39,7 @@ describe("Setup Sales Rep.cy", () => {
         cy.get("#link-to-create-account").click()
         cy.get("#account-name").type(account.name)
         cy.get("#account-reference").type(account.ref)
-        cy.get("#save-account-button").click()
+        cy.get("#btn-save-account").click()
         cy.get(".notyf").contains("Created with Success")
         cy.visit("/")
         cy.get("#create-tab").click()
