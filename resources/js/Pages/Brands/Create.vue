@@ -37,7 +37,7 @@ const items = ref([
         <div class="panel">
             <Header title="New Brand" :breadcrumbs="items">
                 <template #buttons>
-                    <PrimaryButton @click="saveBrand()">
+                    <PrimaryButton id="btn-save-brand" @click="saveBrand()">
                         <font-awesome-icon class="me-2" :icon="['fas', 'save']"></font-awesome-icon> Save
                     </PrimaryButton>
                 </template>

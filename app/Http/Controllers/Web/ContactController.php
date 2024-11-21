@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers\Web;
 
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\BaseController;
 use App\Models\Contact;
 use Illuminate\Http\Request;
 
-class ContactController extends Controller
+class ContactController extends BaseController
 {
     /**
      * Display a listing of the resource.
