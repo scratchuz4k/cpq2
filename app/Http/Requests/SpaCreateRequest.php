@@ -26,19 +26,15 @@ class SpaCreateRequest extends FormRequest
             'rule_id' => 'required|exists:spa_rules,id',
             'field_1' => [
                 'required',
-                'numeric',
-                Rule::unique('spas')->where(function ($query) {
-                    return $query
-                        ->where('rule_id', $this->input('rule_id'));
-                }),
+                "numeric",
+                Rule::unique('spas')
+                    ->where(function ($query) {
+                        return $query->where('rule_id', $this->input('rule_id'))
+                            ->where('field_2', $this->input('field_2', 0));
+                    }), // Dynamically get the ID from the route
             ],
             'field_2' => [
                 'numeric',
-                Rule::unique('spas')->where(function ($query) {
-                    return $query
-                        ->where('rule_id', $this->input('rule_id'))
-                        ->where('field_1', $this->input('field_1'));
-                }),
             ],
             'operation_id' => 'required|exists:spa_operations,id',
             "value" => 'numeric',
@@ -48,6 +44,7 @@ class SpaCreateRequest extends FormRequest
     public function messages()
     {
         return [
+            'field_1.required' => 'The first Entity is required',
             'field_1.unique' => 'There is alredy a SPA for that entity',
             'field_2.unique' => 'There is alredy a SPA for the combination of that entities',
         ];

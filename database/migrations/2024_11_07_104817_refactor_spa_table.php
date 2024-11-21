@@ -19,8 +19,7 @@ return new class extends Migration
 
             $table->foreignId('rule_id')->after('id')->constrained('spa_rules', 'id')->cascadeOnDelete();
             $table->unsignedBigInteger('field_1')->after('rule_id');
-            $table->unsignedBigInteger('field_2')->nullable()->after('field_1');
-            $table->unique(['rule_id', 'field_1']);
+            $table->unsignedBigInteger('field_2')->default(0)->after('field_1');
             $table->unique(['rule_id', 'field_1', 'field_2']);
 
             $table->foreignId('operation_id')->constrained('spa_operations', 'id')->cascadeOnDelete()->after('field_2');

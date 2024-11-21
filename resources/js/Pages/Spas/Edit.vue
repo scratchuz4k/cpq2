@@ -30,7 +30,7 @@ const splitResult = props.spa.rule.code.split(/(?=[A-Z])/);
 const spa = reactive({
     entity_1: splitResult.length ? splitResult[0] : null,
     entity_1_value: props.spa.field_1,
-    entity_2: splitResult.length ? splitResult[1] : null,
+    entity_2: splitResult.length == 2 ? splitResult[1] : null,
     entity_2_value: props.spa.field_2,
     operation_id: props.spa.operation_id,
     value: props.spa.value,
