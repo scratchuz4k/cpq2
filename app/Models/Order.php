@@ -39,7 +39,9 @@ class Order extends Model
         "margin",
         "discount",
         "status",
-        "user_id"
+        "user_id",
+        "quote_id",
+        'note'
     ];
     protected function casts(): array
     {
@@ -72,6 +74,11 @@ class Order extends Model
     public function items(): HasMany
     {
         return $this->hasMany(OrderItem::class);
+    }
+
+    public function quote(): BelongsTo
+    {
+        return $this->belongsTo(Quote::class);
     }
     public function computeTotals()
     {

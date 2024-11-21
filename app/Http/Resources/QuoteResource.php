@@ -28,7 +28,9 @@ class QuoteResource extends JsonResource
             'account' => $this->account,
             'solution_type' => $this->solutionType,
             'items' => QuoteItemResource::collection($this->whenLoaded('items')),
+            // TODO: Relte order
             'updated_at' => $this->updated_at,
+            'orders' => $this->orders
         ];
     }
 }

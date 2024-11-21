@@ -416,9 +416,9 @@ const items = ref([
                             <font-awesome-icon class="me-2" :icon="['fas', 'arrow-left']"></font-awesome-icon>
                             Previous</a>
                         <div>
-                            <button class="btn btn-primary me-2" @click="createOrder(quote.id)">
+                            <button class="btn btn-outline-primary me-2" @click="createOrder(quote.id)">
                                 <font-awesome-icon class="me-2" :icon="['fas', 'thumbtack']">
-                                </font-awesome-icon> Create an order
+                                </font-awesome-icon>Send to Order Management
                             </button>
                             <button class="btn btn-primary">
                                 <font-awesome-icon class="me-2" :icon="['fas', 'envelope']">

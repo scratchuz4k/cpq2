@@ -82,7 +82,7 @@ class QuoteController extends BaseController
     public function show(Quote $quote)
     {
         return Inertia::render('Quotes/Show', [
-            'quote' => new QuoteResource($quote->load(['items']))
+            'quote' => new QuoteResource($quote->load(['items', 'orders']))
         ]);
     }
 

@@ -2,10 +2,11 @@
 import DataTable from 'datatables.net-vue3';
 import DataTablesCore from 'datatables.net-bs5';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head } from '@inertiajs/vue3';
+import {Head, Link} from '@inertiajs/vue3';
 import {ref} from "vue";
 import Button from "primevue/button";
 import {createOrder} from "@/Composables/orders.js";
+import axios from "axios";
 
 DataTable.use(DataTablesCore);
 const props = defineProps({
@@ -27,6 +28,26 @@ const props = defineProps({
     },
 })
 
+const deleteRecord = async (id) => {
+    swal.fire({
+        title: 'Are you sure?'
+    }).then(async (result) => {
+        if (['cancel', 'backdrop'].includes(result.dismiss)) {
+            return
+        }
+        try {
+            let res = await axios.delete('/api' + props.route + '/' + id)
+            getData()
+            notyf.success('Removed with success');
+            return
+        } catch (err) {
+            notyf.error(err?.response?.data?.message ?? 'Something went wrong')
+        }
+
+    })
+
+}
+
 const items = ref([
     { label: 'Home', url: '/' },
     { label: 'Quotes' },
@@ -39,19 +60,14 @@ const items = ref([
         <div class="panel">
             <Header title="Quotes" :breadcrumbs="items"></Header>
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                <Datatable :tableProps="{id:'dashboard-table'}" :allow="{
-                    update: true,
-                    delete: true,
-                    link: true,
-                    createOrder: true
-                }" :columns="[
+                <Datatable :tableProps="{id:'dashboard-table'}" :allow="{}" :columns="[
                     { data: 'id', title: '#', style: 'width:5%' },
                     { data: 'account.name', title: 'Account', style: 'width:15%' },
                     { data: 'solution_type.name', title: 'Solution', style: 'width:25%' },
                     { data: 'user.name', title: 'Owner', style: 'width:20%' },
                     { data: 'status', title: 'Status', style: 'width:10%' },
                     { data: 'updated_at', title: 'Last Updated', style: 'width:15%' },
-                    { data: 'create_order', title: ''},
+                    { data: 'actions', title: ''},
                     { data: 'items.data', title: 'Last Updated', hide: true },
                     { data: 'items.name', title: 'Last Updated', hide: true },
                     { data: 'account.contacts.email', title: 'Last Updated', hide: true },
@@ -66,12 +82,29 @@ const items = ref([
                     <template #updated_at="{ value }">
                         {{ format.date(value) }}
                     </template>
-                    <template #create_order="{ data, value, index }">
-                        <div class="d-flex justify-content-end">
-                            <button  :id="'datatable-btn-' + index + '-crete-order'" @click="createOrder(data.id)"
-                                    class="btn px-0 py-2 border-0">
+                    <template #actions="{ data, value, index, getData }">
+                        <div v-if="!['REGISTRY', 'ORDERED'].includes(data.status)" class="d-flex justify-content-end">
+                            <button title="Send to Order Management" :id="'datatable-btn-' + index + '-crete-order'" @click="createOrder(data.id, getData)"
+                                    class="btn p-2 mx-1 border-0">
                                 <font-awesome-icon :icon="['fas', 'thumbtack']" />
                             </button>
+                            <Link :id="'datatable-btn-' + index + '-edit'" :href="'quotes/' + data.id + '/edit'"
+                                  class="btn p-2 mx-1 border-0">
+                                <font-awesome-icon :icon="['fas', 'edit']" />
+                            </Link>
+                            <Link :id="'datatable-btn-' + index + '-show'" :href="'quotes/' + data.id"
+                                  class="btn p-2 mx-1 border-0">
+                                <font-awesome-icon :icon="['fas', 'eye']" />
+                            </Link>
+                            <button :id="'datatable-btn-' + index + '-delete'" class="btn p-2 mx-1 border-0" @click="deleteRecord(data.id)">
+                                <font-awesome-icon icon="fas fa-trash-alt" />
+                            </button>
+                        </div>
+                        <div v-else class="d-flex justify-content-end">
+                            <Link :id="'datatable-btn-' + index + '-show'" :href="'quotes/' + data.id + '/preview'"
+                                  class="btn p-2 mx-1 border-0">
+                                <font-awesome-icon :icon="['fas', 'eye']" />
+                            </Link>
                         </div>
                     </template>
                 </Datatable>

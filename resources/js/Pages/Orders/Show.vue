@@ -1,8 +1,10 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head, Link } from '@inertiajs/vue3';
+import {Head, Link, usePage} from '@inertiajs/vue3';
 import {ref} from "vue";
+import {proceedOrder, rejectOrder} from "@/Composables/orders.js";
 
+const page = usePage()
 const props = defineProps({
     order: Object,
 });
@@ -22,8 +24,8 @@ const showDate = (days = 0) => {
 
 const items = ref([
     {label: 'Home', url: '/dashboard'},
-    {label: `Order #${props.order?.id}`, url: props.order ? `/orders/${props.order.id}/edit` : '#'},
-    {label: 'Order Preview'}
+    {label: `Orders`, url: '/orders'},
+    {label: `Order #${props.order?.id} Preview`},
 ]);
 
 </script>
@@ -36,14 +38,14 @@ const items = ref([
                 <Header title="Order Preview" :breadcrumbs="items"></Header>
             </div>
             <div class="col" style="text-align: right">
-                <a :href="route('orders.download', { order: order.id })" class="btn btn-secondary mx-2">
+                <button :disabled="order.user_id && order.user_id !== page.props.auth.user.id" class="btn btn-secondary mx-2" @click="rejectOrder(props.order)">
                     <font-awesome-icon :icon="['fas', 'x']"></font-awesome-icon>
                     Reject
-                </a>
-                <a :href="route('orders.download', { order: order.id })" class="btn btn-primary mx-2">
+                </button>
+                <button :disabled="order.user_id && order.user_id !== page.props.auth.user.id" class="btn btn-primary mx-2" @click="proceedOrder(props.order)">
                     <font-awesome-icon :icon="['fas', 'check']"></font-awesome-icon>
                     Proceed
-                </a>
+                </button>
             </div>
         </div>
         <div class="panel">
@@ -61,7 +63,7 @@ const items = ref([
                 </div>
                 <div class="cpq-summary row px-3" id="main">
                     <div class="col">
-                        <h1 class="mb-3">Order Q-{{ order.id }}</h1>
+                        <h1 class="mb-3">Order O-{{ order.id }}</h1>
                         <div class="row mb-3">
                             <div class="col">
                                 <p>Company address, city, state, post code<br>

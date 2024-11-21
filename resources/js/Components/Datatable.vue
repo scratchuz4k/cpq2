@@ -219,14 +219,14 @@ getData()
                     </div>
                 </div>
             </template>
-            <template #body="{ data, field }">
-                <slot v-if="usedSlots.includes(field)" :index="key" :data="data" :name="field" :value="getValue(data, field)" />
+            <template #body="{ data, field, index }">
+                <slot v-if="usedSlots.includes(field)" :index="index" :data="data" :name="field" :getData="getData" :value="getValue(data, field)" />
                 <template v-else>{{ getValue(data, field) }}</template>
             </template>
         </Column>
         <Column v-if="allow.update || allow.link || allow.delete" :class="['p-0']" style="width:10%;">
             <template #body="{ data, index }">
-                <div class="d-flex justify-content-start">
+                <div class="d-flex justify-content-center">
                     <template v-if="allow.update">
                         <Link :id="'datatable-btn-' + index + '-edit'" :href="props.route + '/' + data.id + '/edit'"
                             class="btn p-2 mx-1 border-0">

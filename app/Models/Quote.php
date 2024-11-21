@@ -73,6 +73,11 @@ class Quote extends Model
     {
         return $this->hasMany(QuoteItem::class);
     }
+
+    public function orders(): HasMany
+    {
+        return $this->hasMany(Order::class);
+    }
     public function computeTotals()
     {
         $this->refresh();

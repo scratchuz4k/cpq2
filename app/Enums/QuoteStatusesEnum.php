@@ -8,4 +8,6 @@ enum QuoteStatusesEnum:string
     case QUOTE = 'quote';
     case PRICE = 'price';
     case CONFIGURE = 'configure';
+    case REJECTED = 'rejected';
+    case ORDERED = 'ordered';
 }

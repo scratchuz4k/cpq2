@@ -42,6 +42,14 @@ class QuoteStatusListener
 
     private function resolveStatus(Quote $quote)
     {
+        if ($quote->status === QuoteStatusesEnum::REJECTED->name) {
+            return QuoteStatusesEnum::REJECTED->name;
+        }
+
+        if ($quote->status === QuoteStatusesEnum::ORDERED->name) {
+            return QuoteStatusesEnum::ORDERED->name;
+        }
+
         if ($quote->status === QuoteStatusesEnum::REGISTRY->name) {
             if($quote->items()->count() <= 0) {
                 throw new \Exception("Quote does not meet the requirements to create an Order.");

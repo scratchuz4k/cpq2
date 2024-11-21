@@ -2,7 +2,9 @@
 
 namespace App\Providers;
 
+use App\Events\OrderStatusEvent;
 use App\Events\QuoteStatusEvent;
+use App\Listeners\OrderStatusListener;
 use App\Listeners\QuoteStatusListener;
 use Illuminate\Support\Str;
 use Dedoc\Scramble\Scramble;
@@ -42,6 +44,11 @@ class AppServiceProvider extends ServiceProvider
         Event::listen(
             QuoteStatusEvent::class,
             QuoteStatusListener::class
+        );
+
+        Event::listen(
+            OrderStatusEvent::class,
+            OrderStatusListener::class
         );
 
         Scramble::routes(function (Route $route) {

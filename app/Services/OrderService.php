@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Events\OrderStatusEvent;
 use App\Events\QuoteStatusEvent;
 use App\Models\Order;
 use App\Models\OrderItem;
@@ -30,7 +31,6 @@ class OrderService
     public function update(Order $order, array $array): Order
     {
         return DB::transaction(function () use ($order, $array) {
-
             $order->update($array);
             if (array_key_exists('items', $array)) {
                 $olderItems = collect($order->items);
@@ -51,7 +51,7 @@ class OrderService
                 }
             }
 
-            $order->update(['status' => get_order_status($order->refresh())]);
+            event(OrderStatusEvent::class, $order);
 
             return $order->refresh();
         }, 3);

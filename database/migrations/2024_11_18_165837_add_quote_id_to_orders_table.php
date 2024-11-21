@@ -12,9 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('orders', function (Blueprint $table) {
-            $table->unsignedBigInteger('quote_id')->nullable()->after('id');
+            $table->unsignedBigInteger('quote_id')->after('id');
             $table->foreign('quote_id')->references('id')->on('quotes')->onDelete('cascade');
-
+            $table->text('note')->nullable();
         });
     }
 
@@ -26,6 +26,7 @@ return new class extends Migration
         Schema::table('orders', function (Blueprint $table) {
             $table->dropForeign(['quote_id']);
             $table->dropColumn('quote_id');
+            $table->dropColumn(['note']);
         });
     }
 };
