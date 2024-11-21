@@ -42,7 +42,7 @@ const recurringNewLine = reactive({
     discount: 0,
     quantity: 0,
     price: 0,
-    price_plan_code: 'monthly'
+    price_plan_code: 'MONTHLY'
 })
 
 const oneOffNewLine = reactive({
@@ -50,7 +50,7 @@ const oneOffNewLine = reactive({
     discount: 0,
     quantity: 0,
     price: 0,
-    price_plan_code: 'single'
+    price_plan_code: 'SINGLE'
 })
 
 
@@ -120,6 +120,7 @@ const save = async (p) => {
                 items: quote.items,
             })
         Object.assign(quote, res.data)
+        Object.assign(quote.items, getLeafNodesWithChildren(quote.items))
         p.is_editing = !p.is_editing
     } catch (ex) {
         notyf.error(ex.response.data.message)
@@ -181,6 +182,7 @@ const saveNewLine = async (item) => {
                 items: [...quote.items, item],
             })
         Object.assign(quote, res.data)
+        Object.assign(quote.items, getLeafNodesWithChildren(quote.items))
         item.show = false
         Object.assign(item, {
             name: null,
@@ -216,7 +218,7 @@ const items = ref([
                     <div
                         class="mobile-price-group-heading border-bottom mb-3 d-flex justify-content-between align-items-center">
                         <h3>Recurring charges</h3>
-                        <h3 id="recurring_total">{{ GBP.format(quoteTotal('monthly')) }}</h3>
+                        <h3 id="recurring_total">{{ GBP.format(quoteTotal('MONTHLY')) }}</h3>
                     </div>
                     <table id="table-recurring" class="table">
                         <thead>
@@ -237,7 +239,7 @@ const items = ref([
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="(p, i) in quote.items.filter((x) => x.price_plan && x.price_plan.code == 'monthly')"
+                            <tr v-for="(p, i) in quote.items.filter((x) => x.price_plan && x.price_plan.code == 'MONTHLY')"
                                 class="recurring-item bg-light-grey">
                                 <td>
                                     {{ p.name }}
@@ -257,12 +259,13 @@ const items = ref([
                                     </span>
                                 </td>
                                 <td class="text-center">
-                                    <span v-if="!p.is_editing" :id="'recurring-' + i + '-contract_length'">
-                                        {{ p.contract_length }}
-                                    </span>
-                                    <input :id="'input-recurring-' + i + '-contract_length'" v-else
+                                    <input :id="'input-recurring-' + i + '-contract_length'"
+                                        v-if="!p.is_editing && quote.solution_type.code != 3"
                                         class="form-control text-center p-0 px-1" type="number" min="0" max="100"
                                         v-model="temp.contract_length">
+                                    <span v-else :id="'recurring-' + i + '-contract_length'">
+                                        {{ p.contract_length }}
+                                    </span>
                                 </td>
                                 <td class="text-center">
                                     <span v-if="!p.is_editing" :id="'recurring-' + i + '-discount'">
@@ -343,7 +346,7 @@ const items = ref([
                     <div
                         class="mobile-price-group-heading border-bottom mb-3 d-flex justify-content-between align-items-center">
                         <h3>One off charges</h3>
-                        <h3 id="one_off_total">{{ GBP.format(quoteTotal('single')) }}</h3>
+                        <h3 id="one_off_total">{{ GBP.format(quoteTotal('SINGLE')) }}</h3>
                     </div>
                     <table id="table-one_off" class="table">
                         <thead>
@@ -363,7 +366,7 @@ const items = ref([
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="(p, i) in quote.items.filter((x) => !x.price_plan || x.price_plan?.code == 'single')"
+                            <tr v-for="(p, i) in quote.items.filter((x) => !x.price_plan || x.price_plan?.code == 'SINGLE')"
                                 class="one_off-item bg-light-grey">
                                 <td>{{ p.name }}</td>
                                 <td class="text-center">
@@ -454,14 +457,14 @@ const items = ref([
                     <div>
                         <p class="payment-info border-bottom pb-3 mb-3 big bold">
                             <span class="text-primary">1 payment </span> of
-                            {{ GBP.format(quoteTotal('single')) }}<br>
+                            {{ GBP.format(quoteTotal('SINGLE')) }}<br>
                             followed by
                             <span class="text-primary"> monthly payments</span> of
-                            {{ GBP.format(quoteTotal('monthly')) }}
+                            {{ GBP.format(quoteTotal('MONTHLY')) }}
                         </p>
                     </div>
                     <div class="d-flex justify-content-between">
-                        <a class="btn text-primary" :href="route('quotes.edit', { quote: quote.id }) + '?step=3'">
+                        <a class="btn text-primary" :href="route('quotes.edit', { quote: quote.id }) + '?step=2'">
                             <font-awesome-icon class="me-2" :icon="['fas', 'arrow-left']"></font-awesome-icon>
                             Previous</a>
                         <div>

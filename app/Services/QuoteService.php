@@ -48,7 +48,8 @@ class QuoteService
                         $this->quoteItemService->update($temp, [...$quote_item, 'quote_id' =>  $quote->id]);
 
                         $olderItems = $olderItems->reject(function ($temp) use ($quote_item) {
-                            return $temp->id === $quote_item['id'];
+                            $id = array_key_exists('parent_id', $quote_item) && $quote_item['parent_id'] ? $quote_item['parent_id'] : $quote_item['id'];
+                            return $temp->id === $id;
                         });
                     } else {
                         $this->quoteItemService->store([...$quote_item, 'quote_id' =>  $quote->id]);

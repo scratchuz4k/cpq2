@@ -198,8 +198,8 @@ const resetFilters = () => {
 }
 
 const checkProduct = (article) => {
-    let item = props.modelValue.items.find((item) => item.data.code == article.code)
-    let index = props.modelValue.items.findIndex((item) => item.data.code == article.code)
+    let item = props.modelValue.items.find((item) => item.product_code == article.code)
+    let index = props.modelValue.items.findIndex((item) => item.product_code == article.code)
     return index == -1 ? add(article) : remove(item, index)
 }
 
@@ -609,7 +609,7 @@ getArticles()
                                 </td>
                                 <td>{{ article.contractTermMonths }} Months </td>
                                 <td class="text-end">
-                                    <button v-if="modelValue.items.find((item) => item.data.code == article.code)"
+                                    <button v-if="modelValue.items.find((item) => item.product_code == article.code)"
                                         class="btn btn-primary me-2 py-1" @click="checkProduct(article)">
                                         <font-awesome-icon :icon="['fas', 'check']" />
                                         Added
