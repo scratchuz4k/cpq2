@@ -40,6 +40,7 @@ describe("Creates a Mobile Quote", () => {
         cy.get("#btn-plan-0-add-25").click()
         cy.get("#btn-plan-1-add-25").click()
         cy.get("#btn-step-1-next").click()
+        cy.wait(5000)
         let hardwareCount = 0
         let keys = [0, 1, 2, 3, 4]
         keys.forEach((key) => {
