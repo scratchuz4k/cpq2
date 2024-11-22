@@ -50,7 +50,12 @@ const changeQuantity = async (item, ev) => {
 
 const items = ref([
     { label: 'Home', url: '/dashboard' },
-    { label: `Quote #${quote?.id}`, url: quote ? `/quotes/${quote.id}/edit` : '#' },
+    {
+        label: `Quote #${quote?.id}`,
+        url: quote
+            ? (['REGISTRY', 'ORDERED'].includes(quote.status)) ? '#' : `/quotes/${quote.id}/edit`
+            : '#'
+    },
     { label: 'Summary' }
 ]);
 

@@ -38,11 +38,11 @@ const items = ref([
                 <Header title="Order Preview" :breadcrumbs="items"></Header>
             </div>
             <div class="col" style="text-align: right">
-                <button :disabled="order.user_id && order.user_id !== page.props.auth.user.id" class="btn btn-secondary mx-2" @click="rejectOrder(props.order)">
+                <button :disabled="(order.user_id && order.user_id !== page.props.auth.user.id) || order.status !== 'REGISTRY'" class="btn btn-secondary mx-2" @click="rejectOrder(props.order)">
                     <font-awesome-icon :icon="['fas', 'x']"></font-awesome-icon>
                     Reject
                 </button>
-                <button :disabled="order.user_id && order.user_id !== page.props.auth.user.id" class="btn btn-primary mx-2" @click="proceedOrder(props.order)">
+                <button :disabled="(order.user_id && order.user_id !== page.props.auth.user.id) || order.status !== 'REGISTRY'" class="btn btn-primary mx-2" @click="proceedOrder(props.order)">
                     <font-awesome-icon :icon="['fas', 'check']"></font-awesome-icon>
                     Proceed
                 </button>

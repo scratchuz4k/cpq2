@@ -28,11 +28,13 @@
                         <img class="w-100" src="/images/cloud-market-tools-logo.png">
                     </a>
                 </div>
-                <div class="flex items-center pt-8 sm:justify-start sm:pt-0">
-                    <div class="px-4 text-lg text-gray-500 border-r border-gray-400 tracking-wider">
-                        @yield('code')
+                <div class="flex items-center justify-center">
+                    <div class="text-lg text-gray-500 uppercase tracking-wider text-center">
+                        <a class="btn" href="javascript:history.back()"> Back </a>
                     </div>
-
+                </div>
+                <br>
+                <div class="flex items-center pt-8 sm:justify-start sm:pt-0">
                     <div class="ml-4 text-lg text-gray-500 uppercase tracking-wider">
                         @yield('message')
                     </div>

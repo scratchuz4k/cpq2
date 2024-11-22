@@ -2,6 +2,8 @@
 import { Link, router } from '@inertiajs/vue3';
 import { ref, reactive } from 'vue'
 import {createOrder} from "@/Composables/orders.js";
+import Dialog from "primevue/dialog";
+import PrimaryButton from "@/Components/PrimaryButton.vue";
 
 const props = defineProps({
     modelValue: Object
@@ -166,9 +168,16 @@ const quoteTotal = (key) => {
 
 getHardwareProducts()
 
+let showModal = ref(false)
+
 const items = ref([
     { label: 'Home', url: '/' },
-    { label: `Quote #${quote?.id}`, url: quote ? `/quotes/${quote.id}/edit` : '#' },
+    {
+        label: `Quote #${quote?.id}`,
+        url: quote
+            ? (['REGISTRY', 'ORDERED'].includes(quote.status)) ? '#' : `/quotes/${quote.id}/edit`
+            : '#'
+    },
     { label: 'Summary' },
 ]);
 
@@ -178,6 +187,11 @@ const items = ref([
         <div class="row justify-content-between">
             <div class="col-lg-8 mb-5 price-summary">
                 <Header title="Build your deal" :breadcrumbs="items"></Header>
+                <div class="d-flex justify-content-between align-content-center">
+                    <h5>An Order related to this Quote was {{ quote.status }}</h5>
+                    <button class="btn btn-primary" @click="showModal = true">See Rejection Notes</button>
+                    {{ showModal}}
+                </div>
                 <div class="mb-5">
                     <div
                         class="mobile-price-group-heading border-bottom mb-3 d-flex justify-content-between align-items-center">
@@ -490,6 +504,31 @@ const items = ref([
                 </div>
             </div>
         </div>
+        <Dialog v-model:visible="showModal" modal :style="{ marginTop: '4rem' }"
+                :breakpoints="{ '1199px': '75vw', '575px': '90vw' }" :draggable="false" position="top">
+            <div class="panel px-3">
+                <div class="row">
+                    <h2>Rejected Reasons</h2>
+                    <table class="table reject-reasons-table my-4">
+                        <thead>
+                        <tr>
+                            <th>Order</th>
+                            <th>Note</th>
+                        </tr>
+                        </thead>
+
+                        <tbody>
+                        <tr v-for="order in quote.orders">
+                            <td>#{{ order.id }}</td>
+                            <td>{{ order.note }}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+
+                    <button class="btn btn-primary" @click="showModal = false">Close</button>
+                </div>
+            </div>
+        </Dialog>
     </div>
 </template>
 <style scoped>
@@ -534,5 +573,10 @@ input[type="number"] {
 
 [role=button]:hover {
     opacity: 0.75
+}
+
+.reject-reasons-table tr th,
+.reject-reasons-table tr td{
+    padding: 1rem !important;
 }
 </style>

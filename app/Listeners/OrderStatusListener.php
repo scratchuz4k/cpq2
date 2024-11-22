@@ -33,7 +33,8 @@ class OrderStatusListener
         $order->save();
 
         switch ($order->status) {
-            case OrderStatusesEnum::REJECTED->name || OrderStatusesEnum::ORDERED->name:
+            case OrderStatusesEnum::REJECTED->name:
+            case OrderStatusesEnum::ORDERED->name:
                 $this->updateQuoteStatus($order->load('quote'));
                 break;
         }

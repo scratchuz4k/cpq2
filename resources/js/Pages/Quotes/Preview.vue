@@ -22,8 +22,18 @@ const showDate = (days = 0) => {
 
 const items = ref([
     { label: 'Home', url: '/dashboard' },
-    { label: `Quote #${props.quote?.id}`, url: props.quote ? `/quotes/${props.quote.id}/edit` : '#' },
-    { label: `Summary`, url: props.quote ? `/quotes/${props.quote.id}` : '#' },
+    {
+        label: `Quote #${props.quote?.id}`,
+        url: props.quote
+            ? (['REGISTRY', 'ORDERED'].includes(props.quote.status)) ? '#' : `/quotes/${props.quote.id}/edit`
+            : '#'
+    },
+    {
+        label: `Summary`,
+        url: props.quote
+            ? (['REGISTRY', 'ORDERED'].includes(props.quote.status)) ? '#' : `/quotes/${props.quote.id}`
+            : '#'
+    },
     { label: 'Preview PDF' }
 ]);
 

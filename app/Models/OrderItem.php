@@ -14,26 +14,19 @@ class OrderItem extends Model
     use HasFactory, SetTenantId;
     protected $fillable = [
         "order_id",
+        "price_plan_id",
         "product_code",
         "product_id",
         "quantity",
         "name",
         "data",
-        'margin',
         'discount',
-        'raw_price',
-        'raw_price_monthly',
-        'original_price',
-        'original_price_monthly',
         'price',
-        'price_monthly',
         'total',
         'total_tax',
         'total_gross',
-        'total_monthly',
-        'total_monthly_tax',
-        'total_monthly_gross',
         'tax_order_item',
+        "contract_length",
     ];
 
     protected function casts(): array
