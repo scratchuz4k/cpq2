@@ -337,7 +337,7 @@ const items = ref([
                             <tr v-else>
                                 <th colspan="10">
                                     <div class="d-flex justify-content-center align-items-end">
-                                        <p role="button" id="btn-one_off-add"
+                                        <p role="button" id="btn-recurring-add"
                                             class="d-flex justify-content-center align-items-center px-2 py-1"
                                             style="font-size: 10px;" @click="() => recurringNewLine.show = true">
                                             <span>Add New Recurring Line</span>
@@ -458,7 +458,7 @@ const items = ref([
                             <tr v-else>
                                 <th colspan="10">
                                     <div class="d-flex justify-content-center align-items-end">
-                                        <p role="button" id="btn-recurring-add"
+                                        <p role="button" id="btn-one_off-add"
                                             class="d-flex justify-content-center align-items-center px-2 py-1"
                                             style="font-size: 10px;" @click="() => oneOffNewLine.show = true">
                                             <span>Add New One off Line</span>
