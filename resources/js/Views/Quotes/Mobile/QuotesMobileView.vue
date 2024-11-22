@@ -5,7 +5,7 @@ import MultiSelect from 'primevue/multiselect';
 import Paginator from 'primevue/paginator';
 import axios from 'axios';
 import { router } from '@inertiajs/vue3';
-import { reactive, ref, watch } from 'vue'
+import { onMounted, reactive, ref, watch } from 'vue'
 import queryString from 'query-string';
 import InputQuantity from '@/Components/InputQuantity.vue';
 
@@ -218,8 +218,10 @@ const checkPlansHardwareQuantity = () => {
     return plansQty - hardwareQty
 }
 
-getProducts()
-getProductsShopBlocks()
+onMounted(async () => {
+    await getProducts()
+    await getProductsShopBlocks()
+})
 
 watch([filters, sort], () => {
     getProductsShopBlocks()
@@ -228,12 +230,6 @@ watch([filters, sort], () => {
 watch(search, _.debounce(() => {
     getProductsShopBlocks()
 }, 300))
-
-
-const items = ref([
-    { label: 'Home', url: '/' },
-    { label: 'Create a quote' },
-]);
 
 
 </script>
