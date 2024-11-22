@@ -15,7 +15,8 @@ return new class extends Migration
             $table->dropForeign(['supplier_id']);
             $table->dropForeign(['merchant_id']);
             $table->dropForeign(['account_id']);
-            $table->dropColumn(['name', 'data',  'supplier_id', 'merchant_id', 'account_id']);
+            $table->dropForeign(['user_id']);
+            $table->dropColumn(['name', 'data',  'supplier_id', 'merchant_id', 'account_id','user_id']);
 
             $table->foreignId('rule_id')->after('id')->constrained('spa_rules', 'id')->cascadeOnDelete();
             $table->unsignedBigInteger('field_1')->after('rule_id');
@@ -37,6 +38,7 @@ return new class extends Migration
             $table->foreignId('supplier_id')->constrained()->cascadeOnDelete();
             $table->foreignId('merchant_id')->nullable()->constrained()->nullOnDelete();
             $table->foreignId('account_id')->nullable()->constrained()->cascadeOnDelete();
+            $table->foreignId('user_id')->nullable()->constrained()->cascadeOnDelete();
             $table->string('name', 100)->nullable();
             $table->text('data')->nullable();
             $table->dropForeign(['rule_id']);

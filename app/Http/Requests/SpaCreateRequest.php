@@ -45,8 +45,8 @@ class SpaCreateRequest extends FormRequest
     {
         return [
             'field_1.required' => 'The first Entity is required',
-            'field_1.unique' => 'There is alredy a SPA for that entity',
-            'field_2.unique' => 'There is alredy a SPA for the combination of that entities',
+            'field_1.unique' => 'There is already a SPA for that entity',
+            'field_2.unique' => 'There is already a SPA for the combination of that entities',
         ];
     }
 }

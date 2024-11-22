@@ -1,4 +1,3 @@
-import { faVoteYea } from "@fortawesome/free-solid-svg-icons";
 import { generateHash, getCurrentDate } from "../../support/utils.js";
 
 const temp = getCurrentDate()
@@ -89,7 +88,7 @@ describe('Creates a Connectivity quote', () => {
         cy.get("#spa-percentage").type(20)
         cy.get("#save-spa").click()
         cy.wait(2000)
-        cy.get(".notyf").contains("There is alredy a SPA for that entity")
+        cy.get(".notyf").contains("There is already a SPA for that entity")
 
     })
 

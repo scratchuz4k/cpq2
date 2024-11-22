@@ -45,7 +45,7 @@ jobs:
           mysql --user="root" --password="root" -e "CREATE DATABASE cypress character set UTF8mb4 collate utf8mb4_bin;"
           mysql --user="root" --password="root" -e "ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'root'";
       - name: Install Composer Dependencies
-        run: composer install -q --no-ansi --no-interaction --no-scripts --no-suggest --no-progress --prefer-dist
+        run: composer install --prefer-dist --optimize-autoloader --no-scripts --no-progress --no-interaction --no-dev && composer dump-autoload --optimize --no-dev -q
 
       - name: Laravel Tests and sqlite
         run: |
@@ -57,7 +57,6 @@ jobs:
           php artisan key:generate
           php artisan migrate:fresh --seed
           php artisan db:seed CategoryProductsSeeder
-
 
       - name: Install Node Dependencies
         run: |
@@ -81,6 +80,7 @@ jobs:
           COMMIT_OWNER="${GITHUB_ACTOR}"
           BRANCH_NAME="${GITHUB_REF#refs/heads/}"
           REPO_OWNER="${GITHUB_REPOSITORY%/*}"
+          COMMIT_MESSAGE=${{ github.event.head_commit.message }}
 
           # Define a list of users and their IDs
           declare -A users
@@ -104,8 +104,11 @@ jobs:
           curl -X POST "${{ secrets.DISCORD_WEBHOOK_URL }}" \
             -H "Content-Type: multipart/form-data" \
             -F "file=@screenshot.zip" \
-            -F "payload_json={\"content\": \"<@$USER_ID>: Test failed on branch $BRANCH_NAME ($REPO_OWNER)! Here are the screenshots:\"}"
+            -F "payload_json={\"content\": \"<@$USER_ID>: Tests failed on commit $COMMIT_MESSAGE ($BRANCH_NAME @ $REPO_OWNER)! Here are the screenshots:\"}"
 
+      - name: Rollback Laravel DB
+        run: |
+          php artisan migrate:rollback
 
   # build:
   #   name: Build & Publish Docker Image

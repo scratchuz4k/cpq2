@@ -43,7 +43,7 @@ return new class extends Migration
                 'total_monthly_tax',
                 'total_monthly_gross',
                 'commission_value',
-                'tax_commission',
+                'commission_rate',
             ]);
         });
     }
