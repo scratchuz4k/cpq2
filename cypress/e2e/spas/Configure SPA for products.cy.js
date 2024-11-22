@@ -15,7 +15,7 @@ describe('Creates a Connectivity quote', () => {
         cy.get("#link-to-create-account").click()
         cy.get("#account-name").type(account.name)
         cy.get("#account-reference").type(account.ref)
-        cy.get("#save-account-button").click()
+        cy.get("#btn-save-account").click()
         cy.get(".notyf").contains("Created with Success")
     })
 
@@ -53,10 +53,10 @@ describe('Creates a Connectivity quote', () => {
         cy.wait(1000)
         cy.get('#suppliers-table').then(($table) => {
             if ($table.text().includes("No records found")) {
-                cy.get("#create-suppliers").click()
+                cy.get("#supplier-create-btn").click()
                 cy.get("#supplier-name").type("Gamma")
                 cy.get("#supplier-reference").type("Gamma")
-                cy.get("#save-supplier").click()
+                cy.get("#btn-save-supplier").click()
                 cy.get('.p-row-even').should('have.length.greaterThan', 0);
             }
         });

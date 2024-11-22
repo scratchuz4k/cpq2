@@ -38,6 +38,7 @@ describe('Creates a Connectivity quote', () => {
 
         //SubProvider filter
         cy.get('.p-multiselect').eq(1).click()
+        cy.wait(500)
 
         cy.get('.p-multiselect-list-container').eq(0).within(() => {
             cy.get('.p-checkbox').eq(1).click()

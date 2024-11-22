@@ -16,7 +16,7 @@ const items = ref([
         <div class="panel">
             <Header title="Suppliers" :breadcrumbs="items">
                 <template #buttons>
-                    <Link id="create-suppliers" href="/suppliers/create" class="btn btn-primary me-2">
+                    <Link id="supplier-create-btn" href="/suppliers/create" class="btn btn-primary me-2">
                     <font-awesome-icon :icon="['fas', 'plus']"></font-awesome-icon> New Supplier
                     </Link>
                 </template>

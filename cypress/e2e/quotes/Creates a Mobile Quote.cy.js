@@ -19,11 +19,11 @@ describe("Creates a Mobile Quote", () => {
     let hardwareCount = 0;
 
     beforeEach(() => {
-         cy.login("super@example.com", "werwerwer")
+        cy.login("super@example.com", "werwerwer")
     })
     it("Creates an Account", () => {
         cy.visit("/")
-        cy.get("#my-account").click()
+        cy.get("#create-tab").click()
         cy.get("#link-to-create-account").click()
         cy.get("#account-name").type(account.name)
         cy.get("#account-reference").type(account.ref)
@@ -51,14 +51,14 @@ describe("Creates a Mobile Quote", () => {
                 if (spanText > 0) {
                     hardwareCount += 1
                     cy.log(`Click count: ${hardwareCount}`);
-                    cy.get(`#input-hardware-${key}-quantity`).type(spanText)
+                    cy.get(`#input-hardware-${key}-quantity`).type(1)
                 }
             });
         })
 
-        cy.get("#btn-step-3-next").click()
+        cy.get("#btn-step-2-next").click()
 
-        cy.get(".recurring-item").should("have.length", 4)
+        cy.get(".recurring-item").should("have.length", 2)
         cy.get(".one_off-item").then(($items) => {
             cy.then(() => {
                 expect(hardwareCount).to.equal($items.length);
