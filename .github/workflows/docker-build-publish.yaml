@@ -30,6 +30,15 @@ jobs:
 
       - name: Copy .env
         run: cp .env.testing .env
+
+      - name: Create .env file
+        run: |
+          echo "SHOPBLOCKS_API_KEY=${{ secrets.SHOPBLOCKS_API_KEY }}" >> .env
+          echo "TOMTOM_API_KEY=${{ secrets.TOMTOM_API_KEY }}" >> .env
+          echo "VIRTUAL1_CONNECTION_PASSWORD=${{ secrets.VIRTUAL1_CONNECTION_PASSWORD }}" >> .env
+          echo "VIRTUAL1_CONNECTION_USERNAME=${{ secrets.VIRTUAL1_CONNECTION_USERNAME }}" >> .env
+          echo "VITE_GOOGLE_MAPS_API_KEY=${{ secrets.VITE_GOOGLE_MAPS_API_KEY }}" >> .env
+
       - name: Create Database
         run: |
           sudo systemctl start mysql
@@ -45,7 +54,6 @@ jobs:
 
       - name: Prepare Laravel env, db and test
         run: |
-          cp .env.example .env
           php artisan key:generate
           php artisan migrate:fresh --seed
           php artisan db:seed CategoryProductsSeeder
@@ -76,9 +84,9 @@ jobs:
 
           # Define a list of users and their IDs
           declare -A users
-          users["scratchuz4k"]="113697281739456521"
-          users["steveoliveira-evolve"]="1257232074172010496"
-          users["crisguarda-evolve"]="1277909854903603283"
+          users[${{ secrets.USER_GITHUB_MARCOS }}]=${{ secrets.ID_DISCORD_MARCOS }}
+          users[${{ secrets.USER_GITHUB_STEVE }}]=${{ secrets.ID_DISCORD_STEVE }}
+          users[${{ secrets.USER_GITHUB_CRIS }}]=${{ secrets.ID_DISCORD_CRIS }}
 
           # Define the target username
           TARGET_USER="$COMMIT_OWNER"
@@ -93,12 +101,11 @@ jobs:
           fi
 
           # Send the screenshot to Discord
-          curl -X POST "$DISCORD_WEBHOOK_URL" \
+          curl -X POST "${{ secrets.DISCORD_WEBHOOK_URL }}" \
             -H "Content-Type: multipart/form-data" \
             -F "file=@screenshot.zip" \
             -F "payload_json={\"content\": \"<@$USER_ID>: Test failed on branch $BRANCH_NAME ($REPO_OWNER)! Here are the screenshots:\"}"
-        env:
-          DISCORD_WEBHOOK_URL: https://discord.com/api/webhooks/1308426382472384655/mCq2fiiN5ydJenImCL0Y4AqCnIXZ2dudOpEPUWxP3GqXBRDa3lpDOTTDCzfffDuKuuUr
+
 
   # build:
   #   name: Build & Publish Docker Image
