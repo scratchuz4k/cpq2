@@ -47,7 +47,7 @@ jobs:
       - name: Install Composer Dependencies
         run: composer install -q --no-ansi --no-interaction --no-scripts --no-suggest --no-progress --prefer-dist
 
-      - name: Migrate and seed db
+      - name: Laravel Tests and sqlite
         run: |
           touch database/database.sqlite
           php artisan test
