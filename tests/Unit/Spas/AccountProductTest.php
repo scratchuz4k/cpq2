@@ -16,7 +16,6 @@ beforeEach(function () {
     // Declaration of values
     $this->artisan('db:seed');
     $this->user = User::factory()->create();
-    $this->tenant = Tenant::factory()->create();
     $this->account = Account::factory()->create();
     $this->product = Product::factory()->create();
 
@@ -36,7 +35,7 @@ test('AccountProduct without Spa', function () {
 
 test('AccountProduct with OperationMargin Spa', function () {
     $spa = new Spa();
-    $spa->tenant_id = $this->tenant->id;
+    $spa->tenant_id = 1;
     $spa->rule_id = SpaRule::where('code', SpaRulesEnum::AccountProduct->name)->value('id');
     $spa->field_1 = $this->account->id;
     $spa->field_2 = $this->product->id;
@@ -60,7 +59,7 @@ test('AccountProduct with OperationMargin Spa', function () {
 
 test('AccountProduct with OperationDiscount Spa', function () {
     $spa = new Spa();
-    $spa->tenant_id = $this->tenant->id;
+    $spa->tenant_id = 1;
     $spa->rule_id = SpaRule::where('code', SpaRulesEnum::AccountProduct->name)->value('id');
     $spa->field_1 = $this->account->id;
     $spa->field_2 = $this->product->id;
