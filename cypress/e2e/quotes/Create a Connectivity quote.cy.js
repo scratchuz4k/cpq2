@@ -1,4 +1,4 @@
-import {generateHash, getCurrentDate} from "../../support/utils.js";
+import { generateHash, getCurrentDate } from "../../support/utils.js";
 
 const temp = getCurrentDate()
 const account = { ref: generateHash(temp), name: temp }
@@ -27,6 +27,8 @@ describe('Creates a Connectivity quote', () => {
         cy.get("#select_address").should('be.visible').select(1)
         cy.get("#btn-create-quote").should('not.be.disabled').click()
 
+        // Scroll back to top
+        cy.scrollTo('top');
         //Provider filter
         cy.get('.p-multiselect').eq(0).click()
 
@@ -37,7 +39,7 @@ describe('Creates a Connectivity quote', () => {
         //SubProvider filter
         cy.get('.p-multiselect').eq(1).click()
 
-        cy.get('.p-multiselect-list-container').eq(1).within(() => {
+        cy.get('.p-multiselect-list-container').eq(0).within(() => {
             cy.get('.p-checkbox').eq(1).click()
         })
 

@@ -31,7 +31,7 @@ jobs:
       - name: Copy .env
         run: cp .env.testing .env
 
-      - name: Create .env file
+      - name: Add .env secrets
         run: |
           echo "SHOPBLOCKS_API_KEY=${{ secrets.SHOPBLOCKS_API_KEY }}" >> .env
           echo "TOMTOM_API_KEY=${{ secrets.TOMTOM_API_KEY }}" >> .env
@@ -52,7 +52,7 @@ jobs:
           touch database/database.sqlite
           php artisan test
 
-      - name: Prepare Laravel env, db and test
+      - name: Prepare Laravel DB
         run: |
           php artisan key:generate
           php artisan migrate:fresh --seed
@@ -70,7 +70,7 @@ jobs:
       - name: Check laravel local server
         run: curl http://localhost:8000/health
 
-      - name: Execute tests
+      - name: Execute cypress tests
         run: npm run cy:run
 
       - name: Check for failed Cypress tests and send screenshot to Discord

@@ -218,8 +218,8 @@ const checkPlansHardwareQuantity = () => {
     return plansQty - hardwareQty
 }
 
-getProductsShopBlocks()
 getProducts()
+getProductsShopBlocks()
 
 watch([filters, sort], () => {
     getProductsShopBlocks()

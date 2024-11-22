@@ -40,7 +40,7 @@ class DataProvider
 
         if ($search) {
             $columns = request()->get('columns') ? explode(",", request()->get('columns')) : $this->builder->getModel()->getFillable();
-            $hidden = $this->builder->getModel()->hidden();
+            $hidden = $this->builder->getModel()->getHidden();
 
             $columns = array_filter($columns, function ($column) use ($hidden) {
                 $firstPart = explode('.', $column)[0];
