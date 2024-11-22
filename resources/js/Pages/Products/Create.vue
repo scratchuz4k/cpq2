@@ -13,6 +13,8 @@ const product = reactive({
     name: null,
     supplier_id: null,
     brand_id: null,
+    code: null,
+    description: null
 })
 
 const saveProduct = () => {
@@ -45,7 +47,7 @@ const items = ref([
         <div class="panel">
             <Header title="New Product" :breadcrumbs="items">
                 <template #buttons>
-                    <PrimaryButton @click="saveProduct()">
+                    <PrimaryButton id="btn-save-product" @click="saveProduct()">
                         <font-awesome-icon class="me-2" :icon="['fas', 'save']"></font-awesome-icon> Save
                     </PrimaryButton>
                 </template>
@@ -57,15 +59,25 @@ const items = ref([
                 </div>
                 <div class="row mb-3">
                     <label for="supplier-name" class="form-label">Supplier:</label>
-                    <select class="form-select" v-model="product.supplier_id">
+                    <select id="supplier-name" class="form-select" v-model="product.supplier_id">
                         <option v-for="supplier in suppliers" :value="supplier.id">{{ supplier.name }}</option>
                     </select>
                 </div>
                 <div class="row mb-3">
                     <label for="brand-name" class="form-label">Brand:</label>
-                    <select class="form-select" v-model="product.brand_id">
+                    <select id="brand-name" class="form-select" v-model="product.brand_id">
                         <option v-for="brand in brands" :value="brand.id">{{ brand.name }}</option>
                     </select>
+                </div>
+
+                <div class="row mb-3">
+                    <label for="product-code" class="form-label">Code:</label>
+                    <input id="product-code" class="form-control" v-model="product.code">
+                </div>
+
+                <div class="row mb-3">
+                    <label for="product-description" class="form-label">Description:</label>
+                    <textarea id="product-description" class="form-control" v-model="product.description"></textarea>
                 </div>
             </div>
 

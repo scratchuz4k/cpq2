@@ -64,7 +64,7 @@ const items = ref([
         <div class="panel">
             <Header title="New Account" :breadcrumbs="items">
                 <template #buttons>
-                    <PrimaryButton id="save-account-button" @click="saveAccount()">
+                    <PrimaryButton id="btn-save-account" @click="saveAccount()">
                         <font-awesome-icon class="me-2" :icon="['fas', 'save']"></font-awesome-icon> Save
                     </PrimaryButton>
                 </template>

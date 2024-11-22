@@ -73,7 +73,7 @@ const items = ref([
                         </div>
                         <div class="col" v-if="hasRole('Super Admin') || can('viewAny brand')">
                             <div class="card bg-light border-0">
-                                <a :href="route('brands.index')" class="card-body text-center p-2 text-decoration-none">
+                                <a :href="route('brands.index')" :id="'brands-btn'" class="card-body text-center p-2 text-decoration-none">
                                     <font-awesome-icon class="py-3 opacity-25" :icon="['far', 'registered']" size="2x"></font-awesome-icon>
                                     <span class="d-block h5">Brands</span>
                                 </a>
@@ -81,7 +81,7 @@ const items = ref([
                         </div>
                         <div class="col" v-if="hasRole('Super Admin') || can('viewAny price')">
                             <div class="card bg-light border-0">
-                                <a :href="route('prices.index')" class="card-body text-center p-2 text-decoration-none">
+                                <a :href="route('prices.index')" :id="'prices-btn'" class="card-body text-center p-2 text-decoration-none">
                                     <font-awesome-icon class="py-3 opacity-25" :icon="['far', 'money-bill-1']" size="2x"></font-awesome-icon>
                                     <span class="d-block h5">Prices</span>
                                 </a>
@@ -89,7 +89,7 @@ const items = ref([
                         </div>
                         <div class="col" v-if="hasRole('Super Admin') || can('viewAny product')">
                             <div class="card bg-light border-0">
-                                <a :href="route('products.index')" class="card-body text-center p-2 text-decoration-none">
+                                <a :href="route('products.index')" :id="'products-btn'" class="card-body text-center p-2 text-decoration-none">
                                     <font-awesome-icon class="py-3 opacity-25" :icon="['far', 'rectangle-list']" size="2x"></font-awesome-icon>
                                     <span class="d-block h5">Products</span>
                                 </a>
@@ -97,7 +97,7 @@ const items = ref([
                         </div>
                         <div class="col" v-if="hasRole('Super Admin') || can('viewAny region')">
                             <div class="card bg-light border-0">
-                                <a :href="route('regions.index')" class="card-body text-center p-2 text-decoration-none">
+                                <a :href="route('regions.index')" :id="'regions-btn'" class="card-body text-center p-2 text-decoration-none">
                                     <font-awesome-icon class="py-3 opacity-25" :icon="['far', 'map']" size="2x"></font-awesome-icon>
                                     <span class="d-block h5">Regions</span>
                                 </a>
@@ -129,7 +129,7 @@ const items = ref([
                         </div>
                         <div class="col" v-if="hasRole('Super Admin') || can('viewAny token')">
                             <div class="card bg-light border-0">
-                                <a :href="route('tokens.index')" class="card-body text-center p-2 text-decoration-none">
+                                <a :href="route('tokens.index')" :id="'tokens-btn'" class="card-body text-center p-2 text-decoration-none">
                                     <font-awesome-icon class="py-3 opacity-25" :icon="['far', 'bookmark']" size="2x"></font-awesome-icon>
                                     <span class="d-block h5">Tokens</span>
                                 </a>
@@ -137,7 +137,7 @@ const items = ref([
                         </div>
                         <div class="col" v-if="hasRole('Super Admin') || can('viewAny user')">
                             <div class="card bg-light border-0">
-                                <a id="link-users" :href="route('users.index')" class="card-body text-center p-2 text-decoration-none">
+                                <a id="link-users" :href="route('users.index')" :id="'users-btn'" class="card-body text-center p-2 text-decoration-none">
                                     <font-awesome-icon class="py-3 opacity-25" :icon="['far', 'user']" size="2x"></font-awesome-icon>
                                     <span class="d-block h5">Users</span>
                                 </a>
