@@ -231,10 +231,6 @@ const items = ref([
                                 <th class="text-center" style="width:10%"> Discount</th>
                                 <th class="text-right" style="width:10%"> Sell Price</th>
                                 <th class="text-right" style="width:10%">
-                                    <div class="d-flex justify-content-center">
-                                        <font-awesome-icon id="btn-recurring-add" :icon="['fas', 'plus']" role="button"
-                                            class="py-2 w-100" @click="() => recurringNewLine.show = true" />
-                                    </div>
                                 </th>
                             </tr>
                         </thead>
@@ -300,8 +296,8 @@ const items = ref([
                                 </td>
                             </tr>
                         </tbody>
-                        <tfoot v-if="recurringNewLine.show">
-                            <tr>
+                        <tfoot>
+                            <tr v-if="recurringNewLine.show">
                                 <th>
                                     <input :id="'input-new-recurring-name'" class="form-control p-0 px-1" type="text"
                                         v-model="recurringNewLine.name">
@@ -338,6 +334,19 @@ const items = ref([
                                     </div>
                                 </th>
                             </tr>
+                            <tr v-else>
+                                <th colspan="10">
+                                    <div class="d-flex justify-content-center align-items-end">
+                                        <p role="button"
+                                            class="d-flex justify-content-center align-items-center px-2 py-1"
+                                            style="font-size: 10px;" @click="() => recurringNewLine.show = true">
+                                            <span>Add New Recurring Line</span>
+                                            <font-awesome-icon id="btn-one_off-add" class="ms-2"
+                                                :icon="['fas', 'plus']" />
+                                        </p>
+                                    </div>
+                                </th>
+                            </tr>
                         </tfoot>
 
                     </table>
@@ -358,10 +367,7 @@ const items = ref([
                                 <th class="text-center" style="width:10%"> Discount</th>
                                 <th class="text-right" style="width:10%"> Sell Price</th>
                                 <th class="text-right" style="width:10%">
-                                    <div class="d-flex justify-content-center">
-                                        <font-awesome-icon id="btn-one_off-add" :icon="['fas', 'plus']" role="button"
-                                            class="py-2 w-100" @click="() => oneOffNewLine.show = true" />
-                                    </div>
+
                                 </th>
                             </tr>
                         </thead>
@@ -418,8 +424,8 @@ const items = ref([
                                 </td>
                             </tr>
                         </tbody>
-                        <tfoot v-if="oneOffNewLine.show">
-                            <tr>
+                        <tfoot>
+                            <tr v-if="oneOffNewLine.show">
                                 <th>
                                     <input :id="'input-new-one_off-name'" class="form-control p-0 px-1" type="text"
                                         v-model="oneOffNewLine.name">
@@ -446,6 +452,19 @@ const items = ref([
                                         <font-awesome-icon id="btn-new-one_off-add" :icon="['fas', 'save']"
                                             role="button" class="px-2 py-3 text-primary"
                                             @click="saveNewLine(oneOffNewLine)" />
+                                    </div>
+                                </th>
+                            </tr>
+                            <tr v-else>
+                                <th colspan="10">
+                                    <div class="d-flex justify-content-center align-items-end">
+                                        <p role="button"
+                                            class="d-flex justify-content-center align-items-center px-2 py-1"
+                                            style="font-size: 10px;" @click="() => oneOffNewLine.show = true">
+                                            <span>Add New One off Line</span>
+                                            <font-awesome-icon id="btn-recurring-add" class="ms-2"
+                                                :icon="['fas', 'plus']" />
+                                        </p>
                                     </div>
                                 </th>
                             </tr>
