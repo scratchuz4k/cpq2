@@ -103,7 +103,7 @@ jobs:
           curl -X POST "${{ secrets.DISCORD_WEBHOOK_URL }}" \
             -H "Content-Type: multipart/form-data" \
             -F "file=@screenshot.zip" \
-            -F "payload_json={\"content\": \"<@$USER_ID>: Tests failed on commit  ${GITHUB_EVENT_HEAD_COMMIT_MESSAGE} ($BRANCH_NAME @ $REPO_OWNER)! Here are the screenshots:\"}"
+            -F "payload_json={\"content\": \"<@$USER_ID> Tests failed on commit:  ${GITHUB_EVENT_HEAD_COMMIT_MESSAGE} ($BRANCH_NAME @ $REPO_OWNER)! Here are the screenshots:\"}"
         env:
           GITHUB_EVENT_HEAD_COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
 
