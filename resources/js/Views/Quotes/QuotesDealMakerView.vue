@@ -225,7 +225,7 @@ const items = ref([
                                 <th style="width:30%">Product</th>
                                 <th class="text-center" style="width:10%">
                                     <div style="overflow: hidden;white-space: nowrap; text-overflow:ellipsis;">
-                                     Contract Len.
+                                        Contract Len.
                                     </div>
                                 </th>
                                 <th class="text-center" style="width:10%"> Qty </th>
@@ -522,7 +522,7 @@ const items = ref([
                             <label class="form-label m-0">{{ pricePlan.name }}</label>
 
                             <div class="input-group p-0 w-50">
-                                <input :id="`input-global-${pricePlan.code}-discount`" type="number"
+                                <input :id="`input-global123-${pricePlan.code}-discount`" type="number"
                                     class="form-control" v-model="discounts.pricePlans[pricePlan.code]">
                                 <span class="input-group-text">%</span>
                             </div>

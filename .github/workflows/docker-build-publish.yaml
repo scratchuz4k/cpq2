@@ -80,7 +80,6 @@ jobs:
           COMMIT_OWNER="${GITHUB_ACTOR}"
           BRANCH_NAME="${GITHUB_REF#refs/heads/}"
           REPO_OWNER="${GITHUB_REPOSITORY%/*}"
-          COMMIT_MESSAGE=${{ github.event.head_commit.message }}
 
           # Define a list of users and their IDs
           declare -A users
@@ -104,7 +103,9 @@ jobs:
           curl -X POST "${{ secrets.DISCORD_WEBHOOK_URL }}" \
             -H "Content-Type: multipart/form-data" \
             -F "file=@screenshot.zip" \
-            -F "payload_json={\"content\": \"<@$USER_ID>: Tests failed on commit $COMMIT_MESSAGE ($BRANCH_NAME @ $REPO_OWNER)! Here are the screenshots:\"}"
+            -F "payload_json={\"content\": \"<@$USER_ID>: Tests failed on commit  ${GITHUB_EVENT_HEAD_COMMIT_MESSAGE} ($BRANCH_NAME @ $REPO_OWNER)! Here are the screenshots:\"}"
+        env:
+          GITHUB_EVENT_HEAD_COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
 
       - name: Rollback Laravel DB
         run: |
