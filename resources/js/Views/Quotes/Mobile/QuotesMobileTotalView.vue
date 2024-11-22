@@ -337,11 +337,11 @@ const items = ref([
                             <tr v-else>
                                 <th colspan="10">
                                     <div class="d-flex justify-content-center align-items-end">
-                                        <p role="button"
+                                        <p role="button" id="btn-one_off-add"
                                             class="d-flex justify-content-center align-items-center px-2 py-1"
                                             style="font-size: 10px;" @click="() => recurringNewLine.show = true">
                                             <span>Add New Recurring Line</span>
-                                            <font-awesome-icon id="btn-one_off-add" class="ms-2"
+                                            <font-awesome-icon class="ms-2"
                                                 :icon="['fas', 'plus']" />
                                         </p>
                                     </div>
@@ -458,12 +458,11 @@ const items = ref([
                             <tr v-else>
                                 <th colspan="10">
                                     <div class="d-flex justify-content-center align-items-end">
-                                        <p role="button"
+                                        <p role="button" id="btn-recurring-add"
                                             class="d-flex justify-content-center align-items-center px-2 py-1"
                                             style="font-size: 10px;" @click="() => oneOffNewLine.show = true">
                                             <span>Add New One off Line</span>
-                                            <font-awesome-icon id="btn-recurring-add" class="ms-2"
-                                                :icon="['fas', 'plus']" />
+                                            <font-awesome-icon class="ms-2" :icon="['fas', 'plus']" />
                                         </p>
                                     </div>
                                 </th>
