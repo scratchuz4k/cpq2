@@ -4,7 +4,6 @@ namespace App\Services;
 
 use App\Models\PricePlan;
 use App\Models\Quote;
-use App\Models\QuoteDiscount;
 use App\Models\QuoteItem;
 use Illuminate\Support\Facades\DB;
 

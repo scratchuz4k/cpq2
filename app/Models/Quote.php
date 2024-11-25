@@ -66,6 +66,10 @@ class Quote extends Model
     {
         return $this->hasMany(QuoteDiscount::class);
     }
+    public function sharedLink()
+    {
+        return $this->morphOne(SharedLink::class, 'shareable');
+    }
     public function computeTotals()
     {
         $this->refresh();

@@ -1,11 +1,15 @@
 <script setup>
 import { Link, router } from '@inertiajs/vue3';
 import { ref, reactive } from 'vue'
+import Dialog from "primevue/dialog";
+import DatePicker from 'primevue/datepicker';
+import { DateTime } from "luxon";
 
 const props = defineProps({
     modelValue: Object,
     pricePlans: Array
 })
+const showShare = ref(true)
 const isLoading = ref(false)
 
 const getLeafNodesWithChildren = (objects) => {
@@ -53,29 +57,23 @@ const oneOffNewLine = reactive({
     price_plan_code: 'SINGLE'
 })
 
-
 const temp = reactive({
     contract_length: 1,
     discount: 0,
     quantity: 0
 })
 
-const planProducts = ref([
-]);
+const date7DaysFromNow = DateTime.now().plus({ days: 7 });
+const formattedDate = date7DaysFromNow.toISODate();
 
-const boltOnProducts = ref([
-]);
+const shareLink = reactive({
+    password: null,
+    expires_at: quote.shared_link?.expires_at ?? formattedDate,
+    link: quote.shared_link?.url,
+    id: quote.shared_link?.id
+})
 
-const hardwareProducts = ref([])
 
-const getHardwareProducts = () => {
-    quote.items.forEach(element => {
-        if (boltOnProducts.value.find(x => x.name == element.name) || planProducts.value.find(x => x.name == element.name)) {
-            return
-        }
-        hardwareProducts.value.push(element)
-    });
-}
 const remove = async (p) => {
     let id = p.id
     let result = null
@@ -199,7 +197,44 @@ const quoteTotal = (key) => {
     return quote.items.filter((x) => x.price_plan && x.price_plan.code == key).reduce((acc, item) => acc += item.total, 0)
 }
 
-getHardwareProducts()
+const openShare = () => {
+    showShare.value = true
+}
+
+const createSharedLink = async () => {
+    try {
+
+        let res = await axios.post(`/api/shared-links`,
+            {
+                shareable_type: 'quotes',
+                shareable_id: quote.id,
+                expires_at: shareLink.expires_at,
+                password: shareLink.password
+            })
+        shareLink.link = res.data.data.url
+        shareLink.id = res.data.data.id
+    } catch (ex) {
+        notyf.error(ex.response.data.message)
+    }
+}
+
+const copyToClipboard = async (msg) => {
+    try {
+        await navigator.clipboard.writeText(msg);
+        notyf.success('Copied to clipboard!');
+    } catch (err) {
+        notyf.error('Failed to copy text: ' + err);
+    }
+}
+
+const deleteShareLink = async () => {
+    try {
+        let res = await axios.delete(`/api/shared-links/${shareLink.id}`)
+        shareLink.link = null
+    } catch (ex) {
+        notyf.error(ex.response.data.message)
+    }
+}
 
 const items = ref([
     { label: 'Home', url: '/' },
@@ -492,6 +527,10 @@ const items = ref([
                             <font-awesome-icon class="me-2" :icon="['fas', 'arrow-left']"></font-awesome-icon>
                             Previous</a>
                         <div>
+                            <button class="btn btn-outline-primary me-2" @click="openShare()">
+                                <font-awesome-icon :icon="['fas', 'share-nodes']"></font-awesome-icon>
+                                Share
+                            </button>
                             <a class="btn btn-outline-primary me-2"
                                 :href="route('quotes.preview', { quote: quote.id })">
                                 <font-awesome-icon :icon="['far', 'file-pdf']"></font-awesome-icon>
@@ -561,6 +600,48 @@ const items = ref([
                 </div>
             </div>
         </div>
+
+        <Dialog v-model:visible="showShare" modal :style="{ width: '50rem', marginTop: '4rem' }"
+            :breakpoints="{ '1199px': '75vw', '575px': '90vw' }" :draggable="false" position="top">
+            <template #header>
+                <h2>Share quote</h2>
+            </template>
+            <div v-if="!shareLink.link">
+                <div class="mb-3">
+                    <label for="expiration_data" class="form-label">Expiration Date</label>
+                    <DatePicker v-model="shareLink.expires_at" showIcon fluid iconDisplay="input" />
+                </div>
+                <div class="mb-3">
+                    <label for="expiration_data" class="form-label">Password</label>
+                    <input type="text" class="form-control" v-model="shareLink.password" />
+                </div>
+
+                <div class="mb-3">
+                    <button class="btn btn-primary" @click="createSharedLink()"> Create</button>
+                    <button class="btn" @click="() => showShare.value = !showShare.value"> Cancel</button>
+                </div>
+            </div>
+            <div v-else>
+                <div class="mb-3">
+                    <label for="expiration_data" class="form-label">
+                        Anyone with this link can view the quote.
+                    </label>
+                    <div class="input-group mb-3">
+                        <input type="text" class="form-control" v-model="shareLink.link" disabled />
+
+                        <button class="input-group-text" @click="copyToClipboard(shareLink.link)"><font-awesome-icon
+                                :id="'btn-recurring-' + i + '-edit'" role="button" :icon="['far', 'clipboard']"
+                                @click="edit(p)" /></button>
+                    </div>
+                    <p class="small">
+                        Expires at: {{ shareLink.expires_at }}
+                    </p>
+                </div>
+                <div class="mb-3">
+                    <button class="btn btn-danger" @click="deleteShareLink()"> Delete</button>
+                </div>
+            </div>
+        </Dialog>
     </div>
 </template>
 <style scoped>
