@@ -171,6 +171,7 @@ const getArticles = async () => {
 
         articles.value = res.data.data
         const errorMessages = {
+            "BadGateway": "An error occurred due to a gateway issue.",
             "Request timed out": "The request has timed out.",
             "InternalServerError": "An error occurred on the server.",
             "An error occurred while sending the request": "An error occurred while sending the request.",
