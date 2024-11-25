@@ -5,7 +5,7 @@ import MultiSelect from 'primevue/multiselect';
 import Paginator from 'primevue/paginator';
 import axios from 'axios';
 import { router } from '@inertiajs/vue3';
-import { reactive, ref, watch } from 'vue'
+import { onMounted, reactive, ref, watch } from 'vue'
 import queryString from 'query-string';
 import InputQuantity from '@/Components/InputQuantity.vue';
 
@@ -90,6 +90,7 @@ const getProducts = async () => {
     res.data.data.forEach((e) => {
         let temp = props.modelValue.items.find(x => x.product_code == e.code)
         e.quantity = temp ? temp.quantity : 0
+        e.contract_length = 12
     });
     products.value = res.data.data
 }
@@ -114,6 +115,7 @@ const getProductsShopBlocks = async () => {
     productsHardware.value.forEach(e => {
         let temp = props.modelValue.items.find(x => x.product_code == e.code)
         e.quantity = temp ? temp.quantity : 0
+        e.contract_length = 1
     });
 
     meta.first = (meta.page - 1) * meta.limit
@@ -185,6 +187,7 @@ const saveQuote = async () => {
             product_code: x.code,
             product_id: x.id,
             quantity: x.quantity,
+            contract_length: x.contract_length,
             name: x.name,
             raw_price: x.price ? x.price.net : 0,
             price: x.price ? x.price.net_spa : 0,
@@ -215,8 +218,10 @@ const checkPlansHardwareQuantity = () => {
     return plansQty - hardwareQty
 }
 
-getProductsShopBlocks()
-getProducts()
+onMounted(async () => {
+    await getProducts()
+    await getProductsShopBlocks()
+})
 
 watch([filters, sort], () => {
     getProductsShopBlocks()
@@ -225,12 +230,6 @@ watch([filters, sort], () => {
 watch(search, _.debounce(() => {
     getProductsShopBlocks()
 }, 300))
-
-
-const items = ref([
-    { label: 'Home', url: '/' },
-    { label: 'Create a quote' },
-]);
 
 
 </script>

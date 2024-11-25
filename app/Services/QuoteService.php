@@ -2,7 +2,9 @@
 
 namespace App\Services;
 
+use App\Models\PricePlan;
 use App\Models\Quote;
+use App\Models\QuoteDiscount;
 use App\Models\QuoteItem;
 use Illuminate\Support\Facades\DB;
 
@@ -46,7 +48,8 @@ class QuoteService
                         $this->quoteItemService->update($temp, [...$quote_item, 'quote_id' =>  $quote->id]);
 
                         $olderItems = $olderItems->reject(function ($temp) use ($quote_item) {
-                            return $temp->id === $quote_item['id'];
+                            $id = array_key_exists('parent_id', $quote_item) && $quote_item['parent_id'] ? $quote_item['parent_id'] : $quote_item['id'];
+                            return $temp->id === $id;
                         });
                     } else {
                         $this->quoteItemService->store([...$quote_item, 'quote_id' =>  $quote->id]);
@@ -58,6 +61,26 @@ class QuoteService
             }
 
             $quote->update(['status' => get_quote_status($quote->refresh())]);
+
+            if (array_key_exists('discounts', $array)) {
+                $discounts = $array['discounts'];
+                if (array_key_exists('pricePlans', $discounts)) {
+                    foreach ($discounts['pricePlans'] as $key => $discount) {
+                        $pricePlan = PricePlan::where('code', $key)->first();
+
+                        if (!$pricePlan) {
+                            continue;
+                        }
+
+                        $quote->discounts()->updateOrCreate([
+                            "discountable_type" => PricePlan::class,
+                            "discountable_id" => $pricePlan->id,
+                        ], [
+                            "discount" =>  $discount
+                        ]);
+                    }
+                }
+            }
 
             foreach ($quote->items as $quote_item) {
                 $quote_item->computeTotals();

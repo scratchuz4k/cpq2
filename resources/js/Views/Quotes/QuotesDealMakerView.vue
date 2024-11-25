@@ -3,32 +3,59 @@ import { Link, router } from '@inertiajs/vue3';
 import { ref, reactive } from 'vue'
 
 const props = defineProps({
-    modelValue: Object
+    modelValue: Object,
+    pricePlans: Array
+})
+const isLoading = ref(false)
+
+const getLeafNodesWithChildren = (objects) => {
+    let leaves = [];
+    const findLeaves = (items) => {
+        for (const item of items) {
+            if (item.children && item.children.length > 0) {
+                findLeaves(item.children);
+            } else {
+                leaves.push(item);
+            }
+        }
+    }
+
+    findLeaves(objects);
+    return leaves;
+}
+
+const quote = reactive(props.modelValue)
+Object.assign(quote.items, getLeafNodesWithChildren(quote.items))
+
+const discounts = reactive({
+    pricePlans: {}
 })
 
-const isLoading = ref(false)
-const quote = reactive(props.modelValue)
+props.pricePlans.forEach((e) => {
+    let discount = props.modelValue.discounts.find(x => x.entity?.code == e.code)
+    discounts.pricePlans[e.code] = discount ? discount.discount : 0
+})
+
 const recurringNewLine = reactive({
     name: null,
-    margin: 0,
+    contract_length: 1,
     discount: 0,
     quantity: 0,
     price: 0,
-    price_plan_code: 'monthly'
+    price_plan_code: 'MONTHLY'
 })
 
 const oneOffNewLine = reactive({
     name: null,
-    margin: 0,
     discount: 0,
     quantity: 0,
     price: 0,
-    price_plan_code: 'single'
+    price_plan_code: 'SINGLE'
 })
 
 
 const temp = reactive({
-    margin: 0,
+    contract_length: 1,
     discount: 0,
     quantity: 0
 })
@@ -49,28 +76,36 @@ const getHardwareProducts = () => {
         hardwareProducts.value.push(element)
     });
 }
-const remove = async (id) => {
-    swal.fire({
-        title: 'Are you sure?'
-    }).then(async (result) => {
-        if (['cancel', 'backdrop'].includes(result.dismiss)) {
-            return
-        }
+const remove = async (p) => {
+    let id = p.id
+    let result = null
+    if (p.parent_id) {
+        result = await swal.fire({
+            title: 'Are you sure?',
+            text: 'This line contains other associated lines, removing it dees all associated lines'
+        })
+        id = p.parent_id
+    } else {
+        result = await swal.fire({
+            title: 'Are you sure?'
+        })
+    }
 
-        try {
-            await axios.delete(`/api/quote-items/${id}`)
-            router.get(`/quotes/${quote.id}`)
-        } catch (ex) {
-            notyf.error(ex.response.data.message)
-        }
-
-    })
+    if (['cancel', 'backdrop'].includes(result.dismiss)) {
+        return
+    }
+    try {
+        await axios.delete(`/api/quote-items/${id}`)
+        router.get(`/quotes/${quote.id}`)
+    } catch (ex) {
+        notyf.error(ex.response.data.message)
+    }
 }
 
 const edit = (p) => {
     temp.quantity = p.quantity
     temp.discount = p.discount
-    temp.margin = p.margin
+    temp.contract_length = p.contract_length
     quote.items.forEach((e) => e.is_editing = false)
     p.is_editing = !p.is_editing
 
@@ -78,20 +113,20 @@ const edit = (p) => {
 const save = async (p) => {
     p.quantity = temp.quantity
     p.discount = temp.discount
-    p.margin = temp.margin
+    p.contract_length = temp.contract_length
     try {
         let res = await axios.put(`/api/quotes/${quote.id}`,
             {
                 items: quote.items,
             })
         Object.assign(quote, res.data)
+        Object.assign(quote.items, getLeafNodesWithChildren(quote.items))
         p.is_editing = !p.is_editing
     } catch (ex) {
         notyf.error(ex.response.data.message)
     }
 }
-
-const saveQuote = async (p) => {
+const saveQuote = async () => {
     isLoading.value = true
     if (quote.discount === '') {
         isLoading.value = false
@@ -100,9 +135,10 @@ const saveQuote = async (p) => {
     try {
         let res = await axios.put(`/api/quotes/${quote.id}`,
             {
-                discount: quote.discount,
+                discounts: discounts,
             })
         Object.assign(quote, res.data)
+        Object.assign(quote.items, getLeafNodesWithChildren(quote.items))
         isLoading.value = false
     } catch (ex) {
         isLoading.value = false
@@ -121,7 +157,7 @@ const resetQuote = async () => {
         return
     }
 
-    quote.items.forEach((e) => { e.discount = 0; e.margin = 0; })
+    quote.items.forEach((e) => { e.discount = 0; })
     try {
         let res = await axios.put(`/api/quotes/${quote.id}`,
             {
@@ -146,11 +182,11 @@ const saveNewLine = async (item) => {
                 items: [...quote.items, item],
             })
         Object.assign(quote, res.data)
+        Object.assign(quote.items, getLeafNodesWithChildren(quote.items))
         item.show = false
         Object.assign(item, {
             name: null,
             margin: 0,
-            discount: 0,
             quantity: 0,
             price: 0,
         })
@@ -181,58 +217,69 @@ const items = ref([
                     <div
                         class="mobile-price-group-heading border-bottom mb-3 d-flex justify-content-between align-items-center">
                         <h3>Recurring charges</h3>
-                        <h3 id="recurring_total">{{ GBP.format(quoteTotal('monthly')) }}</h3>
+                        <h3 id="recurring_total">{{ GBP.format(quoteTotal('MONTHLY')) }}</h3>
                     </div>
                     <table id="table-recurring" class="table">
                         <thead>
                             <tr>
-                                <th style="width:40%">Product</th>
-                                <th class="text-center" style="width:10%"> Qty </th>
-                                <th class="text-right" style="width:10%"> Your Price</th>
-                                <th class="text-center" style="width:10%"> Discount</th>
-                                <th class="text-center" style="width:10%"> Margin</th>
-                                <th class="text-right" style="width:10%"> Sell Price</th>
-                                <th class="text-right" style="width:10%">
-                                    <div class="d-flex justify-content-center">
-                                        <font-awesome-icon id="btn-recurring-add" :icon="['fas', 'plus']" role="button"
-                                            class="py-2 w-100" @click="() => recurringNewLine.show = true" />
+                                <th style="width:30%">Product</th>
+                                <th class="text-center" style="width:10%">
+                                    <div style="overflow: hidden;white-space: nowrap; text-overflow:ellipsis;">
+                                        Contract Len.
                                     </div>
                                 </th>
+                                <th class="text-center" style="width:10%"> Qty </th>
+                                <th class="text-right" style="width:10%"> Your Price</th>
+                                <th class="text-center" style="width:10%"> Margin</th>
+                                <th class="text-center" style="width:10%"> Discount</th>
+                                <th class="text-right" style="width:10%"> Sell Price</th>
+                                <th class="text-right" style="width:10%"></th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="(p, i) in quote.items.filter((x) => x.price_plan && x.price_plan.code == 'monthly')"
+                            <tr v-for="(p, i) in quote.items.filter((x) => x.price_plan && x.price_plan.code == 'MONTHLY')"
                                 class="recurring-item bg-light-grey">
                                 <td>
                                     {{ p.name }}
+                                </td>
+                                <td class="text-center">
+                                    <span v-if="quote.solution_type.code == 3"
+                                        :id="'recurring-' + i + '-contract_length'">
+                                        {{ p.contract_length }}
+                                    </span>
+                                    <template v-else>
+                                        <input :id="'input-recurring-' + i + '-contract_length'" v-if="p.is_editing"
+                                            class="form-control text-center p-0 px-1" type="number" min="0" max="100"
+                                            v-model="temp.contract_length">
+                                        <span v-else :id="'recurring-' + i + '-contract_length'">
+                                            {{ p.contract_length }}
+                                        </span>
+                                    </template>
                                 </td>
                                 <td class="text-center">
                                     <span v-if="!p.is_editing" :id="'recurring-' + i + '-quantity'">
                                         x{{ p.quantity }}
                                     </span>
                                     <input :id="'input-recurring-' + i + '-quantity'" v-else
-                                        class="form-control text-center py-1" type="number" min="0" max="100"
+                                        class="form-control text-center p-0 px-1" type="number" min="0" max="100"
                                         v-model="temp.quantity">
                                 </td>
-                                <td class="text-right"> {{ GBP.format(p.original_price) }}</td>
+                                <td class="text-right"> {{ GBP.format(p.price) }}</td>
+                                <td class="text-center">
+                                    <span :id="'recurring-' + i + '-margin'">
+                                        {{ GBP.format(p.margin) }}
+                                    </span>
+                                </td>
                                 <td class="text-center">
                                     <span v-if="!p.is_editing" :id="'recurring-' + i + '-discount'">
                                         {{ p.discount }} %
                                     </span>
                                     <input :id="'input-recurring-' + i + '-discount'" v-else
-                                        class="form-control text-center py-1" type="number" min="0" max="100"
+                                        class="form-control text-center p-0 px-1" type="number" min="0" max="100"
                                         v-model="temp.discount">
                                 </td>
-                                <td class="text-center">
-                                    <span v-if="!p.is_editing" :id="'recurring-' + i + '-margin'">
-                                        {{ p.margin }} %
-                                    </span>
-                                    <input :id="'input-recurring-' + i + '-margin'" v-else
-                                        class="form-control text-center py-1" type="number" min="0" max="100"
-                                        v-model="temp.margin">
-                                </td>
                                 <td class="text-right fw-bold">
-                                    {{ GBP.format(p.price) }}
+                                    {{ GBP.format(p.total) }}
                                 </td>
                                 <td class="text-right">
                                     <div class="d-flex justify-content-center">
@@ -242,7 +289,7 @@ const items = ref([
                                                 @click="edit(p)" />
                                             <font-awesome-icon :id="'btn-recurring-' + i + '-remove'" role="button"
                                                 class="px-2 py-3 text-secondary" :icon="['fas', 'trash']"
-                                                @click="remove(p.id)" />
+                                                @click="remove(p)" />
                                         </template>
                                         <template v-else>
                                             <font-awesome-icon :id="'btn-recurring-' + i + '-cancel'" role="button"
@@ -256,28 +303,31 @@ const items = ref([
                                 </td>
                             </tr>
                         </tbody>
-                        <tfoot v-if="recurringNewLine.show">
-                            <tr>
+                        <tfoot>
+                            <tr v-if="recurringNewLine.show">
                                 <th>
-                                    <input :id="'input-new-recurring-name'" class="form-control py-1" type="text"
+                                    <input :id="'input-new-recurring-name'" class="form-control p-0 px-1" type="text"
                                         v-model="recurringNewLine.name">
                                 </th>
                                 <th class="text-center">
-                                    <input :id="'input-new-recurring-qty'" class="form-control text-center py-1"
+                                    <input :id="'input-new-recurring-qty'" class="form-control text-center p-0 px-1"
                                         type="number" v-model="recurringNewLine.quantity">
                                 </th>
                                 <th>
                                     <input :id="'input-new-recurring-price_monthly'"
-                                        class="form-control text-center py-1" type="number"
+                                        class="form-control text-center p-0 px-1" type="number"
                                         v-model="recurringNewLine.price">
                                 </th>
+                                <th></th>
                                 <th class="text-center">
-                                    <input :id="'input-new-recurring-discount'" class="form-control text-center py-1"
-                                        type="number" v-model="recurringNewLine.discount">
+                                    <input :id="'input-new-recurring-contract_length'"
+                                        class="form-control text-center p-0 px-1" type="number"
+                                        v-model="recurringNewLine.contract_length">
                                 </th>
                                 <th class="text-center">
-                                    <input :id="'input-new-recurring-margin'" class="form-control text-center py-1"
-                                        type="number" v-model="recurringNewLine.margin">
+                                    <input :id="'input-new-recurring-discount'"
+                                        class="form-control text-center p-0 px-1" type="number"
+                                        v-model="recurringNewLine.discount">
                                 </th>
                                 <th class="text-right"> </th>
                                 <th class="text-right">
@@ -291,6 +341,18 @@ const items = ref([
                                     </div>
                                 </th>
                             </tr>
+                            <tr v-else>
+                                <th colspan="10">
+                                    <div class="d-flex justify-content-center align-items-end">
+                                        <p role="button" id="btn-recurring-add"
+                                            class="d-flex justify-content-center align-items-center px-2 py-1"
+                                            style="font-size: 10px;" @click="() => recurringNewLine.show = true">
+                                            <span>Add New Recurring Line</span>
+                                            <font-awesome-icon class="ms-2" :icon="['fas', 'plus']" />
+                                        </p>
+                                    </div>
+                                </th>
+                            </tr>
                         </tfoot>
 
                     </table>
@@ -299,7 +361,7 @@ const items = ref([
                     <div
                         class="mobile-price-group-heading border-bottom mb-3 d-flex justify-content-between align-items-center">
                         <h3>One off charges</h3>
-                        <h3 id="one_off_total">{{ GBP.format(quoteTotal('single')) }}</h3>
+                        <h3 id="one_off_total">{{ GBP.format(quoteTotal('SINGLE')) }}</h3>
                     </div>
                     <table id="table-one_off" class="table">
                         <thead>
@@ -307,19 +369,16 @@ const items = ref([
                                 <th style="width:40%">Product</th>
                                 <th class="text-center" style="width:10%"> Qty </th>
                                 <th class="text-right" style="width:10%"> Your Price</th>
-                                <th class="text-center" style="width:10%"> Discount</th>
                                 <th class="text-center" style="width:10%"> Margin</th>
+                                <th class="text-center" style="width:10%"> Discount</th>
                                 <th class="text-right" style="width:10%"> Sell Price</th>
                                 <th class="text-right" style="width:10%">
-                                    <div class="d-flex justify-content-center">
-                                        <font-awesome-icon id="btn-one_off-add" :icon="['fas', 'plus']" role="button"
-                                            class="py-2 w-100" @click="() => oneOffNewLine.show = true" />
-                                    </div>
+
                                 </th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="(p, i) in quote.items.filter((x) => !x.price_plan || x.price_plan?.code == 'single')"
+                            <tr v-for="(p, i) in quote.items.filter((x) => !x.price_plan || x.price_plan?.code == 'SINGLE')"
                                 class="one_off-item bg-light-grey">
                                 <td>{{ p.name }}</td>
                                 <td class="text-center">
@@ -327,25 +386,22 @@ const items = ref([
                                         x{{ p.quantity }}
                                     </span>
                                     <input :id="'input-one_off-' + i + '-quantity'" v-else
-                                        class="form-control text-center py-1" type="number" min="0" max="100"
+                                        class="form-control text-center p-0 px-1" type="number" min="0" max="100"
                                         v-model="temp.quantity">
                                 </td>
                                 <td class="text-right"> {{ GBP.format(p.original_price) }}</td>
+                                <td class="text-center">
+                                    <span :id="'one_off-' + i + '-margin'">
+                                        {{ GBP.format(p.margin) }}
+                                    </span>
+                                </td>
                                 <td class="text-center">
                                     <span v-if="!p.is_editing" :id="'one_off-' + i + '-discount'">
                                         {{ p.discount }} %
                                     </span>
                                     <input v-else :id="'input-one_off-' + i + '-discount'"
-                                        class="form-control text-center py-1" type="number" min="0" max="100"
+                                        class="form-control text-center p-0 px-1" type="number" min="0" max="100"
                                         v-model="temp.discount">
-                                </td>
-                                <td class="text-center">
-                                    <span v-if="!p.is_editing" :id="'one_off-' + i + '-margin'">
-                                        {{ p.margin }} %
-                                    </span>
-                                    <input v-else :id="'input-one_off-' + i + '-margin'"
-                                        class="form-control text-center py-1" type="number" min="0" max="100"
-                                        v-model="temp.margin">
                                 </td>
                                 <td class="text-right fw-bold">
                                     <span :id="'input-one_off-' + i + '-price'">
@@ -360,7 +416,7 @@ const items = ref([
                                                 @click="edit(p)" />
                                             <font-awesome-icon :id="'btn-one_off-' + i + '-remove'" role="button"
                                                 class="px-2 py-3 text-secondary" :icon="['fas', 'trash']"
-                                                @click="remove(p.id)" />
+                                                @click="remove(p)" />
                                         </template>
                                         <template v-else>
                                             <font-awesome-icon :id="'btn-one_off-' + i + '-cancel'" role="button"
@@ -374,27 +430,24 @@ const items = ref([
                                 </td>
                             </tr>
                         </tbody>
-                        <tfoot v-if="oneOffNewLine.show">
-                            <tr>
+                        <tfoot>
+                            <tr v-if="oneOffNewLine.show">
                                 <th>
-                                    <input :id="'input-new-one_off-name'" class="form-control py-1" type="text"
+                                    <input :id="'input-new-one_off-name'" class="form-control p-0 px-1" type="text"
                                         v-model="oneOffNewLine.name">
                                 </th>
                                 <th class="text-center">
-                                    <input :id="'input-new-one_off-qty'" class="form-control text-center py-1"
+                                    <input :id="'input-new-one_off-qty'" class="form-control text-center p-0 px-1"
                                         type="number" v-model="oneOffNewLine.quantity">
                                 </th>
                                 <th>
-                                    <input :id="'input-new-one_off-price'" class="form-control text-center py-1"
+                                    <input :id="'input-new-one_off-price'" class="form-control text-center p-0 px-1"
                                         type="number" v-model="oneOffNewLine.price">
                                 </th>
+                                <th class="text-center"></th>
                                 <th class="text-center">
-                                    <input :id="'input-new-one_off-discount'" class="form-control text-center py-1"
+                                    <input :id="'input-new-one_off-discount'" class="form-control text-center p-0 px-1"
                                         type="number" v-model="oneOffNewLine.discount">
-                                </th>
-                                <th class="text-center">
-                                    <input :id="'input-new-one_off-margin'" class="form-control text-center py-1"
-                                        type="number" v-model="oneOffNewLine.margin">
                                 </th>
                                 <th class="text-right"> </th>
                                 <th class="text-right">
@@ -408,6 +461,18 @@ const items = ref([
                                     </div>
                                 </th>
                             </tr>
+                            <tr v-else>
+                                <th colspan="10">
+                                    <div class="d-flex justify-content-center align-items-end">
+                                        <p role="button" id="btn-one_off-add"
+                                            class="d-flex justify-content-center align-items-center px-2 py-1"
+                                            style="font-size: 10px;" @click="() => oneOffNewLine.show = true">
+                                            <span>Add New One off Line</span>
+                                            <font-awesome-icon class="ms-2" :icon="['fas', 'plus']" />
+                                        </p>
+                                    </div>
+                                </th>
+                            </tr>
                         </tfoot>
                     </table>
                 </div>
@@ -416,17 +481,22 @@ const items = ref([
                     <div>
                         <p class="payment-info border-bottom pb-3 mb-3 big bold">
                             <span class="text-primary">1 payment </span> of
-                            {{ GBP.format(quoteTotal('single')) }}<br>
+                            {{ GBP.format(quoteTotal('SINGLE')) }}<br>
                             followed by
-                            <span class="text-primary"> {{ quote.contract_length }} monthly payments</span> of
-                            {{ GBP.format(quoteTotal('monthly')) }}
+                            <span class="text-primary"> monthly payments</span> of
+                            {{ GBP.format(quoteTotal('MONTHLY')) }}
                         </p>
                     </div>
                     <div class="d-flex justify-content-between">
-                        <a class="btn text-primary" :href="route('quotes.edit', { quote: quote.id }) + '?step=3'">
+                        <a class="btn text-primary" :href="route('quotes.edit', { quote: quote.id }) + '?step=2'">
                             <font-awesome-icon class="me-2" :icon="['fas', 'arrow-left']"></font-awesome-icon>
                             Previous</a>
                         <div>
+                            <a class="btn btn-outline-primary me-2"
+                                :href="route('quotes.preview', { quote: quote.id })">
+                                <font-awesome-icon :icon="['far', 'file-pdf']"></font-awesome-icon>
+                                Preview
+                            </a>
                             <button class="btn btn-primary">
                                 <font-awesome-icon class="me-2" :icon="['fas', 'envelope']">
                                 </font-awesome-icon> Email this quote
@@ -446,11 +516,17 @@ const items = ref([
                         </div>
                     </InfoBox>
                     <div class="price-mobile-sidebar px-4 pt-4 pb-2 mb-3">
-                        <h3 class="mb-3">Overall Informations</h3>
-                        <div class="mb-3">
-                            <label class="form-label">Quote Discount</label>
-                            <input id="input-global-discount" type="number" class="form-control"
-                                v-model="quote.discount">
+                        <h3 class="mb-3">Total Quote Discount</h3>
+                        <div v-for="pricePlan in props.pricePlans"
+                            class="d-flex justify-content-between align-items-center mb-3">
+                            <label class="form-label m-0">{{ pricePlan.name }}</label>
+
+                            <div class="input-group p-0 w-50">
+                                <input :id="`input-global-${pricePlan.code}-discount`" type="number"
+                                    class="form-control" v-model="discounts.pricePlans[pricePlan.code]">
+                                <span class="input-group-text">%</span>
+                            </div>
+
                         </div>
                         <button id="btn-apply-global-discount" class="btn btn-secondary w-100 mb-2" @click="saveQuote()"
                             :disabled="isLoading">
@@ -529,5 +605,10 @@ input[type="number"] {
 
 [role=button]:hover {
     opacity: 0.75
+}
+
+.form-control {
+    font-size: 0.9rem;
+    line-height: 1.5rem;
 }
 </style>

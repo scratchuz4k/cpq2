@@ -20,7 +20,7 @@ class CloudMarketRepository
                     continue;
                 }
 
-                $file['data'][$index][$key] =  $priceRules->apply($product[$key]);
+                $file['data'][$index][$key . '_spa'] =  $priceRules->apply($product[$key]);
             }
 
             $file['data'][$index]['active_spas']  = $priceRules->getAppliedSpas();

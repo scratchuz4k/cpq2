@@ -9,7 +9,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 
 class Quote extends Model
 {
@@ -33,7 +32,6 @@ class Quote extends Model
         "commission_value",
         "commission_rate",
         "margin",
-        "discount",
         "status",
         "user_id"
     ];
@@ -44,18 +42,14 @@ class Quote extends Model
             "address_data" => "object",
         ];
     }
-
-
     protected static function booted(): void
     {
         static::addGlobalScope(new TenantScope);
     }
-
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
-
     public function solutionType(): BelongsTo
     {
         return $this->belongsTo(SolutionType::class);
@@ -64,33 +58,35 @@ class Quote extends Model
     {
         return $this->belongsTo(Account::class)->withTrashed();
     }
-
     public function items(): HasMany
     {
-        return $this->hasMany(QuoteItem::class);
+        return $this->hasMany(QuoteItem::class)->whereNull('parent_id');
+    }
+    public function discounts(): HasMany
+    {
+        return $this->hasMany(QuoteDiscount::class);
     }
     public function computeTotals()
     {
         $this->refresh();
-        $original_total = 0;
-
+        $raw_total = 0;
 
         $this->total = 0;
         $this->total_tax = 0;
         $this->total_gross = 0;
 
         foreach ($this->items as $item) {
-            $original_total += ($item->original_price * $item->quantity) * $item->contract_length;
+            $raw_total += ($item->raw_price * $item->quantity) * $item->contract_length;
 
-            $this->total += $item->total;
-            $this->total_tax += $item->total_tax;
-            $this->total_gross += $item->total_gross;
+            $this->total += $item->total * $item->contract_length;
+            $this->total_tax += $item->total_tax * $item->contract_length;
+            $this->total_gross += $item->total_gross * $item->contract_length;
         }
 
-        $total_cost = $original_total;
-        $margin_value = $this->total  - $total_cost;
+        $total_cost = $raw_total;
+        $margin_value = $this->total - $total_cost;
 
-        $this->margin = $total_cost ? ($margin_value / $total_cost) * 100 : 0;
+        $this->margin = $total_cost ? ($margin_value / $total_cost) * 100 : 100;
         $this->commission_value = $margin_value * ($this->commission_rate / 100);
         $this->save();
     }

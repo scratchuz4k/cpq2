@@ -12,17 +12,17 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('quotes', function (Blueprint $table) {
-            $table->double('contract_length')->default(12);
-            $table->double('margin')->default(0);
-            $table->double('discount')->default(0);
-            $table->double('total')->default(0);
-            $table->double('total_tax')->default(0);
-            $table->double('total_gross')->default(0);
-            $table->double('total_monthly')->default(0);
-            $table->double('total_monthly_tax')->default(0);
-            $table->double('total_monthly_gross')->default(0);
-            $table->double('commission_value')->default(0);
-            $table->double('commission_rate')->default(0);
+            $table->decimal('contract_length', 12, 4)->default(12);
+            $table->decimal('margin', 12, 4)->default(0);
+            $table->decimal('discount', 12, 4)->default(0);
+            $table->decimal('total', 12, 4)->default(0);
+            $table->decimal('total_tax', 12, 4)->default(0);
+            $table->decimal('total_gross', 12, 4)->default(0);
+            $table->decimal('total_monthly', 12, 4)->default(0);
+            $table->decimal('total_monthly_tax', 12, 4)->default(0);
+            $table->decimal('total_monthly_gross', 12, 4)->default(0);
+            $table->decimal('commission_value', 12, 4)->default(0);
+            $table->decimal('commission_rate', 12, 4)->default(0);
         });
     }
 
@@ -43,7 +43,7 @@ return new class extends Migration
                 'total_monthly_tax',
                 'total_monthly_gross',
                 'commission_value',
-                'tax_commission',
+                'commission_rate',
             ]);
         });
     }

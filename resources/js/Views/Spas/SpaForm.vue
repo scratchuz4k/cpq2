@@ -23,7 +23,8 @@ const icons = {
             <h5>Choose the first Entity</h5>
             <ul class="d-flex flex-wrap p-0 m-0 mb-3" style="list-style: none;">
                 <li v-for="(rule, index) in rules">
-                    <div :class="{ 'active': modelValue.entity_1 === index }" class="rule d-flex flex-column p-2"
+                    <div :id="'spa-entity-' + index" :class="{ 'active': modelValue.entity_1 === index }"
+                        class="rule d-flex flex-column p-2"
                         @click="() => { modelValue.entity_1 = index; modelValue.entity_1_value = null; modelValue.entity_2 = null; modelValue.entity_2_value = null }">
                         <font-awesome-icon class="p-2 " :icon="icons[index]" size="2x"></font-awesome-icon>
                         <p>{{ index }}</p>
@@ -32,17 +33,20 @@ const icons = {
             </ul>
             <div class="mb-3" v-if="modelValue.entity_1 == 'Account'">
                 <label class="form-label">Select the Account</label>
-                <InputSearch url="/accounts" :fields="['name']" v-model="modelValue.entity_1_value" :is-multiple="false">
+                <InputSearch id="Account1" url="/accounts" :fields="['name']" v-model="modelValue.entity_1_value"
+                    :is-multiple="false">
                 </InputSearch>
             </div>
             <div class="mb-3" v-if="modelValue.entity_1 == 'Supplier'">
                 <label class="form-label">Select the Supplier</label>
-                <InputSearch url="/suppliers" :fields="['name']" v-model="modelValue.entity_1_value" :is-multiple="false">
+                <InputSearch id="Supplier1" url="/suppliers" :fields="['name']" v-model="modelValue.entity_1_value"
+                    :is-multiple="false">
                 </InputSearch>
             </div>
             <div class="mb-3" v-if="modelValue.entity_1 == 'Product'">
                 <label class="form-label">Select the Product</label>
-                <InputSearch url="/products" :fields="['name']" v-model="modelValue.entity_1_value" :is-multiple="false">
+                <InputSearch id="Product1"  url="/products" :fields="['name']" v-model="modelValue.entity_1_value"
+                    :is-multiple="false">
                 </InputSearch>
             </div>
             <h5 class="mt-5">Choose the second Entity (if needed)</h5>
@@ -58,17 +62,20 @@ const icons = {
             <template v-if="modelValue.entity_2">
                 <div class="mb-3" v-if="modelValue.entity_2 == 'Account'">
                     <label class="form-label">Select the Account</label>
-                    <InputSearch url="/accounts" :fields="['name']" v-model="modelValue.entity_2_value" :is-multiple="false">
+                    <InputSearch id="Account2" url="/accounts" :fields="['name']" v-model="modelValue.entity_2_value"
+                        :is-multiple="false">
                     </InputSearch>
                 </div>
                 <div class="mb-3" v-if="modelValue.entity_2 == 'Supplier'">
                     <label class="form-label">Select the Supplier</label>
-                    <InputSearch url="/suppliers" :fields="['name']" v-model="modelValue.entity_2_value" :is-multiple="false">
+                    <InputSearch id="Supplier2" url="/suppliers" :fields="['name']" v-model="modelValue.entity_2_value"
+                        :is-multiple="false">
                     </InputSearch>
                 </div>
                 <div class="mb-3" v-if="modelValue.entity_2 == 'Product'">
                     <label class="form-label">Select the Product</label>
-                    <InputSearch url="/products" :fields="['name']" v-model="modelValue.entity_2_value" :is-multiple="false">
+                    <InputSearch id="Product2" url="/products" :fields="['name']" v-model="modelValue.entity_2_value"
+                        :is-multiple="false">
                     </InputSearch>
                 </div>
             </template>
@@ -83,12 +90,13 @@ const icons = {
             <div class="row g-3">
                 <div class="col">
                     <label class="form-label">Percentage:</label>
-                    <input type="number" class="form-control" v-model="modelValue.percentage" :disabled="check(modelValue.value)"
-                        min="0" max="100">
+                    <input id="spa-percentage" type="number" class="form-control" v-model="modelValue.percentage"
+                        :disabled="check(modelValue.value)" min="0" max="100">
                 </div>
                 <div class="col">
                     <label class="form-label">Value:</label>
-                    <input type="number" class="form-control " v-model="modelValue.value" :disabled="check(modelValue.percentage)">
+                    <input id="spa-value" type="number" class="form-control " v-model="modelValue.value"
+                        :disabled="check(modelValue.percentage)">
                 </div>
             </div>
         </div>
