@@ -100,7 +100,7 @@ beforeEach(function () {
     $this->put('api/quotes/1', ['status' => QuoteStatusesEnum::REGISTRY->name]);
 });
 
-it('Assing Order', function () {
+it('Assign Order', function () {
     $this->actingAs($this->order_manager);
 
     $order = Order::first();
@@ -127,7 +127,7 @@ it('Assert Order and Quote status equals rejected on Order reject', function () 
     $this->assertEquals($updated_order['status'], OrderStatusesEnum::REJECTED->name);
     $this->assertEquals($updated_order['note'], $data['note']);
     
-    $quote = Quote::first();
+    $quote = Quote::find($order->quote_id);
     $this->assertEquals($quote['status'], QuoteStatusesEnum::REJECTED->name);
 });
 
@@ -145,6 +145,6 @@ it('Assert Order and Quote status equals ordered on Order Approval', function ()
     $this->assertEquals($updated_order['user_id'], $this->order_manager->id);
     $this->assertEquals($updated_order['status'], OrderStatusesEnum::ORDERED->name);
     
-    $quote = Quote::first();
+    $quote = Quote::find($order->quote_id);
     $this->assertEquals($quote['status'], QuoteStatusesEnum::ORDERED->name);
 });
