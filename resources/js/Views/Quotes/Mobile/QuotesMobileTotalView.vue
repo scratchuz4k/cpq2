@@ -187,11 +187,6 @@ const items = ref([
         <div class="row justify-content-between">
             <div class="col-lg-8 mb-5 price-summary">
                 <Header title="Build your deal" :breadcrumbs="items"></Header>
-                <div class="d-flex justify-content-between align-content-center">
-                    <h5>An Order related to this Quote was {{ quote.status }}</h5>
-                    <button class="btn btn-primary" @click="showModal = true">See Rejection Notes</button>
-                    {{ showModal}}
-                </div>
                 <div class="mb-5">
                     <div
                         class="mobile-price-group-heading border-bottom mb-3 d-flex justify-content-between align-items-center">
@@ -462,6 +457,14 @@ const items = ref([
                             <br>
                             Contact Number: 0124567890<br>
                             Email: firstname.lastname@gmail.com
+                        </div>
+                    </InfoBox>
+                    <InfoBox v-if="quote.orders.length>0">
+                        <div style="font-size: 14px;">
+                            <div class="mb-3">
+                                <h6>An Order related to this Quote was {{ quote.status }}</h6>
+                                <button class="btn btn-primary" @click="showModal = true">See Rejection Notes</button>
+                            </div>
                         </div>
                     </InfoBox>
                     <div class="price-mobile-sidebar px-4 pt-4 pb-2 mb-3">
