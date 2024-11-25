@@ -9,7 +9,7 @@ const props = defineProps({
     modelValue: Object,
     pricePlans: Array
 })
-const showShare = ref(true)
+const showShare = ref(false)
 const isLoading = ref(false)
 
 const getLeafNodesWithChildren = (objects) => {
