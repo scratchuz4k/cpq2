@@ -1,44 +1,33 @@
 <template>
-    <div :id="'select-' + props.id" style="position: relative">
-        <div class="select-options input form-select p-1" @click="openOption()">
-            <p class="select-option w-100 px-2" v-for="(item, i) in proxyValue">
-                <template v-for="(key, i) in props.fields">
-                    <span v-if="i != 0"> | </span>
-                    <span>{{ item[key] }}</span>
+    <MultiSelect v-model="proxyValue" :options="options" showClear :optionLabel="props.field"
+        placeholder="Select multiple options" class="w-100">
+        <template #value="{ value, placeholder }">
+            <p v-if="value">
+                <template v-for="(item, index) in value">
+                    <span v-if="index != 0">,</span> {{ item ? item[props.field] : placeholder }}
                 </template>
-                <font-awesome-icon icon="fa-close" class="ms-2" @click="removeOption(i)" />
             </p>
-        </div>
-        <div :id="'select-items-' + props.id" class="select-items p-3"
-            :class="{ 'show': showOptions, 'hide': !showOptions }">
-            <input type="text" class="form-control " v-model="searchInput" placeholder="Search" @input="search">
-
-            <div class="mt-2">
-                <template v-if="options && options.length">
-                    <p class="select-item" :class="{ 'text-bold': checkIfExists(item) }"
-                        v-for="( item, key ) in options " :key="key" @click="selectOption(item)">
-                        <template v-for="(key, i) in props.fields">
-                            <span v-if="i != 0"> | </span>
-                            <span>{{ item[key] }}</span>
-                        </template>
-                    </p>
-                </template>
-
-                <template v-else-if="!isLoading">
-                    <p class="select-item">
-                        No Records
-                    </p>
-                </template>
-
-                <template v-else>
-                    <!-- <app-loader></app-loader> -->
-                </template>
-            </div>
-        </div>
-    </div>
+            <template v-else>{{ placeholder }}</template>
+        </template>
+        <template #header>
+            <IconField class="p-1">
+                <InputIcon>
+                    <font-awesome-icon icon="fas fa-search" />
+                </InputIcon>
+                <InputText class="w-100" v-model="searchInput" placeholder="Search" />
+            </IconField>
+        </template>
+    </MultiSelect>
 </template>
 <script setup>
-import { ref, onMounted } from 'vue';
+
+import _ from 'lodash'
+import IconField from 'primevue/iconfield';
+import InputIcon from 'primevue/inputicon';
+import InputText from 'primevue/inputtext';
+import MultiSelect from 'primevue/multiselect';
+
+import { ref, computed, watch } from 'vue';
 import { v4 as uuidv4 } from 'uuid';
 
 const props = defineProps({
@@ -49,24 +38,21 @@ const props = defineProps({
         }
     },
     url: String,
-    fields: Array,
+    field: String,
     modelValue: Object
 })
 
 const emit = defineEmits(["update:modelValue"])
-const showOptions = ref(false)
 const options = ref([])
 const isLoading = ref(false)
 const searchInput = ref(null)
 
-const proxyValue = ref(props.modelValue);
+const proxyValue = computed({
+    get: () => props.modelValue,
+    set: (value) => emit('update:modelValue', value),
+});
 
-
-const openOption = () => {
-    showOptions.value = !showOptions.value
-}
-
-const search = async () => {
+const search = _.debounce(async () => {
     if (!props.url) {
         return
     }
@@ -75,43 +61,11 @@ const search = async () => {
     let res = await axios.get(`/api${props.url}?${string}`)
     isLoading.value = false
     options.value = res.data.data
+}, 500)
 
-}
 
-const selectOption = (item) => {
-    let index = proxyValue.value.findIndex((e) => e.id == item.id)
-    if (index == -1) {
-        proxyValue.value.push(item)
-    } else {
-        proxyValue.value.splice(index, 1)
-    }
-    emit("update:modelValue", proxyValue.value)
-}
-
-const removeOption = (index) => {
-    proxyValue.value.splice(index, 1)
-    emit("update:modelValue", proxyValue.value)
-}
-
-const checkIfExists = (item) => {
-    if (item.id) {
-        return !!proxyValue.value.find(e => e.id == item.id)
-    }
-    return props.fields.length ? !!proxyValue.value.find(e => e[props.fields[0]] == item[props.fields[0]]) : false
-}
-
-onMounted(() => {
-    document.addEventListener('click', function (event) {
-        const parent = document.getElementById('select-' + props.id)
-        const div = document.getElementById('select-items-' + props.id)
-        const targetElement = event.target
-        if (parent && parent.contains(targetElement)) {
-            return
-        }
-        if (div && !div.contains(targetElement)) {
-            showOptions.value = false
-        }
-    })
+watch(searchInput, () => {
+    search()
 })
 search()
 
