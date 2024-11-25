@@ -6,7 +6,7 @@ import { Head, router } from "@inertiajs/vue3";
 
 const props = defineProps({
     suppliers: Object,
-    rules: Array,
+    rules: Object,
     operations: Array,
 })
 

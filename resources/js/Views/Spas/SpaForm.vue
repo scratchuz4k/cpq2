@@ -3,7 +3,7 @@ import InputSearch from "@/Components/InputSelect.vue";
 
 const props = defineProps({
     operations: Array,
-    rules: Array,
+    rules: Object,
     modelValue: Object
 })
 const check = (value) => {
@@ -33,19 +33,19 @@ const icons = {
             </ul>
             <div class="mb-3" v-if="modelValue.entity_1 == 'Account'">
                 <label class="form-label">Select the Account</label>
-                <InputSearch id="Account1" url="/accounts" :fields="['name']" v-model="modelValue.entity_1_value"
+                <InputSearch id="Account1" url="/accounts" field="name" v-model="modelValue.entity_1_value"
                     :is-multiple="false">
                 </InputSearch>
             </div>
             <div class="mb-3" v-if="modelValue.entity_1 == 'Supplier'">
                 <label class="form-label">Select the Supplier</label>
-                <InputSearch id="Supplier1" url="/suppliers" :fields="['name']" v-model="modelValue.entity_1_value"
+                <InputSearch id="Supplier1" url="/suppliers" field="name" v-model="modelValue.entity_1_value"
                     :is-multiple="false">
                 </InputSearch>
             </div>
             <div class="mb-3" v-if="modelValue.entity_1 == 'Product'">
                 <label class="form-label">Select the Product</label>
-                <InputSearch id="Product1"  url="/products" :fields="['name']" v-model="modelValue.entity_1_value"
+                <InputSearch id="Product1" url="/products" field="name" v-model="modelValue.entity_1_value"
                     :is-multiple="false">
                 </InputSearch>
             </div>
@@ -62,19 +62,19 @@ const icons = {
             <template v-if="modelValue.entity_2">
                 <div class="mb-3" v-if="modelValue.entity_2 == 'Account'">
                     <label class="form-label">Select the Account</label>
-                    <InputSearch id="Account2" url="/accounts" :fields="['name']" v-model="modelValue.entity_2_value"
+                    <InputSearch id="Account2" url="/accounts" field="name" v-model="modelValue.entity_2_value"
                         :is-multiple="false">
                     </InputSearch>
                 </div>
                 <div class="mb-3" v-if="modelValue.entity_2 == 'Supplier'">
                     <label class="form-label">Select the Supplier</label>
-                    <InputSearch id="Supplier2" url="/suppliers" :fields="['name']" v-model="modelValue.entity_2_value"
+                    <InputSearch id="Supplier2" url="/suppliers" field="name" v-model="modelValue.entity_2_value"
                         :is-multiple="false">
                     </InputSearch>
                 </div>
                 <div class="mb-3" v-if="modelValue.entity_2 == 'Product'">
                     <label class="form-label">Select the Product</label>
-                    <InputSearch id="Product2" url="/products" :fields="['name']" v-model="modelValue.entity_2_value"
+                    <InputSearch id="Product2" url="/products" field="name" v-model="modelValue.entity_2_value"
                         :is-multiple="false">
                     </InputSearch>
                 </div>
