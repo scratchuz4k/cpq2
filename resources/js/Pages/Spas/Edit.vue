@@ -40,6 +40,7 @@ const spa = reactive({
 const saveSpa = () => {
     let rule = props.rules.find(x => x.code == spa.entity_1 + '' + (spa.entity_2 ?? ''))
 
+
     let item = {
         rule_id: rule.id,
         field_1: spa.entity_1_value?.id,
