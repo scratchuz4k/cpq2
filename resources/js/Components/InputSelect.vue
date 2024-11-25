@@ -52,7 +52,7 @@ const search = _.debounce(async () => {
     }
     let string = searchInput.value ? `search=${searchInput.value}` : ''
     isLoading.value = true
-    let res = await axios.get(`/api${props.url}?${string}&limit=2`)
+    let res = await axios.get(`/api${props.url}?${string}`)
     isLoading.value = false
     options.value = res.data.data
 
