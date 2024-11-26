@@ -14,82 +14,76 @@ class QuoteService
     public function __construct(protected QuoteItemService $quoteItemService) {}
     public function store(array $array): Quote
     {
-        return DB::transaction(function () use ($array) {
-            $quote = Quote::create($array);
+        $quote = Quote::create($array);
 
-            if (array_key_exists('items', $array)) {
-                foreach ($array['items'] as $quote_item) {
-                    $quote_item['quote_id'] = $quote->id;
-                    $this->quoteItemService->store($quote_item);
-                }
+        if (array_key_exists('items', $array)) {
+            foreach ($array['items'] as $quote_item) {
+                $quote_item['quote_id'] = $quote->id;
+                $this->quoteItemService->store($quote_item);
             }
+        }
 
-            $quote->update(['status' => get_quote_status($quote->refresh())]);
+        $quote->update(['status' => get_quote_status($quote->refresh())]);
 
-            foreach ($quote->itemsNoTree  as $quote_item) {
-                $quote_item->computeTotals();
-            }
-            $quote->computeTotals();
+        foreach ($quote->itemsNoTree  as $quote_item) {
+            $quote_item->computeTotals();
+        }
+        $quote->computeTotals();
 
-            return $quote->refresh();
-        }, 3);
+        return $quote->refresh();
     }
 
     public function update(Quote $quote, array $array): Quote
     {
-        return DB::transaction(function () use ($quote, $array) {
+        $quote->update($array);
+        if (array_key_exists('items', $array)) {
+            //TODO: CHANGE THE WAY QUOTES INTERACT WITH QUOTES ITEMS, to many logic in multiple places
+            $olderItems = collect($quote->items);
+            foreach ($array['items'] as $quote_item) {
+                if (array_key_exists('id', $quote_item) && !is_null($quote_item['id'])) {
+                    $temp = QuoteItem::find($quote_item['id']);
+                    $this->quoteItemService->update($temp, [...$quote_item, 'quote_id' =>  $quote->id]);
 
-            $quote->update($array);
-            if (array_key_exists('items', $array)) {
+                    $olderItems = $olderItems->reject(function ($temp) use ($quote_item) {
+                        $id = array_key_exists('parent_id', $quote_item) && $quote_item['parent_id'] ? $quote_item['parent_id'] : $quote_item['id'];
+                        return $temp->id === $id;
+                    });
+                } else {
+                    $this->quoteItemService->store([...$quote_item, 'quote_id' =>  $quote->id]);
+                }
+            }
+            foreach ($olderItems as $temp) {
+                $temp->delete();
+            }
+        }
 
-                //TODO: CHANGE THE WAY QUOTES INTERACT WITH QUOTES ITEMS, to many logic in multiple places
-                $olderItems = collect($quote->items);
-                foreach ($array['items'] as $quote_item) {
-                    if (array_key_exists('id', $quote_item) && !is_null($quote_item['id'])) {
-                        $temp = QuoteItem::find($quote_item['id']);
-                        $this->quoteItemService->update($temp, [...$quote_item, 'quote_id' =>  $quote->id]);
+        $quote->update(['status' => get_quote_status($quote->refresh())]);
 
-                        $olderItems = $olderItems->reject(function ($temp) use ($quote_item) {
-                            $id = array_key_exists('parent_id', $quote_item) && $quote_item['parent_id'] ? $quote_item['parent_id'] : $quote_item['id'];
-                            return $temp->id === $id;
-                        });
-                    } else {
-                        $this->quoteItemService->store([...$quote_item, 'quote_id' =>  $quote->id]);
+        if (array_key_exists('discounts', $array)) {
+            $discounts = $array['discounts'];
+            if (array_key_exists('pricePlans', $discounts)) {
+                foreach ($discounts['pricePlans'] as $key => $discount) {
+                    $pricePlan = PricePlan::where('code', $key)->first();
+
+                    if (!$pricePlan) {
+                        continue;
                     }
-                }
-                foreach ($olderItems as $temp) {
-                    $temp->delete();
-                }
-            }
 
-            $quote->update(['status' => get_quote_status($quote->refresh())]);
-
-            if (array_key_exists('discounts', $array)) {
-                $discounts = $array['discounts'];
-                if (array_key_exists('pricePlans', $discounts)) {
-                    foreach ($discounts['pricePlans'] as $key => $discount) {
-                        $pricePlan = PricePlan::where('code', $key)->first();
-
-                        if (!$pricePlan) {
-                            continue;
-                        }
-
-                        $quote->discounts()->updateOrCreate([
-                            "discountable_type" => PricePlan::class,
-                            "discountable_id" => $pricePlan->id,
-                        ], [
-                            "discount" =>  $discount
-                        ]);
-                    }
+                    $quote->discounts()->updateOrCreate([
+                        "discountable_type" => PricePlan::class,
+                        "discountable_id" => $pricePlan->id,
+                    ], [
+                        "discount" =>  $discount
+                    ]);
                 }
             }
+        }
 
-            foreach ($quote->itemsNoTree as $quote_item) {
-                $quote_item->computeTotals();
-            }
-            $quote->computeTotals();
+        foreach ($quote->itemsNoTree as $quote_item) {
+            $quote_item->computeTotals();
+        }
+        $quote->computeTotals();
 
-            return $quote->refresh();
-        }, 3);
+        return $quote->refresh();
     }
 }
