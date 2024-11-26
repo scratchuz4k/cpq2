@@ -26,7 +26,7 @@ class SharedLinkController extends Controller
         // Check if a password is required
         if ($sharedLink->password) {
             if (!$request->has("password") || !$sharedLink->verifyPassword($request->input("password"))) {
-                return response()->json(["error" => "Invalid or missing password."], 403);
+                abort(403, "Invalid or missing password.");
             }
         }
 
@@ -42,7 +42,7 @@ class SharedLinkController extends Controller
     {
         switch ($component) {
             case 'Quotes':
-                return new QuoteResource($item);
+                return new QuoteResource($item->load(['items']));
             default:
                 return $item;
         }

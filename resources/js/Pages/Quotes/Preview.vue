@@ -31,6 +31,6 @@ const items = ref([
                 </a>
             </div>
         </div>
-        <QuotePreview v-model="quote"></QuotePreview>
+        <QuotePreview v-model="props.quote"></QuotePreview>
     </AuthenticatedLayout>
 </template>
