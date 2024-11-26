@@ -29,6 +29,9 @@ const showDate = (days = 0) => {
     const currentDate = dateObj.getDate() + "/" + (dateObj.getMonth() + 1) + "/" + dateObj.getFullYear();
     return currentDate;
 }
+const quoteTotal = (key) => {
+    return quote.items.filter((x) => x.price_plan && x.price_plan.code == key).reduce((acc, item) => acc += item.total, 0)
+}
 </script>
 <template>
     <div class="panel">
@@ -130,7 +133,7 @@ const showDate = (days = 0) => {
                                                 {{ item.price_plan?.name }}
                                             </td>
                                             <td class="text-center">
-                                                {{ item.contract_length  }}
+                                                {{ item.contract_length }}
                                             </td>
                                             <td class="text-center">
                                                 {{ item.quantity }}
@@ -143,51 +146,28 @@ const showDate = (days = 0) => {
                                             </td>
                                         </tr>
                                     </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th></th>
+                                            <th class="text-center"></th>
+                                            <th class="text-center"></th>
+                                            <th class="text-end">Total:</th>
+                                            <th class="text-end">{{ GBP.format(quote.total) }}</th>
+                                        </tr>
+                                    </tfoot>
                                 </table>
-                                <div class="text-right">
-                                    <div class="row">
-                                        <div class="col"></div>
-                                        <div class="col">
-                                            <table class="table">
-                                                <thead>
-                                                    <tr>
-                                                        <th></th>
-                                                        <th>NET</th>
-                                                        <th>VAT (20%)</th>
-                                                        <th>GROSS</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    <tr>
-                                                        <th>Total Monthly</th>
-                                                        <td id="total_monthly_net" class="text-end">
-                                                            {{ GBP.format(quote.total_monthly) }}
-                                                        </td>
-                                                        <td id="total_monthly_vat" class="text-end">
-                                                            {{ GBP.format(quote.total_monthly_vat) }}
-                                                        </td>
-                                                        <td id="total_monthly_gross" class="text-end">
-                                                            {{ GBP.format(quote.total_monthly_gross) }}
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <th>Total One-off Costs</th>
-                                                        <td id="total_net" class="text-end">
-                                                            {{ GBP.format(quote.total) }}
-                                                        </td>
-                                                        <td id="total_vat" class="text-end">
-                                                            {{ GBP.format(quote.total_vat) }}
-                                                        </td>
-                                                        <td id="total_gross" class="text-end">
-                                                            {{ GBP.format(quote.total_gross) }}
-                                                        </td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
+                                <div class="mt-5">
+                                    <p class="payment-info border-bottom pb-3 mb-3 big bold text-right">
+                                        <span class="text-primary">1 payment </span> of
+                                        {{ GBP.format(quoteTotal('SINGLE')) }}<br>
+                                        followed by
+                                        <span class="text-primary"> monthly payments</span> of
+                                        {{ GBP.format(quoteTotal('MONTHLY')) }}
+                                    </p>
                                 </div>
-
                             </div>
                         </div>
                     </div>

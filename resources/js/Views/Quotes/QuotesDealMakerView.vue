@@ -164,6 +164,7 @@ const resetQuote = async () => {
                 items: quote.items,
             })
         Object.assign(quote, res.data)
+        Object.assign(quote.items, getLeafNodesWithChildren(quote.items))
         isLoading.value = false
     } catch (ex) {
         notyf.error(ex.response.data.message)
