@@ -127,7 +127,6 @@ setFilters()
 watch(() => [
     form.order,
     form.orderBy,
-    form.limit,
 ], function () {
     meta.page = 1
     getData()

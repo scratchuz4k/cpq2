@@ -18,6 +18,7 @@ const showLowestCost = ref(true)
 const showQuoted = ref(false)
 const showFilters = ref(true)
 const articles = ref([])
+const errors = ref([])
 const selectedFilters = ref([]);
 const filters = reactive({
     providerName: {
@@ -113,17 +114,20 @@ const getArticles = async () => {
         latitude: props.modelValue.address_position?.lat,
         longitude: props.modelValue.address_position?.lon,
         uprn: props.modelValue.address_data?.uprn,
-        street: props.modelValue.address_data?.thoroughfareName,
-        town: props.modelValue.address_city,
+        street: props.modelValue.address_data?.thoroughfareName ?? props.modelValue.address_data?.dependentThoroughfareName,
+        town: props.modelValue.address_city ?? props.modelValue.address_data?.locality  ?? props.modelValue.address_data?.doubleDependentLocality,
         addressKey: props.modelValue.address_data?.addressKey,
-        buildingNumber: props.modelValue.address_data?.thoroughfareNumber ?? props.modelValue.address_data.BuildingNumber,
-        buildingName: props.modelValue.address_data?.premisesName ?? props.modelValue.address_data.BuildingName ?? props.modelValue.address_data?.organisationName,
+        buildingNumber: props.modelValue.address_data?.thoroughfareNumber,
+        buildingName: props.modelValue.address_data?.premisesName ?? props.modelValue.address_data?.organisationName,
+        subPremises: props.modelValue.address_data?.subPremises,
         page: meta.page,
         perPage: meta.limit,
         filters: temp,
         order: sort.order,
         orderBy: sort.field,
     };
+
+    console.log(query);
 
     const csrfToken = document.head.querySelector("[name~=csrf-token][content]").content;
 	/*
@@ -162,39 +166,65 @@ const getArticles = async () => {
         }
     }
 	*/
-    let res = await axios.post('/api/external/get-articles-from-cloud-market',query)
+    try {
+        let res = await axios.post('/api/external/get-articles-from-cloud-market',query)
 
-	articles.value = res.data.data
-	isLoading.value = false
-	meta.first = (meta.page - 1) * meta.limit
-	meta.total = res.data.total
-	meta.overallTotal = res.data.overall_total
-	meta.isUpdating = !!res.data.finished_at
-	Object.assign(filterList, res.data.filters)
+        articles.value = res.data.data
+        const errorMessages = {
+            "BadGateway": "An error occurred due to a gateway issue.",
+            "Request timed out": "The request has timed out.",
+            "InternalServerError": "An error occurred on the server.",
+            "An error occurred while sending the request": "An error occurred while sending the request.",
+            "TooManyRequests": "The system is experiencing a high volume of requests.",
+            "Too Many Attempts": "The system is currently processing many requests."
+        };
 
-    let bearerFilters = []
-    Object.keys(filterList.bearer).forEach((key) => {
-        bearerFilters.push({
-            label: format.speed(key),
-            value: key
+        errors.value = res.data.errors.map((error) => {
+            for (const [key, message] of Object.entries(errorMessages)) {
+                if (error.response.includes(key)) {
+                    return { provider: error.provider, response: message };
+                }
+            }
+            return error;
+        });
+        isLoading.value = false
+        meta.first = (meta.page - 1) * meta.limit
+        meta.total = res.data.total
+        meta.overallTotal = res.data.overall_total
+        meta.isUpdating = false
+        console.log(meta.isUpdating);
+        Object.assign(filterList, res.data.filters)
+
+        let bearerFilters = []
+        Object.keys(filterList.bearer).forEach((key) => {
+            bearerFilters.push({
+                label: format.speed(key),
+                value: key
+            })
         })
-    })
-    filterList.bearer = bearerFilters
+        filterList.bearer = bearerFilters
 
-    let speedFilters = []
-    Object.keys(filterList.speed).forEach((key) => {
-        speedFilters.push({
-            label: format.speed(key),
-            value: key
+        let speedFilters = []
+        Object.keys(filterList.speed).forEach((key) => {
+            speedFilters.push({
+                label: format.speed(key),
+                value: key
+            })
         })
-    })
-    filterList.speed = speedFilters
+        filterList.speed = speedFilters
 
-    selectedFilters.value = Object.fromEntries(
-        Object.entries(filters).filter(([key, filter]) => filter.value !== null)
-    )
+        selectedFilters.value = Object.fromEntries(
+            Object.entries(filters).filter(([key, filter]) => filter.value !== null)
+        )
 
-    showLoadingModal.value = false
+        showLoadingModal.value = false
+
+    } catch (error) {
+        console.log(error);
+        notyf.error(error)
+        isLoading.value = false
+        meta.isUpdating = false
+    }
 }
 
 
@@ -291,7 +321,7 @@ getArticles()
 <template>
     <div>
         <InfoConnectivity :quote="modelValue"></InfoConnectivity>
-        <div class="row mb-4">
+        <div class="row mb-2">
             <div class="col position-relative">
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <div class="d-flex justify-content-between align-items-center">
@@ -308,6 +338,20 @@ getArticles()
                             Continue
                             <font-awesome-icon :icon="['fas', 'arrow-right']" class="ms-2"></font-awesome-icon>
                         </a>
+                    </div>
+                </div>
+                <div v-if="errors.length">
+                    <div class="row">
+                        <div class="col">
+                            <InfoBox class="mb-2 py-0" severity="info">
+                                <div class="small">
+                                    <div class="mb-2 fw-bold">There were issues retrieving data from the following providers:</div>
+                                    <div v-for="error in errors" class="mb-1">
+                                        <span class="small fw-bold bg-light rounded-2 py-1 px-2 me-1 text-capitalize">{{ error?.provider }}</span><i>{{error?.response}}</i>
+                                    </div>
+                                </div>
+                            </InfoBox>
+                        </div>
                     </div>
                 </div>
                 <div class="row">
@@ -341,102 +385,103 @@ getArticles()
                         </div>
                     </div>
                 </div>
-                    <div id="filters" v-if="showFilters" class="p-0 m-0 mt-2 mb-4 row">
-                        <div class="col-lg-2 col-12 p-0 pe-1">
-                            <label for="filter-provider" class="form-label">Provider</label>
-                            <MultiSelect v-model="filters['providerName'].value" style="width:100%"
-                                :options="Object.keys(filterList.providerName)" placeholder="All" size="small"
-                                :disabled="!meta.isUpdating"
-                                class="custom-multiselect"
-                            >
-                                <template #option="slotProps">
-                                    <div style="font-size:14px;line-height: 1.5rem;">{{ slotProps.option }}
-                                        ( {{ filterList.providerName[slotProps.option] }} )
-                                    </div>
-                                </template>
-                            </MultiSelect>
-                        </div>
-                        <div class="col-lg-2 col-12 p-0 pe-1">
-                            <label for="filter-subprovider" class="form-label">Subprovider</label>
-                            <MultiSelect v-model="filters['connectivitySupplierName'].value" style="width:100%"
-                                :options="Object.keys(filterList.connectivitySupplierName)" placeholder="All"
-                                class="me-3 custom-multiselect" :disabled="!meta.isUpdating">
-                                <template #option="slotProps">
-                                    <div style="font-size:14px;line-height: 1.5rem;">{{ slotProps.option }}
-                                        ( {{ filterList.connectivitySupplierName[slotProps.option] }} )
-                                    </div>
-                                </template>
-                            </MultiSelect>
-                        </div>
-                        <div class="col-lg-2 col-12 p-0 pe-1">
-                            <label for="filter-contract" class="form-label">Contract Length</label>
-                            <MultiSelect v-model="filters['contractTermMonths'].value" style="width:100%"
-                                :options="Object.keys(filterList.contractTermMonths)" placeholder="All"
-                                class="me-3 custom-multiselect " :disabled="!meta.isUpdating">
-                                <template #option="slotProps">
-                                    <div style="font-size:14px;line-height: 1.5rem;">{{ slotProps.option }} Months
-                                    </div>
-                                </template>
-                            </MultiSelect>
-                        </div>
-                        <div class="col-lg-2 col-12 p-0 pe-1">
-                            <label for="filter-contract" class="form-label">Bearer</label>
 
-                            <MultiSelect v-model="filters['bearer'].value" style="width:100%"
-                                         :options="filterList.bearer" optionLabel="label" optionValue="value" placeholder="All"
-                                         class="me-3 custom-multiselect " :disabled="!meta.isUpdating">
-                                <template #option="slotProps">
-                                    <div style="font-size:14px;line-height: 1.5rem;">
-                                        {{ slotProps.option.label }}
+                <div id="filters" v-if="showFilters" class="p-0 m-0 mt-2 mb-4 row">
+                    <div class="col-lg-2 col-12 p-0 pe-1">
+                        <label for="filter-provider" class="form-label">Provider</label>
+                        <MultiSelect v-model="filters['providerName'].value" style="width:100%"
+                            :options="Object.keys(filterList.providerName)" placeholder="All" size="small"
+                            :disabled="meta.isUpdating"
+                            class="custom-multiselect"
+                        >
+                            <template #option="slotProps">
+                                <div style="font-size:14px;line-height: 1.5rem;">{{ slotProps.option }}
+                                    ( {{ filterList.providerName[slotProps.option] }} )
+                                </div>
+                            </template>
+                        </MultiSelect>
+                    </div>
+                    <div class="col-lg-2 col-12 p-0 pe-1">
+                        <label for="filter-subprovider" class="form-label">Subprovider</label>
+                        <MultiSelect v-model="filters['connectivitySupplierName'].value" style="width:100%"
+                            :options="Object.keys(filterList.connectivitySupplierName)" placeholder="All"
+                            class="me-3 custom-multiselect" :disabled="meta.isUpdating">
+                            <template #option="slotProps">
+                                <div style="font-size:14px;line-height: 1.5rem;">{{ slotProps.option }}
+                                    ( {{ filterList.connectivitySupplierName[slotProps.option] }} )
+                                </div>
+                            </template>
+                        </MultiSelect>
+                    </div>
+                    <div class="col-lg-2 col-12 p-0 pe-1">
+                        <label for="filter-contract" class="form-label">Contract Length</label>
+                        <MultiSelect v-model="filters['contractTermMonths'].value" style="width:100%"
+                            :options="Object.keys(filterList.contractTermMonths)" placeholder="All"
+                            class="me-3 custom-multiselect " :disabled="meta.isUpdating">
+                            <template #option="slotProps">
+                                <div style="font-size:14px;line-height: 1.5rem;">{{ slotProps.option }} Months
+                                </div>
+                            </template>
+                        </MultiSelect>
+                    </div>
+                    <div class="col-lg-2 col-12 p-0 pe-1">
+                        <label for="filter-contract" class="form-label">Bearer</label>
+
+                        <MultiSelect v-model="filters['bearer'].value" style="width:100%"
+                                        :options="filterList.bearer" optionLabel="label" optionValue="value" placeholder="All"
+                                        class="me-3 custom-multiselect " :disabled="meta.isUpdating">
+                            <template #option="slotProps">
+                                <div style="font-size:14px;line-height: 1.5rem;">
+                                    {{ slotProps.option.label }}
+                                </div>
+                            </template>
+                        </MultiSelect>
+                    </div>
+                    <div class="col-lg-2 col-12 p-0 pe-1">
+                        <label for="filter-contract" class="form-label">Speed</label>
+                        <MultiSelect v-model="filters['speed'].value" style="width:100%"
+                                        :options="filterList.speed" optionLabel="label" optionValue="value" placeholder="All"
+                                        class="me-3 custom-multiselect " :disabled="meta.isUpdating">
+                            <template #option="slotProps">
+                                <div style="font-size:14px;line-height: 1.5rem;">
+                                    {{ slotProps.option.label }}
+                                </div>
+                            </template>
+                        </MultiSelect>
+                    </div>
+                    <div class="col-lg-2 col-12 d-flex align-self-end justify-content-around">
+                        <button class="btn btn-secondary btn-sm mt-2 me-2 w-100" @click="resetFilters()"
+                                :disabled="meta.isUpdating">Reset</button>
+                        <div class="advanced-settings pt-2 w-100">
+                            <button class="btn btn-secondary dropdown-toggle lh-1 w-100" type="button"
+                                    data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside"
+                                    :disabled="meta.isUpdating">
+                                <font-awesome-icon :icon="['fas', 'gear']"></font-awesome-icon>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end p-1">
+                                <li>
+                                    <div class="checkbox d-flex px-3">
+                                        <input class="form-check-input me-2" type="checkbox"
+                                                value="filter-lower-cost" id="filter-lower-cost"
+                                                v-model="showLowestCost">
+                                        <label class="form-check-label" for="filter-lower-cost">
+                                            Only show lowest cost router
+                                        </label>
                                     </div>
-                                </template>
-                            </MultiSelect>
-                        </div>
-                        <div class="col-lg-2 col-12 p-0 pe-1">
-                            <label for="filter-contract" class="form-label">Speed</label>
-                            <MultiSelect v-model="filters['speed'].value" style="width:100%"
-                                         :options="filterList.speed" optionLabel="label" optionValue="value" placeholder="All"
-                                         class="me-3 custom-multiselect " :disabled="!meta.isUpdating">
-                                <template #option="slotProps">
-                                    <div style="font-size:14px;line-height: 1.5rem;">
-                                        {{ slotProps.option.label }}
+                                    <div class="checkbox d-flex px-3">
+                                        <input class="form-check-input me-2" type="checkbox"
+                                                value="filter-show-quoted" id="filter-show-quoted"
+                                                v-model="showQuoted">
+                                        <label class="form-check-label" for="filter-show-quoted">
+                                            Show quoted items
+                                        </label>
                                     </div>
-                                </template>
-                            </MultiSelect>
-                        </div>
-                        <div class="col-lg-2 col-12 d-flex align-self-end justify-content-around">
-                            <button class="btn btn-secondary btn-sm mt-2 me-2 w-100" @click="resetFilters()"
-                                    :disabled="!meta.isUpdating">Reset</button>
-                            <div class="advanced-settings pt-2 w-100">
-                                <button class="btn btn-secondary dropdown-toggle lh-1 w-100" type="button"
-                                        data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside"
-                                        :disabled="!meta.isUpdating">
-                                    <font-awesome-icon :icon="['fas', 'gear']"></font-awesome-icon>
-                                </button>
-                                <ul class="dropdown-menu dropdown-menu-end p-1">
-                                    <li>
-                                        <div class="checkbox d-flex px-3">
-                                            <input class="form-check-input me-2" type="checkbox"
-                                                   value="filter-lower-cost" id="filter-lower-cost"
-                                                   v-model="showLowestCost">
-                                            <label class="form-check-label" for="filter-lower-cost">
-                                                Only show lowest cost router
-                                            </label>
-                                        </div>
-                                        <div class="checkbox d-flex px-3">
-                                            <input class="form-check-input me-2" type="checkbox"
-                                                   value="filter-show-quoted" id="filter-show-quoted"
-                                                   v-model="showQuoted">
-                                            <label class="form-check-label" for="filter-show-quoted">
-                                                Show quoted items
-                                            </label>
-                                        </div>
-                                    </li>
-                                </ul>
-                            </div>
+                                </li>
+                            </ul>
                         </div>
                     </div>
-                <div v-if="isLoading || !meta.isUpdating" data-provider="loading" class="position-relative">
+                </div>
+                <div v-if="isLoading || meta.isUpdating" data-provider="loading" class="position-relative">
                     <div class="cpq-progress-bar" style="position: absolute;z-index: 2; ">
                         <div class="cpq-bar"></div>
                         <div class="cpq-bar-text" v-if="!articles.length">

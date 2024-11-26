@@ -39,6 +39,7 @@ class CloudMarketConnectivityProducts implements ShouldQueue, TenantAware
         }
 
         $prices = [];
+        $errors = [];
         $filters = [
             "providerName" => [],
             "connectivitySupplierName" => [],
@@ -49,9 +50,21 @@ class CloudMarketConnectivityProducts implements ShouldQueue, TenantAware
 
         $stream = StreamWrapper::getResource($res->toPsrResponse()->getBody());
         foreach (Items::fromStream($stream) as $key => $value) {
+            if($value->hasErrors && $value->quoteResponseError) {
+                $error = [
+                    'provider' => $value->quoteResponseError->requestInfo->supplier,
+                    'response' => $value->quoteResponseError->errorMessage,
+                ];
+
+                if (!in_array($error, $errors)) {
+                    $errors[] = $error;
+                }
+            }
+
             if (empty($value->providerKey)|| !$value->quoteId) {
                 continue;
             }
+
             $temp = (array)$value;
             $temp['code'] = '';
             foreach (array_keys($temp) as $key) {
@@ -63,10 +76,10 @@ class CloudMarketConnectivityProducts implements ShouldQueue, TenantAware
             $prices[] = [...$temp, 'code' => md5(Str::slug($temp['code']))];
 
             $filters = $cloudMarketRepository->processFilters($filters, $temp);
-            $this->file->write($prices, false, null, $started_at, $filters);
+            $this->file->write($prices, false, null, $started_at, $filters, $errors);
         }
 
-        $this->file->write($prices, false, now(), $started_at, $filters);
+        $this->file->write($prices, false, now(), $started_at, $filters, $errors);
     }
 
     /**

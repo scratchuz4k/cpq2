@@ -7,7 +7,7 @@ const props = defineProps({
 })
 </script>
 <template>
-    <div class="row mb-4">
+    <div class="row mb-2">
         <div class="col">
             <InfoBox>
                 <p class="mb-1">
