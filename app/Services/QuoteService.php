@@ -49,6 +49,7 @@ class QuoteService
                     ]);
                 }
             }
+
             foreach ($quote->itemsNoTree as $item) {
                 $item->computeTotals();
             }

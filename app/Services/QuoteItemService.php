@@ -41,7 +41,7 @@ class QuoteItemService
             }
         }
 
-        $quoteItem->quote->update(['status' => get_quote_status($quoteItem->quote)]);
+        $quoteItem->computeTotals();
         return $quoteItem;
     }
 
@@ -49,7 +49,7 @@ class QuoteItemService
     {
         $quoteItem->update($array);
 
-        $quoteItem->quote->update(['status' => get_quote_status($quoteItem->quote)]);
+        $quoteItem->computeTotals();
         return $quoteItem;
     }
 }
