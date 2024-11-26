@@ -20,11 +20,11 @@ return new class extends Migration
         });
 
         Schema::table('quote_items', function (Blueprint $table) {
-            $table->integer('contract_length')->default(0);
+            $table->integer('contract_length')->default(1);
             $table->integer('quantity')->default(0)->change();
         });
         Schema::table('order_items', function (Blueprint $table) {
-            $table->integer('contract_length')->default(0);
+            $table->integer('contract_length')->default(1);
             $table->integer('quantity')->default(0)->change();
         });
     }
