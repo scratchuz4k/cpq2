@@ -1,5 +1,5 @@
 <template>
-    <Select v-model="proxyValue" :options="options" showClear :optionLabel="props.field"
+    <Select :inputId="'select-' + props.id" v-model="proxyValue" :options="options" showClear :optionLabel="props.field"
         placeholder="Select an option" class="w-100">
         <template #value="{ value, placeholder }">
             {{ value ? value[props.field] : placeholder }}
@@ -9,7 +9,8 @@
                 <InputIcon>
                     <font-awesome-icon icon="fas fa-search" />
                 </InputIcon>
-                <InputText class="w-100" v-model="searchInput" placeholder="Search" />
+                <InputText :id="'select-' + props.id + '-search'" class="w-100" v-model="searchInput"
+                    placeholder="Search" />
             </IconField>
         </template>
     </Select>

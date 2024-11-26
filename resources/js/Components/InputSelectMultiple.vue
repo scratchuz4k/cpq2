@@ -1,5 +1,5 @@
 <template>
-    <MultiSelect v-model="proxyValue" :options="options" showClear :optionLabel="props.field"
+    <MultiSelect :inputId="props.id" v-model="proxyValue" :options="options" showClear :optionLabel="props.field"
         placeholder="Select multiple options" class="w-100">
         <template #value="{ value, placeholder }">
             <p v-if="value">
@@ -14,7 +14,7 @@
                 <InputIcon>
                     <font-awesome-icon icon="fas fa-search" />
                 </InputIcon>
-                <InputText class="w-100" v-model="searchInput" placeholder="Search" />
+                <InputText :id="props.id + '-search'" class="w-100" v-model="searchInput" placeholder="Search" />
             </IconField>
         </template>
     </MultiSelect>

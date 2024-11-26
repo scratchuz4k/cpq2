@@ -68,7 +68,9 @@ describe('Creates a Connectivity quote', () => {
         cy.get("#create-spa").click()
         cy.get("#spa-entity-Supplier").click()
         cy.get("#select-Supplier1").click()
-        cy.get("#select-items-Supplier1 .select-item-0").eq(0).click()
+        cy.get("#select-Supplier1-search").type("Gamma")
+        cy.wait(2000)
+        cy.get(".p-select-option").eq(0).click()
 
         cy.get("#spa-percentage").type(20)
         cy.get("#save-spa").click()
@@ -83,7 +85,9 @@ describe('Creates a Connectivity quote', () => {
         cy.get("#create-spa").click()
         cy.get("#spa-entity-Supplier").click()
         cy.get("#select-Supplier1").click()
-        cy.get("#select-items-Supplier1 .select-item-0").eq(0).click()
+        cy.get("#select-Supplier1-search").type("Gamma")
+        cy.wait(2000)
+        cy.get(".p-select-option").eq(0).click()
 
         cy.get("#spa-percentage").type(20)
         cy.get("#save-spa").click()
