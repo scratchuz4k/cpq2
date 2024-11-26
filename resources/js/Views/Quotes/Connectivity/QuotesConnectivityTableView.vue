@@ -100,7 +100,7 @@ const getArticles = async () => {
         temp.push({ column: key, operator: filters[key].operator, value: filters[key].value ?? null })
     })
     if (showQuoted.value) {
-        let items = props.modelValue.items.length ? props.modelValue.items.filter((item) => item.data.code).map((item) => item.data.code) : ['#']
+        let items = props.modelValue.items.length ? props.modelValue.items.filter((item) => item.product_code).map((item) => item.product_code) : ['#']
         temp.push({ column: 'code', operator: 'in', value: items })
     }
     if (showLowestCost.value) {

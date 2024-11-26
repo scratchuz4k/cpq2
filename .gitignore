@@ -1,6 +1,7 @@
 /.phpunit.cache
 /node_modules
 /public/build
+/cypress/output
 /cypress/screenshots
 /cypress/downloads
 /public/hot

@@ -1,44 +1,28 @@
 <template>
-    <div style="position: relative">
-        <div :id="'select-' + props.id" class="select-options input form-select p-1" @click="openOption()">
-            <p v-if="proxyValue" class="select-option px-2">
-                <template v-for="(key, i) in props.fields">
-                    <span v-if="i != 0"> | </span>
-                    <span>{{ proxyValue[key] }}</span>
-                </template>
-                <font-awesome-icon icon="fa-close" class="ms-2" @click="removeOption(i)" />
-            </p>
-        </div>
-        <div :id="'select-items-' + props.id" class="select-items p-3"
-            :class="{ 'show': showOptions, 'hide': !showOptions }">
-            <input type="text" class="form-control " v-model="searchInput" placeholder="Search" @input="search">
-
-            <div class="mt-2">
-                <template v-if="options && options.length">
-                    <p class="select-item" :class="[checkIfExists(item) ? 'text-bold' : null, 'select-item-' + key]"
-                        v-for="( item, key ) in options " :key="key" @click="selectOption(item)">
-                        <template v-for="(key, i) in props.fields">
-                            <span v-if="i != 0"> | </span>
-                            <span>{{ item[key] }}</span>
-                        </template>
-                    </p>
-                </template>
-
-                <template v-else-if="!isLoading">
-                    <p class="select-item">
-                        No Records
-                    </p>
-                </template>
-
-                <template v-else>
-                    <!-- <app-loader></app-loader> -->
-                </template>
-            </div>
-        </div>
-    </div>
+    <Select :inputId="'select-' + props.id" v-model="proxyValue" :options="options" showClear :optionLabel="props.field"
+        placeholder="Select an option" class="w-100">
+        <template #value="{ value, placeholder }">
+            {{ value ? value[props.field] : placeholder }}
+        </template>
+        <template #header>
+            <IconField class="p-1">
+                <InputIcon>
+                    <font-awesome-icon icon="fas fa-search" />
+                </InputIcon>
+                <InputText :id="'select-' + props.id + '-search'" class="w-100" v-model="searchInput"
+                    placeholder="Search" />
+            </IconField>
+        </template>
+    </Select>
 </template>
 <script setup>
-import { ref, onMounted } from 'vue';
+import _ from 'lodash'
+import IconField from 'primevue/iconfield';
+import InputIcon from 'primevue/inputicon';
+import InputText from 'primevue/inputtext';
+
+import Select from 'primevue/select';
+import { ref, watch, computed } from 'vue';
 import { v4 as uuidv4 } from 'uuid';
 
 const props = defineProps({
@@ -49,24 +33,21 @@ const props = defineProps({
         }
     },
     url: String,
-    fields: Array,
+    field: String,
     modelValue: Object
 })
 
 const emit = defineEmits(["update:modelValue"])
-const showOptions = ref(false)
 const options = ref([])
 const isLoading = ref(false)
 const searchInput = ref(null)
 
-const proxyValue = ref(props.modelValue);
+const proxyValue = computed({
+    get: () => props.modelValue,
+    set: (value) => emit('update:modelValue', value),
+});
 
-
-const openOption = () => {
-    showOptions.value = !showOptions.value
-}
-
-const search = async () => {
+const search = _.debounce(async () => {
     if (!props.url) {
         return
     }
@@ -76,35 +57,9 @@ const search = async () => {
     isLoading.value = false
     options.value = res.data.data
 
-}
+}, 500)
 
-const selectOption = (item) => {
-    proxyValue.value = item
-    emit("update:modelValue", proxyValue.value)
-}
-
-const removeOption = () => {
-    proxyValue.value = null
-    emit("update:modelValue", proxyValue.value)
-}
-
-const checkIfExists = (item) => {
-    return proxyValue.value ? proxyValue.value.id == item.id : false
-}
-
-onMounted(() => {
-    document.addEventListener('click', function (event) {
-        const parent = document.getElementById('select-' + props.id)
-        const div = document.getElementById('select-items-' + props.id)
-        const targetElement = event.target
-        if (parent && parent.contains(targetElement)) {
-            return
-        }
-        if (div && !div.contains(targetElement)) {
-            showOptions.value = false
-        }
-    })
-})
+watch(searchInput, () => search())
 search()
 
 </script>

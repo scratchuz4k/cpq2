@@ -156,10 +156,11 @@ const resetQuote = async () => {
     }
 
     quote.items.forEach((e) => { e.discount = 0; })
+    Object.keys(discounts).forEach((key) => Object.keys(discounts[key]).forEach((discount) => discounts[key][discount] = 0))
     try {
         let res = await axios.put(`/api/quotes/${quote.id}`,
             {
-                discount: 0,
+                discounts: discounts,
                 items: quote.items,
             })
         Object.assign(quote, res.data)
@@ -345,6 +346,11 @@ const items = ref([
                                         v-model="recurringNewLine.name">
                                 </th>
                                 <th class="text-center">
+                                    <input :id="'input-new-recurring-contract_length'"
+                                        class="form-control text-center p-0 px-1" type="number"
+                                        v-model="recurringNewLine.contract_length">
+                                </th>
+                                <th class="text-center">
                                     <input :id="'input-new-recurring-qty'" class="form-control text-center p-0 px-1"
                                         type="number" v-model="recurringNewLine.quantity">
                                 </th>
@@ -354,11 +360,6 @@ const items = ref([
                                         v-model="recurringNewLine.price">
                                 </th>
                                 <th></th>
-                                <th class="text-center">
-                                    <input :id="'input-new-recurring-contract_length'"
-                                        class="form-control text-center p-0 px-1" type="number"
-                                        v-model="recurringNewLine.contract_length">
-                                </th>
                                 <th class="text-center">
                                     <input :id="'input-new-recurring-discount'"
                                         class="form-control text-center p-0 px-1" type="number"

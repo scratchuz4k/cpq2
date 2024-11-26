@@ -20,10 +20,12 @@ return new class extends Migration
         });
 
         Schema::table('quote_items', function (Blueprint $table) {
-            $table->decimal('contract_length', 4, 2)->default(1);
+            $table->integer('contract_length')->default(0);
+            $table->integer('quantity')->default(0)->change();
         });
         Schema::table('order_items', function (Blueprint $table) {
-            $table->decimal('contract_length', 4, 2)->default(1);
+            $table->integer('contract_length')->default(0);
+            $table->integer('quantity')->default(0)->change();
         });
     }
 
@@ -34,9 +36,11 @@ return new class extends Migration
     {
         Schema::table('quote_items', function (Blueprint $table) {
             $table->dropColumn('contract_length');
+            $table->decimal('quantity',4,2)->default(0)->change();
         });
         Schema::table('order_items', function (Blueprint $table) {
             $table->dropColumn('contract_length');
+            $table->decimal('quantity',4,2)->default(0)->change();
         });
 
         Schema::table('quotes', function (Blueprint $table) {
