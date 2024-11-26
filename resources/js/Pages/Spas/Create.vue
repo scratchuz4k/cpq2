@@ -37,13 +37,14 @@ const spa = reactive({
 const saveSpa = () => {
     let rule = props.rules.find(x => x.code == spa.entity_1 + '' + (spa.entity_2 ?? ''))
 
+    debugger
     let item = {
-        rule_id: rule.id,
+        rule_id: rule?.id,
         field_1: spa.entity_1_value?.id,
         field_2: spa.entity_2_value?.id,
         operation_id: spa.operation_id,
-        value: spa.value,
-        percentage: spa.percentage,
+        value: !spa.value ? 0 :spa.value,
+        percentage: !spa.percentage ? 0 :spa.percentage,
     }
 
     router.post(`/spas`, item,

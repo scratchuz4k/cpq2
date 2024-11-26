@@ -27,7 +27,7 @@ class SpaCreateRequest extends FormRequest
     {
         $rules =  ["numeric"];
         $rule = SpaRule::find($this->input('rule_id'));
-        if (in_array($rule->class, $this->requiredEntity2))
+        if ($rule  && in_array($rule->class, $this->requiredEntity2))
             $rules[] = "required";
 
         return [

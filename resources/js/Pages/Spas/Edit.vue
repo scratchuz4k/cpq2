@@ -46,8 +46,8 @@ const saveSpa = () => {
         field_1: spa.entity_1_value?.id,
         field_2: spa.entity_2_value?.id,
         operation_id: spa.operation_id,
-        value: spa.value,
-        percentage: spa.percentage,
+        value: !spa.value ? 0 : spa.value,
+        percentage: !spa.percentage ? 0 : spa.percentage,
     }
 
     router.put(`/spas/${props.spa.id}`, item,
