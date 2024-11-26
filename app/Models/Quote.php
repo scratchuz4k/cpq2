@@ -62,6 +62,11 @@ class Quote extends Model
     {
         return $this->hasMany(QuoteItem::class)->whereNull('parent_id');
     }
+    public function itemsNoTree(): HasMany
+    {
+        return $this->hasMany(QuoteItem::class);
+    }
+
     public function discounts(): HasMany
     {
         return $this->hasMany(QuoteDiscount::class);
@@ -75,7 +80,7 @@ class Quote extends Model
         $this->total_tax = 0;
         $this->total_gross = 0;
 
-        foreach ($this->items as $item) {
+        foreach ($this->itemsNoTree as $item) {
             $raw_total += ($item->raw_price * $item->quantity) * $item->contract_length;
 
             $this->total += $item->total * $item->contract_length;

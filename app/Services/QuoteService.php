@@ -26,7 +26,7 @@ class QuoteService
 
             $quote->update(['status' => get_quote_status($quote->refresh())]);
 
-            foreach ($quote->items as $quote_item) {
+            foreach ($quote->itemsNoTree  as $quote_item) {
                 $quote_item->computeTotals();
             }
             $quote->computeTotals();
@@ -41,6 +41,8 @@ class QuoteService
 
             $quote->update($array);
             if (array_key_exists('items', $array)) {
+
+                //TODO: CHANGE THE WAY QUOTES INTERACT WITH QUOTES ITEMS, to many logic in multiple places
                 $olderItems = collect($quote->items);
                 foreach ($array['items'] as $quote_item) {
                     if (array_key_exists('id', $quote_item) && !is_null($quote_item['id'])) {
@@ -82,7 +84,7 @@ class QuoteService
                 }
             }
 
-            foreach ($quote->items as $quote_item) {
+            foreach ($quote->itemsNoTree as $quote_item) {
                 $quote_item->computeTotals();
             }
             $quote->computeTotals();
