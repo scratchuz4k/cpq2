@@ -20,7 +20,7 @@ class FilterProvider
         if (request()->has('search') && !is_null(request()->search)) {
             $data = $data->filter(function ($item) {
                 return collect($item)->contains(key: function ($value) {
-                    return strpos(strtolower($value), strtolower(request()->search)) !== false;
+                    return !is_array($value) ? strpos(strtolower($value), strtolower(request()->search)) !== false : false;
                 });
             });
         }
