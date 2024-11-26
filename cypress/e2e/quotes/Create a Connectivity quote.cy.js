@@ -59,4 +59,32 @@ describe('Creates a Connectivity quote', () => {
         cy.get('.recurring-item').its('length').should('eq', 5);
         cy.get('.one_off-item').its('length').should('eq', 5);
     })
+    it("I can add a Custom Line and check quoted items", () => {
+        cy.visit("/")
+        cy.get("#datatable-btn-0-show").click()
+        cy.get("#btn-recurring-add").click()
+        cy.get("#input-new-recurring-name").type("Custom line recurring")
+        cy.get("#input-new-recurring-qty").type(10)
+        cy.get("#input-new-recurring-price_monthly").type(10)
+        cy.get("#input-new-recurring-discount").type(10)
+        cy.get("#btn-new-recurring-add").click()
+        cy.get("#table-recurring").contains("Custom line recurring")
+
+        cy.get("#btn-one_off-add").click()
+        cy.get("#input-new-one_off-name").type("Custom line one_off")
+        cy.get("#input-new-one_off-qty").type(10)
+        cy.get("#input-new-one_off-price").type(10)
+        cy.get("#input-new-one_off-discount").type(10)
+        cy.get("#btn-new-one_off-add").click()
+        cy.get("#table-one_off").contains("Custom line one_off")
+
+        cy.get("#btn-previous").click()
+        cy.get("#btn-more-filters").click()
+        cy.get("#filter-show-quoted").click({ force: true })
+        cy.wait(5000)
+        cy.get('.connectivity-table-item').its("length")
+            .then((items) => {
+                expect(items).to.equal(5);
+            });
+    })
 })

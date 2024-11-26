@@ -123,6 +123,7 @@ const getArticles = async () => {
         filters: temp,
         order: sort.order,
         orderBy: sort.field,
+        account_id: props.modelValue.account_id
     };
 
     const csrfToken = document.head.querySelector("[name~=csrf-token][content]").content;
@@ -388,7 +389,7 @@ getArticles()
                         <button class="btn btn-secondary btn-sm mt-2 me-2 w-100" @click="resetFilters()"
                             :disabled="!meta.isUpdating">Reset</button>
                         <div class="advanced-settings pt-2 w-100">
-                            <button class="btn btn-secondary dropdown-toggle lh-1 w-100" type="button"
+                            <button id="btn-more-filters" class="btn btn-secondary dropdown-toggle lh-1 w-100" type="button"
                                 data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside"
                                 :disabled="!meta.isUpdating">
                                 <font-awesome-icon :icon="['fas', 'gear']"></font-awesome-icon>
@@ -571,7 +572,7 @@ getArticles()
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="(article, index) in articles" style="text-align: center;">
+                            <tr class="connectivity-table-item" v-for="(article, index) in articles" style="text-align: center;">
                                 <td class="lh-sm text-left ps-3">
                                     {{ article.productName }}
                                     <span v-if="article.additionalInfo['Primary Router Model']" v-tooltip

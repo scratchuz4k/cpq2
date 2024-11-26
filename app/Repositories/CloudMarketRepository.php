@@ -5,16 +5,28 @@ namespace App\Repositories;
 use App\Models\Supplier;
 use App\Helpers\FilterProvider;
 use App\Helpers\Prices\PriceRules;
+use App\Models\Account;
 
 class CloudMarketRepository
 {
 
+    protected $providers = [];
+
     public function sendResponse($file, $filters)
     {
         $priceRules = new PriceRules();
+        $account = Account::where('id', request()->input('account_id', null))->first();
         foreach ($file['data'] as $index => $product) {
-            $supplier = Supplier::where('reference', $product['providerKey'])->first();
-            $priceRules->find(supplier: $supplier);
+            $supplier = null;
+
+            if (array_key_exists($product['providerKey'], $this->providers)) {
+                $supplier = $this->providers[$product['providerKey']];
+            } else {
+                $supplier = Supplier::where('reference', $product['providerKey'])->first();
+                $this->providers[$product['providerKey']] = $supplier;
+            }
+
+            $priceRules->find(supplier: $supplier, account: $account);
             foreach (['priceMonthly', 'priceAnnual', 'priceInstall'] as $key) {
                 if (!array_key_exists($key, $product)) {
                     continue;
