@@ -18,6 +18,7 @@ const showLowestCost = ref(true)
 const showQuoted = ref(false)
 const showFilters = ref(true)
 const articles = ref([])
+const errors = ref([])
 const selectedFilters = ref([]);
 const filters = reactive({
     providerName: {
@@ -113,11 +114,12 @@ const getArticles = async () => {
         latitude: props.modelValue.address_position?.lat,
         longitude: props.modelValue.address_position?.lon,
         uprn: props.modelValue.address_data?.uprn,
-        street: props.modelValue.address_data?.thoroughfareName,
-        town: props.modelValue.address_city,
+        street: props.modelValue.address_data?.thoroughfareName ?? props.modelValue.address_data?.dependentThoroughfareName,
+        town: props.modelValue.address_city ?? props.modelValue.address_data?.locality  ?? props.modelValue.address_data?.doubleDependentLocality,
         addressKey: props.modelValue.address_data?.addressKey,
-        buildingNumber: props.modelValue.address_data?.thoroughfareNumber ?? props.modelValue.address_data.BuildingNumber,
-        buildingName: props.modelValue.address_data?.premisesName ?? props.modelValue.address_data.BuildingName ?? props.modelValue.address_data?.organisationName,
+        buildingNumber: props.modelValue.address_data?.thoroughfareNumber,
+        buildingName: props.modelValue.address_data?.premisesName ?? props.modelValue.address_data?.organisationName,
+        subPremises: props.modelValue.address_data?.subPremises,
         page: meta.page,
         perPage: meta.limit,
         filters: temp,
@@ -126,40 +128,104 @@ const getArticles = async () => {
         account_id: props.modelValue.account_id
     };
 
+    console.log(query);
+
     const csrfToken = document.head.querySelector("[name~=csrf-token][content]").content;
-    let res = await axios.post('/api/external/get-articles-from-cloud-market', query)
-
-    articles.value = res.data.data
-    isLoading.value = false
-    meta.first = (meta.page - 1) * meta.limit
-    meta.total = res.data.total
-    meta.overallTotal = res.data.overall_total
-    meta.isUpdating = !!res.data.finished_at
-    Object.assign(filterList, res.data.filters)
-
-    let bearerFilters = []
-    Object.keys(filterList.bearer).forEach((key) => {
-        bearerFilters.push({
-            label: format.speed(key),
-            value: key
+    /*
+    let res = await fetch('/api/external/get-articles-from-cloud-market',
+        {
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+                "X-Requested-With": "XMLHttpRequest",
+                "X-CSRF-Token": csrfToken
+            },
+            method: "post",
+            credentials: "same-origin",
+            body: JSON.stringify(query)
         })
-    })
-    filterList.bearer = bearerFilters
+    const reader = res.body.getReader();
+    const decoder = new TextDecoder();
 
-    let speedFilters = []
-    Object.keys(filterList.speed).forEach((key) => {
-        speedFilters.push({
-            label: format.speed(key),
-            value: key
+
+    while (true) {
+        const { done, value } = await reader.read();
+        if (done) {
+            break;
+        }
+
+        try {
+            const data = JSON.parse(decoder.decode(value, { stream: true }));
+            articles.value = data.data
+            isLoading.value = false
+            meta.first = (meta.page - 1) * meta.limit
+            meta.total = data.total
+            meta.overallTotal = data.overall_total
+            meta.isUpdating = !!data.finished_at
+            Object.assign(filterList, data.filters)
+        } catch (e) {
+        }
+    }
+	  */
+    try {
+        let res = await axios.post('/api/external/get-articles-from-cloud-market',query)
+
+        articles.value = res.data.data
+        const errorMessages = {
+            "BadGateway": "An error occurred due to a gateway issue.",
+            "Request timed out": "The request has timed out.",
+            "InternalServerError": "An error occurred on the server.",
+            "An error occurred while sending the request": "An error occurred while sending the request.",
+            "TooManyRequests": "The system is experiencing a high volume of requests.",
+            "Too Many Attempts": "The system is currently processing many requests."
+        };
+
+        errors.value = res.data.errors.map((error) => {
+            for (const [key, message] of Object.entries(errorMessages)) {
+                if (error.response.includes(key)) {
+                    return { provider: error.provider, response: message };
+                }
+            }
+            return error;
+        });
+        isLoading.value = false
+        meta.first = (meta.page - 1) * meta.limit
+        meta.total = res.data.total
+        meta.overallTotal = res.data.overall_total
+        meta.isUpdating = false
+        console.log(meta.isUpdating);
+        Object.assign(filterList, res.data.filters)
+
+        let bearerFilters = []
+        Object.keys(filterList.bearer).forEach((key) => {
+            bearerFilters.push({
+                label: format.speed(key),
+                value: key
+            })
         })
-    })
-    filterList.speed = speedFilters
+        filterList.bearer = bearerFilters
 
-    selectedFilters.value = Object.fromEntries(
-        Object.entries(filters).filter(([key, filter]) => filter.value !== null)
-    )
+        let speedFilters = []
+        Object.keys(filterList.speed).forEach((key) => {
+            speedFilters.push({
+                label: format.speed(key),
+                value: key
+            })
+        })
+        filterList.speed = speedFilters
 
-    showLoadingModal.value = false
+        selectedFilters.value = Object.fromEntries(
+            Object.entries(filters).filter(([key, filter]) => filter.value !== null)
+        )
+
+        showLoadingModal.value = false
+
+    } catch (error) {
+        console.log(error);
+        notyf.error(error)
+        isLoading.value = false
+        meta.isUpdating = false
+    }
 }
 
 
@@ -275,7 +341,7 @@ getArticles()
 <template>
     <div>
         <InfoConnectivity :quote="modelValue"></InfoConnectivity>
-        <div class="row mb-4">
+        <div class="row mb-2">
             <div class="col position-relative">
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <div class="d-flex justify-content-between align-items-center">
@@ -294,6 +360,20 @@ getArticles()
                             Continue
                             <font-awesome-icon :icon="['fas', 'arrow-right']" class="ms-2"></font-awesome-icon>
                         </a>
+                    </div>
+                </div>
+                <div v-if="errors.length">
+                    <div class="row">
+                        <div class="col">
+                            <InfoBox class="mb-2 py-0" severity="info">
+                                <div class="small">
+                                    <div class="mb-2 fw-bold">There were issues retrieving data from the following providers:</div>
+                                    <div v-for="error in errors" class="mb-1">
+                                        <span class="small fw-bold bg-light rounded-2 py-1 px-2 me-1 text-capitalize">{{ error?.provider }}</span><i>{{error?.response}}</i>
+                                    </div>
+                                </div>
+                            </InfoBox>
+                        </div>
                     </div>
                 </div>
                 <div class="row">
@@ -329,7 +409,7 @@ getArticles()
                         <label for="filter-provider" class="form-label">Provider</label>
                         <MultiSelect id="provider-multiselect" v-model="filters['providerName'].value"
                             style="width:100%" :options="Object.keys(filterList.providerName)" placeholder="All"
-                            size="small" :disabled="!meta.isUpdating" class="custom-multiselect">
+                            size="small" :disabled="meta.isUpdating" class="custom-multiselect">
                             <template #option="slotProps">
                                 <div style="font-size:14px;line-height: 1.5rem;">{{ slotProps.option }}
                                     ( {{ filterList.providerName[slotProps.option] }} )
@@ -341,7 +421,7 @@ getArticles()
                         <label for="filter-subprovider" class="form-label">Subprovider</label>
                         <MultiSelect id="subprovider-multiselect" v-model="filters['connectivitySupplierName'].value"
                             style="width:100%" :options="Object.keys(filterList.connectivitySupplierName)"
-                            placeholder="All" class="me-3 custom-multiselect" :disabled="!meta.isUpdating">
+                            placeholder="All" class="me-3 custom-multiselect" :disabled="meta.isUpdating">
                             <template #option="slotProps">
                                 <div style="font-size:14px;line-height: 1.5rem;">{{ slotProps.option }}
                                     ( {{ filterList.connectivitySupplierName[slotProps.option] }} )
@@ -353,7 +433,7 @@ getArticles()
                         <label for="filter-contract" class="form-label">Contract Length</label>
                         <MultiSelect v-model="filters['contractTermMonths'].value" style="width:100%"
                             :options="Object.keys(filterList.contractTermMonths)" placeholder="All"
-                            class="me-3 custom-multiselect " :disabled="!meta.isUpdating">
+                            class="me-3 custom-multiselect " :disabled="meta.isUpdating">
                             <template #option="slotProps">
                                 <div style="font-size:14px;line-height: 1.5rem;">{{ slotProps.option }} Months
                                 </div>
@@ -362,10 +442,9 @@ getArticles()
                     </div>
                     <div class="col-lg-2 col-12 p-0 pe-1">
                         <label for="filter-contract" class="form-label">Bearer</label>
-
                         <MultiSelect v-model="filters['bearer'].value" style="width:100%" :options="filterList.bearer"
                             optionLabel="label" optionValue="value" placeholder="All" class="me-3 custom-multiselect "
-                            :disabled="!meta.isUpdating">
+                            :disabled="meta.isUpdating">
                             <template #option="slotProps">
                                 <div style="font-size:14px;line-height: 1.5rem;">
                                     {{ slotProps.option.label }}
@@ -377,7 +456,7 @@ getArticles()
                         <label for="filter-contract" class="form-label">Speed</label>
                         <MultiSelect v-model="filters['speed'].value" style="width:100%" :options="filterList.speed"
                             optionLabel="label" optionValue="value" placeholder="All" class="me-3 custom-multiselect "
-                            :disabled="!meta.isUpdating">
+                            :disabled="meta.isUpdating">
                             <template #option="slotProps">
                                 <div style="font-size:14px;line-height: 1.5rem;">
                                     {{ slotProps.option.label }}
@@ -391,7 +470,7 @@ getArticles()
                         <div class="advanced-settings pt-2 w-100">
                             <button id="btn-more-filters" class="btn btn-secondary dropdown-toggle lh-1 w-100" type="button"
                                 data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside"
-                                :disabled="!meta.isUpdating">
+                                :disabled="meta.isUpdating">
                                 <font-awesome-icon :icon="['fas', 'gear']"></font-awesome-icon>
                             </button>
                             <ul class="dropdown-menu dropdown-menu-end p-1">
@@ -415,7 +494,7 @@ getArticles()
                         </div>
                     </div>
                 </div>
-                <div v-if="isLoading || !meta.isUpdating" data-provider="loading" class="position-relative">
+                <div v-if="isLoading || meta.isUpdating" data-provider="loading" class="position-relative">
                     <div class="cpq-progress-bar" style="position: absolute;z-index: 2; ">
                         <div class="cpq-bar"></div>
                         <div class="cpq-bar-text" v-if="!articles.length">
