@@ -323,7 +323,7 @@ getArticles()
                                     <template v-for="(selectedFilter, column) in selectedFilters">
                                         <Badge
                                             v-for="value in (Array.isArray(selectedFilter.value) ? selectedFilter.value : [selectedFilter.value])"
-                                            :value="['speed', 'bearer'].includes(column) ? format.speed(value) : (['contractTermMonths'].includes(column) ? value + ' Months' : value)"
+                                            :value="['speed', 'bearer'].includes(column) ? 'Min. ' + format.speed(value) : (['contractTermMonths'].includes(column) ? value + ' Months' : value)"
                                             class="px-3 py-1"
                                             data-toggle="tooltip"
                                             data-placement="top"
