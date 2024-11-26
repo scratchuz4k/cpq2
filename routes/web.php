@@ -79,5 +79,6 @@ Route::get('/health', function () {
 })->name('health');
 
 Route::get('/s/{token}', [SharedLinkController::class, 'show']);
+Route::post('/s/{token}', [SharedLinkController::class, 'verifyPassword']);
 
 require __DIR__ . '/auth.php';

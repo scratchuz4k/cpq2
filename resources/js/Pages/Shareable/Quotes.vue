@@ -12,3 +12,4 @@ const props = defineProps({
         <QuotePreview v-model="props.model"></QuotePreview>
     </ShareLayout>
 </template>
+

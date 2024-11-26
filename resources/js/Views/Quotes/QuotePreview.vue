@@ -4,7 +4,24 @@ import { reactive } from 'vue';
 const props = defineProps({
     modelValue: Object
 })
+const getLeafNodesWithChildren = (objects) => {
+    let leaves = [];
+    const findLeaves = (items) => {
+        for (const item of items) {
+            if (item.children && item.children.length > 0) {
+                findLeaves(item.children);
+            } else {
+                leaves.push(item);
+            }
+        }
+    }
+
+    findLeaves(objects);
+    return leaves;
+}
+
 const quote = reactive(props.modelValue)
+Object.assign(quote.items, getLeafNodesWithChildren(quote.items))
 
 const showDate = (days = 0) => {
     const dateObj = new Date();
@@ -73,14 +90,12 @@ const showDate = (days = 0) => {
                                     <thead>
                                         <tr>
                                             <th>#</th>
-                                            <th class="text-center d-none d-xl-table-cell">Provider</th>
+                                            <th>Provider</th>
                                             <th>Name</th>
-                                            <th class="d-none d-xl-table-cell" style="white-space: nowrap;">Supplier
-                                                Quote Ref.</th>
                                             <th>Type</th>
+                                            <th class="text-center">Contract Len.</th>
                                             <th class="text-center">Qty</th>
-                                            <th class="text-end" style="white-space: nowrap;">Monthly Price</th>
-                                            <th class="text-end" style="white-space: nowrap;">Install Price</th>
+                                            <th class="text-end" style="white-space: nowrap;">Price</th>
                                             <th class="text-end" style="white-space: nowrap;">Total Price</th>
                                         </tr>
                                     </thead>
@@ -90,39 +105,41 @@ const showDate = (days = 0) => {
                                             <td class="position-relative" style="width:40px">
                                                 {{ quote.items.indexOf(item) + 1 }}
                                             </td>
-                                            <td class="text-center d-none d-xl-table-cell">
+                                            <td>
                                                 <img v-if="item.data?.providerKey" class="img-provider"
                                                     @error="setAltImg"
                                                     :src="`/images/providers/${item.data.providerKey}.png`"
                                                     :alt="item.data.providerName" :title="item.data.providerName" />
                                             </td>
                                             <td>
-                                                {{ item.name }}
-                                                <span v-if="item.data?.additionalInfo['Primary Router Model']" v-tooltip
-                                                    data-bs-toggle="tooltip" data-bs-placement="top"
-                                                    title="Primary Router Model"
-                                                    class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm router-model">
-                                                    <font-awesome-icon :icon="['fas', 'plug']"></font-awesome-icon>
-                                                    {{ item.data.additionalInfo['Primary Router Model'] }}
-                                                </span>
-                                            </td>
-                                            <td class="d-none d-xl-table-cell">
-                                                {{ item.data?.productCode }}
+                                                <div class="d-flex justify-content-between">
+                                                    <p>{{ item.name }}
+                                                        <span v-if="item.data?.additionalInfo['Primary Router Model']"
+                                                            v-tooltip data-bs-toggle="tooltip" data-bs-placement="top"
+                                                            title="Primary Router Model"
+                                                            class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm router-model">
+                                                            <font-awesome-icon
+                                                                :icon="['fas', 'plug']"></font-awesome-icon>
+                                                            {{ item.data.additionalInfo['Primary Router Model'] }}
+                                                        </span>
+                                                    </p>
+
+                                                </div>
                                             </td>
                                             <td>
-                                                Monthly
+                                                {{ item.price_plan?.name }}
+                                            </td>
+                                            <td class="text-center">
+                                                {{ item.contract_length  }}
                                             </td>
                                             <td class="text-center">
                                                 {{ item.quantity }}
                                             </td>
                                             <td class="text-end">
-                                                {{ GBP.format(item.data?.priceMonthly ?? item.data?.price) }}
+                                                {{ GBP.format(item.price) }}
                                             </td>
                                             <td class="text-end">
-                                                {{ GBP.format(item.data?.priceInstall ?? 0) }}
-                                            </td>
-                                            <td class="text-end">
-                                                {{ GBP.format(item.total_monthly) }}
+                                                {{ GBP.format(item.total) }}
                                             </td>
                                         </tr>
                                     </tbody>

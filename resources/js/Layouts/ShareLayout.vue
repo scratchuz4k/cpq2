@@ -26,7 +26,7 @@ import { Link } from '@inertiajs/vue3';
 
         <main>
             <div class="container">
-                <slot />
+                <slot/>
             </div>
         </main>
 

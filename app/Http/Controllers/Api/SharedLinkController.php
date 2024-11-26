@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Api;
 
 use App\Models\Quote;
 use App\Models\SharedLink;
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ShareLinkCreateRequest;
 use App\Http\Resources\SharedLinkResource;

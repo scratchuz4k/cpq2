@@ -25,8 +25,32 @@ class SharedLinkController extends Controller
 
         // Check if a password is required
         if ($sharedLink->password) {
+            return Inertia::render("Shareable/Index", [
+                'isAuthorized' => false,
+                'url' => $sharedLink->url
+            ]);
+        }
+
+        $component = $this->sharedModels[$sharedLink->shareable_type];
+        $resource = $this->getResource($component, $sharedLink->shareable);
+
+        return Inertia::render("Shareable/$component", [
+            'model' => $resource,
+        ]);
+    }
+
+    public function verifyPassword(Request $request, $token)
+    {
+        $sharedLink = SharedLink::where("token", $token)->firstOrFail();
+
+        if ($sharedLink->isExpired()) {
+            abort(410, "This link has expired.");
+        }
+
+        // Check if a password is required
+        if ($sharedLink->password) {
             if (!$request->has("password") || !$sharedLink->verifyPassword($request->input("password"))) {
-                abort(403, "Invalid or missing password.");
+                return redirect()->back()->withErrors(["Invalid password."]);
             }
         }
 
