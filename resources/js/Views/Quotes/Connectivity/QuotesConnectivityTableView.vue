@@ -101,7 +101,7 @@ const getArticles = async () => {
         temp.push({ column: key, operator: filters[key].operator, value: filters[key].value ?? null })
     })
     if (showQuoted.value) {
-        let items = props.modelValue.items.length ? props.modelValue.items.filter((item) => item.data.code).map((item) => item.data.code) : ['#']
+        let items = props.modelValue.items.length ? props.modelValue.items.filter((item) => item.product_code).map((item) => item.product_code) : ['#']
         temp.push({ column: 'code', operator: 'in', value: items })
     }
     if (showLowestCost.value) {
@@ -125,12 +125,13 @@ const getArticles = async () => {
         filters: temp,
         order: sort.order,
         orderBy: sort.field,
+        account_id: props.modelValue.account_id
     };
 
     console.log(query);
 
     const csrfToken = document.head.querySelector("[name~=csrf-token][content]").content;
-	/*
+    /*
     let res = await fetch('/api/external/get-articles-from-cloud-market',
         {
             headers: {
@@ -165,7 +166,7 @@ const getArticles = async () => {
         } catch (e) {
         }
     }
-	*/
+	  */
     try {
         let res = await axios.post('/api/external/get-articles-from-cloud-market',query)
 
@@ -264,22 +265,41 @@ const resetFilters = () => {
 }
 
 const checkProduct = (article) => {
-    let item = props.modelValue.items.find((item) => item.data.code == article.code)
-    let index = props.modelValue.items.findIndex((item) => item.data.code == article.code)
+    let item = props.modelValue.items.find((item) => item.product_code == article.code)
+    let index = props.modelValue.items.findIndex((item) => item.product_code == article.code)
     return index == -1 ? add(article) : remove(item, index)
 }
 
 const add = async (article) => {
     try {
+        let childs = []
+        if (article.priceMonthly_spa) {
+            childs.push({
+                name: article.productName,
+                price_plan_code: 'monthly',
+                contract_length: article.contractTermMonths,
+                raw_price: article.priceMonthly,
+                price: article.priceMonthly_spa,
+            })
+        }
+        if (article.priceInstall_spa) {
+            childs.push({
+                name: article.productName + ' (service install)',
+                price_plan_code: 'single',
+                raw_price: article.priceInstall,
+                price: article.priceInstall_spa,
+            })
+        }
+
         let res = await axios.post('/api/quote-items',
             {
                 quote_id: props.modelValue.id,
                 product_id: null,
                 quantity: 1,
+                product_code: article.code,
                 name: article.productName,
                 data: article,
-                price: article.priceInstall ?? 0,
-                price_monthly: article.priceMonthly ?? 0
+                children: childs
             })
         props.modelValue.items.push(res.data)
     } catch (ex) {
@@ -330,11 +350,13 @@ getArticles()
                     </div>
                     <div class="d-flex justify-content-between align-items-center">
                         <p class="fs-4 me-3 mb-0"><b>Add {{ modelValue.items.length }} products</b></p>
-                        <button v-if="modelValue.items.length == 0" class="btn btn-primary continue-btn" type="button" disabled>
+                        <button v-if="modelValue.items.length == 0" class="btn btn-primary continue-btn" type="button"
+                            disabled>
                             Continue
                             <font-awesome-icon :icon="['fas', 'arrow-right']" class="ms-2"></font-awesome-icon>
                         </button>
-                        <a v-else class="btn btn-primary continue-btn" type="submit" :href="route('quotes.show', { quote: modelValue.id })">
+                        <a v-else class="btn btn-primary continue-btn" type="submit"
+                            :href="route('quotes.show', { quote: modelValue.id })">
                             Continue
                             <font-awesome-icon :icon="['fas', 'arrow-right']" class="ms-2"></font-awesome-icon>
                         </a>
@@ -364,16 +386,13 @@ getArticles()
                             <ul class="d-flex list-unstyled ms-2 mb-0">
                                 <li>
                                     <template v-for="(selectedFilter, column) in selectedFilters">
-                                        <Badge
-                                            v-for="value in selectedFilter.value"
+                                        <Badge v-for="value in selectedFilter.value"
                                             :value="['speed', 'bearer'].includes(column) ? format.speed(value) : (['contractTermMonths'].includes(column) ? value + ' Months' : value)"
-                                            class="px-3 py-1"
-                                            data-toggle="tooltip"
-                                            data-placement="top"
-                                            :title="selectedFilter.name"
-                                        >
+                                            class="px-3 py-1" data-toggle="tooltip" data-placement="top"
+                                            :title="selectedFilter.name">
                                             <template #close-button>
-                                                <font-awesome-icon :icon="['fas', 'x']" role="button" class="ms-1 fs-7" @click="removeFilter(selectedFilter, value)"/>
+                                                <font-awesome-icon :icon="['fas', 'x']" role="button" class="ms-1 fs-7"
+                                                    @click="removeFilter(selectedFilter, value)" />
                                             </template>
                                         </Badge>
                                     </template>
@@ -385,15 +404,12 @@ getArticles()
                         </div>
                     </div>
                 </div>
-
                 <div id="filters" v-if="showFilters" class="p-0 m-0 mt-2 mb-4 row">
                     <div class="col-lg-2 col-12 p-0 pe-1">
                         <label for="filter-provider" class="form-label">Provider</label>
-                        <MultiSelect v-model="filters['providerName'].value" style="width:100%"
-                            :options="Object.keys(filterList.providerName)" placeholder="All" size="small"
-                            :disabled="meta.isUpdating"
-                            class="custom-multiselect"
-                        >
+                        <MultiSelect id="provider-multiselect" v-model="filters['providerName'].value"
+                            style="width:100%" :options="Object.keys(filterList.providerName)" placeholder="All"
+                            size="small" :disabled="meta.isUpdating" class="custom-multiselect">
                             <template #option="slotProps">
                                 <div style="font-size:14px;line-height: 1.5rem;">{{ slotProps.option }}
                                     ( {{ filterList.providerName[slotProps.option] }} )
@@ -403,9 +419,9 @@ getArticles()
                     </div>
                     <div class="col-lg-2 col-12 p-0 pe-1">
                         <label for="filter-subprovider" class="form-label">Subprovider</label>
-                        <MultiSelect v-model="filters['connectivitySupplierName'].value" style="width:100%"
-                            :options="Object.keys(filterList.connectivitySupplierName)" placeholder="All"
-                            class="me-3 custom-multiselect" :disabled="meta.isUpdating">
+                        <MultiSelect id="subprovider-multiselect" v-model="filters['connectivitySupplierName'].value"
+                            style="width:100%" :options="Object.keys(filterList.connectivitySupplierName)"
+                            placeholder="All" class="me-3 custom-multiselect" :disabled="meta.isUpdating">
                             <template #option="slotProps">
                                 <div style="font-size:14px;line-height: 1.5rem;">{{ slotProps.option }}
                                     ( {{ filterList.connectivitySupplierName[slotProps.option] }} )
@@ -426,10 +442,9 @@ getArticles()
                     </div>
                     <div class="col-lg-2 col-12 p-0 pe-1">
                         <label for="filter-contract" class="form-label">Bearer</label>
-
-                        <MultiSelect v-model="filters['bearer'].value" style="width:100%"
-                                        :options="filterList.bearer" optionLabel="label" optionValue="value" placeholder="All"
-                                        class="me-3 custom-multiselect " :disabled="meta.isUpdating">
+                        <MultiSelect v-model="filters['bearer'].value" style="width:100%" :options="filterList.bearer"
+                            optionLabel="label" optionValue="value" placeholder="All" class="me-3 custom-multiselect "
+                            :disabled="meta.isUpdating">
                             <template #option="slotProps">
                                 <div style="font-size:14px;line-height: 1.5rem;">
                                     {{ slotProps.option.label }}
@@ -439,9 +454,9 @@ getArticles()
                     </div>
                     <div class="col-lg-2 col-12 p-0 pe-1">
                         <label for="filter-contract" class="form-label">Speed</label>
-                        <MultiSelect v-model="filters['speed'].value" style="width:100%"
-                                        :options="filterList.speed" optionLabel="label" optionValue="value" placeholder="All"
-                                        class="me-3 custom-multiselect " :disabled="meta.isUpdating">
+                        <MultiSelect v-model="filters['speed'].value" style="width:100%" :options="filterList.speed"
+                            optionLabel="label" optionValue="value" placeholder="All" class="me-3 custom-multiselect "
+                            :disabled="meta.isUpdating">
                             <template #option="slotProps">
                                 <div style="font-size:14px;line-height: 1.5rem;">
                                     {{ slotProps.option.label }}
@@ -451,27 +466,25 @@ getArticles()
                     </div>
                     <div class="col-lg-2 col-12 d-flex align-self-end justify-content-around">
                         <button class="btn btn-secondary btn-sm mt-2 me-2 w-100" @click="resetFilters()"
-                                :disabled="meta.isUpdating">Reset</button>
+                            :disabled="!meta.isUpdating">Reset</button>
                         <div class="advanced-settings pt-2 w-100">
-                            <button class="btn btn-secondary dropdown-toggle lh-1 w-100" type="button"
-                                    data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside"
-                                    :disabled="meta.isUpdating">
+                            <button id="btn-more-filters" class="btn btn-secondary dropdown-toggle lh-1 w-100" type="button"
+                                data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside"
+                                :disabled="meta.isUpdating">
                                 <font-awesome-icon :icon="['fas', 'gear']"></font-awesome-icon>
                             </button>
                             <ul class="dropdown-menu dropdown-menu-end p-1">
                                 <li>
                                     <div class="checkbox d-flex px-3">
-                                        <input class="form-check-input me-2" type="checkbox"
-                                                value="filter-lower-cost" id="filter-lower-cost"
-                                                v-model="showLowestCost">
+                                        <input class="form-check-input me-2" type="checkbox" value="filter-lower-cost"
+                                            id="filter-lower-cost" v-model="showLowestCost">
                                         <label class="form-check-label" for="filter-lower-cost">
                                             Only show lowest cost router
                                         </label>
                                     </div>
                                     <div class="checkbox d-flex px-3">
-                                        <input class="form-check-input me-2" type="checkbox"
-                                                value="filter-show-quoted" id="filter-show-quoted"
-                                                v-model="showQuoted">
+                                        <input class="form-check-input me-2" type="checkbox" value="filter-show-quoted"
+                                            id="filter-show-quoted" v-model="showQuoted">
                                         <label class="form-check-label" for="filter-show-quoted">
                                             Show quoted items
                                         </label>
@@ -514,7 +527,8 @@ getArticles()
                                         </template>
                                     </span>
                                 </th>
-                                <th class="text-center" :style="{ whiteSpace: 'nowrap' }" @click="orderBy('providerName')">
+                                <th class="text-center" :style="{ whiteSpace: 'nowrap' }"
+                                    @click="orderBy('providerName')">
                                     Provider
                                     <span class="text-center d-inline-block align-middle" style="width: 20px;">
                                         <template v-if="sort.field == 'providerName'">
@@ -527,7 +541,8 @@ getArticles()
                                         </template>
                                     </span>
                                 </th>
-                                <th class="text-center" :style="{ whiteSpace: 'nowrap' }" @click="orderBy('connectivitySupplierName')">
+                                <th class="text-center" :style="{ whiteSpace: 'nowrap' }"
+                                    @click="orderBy('connectivitySupplierName')">
                                     Subprovider
                                     <span class="text-center d-inline-block align-middle" style="width: 20px;">
                                         <template v-if="sort.field == 'connectivitySupplierName'">
@@ -636,7 +651,7 @@ getArticles()
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="article in articles" style="text-align: center;">
+                            <tr class="connectivity-table-item" v-for="(article, index) in articles" style="text-align: center;">
                                 <td class="lh-sm text-left ps-3">
                                     {{ article.productName }}
                                     <span v-if="article.additionalInfo['Primary Router Model']" v-tooltip
@@ -659,8 +674,10 @@ getArticles()
                                 </td>
                                 <td>{{ bytesFormatter(article.bearer) }} </td>
                                 <td>{{ bytesFormatter(article.speed) }} </td>
-                                <td>{{ GBP.format(article.priceInstall) }} </td>
-                                <td>{{ GBP.format(article.priceMonthly) }} </td>
+                                <td :id="'line-' + index + '-price-install'">{{ GBP.format(article.priceInstall_spa) }}
+                                </td>
+                                <td :id="'line-' + index + '-price-monthly'">{{ GBP.format(article.priceMonthly_spa) }}
+                                </td>
                                 <td>
                                     <template v-if="article.priceECC">
                                         {{ GBP.format(article.priceECC) }}
@@ -672,19 +689,13 @@ getArticles()
                                 </td>
                                 <td>{{ article.contractTermMonths }} Months </td>
                                 <td class="text-end">
-                                    <button
-                                        v-if="modelValue.items.find((item) => item.data.code == article.code)"
-                                        class="btn btn-primary me-2 py-1"
-                                        @click="checkProduct(article)"
-                                    >
+                                    <button v-if="modelValue.items.find((item) => item.product_code == article.code)"
+                                        class="btn btn-primary me-2 py-1" @click="checkProduct(article)">
                                         <font-awesome-icon :icon="['fas', 'check']" />
                                         Added
                                     </button>
-                                    <button
-                                        v-else
-                                        class="btn btn-outline-primary me-2 py-1"
-                                        @click="checkProduct(article)"
-                                    >
+                                    <button v-else class="btn btn-outline-primary me-2 py-1"
+                                        @click="checkProduct(article)">
                                         <font-awesome-icon :icon="['fas', 'plus']" />
                                         Add
                                     </button>
@@ -692,15 +703,9 @@ getArticles()
                             </tr>
                         </tbody>
                     </table>
-                    <Paginator
-                        v-model:first="meta.first"
-                        :rows="meta.limit"
-                        :pageLinkSize="5"
-                        :totalRecords="meta.total"
-                        :rowsPerPageOptions="[10, 25, 50]"
-                        @page="handlePaginator"
-                        class="custom-paginator"
-                    >
+                    <Paginator v-model:first="meta.first" :rows="meta.limit" :pageLinkSize="5"
+                        :totalRecords="meta.total" :rowsPerPageOptions="[10, 25, 50]" @page="handlePaginator"
+                        class="custom-paginator">
                     </Paginator>
                 </div>
                 <div class="d-flex justify-content-end align-items-center my-5">
@@ -709,7 +714,8 @@ getArticles()
                         Continue
                         <font-awesome-icon :icon="['fas', 'arrow-right']" class="ms-2"></font-awesome-icon>
                     </button>
-                    <a v-else class="btn btn-primary" type="submit" :href="route('quotes.show', { quote: modelValue.id })">
+                    <a v-else class="btn btn-primary" type="submit"
+                        :href="route('quotes.show', { quote: modelValue.id })">
                         Continue
                         <font-awesome-icon :icon="['fas', 'arrow-right']" class="ms-2"></font-awesome-icon>
                     </a>
@@ -719,11 +725,11 @@ getArticles()
     </div>
 
     <Dialog v-model:visible="showLoadingModal" modal :show-header="false" class="loading-modal px-4"
-            :breakpoints="{ '1199px': '75vw', '575px': '90vw' }" :draggable="false">
+        :breakpoints="{ '1199px': '75vw', '575px': '90vw' }" :draggable="false">
         <div class="panel">
             <div class="row">
                 <div class="text-center">
-                    <Spinner class="mt-5 mb-4 d-flex justify-content-center"/>
+                    <Spinner class="mt-5 mb-4 d-flex justify-content-center" />
                     <h4><strong>Finding your available products</strong></h4>
                     <h6>This may take a few moments, the perfect <br> chance to grab a coffee!</h6>
                     <div class="cpq-bar-bg">
@@ -732,7 +738,7 @@ getArticles()
                     <p>
                         <strong>{{ meta.overallTotal }}</strong>
                         results retrieved so far
-                        <a href="#" class="text-dark" @click.prevent="showLoadingModal=false">view now</a>
+                        <a href="#" class="text-dark" @click.prevent="showLoadingModal = false">view now</a>
                     </p>
                 </div>
             </div>
@@ -786,5 +792,4 @@ tr.active td {
     background-color: var(--purple);
     animation: progressBar 100s linear forwards;
 }
-
 </style>

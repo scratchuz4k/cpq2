@@ -65,20 +65,6 @@ const items = ref([
                         <input id="price-name" type="number" class="form-control" v-model="price.net">
                     </div>
                     <div class="mb-3">
-                        <label for="price-name" class="form-label">Tax:</label>
-                        <input id="price-name" type="number" class="form-control" v-model="price.tax">
-                    </div>
-                    <div class="mb-3">
-                        <label for="price-name" class="form-label">Gross:</label>
-                        <input id="price-name" type="number" class="form-control" v-model="price.gross">
-                    </div>
-                    <div class="mb-3">
-                        <label for="price-name" class="form-label">SPA:</label>
-                        <select class="form-select" v-model="price.spa_id">
-                            <option v-for="spa in spas" :value="spa.id">{{ spa.name }}</option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
                         <label for="price-name" class="form-label">Product:</label>
                         <select class="form-select" v-model="price.product_id">
                             <option v-for="product in products" :value="product.id">{{ product.name }}</option>

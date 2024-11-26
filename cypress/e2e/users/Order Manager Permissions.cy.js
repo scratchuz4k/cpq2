@@ -86,7 +86,7 @@ describe('Order Manager Permissions', () => {
         models.forEach((model) => {
             cy.visit('/')
             cy.get("#my-account").click()
-            cy.get(`#${model.url}-btn`).click()
+            cy.get(`#link-${model.url}`).click()
             cy.get(`#${model.name.toLowerCase()}-create-btn`).click()
 
             model.fields.forEach((field) => {
@@ -98,7 +98,7 @@ describe('Order Manager Permissions', () => {
             })
 
             cy.get(`#btn-save-${model.name.toLowerCase()}`).click()
-            cy.get("#data-table-search").type(model.fields[0].value)
+            cy.get("#datatable-search").type(model.fields[0].value)
             cy.get(".p-datatable-table").contains(model.fields[0].value)
         })
     })

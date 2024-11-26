@@ -4,7 +4,7 @@ namespace App\Helpers\Prices\Rules;
 
 use App\Models\Spa;
 use App\Models\SpaRule;
-use App\Helpers\Prices\Enums\SpaRulesEnum;
+use App\Enums\SpaRulesEnum;
 
 class RuleSupplier
 {
@@ -16,7 +16,7 @@ class RuleSupplier
         $rule = SpaRule::where("code", SpaRulesEnum::Supplier->name)->first();
         $object->spas->push(
             ...Spa::where('field_1', $object->supplier->id)
-                ->where('field_2', null)
+                ->where('field_2', 0)
                 ->where('rule_id',  $rule->id)
                 ->get()
         );
