@@ -24,20 +24,37 @@ class QuoteService
         }
 
         $quote->update(['status' => get_quote_status($quote->refresh())]);
-
-        foreach ($quote->itemsNoTree  as $quote_item) {
-            $quote_item->computeTotals();
-        }
-        $quote->computeTotals();
-
         return $quote->refresh();
     }
 
     public function update(Quote $quote, array $array): Quote
     {
         $quote->update($array);
+
+        if (array_key_exists('discounts', $array)) {
+            $discounts = $array['discounts'];
+            if (array_key_exists('pricePlans', $discounts)) {
+                foreach ($discounts['pricePlans'] as $key => $discount) {
+                    $pricePlan = PricePlan::where('code', $key)->first();
+
+                    if (!$pricePlan) {
+                        continue;
+                    }
+
+                    $quote->discounts()->updateOrCreate([
+                        "discountable_type" => PricePlan::class,
+                        "discountable_id" => $pricePlan->id,
+                    ], [
+                        "discount" =>  $discount
+                    ]);
+                }
+            }
+            foreach ($quote->itemsNoTree as $item) {
+                $item->computeTotals();
+            }
+        }
+
         if (array_key_exists('items', $array)) {
-            //TODO: CHANGE THE WAY QUOTES INTERACT WITH QUOTES ITEMS, to many logic in multiple places
             $olderItems = collect($quote->items);
             foreach ($array['items'] as $quote_item) {
                 if (array_key_exists('id', $quote_item) && !is_null($quote_item['id'])) {
@@ -58,32 +75,6 @@ class QuoteService
         }
 
         $quote->update(['status' => get_quote_status($quote->refresh())]);
-
-        if (array_key_exists('discounts', $array)) {
-            $discounts = $array['discounts'];
-            if (array_key_exists('pricePlans', $discounts)) {
-                foreach ($discounts['pricePlans'] as $key => $discount) {
-                    $pricePlan = PricePlan::where('code', $key)->first();
-
-                    if (!$pricePlan) {
-                        continue;
-                    }
-
-                    $quote->discounts()->updateOrCreate([
-                        "discountable_type" => PricePlan::class,
-                        "discountable_id" => $pricePlan->id,
-                    ], [
-                        "discount" =>  $discount
-                    ]);
-                }
-            }
-        }
-
-        foreach ($quote->itemsNoTree as $quote_item) {
-            $quote_item->computeTotals();
-        }
-        $quote->computeTotals();
-
         return $quote->refresh();
     }
 }

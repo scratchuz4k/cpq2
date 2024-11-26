@@ -23,8 +23,6 @@ class QuoteItemService
         ]);
 
         if (array_key_exists('children', $array)) {
-
-
             foreach ($array['children'] as $child) {
                 if (array_key_exists("price_plan_code", $child)) {
                     $id = PricePlan::where('code', $child["price_plan_code"])->value("id");
@@ -43,8 +41,6 @@ class QuoteItemService
             }
         }
 
-        $quoteItem->computeTotals();
-        $quoteItem->quote->computeTotals();
         $quoteItem->quote->update(['status' => get_quote_status($quoteItem->quote)]);
         return $quoteItem;
     }
@@ -53,8 +49,6 @@ class QuoteItemService
     {
         $quoteItem->update($array);
 
-        $quoteItem->computeTotals();
-        $quoteItem->quote->computeTotals();
         $quoteItem->quote->update(['status' => get_quote_status($quoteItem->quote)]);
         return $quoteItem;
     }
