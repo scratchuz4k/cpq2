@@ -396,7 +396,7 @@ getArticles()
                         <div class="col-lg-2 col-12 p-0 pe-1">
                             <label for="filter-contract" class="form-label">Min. Speed</label>
                             <Select v-model="filters['speed'].value" style="width:100%"
-                                         :options="filterList.speed" optionLabel="label" optionValue="value" placeholder="All"
+                                         :options="[{label: 'All', value: null}, ...filterList.speed]" optionLabel="label" optionValue="value" placeholder="All"
                                          class="me-3 custom-multiselect " :disabled="!meta.isUpdating">
                                 <template #option="slotProps">
                                     <div style="font-size:14px;line-height: 1.5rem;">
