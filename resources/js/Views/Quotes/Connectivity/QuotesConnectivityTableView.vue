@@ -19,6 +19,7 @@ const showLowestCost = ref(true)
 const showQuoted = ref(false)
 const showFilters = ref(true)
 const articles = ref([])
+const errors = ref([])
 const selectedFilters = ref([]);
 const filters = reactive({
     providerName: {
@@ -101,7 +102,7 @@ const getArticles = async () => {
         temp.push({ column: key, operator: filters[key].operator, value: filters[key].value ?? null })
     })
     if (showQuoted.value) {
-        let items = props.modelValue.items.length ? props.modelValue.items.filter((item) => item.data.code).map((item) => item.data.code) : ['#']
+        let items = props.modelValue.items.length ? props.modelValue.items.filter((item) => item.product_code).map((item) => item.product_code) : ['#']
         temp.push({ column: 'code', operator: 'in', value: items })
     }
     if (showLowestCost.value) {
@@ -114,20 +115,24 @@ const getArticles = async () => {
         latitude: props.modelValue.address_position?.lat,
         longitude: props.modelValue.address_position?.lon,
         uprn: props.modelValue.address_data?.uprn,
-        street: props.modelValue.address_data?.thoroughfareName,
-        town: props.modelValue.address_city,
+        street: props.modelValue.address_data?.thoroughfareName ?? props.modelValue.address_data?.dependentThoroughfareName,
+        town: props.modelValue.address_city ?? props.modelValue.address_data?.locality  ?? props.modelValue.address_data?.doubleDependentLocality,
         addressKey: props.modelValue.address_data?.addressKey,
-        buildingNumber: props.modelValue.address_data?.thoroughfareNumber ?? props.modelValue.address_data.BuildingNumber,
-        buildingName: props.modelValue.address_data?.premisesName ?? props.modelValue.address_data.BuildingName ?? props.modelValue.address_data?.organisationName,
+        buildingNumber: props.modelValue.address_data?.thoroughfareNumber,
+        buildingName: props.modelValue.address_data?.premisesName ?? props.modelValue.address_data?.organisationName,
+        subPremises: props.modelValue.address_data?.subPremises,
         page: meta.page,
         perPage: meta.limit,
         filters: temp,
         order: sort.order,
         orderBy: sort.field,
+        account_id: props.modelValue.account_id
     };
 
+    console.log(query);
+
     const csrfToken = document.head.querySelector("[name~=csrf-token][content]").content;
-	/*
+    /*
     let res = await fetch('/api/external/get-articles-from-cloud-market',
         {
             headers: {
@@ -162,40 +167,66 @@ const getArticles = async () => {
         } catch (e) {
         }
     }
-	*/
-    let res = await axios.post('/api/external/get-articles-from-cloud-market',query)
+	  */
+    try {
+        let res = await axios.post('/api/external/get-articles-from-cloud-market',query)
 
-	articles.value = res.data.data
-	isLoading.value = false
-	meta.first = (meta.page - 1) * meta.limit
-	meta.total = res.data.total
-	meta.overallTotal = res.data.overall_total
-	meta.isUpdating = !!res.data.finished_at
-	Object.assign(filterList, res.data.filters)
+        articles.value = res.data.data
+        const errorMessages = {
+            "BadGateway": "An error occurred due to a gateway issue.",
+            "Request timed out": "The request has timed out.",
+            "InternalServerError": "An error occurred on the server.",
+            "An error occurred while sending the request": "An error occurred while sending the request.",
+            "TooManyRequests": "The system is experiencing a high volume of requests.",
+            "Too Many Attempts": "The system is currently processing many requests."
+        };
 
-    let bearerFilters = []
-    Object.keys(filterList.bearer).forEach((key) => {
-        bearerFilters.push({
-            label: format.speed(key),
-            value: key
+        errors.value = res.data.errors.map((error) => {
+            for (const [key, message] of Object.entries(errorMessages)) {
+                if (error.response.includes(key)) {
+                    return { provider: error.provider, response: message };
+                }
+            }
+            return error;
+        });
+        isLoading.value = false
+        meta.first = (meta.page - 1) * meta.limit
+        meta.total = res.data.total
+        meta.overallTotal = res.data.overall_total
+        meta.isUpdating = false
+        console.log(meta.isUpdating);
+        Object.assign(filterList, res.data.filters)
+
+        let bearerFilters = []
+        Object.keys(filterList.bearer).forEach((key) => {
+            bearerFilters.push({
+                label: format.speed(key),
+                value: key
+            })
         })
-    })
-    filterList.bearer = bearerFilters
+        filterList.bearer = bearerFilters
 
-    let speedFilters = []
-    Object.keys(filterList.speed).forEach((key) => {
-        speedFilters.push({
-            label: format.speed(key),
-            value: key
+        let speedFilters = []
+        Object.keys(filterList.speed).forEach((key) => {
+            speedFilters.push({
+                label: format.speed(key),
+                value: key
+            })
         })
-    })
-    filterList.speed = speedFilters
+        filterList.speed = speedFilters
 
-    selectedFilters.value = Object.fromEntries(
-        Object.entries(filters).filter(([key, filter]) => filter.value !== null)
-    )
+        selectedFilters.value = Object.fromEntries(
+            Object.entries(filters).filter(([key, filter]) => filter.value !== null)
+        )
 
-    showLoadingModal.value = false
+        showLoadingModal.value = false
+
+    } catch (error) {
+        console.log(error);
+        notyf.error(error)
+        isLoading.value = false
+        meta.isUpdating = false
+    }
 }
 
 
@@ -235,22 +266,41 @@ const resetFilters = () => {
 }
 
 const checkProduct = (article) => {
-    let item = props.modelValue.items.find((item) => item.data.code == article.code)
-    let index = props.modelValue.items.findIndex((item) => item.data.code == article.code)
+    let item = props.modelValue.items.find((item) => item.product_code == article.code)
+    let index = props.modelValue.items.findIndex((item) => item.product_code == article.code)
     return index == -1 ? add(article) : remove(item, index)
 }
 
 const add = async (article) => {
     try {
+        let childs = []
+        if (article.priceMonthly_spa) {
+            childs.push({
+                name: article.productName,
+                price_plan_code: 'monthly',
+                contract_length: article.contractTermMonths,
+                raw_price: article.priceMonthly,
+                price: article.priceMonthly_spa,
+            })
+        }
+        if (article.priceInstall_spa) {
+            childs.push({
+                name: article.productName + ' (service install)',
+                price_plan_code: 'single',
+                raw_price: article.priceInstall,
+                price: article.priceInstall_spa,
+            })
+        }
+
         let res = await axios.post('/api/quote-items',
             {
                 quote_id: props.modelValue.id,
                 product_id: null,
                 quantity: 1,
+                product_code: article.code,
                 name: article.productName,
                 data: article,
-                price: article.priceInstall ?? 0,
-                price_monthly: article.priceMonthly ?? 0
+                children: childs
             })
         props.modelValue.items.push(res.data)
     } catch (ex) {
@@ -292,7 +342,7 @@ getArticles()
 <template>
     <div>
         <InfoConnectivity :quote="modelValue"></InfoConnectivity>
-        <div class="row mb-4">
+        <div class="row mb-2">
             <div class="col position-relative">
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <div class="d-flex justify-content-between align-items-center">
@@ -301,14 +351,30 @@ getArticles()
                     </div>
                     <div class="d-flex justify-content-between align-items-center">
                         <p class="fs-4 me-3 mb-0"><b>Add {{ modelValue.items.length }} products</b></p>
-                        <button v-if="modelValue.items.length == 0" class="btn btn-primary continue-btn" type="button" disabled>
+                        <button v-if="modelValue.items.length == 0" class="btn btn-primary continue-btn" type="button"
+                            disabled>
                             Continue
                             <font-awesome-icon :icon="['fas', 'arrow-right']" class="ms-2"></font-awesome-icon>
                         </button>
-                        <a v-else class="btn btn-primary continue-btn" type="submit" :href="route('quotes.show', { quote: modelValue.id })">
+                        <a v-else class="btn btn-primary continue-btn" type="submit"
+                            :href="route('quotes.show', { quote: modelValue.id })">
                             Continue
                             <font-awesome-icon :icon="['fas', 'arrow-right']" class="ms-2"></font-awesome-icon>
                         </a>
+                    </div>
+                </div>
+                <div v-if="errors.length">
+                    <div class="row">
+                        <div class="col">
+                            <InfoBox class="mb-2 py-0" severity="info">
+                                <div class="small">
+                                    <div class="mb-2 fw-bold">There were issues retrieving data from the following providers:</div>
+                                    <div v-for="error in errors" class="mb-1">
+                                        <span class="small fw-bold bg-light rounded-2 py-1 px-2 me-1 text-capitalize">{{ error?.provider }}</span><i>{{error?.response}}</i>
+                                    </div>
+                                </div>
+                            </InfoBox>
+                        </div>
                     </div>
                 </div>
                 <div class="row">
@@ -330,7 +396,8 @@ getArticles()
                                             :title="selectedFilter.name"
                                         >
                                             <template #close-button>
-                                                <font-awesome-icon :icon="['fas', 'x']" role="button" class="ms-1 fs-7" @click="removeFilter(selectedFilter, value)"/>
+                                                <font-awesome-icon :icon="['fas', 'x']" role="button" class="ms-1 fs-7"
+                                                    @click="removeFilter(selectedFilter, value)" />
                                             </template>
                                         </Badge>
                                     </template>
@@ -437,7 +504,8 @@ getArticles()
                             </div>
                         </div>
                     </div>
-                <div v-if="isLoading || !meta.isUpdating" data-provider="loading" class="position-relative">
+                </div>
+                <div v-if="isLoading || meta.isUpdating" data-provider="loading" class="position-relative">
                     <div class="cpq-progress-bar" style="position: absolute;z-index: 2; ">
                         <div class="cpq-bar"></div>
                         <div class="cpq-bar-text" v-if="!articles.length">
@@ -470,7 +538,8 @@ getArticles()
                                         </template>
                                     </span>
                                 </th>
-                                <th class="text-center" :style="{ whiteSpace: 'nowrap' }" @click="orderBy('providerName')">
+                                <th class="text-center" :style="{ whiteSpace: 'nowrap' }"
+                                    @click="orderBy('providerName')">
                                     Provider
                                     <span class="text-center d-inline-block align-middle" style="width: 20px;">
                                         <template v-if="sort.field == 'providerName'">
@@ -483,7 +552,8 @@ getArticles()
                                         </template>
                                     </span>
                                 </th>
-                                <th class="text-center" :style="{ whiteSpace: 'nowrap' }" @click="orderBy('connectivitySupplierName')">
+                                <th class="text-center" :style="{ whiteSpace: 'nowrap' }"
+                                    @click="orderBy('connectivitySupplierName')">
                                     Subprovider
                                     <span class="text-center d-inline-block align-middle" style="width: 20px;">
                                         <template v-if="sort.field == 'connectivitySupplierName'">
@@ -592,7 +662,7 @@ getArticles()
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="article in articles" style="text-align: center;">
+                            <tr class="connectivity-table-item" v-for="(article, index) in articles" style="text-align: center;">
                                 <td class="lh-sm text-left ps-3">
                                     {{ article.productName }}
                                     <span v-if="article.additionalInfo['Primary Router Model']" v-tooltip
@@ -615,8 +685,10 @@ getArticles()
                                 </td>
                                 <td>{{ bytesFormatter(article.bearer) }} </td>
                                 <td>{{ bytesFormatter(article.speed) }} </td>
-                                <td>{{ GBP.format(article.priceInstall) }} </td>
-                                <td>{{ GBP.format(article.priceMonthly) }} </td>
+                                <td :id="'line-' + index + '-price-install'">{{ GBP.format(article.priceInstall_spa) }}
+                                </td>
+                                <td :id="'line-' + index + '-price-monthly'">{{ GBP.format(article.priceMonthly_spa) }}
+                                </td>
                                 <td>
                                     <template v-if="article.priceECC">
                                         {{ GBP.format(article.priceECC) }}
@@ -628,19 +700,13 @@ getArticles()
                                 </td>
                                 <td>{{ article.contractTermMonths }} Months </td>
                                 <td class="text-end">
-                                    <button
-                                        v-if="modelValue.items.find((item) => item.data.code == article.code)"
-                                        class="btn btn-primary me-2 py-1"
-                                        @click="checkProduct(article)"
-                                    >
+                                    <button v-if="modelValue.items.find((item) => item.product_code == article.code)"
+                                        class="btn btn-primary me-2 py-1" @click="checkProduct(article)">
                                         <font-awesome-icon :icon="['fas', 'check']" />
                                         Added
                                     </button>
-                                    <button
-                                        v-else
-                                        class="btn btn-outline-primary me-2 py-1"
-                                        @click="checkProduct(article)"
-                                    >
+                                    <button v-else class="btn btn-outline-primary me-2 py-1"
+                                        @click="checkProduct(article)">
                                         <font-awesome-icon :icon="['fas', 'plus']" />
                                         Add
                                     </button>
@@ -648,15 +714,9 @@ getArticles()
                             </tr>
                         </tbody>
                     </table>
-                    <Paginator
-                        v-model:first="meta.first"
-                        :rows="meta.limit"
-                        :pageLinkSize="5"
-                        :totalRecords="meta.total"
-                        :rowsPerPageOptions="[10, 25, 50]"
-                        @page="handlePaginator"
-                        class="custom-paginator"
-                    >
+                    <Paginator v-model:first="meta.first" :rows="meta.limit" :pageLinkSize="5"
+                        :totalRecords="meta.total" :rowsPerPageOptions="[10, 25, 50]" @page="handlePaginator"
+                        class="custom-paginator">
                     </Paginator>
                 </div>
                 <div class="d-flex justify-content-end align-items-center my-5">
@@ -665,7 +725,8 @@ getArticles()
                         Continue
                         <font-awesome-icon :icon="['fas', 'arrow-right']" class="ms-2"></font-awesome-icon>
                     </button>
-                    <a v-else class="btn btn-primary" type="submit" :href="route('quotes.show', { quote: modelValue.id })">
+                    <a v-else class="btn btn-primary" type="submit"
+                        :href="route('quotes.show', { quote: modelValue.id })">
                         Continue
                         <font-awesome-icon :icon="['fas', 'arrow-right']" class="ms-2"></font-awesome-icon>
                     </a>
@@ -675,11 +736,11 @@ getArticles()
     </div>
 
     <Dialog v-model:visible="showLoadingModal" modal :show-header="false" class="loading-modal px-4"
-            :breakpoints="{ '1199px': '75vw', '575px': '90vw' }" :draggable="false">
+        :breakpoints="{ '1199px': '75vw', '575px': '90vw' }" :draggable="false">
         <div class="panel">
             <div class="row">
                 <div class="text-center">
-                    <Spinner class="mt-5 mb-4 d-flex justify-content-center"/>
+                    <Spinner class="mt-5 mb-4 d-flex justify-content-center" />
                     <h4><strong>Finding your available products</strong></h4>
                     <h6>This may take a few moments, the perfect <br> chance to grab a coffee!</h6>
                     <div class="cpq-bar-bg">
@@ -688,7 +749,7 @@ getArticles()
                     <p>
                         <strong>{{ meta.overallTotal }}</strong>
                         results retrieved so far
-                        <a href="#" class="text-dark" @click.prevent="showLoadingModal=false">view now</a>
+                        <a href="#" class="text-dark" @click.prevent="showLoadingModal = false">view now</a>
                     </p>
                 </div>
             </div>
@@ -742,5 +803,4 @@ tr.active td {
     background-color: var(--purple);
     animation: progressBar 100s linear forwards;
 }
-
 </style>

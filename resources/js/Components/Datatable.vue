@@ -127,7 +127,6 @@ setFilters()
 watch(() => [
     form.order,
     form.orderBy,
-    form.limit,
 ], function () {
     meta.page = 1
     getData()
@@ -142,7 +141,8 @@ getData()
 
 </script>
 <template>
-    <DataTable :tableProps="props.tableProps" :value="data" :rows="form.limit" stripedRows :reorderableColumns="false">
+    <DataTable :tableProps="props.tableProps" :value="data" :rows="form.limit" stripedRows
+        :reorderableColumns="false">
         <template #header>
             <div class="d-flex justify-content-between">
                 <div>
@@ -159,7 +159,7 @@ getData()
                     <InputIcon>
                         <font-awesome-icon :icon="['fas', 'search']" />
                     </InputIcon>
-                    <InputText id="data-table-search" v-model="global" type="search" placeholder="Keyword Search" />
+                    <InputText id="datatable-search" v-model="global" type="search" placeholder="Keyword Search" />
                 </IconField>
             </div>
         </template>
@@ -242,7 +242,8 @@ getData()
                     </template>
 
                     <template v-if="allow.delete">
-                        <button :id="'datatable-btn-' + index + '-delete'" class="btn p-2 mx-1 border-0" @click="deleteRecord(data.id)">
+                        <button :id="'datatable-btn-' + index + '-delete'" class="btn p-2 mx-1 border-0"
+                            @click="deleteRecord(data.id)">
                             <font-awesome-icon icon="fas fa-trash-alt" />
                         </button>
                     </template>
@@ -266,6 +267,7 @@ getData()
 .p-select-option.p-select-option-selected:hover {
     background-color: var(--color-purple) !important;
 }
+
 .p-select-option:hover {
     background-color: var(--color-purple-light) !important;
 }

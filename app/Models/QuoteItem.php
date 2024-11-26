@@ -16,6 +16,7 @@ class QuoteItem extends Model
         "quote_id",
         "product_id",
         "price_plan_id",
+        "parent_id",
         "product_code",
         "quantity",
         "name",
@@ -42,7 +43,32 @@ class QuoteItem extends Model
     protected static function booted(): void
     {
         static::addGlobalScope(new TenantScope);
+
+        static::saved(function ($quoteItem) {
+            $quoteItem->quote->computeTotals();
+            $quoteItem->quote->update(['status' => get_quote_status($quoteItem->quote)]);
+        });
+
+        static::deleted(function ($quoteItem) {
+            $quoteItem->quote->computeTotals();
+        });
     }
+    /**
+     * Get the parent user of this user.
+     */
+    public function parent()
+    {
+        return $this->hasOne(QuoteItem::class, 'id', 'parent_id');
+    }
+
+    /**
+     * Get the children users of this user.
+     */
+    public function children()
+    {
+        return $this->hasMany(QuoteItem::class, 'parent_id', 'id');
+    }
+
     public function product(): HasOne
     {
         return $this->hasOne(Product::class);
@@ -62,18 +88,20 @@ class QuoteItem extends Model
 
     public function computeTotals()
     {
-        $this->refresh();
-        $price = $this->original_price + (($this->original_price * ($this->margin / 100)));
+        $price = $this->original_price;
 
-        $discounts  = [$this->discount, $this->quote->discount];
+        $discounts = $this->quote->discounts->where('discountable_type', PricePlan::class)->where('discountable_id', $this->pricePlan->id)->pluck('discount');
+        $discounts  = [$this->discount, ...$discounts];
+
         foreach ($discounts as $discount) {
             $price = ($price * (1 - ($discount / 100)));
         }
 
         $this->price = $price;
-        $this->total = ($this->price * $this->quantity) * $this->contract_length;
-        $this->total_tax = ($this->total * ($this->tax_quote_item / 100)) * $this->contract_length;
-        $this->total_gross = ($this->total * (($this->tax_quote_item / 100) + 1)) * $this->contract_length;
+        $this->margin = $this->price - $this->raw_price;
+        $this->total = ($this->price * $this->quantity);
+        $this->total_tax = ($this->total * ($this->tax_quote_item / 100));
+        $this->total_gross = ($this->total * (($this->tax_quote_item / 100) + 1));
         $this->save();
     }
 }

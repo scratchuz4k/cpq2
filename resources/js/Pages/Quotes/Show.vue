@@ -1,17 +1,18 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link } from '@inertiajs/vue3';
-import {ref} from "vue";
+import { ref } from "vue";
 import InfoConnectivity from "@/Components/InfoConnectivity.vue";
 
 const props = defineProps({
     quote: Object,
+    pricePlans: Object,
     modelValue: Object
 });
 
 const solutionsViews = {
-    3: 'QuotesConnectivityTotalView',
-    4: 'QuotesMobileTotalView',
+    3: 'QuotesDealMakerView', //QuotesConnectivityTotalView
+    4: 'QuotesDealMakerView',
     5: 'QuotesHardwareTotalView',
 }
 
@@ -27,6 +28,7 @@ const items = ref([
     <AuthenticatedLayout :quote="quote">
         <component :is="solutionsViews[quote.solution_type.code]" v-bind="{
             modelValue: quote,
+            pricePlans: props.pricePlans,
             preview: false
         }"></component>
     </AuthenticatedLayout>
