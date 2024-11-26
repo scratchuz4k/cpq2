@@ -384,7 +384,7 @@ getArticles()
                             <label for="filter-contract" class="form-label">Min. Bearer</label>
 
                             <Select v-model="filters['bearer'].value" style="width:100%"
-                                         :options="filterList.bearer" optionLabel="label" optionValue="value" placeholder="All"
+                                         :options="[{label: 'All', value: null}, ...filterList.bearer]" optionLabel="label" optionValue="value" placeholder="All"
                                          class="me-3 custom-multiselect " :disabled="!meta.isUpdating">
                                 <template #option="slotProps">
                                     <div style="font-size:14px;line-height: 1.5rem;">
