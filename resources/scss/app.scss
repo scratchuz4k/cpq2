@@ -972,6 +972,22 @@ body {
             color: black;
         }
     }
+
+    .custom-select {
+        .p-select-label {
+            color: black;
+        }
+
+        &:not(.p-disabled) {
+            &:hover {
+                border-color: var(--purple);
+            }
+        }
+
+        .p-select-dropdown {
+            color: black;
+        }
+    }
 }
 
 .p-multiselect-header{
@@ -1006,6 +1022,24 @@ body {
                             }
                         }
                     }
+                }
+            }
+        }
+    }
+}
+
+
+.p-select-list-container {
+    .p-select-option {
+        padding: 0.25rem 0.75rem;
+
+        &:not(.p-select-option-selected) {
+            &:not(.p-disabled) {
+                color: black;
+
+                &.p-focus {
+                    color: black;
+                    background-color: var(--color-purple-light);
                 }
             }
         }

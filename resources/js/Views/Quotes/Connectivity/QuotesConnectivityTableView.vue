@@ -194,7 +194,6 @@ const getArticles = async () => {
         meta.total = res.data.total
         meta.overallTotal = res.data.overall_total
         meta.isUpdating = false
-        console.log(meta.isUpdating);
         Object.assign(filterList, res.data.filters)
 
         let bearerFilters = []
@@ -319,9 +318,12 @@ const remove = async (item, index) => {
 
 
 const removeFilter = (selectedFilter, value) => {
-    let index = selectedFilter.value.findIndex((x) => x === value)
-
-    selectedFilter.value.splice(index, 1)
+    if (Array.isArray(selectedFilter.value)) {
+        let index = selectedFilter.value.findIndex((x) => x === value)
+        selectedFilter.value.splice(index, 1)
+    } else {
+        selectedFilter.value = null
+    }
 }
 
 const handlePaginator = (ev) => {
@@ -388,7 +390,7 @@ getArticles()
                                 <li>
                                     <template v-for="(selectedFilter, column) in selectedFilters">
                                         <Badge
-                                            v-for="value in (Array.isArray(selectedFilter.value) ? selectedFilter.value : [selectedFilter.value])"
+                                            v-for="value in (Array.isArray(selectedFilter.value) ? selectedFilter.value : [selectedFilter.value]).filter(v => v !== null)"
                                             :value="['speed', 'bearer'].includes(column) ? 'Min. ' + format.speed(value) : (['contractTermMonths'].includes(column) ? value + ' Months' : value)"
                                             class="px-3 py-1"
                                             data-toggle="tooltip"
@@ -409,99 +411,93 @@ getArticles()
                         </div>
                     </div>
                 </div>
-                    <div id="filters" v-if="showFilters" class="p-0 m-0 mt-2 mb-4 row">
-                        <div class="col-lg-2 col-12 p-0 pe-1">
-                            <label for="filter-provider" class="form-label">Provider</label>
-                            <MultiSelect v-model="filters['providerName'].value" style="width:100%"
-                                :options="Object.keys(filterList.providerName)" placeholder="All" size="small"
-                                :disabled="!meta.isUpdating"
-                                class="custom-multiselect"
-                            >
-                                <template #option="slotProps">
-                                    <div style="font-size:14px;line-height: 1.5rem;">{{ slotProps.option }}
-                                        ( {{ filterList.providerName[slotProps.option] }} )
+                <div id="filters" v-if="showFilters" class="p-0 m-0 mt-2 mb-4 row">
+                    <div class="col-lg-2 col-12 p-0 pe-1">
+                        <label for="filter-provider" class="form-label">Provider</label>
+                        <MultiSelect id="provider-multiselect" v-model="filters['providerName'].value"
+                            style="width:100%" :options="Object.keys(filterList.providerName)" placeholder="All"
+                            size="small" :disabled="meta.isUpdating" class="custom-multiselect">
+                            <template #option="slotProps">
+                                <div style="font-size:14px;line-height: 1.5rem;">{{ slotProps.option }}
+                                    ( {{ filterList.providerName[slotProps.option] }} )
+                                </div>
+                            </template>
+                        </MultiSelect>
+                    </div>
+                    <div class="col-lg-2 col-12 p-0 pe-1">
+                        <label for="filter-subprovider" class="form-label">Subprovider</label>
+                        <MultiSelect id="subprovider-multiselect" v-model="filters['connectivitySupplierName'].value"
+                            style="width:100%" :options="Object.keys(filterList.connectivitySupplierName)"
+                            placeholder="All" class="me-3 custom-multiselect" :disabled="meta.isUpdating">
+                            <template #option="slotProps">
+                                <div style="font-size:14px;line-height: 1.5rem;">{{ slotProps.option }}
+                                    ( {{ filterList.connectivitySupplierName[slotProps.option] }} )
+                                </div>
+                            </template>
+                        </MultiSelect>
+                    </div>
+                    <div class="col-lg-2 col-12 p-0 pe-1">
+                        <label for="filter-contract" class="form-label">Contract Length</label>
+                        <MultiSelect v-model="filters['contractTermMonths'].value" style="width:100%"
+                            :options="Object.keys(filterList.contractTermMonths)" placeholder="All"
+                            class="me-3 custom-multiselect " :disabled="meta.isUpdating">
+                            <template #option="slotProps">
+                                <div style="font-size:14px;line-height: 1.5rem;">{{ slotProps.option }} Months
+                                </div>
+                            </template>
+                        </MultiSelect>
+                    </div>
+                    <div class="col-lg-2 col-12 p-0 pe-1">
+                        <label for="filter-contract" class="form-label">Min. Bearer</label>
+                        <Select v-model="filters['bearer'].value" style="width:100%"
+                            :options="filterList.bearer" optionLabel="label" optionValue="value" placeholder="All"
+                            class="me-3 custom-select " :disabled="meta.isUpdating">
+                            <template #option="slotProps">
+                                <div style="font-size:14px;line-height: 1.5rem;">
+                                    {{ slotProps.option.label }}
+                                </div>
+                            </template>
+                        </Select>
+                    </div>
+                    <div class="col-lg-2 col-12 p-0 pe-1">
+                        <label for="filter-contract" class="form-label">Min. Speed</label>
+                        <Select v-model="filters['speed'].value" style="width:100%"
+                                :options="filterList.speed" optionLabel="label" optionValue="value" placeholder="All"
+                                class="me-3 custom-select " :disabled="meta.isUpdating">
+                            <template #option="slotProps">
+                                <div style="font-size:14px;line-height: 1.5rem;">
+                                    {{ slotProps.option.label }}
+                                </div>
+                            </template>
+                        </Select>
+                    </div>
+                    <div class="col-lg-2 col-12 d-flex align-self-end justify-content-around">
+                        <button class="btn btn-secondary btn-sm mt-2 me-2 w-100" @click="resetFilters()"
+                            :disabled="!meta.isUpdating">Reset</button>
+                        <div class="advanced-settings pt-2 w-100">
+                            <button id="btn-more-filters" class="btn btn-secondary dropdown-toggle lh-1 w-100" type="button"
+                                data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside"
+                                :disabled="meta.isUpdating">
+                                <font-awesome-icon :icon="['fas', 'gear']"></font-awesome-icon>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end p-1">
+                                <li>
+                                    <div class="checkbox d-flex px-3">
+                                        <input class="form-check-input me-2" type="checkbox" value="filter-lower-cost"
+                                            id="filter-lower-cost" v-model="showLowestCost">
+                                        <label class="form-check-label" for="filter-lower-cost">
+                                            Only show lowest cost router
+                                        </label>
                                     </div>
-                                </template>
-                            </MultiSelect>
-                        </div>
-                        <div class="col-lg-2 col-12 p-0 pe-1">
-                            <label for="filter-subprovider" class="form-label">Subprovider</label>
-                            <MultiSelect v-model="filters['connectivitySupplierName'].value" style="width:100%"
-                                :options="Object.keys(filterList.connectivitySupplierName)" placeholder="All"
-                                class="me-3 custom-multiselect" :disabled="!meta.isUpdating">
-                                <template #option="slotProps">
-                                    <div style="font-size:14px;line-height: 1.5rem;">{{ slotProps.option }}
-                                        ( {{ filterList.connectivitySupplierName[slotProps.option] }} )
+                                    <div class="checkbox d-flex px-3">
+                                        <input class="form-check-input me-2" type="checkbox" value="filter-show-quoted"
+                                            id="filter-show-quoted" v-model="showQuoted">
+                                        <label class="form-check-label" for="filter-show-quoted">
+                                            Show quoted items
+                                        </label>
                                     </div>
-                                </template>
-                            </MultiSelect>
-                        </div>
-                        <div class="col-lg-2 col-12 p-0 pe-1">
-                            <label for="filter-contract" class="form-label">Contract Length</label>
-                            <MultiSelect v-model="filters['contractTermMonths'].value" style="width:100%"
-                                :options="Object.keys(filterList.contractTermMonths)" placeholder="All"
-                                class="me-3 custom-multiselect " :disabled="!meta.isUpdating">
-                                <template #option="slotProps">
-                                    <div style="font-size:14px;line-height: 1.5rem;">{{ slotProps.option }} Months
-                                    </div>
-                                </template>
-                            </MultiSelect>
-                        </div>
-                        <div class="col-lg-2 col-12 p-0 pe-1">
-                            <label for="filter-contract" class="form-label">Min. Bearer</label>
-
-                            <Select v-model="filters['bearer'].value" style="width:100%"
-                                         :options="[{label: 'All', value: null}, ...filterList.bearer]" optionLabel="label" optionValue="value" placeholder="All"
-                                         class="me-3 custom-multiselect " :disabled="!meta.isUpdating">
-                                <template #option="slotProps">
-                                    <div style="font-size:14px;line-height: 1.5rem;">
-                                        {{ slotProps.option.label }}
-                                    </div>
-                                </template>
-                            </Select>
-                        </div>
-                        <div class="col-lg-2 col-12 p-0 pe-1">
-                            <label for="filter-contract" class="form-label">Min. Speed</label>
-                            <Select v-model="filters['speed'].value" style="width:100%"
-                                         :options="[{label: 'All', value: null}, ...filterList.speed]" optionLabel="label" optionValue="value" placeholder="All"
-                                         class="me-3 custom-multiselect " :disabled="!meta.isUpdating">
-                                <template #option="slotProps">
-                                    <div style="font-size:14px;line-height: 1.5rem;">
-                                        {{ slotProps.option.label }}
-                                    </div>
-                                </template>
-                            </Select>
-                        </div>
-                        <div class="col-lg-2 col-12 d-flex align-self-end justify-content-around">
-                            <button class="btn btn-secondary btn-sm mt-2 me-2 w-100" @click="resetFilters()"
-                                    :disabled="!meta.isUpdating">Reset</button>
-                            <div class="advanced-settings pt-2 w-100">
-                                <button class="btn btn-secondary dropdown-toggle lh-1 w-100" type="button"
-                                        data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside"
-                                        :disabled="!meta.isUpdating">
-                                    <font-awesome-icon :icon="['fas', 'gear']"></font-awesome-icon>
-                                </button>
-                                <ul class="dropdown-menu dropdown-menu-end p-1">
-                                    <li>
-                                        <div class="checkbox d-flex px-3">
-                                            <input class="form-check-input me-2" type="checkbox"
-                                                   value="filter-lower-cost" id="filter-lower-cost"
-                                                   v-model="showLowestCost">
-                                            <label class="form-check-label" for="filter-lower-cost">
-                                                Only show lowest cost router
-                                            </label>
-                                        </div>
-                                        <div class="checkbox d-flex px-3">
-                                            <input class="form-check-input me-2" type="checkbox"
-                                                   value="filter-show-quoted" id="filter-show-quoted"
-                                                   v-model="showQuoted">
-                                            <label class="form-check-label" for="filter-show-quoted">
-                                                Show quoted items
-                                            </label>
-                                        </div>
-                                    </li>
-                                </ul>
-                            </div>
+                                </li>
+                            </ul>
                         </div>
                     </div>
                 </div>
