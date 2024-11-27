@@ -74,8 +74,9 @@ class ProductController extends BaseController
      */
     public function edit(Product $product)
     {
+
         return Inertia::render('Products/Edit', [
-            'product' => new ProductResource($product) ,
+            'product' => (new ProductResource($product->load(['prices'])))->resolve(),
             'brands' => Brand::all(),
             'suppliers' => Supplier::all()
         ]);

@@ -18,13 +18,12 @@ class ProductResource extends JsonResource
         if (is_null($this->resource)) {
             return [];
         }
-
         return [
             ...$this->resource->toArray(),
             'supplier' => $this->supplier,
             'brand' => $this->brand,
-            'price' =>  new PriceResource($this->activePrice()),
-            'prices' => PriceResource::collection($this->whenLoaded("prices", default: collect([]))),
+            'price' =>  $this->activePrice(),
+            'prices' => $this->whenLoaded("prices", default: collect([])),
             'updated_at' => $this->updated_at,
             'created_at' => $this->created_at
         ];
