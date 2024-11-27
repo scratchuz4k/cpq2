@@ -7,6 +7,7 @@ import MultiSelect from 'primevue/multiselect';
 import Dialog from "primevue/dialog";
 import format from "@/Composables/format.js";
 import Spinner from "@/Components/Spinner.vue";
+import Select from "primevue/select";
 
 const props = defineProps({
     modelValue: Object
@@ -37,12 +38,12 @@ const filters = reactive({
         name: 'Contract Length'
     },
     bearer: {
-        operator: "in",
+        operator: "greater_than_or_equal_to",
         value: null,
         name: 'Bearer'
     },
     speed: {
-        operator: "in",
+        operator: "greater_than_or_equal_to",
         value: null,
         name: 'Speed'
     }
@@ -193,7 +194,6 @@ const getArticles = async () => {
         meta.total = res.data.total
         meta.overallTotal = res.data.overall_total
         meta.isUpdating = false
-        console.log(meta.isUpdating);
         Object.assign(filterList, res.data.filters)
 
         let bearerFilters = []
@@ -318,9 +318,12 @@ const remove = async (item, index) => {
 
 
 const removeFilter = (selectedFilter, value) => {
-    let index = selectedFilter.value.findIndex((x) => x === value)
-
-    selectedFilter.value.splice(index, 1)
+    if (Array.isArray(selectedFilter.value)) {
+        let index = selectedFilter.value.findIndex((x) => x === value)
+        selectedFilter.value.splice(index, 1)
+    } else {
+        selectedFilter.value = null
+    }
 }
 
 const handlePaginator = (ev) => {
@@ -386,10 +389,14 @@ getArticles()
                             <ul class="d-flex list-unstyled ms-2 mb-0">
                                 <li>
                                     <template v-for="(selectedFilter, column) in selectedFilters">
-                                        <Badge v-for="value in selectedFilter.value"
-                                            :value="['speed', 'bearer'].includes(column) ? format.speed(value) : (['contractTermMonths'].includes(column) ? value + ' Months' : value)"
-                                            class="px-3 py-1" data-toggle="tooltip" data-placement="top"
-                                            :title="selectedFilter.name">
+                                        <Badge
+                                            v-for="value in (Array.isArray(selectedFilter.value) ? selectedFilter.value : [selectedFilter.value]).filter(v => v !== null)"
+                                            :value="['speed', 'bearer'].includes(column) ? 'Min. ' + format.speed(value) : (['contractTermMonths'].includes(column) ? value + ' Months' : value)"
+                                            class="px-3 py-1"
+                                            data-toggle="tooltip"
+                                            data-placement="top"
+                                            :title="selectedFilter.name"
+                                        >
                                             <template #close-button>
                                                 <font-awesome-icon :icon="['fas', 'x']" role="button" class="ms-1 fs-7"
                                                     @click="removeFilter(selectedFilter, value)" />
@@ -441,28 +448,28 @@ getArticles()
                         </MultiSelect>
                     </div>
                     <div class="col-lg-2 col-12 p-0 pe-1">
-                        <label for="filter-contract" class="form-label">Bearer</label>
-                        <MultiSelect v-model="filters['bearer'].value" style="width:100%" :options="filterList.bearer"
-                            optionLabel="label" optionValue="value" placeholder="All" class="me-3 custom-multiselect "
-                            :disabled="meta.isUpdating">
+                        <label for="filter-contract" class="form-label">Min. Bearer</label>
+                        <Select v-model="filters['bearer'].value" style="width:100%"
+                            :options="filterList.bearer" optionLabel="label" optionValue="value" placeholder="All"
+                            class="me-3 custom-select " :disabled="meta.isUpdating">
                             <template #option="slotProps">
                                 <div style="font-size:14px;line-height: 1.5rem;">
                                     {{ slotProps.option.label }}
                                 </div>
                             </template>
-                        </MultiSelect>
+                        </Select>
                     </div>
                     <div class="col-lg-2 col-12 p-0 pe-1">
-                        <label for="filter-contract" class="form-label">Speed</label>
-                        <MultiSelect v-model="filters['speed'].value" style="width:100%" :options="filterList.speed"
-                            optionLabel="label" optionValue="value" placeholder="All" class="me-3 custom-multiselect "
-                            :disabled="meta.isUpdating">
+                        <label for="filter-contract" class="form-label">Min. Speed</label>
+                        <Select v-model="filters['speed'].value" style="width:100%"
+                                :options="filterList.speed" optionLabel="label" optionValue="value" placeholder="All"
+                                class="me-3 custom-select " :disabled="meta.isUpdating">
                             <template #option="slotProps">
                                 <div style="font-size:14px;line-height: 1.5rem;">
                                     {{ slotProps.option.label }}
                                 </div>
                             </template>
-                        </MultiSelect>
+                        </Select>
                     </div>
                     <div class="col-lg-2 col-12 d-flex align-self-end justify-content-around">
                         <button class="btn btn-secondary btn-sm mt-2 me-2 w-100" @click="resetFilters()"

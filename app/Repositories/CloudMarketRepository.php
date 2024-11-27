@@ -52,7 +52,7 @@ class CloudMarketRepository
                 'finished_at' => $file['finished_at'],
                 'created_at' =>  $file['created_at'],
                 'filters' =>  $file['filters'],
-                'errors' =>  $file['errors'],
+                'errors' =>  array_key_exists('errors', $file) ? $file['errors'] : [],
             ]
         );
     }
