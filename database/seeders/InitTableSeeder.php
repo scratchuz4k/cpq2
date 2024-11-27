@@ -4,17 +4,21 @@ namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
-use App\Enums\PricePlanEnum;
-use App\Enums\SpaOperationsEnum;
 use App\Models\User;
+use App\Models\Tenant;
+use App\Models\SpaRule;
+use App\Models\PricePlan;
+use App\Enums\SpaRulesEnum;
+use App\Models\OrderStatus;
+use App\Enums\PricePlanEnum;
+use App\Models\SolutionType;
+use App\Models\SpaOperation;
 use Illuminate\Database\Seeder;
+use App\Enums\OrderStatusesEnum;
+use App\Enums\SpaOperationsEnum;
 use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Permission;
-use App\Enums\SpaRulesEnum;
-use App\Models\PricePlan;
-use App\Models\SpaOperation;
-use App\Models\SpaRule;
 
 class InitTableSeeder extends Seeder
 {

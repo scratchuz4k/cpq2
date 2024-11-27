@@ -66,7 +66,6 @@ class QuoteController extends BaseController
         try {
             $quote = DB::transaction(function () use ($request) {
                 $quote = $this->quoteService->store($request->all());
-                event(QuoteStatusEvent::class, $quote);
                 return $quote;
             });
         } catch (\Exception $e) {

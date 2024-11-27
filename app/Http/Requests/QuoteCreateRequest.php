@@ -34,16 +34,7 @@ class QuoteCreateRequest extends FormRequest
             'user_id' => 'required|exists:users,id',
             'account_id' => 'required|exists:accounts,id',
             'solution_type_id' => 'required|exists:solution_types,id',
-            'margin' => 'numeric|min:0|max:100',
             'discount' => 'numeric|min:0|max:100',
-            'items' => 'nullable|array',
-            'items.*.quantity' => 'required|numeric',
-            'items.*.name' => 'string',
-            'items.*.raw_price' => 'numeric',
-            'items.*.price' => 'numeric',
-            'items.*.discount' => 'numeric|min:0|max:100',
-            "items.*.price_plan_id" => "nullable|numeric|exists:price_plans,id",
-            "items.*.contract_length" => "numeric|min:1",
         ];
     }
 }

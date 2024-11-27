@@ -46,7 +46,6 @@ class QuoteItem extends Model
 
         static::saved(function ($quoteItem) {
             $quoteItem->quote->computeTotals();
-            $quoteItem->quote->update(['status' => get_quote_status($quoteItem->quote)]);
         });
 
         static::deleted(function ($quoteItem) {

@@ -26,7 +26,6 @@ class QuoteUpdateRequest extends FormRequest
             "user_id" => "exists:users,id",
             "account_id" => "exists:accounts,id",
             "solution_type_id" => "exists:solution_types,id",
-            "margin" => "numeric|min:0|max:100",
             "discount" => "numeric|min:0|max:100",
             "items" => "array",
             "items.*.quantity" => "required|numeric",

@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Api;
 
 use Exception;
-use App\Models\User;
 use App\Models\Order;
 use Illuminate\Http\Request;
 use App\Helpers\DataProvider;

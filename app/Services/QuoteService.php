@@ -4,9 +4,7 @@ namespace App\Services;
 
 use App\Models\PricePlan;
 use App\Models\Quote;
-use App\Models\QuoteDiscount;
 use App\Models\QuoteItem;
-use Illuminate\Support\Facades\DB;
 
 class QuoteService
 {
@@ -15,22 +13,11 @@ class QuoteService
     public function store(array $array): Quote
     {
         $quote = Quote::create($array);
-
-        if (array_key_exists('items', $array)) {
-            foreach ($array['items'] as $quote_item) {
-                $quote_item['quote_id'] = $quote->id;
-                $this->quoteItemService->store($quote_item);
-            }
-        }
-
-        $quote->update(['status' => get_quote_status($quote->refresh())]);
         return $quote->refresh();
     }
 
     public function update(Quote $quote, array $array): Quote
     {
-        $quote->update($array);
-
         if (array_key_exists('discounts', $array)) {
             $discounts = $array['discounts'];
             if (array_key_exists('pricePlans', $discounts)) {
@@ -48,10 +35,6 @@ class QuoteService
                         "discount" =>  $discount
                     ]);
                 }
-            }
-
-            foreach ($quote->itemsNoTree as $item) {
-                $item->computeTotals();
             }
         }
 
@@ -75,7 +58,7 @@ class QuoteService
             }
         }
 
-        $quote->update(['status' => get_quote_status($quote->refresh())]);
+        $quote->update($array);
         return $quote->refresh();
     }
 }

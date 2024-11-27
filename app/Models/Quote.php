@@ -50,12 +50,12 @@ class Quote extends Model
         static::addGlobalScope(new TenantScope);
 
         static::creating(function ($quote) {
-            if (empty($quote->status))  {
+            if (empty($quote->status)) {
                 $quote->status = QuoteStatusesEnum::CONFIGURE;
             }
         });
 
-        static::updated(function ($quote) {
+        static::saved(function ($quote) {
             if ($quote->isDirty('status')) {
                 event(new QuoteStatusEvent($quote, $quote->getOriginal('status'), $quote->status));
             }
@@ -86,6 +86,11 @@ class Quote extends Model
     {
         return $this->hasMany(Order::class);
     }
+    public function discounts(): HasMany
+    {
+        return $this->hasMany(QuoteDiscount::class);
+    }
+
     public function computeTotals()
     {
         $this->refresh();
