@@ -22,6 +22,7 @@ class PriceCreateRequest extends FormRequest
     public function rules(): array
     {
         return [
+            "code" => "required|numeric",
             "tax_rate" => "required|numeric",
             "net" => "required|numeric",
             "tax" => "required|numeric",

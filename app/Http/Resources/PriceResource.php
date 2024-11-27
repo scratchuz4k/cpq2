@@ -14,6 +14,10 @@ class PriceResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        if (is_null($this->resource)) {
+            return [];
+        }
+
         return [
             ...$this->resource->toArray(),
             'price_plan' => $this->pricePlan,

@@ -9,6 +9,11 @@ const props = defineProps({
     brands: Object,
     suppliers: Object
 })
+const price = reactive({
+    code: null,
+    tax_rate: 0,
+    value: 0,
+})
 
 const saveProduct = () => {
     router.put(`/products/${props.product.id}`, props.product,
@@ -46,37 +51,75 @@ const items = ref([
                     </PrimaryButton>
                 </template>
             </Header>
+            <tabs class="mt-3">
+                <tab title="General" :selected="true">
+                    <div class="row my-4">
+                        <div class="col-6">
+                            <div class="row mb-3">
+                                <label for="product-name" class="form-label">Name:</label>
+                                <input id="product-name" class="form-control" v-model="product.name">
+                            </div>
+                            <div class="row mb-3">
+                                <label for="supplier-name" class="form-label">Supplier:</label>
+                                <select class="form-select" v-model="product.supplier_id">
+                                    <option v-for="supplier in suppliers" :value="supplier.id">{{ supplier.name }}
+                                    </option>
+                                </select>
+                            </div>
+                            <div class="row mb-3">
+                                <label for="brand-name" class="form-label">Brand:</label>
+                                <select class="form-select" v-model="product.brand_id">
+                                    <option v-for="brand in brands" :value="brand.id">{{ brand.name }}</option>
+                                </select>
+                            </div>
 
-            <div class="row mb-3">
-                <div class="col-6">
-                    <div class="row mb-3">
-                        <label for="product-name" class="form-label">Name:</label>
-                        <input id="product-name" class="form-control" v-model="product.name">
-                    </div>
-                    <div class="row mb-3">
-                        <label for="supplier-name" class="form-label">Supplier:</label>
-                        <select class="form-select" v-model="product.supplier_id">
-                            <option v-for="supplier in suppliers" :value="supplier.id">{{ supplier.name }}</option>
-                        </select>
-                    </div>
-                    <div class="row mb-3">
-                        <label for="brand-name" class="form-label">Brand:</label>
-                        <select class="form-select" v-model="product.brand_id">
-                            <option v-for="brand in brands" :value="brand.id">{{ brand.name }}</option>
-                        </select>
-                    </div>
+                            <div class="row mb-3">
+                                <label for="product-code" class="form-label">Code:</label>
+                                <input id="product-code" class="form-control" v-model="product.code">
+                            </div>
 
-                    <div class="row mb-3">
-                        <label for="product-code" class="form-label">Code:</label>
-                        <input id="product-code" class="form-control" v-model="product.code">
+                            <div class="row mb-3">
+                                <label for="product-description" class="form-label">Description:</label>
+                                <textarea id="product-description" class="form-control" v-model="product.description">{{
+                                    product.description
+                                }}</textarea>
+                            </div>
+                        </div>
                     </div>
-
-                    <div class="row mb-3">
-                        <label for="product-description" class="form-label">Description:</label>
-                        <textarea id="product-description" class="form-control" v-model="product.description">{{ product.description }}</textarea>
+                </tab>
+                <tab title="Prices">
+                    <div class="row my-4">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Code</th>
+                                    <th>Tax Rate</th>
+                                    <th>Price</th>
+                                    <th>Tax</th>
+                                    <th>Gross</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="price in product.prices">
+                                    <td>{{ price }}</td>
+                                    <td>Tax Rate</td>
+                                    <td>Price</td>
+                                    <td>Tax</td>
+                                    <td>Gross</td>
+                                </tr>
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td><input class="form-control" v-model="price.code" type="text" /></td>
+                                    <td><input class="form-control" v-model="price.tax_rate" type="number" /></td>
+                                    <td><input class="form-control" v-model="price.value" type="number" /></td>
+                                    <td colspan="2"> <button class="btn btn-primary">Add</button></td>
+                                </tr>
+                            </tfoot>
+                        </table>
                     </div>
-                </div>
-            </div>
+                </tab>
+            </tabs>
 
         </div>
     </AuthenticatedLayout>

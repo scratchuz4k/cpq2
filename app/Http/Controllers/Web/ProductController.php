@@ -74,9 +74,8 @@ class ProductController extends BaseController
      */
     public function edit(Product $product)
     {
-        $temp = new ProductResource($product);
         return Inertia::render('Products/Edit', [
-            'product' => $temp->toArray(request()),
+            'product' => new ProductResource($product) ,
             'brands' => Brand::all(),
             'suppliers' => Supplier::all()
         ]);
