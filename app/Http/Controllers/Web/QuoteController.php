@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Web;
 
+use App\Events\QuoteStatusEvent;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
@@ -63,7 +64,9 @@ class QuoteController extends BaseController
     {
         try {
             $quote = DB::transaction(function () use ($request) {
-                return $this->quoteService->store($request->all());
+                $quote = $this->quoteService->store($request->all());
+                event(QuoteStatusEvent::class, $quote);
+                return $quote;
             });
         } catch (\Exception $e) {
             if (!env('APP_DEBUG')) {

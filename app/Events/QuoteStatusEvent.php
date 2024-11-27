@@ -16,24 +16,16 @@ class QuoteStatusEvent
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public Quote $quote;
+    public $oldStatus;
+    public $newStatus;
 
     /**
      * Create a new event instance.
      */
-    public function __construct(Quote $quote)
+    public function __construct(Quote $quote, $oldStatus, $newStatus)
     {
         $this->quote = $quote;
-    }
-
-    /**
-     * Get the channels the event should broadcast on.
-     *
-     * @return array<int, \Illuminate\Broadcasting\Channel>
-     */
-    public function broadcastOn(): array
-    {
-        return [
-            new PrivateChannel('channel-name'),
-        ];
+        $this->oldStatus = $oldStatus;
+        $this->newStatus = $newStatus;
     }
 }

@@ -16,24 +16,16 @@ class OrderStatusEvent
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public Order $order;
+    public $oldStatus;
+    public $newStatus;
 
     /**
      * Create a new event instance.
      */
-    public function __construct(Order $order)
+    public function __construct(Order $order, $oldStatus, $newStatus)
     {
         $this->order = $order;
-    }
-
-    /**
-     * Get the channels the event should broadcast on.
-     *
-     * @return array<int, \Illuminate\Broadcasting\Channel>
-     */
-    public function broadcastOn(): array
-    {
-        return [
-            new PrivateChannel('channel-name'),
-        ];
+        $this->oldStatus = $oldStatus;
+        $this->newStatus = $newStatus;
     }
 }

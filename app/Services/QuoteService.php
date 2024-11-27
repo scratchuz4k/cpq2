@@ -23,7 +23,7 @@ class QuoteService
                 }
             }
 
-            event(QuoteStatusEvent::class, $quote);
+            event(new QuoteStatusEvent($quote, $quote->status));
 
             foreach ($quote->items as $quote_item) {
                 $quote_item->computeTotals();
@@ -37,7 +37,6 @@ class QuoteService
     public function update(Quote $quote, array $array): Quote
     {
         return DB::transaction(function () use ($quote, $array) {
-
             $quote->update($array);
             if (array_key_exists('items', $array)) {
                 $olderItems = collect($quote->items);
@@ -58,13 +57,14 @@ class QuoteService
                 }
             }
 
-            event(QuoteStatusEvent::class, $quote);
+
 
             foreach ($quote->items as $quote_item) {
                 $quote_item->computeTotals();
             }
             $quote->computeTotals();
 
+            event(QuoteStatusEvent::class, $quote->status);
             return $quote->refresh();
         }, 3);
     }

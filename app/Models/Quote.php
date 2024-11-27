@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Enums\QuoteStatusesEnum;
+use App\Events\QuoteStatusEvent;
 use App\Trait\SetTenantId;
 use App\Models\Scopes\TenantScope;
 use Illuminate\Support\Facades\Auth;
@@ -49,6 +51,18 @@ class Quote extends Model
     protected static function booted(): void
     {
         static::addGlobalScope(new TenantScope);
+
+        static::creating(function ($quote) {
+            if (empty($quote->status))  {
+                $quote->status = QuoteStatusesEnum::CONFIGURE;
+            }
+        });
+
+        static::updated(function ($quote) {
+            if ($quote->isDirty('status')) {
+                event(new QuoteStatusEvent($quote, $quote->getOriginal('status'), $quote->status));
+            }
+        });
     }
 
     public function user(): BelongsTo
@@ -97,6 +111,12 @@ class Quote extends Model
 
         $this->margin = $total_cost ? ($margin_value / $total_cost) * 100 : 0;
         $this->commission_value = $margin_value * ($this->commission_rate / 100);
+        $this->save();
+    }
+
+    public function changeStatus($newStatus)
+    {
+        $this->status = $newStatus;
         $this->save();
     }
 }
