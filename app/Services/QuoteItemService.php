@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-use App\Events\QuoteStatusEvent;
 use App\Models\PricePlan;
 use App\Models\QuoteItem;
 use Illuminate\Support\Facades\DB;
@@ -38,11 +37,9 @@ class QuoteItemService
                     'original_price' => isset($child['price']) ? $child['price'] : 0,
                 ]);
 
-                $childItem->computeTotals();
             }
         }
 
-        $quoteItem->computeTotals();
         return $quoteItem;
     }
 

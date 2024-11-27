@@ -3,9 +3,7 @@
 namespace App\Listeners;
 
 use App\Enums\QuoteStatusesEnum;
-use App\Events\OrderStatusEvent;
 use App\Events\QuoteStatusEvent;
-use App\Models\Quote;
 use App\Services\OrderService;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;

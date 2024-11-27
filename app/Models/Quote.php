@@ -2,10 +2,11 @@
 
 namespace App\Models;
 
+use App\Trait\SetTenantId;
 use App\Enums\QuoteStatusesEnum;
 use App\Events\QuoteStatusEvent;
-use App\Trait\SetTenantId;
 use App\Models\Scopes\TenantScope;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -49,11 +50,12 @@ class Quote extends Model
     {
         static::addGlobalScope(new TenantScope);
 
-        static::creating(function ($quote) {
-            if (empty($quote->status)) {
-                $quote->status = QuoteStatusesEnum::CONFIGURE;
-            }
-        });
+        // Log all model events
+        foreach (['retrieved', 'creating', 'created', 'updating', 'updated', 'saving',  'deleting', 'deleted'] as $event) {
+            static::$event(function ($model) use ($event) {
+                Log::info("{$event} event triggered for model " . get_class($model));
+            });
+        }
 
         static::saved(function ($quote) {
             if ($quote->isDirty('status')) {
@@ -93,7 +95,6 @@ class Quote extends Model
 
     public function computeTotals()
     {
-        $this->refresh();
         $raw_total = 0;
 
         $this->total = 0;
@@ -113,12 +114,6 @@ class Quote extends Model
 
         $this->margin = $total_cost ? ($margin_value / $total_cost) * 100 : 100;
         $this->commission_value = $margin_value * ($this->commission_rate / 100);
-        $this->save();
-    }
-
-    public function changeStatus($newStatus)
-    {
-        $this->status = $newStatus;
         $this->save();
     }
 }

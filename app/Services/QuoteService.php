@@ -13,7 +13,7 @@ class QuoteService
     public function store(array $array): Quote
     {
         $quote = Quote::create($array);
-        return $quote->refresh();
+        return $quote;
     }
 
     public function update(Quote $quote, array $array): Quote

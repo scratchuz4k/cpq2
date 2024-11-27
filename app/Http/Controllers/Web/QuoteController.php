@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Web;
 
-use App\Events\QuoteStatusEvent;
 use App\Models\User;
 use Inertia\Inertia;
 use App\Models\Quote;
@@ -10,6 +9,7 @@ use App\Models\Account;
 use App\Models\PricePlan;
 use App\Models\SolutionType;
 use App\Services\QuoteService;
+use App\Events\QuoteStatusEvent;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Http\Resources\QuoteResource;
@@ -107,7 +107,7 @@ class QuoteController extends BaseController
     {
         try {
             $quote = DB::transaction(function () use ($request, $quote) {
-                return $this->quoteService->update($quote, $request->all());
+                return  $this->quoteService->update($quote, $request->all());
             });
         } catch (\Exception $e) {
             if (!env('APP_DEBUG')) {

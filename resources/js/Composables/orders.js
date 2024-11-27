@@ -16,7 +16,6 @@ export const createOrder = async (id, getData) => {
             { status: 'REGISTRY'}
         )
         notyf.success('Order created with success');
-        getData()
         return
     } catch (err) {
         notyf.error(err?.response?.data?.message ?? 'Something went wrong')
