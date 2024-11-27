@@ -529,7 +529,7 @@ const items = ref([
                             <font-awesome-icon class="me-2" :icon="['fas', 'arrow-left']"></font-awesome-icon>
                             Previous</a>
                         <div>
-                            <button class="btn btn-outline-primary me-2" @click="openShare()">
+                            <button id="btn-shareable-open"  class="btn btn-outline-primary me-2" @click="openShare()">
                                 <font-awesome-icon :icon="['fas', 'share-nodes']"></font-awesome-icon>
                                 Share
                             </button>
@@ -615,11 +615,11 @@ const items = ref([
                 </div>
                 <div class="mb-3">
                     <label for="expiration_data" class="form-label">Password</label>
-                    <input type="text" class="form-control" v-model="shareLink.password" />
+                    <input id="input-shareable-password" type="text" class="form-control" v-model="shareLink.password" />
                 </div>
 
                 <div class="mb-3">
-                    <button class="btn btn-primary" @click="createSharedLink()"> Create</button>
+                    <button id="btn-shareable-create"  class="btn btn-primary" @click="createSharedLink()"> Create</button>
                     <button class="btn" @click="() => showShare.value = !showShare.value"> Cancel</button>
                 </div>
             </div>
@@ -629,7 +629,7 @@ const items = ref([
                         Anyone with this link can view the quote.
                     </label>
                     <div class="input-group mb-3">
-                        <input type="text" class="form-control" v-model="shareLink.link" disabled />
+                        <input id="input-shareable-link" type="text" class="form-control" v-model="shareLink.link" disabled />
 
                         <button class="input-group-text" @click="copyToClipboard(shareLink.link)"><font-awesome-icon
                                 :id="'btn-recurring-' + i + '-edit'" role="button" :icon="['far', 'clipboard']"
