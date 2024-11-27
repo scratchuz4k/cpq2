@@ -15,7 +15,7 @@ class ProductsService
 
     public function update(Product $product, array $array): Product
     {
-            $product->update($array);
-            return $product;
+        $product->update($array);
+        return $product;
     }
 }

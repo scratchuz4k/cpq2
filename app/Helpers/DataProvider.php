@@ -39,11 +39,17 @@ class DataProvider
         $filters = is_string($filters) ? json_decode($filters, true) : $filters;
 
         if ($search) {
-            $getFillables = $this->builder->getModel()->getFillable();
-            $getHidden = $this->builder->getModel()->getHidden();
-            $visibleColumns = array_diff($getFillables, $getHidden);
-            $columns = request()->get('columns') ? explode(",", request()->get('columns')) : $visibleColumns;
-            $this->builder = $this->builder->where(function($query) use ($columns, $search) { return $this->searchModel($query, $columns, $search); });
+            $columns = request()->get('columns') ? explode(",", request()->get('columns')) : $this->builder->getModel()->getFillable();
+            $hidden = $this->builder->getModel()->getHidden();
+
+            $columns = array_filter($columns, function ($column) use ($hidden) {
+                $firstPart = explode('.', $column)[0];
+                return !in_array($firstPart, $hidden);
+            });
+
+            $this->builder = $this->builder->where(function ($query) use ($columns, $search) {
+                return $this->searchModel($query, $columns, $search);
+            });
         }
 
         foreach ($filters as $filter) {
@@ -96,7 +102,7 @@ class DataProvider
 
     protected function query($query, $column, $operator, $value, $func)
     {
-        $column = $query->getModel()->getTable().'.'.$column;
+        $column = $query->getModel()->getTable() . '.' . $column;
 
         if ($this->model->translatable && in_array($column, $this->model->translatable)) {
             $column = $column . '->' . app()->getLocale();

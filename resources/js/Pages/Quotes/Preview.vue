@@ -7,11 +7,6 @@ const props = defineProps({
     quote: Object,
 });
 
-const solutionsViews = {
-    3: 'QuotesConnectivityTotalView',
-    4: 'QuotesMobileTotalView',
-    5: 'QuotesHardwareTotalView',
-}
 
 const showDate = (days = 0) => {
     const dateObj = new Date();
@@ -61,7 +56,7 @@ const items = ref([
                         <p>Insert Tagline</p>
                     </div>
                     <div class="col text-end" id="header_right">
-                        <p>{{ quote.account?.name }}<br>{{ quote.address_data.label ?? '' }}</p>
+                        <p>{{ quote.account?.name }}<br>{{ quote.address_data?.label }}</p>
                         <p>Tel: +44 (0) 191 300 700</p>
                         <p>Email: sales@example.com</p>
                     </div>
@@ -130,14 +125,14 @@ const items = ref([
                                                     {{ quote.items.indexOf(item) + 1 }}
                                                 </td>
                                                 <td class="text-center d-none d-xl-table-cell">
-                                                    <img v-if="item.data.providerKey" class="img-provider"
+                                                    <img v-if="item.data?.providerKey" class="img-provider"
                                                         @error="setAltImg"
                                                         :src="`/images/providers/${item.data.providerKey}.png`"
                                                         :alt="item.data.providerName" :title="item.data.providerName" />
                                                 </td>
                                                 <td>
                                                     {{ item.name }}
-                                                    <span v-if="item.data.additionalInfo['Primary Router Model']" v-tooltip
+                                                    <span v-if="item.data?.additionalInfo['Primary Router Model']" v-tooltip
                                                         data-bs-toggle="tooltip" data-bs-placement="top" title="Primary Router Model"
                                                         class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm router-model">
                                                         <font-awesome-icon :icon="['fas', 'plug']"></font-awesome-icon>

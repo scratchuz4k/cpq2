@@ -4,12 +4,13 @@ namespace App\Http\Controllers\Web;
 
 use App\Events\QuoteStatusEvent;
 use App\Models\User;
-use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use App\Models\Quote;
 use App\Models\Account;
+use App\Models\PricePlan;
 use App\Models\SolutionType;
 use App\Services\QuoteService;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Http\Resources\QuoteResource;
 use Illuminate\Support\Facades\Storage;
@@ -38,7 +39,7 @@ class QuoteController extends BaseController
             $users = User::all();
         }
 
-        $users = $users->filter(fn ($user) => $user->quotes->count() > 0);
+        $users = $users->filter(fn($user) => $user->quotes->count() > 0);
 
         return Inertia::render('Quotes/Index', [
             "users" => $users->values(),
@@ -83,6 +84,7 @@ class QuoteController extends BaseController
     public function show(Quote $quote)
     {
         return Inertia::render('Quotes/Show', [
+            'pricePlans' => PricePlan::all(),
             'quote' => new QuoteResource($quote->load(['items', 'orders']))
         ]);
     }

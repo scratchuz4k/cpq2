@@ -101,6 +101,7 @@ const items = ref([
                         <th class="d-none d-xl-table-cell" style="white-space: nowrap;">Supplier quote ref.</th>
                         <th>Type</th>
                         <th>Qty.</th>
+                        <th>Contract Len.</th>
                         <th style="white-space: nowrap;">Monthly price</th>
                         <th style="white-space: nowrap;">Install price</th>
                         <th style="width:60px" class="text-center"></th>
@@ -139,6 +140,9 @@ const items = ref([
                             <template v-else>
                                 {{ item.quantity }}
                             </template>
+                        </td>
+                        <td>
+                            {{ item.contract_length }}
                         </td>
                         <td>
                             {{ GBP.format(item.data?.priceMonthly ?? item.data?.price) }}

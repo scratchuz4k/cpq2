@@ -16,13 +16,13 @@ const items = ref([
         <div class="panel">
             <Header title="Suppliers" :breadcrumbs="items">
                 <template #buttons>
-                    <Link href="/suppliers/create" id="supplier-create-btn" class="btn btn-primary me-2">
+                    <Link id="supplier-create-btn" href="/suppliers/create" class="btn btn-primary me-2">
                     <font-awesome-icon :icon="['fas', 'plus']"></font-awesome-icon> New Supplier
                     </Link>
                 </template>
             </Header>
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                <Datatable :allow="{
+                <Datatable :table-props="{ id: 'suppliers-table' }" :allow="{
                     update: true,
                     delete: true,
                     link: false,

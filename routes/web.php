@@ -1,20 +1,46 @@
 <?php
 
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Web\TokenController;
+use App\Http\Controllers\Web\SpaController;
+use App\Http\Controllers\Web\UserController;
 use App\Http\Controllers\Web\BrandController;
-use App\Http\Controllers\Web\QuoteController;
-use App\Http\Controllers\Web\OrderController;
 use App\Http\Controllers\Web\PriceController;
+use App\Http\Controllers\Web\QuoteController;
+use App\Http\Controllers\Web\TokenController;
+use App\Http\Controllers\Web\RegionController;
 use App\Http\Controllers\Web\TenantController;
 use App\Http\Controllers\Web\AccountController;
-use App\Http\Controllers\Web\ProfileController;
-use App\Http\Controllers\Web\DashboardController;
 use App\Http\Controllers\Web\ProductController;
+use App\Http\Controllers\Web\ProfileController;
 use App\Http\Controllers\Web\SupplierController;
-use App\Http\Controllers\Web\RegionController;
-use App\Http\Controllers\Web\UserController;
-use App\Http\Controllers\Web\SpaController;
+use App\Http\Controllers\Web\DashboardController;
+
+Route::get('/health', function () {
+    try {
+        // Check database connection
+        DB::connection()->getPdo();
+
+        // Check cache
+        cache()->put('health_check', 'ok', 1);
+        $cacheStatus = cache()->get('health_check') === 'ok';
+
+        // Check storage
+        $storageStatus = is_writable(storage_path('app'));
+
+        return response()->json([
+            'status' => 'healthy',
+            'database' => 'connected',
+            'cache' => $cacheStatus ? 'working' : 'not working',
+            'storage' => $storageStatus ? 'writable' : 'not writable',
+        ], 200);
+    } catch (\Exception $e) {
+        return response()->json([
+            'status' => 'unhealthy',
+            'error' => $e->getMessage(),
+        ], 500);
+    }
+})->name('health');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('index');

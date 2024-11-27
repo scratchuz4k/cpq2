@@ -9,7 +9,7 @@ use Illuminate\Pipeline\Pipeline;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use App\Helpers\Prices\PriceRulesObject;
-use App\Helpers\Prices\Enums\SpaRulesEnum;
+use App\Enums\SpaRulesEnum;
 
 class PriceRules
 {

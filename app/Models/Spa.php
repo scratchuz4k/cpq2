@@ -13,6 +13,10 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class Spa extends Model
 {
     use HasFactory, SetTenantId;
+    protected $hidden = [
+        "field_1",
+        "field_2"
+    ];
 
     protected $fillable = [
         "rule_id",

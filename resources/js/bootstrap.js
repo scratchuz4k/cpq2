@@ -13,3 +13,19 @@ if (token) {
         "CSRF token not found: https://laravel.com/docs/csrf#csrf-x-csrf-token",
     );
 }
+
+//Redirect to login if not authenticated
+window.axios.interceptors.response.use(
+    response => {
+      return response;
+    },
+    error => {
+      if (error.response && error.response.status === 401) {
+        window.location.href = '/login';
+      }
+      if (error.response && error.response.status === 419) {
+        window.location.reload();
+      }
+      return Promise.reject(error);
+    }
+  );

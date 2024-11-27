@@ -75,6 +75,9 @@ class QuoteItemController extends BaseController
      */
     public function destroy(QuoteItem $quoteItem)
     {
-        return $quoteItem->delete();
+        $quote = $quoteItem->quote;
+        $quoteItem->delete();
+        $quote->computeTotals();
+        return response(null, 200);
     }
 }

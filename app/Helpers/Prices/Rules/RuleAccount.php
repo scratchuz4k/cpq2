@@ -5,7 +5,7 @@ namespace App\Helpers\Prices\Rules;
 use App\Models\Spa;
 use App\Models\SpaRule;
 use App\Helpers\Prices\PriceRulesObject;
-use App\Helpers\Prices\Enums\SpaRulesEnum;
+use App\Enums\SpaRulesEnum;
 
 class RuleAccount
 {
@@ -17,7 +17,7 @@ class RuleAccount
         $rule = SpaRule::where("code", SpaRulesEnum::Account->name)->first();
         $object->spas->push(
             ...Spa::where('field_1', $object->account->id)
-                ->where('field_2', null)
+                ->where('field_2', operator: 0)
                 ->where('rule_id',  $rule->id)
                 ->get()
         );

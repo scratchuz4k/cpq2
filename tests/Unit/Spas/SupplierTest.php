@@ -9,14 +9,13 @@ use App\Models\Supplier;
 use App\Models\SpaOperation;
 use App\Helpers\Prices\PriceRules;
 use Illuminate\Support\Facades\Auth;
-use App\Helpers\Prices\Enums\SpaRulesEnum;
-use App\Helpers\Prices\Enums\SpaOperationsEnum;
+use App\Enums\SpaRulesEnum;
+use App\Enums\SpaOperationsEnum;
 
 beforeEach(function () {
     // Declaration of values
     $this->artisan('db:seed');
     $this->user = User::factory()->create();
-    $this->tenant = Tenant::factory()->create();
     $this->supplier = Supplier::factory()->create();
 
     // Set the user as the authenticated user
@@ -35,7 +34,7 @@ test('Supplier without Spa', function () {
 
 test('Supplier with OperationMargin Spa', function () {
     $spa = new Spa();
-    $spa->tenant_id = $this->tenant->id;
+    $spa->tenant_id = 1;
     $spa->rule_id = SpaRule::where('code', SpaRulesEnum::Supplier->name)->value('id');
     $spa->field_1 = $this->supplier->id;
     $spa->operation_id = SpaOperation::where('code',  SpaOperationsEnum::Margin->name)->value('id');
@@ -58,7 +57,7 @@ test('Supplier with OperationMargin Spa', function () {
 
 test('Supplier with OperationDiscount Spa', function () {
     $spa = new Spa();
-    $spa->tenant_id = $this->tenant->id;
+    $spa->tenant_id = 1;
     $spa->rule_id = SpaRule::where('code', SpaRulesEnum::Supplier->name)->value('id');
     $spa->field_1 = $this->supplier->id;
     $spa->operation_id = SpaOperation::where('code',  SpaOperationsEnum::Discount->name)->value('id');

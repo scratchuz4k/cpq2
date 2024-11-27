@@ -4,18 +4,14 @@ namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
-use App\Enums\OrderStatusesEnum;
-use App\Models\OrderStatus;
-use App\Models\SolutionType;
-use App\Models\Tenant;
-use App\Helpers\Prices\Enums\PricePlanEnum;
-use App\Helpers\Prices\Enums\SpaOperationsEnum;
+use App\Enums\PricePlanEnum;
+use App\Enums\SpaOperationsEnum;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Permission;
-use App\Helpers\Prices\Enums\SpaRulesEnum;
+use App\Enums\SpaRulesEnum;
 use App\Models\PricePlan;
 use App\Models\SpaOperation;
 use App\Models\SpaRule;
@@ -71,7 +67,7 @@ class InitTableSeeder extends Seeder
         }
 
         foreach (PricePlanEnum::cases() as $case) {
-            PricePlan::updateOrCreate(['code' => $case->value], ['name' => $case->name]);
+            PricePlan::updateOrCreate(['code' => $case->name], ['name' => $case->value]);
         }
 
 
