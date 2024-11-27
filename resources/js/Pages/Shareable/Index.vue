@@ -10,9 +10,6 @@ const password = ref('')
 
 const withPassword = async () => {
     await router.post(`${props.url}`, { password: password.value }, {
-        onSuccess: (page) => {
-            notyf.success("Created with Success")
-        },
         onError: (errors) => {
             let string = ''
             Object.keys(errors).forEach((key) => {
