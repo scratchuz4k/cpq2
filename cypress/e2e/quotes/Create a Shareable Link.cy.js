@@ -1,23 +1,10 @@
-const crypto = require("crypto");
 const { getCurrentDate, generateHash } = require("../../support/utils.js");
-const rand = (notAllowedNumber, max = 101) => {
-    let randomNumber = Math.floor(Math.random() * max); // Generate a random number
-
-    // Keep generating until it"s not equal to the not allowed number
-    while (randomNumber === notAllowedNumber) {
-        randomNumber = Math.floor(Math.random() * max);
-    }
-    return randomNumber
-}
-
 const temp = getCurrentDate()
 const account = { ref: generateHash(temp), name: temp }
 let url = ''
 
 
-describe("Creates a Mobile Quote", () => {
-    let hardwareCount = 0;
-
+describe("Create a Shareable Link.cy", () => {
     beforeEach(() => {
         cy.login("super@example.com", "werwerwer")
     })
