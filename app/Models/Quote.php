@@ -50,19 +50,13 @@ class Quote extends Model
     {
         static::addGlobalScope(new TenantScope);
 
-        // Log all model events
-        foreach (['retrieved', 'creating', 'created', 'updating', 'updated', 'saving',  'deleting', 'deleted'] as $event) {
-            static::$event(function ($model) use ($event) {
-                Log::info("{$event} event triggered for model " . get_class($model));
-            });
-        }
-
         static::saved(function ($quote) {
             if ($quote->isDirty('status')) {
                 event(new QuoteStatusEvent($quote, $quote->getOriginal('status'), $quote->status));
             }
         });
     }
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
