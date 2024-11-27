@@ -43,6 +43,15 @@ class QuoteItem extends Model
     protected static function booted(): void
     {
         static::addGlobalScope(new TenantScope);
+
+        static::saved(function ($quoteItem) {
+            $quoteItem->quote->computeTotals();
+            $quoteItem->quote->update(['status' => get_quote_status($quoteItem->quote)]);
+        });
+
+        static::deleted(function ($quoteItem) {
+            $quoteItem->quote->computeTotals();
+        });
     }
     /**
      * Get the parent user of this user.
@@ -79,7 +88,6 @@ class QuoteItem extends Model
 
     public function computeTotals()
     {
-        $this->refresh();
         $price = $this->original_price;
 
         $discounts = $this->quote->discounts->where('discountable_type', PricePlan::class)->where('discountable_id', $this->pricePlan->id)->pluck('discount');

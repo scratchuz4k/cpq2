@@ -42,9 +42,11 @@ class Quote extends Model
             "address_data" => "object",
         ];
     }
+
     protected static function booted(): void
     {
         static::addGlobalScope(new TenantScope);
+
     }
     public function user(): BelongsTo
     {

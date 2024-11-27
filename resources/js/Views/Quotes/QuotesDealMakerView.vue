@@ -525,7 +525,7 @@ const items = ref([
                         </p>
                     </div>
                     <div class="d-flex justify-content-between">
-                        <a class="btn text-primary" :href="route('quotes.edit', { quote: quote.id }) + '?step=2'">
+                        <a id="btn-previous" class="btn text-primary" :href="route('quotes.edit', { quote: quote.id }) + '?step=2'">
                             <font-awesome-icon class="me-2" :icon="['fas', 'arrow-left']"></font-awesome-icon>
                             Previous</a>
                         <div>

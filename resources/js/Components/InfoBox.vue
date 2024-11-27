@@ -17,7 +17,7 @@ const current = Object.keys(options).includes(props.severity) ? options[props.se
 <template>
     <div class="info-box d-flex mb-4 py-3 pe-5"
         :style="{ backgroundColor: current.second, borderLeft: `4px solid ${current.first}` }">
-        <div class="px-3">
+        <div class="px-3 pt-1">
             <font-awesome-icon :icon="['fas', 'circle-info']" :style="{ color: current.first, fontSize: '20px' }" />
         </div>
         <div class="w-100">
