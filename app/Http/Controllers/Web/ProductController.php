@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Web;
 
 use Inertia\Inertia;
 use App\Models\Brand;
+use Inertia\Response;
 use App\Models\Product;
 use App\Models\Supplier;
 use App\Services\ProductsService;
@@ -13,6 +14,7 @@ use App\Http\Resources\ProductResource;
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\ProductCreateRequest;
 use App\Http\Requests\ProductUpdateRequest;
+use App\Models\PricePlan;
 
 class ProductController extends BaseController
 {
@@ -72,13 +74,12 @@ class ProductController extends BaseController
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Product $product)
+    public function edit(Product $product): Response
     {
 
         return Inertia::render('Products/Edit', [
-            'product' => (new ProductResource($product->load(['prices'])))->resolve(),
-            'brands' => Brand::all(),
-            'suppliers' => Supplier::all()
+            'product' => ProductResource::make($product->load('prices'))->resolve(),
+            'price_plans' => PricePlan::all(),
         ]);
     }
 

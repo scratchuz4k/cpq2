@@ -1,5 +1,6 @@
 <script setup>
 import { reactive, ref } from "vue";
+import { can, hasRole } from '@composables/useAuth'
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, router } from "@inertiajs/vue3";
@@ -12,22 +13,27 @@ import Dialog from "primevue/dialog";
 
 const props = defineProps({
     product: Object,
-    brands: Object,
-    suppliers: Object
+    price_plans: Object,
 })
 
 const price = reactive({
     code: null,
     tax_rate: 0,
-    value: 0,
+    net: 0,
+    product_id: props.product.id,
 })
 
-const showModal = ref(true)
+const showModal = ref(false)
 const prices = ref(props.product.prices)
 const editingRows = ref([]);
 
 const saveProduct = () => {
-    router.put(`/products/${props.product.id}`, props.product,
+    router.put(`/products/${props.product.id}`,
+        {
+            ...props.product,
+            supplier_id: props.product.supplier?.id,
+            brand_id: props.product.brand?.id
+        },
         {
             onSuccess: (page) => {
                 notyf.success("Updated with Success")
@@ -43,10 +49,38 @@ const saveProduct = () => {
     )
 }
 
-const onRowEditSave = (event) => {
-    let { newData, index } = event;
+const savePrice = async () => {
+    try {
+        let res = await axios.post(`/api/prices`, price)
+        prices.value.push(res.data.data)
+        showModal.value = !showModal.value
+    } catch (ex) {
+        notyf.error(ex.response.data.message)
+    }
+}
 
-    alert(newData);
+const deletePrice = async (id) => {
+    try {
+        let index = prices.value.findIndex(e => e.id == id)
+        await axios.delete(`/api/prices/${id}`)
+        prices.value.splice(index, 1)
+    } catch (ex) {
+        notyf.error(ex.response.data.message)
+    }
+}
+
+const onRowEditSave = async (event) => {
+    let { newData, index } = event;
+    try {
+        let res = await axios.put(`/api/prices/${newData.id}`, {
+            tax_rate: newData.tax_rate,
+            net: newData.net,
+        })
+        prices.value[index] = res.data.data
+        notyf.success("Updated with success")
+    } catch (ex) {
+        notyf.error(ex.response.data.message)
+    }
 };
 
 const items = ref([
@@ -71,42 +105,64 @@ const items = ref([
             </Header>
             <tabs class="mt-3">
                 <tab title="General" :selected="true">
+                    <div class="my-3">
+                        <p>
+                            This section provides an overview of the product, including general information, associated
+                            brands, and
+                            suppliers.
+                        </p>
+                    </div>
                     <div class="row my-4">
                         <div class="col-6">
-                            <div class="row mb-3">
+                            <div class=" mb-3">
                                 <label for="product-name" class="form-label">Name:</label>
                                 <input id="product-name" class="form-control" v-model="product.name">
                             </div>
-                            <div class="row mb-3">
-                                <label for="supplier-name" class="form-label">Supplier:</label>
-                                <select class="form-select" v-model="product.supplier_id">
-                                    <option v-for="supplier in suppliers" :value="supplier.id">{{ supplier.name }}
-                                    </option>
-                                </select>
-                            </div>
-                            <div class="row mb-3">
-                                <label for="brand-name" class="form-label">Brand:</label>
-                                <select class="form-select" v-model="product.brand_id">
-                                    <option v-for="brand in brands" :value="brand.id">{{ brand.name }}</option>
-                                </select>
-                            </div>
-
-                            <div class="row mb-3">
+                            <div class=" mb-3">
                                 <label for="product-code" class="form-label">Code:</label>
                                 <input id="product-code" class="form-control" v-model="product.code">
                             </div>
 
-                            <div class="row mb-3">
+                            <div class=" mb-5">
                                 <label for="product-description" class="form-label">Description:</label>
                                 <textarea id="product-description" class="form-control" v-model="product.description">{{
                                     product.description
                                 }}</textarea>
                             </div>
+                            <h4>Relations</h4>
+                            <hr>
+                            <div class="mb-3">
+                                <label class="form-label">Price Plan</label>
+                                <select class="form-select" v-model="price.price_plan_id">
+                                    <option v-for="price_plan in props.price_plans" :value="price_plan.id">
+                                        {{ price_plan.name }}
+                                    </option>
+                                </select>
+                            </div>
+                            <div class=" mb-3">
+                                <label for="supplier-name" class="form-label">Supplier:</label>
+                                <InputSelect id="product-supplier" url="/suppliers" field="name"
+                                    v-model="product.supplier">
+                                </InputSelect>
+                            </div>
+
+                            <div class=" mb-3">
+                                <label for="brand-name" class="form-label">Brand:</label>
+                                <InputSelect id="product-brand" url="/brands" field="name" v-model="product.brand">
+                                </InputSelect>
+                            </div>
+
                         </div>
                     </div>
                 </tab>
-                <tab title="Prices">
+                <tab title="Prices" v-if="hasRole('Super Admin') || can('viewAny price')">
                     <div class="my-3">
+                        <p>
+                            Here are the available prices for this product, including details like tax and gross
+                            value.
+                        </p>
+                    </div>
+                    <div class="mb-3">
                         <DataTable v-model:editingRows="editingRows" :value="prices" editMode="row" dataKey="id"
                             @row-edit-save="onRowEditSave" :pt="{
                                 table: { style: 'min-width: 50rem' },
@@ -128,21 +184,15 @@ const items = ref([
                                     <InputText v-model="data[field]" fluid />
                                 </template>
                             </Column>
-                            <Column field="tax" header="Tax" style="width: 20%">
-                                <template #editor="{ data, field }">
-                                    <InputText v-model="data[field]" fluid />
-                                </template>
-                            </Column>
-                            <Column field="gross" header="Gross" style="width: 20%">
-                                <template #editor="{ data, field }">
-                                    <InputText v-model="data[field]" fluid />
-                                </template>
-                            </Column>
+                            <Column field="tax" header="Tax" style="width: 20%"></Column>
+                            <Column field="gross" header="Gross" style="width: 20%"></Column>
 
-                            <Column :rowEditor="true" bodyStyle="display:flex"> </Column>
-                            <Column bodyStyle="text-align:center">
-                                <template #body="slotProps">
-                                    <Button
+                            <Column :rowEditor="true" bodyStyle="display:flex"
+                                v-if="hasRole('Super Admin') || can('update price')">
+                            </Column>
+                            <Column bodyStyle="text-align:center" v-if="hasRole('Super Admin') || can('delete price')">
+                                <template #body="{ data }">
+                                    <Button @click="deletePrice(data.id)"
                                         class="p-button p-component p-button-icon-only p-button-secondary p-button-rounded p-button-text p-datatable-row-editor-init"
                                         label="Button">
                                         <font-awesome-icon :icon="['far', 'trash-can']" />
@@ -152,7 +202,7 @@ const items = ref([
                         </DataTable>
 
                     </div>
-                    <div class="mb-3 d-flex justify-content-end">
+                    <div class="mb-3 d-flex justify-content-end" v-if="hasRole('Super Admin') || can('create price')">
                         <button class="btn btn-primary" @click="() => showModal = !showModal">Add Price</button>
                     </div>
                     <Dialog v-model:visible="showModal" modal :style="{ width: '50rem', marginTop: '4rem' }"
@@ -166,14 +216,16 @@ const items = ref([
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Price</label>
-                            <input class="form-control" type="number" v-model="price.value" />
+                            <input class="form-control" type="number" v-model="price.net" />
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Tax Rate</label>
                             <input class="form-control" type="number" v-model="price.tax_rate" />
                         </div>
+
                         <div class="d-flex justify-content-end">
-                            <button class="btn btn-secondary me-2" @click="() => showModal = !showModal"> Cancel</button>
+                            <button class="btn btn-secondary me-2" @click="() => showModal = !showModal">
+                                Cancel</button>
                             <button class="btn btn-primary" @click="savePrice()"> Save</button>
                         </div>
                     </Dialog>

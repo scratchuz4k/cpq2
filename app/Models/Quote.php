@@ -4,7 +4,6 @@ namespace App\Models;
 
 use App\Trait\SetTenantId;
 use App\Models\Scopes\TenantScope;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -46,8 +45,8 @@ class Quote extends Model
     protected static function booted(): void
     {
         static::addGlobalScope(new TenantScope);
-
     }
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);

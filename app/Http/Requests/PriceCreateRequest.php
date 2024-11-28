@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Validation\Rule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class PriceCreateRequest extends FormRequest
@@ -22,12 +23,17 @@ class PriceCreateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "code" => "required|numeric",
+            "code" => [
+                "required",
+                "numeric",
+                Rule::unique("prices")
+                    ->where(function ($query) {
+                        return $query->where("product_id", $this->input("product_id"));
+                    }),
+            ],
             "tax_rate" => "required|numeric",
             "net" => "required|numeric",
-            "tax" => "required|numeric",
-            "gross" => "required|numeric",
-            "spa_id" => "required|exists:spas,id",
+            "price_plan_id" => "required|exists:price_plans,id",
             "product_id" => "required|exists:products,id",
         ];
     }

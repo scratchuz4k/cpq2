@@ -57,7 +57,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/users/import', [UserController::class, 'importUsers'])->name('users.import');
 
     Route::resources([
-        'prices' => PriceController::class,
         'quotes' => QuoteController::class,
         'accounts' => AccountController::class,
         'tenant' => TenantController::class,

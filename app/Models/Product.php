@@ -2,11 +2,17 @@
 
 namespace App\Models;
 
+use App\Models\Brand;
+use App\Models\Price;
+use App\Models\Category;
+use App\Models\Supplier;
+use App\Models\PricePlan;
 use App\Trait\SetTenantId;
 use App\Models\Scopes\TenantScope;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
@@ -19,6 +25,7 @@ class Product extends Model
         'description',
         'supplier_id',
         'brand_id',
+        "price_plan_id",
         'tenant_id'
     ];
 
@@ -33,6 +40,10 @@ class Product extends Model
     public function prices(): HasMany
     {
         return $this->hasMany(Price::class);
+    }
+    public function pricePlan(): BelongsTo
+    {
+        return $this->belongsTo(PricePlan::class);
     }
 
     public function categories(): BelongsToMany
