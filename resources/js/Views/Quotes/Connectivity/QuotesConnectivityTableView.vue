@@ -208,7 +208,7 @@ const getArticles = async () => {
         meta.first = (meta.page - 1) * meta.limit
         meta.total = res.data.total
         meta.overallTotal = res.data.overall_total
-        meta.isUpdating = !res.data.finished_at
+        meta.isUpdating = false
         Object.assign(filterList, res.data.filters)
 
         let bearerFilters = []
