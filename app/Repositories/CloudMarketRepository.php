@@ -14,9 +14,17 @@ class CloudMarketRepository
 
     public function sendResponse($file, $filters)
     {
+        $items = FilterProvider::get($file['data'], $filters);
+
+        foreach ($items as $key => $value) {
+            $file['filters'] = FilterProvider::process($file['filters'], $value, true);
+        }
+
+        $meta = FilterProvider::paginate($items);
+
         $priceRules = new PriceRules();
         $account = Account::where('id', request()->input('account_id', null))->first();
-        foreach ($file['data'] as $index => $product) {
+        $meta['data'] = $meta['data']->map(function ($product) use ($priceRules, $account) {
             $supplier = null;
 
             if (array_key_exists($product['providerKey'], $this->providers)) {
@@ -31,20 +39,14 @@ class CloudMarketRepository
                 if (!array_key_exists($key, $product)) {
                     continue;
                 }
-
-                $file['data'][$index][$key . '_spa'] =  $priceRules->apply($product[$key]);
+                $product[$key . '_spa'] = $priceRules->apply($product[$key]);
             }
 
-            $file['data'][$index]['active_spas']  = $priceRules->getAppliedSpas();
-        }
+            $product['active_spas'] = $priceRules->getAppliedSpas();
 
-        $items = FilterProvider::get($file['data'], $filters);
+            return $product;
+        });
 
-        foreach ($items as $key => $value) {
-            $file['filters'] = FilterProvider::process($file['filters'], $value, true);
-        }
-
-        $meta = FilterProvider::paginate($items);
         return array_merge(
             $meta,
             [

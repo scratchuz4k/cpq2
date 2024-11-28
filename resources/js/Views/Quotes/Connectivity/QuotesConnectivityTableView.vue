@@ -189,11 +189,26 @@ const getArticles = async () => {
             }
             return error;
         });
+
+        articles.value = articles.value.map((article) => {
+            if (article.productName.includes('with router:')) {
+                const productInfo = article.productName.split('with router:');
+                article.productName = productInfo[0].trim();
+                if (productInfo.length > 1) {
+                    article.additionalInfo = article.additionalInfo || {};
+                    article.additionalInfo['Primary Router Model'] = productInfo[1].trim();
+                }
+            }
+
+            return article;
+        });
+
+
         isLoading.value = false
         meta.first = (meta.page - 1) * meta.limit
         meta.total = res.data.total
         meta.overallTotal = res.data.overall_total
-        meta.isUpdating = false
+        meta.isUpdating = !res.data.finished_at
         Object.assign(filterList, res.data.filters)
 
         let bearerFilters = []
@@ -473,7 +488,7 @@ getArticles()
                     </div>
                     <div class="col-lg-2 col-12 d-flex align-self-end justify-content-around">
                         <button class="btn btn-secondary btn-sm mt-2 me-2 w-100" @click="resetFilters()"
-                            :disabled="!meta.isUpdating">Reset</button>
+                            :disabled="meta.isUpdating">Reset</button>
                         <div class="advanced-settings pt-2 w-100">
                             <button id="btn-more-filters" class="btn btn-secondary dropdown-toggle lh-1 w-100" type="button"
                                 data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside"
@@ -661,7 +676,7 @@ getArticles()
                             <tr class="connectivity-table-item" v-for="(article, index) in articles" style="text-align: center;">
                                 <td class="lh-sm text-left ps-3">
                                     {{ article.productName }}
-                                    <span v-if="article.additionalInfo['Primary Router Model']" v-tooltip
+                                    <span v-if="article?.additionalInfo?.['Primary Router Model']" v-tooltip
                                         data-bs-toggle="tooltip" data-bs-placement="top" title="Primary Router Model"
                                         class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm router-model">
                                         <font-awesome-icon :icon="['fas', 'plug']"></font-awesome-icon>
