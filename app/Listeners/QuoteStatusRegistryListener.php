@@ -4,6 +4,8 @@ namespace App\Listeners;
 
 use App\Enums\QuoteStatusesEnum;
 use App\Events\QuoteStatusEvent;
+use App\Models\Quote;
+use App\Services\OrderItemService;
 use App\Services\OrderService;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
@@ -12,25 +14,28 @@ use Illuminate\Support\Facades\Log;
 
 class QuoteStatusRegistryListener
 {
+
+    protected OrderService $orderService;
+
     /**
      * Create the event listener.
      */
-    public function __construct(protected OrderService $orderService)
-    {
-        //
+    public function __construct(
+    ) {
+        $this->orderService = new OrderService(new OrderItemService);
     }
 
     /**
      * Handle the event.
      */
-    public function handle(QuoteStatusEvent $quoteStatusUpdate): void
+    public function handle(QuoteStatusEvent $event): void
     {
-        $quote = $quoteStatusUpdate->quote;
-        if (!($quoteStatusUpdate->newStatus === QuoteStatusesEnum::REGISTRY->name)) {
+        $quote = Quote::find($event->quote_id);
+        if (!($quote->status === QuoteStatusesEnum::REGISTRY->name)) {
             return;
         }
 
-        if($quote->items()->count() <= 0) {
+        if ($quote->items()->count() <= 0) {
             throw new \Exception("Quote does not meet the requirements to create an Order.");
         }
 

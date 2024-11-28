@@ -51,10 +51,13 @@ class Quote extends Model
         static::addGlobalScope(new TenantScope);
 
         static::saved(function ($quote) {
-            if ($quote->isDirty('status')) {
-                event(new QuoteStatusEvent($quote, $quote->getOriginal('status'), $quote->status));
-            }
+            // if ($quote->isDirty('status')) {
+            // QuoteStatusEvent::dispatch($quote->id);
+                // event(new QuoteStatusEvent($quote));
+            // }
         });
+
+
     }
 
     public function user(): BelongsTo

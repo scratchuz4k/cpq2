@@ -16,6 +16,7 @@ use SocialiteProviders\Saml2\Saml2ExtendSocialite;
 
 class AppServiceProvider extends ServiceProvider
 {
+
     /**
      * Register any application services.
      */
@@ -38,12 +39,6 @@ class AppServiceProvider extends ServiceProvider
         Event::listen(function (\SocialiteProviders\Manager\SocialiteWasCalled $event) {
             $event->extendSocialite('saml2', \SocialiteProviders\Saml2\Provider::class);
         });
-
-        Event::listen(
-            QuoteStatusEvent::class,
-            QuoteStatusRegistryListener::class
-        );
-
 
         Scramble::routes(function (Route $route) {
             $available = [

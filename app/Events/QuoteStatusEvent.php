@@ -15,17 +15,10 @@ class QuoteStatusEvent
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public Quote $quote;
-    public $oldStatus;
-    public $newStatus;
-
     /**
      * Create a new event instance.
      */
-    public function __construct(Quote $quote, $oldStatus, $newStatus)
-    {
-        $this->quote = $quote;
-        $this->oldStatus = $oldStatus;
-        $this->newStatus = $newStatus;
-    }
+    public function __construct(
+        public $quote_id
+    ) {}
 }
