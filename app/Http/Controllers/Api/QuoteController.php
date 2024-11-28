@@ -84,8 +84,8 @@ class QuoteController extends BaseController
     {
         try {
             $quote = DB::transaction(function () use ($request, $quote) {
-                $order =  $this->quoteService->update($quote, $request->all());
-                return $order;
+                $quote =  $this->quoteService->update($quote, $request->all());
+                return $quote;
             });
         } catch (Exception $e) {
             if (!env('APP_DEBUG')) {

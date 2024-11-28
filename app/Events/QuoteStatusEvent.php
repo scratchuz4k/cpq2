@@ -19,6 +19,6 @@ class QuoteStatusEvent
      * Create a new event instance.
      */
     public function __construct(
-        public $quote_id
+        public Quote $quote
     ) {}
 }

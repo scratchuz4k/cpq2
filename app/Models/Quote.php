@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Trait\SetTenantId;
 use App\Enums\QuoteStatusesEnum;
+use App\Events\ChangedQuoteStatus;
 use App\Events\QuoteStatusEvent;
 use App\Models\Scopes\TenantScope;
 use Illuminate\Support\Facades\Log;
@@ -51,13 +52,10 @@ class Quote extends Model
         static::addGlobalScope(new TenantScope);
 
         static::saved(function ($quote) {
-            // if ($quote->isDirty('status')) {
-            // QuoteStatusEvent::dispatch($quote->id);
-                // event(new QuoteStatusEvent($quote));
-            // }
+            if ($quote->isDirty('status')) {
+                QuoteStatusEvent::dispatch($quote);
+            }
         });
-
-
     }
 
     public function user(): BelongsTo

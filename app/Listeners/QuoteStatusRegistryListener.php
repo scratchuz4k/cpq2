@@ -7,8 +7,6 @@ use App\Events\QuoteStatusEvent;
 use App\Models\Quote;
 use App\Services\OrderItemService;
 use App\Services\OrderService;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -20,8 +18,8 @@ class QuoteStatusRegistryListener
     /**
      * Create the event listener.
      */
-    public function __construct(
-    ) {
+    public function __construct()
+    {
         $this->orderService = new OrderService(new OrderItemService);
     }
 
@@ -30,7 +28,7 @@ class QuoteStatusRegistryListener
      */
     public function handle(QuoteStatusEvent $event): void
     {
-        $quote = Quote::find($event->quote_id);
+        $quote = $event->quote;
         if (!($quote->status === QuoteStatusesEnum::REGISTRY->name)) {
             return;
         }
