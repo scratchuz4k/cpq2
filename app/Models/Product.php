@@ -35,7 +35,7 @@ class Product extends Model
     }
     public function activePrice(): ?Price
     {
-        return $this->prices()->where('code', 1)->first();
+        return $this->prices()->first();
     }
     public function prices(): HasMany
     {
