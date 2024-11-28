@@ -30,8 +30,8 @@ class FilterProvider
     public static function paginate(Collection $items)
     {
         $order = request()->input('order', 'asc');
-        $orderBy = null;
-        if (count($items) && count(array_keys($items[0]))) {
+        $orderBy = 'id';
+        if (count($items) && is_array($items[0]) && count(array_keys($items[0]))) {
             $orderBy = array_keys($items[0])[0];
         }
         $orderBy = request()->input('orderBy', $orderBy);

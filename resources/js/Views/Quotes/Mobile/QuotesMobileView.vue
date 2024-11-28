@@ -84,6 +84,8 @@ const getProducts = async () => {
             operator: 'equals',
             value: 'plan'
         }]),
+        orderBy: 'price.net_spa',
+        order: 'desc',
         account_id: props.modelValue.account_id
     })
     let res = await axios.get("/api/products" + '?' + query)

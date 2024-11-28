@@ -30,7 +30,7 @@ class DataProvider
         return $this;
     }
 
-    public function get()
+    private function asd()
     {
         $this->builder = $this->builder->with($this->relations);
 
@@ -61,16 +61,22 @@ class DataProvider
             $func = $this->getFunction($filter);
             $this->builder = $this->buildSearch($this->builder, $filter['column'], $queryParts['operator'], $queryParts['value'], $func);
         }
+    }
+    public function getCollection()
+    {
+        $this->asd();
+        return $this->builder->get();
+    }
 
+    public function get()
+    {
+        $this->asd();
         $page = request()->input("page", 1);
         $limit = request()->input("limit", 10);
         $order = request()->input("order", "asc");
         $orderBy = request()->input("orderBy", "id");
-
         $orderByArray = explode('.', $orderBy);
-        if (count($orderByArray) == 1) {
-            return $this->builder->orderBy($orderBy, $order)->paginate(perPage: $limit, page: $page);
-        }
+
         if (count($orderByArray) == 2) {
             $table = $this->builder->getModel()->getTable();
 
@@ -78,7 +84,8 @@ class DataProvider
                 ->orderBy($orderByArray[0] . '.' . $orderByArray[1], $order);
             return  $this->builder->paginate(perPage: $limit, page: $page);
         }
-        return $this->builder->paginate(perPage: $limit, page: $page);
+
+        return $this->builder->orderBy($orderBy, $order)->paginate(perPage: $limit, page: $page);
     }
 
     public function buildSearch($builder, $column, $operator, $value, $func)
