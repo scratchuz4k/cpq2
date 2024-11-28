@@ -22,6 +22,7 @@ class ProductResource extends JsonResource
             ...$this->resource->toArray(),
             'supplier' => $this->supplier,
             'brand' => $this->brand,
+            'price_plan' => $this->pricePlan,
             'price' =>  PriceResource::make($this->activePrice())->resolve(),
             'prices' => PriceResource::collection($this->whenLoaded("prices", default: collect([])))->resolve(),
             'updated_at' => $this->updated_at,

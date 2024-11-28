@@ -42,7 +42,7 @@ class QuoteCreateRequest extends FormRequest
             'items.*.raw_price' => 'numeric',
             'items.*.price' => 'numeric',
             'items.*.discount' => 'numeric|min:0|max:100',
-            "items.*.price_plan_id" => "nullable|numeric|exists:price_plans,id",
+            "items.*.price_plan_id" => "required|numeric|exists:price_plans,id",
             "items.*.contract_length" => "numeric|min:1",
         ];
     }
