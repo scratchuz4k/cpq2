@@ -15,17 +15,7 @@ class OrderStatusEvent
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public Order $order;
-    public $oldStatus;
-    public $newStatus;
-
-    /**
-     * Create a new event instance.
-     */
-    public function __construct(Order $order, $oldStatus, $newStatus)
-    {
-        $this->order = $order;
-        $this->oldStatus = $oldStatus;
-        $this->newStatus = $newStatus;
-    }
+    public function __construct(
+        public Order $order
+    ) {}
 }

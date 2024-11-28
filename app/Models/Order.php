@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Events\OrderStatusEvent;
 use App\Trait\SetTenantId;
 use App\Models\Scopes\TenantScope;
 use Illuminate\Support\Facades\Auth;
@@ -55,6 +56,13 @@ class Order extends Model
     protected static function booted(): void
     {
         static::addGlobalScope(new TenantScope);
+
+        static::saved(function ($order) {
+            if ($order->isDirty('status')) {
+                OrderStatusEvent::dispatch($order);
+            }
+        });
+
     }
 
     public function user(): BelongsTo
