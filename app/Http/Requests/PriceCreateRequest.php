@@ -33,7 +33,6 @@ class PriceCreateRequest extends FormRequest
             ],
             "tax_rate" => "required|numeric",
             "net" => "required|numeric",
-            "price_plan_id" => "required|exists:price_plans,id",
             "product_id" => "required|exists:products,id",
         ];
     }

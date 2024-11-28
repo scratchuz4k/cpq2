@@ -60,6 +60,14 @@ const savePrice = async () => {
 }
 
 const deletePrice = async (id) => {
+    let result = await swal.fire({
+        title: 'Are you sure?'
+    })
+
+    if (['cancel', 'backdrop'].includes(result.dismiss)) {
+        return
+    }
+
     try {
         let index = prices.value.findIndex(e => e.id == id)
         await axios.delete(`/api/prices/${id}`)
@@ -206,7 +214,9 @@ const items = ref([
                             </div>
                             <div class="mb-3 d-flex justify-content-end"
                                 v-if="hasRole('Super Admin') || can('create price')">
-                                <button class="btn btn-primary" @click="() => showModal = !showModal">Add Price</button>
+                                <button class="btn btn-primary" @click="() => showModal = !showModal"
+                                    v-if="prices.length == 0">Add
+                                    Price</button>
                             </div>
                             <Dialog v-model:visible="showModal" modal :style="{ width: '50rem', marginTop: '4rem' }"
                                 :breakpoints="{ '1199px': '75vw', '575px': '90vw' }" :draggable="false" position="top">

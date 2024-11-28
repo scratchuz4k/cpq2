@@ -55,7 +55,7 @@ class PriceController extends BaseController
             }
             throw new Exception($e);
         }
-        return new PriceResource($price);
+        return new PriceResource($price->refresh());
     }
 
     /**

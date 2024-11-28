@@ -38,6 +38,7 @@ class Price extends Model
         static::saving(function ($model) {
             unset($model->attributes['net_spa']);
             unset($model->attributes['active_spas']);
+            $model->calculate();
         });
 
         static::creating(function (Model $model) {
@@ -45,9 +46,6 @@ class Price extends Model
             if (auth()->check() && !$model->tenant_id) {
                 $model->tenant_id = auth()->user()->tenant_id;
             }
-            $model->calculate();
-        });
-        static::updating(function (Model $model) {
             $model->calculate();
         });
     }
