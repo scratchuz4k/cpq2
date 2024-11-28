@@ -240,6 +240,7 @@ const getArticles = async () => {
         notyf.error(error)
         isLoading.value = false
         meta.isUpdating = false
+        showLoadingModal.value = false
     }
 }
 
