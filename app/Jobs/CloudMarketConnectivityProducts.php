@@ -94,7 +94,7 @@ class CloudMarketConnectivityProducts implements ShouldQueue, TenantAware
         $message = "CloudMarketConnectivityProducts failed with error: " . $exception->getMessage();
 
         $error = [
-            "provider" => "API",
+            "provider" => "JOB",
             "response" =>  $exception->getMessage(),
         ];
 
