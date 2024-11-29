@@ -22,6 +22,16 @@ class CloudMarketConnectivityProducts implements ShouldQueue, TenantAware
 {
     use Queueable;
     public $timeout = 3600;
+    public $prices = [];
+    public $errors = [];
+    public $started_at = null;
+    public $tempFilters = [
+        "providerName" => [],
+        "connectivitySupplierName" => [],
+        "contractTermMonths" => [],
+        "bearer" => [],
+        "speed" => []
+    ];
 
     /**
      * Create a new job instance.
@@ -34,31 +44,22 @@ class CloudMarketConnectivityProducts implements ShouldQueue, TenantAware
     public function handle(): void
     {
         $res = CloudMarketApi::getQuotes($this->connectivityType, $this->address);
-        $started_at = now();
+        $this->started_at = now();
         if (!$this->file->exists()) {
             throw new Exception("CloudMarketConnectivityProducts: File was not Found!");
         }
 
-        $prices = [];
-        $errors = [];
-        $tempFilters = [
-            "providerName" => [],
-            "connectivitySupplierName" => [],
-            "contractTermMonths" => [],
-            'bearer' => [],
-            'speed' => []
-        ];
 
         $stream = StreamWrapper::getResource($res->toPsrResponse()->getBody());
         foreach (Items::fromStream($stream) as $key => $value) {
             if ($value->hasErrors && $value->quoteResponseError) {
                 $error = [
-                    'provider' => $value->quoteResponseError->requestInfo->supplier,
-                    'response' => $value->quoteResponseError->errorMessage,
+                    "provider" => $value->quoteResponseError->requestInfo->supplier,
+                    "response" => $value->quoteResponseError->errorMessage,
                 ];
 
-                if (!in_array($error, $errors)) {
-                    $errors[] = $error;
+                if (!in_array($error, $this->errors)) {
+                    $this->errors[] = $error;
                 }
             }
 
@@ -67,20 +68,20 @@ class CloudMarketConnectivityProducts implements ShouldQueue, TenantAware
             }
 
             $temp = (array)$value;
-            $temp['code'] = '';
+            $temp["code"] = "";
             foreach (array_keys($temp) as $itemKey) {
                 if (!(is_string($temp[$itemKey]) || is_numeric($temp[$itemKey]))) {
                     continue;
                 }
-                $temp['code'] .= $temp[$itemKey];
+                $temp["code"] .= $temp[$itemKey];
             }
 
-            $prices[] = [...$temp, 'code' => md5(Str::slug($temp['code']))];
-            $tempFilters = FilterProvider::process($tempFilters, $temp);
-            $this->file->write($prices, false, null, $started_at, $tempFilters, $errors);
+            $this->prices[] = [...$temp, "code" => md5(Str::slug($temp["code"]))];
+            $this->tempFilters = FilterProvider::process($this->tempFilters, $temp);
+            $this->file->write($this->prices, false, null, $this->started_at, $this->tempFilters, $this->errors);
         }
 
-        $this->file->write($prices, false, now(), $started_at, $tempFilters, $errors);
+        $this->file->write($this->prices, false, now(), $this->started_at, $this->tempFilters, $this->errors);
     }
 
     /**
@@ -93,7 +94,18 @@ class CloudMarketConnectivityProducts implements ShouldQueue, TenantAware
     {
         // Handle the failure, log exception details, etc.
         $message = "CloudMarketConnectivityProducts failed with error: " . $exception->getMessage();
+
+        $error = [
+            "provider" => "API",
+            "response" =>  $exception->getMessage(),
+        ];
+
+        $this->errors[] = $error;
+
+        $this->file->write($this->prices, false, now(), $this->started_at, $this->tempFilters, $this->errors);
         Log::error($message);
-        Http::post(env("DISCORD_CLOUDMARKET_JOBS"), ["content" =>  $message]);
+        if(env("DISCORD_CLOUDMARKET_JOBS")){
+            Http::post(env("DISCORD_CLOUDMARKET_JOBS"), ["content" =>  $message]);
+        }
     }
 }
