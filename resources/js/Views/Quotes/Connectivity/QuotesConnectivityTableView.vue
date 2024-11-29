@@ -12,7 +12,7 @@ import Select from "primevue/select";
 const props = defineProps({
     modelValue: Object
 })
-
+let timeoutId =null
 const isLoading = ref(true)
 const showLoadingModal = ref(true)
 const showLowestCost = ref(true)
@@ -96,7 +96,7 @@ const getSubproviderImage = (img) => {
 }
 
 const getArticles = async () => {
-    isLoading.value = false
+    isLoading.value = true
     let temp = []
     Object.keys(filters).forEach((key) => {
         temp.push({ column: key, operator: filters[key].operator, value: filters[key].value ?? null })
@@ -196,7 +196,7 @@ const getArticles = async () => {
         )
 
         if (!meta.isRequestCompleted && showLoadingModal.value) {
-            const timeoutId = setTimeout(() => {
+            timeoutId = setTimeout(() => {
                 getArticles()
             }, 5000);
             return
