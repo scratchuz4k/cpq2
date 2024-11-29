@@ -2,51 +2,48 @@
 
 namespace App\Listeners;
 
-use App\Enums\QuoteStatusesEnum;
-use App\Events\QuoteStatusEvent;
 use App\Models\Quote;
-use App\Services\OrderItemService;
 use App\Services\OrderService;
+use App\Services\QuoteService;
+use App\Enums\OrderStatusesEnum;
+use App\Enums\QuoteStatusesEnum;
+use App\Events\OrderStatusEvent;
+use App\Events\QuoteStatusEvent;
+use App\Services\OrderItemService;
+use App\Services\QuoteItemService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class OrderStatusRejectedListener
 {
 
-    protected OrderService $orderService;
+    protected QuoteService $quoteService;
 
     /**
      * Create the event listener.
      */
     public function __construct()
     {
-        $this->orderService = new OrderService(new OrderItemService);
+        $this->quoteService = new QuoteService(new QuoteItemService);
     }
 
     /**
      * Handle the event.
      */
-    public function handle(QuoteStatusEvent $event): void
+    public function handle(OrderStatusEvent $event): void
     {
-        $quote = $event->quote;
-        if (!($quote->status === QuoteStatusesEnum::REGISTRY->name)) {
-            return;
-        }
-
-        if ($quote->items()->count() <= 0) {
-            throw new \Exception("Quote does not meet the requirements to create an Order.");
-        }
+        $order = $event->order;
 
         try {
-            $order = DB::transaction(function () use ($quote) {
-                $this->orderService->store([...$quote->toArray(), 'user_id' => null, 'quote_id' => $quote->id]);
+            $quote = DB::transaction(function () use ($order) {
+                $this->quoteService->update($order->quote,  ['status' => $order->status]);
             });
         } catch (\Exception $e) {
             if (!env('APP_DEBUG')) {
                 Log::error($e->getMessage());
             }
-            $quote->status = QuoteStatusesEnum::PRICE->name;
-            $quote->save();
+            $order->status = OrderStatusesEnum::REGISTRY->name;
+            $order->save();
         }
     }
 }

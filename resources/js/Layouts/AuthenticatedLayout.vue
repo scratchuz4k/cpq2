@@ -138,7 +138,7 @@ watch(search, () => {
                            :class="{ 'active': activeTab === ''}"
                         >DASHBOARD</a>
                     </li>
-                    <li class="nav-item">
+                    <li class="nav-item" v-if="!page.props.auth.roles.includes('Order Manager')">
                         <a class="nav-link" :class="{ 'active': $page.component == 'Quotes/Create' }" id="create-tab"
                             data-toggle="tab" href="/quotes/create" role="tab" aria-controls="create"
                             aria-selected="false">
@@ -146,18 +146,20 @@ watch(search, () => {
                             NEW
                         </a>
                     </li>
-                    <li class="nav-item" v-if="quote">
-                        <Link :href="route('quotes.configure', { quote: quote.id })" class="nav-link"
-                            :class="{ 'active': $page.component == 'Quotes/Configure' }">CONFIGURE</Link>
-                    </li>
-                    <li class="nav-item" v-if="quote">
-                        <Link :href="route('quotes.edit', { quote: quote.id })" class="nav-link"
-                            :class="{ 'active': $page.component == 'Quotes/Edit' }">PRICE</Link>
-                    </li>
-                    <li class="nav-item" v-if="quote">
-                        <Link :href="route('quotes.show', { quote: quote.id })" class="nav-link"
-                            :class="{ 'active': $page.component == 'Quotes/Show' }">QUOTE</Link>
-                    </li>
+                    <template v-if="quote && quote.status !== 'REGISTRY'">
+                        <li class="nav-item">
+                            <Link :href="route('quotes.configure', { quote: quote.id })" class="nav-link"
+                                :class="{ 'active': $page.component == 'Quotes/Configure' }">CONFIGURE</Link>
+                        </li>
+                        <li class="nav-item">
+                            <Link :href="route('quotes.edit', { quote: quote.id })" class="nav-link"
+                                :class="{ 'active': $page.component == 'Quotes/Edit' }">PRICE</Link>
+                        </li>
+                        <li class="nav-item">
+                            <Link :href="route('quotes.show', { quote: quote.id })" class="nav-link"
+                                :class="{ 'active': $page.component == 'Quotes/Show' }">QUOTE</Link>
+                        </li>
+                    </template>
                 </ul>
                 <form class="d-md-flex d-none" @submit.prevent="showSearch()">
                     <div class="input-group">
