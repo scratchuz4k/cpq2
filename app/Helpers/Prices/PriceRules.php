@@ -49,4 +49,9 @@ class PriceRules
     {
         return static::$spas;
     }
+
+    public function setAppliedSpas(Collection $spas): void
+    {
+        static::$spas = collect($spas);
+    }
 }

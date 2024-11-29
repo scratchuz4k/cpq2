@@ -20,21 +20,20 @@ class CloudMarketRepository
             $file['filters'] = FilterProvider::process($file['filters'], $value, true);
         }
 
-        $meta = FilterProvider::paginate($items);
 
         $priceRules = new PriceRules();
         $account = Account::where('id', request()->input('account_id', null))->first();
-        $meta['data'] = $meta['data']->map(function ($product) use ($priceRules, $account) {
+        $items = $items->map(function ($product) use ($priceRules, $account) {
             $supplier = null;
 
             if (array_key_exists($product['providerKey'], $this->providers)) {
-                $supplier = $this->providers[$product['providerKey']];
+                $priceRules->setAppliedSpas($this->providers[$product['providerKey']]);
             } else {
                 $supplier = Supplier::where('reference', $product['providerKey'])->first();
-                $this->providers[$product['providerKey']] = $supplier;
+                $priceRules->find(supplier: $supplier, account: $account);
+                $this->providers[$product['providerKey']] = $priceRules->getAppliedSpas();
             }
 
-            $priceRules->find(supplier: $supplier, account: $account);
             foreach (['priceMonthly', 'priceAnnual', 'priceInstall'] as $key) {
                 if (!array_key_exists($key, $product)) {
                     continue;
@@ -46,6 +45,8 @@ class CloudMarketRepository
 
             return $product;
         });
+
+        $meta = FilterProvider::paginate($items);
 
         return array_merge(
             $meta,
