@@ -72,7 +72,7 @@ it('Assert Quote status equals price on adding address', function () {
     $this->assertEquals($quote['status'], QuoteStatusesEnum::PRICE->name);
 });
 
-it('Assert Quote status equals quote on adding items', function () { 
+it('Assert Quote status equals quote on adding items', function () {
     $quote_data = [
         'account_id' => 1,
         'address_position' => [
@@ -150,4 +150,4 @@ it('Assert Quote status equals quote on adding items', function () {
     $response = $this->post('api/quote-items', $quote_item);
     $updated_quote = $response->json();
     $this->assertEquals($updated_quote['quote']['status'], QuoteStatusesEnum::QUOTE->name);
- });
+});

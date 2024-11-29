@@ -4,11 +4,8 @@ namespace App\Models;
 
 use App\Trait\SetTenantId;
 use App\Enums\QuoteStatusesEnum;
-use App\Events\ChangedQuoteStatus;
 use App\Events\QuoteStatusEvent;
 use App\Models\Scopes\TenantScope;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -17,7 +14,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class Quote extends Model
 {
     use HasFactory, SetTenantId;
-
     protected $fillable = [
         "account_id",
         "solution_type_id",
@@ -50,6 +46,10 @@ class Quote extends Model
     protected static function booted(): void
     {
         static::addGlobalScope(new TenantScope);
+
+        static::saving(function (Quote $quote) {
+            $quote->status = Quote::resolveStatus($quote);
+        });
 
         static::saved(function ($quote) {
             if ($quote->isDirty('status')) {
@@ -110,5 +110,27 @@ class Quote extends Model
         $this->margin = $total_cost ? ($margin_value / $total_cost) * 100 : 100;
         $this->commission_value = $margin_value * ($this->commission_rate / 100);
         $this->save();
+    }
+
+    public static function resolveStatus(Quote $quote): string {
+        $statuses_to_ignore = [
+            QuoteStatusesEnum::REJECTED->name,
+            QuoteStatusesEnum::REGISTRY->name,
+            QuoteStatusesEnum::ORDERED->name,
+        ];
+
+        if (in_array($quote->status, $statuses_to_ignore)) {
+            return $quote->status;
+        }
+
+        if ($quote->items->count()) {
+            return QuoteStatusesEnum::QUOTE->name;
+        }
+
+        if (!empty($quote->address_data)) {
+            return QuoteStatusesEnum::PRICE->name;
+        }
+
+        return QuoteStatusesEnum::CONFIGURE->name;
     }
 }
