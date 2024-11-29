@@ -235,16 +235,12 @@ const items = ref([
                         <thead>
                             <tr>
                                 <th style="width:30%">Product</th>
-                                <th class="text-center" style="width:10%">
-                                    <div style="overflow: hidden;white-space: nowrap; text-overflow:ellipsis;">
-                                        Contract Len.
-                                    </div>
-                                </th>
-                                <th class="text-center" style="width:10%"> Qty </th>
-                                <th class="text-right" style="width:10%"> Your Price</th>
-                                <th class="text-center" style="width:10%"> Margin</th>
-                                <th class="text-center" style="width:10%"> Discount</th>
-                                <th class="text-right" style="width:10%"> Sell Price</th>
+                                <th class="text-center" style="width:8%">Months</th>
+                                <th class="text-center" style="width:8%">Qty</th>
+                                <th class="text-right" style="width:11%">Your Price</th>
+                                <th class="text-right" style="width:10%">Margin</th>
+                                <th class="text-center" style="width:10%">Discount</th>
+                                <th class="text-right" style="width:13%">Sell Price</th>
                                 <th class="text-right" style="width:10%"></th>
                             </tr>
                         </thead>
@@ -277,7 +273,7 @@ const items = ref([
                                         v-model="temp.quantity">
                                 </td>
                                 <td class="text-right"> {{ GBP.format(p.price) }}</td>
-                                <td class="text-center">
+                                <td class="text-right">
                                     <span :id="'recurring-' + i + '-margin'">
                                         {{ GBP.format(p.margin) }}
                                     </span>
@@ -355,13 +351,10 @@ const items = ref([
                             </tr>
                             <tr v-else>
                                 <th colspan="10">
-                                    <div class="d-flex justify-content-center align-items-end">
-                                        <p role="button" id="btn-recurring-add"
-                                            class="d-flex justify-content-center align-items-center px-2 py-1"
-                                            style="font-size: 10px;" @click="() => recurringNewLine.show = true">
-                                            <span>Add New Recurring Line</span>
+                                    <div role="button" id="btn-recurring-add" class="d-flex justify-content-center align-items-center px-2 py-1"
+                                        style="font-size: 12px;" @click="() => recurringNewLine.show = true">
+                                            <span>Add New</span>
                                             <font-awesome-icon class="ms-2" :icon="['fas', 'plus']" />
-                                        </p>
                                     </div>
                                 </th>
                             </tr>
@@ -378,12 +371,12 @@ const items = ref([
                     <table id="table-one_off" class="table">
                         <thead>
                             <tr>
-                                <th style="width:40%">Product</th>
-                                <th class="text-center" style="width:10%"> Qty </th>
-                                <th class="text-right" style="width:10%"> Your Price</th>
-                                <th class="text-center" style="width:10%"> Margin</th>
-                                <th class="text-center" style="width:10%"> Discount</th>
-                                <th class="text-right" style="width:10%"> Sell Price</th>
+                                <th style="width:38%">Product</th>
+                                <th class="text-center" style="width:8%">Qty</th>
+                                <th class="text-right" style="width:11%">Your Price</th>
+                                <th class="text-right" style="width:10%">Margin</th>
+                                <th class="text-center" style="width:10%">Discount</th>
+                                <th class="text-right" style="width:13%">Sell Price</th>
                                 <th class="text-right" style="width:10%">
 
                                 </th>
@@ -402,7 +395,7 @@ const items = ref([
                                         v-model="temp.quantity">
                                 </td>
                                 <td class="text-right"> {{ GBP.format(p.original_price) }}</td>
-                                <td class="text-center">
+                                <td class="text-right">
                                     <span :id="'one_off-' + i + '-margin'">
                                         {{ GBP.format(p.margin) }}
                                     </span>
@@ -475,13 +468,10 @@ const items = ref([
                             </tr>
                             <tr v-else>
                                 <th colspan="10">
-                                    <div class="d-flex justify-content-center align-items-end">
-                                        <p role="button" id="btn-one_off-add"
-                                            class="d-flex justify-content-center align-items-center px-2 py-1"
-                                            style="font-size: 10px;" @click="() => oneOffNewLine.show = true">
-                                            <span>Add New One off Line</span>
+                                    <div role="button" id="btn-one_off-add" class="d-flex justify-content-center align-items-center px-2 py-1"
+                                        style="font-size: 12px;" @click="() => oneOffNewLine.show = true">
+                                            <span>Add New</span>
                                             <font-awesome-icon class="ms-2" :icon="['fas', 'plus']" />
-                                        </p>
                                     </div>
                                 </th>
                             </tr>
@@ -521,8 +511,8 @@ const items = ref([
                     </div>
                 </div>
             </div>
-            <div class="col-lg-3">
-                <div style="position: sticky; top: 25px">
+            <div class="col-lg-4">
+                <div style="position: sticky; top: 25px; max-width: 82%; margin-right: 0; margin-left: auto;">
                     <InfoBox>
                         <div style="font-size: 14px;">
                             <b style="font-size: 16px;">Quote {{ quote.id }} for {{ quote.account.name }}</b>
@@ -539,7 +529,7 @@ const items = ref([
                             </div>
                         </div>
                     </InfoBox>
-                    <div class="price-mobile-sidebar px-4 pt-4 pb-2 mb-3">
+                    <div class="price-mobile-sidebar total-quote-discount px-4 pt-4 pb-2 mb-3">
                         <h3 class="mb-3">Total Quote Discount</h3>
                         <div v-for="pricePlan in props.pricePlans"
                             class="d-flex justify-content-between align-items-center mb-3">
@@ -560,25 +550,31 @@ const items = ref([
                             Reset quote
                         </button>
                     </div>
-                    <div class="price-mobile-sidebar px-4 pt-4 pb-2 mb-3">
+                    <div class="price-mobile-sidebar commission-calculator px-4 pt-4 pb-2 mb-3">
                         <h3 class="mb-3">Commission Calculator</h3>
-                        <p style="font-size: 14px;"> Currently, you will make {{ GBP.format(quote.commission_value) }}
+                        <p class="mb-2" style="font-size: 14px;"> Currently, you will make <b>{{ GBP.format(quote.commission_value) }}</b>
                             commission and
-                            {{ quote.margin.toFixed(2) }} %
+                            <b>{{ quote.margin.toFixed(2) }} %</b>
                             margin on
                             this quote.</p>
-                        <div class="p-3" style="background: #E9EDF0;">
+                        <div class="p-3 mb-3" style="background: #E9EDF0;">
                             <div class="mb-3">
                                 <label class="form-label">Margin</label>
-                                <input id="input-margin-order" class="form-control"
-                                    :value="quote.margin.toFixed(2) + ' %'" disabled>
+                                <div class="input-group">
+                                    <input id="input-margin-order" class="form-control"
+                                        :value="quote.margin.toFixed(2) + ' %'" disabled>
+                                    <span class="input-group-text"><font-awesome-icon :icon="['fas', 'lock']"></font-awesome-icon></span>
+                                </div>
                             </div>
                             <div class="mb-3">
-                                <label class="form-label">Commission (<span id="order-tax-commission">
-                                        {{ quote.commission_rate }}</span>%)
+                                <label class="form-label">Commission <b>(<span id="order-tax-commission">
+                                        {{ quote.commission_rate }}</span>%)</b>
                                 </label>
-                                <input id="input-commission_value-order" class="form-control"
-                                    :value="GBP.format(quote.commission_value)" disabled>
+                                <div class="input-group">
+                                    <input id="input-commission_value-order" class="form-control"
+                                        :value="GBP.format(quote.commission_value)" disabled>
+                                    <span class="input-group-text"><font-awesome-icon :icon="['fas', 'lock']"></font-awesome-icon></span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -665,4 +661,17 @@ input[type="number"] {
     font-size: 0.9rem;
     line-height: 1.5rem;
 }
+
+.commission-calculator .input-group input {
+    border-right: none;
+    background-color: #dfe3e6;
+    border-color: #bdbdbd;
+}
+
+.commission-calculator .input-group .input-group-text {
+    background-color: #dfe3e6;
+    color:#646464;
+    border-color: #bdbdbd;
+}
+
 </style>
