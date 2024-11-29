@@ -38,7 +38,6 @@ class CloudMarketService
 
         if (!Cache::has($filename)) {
             $file->write([], true, null, now());
-
             CloudMarketConnectivityProducts::dispatch($file, $connectivityType, $address);
         }
 

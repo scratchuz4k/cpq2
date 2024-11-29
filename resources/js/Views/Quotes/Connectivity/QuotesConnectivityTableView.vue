@@ -116,7 +116,7 @@ const getArticles = async () => {
         longitude: props.modelValue.address_position?.lon,
         uprn: props.modelValue.address_data?.uprn,
         street: props.modelValue.address_data?.thoroughfareName ?? props.modelValue.address_data?.dependentThoroughfareName,
-        town: props.modelValue.address_city ?? props.modelValue.address_data?.locality  ?? props.modelValue.address_data?.doubleDependentLocality,
+        town: props.modelValue.address_city ?? props.modelValue.address_data?.locality ?? props.modelValue.address_data?.doubleDependentLocality,
         addressKey: props.modelValue.address_data?.addressKey,
         buildingNumber: props.modelValue.address_data?.thoroughfareNumber,
         buildingName: props.modelValue.address_data?.premisesName ?? props.modelValue.address_data?.organisationName,
@@ -130,7 +130,7 @@ const getArticles = async () => {
     };
 
     try {
-        let res = await axios.post('/api/external/get-articles-from-cloud-market',query)
+        let res = await axios.post('/api/external/get-articles-from-cloud-market', query)
 
         articles.value = res.data.data
         const errorMessages = {
@@ -194,9 +194,10 @@ const getArticles = async () => {
             Object.entries(filters).filter(([key, filter]) => filter.value !== null)
         )
 
-        if(!meta.isUpdating && showLoadingModal.value){
-            setTimeout(() => {}, 20000);
-            getArticles()
+        if (!meta.isUpdating && showLoadingModal.value) {
+            const timeoutId = setTimeout(() => {
+                getArticles()
+            }, 5000);
             return
         }
 
@@ -320,6 +321,9 @@ watch([filters, showQuoted, showLowestCost], _.debounce(function () {
     getArticles()
 }, 500))
 
+window.addEventListener("beforeunload", () => {
+    clearTimeout(timeoutId); // Cancel timeout on page navigation or refresh
+});
 
 getArticles()
 
@@ -353,9 +357,11 @@ getArticles()
                         <div class="col">
                             <InfoBox class="mb-2 py-0" severity="info">
                                 <div class="small">
-                                    <div class="mb-2 fw-bold">There were issues retrieving data from the following providers:</div>
+                                    <div class="mb-2 fw-bold">There were issues retrieving data from the following
+                                        providers:</div>
                                     <div v-for="error in errors" class="mb-1">
-                                        <span class="small fw-bold bg-light rounded-2 py-1 px-2 me-1 text-capitalize">{{ error?.provider }}</span><i>{{error?.response}}</i>
+                                        <span class="small fw-bold bg-light rounded-2 py-1 px-2 me-1 text-capitalize">{{
+                                            error?.provider }}</span><i>{{ error?.response }}</i>
                                     </div>
                                 </div>
                             </InfoBox>
@@ -385,11 +391,8 @@ getArticles()
                                         <Badge
                                             v-for="value in (Array.isArray(selectedFilter.value) ? selectedFilter.value : [selectedFilter.value]).filter(v => v !== null)"
                                             :value="['speed', 'bearer'].includes(column) ? 'Min. ' + format.speed(value) : (['contractTermMonths'].includes(column) ? value + ' Months' : value)"
-                                            class="px-3 py-1"
-                                            data-toggle="tooltip"
-                                            data-placement="top"
-                                            :title="selectedFilter.name"
-                                        >
+                                            class="px-3 py-1" data-toggle="tooltip" data-placement="top"
+                                            :title="selectedFilter.name">
                                             <template #close-button>
                                                 <font-awesome-icon :icon="['fas', 'x']" role="button" class="ms-1 fs-7"
                                                     @click="removeFilter(selectedFilter, value)" />
@@ -442,9 +445,9 @@ getArticles()
                     </div>
                     <div class="col-lg-2 col-12 p-0 pe-1">
                         <label for="filter-contract" class="form-label">Min. Bearer</label>
-                        <Select v-model="filters['bearer'].value" style="width:100%"
-                            :options="filterList.bearer" optionLabel="label" optionValue="value" placeholder="All"
-                            class="me-3 custom-select " :disabled="meta.isUpdating">
+                        <Select v-model="filters['bearer'].value" style="width:100%" :options="filterList.bearer"
+                            optionLabel="label" optionValue="value" placeholder="All" class="me-3 custom-select "
+                            :disabled="meta.isUpdating">
                             <template #option="slotProps">
                                 <div style="font-size:14px;line-height: 1.5rem;">
                                     {{ slotProps.option.label }}
@@ -454,9 +457,9 @@ getArticles()
                     </div>
                     <div class="col-lg-2 col-12 p-0 pe-1">
                         <label for="filter-contract" class="form-label">Min. Speed</label>
-                        <Select v-model="filters['speed'].value" style="width:100%"
-                                :options="filterList.speed" optionLabel="label" optionValue="value" placeholder="All"
-                                class="me-3 custom-select " :disabled="meta.isUpdating">
+                        <Select v-model="filters['speed'].value" style="width:100%" :options="filterList.speed"
+                            optionLabel="label" optionValue="value" placeholder="All" class="me-3 custom-select "
+                            :disabled="meta.isUpdating">
                             <template #option="slotProps">
                                 <div style="font-size:14px;line-height: 1.5rem;">
                                     {{ slotProps.option.label }}
@@ -468,9 +471,9 @@ getArticles()
                         <button class="btn btn-secondary btn-sm mt-2 me-2 w-100" @click="resetFilters()"
                             :disabled="meta.isUpdating">Reset</button>
                         <div class="advanced-settings pt-2 w-100">
-                            <button id="btn-more-filters" class="btn btn-secondary dropdown-toggle lh-1 w-100" type="button"
-                                data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside"
-                                :disabled="meta.isUpdating">
+                            <button id="btn-more-filters" class="btn btn-secondary dropdown-toggle lh-1 w-100"
+                                type="button" data-bs-toggle="dropdown" aria-expanded="false"
+                                data-bs-auto-close="outside" :disabled="meta.isUpdating">
                                 <font-awesome-icon :icon="['fas', 'gear']"></font-awesome-icon>
                             </button>
                             <ul class="dropdown-menu dropdown-menu-end p-1">
@@ -651,7 +654,8 @@ getArticles()
                             </tr>
                         </thead>
                         <tbody>
-                            <tr class="connectivity-table-item" v-for="(article, index) in articles" style="text-align: center;">
+                            <tr class="connectivity-table-item" v-for="(article, index) in articles"
+                                style="text-align: center;">
                                 <td class="lh-sm text-left ps-3">
                                     {{ article.productName }}
                                     <span v-if="article?.additionalInfo?.['Primary Router Model']" v-tooltip
