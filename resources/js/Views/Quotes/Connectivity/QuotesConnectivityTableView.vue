@@ -96,7 +96,7 @@ const getSubproviderImage = (img) => {
 }
 
 const getArticles = async () => {
-    isLoading.value = true
+    isLoading.value = false
     let temp = []
     Object.keys(filters).forEach((key) => {
         temp.push({ column: key, operator: filters[key].operator, value: filters[key].value ?? null })
@@ -129,45 +129,6 @@ const getArticles = async () => {
         account_id: props.modelValue.account_id
     };
 
-    console.log(query);
-
-    const csrfToken = document.head.querySelector("[name~=csrf-token][content]").content;
-    /*
-    let res = await fetch('/api/external/get-articles-from-cloud-market',
-        {
-            headers: {
-                "Content-Type": "application/json",
-                "Accept": "application/json",
-                "X-Requested-With": "XMLHttpRequest",
-                "X-CSRF-Token": csrfToken
-            },
-            method: "post",
-            credentials: "same-origin",
-            body: JSON.stringify(query)
-        })
-    const reader = res.body.getReader();
-    const decoder = new TextDecoder();
-
-
-    while (true) {
-        const { done, value } = await reader.read();
-        if (done) {
-            break;
-        }
-
-        try {
-            const data = JSON.parse(decoder.decode(value, { stream: true }));
-            articles.value = data.data
-            isLoading.value = false
-            meta.first = (meta.page - 1) * meta.limit
-            meta.total = data.total
-            meta.overallTotal = data.overall_total
-            meta.isUpdating = !!data.finished_at
-            Object.assign(filterList, data.filters)
-        } catch (e) {
-        }
-    }
-	  */
     try {
         let res = await axios.post('/api/external/get-articles-from-cloud-market',query)
 
@@ -203,12 +164,12 @@ const getArticles = async () => {
             return article;
         });
 
-
         isLoading.value = false
         meta.first = (meta.page - 1) * meta.limit
         meta.total = res.data.total
         meta.overallTotal = res.data.overall_total
-        meta.isUpdating = false
+        meta.isUpdating = !!res.data.finished_at
+
         Object.assign(filterList, res.data.filters)
 
         let bearerFilters = []
@@ -232,6 +193,12 @@ const getArticles = async () => {
         selectedFilters.value = Object.fromEntries(
             Object.entries(filters).filter(([key, filter]) => filter.value !== null)
         )
+
+        if(!meta.isUpdating && showLoadingModal.value){
+            setTimeout(() => {}, 20000);
+            getArticles()
+            return
+        }
 
         showLoadingModal.value = false
 
@@ -398,10 +365,20 @@ getArticles()
                 <div class="row">
                     <div class="d-flex justify-content-between">
                         <div class="filters d-flex">
-                            <p class="fs-5 bold mb-2">
-                                Filters
-                                <span class="fw-normal">({{ meta.total }})</span>
-                            </p>
+                            <div class="d-flex mb-2">
+                                <p class="fs-5 bold me-2">
+                                    Filters
+                                    <span class="fw-normal">({{ meta.total }})</span>
+                                </p>
+                                <div v-if="!meta.isUpdating"
+                                    class="badge badge-filter text-bg-danger m-0 d-flex align-items-center">
+                                    <div class="spinner-border spinner-border-sm me-2" role="status">
+                                        <span class="sr-only">Loading...</span>
+                                    </div>
+                                    Searching
+                                </div>
+                                <p v-else class="badge badge-filter text-bg-success m-0">Prices Updated</p>
+                            </div>
                             <ul class="d-flex list-unstyled ms-2 mb-0">
                                 <li>
                                     <template v-for="(selectedFilter, column) in selectedFilters">

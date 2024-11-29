@@ -39,79 +39,18 @@ class CloudMarketService
         if (!Cache::has($filename)) {
             $file->write([], true, null, now());
 
-            if (env('CLOUDMARKET_CONNECTION_AS_JOB')) {
-                CloudMarketConnectivityProducts::dispatch($file, $connectivityType, $address);
-            } else {
-                $this->getConnectivityProducts($file, $connectivityType, $address, $filters);
-            }
+            CloudMarketConnectivityProducts::dispatch($file, $connectivityType, $address);
         }
 
         $content = $file->getContent();
         $createdAt = Carbon::parse($content['created_at']);
 
-        if (!$file->exists() || (is_null($content['finished_at']) && $createdAt->addMinutes(2)->isPast())) {
-            if (env('CLOUDMARKET_CONNECTION_AS_JOB')) {
-                CloudMarketConnectivityProducts::dispatch($file, $connectivityType, $address);
-            } else {
-                $this->getConnectivityProducts($file, $connectivityType, $address, $filters);
-            }
+        if (!$file->exists() || (is_null($content['finished_at']) && $createdAt->addMinutes(5)->isPast())) {
+            $file->write([], true, null, now());
+            CloudMarketConnectivityProducts::dispatch($file, $connectivityType, $address);
         }
 
         return $this->cloudMarketRepository->sendResponse($file->getContent(), $filters);
     }
 
-    private function getConnectivityProducts(CloudMarketFile $file, $connectivityType, $address, $filters)
-    {
-        $res = CloudMarketApi::getQuotes($connectivityType, $address);
-        $started_at = now();
-
-        $prices = [];
-        $errors = [];
-        $tempFilters = [
-            "providerName" => [],
-            "connectivitySupplierName" => [],
-            "contractTermMonths" => [],
-            'bearer' => [],
-            'speed' => []
-        ];
-
-        $stream = StreamWrapper::getResource($res->toPsrResponse()->getBody());
-        foreach (Items::fromStream($stream) as $key => $value) {
-            if($value->hasErrors && $value->quoteResponseError) {
-                $error = [
-                    'provider' => $value->quoteResponseError->requestInfo->supplier,
-                    'response' => $value->quoteResponseError->errorMessage,
-                ];
-
-                if (!in_array($error, $errors)) {
-                    $errors[] = $error;
-                }
-            }
-
-            if (empty($value->providerKey) || !$value->quoteId) {
-                continue;
-            }
-
-            $temp = (array)$value;
-            $temp['code'] = '';
-            foreach (array_keys($temp) as $itemKey) {
-                if (!(is_string($temp[$itemKey]) || is_numeric($temp[$itemKey]))) {
-                    continue;
-                }
-                $temp['code'] .= $temp[$itemKey];
-            }
-
-            $prices[] = [...$temp, 'code' => md5(Str::slug($temp['code']))];
-            $tempFilters = FilterProvider::process($tempFilters, $temp);
-            $file->write($prices, false, null, $started_at, $tempFilters, $errors);
-            /*
-            if (($key % 250) == 0) {
-                echo json_encode($this->cloudMarketRepository->sendResponse($file->getContent(), $filters));
-            }
-            */
-        }
-
-        $file->write($prices, false, now(), $started_at, $tempFilters, $errors);
-        //echo json_encode($this->cloudMarketRepository->sendResponse($file->getContent(), $filters));
-    }
 }
