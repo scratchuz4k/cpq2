@@ -1,5 +1,6 @@
 import axios from "axios";
 import {usePage} from "@inertiajs/vue3";
+import { get } from "lodash";
 
 const page = usePage()
 export const createOrder = async (id, getData) => {
@@ -20,6 +21,7 @@ export const createOrder = async (id, getData) => {
     } catch (err) {
         notyf.error(err?.response?.data?.message ?? 'Something went wrong')
     }
+    getData();
 }
 
 export const assignOrder = async (id) => {

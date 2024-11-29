@@ -27,7 +27,7 @@ class QuoteResource extends JsonResource
             'discounts' => QuoteDiscountResource::collection($this->discounts),
             'items' => QuoteItemResource::collection($this->whenLoaded('items', default: collect([]))),
             'updated_at' => $this->updated_at,
-            'orders' => QuoteResource::collection($this->whenLoaded('orders', collect([])))
+            'orders' => $this->whenLoaded('orders')
         ];
     }
 }
