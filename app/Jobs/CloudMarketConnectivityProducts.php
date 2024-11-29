@@ -15,7 +15,6 @@ use Illuminate\Support\Facades\Cache;
 use App\Helpers\Api\CloudMarketAddress;
 use Spatie\Multitenancy\Jobs\TenantAware;
 use Illuminate\Foundation\Queue\Queueable;
-use App\Repositories\CloudMarketRepository;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
 class CloudMarketConnectivityProducts implements ShouldQueue, TenantAware
@@ -48,7 +47,6 @@ class CloudMarketConnectivityProducts implements ShouldQueue, TenantAware
         if (!$this->file->exists()) {
             throw new Exception("CloudMarketConnectivityProducts: File was not Found!");
         }
-
 
         $stream = StreamWrapper::getResource($res->toPsrResponse()->getBody());
         foreach (Items::fromStream($stream) as $key => $value) {
@@ -100,11 +98,15 @@ class CloudMarketConnectivityProducts implements ShouldQueue, TenantAware
             "response" =>  $exception->getMessage(),
         ];
 
-        $this->errors[] = $error;
+        $file = $this->file->getContent();
+        $file['errors'][] = $error;
 
-        $this->file->write($this->prices, false, now(), $this->started_at, $this->tempFilters, $this->errors);
+        // Handle the failure, log exception details, etc.
+        $message = "CloudMarketConnectivityProducts failed with error: " . json_encode($file['errors']);
+
+        $this->file->write($file['data'], false, now(), $file['created_at'], $file['filters'], $file['errors']);
         Log::error($message);
-        if(env("DISCORD_CLOUDMARKET_JOBS")){
+        if (env("DISCORD_CLOUDMARKET_JOBS")) {
             Http::post(env("DISCORD_CLOUDMARKET_JOBS"), ["content" =>  $message]);
         }
     }

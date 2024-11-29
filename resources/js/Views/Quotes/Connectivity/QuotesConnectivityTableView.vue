@@ -170,6 +170,7 @@ const getArticles = async () => {
         meta.overallTotal = res.data.overall_total
         meta.isRequestCompleted = !!res.data.finished_at
 
+
         Object.assign(filterList, res.data.filters)
 
         let bearerFilters = []
@@ -242,8 +243,6 @@ const resetFilters = () => {
         filters[key].value = null
     })
 
-    emitter.emit('bearerSlider-reset')
-    emitter.emit('speedSlider-reset')
     showLowestCost.value = true
     showQuoted.value = false
 }
@@ -412,7 +411,7 @@ getArticles()
                         <label for="filter-provider" class="form-label">Provider</label>
                         <MultiSelect id="provider-multiselect" v-model="filters['providerName'].value"
                             style="width:100%" :options="Object.keys(filterList.providerName)" placeholder="All"
-                            size="small" :disabled="meta.isRequestCompleted" class="custom-multiselect">
+                            size="small" class="custom-multiselect">
                             <template #option="slotProps">
                                 <div style="font-size:14px;line-height: 1.5rem;">{{ slotProps.option }}
                                     ( {{ filterList.providerName[slotProps.option] }} )
@@ -424,7 +423,7 @@ getArticles()
                         <label for="filter-subprovider" class="form-label">Subprovider</label>
                         <MultiSelect id="subprovider-multiselect" v-model="filters['connectivitySupplierName'].value"
                             style="width:100%" :options="Object.keys(filterList.connectivitySupplierName)"
-                            placeholder="All" class="me-3 custom-multiselect" :disabled="meta.isRequestCompleted">
+                            placeholder="All" class="me-3 custom-multiselect">
                             <template #option="slotProps">
                                 <div style="font-size:14px;line-height: 1.5rem;">{{ slotProps.option }}
                                     ( {{ filterList.connectivitySupplierName[slotProps.option] }} )
@@ -436,7 +435,7 @@ getArticles()
                         <label for="filter-contract" class="form-label">Contract Length</label>
                         <MultiSelect v-model="filters['contractTermMonths'].value" style="width:100%"
                             :options="Object.keys(filterList.contractTermMonths)" placeholder="All"
-                            class="me-3 custom-multiselect " :disabled="meta.isRequestCompleted">
+                            class="me-3 custom-multiselect ">
                             <template #option="slotProps">
                                 <div style="font-size:14px;line-height: 1.5rem;">{{ slotProps.option }} Months
                                 </div>
@@ -447,7 +446,7 @@ getArticles()
                         <label for="filter-contract" class="form-label">Min. Bearer</label>
                         <Select v-model="filters['bearer'].value" style="width:100%" :options="filterList.bearer"
                             optionLabel="label" optionValue="value" placeholder="All" class="me-3 custom-select "
-                            :disabled="meta.isRequestCompleted">
+                        >
                             <template #option="slotProps">
                                 <div style="font-size:14px;line-height: 1.5rem;">
                                     {{ slotProps.option.label }}
@@ -459,7 +458,7 @@ getArticles()
                         <label for="filter-contract" class="form-label">Min. Speed</label>
                         <Select v-model="filters['speed'].value" style="width:100%" :options="filterList.speed"
                             optionLabel="label" optionValue="value" placeholder="All" class="me-3 custom-select "
-                            :disabled="meta.isRequestCompleted">
+                        >
                             <template #option="slotProps">
                                 <div style="font-size:14px;line-height: 1.5rem;">
                                     {{ slotProps.option.label }}
@@ -469,11 +468,11 @@ getArticles()
                     </div>
                     <div class="col-lg-2 col-12 d-flex align-self-end justify-content-around">
                         <button class="btn btn-secondary btn-sm mt-2 me-2 w-100" @click="resetFilters()"
-                            :disabled="meta.isRequestCompleted">Reset</button>
+                        >Reset</button>
                         <div class="advanced-settings pt-2 w-100">
                             <button id="btn-more-filters" class="btn btn-secondary dropdown-toggle lh-1 w-100"
                                 type="button" data-bs-toggle="dropdown" aria-expanded="false"
-                                data-bs-auto-close="outside" :disabled="meta.isRequestCompleted">
+                                data-bs-auto-close="outside">
                                 <font-awesome-icon :icon="['fas', 'gear']"></font-awesome-icon>
                             </button>
                             <ul class="dropdown-menu dropdown-menu-end p-1">
@@ -497,7 +496,7 @@ getArticles()
                         </div>
                     </div>
                 </div>
-                <div v-if="isLoading || meta.isRequestCompleted" data-provider="loading" class="position-relative">
+                <div v-if="isLoading" data-provider="loading" class="position-relative">
                     <div class="cpq-progress-bar" style="position: absolute;z-index: 2; ">
                         <div class="cpq-bar"></div>
                         <div class="cpq-bar-text" v-if="!articles.length">
