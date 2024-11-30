@@ -9,7 +9,7 @@ env:
 
 jobs:
   tests:
-    name: Build & Publish Docker Image
+    name: Run Pest and Cypress Tests
     runs-on: ubuntu-24.04
     environment: testing
 
@@ -115,6 +115,7 @@ jobs:
 
   build:
     name: Build & Publish Docker Image
+    needs: tests
     runs-on: ubuntu-24.04
     environment: staging
 
