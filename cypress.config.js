@@ -1,6 +1,7 @@
 import { defineConfig } from 'cypress'
 
 export default defineConfig({
+    retries: 2,
     chromeWebSecurity: false,
     defaultCommandTimeout: 5000,
     watchForFileChanges: false,
