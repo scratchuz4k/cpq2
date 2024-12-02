@@ -12,7 +12,8 @@ import Select from "primevue/select";
 const props = defineProps({
     modelValue: Object
 })
-let timeoutId =null
+
+let timeoutId = null
 const isLoading = ref(true)
 const showLoadingModal = ref(true)
 const showLowestCost = ref(true)
@@ -351,10 +352,10 @@ getArticles()
                         </a>
                     </div>
                 </div>
-                <div v-if="errors.length">
-                    <div class="row">
-                        <div class="col">
-                            <InfoBox class="mb-2 py-0" severity="info">
+                <div class="row mb-3" v-if="errors.length">
+                    <div class="col">
+                        <InfoBox class="mb-2 py-0" severity="info">
+                            <div class="d-flex justify-content-between">
                                 <div class="small">
                                     <div class="mb-2 fw-bold">There were issues retrieving data from the following
                                         providers:</div>
@@ -363,8 +364,11 @@ getArticles()
                                             error?.provider }}</span><i>{{ error?.response }}</i>
                                     </div>
                                 </div>
-                            </InfoBox>
-                        </div>
+                                <div class="small">
+                                    <button class="btn btn-secondary" @click="">Refresh</button>
+                                </div>
+                            </div>
+                        </InfoBox>
                     </div>
                 </div>
                 <div class="row">
@@ -445,8 +449,7 @@ getArticles()
                     <div class="col-lg-2 col-12 p-0 pe-1">
                         <label for="filter-contract" class="form-label">Min. Bearer</label>
                         <Select v-model="filters['bearer'].value" style="width:100%" :options="filterList.bearer"
-                            optionLabel="label" optionValue="value" placeholder="All" class="me-3 custom-select "
-                        >
+                            optionLabel="label" optionValue="value" placeholder="All" class="me-3 custom-select ">
                             <template #option="slotProps">
                                 <div style="font-size:14px;line-height: 1.5rem;">
                                     {{ slotProps.option.label }}
@@ -457,8 +460,7 @@ getArticles()
                     <div class="col-lg-2 col-12 p-0 pe-1">
                         <label for="filter-contract" class="form-label">Min. Speed</label>
                         <Select v-model="filters['speed'].value" style="width:100%" :options="filterList.speed"
-                            optionLabel="label" optionValue="value" placeholder="All" class="me-3 custom-select "
-                        >
+                            optionLabel="label" optionValue="value" placeholder="All" class="me-3 custom-select ">
                             <template #option="slotProps">
                                 <div style="font-size:14px;line-height: 1.5rem;">
                                     {{ slotProps.option.label }}
@@ -467,8 +469,7 @@ getArticles()
                         </Select>
                     </div>
                     <div class="col-lg-2 col-12 d-flex align-self-end justify-content-around">
-                        <button class="btn btn-secondary btn-sm mt-2 me-2 w-100" @click="resetFilters()"
-                        >Reset</button>
+                        <button class="btn btn-secondary btn-sm mt-2 me-2 w-100" @click="resetFilters()">Reset</button>
                         <div class="advanced-settings pt-2 w-100">
                             <button id="btn-more-filters" class="btn btn-secondary dropdown-toggle lh-1 w-100"
                                 type="button" data-bs-toggle="dropdown" aria-expanded="false"
