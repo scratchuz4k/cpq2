@@ -219,8 +219,8 @@ getData()
                     </div>
                 </div>
             </template>
-            <template #body="{ data, field }">
-                <slot v-if="usedSlots.includes(field)" :name="field" :value="getValue(data, field)" :id="`${field}-${index}`"/>
+            <template #body="{ data, field, index }">
+                <slot v-if="usedSlots.includes(field)" :index="index" :name="field" :value="getValue(data, field)" :id="`${field}-${index}`"/>
                 <template v-else>{{ getValue(data, field) }}</template>
             </template>
         </Column>
