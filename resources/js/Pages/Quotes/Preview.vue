@@ -171,13 +171,6 @@ const items = ref([
                                                 </td>
                                             </tr>
                                         </tbody>
-                                        <!-- <tfoot>
-                                            <tr>
-                                                <td id="total_monthly" class="text-end border-bottom-0" colspan="10">
-                                                    <b class="pe-4">Total Monthly</b> {{ GBP.format(quoteTotal('MONTHLY')) }}
-                                                </td>
-                                            </tr>
-                                        </tfoot> -->
                                     </table>
                                     <br>
                                     <h3>One off charges</h3>
@@ -241,13 +234,6 @@ const items = ref([
                                                 </td>
                                             </tr>
                                         </tbody>
-                                        <!-- <tfoot>
-                                            <tr>
-                                                <td id="total_one_off" class="text-end border-bottom-0" colspan="10">
-                                                    <b class="pe-4">Total One-off Costs</b> {{ GBP.format(quoteTotal('SINGLE')) }}
-                                                </td>
-                                            </tr>
-                                        </tfoot> -->
                                     </table>
                                     <br>
                                     <br>
