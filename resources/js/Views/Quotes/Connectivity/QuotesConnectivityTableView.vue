@@ -144,7 +144,8 @@ const getArticles = async (clearCache = false) => {
             "InternalServerError": "An error occurred on the server.",
             "An error occurred while sending the request": "An error occurred while sending the request.",
             "TooManyRequests": "The system is experiencing a high volume of requests.",
-            "Too Many Attempts": "The system is currently processing many requests."
+            "Too Many Attempts": "The system is currently processing many requests.",
+            "System.Text.Json.JsonException": "The request could not be processed due to a data format error."
         };
 
         errors.value = res.data.errors.map((error) => {
@@ -361,15 +362,15 @@ getArticles()
                         <InfoBox class="mb-2 py-0" severity="info">
                             <div class="d-flex justify-content-between">
                                 <div class="small">
-                                    <div class="mb-2 fw-bold">There were issues retrieving data from the following
-                                        providers:</div>
+                                    <div class="mb-2 fw-bold">There were issues retrieving data from:</div>
                                     <div v-for="error in errors" class="mb-1">
                                         <span class="small fw-bold bg-light rounded-2 py-1 px-2 me-1 text-capitalize">{{
                                             error?.provider }}</span><i>{{ error?.response }}</i>
                                     </div>
                                 </div>
-                                <div class="small">
-                                    <button class="btn btn-secondary" @click="getArticles(true)">Refresh</button>
+                                <div class="small d-flex align-items-center">
+                                    <button class="btn btn-sm btn-outline-primary" @click="getArticles(true)">Get fresh data
+                                        <font-awesome-icon :icon="['fas', 'refresh']" class="ps-2"></font-awesome-icon></button>
                                 </div>
                             </div>
                         </InfoBox>
@@ -798,6 +799,6 @@ tr.active td {
     border-radius: 4px;
     width: 0%;
     background-color: var(--purple);
-    animation: progressBar 100s linear forwards;
+    animation: progressBar 240s linear forwards;
 }
 </style>
