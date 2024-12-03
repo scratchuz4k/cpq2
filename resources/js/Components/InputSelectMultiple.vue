@@ -1,20 +1,14 @@
 <template>
-    <MultiSelect :inputId="props.id" v-model="proxyValue" :options="options" showClear :optionLabel="props.field"
-        placeholder="Select multiple options" class="w-100">
-        <template #value="{ value, placeholder }">
-            <p v-if="value">
-                <template v-for="(item, index) in value">
-                    <span v-if="index != 0">,</span> {{ item ? item[props.field] : placeholder }}
-                </template>
-            </p>
-            <template v-else>{{ placeholder }}</template>
-        </template>
+    <MultiSelect :inputId="'select-' + props.id" v-model="proxyValue" :options="options" showClear
+        :optionLabel="props.field" placeholder="Select multiple options" class="w-100">
+
         <template #header>
             <IconField class="p-1">
                 <InputIcon>
                     <font-awesome-icon icon="fas fa-search" />
                 </InputIcon>
-                <InputText :id="props.id + '-search'" class="w-100" v-model="searchInput" placeholder="Search" />
+                <InputText :id="'select-' + props.id + '-search'" class="w-100" v-model="searchInput"
+                    placeholder="Search" />
             </IconField>
         </template>
     </MultiSelect>
@@ -60,9 +54,12 @@ const search = _.debounce(async () => {
     isLoading.value = true
     let res = await axios.get(`/api${props.url}?${string}`)
     isLoading.value = false
-    options.value = res.data.data
+    options.value = res.data.data.map((e) => {
+        let item = { id: e.id }
+        item[props.field] = e[props.field]
+        return item
+    })
 }, 500)
-
 
 watch(searchInput, () => {
     search()

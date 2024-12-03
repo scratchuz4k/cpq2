@@ -9,6 +9,7 @@ import Column from 'primevue/column';
 import InputText from 'primevue/inputtext';
 import Button from 'primevue/button';
 import Dialog from "primevue/dialog";
+import InputSelectMultiple from "@/Components/InputSelectMultiple.vue";
 
 
 const props = defineProps({
@@ -25,14 +26,17 @@ const price = reactive({
 
 const showModal = ref(false)
 const prices = ref(props.product.prices)
+const categories = ref(props.product.categories.map((e) => { return { id: e.id, name: e.name } }))
 const editingRows = ref([]);
 
 const saveProduct = () => {
+    debugger
     router.put(`/products/${props.product.id}`,
         {
             ...props.product,
             supplier_id: props.product.supplier?.id,
-            brand_id: props.product.brand?.id
+            brand_id: props.product.brand?.id,
+            categories: categories.value.map(item => item.id)
         },
         {
             onSuccess: (page) => {
@@ -161,6 +165,13 @@ const items = ref([
                                 </InputSelect>
                             </div>
 
+
+                            <div class=" mb-3">
+                                <label for="brand-name" class="form-label">Categories:</label>
+                                <InputSelectMultiple id="product-categories" url="/categories" field="name"
+                                    v-model="categories">
+                                </InputSelectMultiple>
+                            </div>
                         </div>
                     </div>
                 </tab>

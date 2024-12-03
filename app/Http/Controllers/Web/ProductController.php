@@ -78,7 +78,7 @@ class ProductController extends BaseController
     {
 
         return Inertia::render('Products/Edit', [
-            'product' => ProductResource::make($product->load('prices'))->resolve(),
+            'product' => ProductResource::make($product->load(['prices','categories']))->resolve(),
             'price_plans' => PricePlan::all(),
         ]);
     }
