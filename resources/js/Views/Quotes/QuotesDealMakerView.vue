@@ -227,14 +227,18 @@ const items = ref([
                                 <div class="small">
                                     <div class="mb-2 fw-bold">Important Information</div>
                                     <div v-for="provider in warningProviders" class="mb-2">
-                                        <span class="small fw-bold bg-light rounded-2 py-1 px-2 me-1 text-capitalize">
-                                            {{ Object.keys(provider)[0] }}
-                                        </span>
-                                        <i>
-                                            Please note, quote references for ITS and PXC quotes cannot currently be
-                                            used to place an order. To obtain a valid quote for ordering please generate
-                                            the quote directly on the ITS or PXC portal
-                                        </i>
+                                        <div v-if="Object.values(provider)[0]">
+                                            <span
+                                                class="small fw-bold bg-light rounded-2 py-1 px-2 me-1 text-capitalize">
+                                                {{ Object.keys(provider)[0] }}
+                                            </span>
+                                            <i>
+                                                Please note, quote references for ITS and PXC quotes cannot currently be
+                                                used to place an order. To obtain a valid quote for ordering please
+                                                generate
+                                                the quote directly on the ITS or PXC portal
+                                            </i>
+                                        </div>
                                     </div>
                                 </div>
                             </InfoBox>
