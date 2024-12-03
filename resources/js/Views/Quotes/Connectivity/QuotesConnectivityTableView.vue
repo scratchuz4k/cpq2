@@ -22,6 +22,16 @@ const articles = ref([])
 const errors = ref([])
 const selectedFilters = ref([]);
 const filters = reactive({
+    productName: {
+        operator: "not_in",
+        value: [
+            'ADSL 2+ MPF',
+            'Software Defined SOGEA',
+            'Broadband FTTC MPF',
+            'Cellular Ethernet'
+        ],
+        name: 'Product'
+    },
     providerName: {
         operator: "in",
         value: null,
@@ -270,7 +280,9 @@ const orderBy = (column) => {
 }
 
 const resetFilters = () => {
-    Object.keys(filters).forEach((key) => {
+    Object.keys(filters)
+    .filter((key) => key !== 'productName')
+    .forEach((key) => {
         filters[key].value = null
     })
 
@@ -406,7 +418,7 @@ getArticles()
                                 <li>
                                     <template v-for="(selectedFilter, column) in selectedFilters">
                                         <Badge
-                                            v-for="value in (Array.isArray(selectedFilter.value) ? selectedFilter.value : [selectedFilter.value]).filter(v => v !== null)"
+                                            v-for="value in  column === 'productName' ? [] : (Array.isArray(selectedFilter.value) ? selectedFilter.value : [selectedFilter.value]).filter(v => v !== null)"
                                             :value="['speed', 'bearer'].includes(column) ? 'Min. ' + format.speed(value) : (['contractTermMonths'].includes(column) ? value + ' Months' : value)"
                                             class="px-3 py-1"
                                             data-toggle="tooltip"

@@ -76,6 +76,8 @@ class FilterProvider
                 });
             case "in":
                 return $data->whereIn($column, $value);
+            case "not_in":
+                return $data->whereNotIn($column, $value);
             case "between":
                 return $data->whereBetween($column, $value);
             case "greater_than_or_equal_to":

@@ -217,6 +217,10 @@ class DataProvider
                 'operator' => 'in',
                 'value' => explode(',', $value),
             ],
+            'not_in' => [
+                'operator' => 'in',
+                'value' => explode(',', $value),
+            ],
             'search' => [
                 'operator' => 'search',
                 'value' => $value,
