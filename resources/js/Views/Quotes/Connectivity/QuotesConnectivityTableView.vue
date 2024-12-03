@@ -96,7 +96,7 @@ const getSubproviderImage = (img) => {
     return 'no_image'
 }
 
-const getArticles = async () => {
+const getArticles = async (clearCache = false) => {
     isLoading.value = true
     let temp = []
     Object.keys(filters).forEach((key) => {
@@ -109,8 +109,12 @@ const getArticles = async () => {
     if (showLowestCost.value) {
         temp.push({ column: '*', operator: 'lowest-cost', value: true })
     }
+    if(clearCache){
+        showLoadingModal.value = true
+    }
 
     let query = {
+        clearCache: clearCache,
         connectivityType: 3,
         postCode: props.modelValue.address_postcode,
         latitude: props.modelValue.address_position?.lat,
@@ -365,7 +369,7 @@ getArticles()
                                     </div>
                                 </div>
                                 <div class="small">
-                                    <button class="btn btn-secondary" @click="">Refresh</button>
+                                    <button class="btn btn-secondary" @click="getArticles(true)">Refresh</button>
                                 </div>
                             </div>
                         </InfoBox>

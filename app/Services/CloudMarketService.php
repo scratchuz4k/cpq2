@@ -36,6 +36,10 @@ class CloudMarketService
         $filename = $address->toString() . '.json';
         $file = new CloudMarketFile($path, $filename);
 
+        if (request()->input("clearCache", false)) {
+            Cache::forget($filename);
+        }
+
         if (!Cache::has($filename)) {
             $file->write([], true, null, now());
             CloudMarketConnectivityProducts::dispatch($file, $connectivityType, $address);
@@ -51,5 +55,4 @@ class CloudMarketService
 
         return $this->cloudMarketRepository->sendResponse($file->getContent(), $filters);
     }
-
 }
