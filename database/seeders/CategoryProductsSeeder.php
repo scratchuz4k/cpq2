@@ -69,6 +69,7 @@ class CategoryProductsSeeder extends Seeder
                 ], [
                     "name" => $temp["name"],
                     "description" => $temp["description"],
+                    "price_plan_id" => $pricePlan->id
                 ]);
 
                 $price = $product->prices()->updateOrCreate(
@@ -79,7 +80,6 @@ class CategoryProductsSeeder extends Seeder
                     [
                         "tax_rate" => 20,
                         "net" => $temp["price"] ?? 0,
-                        "price_plan_id" => $pricePlan->id
                     ]
                 );
 

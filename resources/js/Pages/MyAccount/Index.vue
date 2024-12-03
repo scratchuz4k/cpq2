@@ -88,6 +88,16 @@ const items = ref([
                                 </a>
                             </div>
                         </div>
+                        <div class="col" v-if="hasRole('Super Admin') || can('viewAny category')">
+                            <div class="card bg-light border-0">
+                                <a id="link-categories" :href="route('categories.index')"
+                                    class="card-body text-center p-2 text-decoration-none">
+                                    <font-awesome-icon class="py-3 opacity-25" :icon="['far', 'folder']"
+                                        size="2x"></font-awesome-icon>
+                                    <span class="d-block h5">Categories</span>
+                                </a>
+                            </div>
+                        </div>
                         <div class="col" v-if="hasRole('Super Admin') || can('viewAny product')">
                             <div class="card bg-light border-0">
                                 <a id="link-products" :href="route('products.index')"

@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        $pricePlanId = PricePlan::where('code', PricePlanEnum::SINGLE->name)->first()->value('id');
+        $pricePlanId = PricePlan::where('code', PricePlanEnum::SINGLE->name)->value('id')  ?? 1;
         Schema::table('products', function (Blueprint $table) use ($pricePlanId) {
             $table->foreignId('price_plan_id')->after('brand_id')->default($pricePlanId)->nullable()->constrained()->nullOnDelete();
         });

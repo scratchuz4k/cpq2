@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\BrandController;
 use App\Http\Controllers\Api\QuoteController;
 use App\Http\Controllers\Api\AccountController;
+use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\ContactController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\ExternalController;
@@ -28,6 +29,7 @@ Route::prefix("external")->group(function () {
 Route::apiResources([
     'accounts' => AccountController::class,
     'contacts' => ContactController::class,
+    'categories' => CategoryController::class,
     'products' => ProductController::class,
     'quotes' => QuoteController::class,
     'quote-items' => QuoteItemController::class,
