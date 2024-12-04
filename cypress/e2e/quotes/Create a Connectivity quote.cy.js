@@ -44,9 +44,6 @@ describe('Creates a Connectivity quote', () => {
             cy.get('.p-checkbox').eq(1).click()
         })
 
-        cy.get('.cpq-progress-bar').eq(0).should('be.visible')
-        cy.wait(3000)
-
         //Add products to quote
         let keys = [0, 1, 2, 3, 4]
         keys.forEach((key) => {

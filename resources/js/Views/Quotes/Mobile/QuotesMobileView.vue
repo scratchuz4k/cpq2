@@ -431,37 +431,39 @@ watch(search, _.debounce(() => {
                     </div>
                 </div>
             </div>
-            <div class="col-lg-3 order-first order-lg-last mb-5">
-                <InfoBox>
-                    <div style="font-size: 14px;">
-                        <b style="font-size: 16px;">Quote {{ modelValue.id }} for {{ modelValue.account.name }}</b>
-                        <br>
-                        Contact Number: 0124567890<br>
-                        Email: firstname.lastname@gmail.com
-                    </div>
-                </InfoBox>
-                <div class="configure-mobile-sidebar px-4 py-4" style="position: sticky; top: 25px">
-                    <h4 id="sidebar_products" data-total="0">1. Plans</h4>
-                    <div class="sidebar_items mb-3">
-                        <div v-for="product in products" class="item mb-2">
-                            <span>{{ product.name }}</span>
-                            <span class="badge bg-light-grey dark">
-                                {{ product.quantity }}
-                            </span>
+            <div class="col-lg-4 order-first order-lg-last mb-5">
+                <div style="position: sticky; top: 25px; max-width: 82%; margin-right: 0; margin-left: auto;">
+                    <InfoBox>
+                        <div style="font-size: 14px;">
+                            <b style="font-size: 16px;">Quote {{ modelValue.id }} for {{ modelValue.account.name }}</b>
+                            <br>
+                            Contact Number: 0124567890<br>
+                            Email: firstname.lastname@gmail.com
                         </div>
-                    </div>
-                    <h4>2. Add-ons</h4>
-                    <div class="sidebar_add_ons mb-3">
-                        <div class="item mb-2">
-                            <span>Hardware</span><span class="badge bg-light-grey dark">
-                                {{ getHardwareProductsCount() }}
-                            </span>
+                    </InfoBox>
+                    <div class="configure-mobile-sidebar px-4 py-4">
+                        <h4 id="sidebar_products" data-total="0">1. Plans</h4>
+                        <div class="sidebar_items mb-3">
+                            <div v-for="product in products" class="item mb-2">
+                                <span>{{ product.name }}</span>
+                                <span class="badge bg-light-grey dark">
+                                    {{ product.quantity }}
+                                </span>
+                            </div>
                         </div>
+                        <h4>2. Add-ons</h4>
+                        <div class="sidebar_add_ons mb-3">
+                            <div class="item mb-2">
+                                <span>Hardware</span><span class="badge bg-light-grey dark">
+                                    {{ getHardwareProductsCount() }}
+                                </span>
+                            </div>
+                        </div>
+                        <button class="btn btn-primary mt-2" @click="saveQuote()"
+                            :disabled="checkPlansHardwareQuantity() < 0">
+                            Save
+                        </button>
                     </div>
-                    <button class="btn btn-primary mt-2" @click="saveQuote()"
-                        :disabled="checkPlansHardwareQuantity() < 0">
-                        Save
-                    </button>
                 </div>
             </div>
         </div>
