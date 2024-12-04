@@ -91,7 +91,7 @@ class CloudMarketConnectivityProducts implements ShouldQueue, TenantAware
     public function failed(Exception $exception)
     {
         // Handle the failure, log exception details, etc.
-        $message = "CloudMarketConnectivityProducts failed with error: " . $exception->getMessage();
+        $message = "[" . strtoupper(env("APP_ENV")) . "] CloudMarketConnectivityProducts failed with error: " . $exception->getMessage();
 
         $error = [
             "provider" => "JOB",
@@ -102,7 +102,7 @@ class CloudMarketConnectivityProducts implements ShouldQueue, TenantAware
         $file['errors'][] = $error;
 
         // Handle the failure, log exception details, etc.
-        $message = "CloudMarketConnectivityProducts failed with error: " . json_encode($file['errors']);
+        $message = "[" . strtoupper(env("APP_ENV")) . "] CloudMarketConnectivityProducts failed with error: " . json_encode($file['errors']);
 
         $this->file->write($file['data'], false, now(), $file['created_at'], $file['filters'], $file['errors']);
         Log::error($message);
