@@ -3,6 +3,7 @@
 use Sentry\Laravel\Integration;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Application;
+use App\Http\Middleware\EnsureSuperAdmin;
 use App\Http\Middleware\SetTenantByRequest;
 use App\Http\Middleware\SetTenantBySession;
 use App\Http\Middleware\HandleInertiaRequests;
@@ -47,6 +48,7 @@ return Application::configure(basePath: dirname(__DIR__))
             SetTenantBySession::class,
             NeedsTenant::class,
         ]);
+
         $middleware->validateCsrfTokens(except: [
             'auth/callback'
         ]);
