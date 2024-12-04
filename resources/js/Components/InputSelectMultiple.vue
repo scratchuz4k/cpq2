@@ -3,11 +3,13 @@
         :options="options" showClear :optionLabel="props.field" placeholder="Select multiple options" class="w-100"
         display="chip">
         <template #value="{ value, placeholder }">
-            <span v-for="(item, index) in value" class="chip">
-                {{ item ? item[props.field] : placeholder }}
-                <font-awesome-icon :id="'select-' + props.id + '-remove-' + index" @click="remove(index)" class="ms-1"
-                    :icon="['far', 'circle-xmark']"></font-awesome-icon>
-            </span>
+            <div >
+                <span v-for="(item, index) in value" class="chip">
+                    {{ item ? item[props.field] : placeholder }}
+                    <font-awesome-icon :id="'select-' + props.id + '-remove-' + index" @click="remove(index)"
+                        class="ms-1" :icon="['far', 'circle-xmark']"></font-awesome-icon>
+                </span>
+            </div>
         </template>
         <template #header>
             <IconField class="p-1">
@@ -78,7 +80,7 @@ search()
 
 </script>
 
-<style scoped>
+<style >
 .select-options {
     min-height: 2.5em;
     height: auto;
@@ -137,8 +139,11 @@ search()
 
 .chip {
     background-color: whitesmoke;
-    padding: 0 4px;
+    padding: 0 5px;
     border-radius: 5px;
-    margin-left: 4px
+    margin-left: 5px
+}
+.p-multiselect-label{
+    white-space: normal!important;
 }
 </style>

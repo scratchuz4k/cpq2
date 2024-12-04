@@ -6,7 +6,7 @@ const product = { code: generateHash(temp1), name: temp1 }
 const temp2 = getCurrentDate()
 const category = { code: generateHash(temp2), name: temp2 }
 
-describe('Creates a Connectivity quote', () => {
+describe('Creates products and associates Category.cy', () => {
     beforeEach(() => {
         cy.login("super@example.com", "werwerwer")
     })
@@ -46,7 +46,7 @@ describe('Creates a Connectivity quote', () => {
                 cy.get("#product-code").type(product.code)
 
                 cy.get("#select-product-categories > div.p-multiselect-label-container > div").click()
-                cy.get("#select-product-categories-search").type(category.code)
+                cy.get("#select-product-categories-search").type(category.name)
                 cy.wait(1000)
                 cy.get("#select-product-categories_0 > span").click()
                 cy.get("#btn-save-product").click()
@@ -57,7 +57,7 @@ describe('Creates a Connectivity quote', () => {
         cy.get("#datatable-search").type(product.code)
         cy.wait(1000)
         cy.get("#datatable-btn-0-edit").click()
-        cy.get("#select-product-categories > div.p-multiselect-label-container > div").contains(category.code)
+        cy.get("#select-product-categories > div.p-multiselect-label-container > div").contains(category.name)
     })
 
 })
