@@ -60,4 +60,21 @@ class CloudMarketRepository
         );
     }
 
+    function getConsolidatedProviderGroup($provider): string
+    {
+        $sub_provider_mapping = [
+            'BT' => ['BT Wholesale', 'BTW', 'BT'],
+            'Virgin' => ['Virgin Media', 'Virgin Media Business', 'Virgin'],
+            'ITS' => ['ITS Technology Group', 'ITS'],
+            'TalkTalk' => ['TalkTalk Business', 'TalkTalk']
+        ];
+
+        foreach ($sub_provider_mapping as $consolidated_name => $sub_providers) {
+            if (in_array($provider, $sub_providers)) {
+                return $consolidated_name;
+            }
+        }
+
+        return $provider;
+    }
 }

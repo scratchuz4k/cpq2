@@ -89,7 +89,7 @@ class FilterProvider
                     $key = Str::slug(
                         $item['productName'] .
                             $item['providerName'] .
-                            $item['connectivitySupplierName'] .
+                            $item['connectivitySupplierGroup'] .
                             $item['bearer'] .
                             $item['speed'] .
                             $item['priceInstall'] .
