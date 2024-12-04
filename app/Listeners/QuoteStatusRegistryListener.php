@@ -39,11 +39,11 @@ class QuoteStatusRegistryListener
 
         try {
             $order = DB::transaction(function () use ($quote) {
-                $this->orderService->store([...$quote->toArray(), 'user_id' => null, 'quote_id' => $quote->id]);
+                $this->orderService->store([...$quote->toArray(), 'items' => $quote->items->toArray(), 'user_id' => null, 'quote_id' => $quote->id]);
             });
         } catch (\Exception $e) {
-            if (!env('APP_DEBUG')) {
-                Log::error($e->getMessage());
+			if (!env('APP_DEBUG')) {
+				Log::error($e->getMessage());
             }
             $quote->status = QuoteStatusesEnum::PRICE->name;
             $quote->save();
