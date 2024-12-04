@@ -10,6 +10,9 @@ class ProductsService
     public function store(array $array): Product
     {
         $product = Product::create($array);
+        if (array_key_exists('categories', $array)) {
+            $product->categories()->sync($array['categories']);
+        }
         return $product;
     }
 

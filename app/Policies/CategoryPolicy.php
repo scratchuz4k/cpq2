@@ -57,10 +57,14 @@ class CategoryPolicy
      */
     public function delete(User $user, Category $category): bool
     {
-        if ($user->can("delete $this->model")) {
-            return true;
+        if (!$user->can("delete $this->model")) {
+            return false;
         }
-        return false;
+
+        if (count($category->products)) {
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -79,9 +83,10 @@ class CategoryPolicy
      */
     public function forceDelete(User $user, Category $category): bool
     {
-        if ($user->can("forceDelete $this->model")) {
-            return true;
+        if (!$user->can("forceDelete $this->model")) {
+            return false;
         }
-        return false;
+
+        return true;
     }
 }

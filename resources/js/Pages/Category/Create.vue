@@ -42,19 +42,19 @@ const items = ref([
         <div class="panel">
             <Header title="New Product" :breadcrumbs="items">
                 <template #buttons>
-                    <PrimaryButton id="btn-save-product" @click="saveCate()">
+                    <PrimaryButton id="btn-save-category" @click="saveCate()">
                         <font-awesome-icon class="me-2" :icon="['fas', 'save']"></font-awesome-icon> Save
                     </PrimaryButton>
                 </template>
             </Header>
             <div class="col-6">
                 <div class="mb-3">
-                    <label for="product-code" class="form-label">Code:</label>
-                    <input id="product-code" class="form-control" v-model="category.code">
+                    <label for="category-code" class="form-label">Code:</label>
+                    <input id="category-code" class="form-control" v-model="category.code">
                 </div>
                 <div class="mb-3">
-                    <label for="product-name" class="form-label">Name:</label>
-                    <input id="product-name" class="form-control" v-model="category.name">
+                    <label for="category-name" class="form-label">Name:</label>
+                    <input id="category-name" class="form-control" v-model="category.name">
                 </div>
 
             </div>

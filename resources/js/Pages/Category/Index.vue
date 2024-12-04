@@ -21,7 +21,7 @@ const items = ref([
                 </template>
             </Header>
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                <Datatable :allow="{
+                <Datatable  :table-props="{ id: 'categories-table' }" :allow="{
                     update: true,
                     delete: true,
                     link: false,

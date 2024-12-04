@@ -38,8 +38,7 @@ class ProductController extends BaseController
     public function create()
     {
         return Inertia::render('Products/Create', [
-            'brands' => Brand::all(),
-            'suppliers' => Supplier::all()
+            'price_plans' => PricePlan::all(),
         ]);
     }
 

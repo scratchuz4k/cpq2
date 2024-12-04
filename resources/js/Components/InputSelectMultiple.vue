@@ -1,7 +1,14 @@
 <template>
-    <MultiSelect :inputId="'select-' + props.id" v-model="proxyValue" :options="options" showClear
-        :optionLabel="props.field" placeholder="Select multiple options" class="w-100">
-
+    <MultiSelect :id="'select-' + props.id" :inputId="'select-' + props.id + '-input'" v-model="proxyValue"
+        :options="options" showClear :optionLabel="props.field" placeholder="Select multiple options" class="w-100"
+        display="chip">
+        <template #value="{ value, placeholder }">
+            <span v-for="(item, index) in value" class="chip">
+                {{ item ? item[props.field] : placeholder }}
+                <font-awesome-icon :id="'select-' + props.id + '-remove-' + index" @click="remove(index)" class="ms-1"
+                    :icon="['far', 'circle-xmark']"></font-awesome-icon>
+            </span>
+        </template>
         <template #header>
             <IconField class="p-1">
                 <InputIcon>
@@ -61,6 +68,9 @@ const search = _.debounce(async () => {
     })
 }, 500)
 
+const remove = (index) => {
+    proxyValue.value.splice(index, 1)
+}
 watch(searchInput, () => {
     search()
 })
@@ -123,5 +133,12 @@ search()
 
 .text-bold {
     font-weight: bold;
+}
+
+.chip {
+    background-color: whitesmoke;
+    padding: 0 4px;
+    border-radius: 5px;
+    margin-left: 4px
 }
 </style>

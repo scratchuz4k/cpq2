@@ -30,7 +30,6 @@ const categories = ref(props.product.categories.map((e) => { return { id: e.id, 
 const editingRows = ref([]);
 
 const saveProduct = () => {
-    debugger
     router.put(`/products/${props.product.id}`,
         {
             ...props.product,
@@ -128,12 +127,12 @@ const items = ref([
                     <div class="row my-4">
                         <div class="col-6">
                             <div class=" mb-3">
-                                <label for="product-name" class="form-label">Name:</label>
-                                <input id="product-name" class="form-control" v-model="product.name">
-                            </div>
-                            <div class=" mb-3">
                                 <label for="product-code" class="form-label">Code:</label>
                                 <input id="product-code" class="form-control" v-model="product.code">
+                            </div>
+                            <div class=" mb-3">
+                                <label for="product-name" class="form-label">Name:</label>
+                                <input id="product-name" class="form-control" v-model="product.name">
                             </div>
 
                             <div class=" mb-5">

@@ -90,6 +90,5 @@ class CategoryController extends BaseController
      */
     public function destroy(Category $category)
     {
-        //
     }
 }

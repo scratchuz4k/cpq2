@@ -11,22 +11,14 @@ use App\Services\AccountService;
 use Illuminate\Support\Facades\DB;
 use App\Http\Requests\IndexRequest;
 use Illuminate\Support\Facades\Log;
-use App\Http\Resources\AccountResource;
 use App\Http\Controllers\BaseController;
-use App\Http\Requests\AccountCreateRequest;
-use App\Http\Requests\AccountUpdateRequest;
 use App\Http\Resources\CategoryResource;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class CategoryController extends BaseController
 {
-
     protected $model = Category::class;
-    public function __construct(protected AccountService $accountService)
-    {
-        parent::__construct();
-    }
     /**
      * Index
      * @response AnonymousResourceCollection<LengthAwarePaginator<AccountResource>>
@@ -62,5 +54,7 @@ class CategoryController extends BaseController
     /**
      * Remove
      */
-    public function destroy(Category $category) {}
+    public function destroy(Category $category) {
+        $category->delete();
+    }
 }
