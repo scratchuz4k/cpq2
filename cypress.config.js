@@ -5,6 +5,7 @@ export default defineConfig({
     chromeWebSecurity: false,
     defaultCommandTimeout: 5000,
     watchForFileChanges: false,
+    videoCompression: true,
     videosFolder: 'cypress/output/videos',
     screenshotsFolder: 'cypress/output/screenshots',
     video: true,  // Optionally, enable videos for failed tests
