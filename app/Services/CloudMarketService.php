@@ -48,7 +48,7 @@ class CloudMarketService
         $content = $file->getContent();
         $createdAt = Carbon::parse($content['created_at']);
 
-        if (!$file->exists() || (is_null($content['finished_at']) && $createdAt->addMinutes(5)->isPast())) {
+        if (!$file->exists() || (is_null($content['finished_at']) && $createdAt->addMinutes(10)->isPast())) {
             $file->write([], true, null, now());
             CloudMarketConnectivityProducts::dispatch($file, $connectivityType, $address);
         }

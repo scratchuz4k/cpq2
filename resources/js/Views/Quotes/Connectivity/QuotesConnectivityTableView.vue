@@ -96,7 +96,7 @@ const getSubproviderImage = (img) => {
     return 'no_image'
 }
 
-const getArticles = async (clearCache = false) => {
+const getArticles = async (clearCache = false, runTimeout = false) => {
     isLoading.value = true
     let temp = []
     Object.keys(filters).forEach((key) => {
@@ -139,13 +139,14 @@ const getArticles = async (clearCache = false) => {
 
         articles.value = res.data.data
         const errorMessages = {
-            "BadGateway": "An error occurred due to a gateway issue.",
-            "Request timed out": "The request has timed out.",
+            "BadGateway": "An error occurred, resulting in partial or no results.",
+            "Request timed out": "The request timed out, resulting in partial or no results.",
             "InternalServerError": "An error occurred on the server.",
             "An error occurred while sending the request": "An error occurred while sending the request.",
             "TooManyRequests": "The system is experiencing a high volume of requests.",
             "Too Many Attempts": "The system is currently processing many requests.",
-            "System.Text.Json.JsonException": "The request could not be processed due to a data format error."
+            "System.Text.Json.JsonException": "The request could not be processed due to a data format error.",
+            "Service Unavailable": "System.Exception: The service is currently unavailable.",
         };
 
         errors.value = res.data.errors.map((error) => {
@@ -171,6 +172,9 @@ const getArticles = async (clearCache = false) => {
         });
 
         isLoading.value = false
+        if(!showLoadingModal.value && (meta.overallTotal !== res.data.overall_total) && (meta.overallTotal>0)) {
+            notyf.success("New products added!")
+        }
         meta.first = (meta.page - 1) * meta.limit
         meta.total = res.data.total
         meta.overallTotal = res.data.overall_total
@@ -201,14 +205,14 @@ const getArticles = async (clearCache = false) => {
             Object.entries(filters).filter(([key, filter]) => filter.value !== null)
         )
 
-        if (!meta.isRequestCompleted && showLoadingModal.value) {
+        if (!meta.isRequestCompleted && runTimeout) {
             timeoutId = setTimeout(() => {
-                getArticles()
-            }, 5000);
+                getArticles(false, true)
+            }, 15000);
             return
+        } else {
+            showLoadingModal.value = false
         }
-
-        showLoadingModal.value = false
 
     } catch (error) {
         console.log(error);
@@ -330,7 +334,7 @@ window.addEventListener("beforeunload", () => {
     clearTimeout(timeoutId); // Cancel timeout on page navigation or refresh
 });
 
-getArticles()
+getArticles(false, true)
 
 </script>
 <template>
@@ -368,8 +372,8 @@ getArticles()
                                             error?.provider }}</span><i>{{ error?.response }}</i>
                                     </div>
                                 </div>
-                                <div class="small d-flex align-items-center">
-                                    <button class="btn btn-sm btn-outline-primary" @click="getArticles(true)">Get fresh data
+                                <div v-if="meta.isRequestCompleted" class="small d-flex align-items-center">
+                                    <button class="btn btn-sm btn-outline-primary" @click="getArticles(true, true)">Get fresh data
                                         <font-awesome-icon :icon="['fas', 'refresh']" class="ps-2"></font-awesome-icon></button>
                                 </div>
                             </div>
@@ -381,17 +385,9 @@ getArticles()
                         <div class="filters d-flex">
                             <div class="d-flex mb-2">
                                 <p class="fs-5 bold me-2">
-                                    Filters
+                                    <font-awesome-icon v-if="!meta.isRequestCompleted" :icon="['fas', 'refresh']" class="fa-spin me-2"></font-awesome-icon>Filters
                                     <span class="fw-normal">({{ meta.total }})</span>
                                 </p>
-                                <div v-if="!meta.isRequestCompleted"
-                                    class="badge badge-filter text-bg-danger m-0 d-flex align-items-center">
-                                    <div class="spinner-border spinner-border-sm me-2" role="status">
-                                        <span class="sr-only">Loading...</span>
-                                    </div>
-                                    Searching
-                                </div>
-                                <p v-else class="badge badge-filter text-bg-success m-0">Prices Updated</p>
                             </div>
                             <ul class="d-flex list-unstyled ms-2 mb-0">
                                 <li>
@@ -409,9 +405,6 @@ getArticles()
                                     </template>
                                 </li>
                             </ul>
-                        </div>
-                        <div class="clear-filter">
-                            <a href="#" class="nav-link" @click="resetFilters">Clear filters</a>
                         </div>
                     </div>
                 </div>
@@ -502,16 +495,12 @@ getArticles()
                         </div>
                     </div>
                 </div>
-                <div v-if="isLoading" data-provider="loading" class="position-relative">
+                <div v-if="!meta.isRequestCompleted" data-provider="loading" class="position-relative">
                     <div class="cpq-progress-bar" style="position: absolute;z-index: 2; ">
                         <div class="cpq-bar"></div>
-                        <div class="cpq-bar-text" v-if="!articles.length">
-                            <font-awesome-icon :icon="['fas', 'refresh']" class="fa-spin"></font-awesome-icon>
-                            Please wait... <span>({{ meta.overallTotal }})</span>
-                        </div>
                     </div>
                 </div>
-                <div id="no-results" v-else-if="!articles.length">
+                <div id="no-results" v-if="!articles.length">
                     <div class="alert alert-secondary mt-3">No results match your filters. <button @click="resetFilters"
                             class="btn btn-primary  btn-sm js-clear-filters ms-3">Clear filters</button></div>
                 </div>
@@ -747,7 +736,7 @@ getArticles()
                     <p>
                         <strong>{{ meta.overallTotal }}</strong>
                         results retrieved so far
-                        <a href="#" class="text-dark" @click.prevent="showLoadingModal = false">view now</a>
+                        <a role="button" class="text-dark" @click.prevent="showLoadingModal = false">view now</a>
                     </p>
                 </div>
             </div>
