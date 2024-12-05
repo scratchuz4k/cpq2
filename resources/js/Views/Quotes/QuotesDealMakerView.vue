@@ -634,12 +634,12 @@ const items = ref([
                                 role="button" :icon="['far', 'clipboard']"
                                 @click="edit(p)" /></button>
                     </div>
-                    <p class="small">
+                    <p class="small text-center">
                         Expires at: {{ shareLink.expires_at }}
                     </p>
                 </div>
-                <div class="mb-3">
-                    <button class="btn btn-danger" @click="deleteShareLink()"> Delete</button>
+                <div class="mb-3 text-center">
+                    <button class="btn btn-outline-primary" @click="deleteShareLink()"> Delete</button>
                 </div>
             </div>
         </Dialog>
