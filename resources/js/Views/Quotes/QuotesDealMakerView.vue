@@ -63,8 +63,8 @@ const temp = reactive({
     quantity: 0
 })
 
-const date7DaysFromNow = DateTime.now().plus({ days: 7 });
-const formattedDate = date7DaysFromNow.toISODate();
+const dateNow = DateTime.now();
+const formattedDate = dateNow.plus({ days: 7 }).toISODate();
 
 const shareLink = reactive({
     password: null,
