@@ -634,7 +634,7 @@ const items = ref([
                         Expires at: {{ shareLink.expires_at }}
                     </p>
                 </div>
-                <div class="mb-3 text-center">
+                <div class="mb-3">
                     <button class="btn btn-outline-primary" @click="deleteShareLink()"> Delete</button>
                 </div>
             </div>
