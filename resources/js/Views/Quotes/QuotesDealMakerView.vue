@@ -619,7 +619,7 @@ const items = ref([
 
                 <div class="mb-3">
                     <button id="btn-shareable-create"  class="btn btn-primary" @click="createSharedLink()"> Create</button>
-                    <button class="btn" @click="() => showShare.value = !showShare.value"> Cancel</button>
+                    <button class="btn" @click="() => showShare= !showShare"> Cancel</button>
                 </div>
             </div>
             <div v-else>
