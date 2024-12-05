@@ -3,8 +3,7 @@ import {usePage} from "@inertiajs/vue3";
 import { get } from "lodash";
 
 const page = usePage()
-export const createOrder = async (id, getData) => {
-
+export const createOrder = async (id, getData = null) => {
     let result = await swal.fire({
         title: 'Do you want to create an Order from this Quote?'
     })
@@ -16,12 +15,15 @@ export const createOrder = async (id, getData) => {
         let res = await axios.put('/api/quotes/' + id,
             { status: 'REGISTRY'}
         )
+
+        if (getData) {
+            getData();
+        }
         notyf.success('Order created with success');
         return
     } catch (err) {
         notyf.error(err?.response?.data?.message ?? 'Something went wrong')
     }
-    getData();
 }
 
 export const assignOrder = async (id) => {

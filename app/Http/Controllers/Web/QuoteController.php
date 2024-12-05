@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Web;
 
+use App\Enums\QuoteStatusesEnum;
 use App\Models\User;
 use Inertia\Inertia;
 use App\Models\Quote;
@@ -44,7 +45,7 @@ class QuoteController extends BaseController
         return Inertia::render('Quotes/Index', [
             "users" => $users->values(),
             "solutions" => SolutionType::all(),
-            "status" => ["PRICE", "QUOTE", "CONFIGURE"]
+            "status" => array_map(fn($status) => $status->name, QuoteStatusesEnum::cases())
         ]);
     }
     /**

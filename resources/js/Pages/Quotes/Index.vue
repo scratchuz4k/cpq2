@@ -86,25 +86,25 @@ const items = ref([
                     <template #actions="{ data, value, index, getData }">
                         <div v-if="!['REGISTRY', 'ORDERED'].includes(data.status)" class="d-flex justify-content-end">
                             <button title="Send to Order Management" :id="'datatable-btn-' + index + '-crete-order'"
-                                @click="createOrder(data.id, getData)" class="btn p-2 mx-1 border-0">
+                                @click="createOrder(data.id, getData)" class="btn px-2 py-0 mx-1 border-0">
                                 <font-awesome-icon :icon="['fas', 'thumbtack']" />
                             </button>
                             <Link :id="'datatable-btn-' + index + '-edit'" :href="'quotes/' + data.id + '/edit'"
-                                class="btn p-2 mx-1 border-0">
+                                class="btn px-2 py-0 mx-1 border-0">
                             <font-awesome-icon :icon="['fas', 'edit']" />
                             </Link>
                             <Link :id="'datatable-btn-' + index + '-show'" :href="'quotes/' + data.id"
-                                class="btn p-2 mx-1 border-0">
+                                class="btn px-2 py-0 mx-1 border-0">
                             <font-awesome-icon :icon="['fas', 'eye']" />
                             </Link>
-                            <button :id="'datatable-btn-' + index + '-delete'" class="btn p-2 mx-1 border-0"
+                            <button :id="'datatable-btn-' + index + '-delete'" class="btn px-2 py-0 mx-1 border-0"
                                 @click="deleteRecord(data.id)">
                                 <font-awesome-icon icon="fas fa-trash-alt" />
                             </button>
                         </div>
                         <div v-else class="d-flex justify-content-end">
                             <Link :id="'datatable-btn-' + index + '-show'" :href="'quotes/' + data.id + '/preview'"
-                                class="btn p-2 mx-1 border-0">
+                                class="btn px-2 py-0 mx-1 border-0">
                             <font-awesome-icon :icon="['fas', 'eye']" />
                             </Link>
                         </div>

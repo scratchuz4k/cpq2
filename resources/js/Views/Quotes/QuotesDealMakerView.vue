@@ -203,6 +203,12 @@ const saveNewLine = async (item) => {
 const quoteTotal = (key) => {
     return quote.items.filter((x) => x.price_plan && x.price_plan.code == key).reduce((acc, item) => acc += item.total, 0)
 }
+const disableButtonSendToOrder = ref(false)
+const createOrderAndRedirect = async (id) => {
+    disableButtonSendToOrder.value = true
+    await createOrder(id)
+    window.location = '/dashboard'
+}
 
 getHardwareProducts()
 
@@ -499,13 +505,13 @@ const items = ref([
                                 <font-awesome-icon :icon="['far', 'file-pdf']"></font-awesome-icon>
                                 Preview
                             </a>
-                            <button class="btn btn-outline-primary me-2" @click="createOrder(quote.id)">
-                                <font-awesome-icon class="me-2" :icon="['fas', 'thumbtack']">
-                                </font-awesome-icon>Send to Order Management
-                            </button>
-                            <button class="btn btn-primary">
+                            <button class="btn btn-outline-primary me-2">
                                 <font-awesome-icon class="me-2" :icon="['fas', 'envelope']">
                                 </font-awesome-icon> Email this quote
+                            </button>
+                            <button :disabled="disableButtonSendToOrder" class="btn btn-primary" @click="createOrderAndRedirect(quote.id)">
+                                <font-awesome-icon class="me-2" :icon="['fas', 'thumbtack']">
+                                </font-awesome-icon>Send to Order
                             </button>
                         </div>
                     </div>

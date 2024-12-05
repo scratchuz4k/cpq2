@@ -72,7 +72,7 @@ const items = ref([
         <div class="d-flex justify-content-between align-items-center">
             <button class="btn btn-outline-primary me-2" @click="createOrder(quote.id)">
                 <font-awesome-icon class="me-2" :icon="['fas', 'thumbtack']">
-                </font-awesome-icon>Send to Order Management
+                </font-awesome-icon>Send to Order
             </button>
             <button v-if="modelValue.items.length == 0" class="btn btn-outline-primary me-2" type="button" disabled>
                 <font-awesome-icon :icon="['far', 'file-pdf']"></font-awesome-icon>
@@ -214,7 +214,7 @@ const items = ref([
         <div class="d-flex justify-content-end align-items-center">
             <button class="btn btn-outline-primary me-2" @click="createOrder(quote.id)">
                 <font-awesome-icon class="me-2" :icon="['fas', 'thumbtack']">
-                </font-awesome-icon>Send to Order Management
+                </font-awesome-icon>Send to Order
             </button>
             <button v-if="modelValue.items.length == 0" class="btn btn-outline-primary me-2" type="button" disabled>
                 <font-awesome-icon :icon="['far', 'file-pdf']"></font-awesome-icon>
