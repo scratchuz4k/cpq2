@@ -603,7 +603,7 @@ const items = ref([
             </div>
         </div>
 
-        <Dialog v-model:visible="showShare" modal :style="{ width: '22rem'}" :draggable="false">
+        <Dialog v-model:visible="showShare" modal :style="{ width: '40rem'}" :draggable="false">
             <template #header>
                 <h2>Share quote</h2>
             </template>
@@ -634,7 +634,7 @@ const items = ref([
                                 role="button" :icon="['far', 'clipboard']"
                                 @click="edit(p)" /></button>
                     </div>
-                    <p class="small text-center">
+                    <p class="small">
                         Expires at: {{ shareLink.expires_at }}
                     </p>
                 </div>

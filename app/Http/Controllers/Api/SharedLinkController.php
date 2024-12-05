@@ -19,7 +19,7 @@ class SharedLinkController extends Controller
         $sharedLink = SharedLink::create([
             ...$request->all(),
             'shareable_type' => $this->sharedModels[$request->input('shareable_type')],
-            'expires_at' => $request->input('expires_at', now()->addDays(7)), // Expire after 7 days
+            'expires_at' => $request->input('expires_at', null), // Expire after 7 days
         ]);
 
         // Optionally redirect or return the shareable resource
