@@ -2,7 +2,8 @@
 import DataTable from 'datatables.net-vue3';
 import DataTablesCore from 'datatables.net-bs5';
 import { Head } from '@inertiajs/vue3';
-import QuotesLayout from '@/Layouts/QuotesLayout.vue';
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+
 DataTable.use(DataTablesCore);
 const props = defineProps({
     users: {
@@ -28,7 +29,7 @@ const props = defineProps({
 
     <Head title="Dashboard" />
 
-    <QuotesLayout>
+    <AuthenticatedLayout>
         <h1 id="welcome-msg">Welcome {{ $page.props.auth.user.name }}<span>.</span></h1>
 
         <div class="panel">
@@ -63,5 +64,5 @@ const props = defineProps({
                 </Datatable>
             </div>
         </div>
-    </QuotesLayout>
+    </AuthenticatedLayout>
 </template>
