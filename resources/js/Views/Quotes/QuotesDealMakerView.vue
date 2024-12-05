@@ -603,8 +603,7 @@ const items = ref([
             </div>
         </div>
 
-        <Dialog v-model:visible="showShare" modal :style="{ width: '50rem', marginTop: '4rem' }"
-            :breakpoints="{ '1199px': '75vw', '575px': '90vw' }" :draggable="false" position="top">
+        <Dialog v-model:visible="showShare" modal :style="{ width: '22rem'}" :draggable="false">
             <template #header>
                 <h2>Share quote</h2>
             </template>
