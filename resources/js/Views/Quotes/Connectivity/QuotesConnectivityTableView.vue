@@ -109,7 +109,7 @@ const getArticles = async (clearCache = false, runTimeout = false) => {
     if (showLowestCost.value) {
         temp.push({ column: '*', operator: 'lowest-cost', value: true })
     }
-    if(clearCache){
+    if (clearCache) {
         showLoadingModal.value = true
     }
 
@@ -173,7 +173,7 @@ const getArticles = async (clearCache = false, runTimeout = false) => {
         });
 
         isLoading.value = false
-        if(!showLoadingModal.value && (meta.overallTotal !== res.data.overall_total) && (meta.overallTotal>0)) {
+        if (!showLoadingModal.value && (meta.overallTotal !== res.data.overall_total) && (meta.overallTotal > 0)) {
             notyf.success("New products added!")
         }
         meta.first = (meta.page - 1) * meta.limit
@@ -285,16 +285,22 @@ const add = async (article) => {
             })
         }
 
-        let res = await axios.post('/api/quote-items',
-            {
-                quote_id: props.modelValue.id,
-                product_id: null,
-                quantity: 1,
-                product_code: article.code,
-                name: article.productName,
-                data: article,
-                children: childs
-            })
+        let item = {
+            quote_id: props.modelValue.id,
+            product_id: null,
+            quantity: 1,
+            product_code: article.code,
+            name: article.productName,
+            data: article,
+        }
+
+        if (childs.length == 1) {
+            item = { ...item, ...childs[0] }
+        } else {
+            item.children = childs
+        }
+
+        let res = await axios.post('/api/quote-items', item)
         props.modelValue.items.push(res.data)
     } catch (ex) {
         alert(ex.response.data.message)
@@ -374,8 +380,10 @@ getArticles(false, true)
                                     </div>
                                 </div>
                                 <div v-if="meta.isRequestCompleted" class="small d-flex align-items-center">
-                                    <button class="btn btn-sm btn-outline-primary" @click="getArticles(true, true)">Get fresh data
-                                        <font-awesome-icon :icon="['fas', 'refresh']" class="ps-2"></font-awesome-icon></button>
+                                    <button class="btn btn-sm btn-outline-primary" @click="getArticles(true, true)">Get
+                                        fresh data
+                                        <font-awesome-icon :icon="['fas', 'refresh']"
+                                            class="ps-2"></font-awesome-icon></button>
                                 </div>
                             </div>
                         </InfoBox>
@@ -386,7 +394,8 @@ getArticles(false, true)
                         <div class="filters d-flex">
                             <div class="d-flex mb-2">
                                 <p class="fs-5 bold me-2">
-                                    <font-awesome-icon v-if="!meta.isRequestCompleted" :icon="['fas', 'refresh']" class="fa-spin me-2"></font-awesome-icon>Filters
+                                    <font-awesome-icon v-if="!meta.isRequestCompleted" :icon="['fas', 'refresh']"
+                                        class="fa-spin me-2"></font-awesome-icon>Filters
                                     <span class="fw-normal">({{ meta.total }})</span>
                                 </p>
                             </div>
