@@ -65,7 +65,9 @@ describe("Create a Shareable Link.cy", () => {
             });
     })
 
-    it("I can create the link", () => {
+    it("I can access the link", () => {
+        cy.logout()
+        cy.visit("/")
         cy.log(url)
         cy.visit(url)
         cy.get('.item-row').its("length")
