@@ -147,6 +147,7 @@ const getArticles = async (clearCache = false, runTimeout = false) => {
             "Too Many Attempts": "The system is currently processing many requests.",
             "System.Text.Json.JsonException": "The request could not be processed due to a data format error.",
             "Service Unavailable": "System.Exception: The service is currently unavailable.",
+            "There is an error in XML document": "The request could not be processed due to an XML serialization error.",
         };
 
         errors.value = res.data.errors.map((error) => {
