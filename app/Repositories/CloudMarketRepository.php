@@ -14,37 +14,40 @@ class CloudMarketRepository
 
     public function sendResponse($file, $filters)
     {
-        $priceRules = new PriceRules();
-        $account = Account::where('id', request()->input('account_id', null))->first();
-        foreach ($file['data'] as $index => $product) {
-            $supplier = null;
-
-            if (array_key_exists($product['providerKey'], $this->providers)) {
-                $supplier = $this->providers[$product['providerKey']];
-            } else {
-                $supplier = Supplier::where('reference', $product['providerKey'])->first();
-                $this->providers[$product['providerKey']] = $supplier;
-            }
-
-            $priceRules->find(supplier: $supplier, account: $account);
-            foreach (['priceMonthly', 'priceAnnual', 'priceInstall'] as $key) {
-                if (!array_key_exists($key, $product)) {
-                    continue;
-                }
-
-                $file['data'][$index][$key . '_spa'] =  $priceRules->apply($product[$key]);
-            }
-
-            $file['data'][$index]['active_spas']  = $priceRules->getAppliedSpas();
-        }
-
         $items = FilterProvider::get($file['data'], $filters);
 
         foreach ($items as $key => $value) {
             $file['filters'] = FilterProvider::process($file['filters'], $value, true);
         }
 
+
+        $priceRules = new PriceRules();
+        $account = Account::where('id', request()->input('account_id', null))->first();
+        $items = $items->map(function ($product) use ($priceRules, $account) {
+            $supplier = null;
+
+            if (array_key_exists($product['providerKey'], $this->providers)) {
+                $priceRules->setAppliedSpas($this->providers[$product['providerKey']]);
+            } else {
+                $supplier = Supplier::where('reference', $product['providerKey'])->first();
+                $priceRules->find(supplier: $supplier, account: $account);
+                $this->providers[$product['providerKey']] = $priceRules->getAppliedSpas();
+            }
+
+            foreach (['priceMonthly', 'priceAnnual', 'priceInstall'] as $key) {
+                if (!array_key_exists($key, $product)) {
+                    continue;
+                }
+                $product[$key . '_spa'] = $priceRules->apply($product[$key]);
+            }
+
+            $product['active_spas'] = $priceRules->getAppliedSpas();
+
+            return $product;
+        });
+
         $meta = FilterProvider::paginate($items);
+
         return array_merge(
             $meta,
             [
@@ -56,4 +59,5 @@ class CloudMarketRepository
             ]
         );
     }
+
 }

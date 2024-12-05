@@ -49,7 +49,7 @@ class CloudMarketFile
                 'created_at' => null,
                 'finished_at' => null,
                 'filters' => null,
-                'errors' => null,
+                'errors' => [],
             ];
         }
         return json_decode(file_get_contents($this->path . $this->filename), true);
