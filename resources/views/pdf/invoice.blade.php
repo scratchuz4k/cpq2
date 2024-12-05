@@ -150,6 +150,16 @@ $monthly_items = array_filter($quote['items'], function ($item) {
         #footer img {
             width: var(--pdf-footer-logo-width);
         }
+
+        .w-5 {
+            width: 5% !important;
+        }
+        .w-10 {
+            width: 10% !important;
+        }
+        .w-20 {
+            width: 20% !important;
+        }
     </style>
 </head>
 
@@ -206,18 +216,18 @@ $monthly_items = array_filter($quote['items'], function ($item) {
                                 <!-- Headers -->
                                 <thead>
                                     <tr>
-                                        <th style="width:40px">ID</th>
+                                        <th class="w-5">ID</th>
                                         @if ($quote['solution_type_id'] === 1)
-                                            <th class="text-center d-xl-table-cell">Provider</th>
+                                            <th class="text-center d-xl-table-cell w-5">Provider</th>
                                         @endif
                                         <th class="w-auto">Product</th>
-                                        <th class="text-center w-20">Contract Length</th>
+                                        <th class="text-center w-5">Months</th>
                                         @if ($quote['solution_type_id'] === 1)
                                             <th class="d-xl-table-cell text-center w-10" style="white-space: nowrap;">
                                                 Supplier Quote Ref.</th>
                                         @endif
                                         <th class="text-center w-10">Type</th>
-                                        <th class="text-center w-10">Qty</th>
+                                        <th class="text-center w-5">Qty</th>
                                         <th class="text-center w-10">Price</th>
                                         <th class="text-end w-10" style="white-space: nowrap;">Total Price</th>
                                     </tr>
@@ -241,7 +251,7 @@ $monthly_items = array_filter($quote['items'], function ($item) {
                                                     <span
                                                         class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm router-model">
                                                         <font-awesome-icon :icon="['fas', 'plug']"></font-awesome-icon>
-                                                        {{ $quote['items'][7]['data']->additionalInfo->{'Primary Router Model'} }}
+                                                        {{ $item['data']->additionalInfo->{'Primary Router Model'} }}
                                                     </span>
                                                 @endif
                                             </td>
@@ -275,9 +285,9 @@ $monthly_items = array_filter($quote['items'], function ($item) {
                                 <!-- Headers -->
                                 <thead>
                                     <tr>
-                                        <th style="width:40px">ID</th>
+                                        <th class="w-5">ID</th>
                                         @if ($quote['solution_type_id'] === 1)
-                                            <th class="text-center d-xl-table-cell">Provider</th>
+                                            <th class="text-center d-xl-table-cell w-5">Provider</th>
                                         @endif
                                         <th class="w-auto">Product</th>
                                         @if ($quote['solution_type_id'] === 1)
@@ -286,7 +296,7 @@ $monthly_items = array_filter($quote['items'], function ($item) {
                                                 Quote Ref.</th>
                                         @endif
                                         <th class="text-center w-10">Type</th>
-                                        <th class="text-center w-10">Qty</th>
+                                        <th class="text-center w-5">Qty</th>
                                         <th class="text-center w-10">Price</th>
                                         <th class="text-end w-10" style="white-space: nowrap;">Total Price</th>
                                     </tr>

@@ -112,16 +112,16 @@ const items = ref([
                                         <!-- Headers -->
                                         <thead>
                                             <tr>
-                                                <th style="width:40px">ID</th>
+                                                <th class="w-5">ID</th>
                                                 <th v-if="quote.solution_type_id === 1"
-                                                    class="text-center d-none d-xl-table-cell">Provider</th>
+                                                    class="text-center d-none d-xl-table-cell w-5">Provider</th>
                                                 <th class="w-auto">Product</th>
-                                                <th class="text-center w-20">Contract Length</th>
+                                                <th class="text-center w-5">Months</th>
                                                 <th v-if="quote.solution_type_id === 1"
                                                     class="d-none d-xl-table-cell text-center w-10"
                                                     style="white-space: nowrap;">Supplier Quote Ref.</th>
                                                 <th class="text-center w-10">Type</th>
-                                                <th class="text-center w-10">Qty</th>
+                                                <th class="text-center w-5">Qty</th>
                                                 <th class="text-center w-10">Price</th>
                                                 <th class="text-end w-10" style="white-space: nowrap;">Total Price</th>
                                             </tr>
@@ -178,16 +178,16 @@ const items = ref([
                                         <!-- Headers -->
                                         <thead>
                                             <tr>
-                                                <th style="width:40px">ID</th>
+                                                <th class="w-5">ID</th>
                                                 <th v-if="quote.solution_type_id === 1"
-                                                    class="text-center d-none d-xl-table-cell">Provider</th>
+                                                    class="text-center d-none d-xl-table-cell w-5">Provider</th>
                                                 <th class="w-auto">Product</th>
                                                 <th v-if="quote.solution_type_id === 1"
                                                     class="d-none d-xl-table-cell w-10 text-center"
                                                     style="white-space: nowrap;">Supplier
                                                     Quote Ref.</th>
                                                 <th class="text-center w-10">Type</th>
-                                                <th class="text-center w-10">Qty</th>
+                                                <th class="text-center w-5">Qty</th>
                                                 <th class="text-center w-10">Price</th>
                                                 <th class="text-end w-10" style="white-space: nowrap;">Total Price</th>
                                             </tr>
@@ -308,6 +308,9 @@ const items = ref([
     </AuthenticatedLayout>
 </template>
 <style scoped>
+.w-5 {
+    width: 5% !important;
+}
 .w-10 {
     width: 10% !important;
 }
