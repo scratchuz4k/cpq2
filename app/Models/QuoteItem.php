@@ -105,6 +105,5 @@ class QuoteItem extends Model
         $this->total = ($this->price * $this->quantity);
         $this->total_tax = ($this->total * ($this->tax_quote_item / 100));
         $this->total_gross = ($this->total * (($this->tax_quote_item / 100) + 1));
-        $this->save();
     }
 }
