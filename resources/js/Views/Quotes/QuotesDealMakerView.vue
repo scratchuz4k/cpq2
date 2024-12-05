@@ -631,7 +631,7 @@ const items = ref([
                         <input id="input-shareable-link" type="text" class="form-control" v-model="shareLink.link" disabled />
 
                         <button class="input-group-text" @click="copyToClipboard(shareLink.link)"><font-awesome-icon
-                                :id="'btn-recurring-' + i + '-edit'" role="button" :icon="['far', 'clipboard']"
+                                role="button" :icon="['far', 'clipboard']"
                                 @click="edit(p)" /></button>
                     </div>
                     <p class="small">
