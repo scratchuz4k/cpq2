@@ -610,7 +610,7 @@ const items = ref([
             <div v-if="!shareLink.link">
                 <div class="mb-3">
                     <label for="expiration_data" class="form-label">Expiration Date</label>
-                    <DatePicker v-model="shareLink.expires_at" showIcon fluid iconDisplay="input" />
+                    <DatePicker v-model="shareLink.expires_at" dateFormat="dd-mm-yy" :minDate="dateNow.toJSDate()" showIcon fluid iconDisplay="input" />
                 </div>
                 <div class="mb-3">
                     <label for="expiration_data" class="form-label">Password</label>
