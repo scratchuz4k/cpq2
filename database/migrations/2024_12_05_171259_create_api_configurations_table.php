@@ -16,7 +16,6 @@ return new class extends Migration
 
             $table->string('auth_type');
             $table->string('code');
-            $table->string('url')->nullable();
             $table->string('client_id')->nullable();
             $table->string('username')->nullable();
             $table->string('password')->nullable();
