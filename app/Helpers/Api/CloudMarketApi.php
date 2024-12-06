@@ -33,7 +33,7 @@ class CloudMarketApi
                     "Address1.Street" =>  $address->street,
                     "Address1.Town" =>  $address->town,
 
-                    "ManagedOption" => 1,
+                    "ManagedOption" => 0,
 
                     'SupplierApiConnections.Its_Connection.Its_AccessKey' => env('ITS_CONNECTION_ACCESSKEY', '328736h87y78g823'),
                     'SupplierApiConnections.Virtual1_Connection.Username' => env('VIRTUAL1_CONNECTION_USERNAME', 'JenniferLawrence'),
