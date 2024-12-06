@@ -18,4 +18,11 @@ enum CloudMarketSuppliersEnum: string
             CloudMarketSuppliersEnum::Giacom => ['auth_type' => 'basic'],
         };
     }
+    public static function asArray(): array
+    {
+        return array_map(fn($case) => [
+            'name' => $case->name,   // Enum case value
+            'value' => $case->value // Custom value
+        ], self::cases());
+    }
 }

@@ -1,18 +1,33 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
-use App\Models\ApiConfiguration;
+use Exception;
+use Inertia\Inertia;
 use Illuminate\Http\Request;
+use App\Helpers\DataProvider;
+use App\Models\ApiConfiguration;
+use Illuminate\Support\Facades\Log;
+use App\Http\Controllers\BaseController;
+use App\Http\Resources\ApiConfigurationResource;
 
-class ApiConfigurationController extends Controller
+class ApiConfigurationController extends BaseController
 {
+    protected $model = ApiConfiguration::class;
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        //
+        $dataProvider = new DataProvider(ApiConfiguration::class);
+        try {
+            $data = $dataProvider->get();
+        } catch (Exception $e) {
+            Log::debug($e->getMessage());
+            return $e->getMessage();
+        }
+
+        return ApiConfigurationResource::collection($data);
     }
 
     /**

@@ -11,6 +11,7 @@ use App\Http\Controllers\Web\TokenController;
 use App\Http\Controllers\Web\RegionController;
 use App\Http\Controllers\Web\TenantController;
 use App\Http\Controllers\Web\AccountController;
+use App\Http\Controllers\Web\ApiConfigurationController;
 use App\Http\Controllers\Web\ProductController;
 use App\Http\Controllers\Web\ProfileController;
 use App\Http\Controllers\Web\SupplierController;
@@ -57,6 +58,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/users/import', [UserController::class, 'importUsers'])->name('users.import');
 
     Route::resources([
+        'apis' => ApiConfigurationController::class,
         'prices' => PriceController::class,
         'quotes' => QuoteController::class,
         'accounts' => AccountController::class,
