@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('client_id')->nullable();
             $table->string('username')->nullable();
             $table->string('password')->nullable();
-            $table->string('access_token')->nullable();
+            $table->string('token')->nullable();
             $table->text('extra_data')->nullable();
 
             $table->foreignId('tenant_id')->constrained()->cascadeOnDelete();
