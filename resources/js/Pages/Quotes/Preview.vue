@@ -1,18 +1,39 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link } from '@inertiajs/vue3';
-import {ref} from "vue";
+import { reactive, ref } from "vue";
 
 const props = defineProps({
     quote: Object,
 });
 
+const getLeafNodesWithChildren = (objects) => {
+    let leaves = [];
+    const findLeaves = (items) => {
+        for (const item of items) {
+            if (item.children && item.children.length > 0) {
+                findLeaves(item.children);
+            } else {
+                leaves.push(item);
+            }
+        }
+    }
+
+    findLeaves(objects);
+    return leaves;
+}
+const quote = reactive(props.quote)
+Object.assign(quote.items, getLeafNodesWithChildren(quote.items))
 
 const showDate = (days = 0) => {
     const dateObj = new Date();
     dateObj.setDate(dateObj.getDate() + days);
     const currentDate = dateObj.getDate() + "/" + (dateObj.getMonth() + 1) + "/" + dateObj.getFullYear();
     return currentDate;
+}
+
+const quoteTotal = (key) => {
+    return quote.items.filter((x) => x.price_plan && x.price_plan.code == key).reduce((acc, item) => acc += item.total, 0)
 }
 
 const items = ref([
@@ -93,38 +114,37 @@ const items = ref([
                                     +44 (0) 234 567 8910</p>
                             </div>
                         </div>
-
-                        <div class="panel">
+                        <div>
                             <div class="row mb-4" style="min-height: 50vh;">
                                 <div class="col">
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <h2>Items</h2>
-                                    </div>
-                                    <!-- Product List -->
-                                    <!-- In a real application, this would be dynamically generated based on the selected solution type -->
+                                    <h3>Recurring charges</h3>
                                     <table class="table">
                                         <!-- Headers -->
                                         <thead>
                                             <tr>
-                                                <th>#</th>
-                                                <th class="text-center d-none d-xl-table-cell">Provider</th>
-                                                <th>Name</th>
-                                                <th class="d-none d-xl-table-cell" style="white-space: nowrap;">Supplier
-                                                    Quote Ref.</th>
-                                                <th>Type</th>
-                                                <th class="text-center">Qty</th>
-                                                <th class="text-end" style="white-space: nowrap;">Monthly Price</th>
-                                                <th class="text-end" style="white-space: nowrap;">Install Price</th>
-                                                <th class="text-end" style="white-space: nowrap;">Total Price</th>
+                                                <th class="w-5">ID</th>
+                                                <th v-if="quote.solution_type_id === 1"
+                                                    class="text-center d-none d-xl-table-cell w-5">Provider</th>
+                                                <th class="w-auto">Product</th>
+                                                <th class="text-center w-5">Months</th>
+                                                <th v-if="quote.solution_type_id === 1"
+                                                    class="d-none d-xl-table-cell text-center w-10"
+                                                    style="white-space: nowrap;">Supplier Quote Ref.</th>
+                                                <th class="text-center w-10">Type</th>
+                                                <th class="text-center w-5">Qty</th>
+                                                <th class="text-center w-10">Price</th>
+                                                <th class="text-end w-10" style="white-space: nowrap;">Total Price</th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <tr class="item-row" v-for="item in quote.items"
+                                            <tr class="item-row"
+                                                v-for="(item, index) in quote.items.filter((x) => x.price_plan && x.price_plan.code == 'MONTHLY')"
                                                 style="vertical-align: middle;">
-                                                <td class="position-relative" style="width:40px">
-                                                    {{ quote.items.indexOf(item) + 1 }}
+                                                <td class="position-relative">
+                                                    {{ index + 1 }}
                                                 </td>
-                                                <td class="text-center d-none d-xl-table-cell">
+                                                <td v-if="quote.solution_type_id === 1"
+                                                    class="text-center d-none d-xl-table-cell">
                                                     <img v-if="item.data?.providerKey" class="img-provider"
                                                         @error="setAltImg"
                                                         :src="`/images/providers/${item.data.providerKey}.png`"
@@ -132,34 +152,101 @@ const items = ref([
                                                 </td>
                                                 <td>
                                                     {{ item.name }}
-                                                    <span v-if="item.data?.additionalInfo['Primary Router Model']" v-tooltip
-                                                        data-bs-toggle="tooltip" data-bs-placement="top" title="Primary Router Model"
+                                                    <span v-if="item.data?.additionalInfo['Primary Router Model']"
+                                                        v-tooltip data-bs-toggle="tooltip" data-bs-placement="top"
+                                                        title="Primary Router Model"
                                                         class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm router-model">
                                                         <font-awesome-icon :icon="['fas', 'plug']"></font-awesome-icon>
                                                         {{ item.data.additionalInfo['Primary Router Model'] }}
                                                     </span>
                                                 </td>
-                                                <td class="d-none d-xl-table-cell">
+                                                <td class="text-center">
+                                                    {{ item.contract_length }}
+                                                </td>
+                                                <td v-if="quote.solution_type_id === 1"
+                                                    class="d-none d-xl-table-cell text-center">
                                                     {{ item.data?.productCode }}
                                                 </td>
-                                                <td>
+                                                <td class="text-center">
                                                     Monthly
                                                 </td>
                                                 <td class="text-center">
                                                     {{ item.quantity }}
                                                 </td>
-                                                <td class="text-end">
-                                                    {{ GBP.format(item.data?.priceMonthly ?? item.data?.price) }}
+                                                <td class="text-center">
+                                                    {{ GBP.format(item.price) }}
                                                 </td>
                                                 <td class="text-end">
-                                                    {{ GBP.format(item.data?.priceInstall ?? 0) }}
-                                                </td>
-                                                <td class="text-end">
-                                                    {{ GBP.format(item.total_monthly) }}
+                                                    {{ GBP.format(item.total) }}
                                                 </td>
                                             </tr>
                                         </tbody>
                                     </table>
+                                    <br>
+                                    <h3>One off charges</h3>
+                                    <table class="table">
+                                        <!-- Headers -->
+                                        <thead>
+                                            <tr>
+                                                <th class="w-5">ID</th>
+                                                <th v-if="quote.solution_type_id === 1"
+                                                    class="text-center d-none d-xl-table-cell w-5">Provider</th>
+                                                <th class="w-auto">Product</th>
+                                                <th v-if="quote.solution_type_id === 1"
+                                                    class="d-none d-xl-table-cell w-10 text-center"
+                                                    style="white-space: nowrap;">Supplier
+                                                    Quote Ref.</th>
+                                                <th class="text-center w-10">Type</th>
+                                                <th class="text-center w-5">Qty</th>
+                                                <th class="text-center w-10">Price</th>
+                                                <th class="text-end w-10" style="white-space: nowrap;">Total Price</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr class="item-row"
+                                                v-for="(item, index) in quote.items.filter((x) => x.price_plan && x.price_plan.code == 'SINGLE')"
+                                                style="vertical-align: middle;">
+                                                <td class="position-relative">
+                                                    {{ index + 1 }}
+                                                </td>
+                                                <td v-if="quote.solution_type_id === 1"
+                                                    class="text-center d-none d-xl-table-cell">
+                                                    <img v-if="item.data?.providerKey" class="img-provider"
+                                                        @error="setAltImg"
+                                                        :src="`/images/providers/${item.data.providerKey}.png`"
+                                                        :alt="item.data.providerName" :title="item.data.providerName" />
+                                                </td>
+                                                <td>
+                                                    {{ item.name }}
+                                                    <span v-if="item.data?.additionalInfo['Primary Router Model']"
+                                                        v-tooltip data-bs-toggle="tooltip" data-bs-placement="top"
+                                                        title="Primary Router Model"
+                                                        class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm router-model">
+                                                        <font-awesome-icon :icon="['fas', 'plug']"></font-awesome-icon>
+                                                        {{ item.data.additionalInfo['Primary Router Model'] }}
+                                                    </span>
+                                                </td>
+                                                <td v-if="quote.solution_type_id === 1"
+                                                    class="d-none d-xl-table-cell text-center">
+                                                    {{ item.data?.productCode }}
+                                                </td>
+                                                <td class="text-center">
+                                                    Single
+                                                </td>
+                                                <td class="text-center">
+                                                    {{ item.quantity }}
+                                                </td>
+                                                <td class="text-center">
+                                                    {{ GBP.format(item.price) }}
+                                                </td>
+                                                <td class="text-end">
+                                                    {{ GBP.format(item.total) }}
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                    <br>
+                                    <br>
                                     <div class="text-right">
                                         <div class="row">
                                             <div class="col"></div>
@@ -177,13 +264,13 @@ const items = ref([
                                                         <tr>
                                                             <th>Total Monthly</th>
                                                             <td id="total_monthly_net" class="text-end">
-                                                                {{ GBP.format(quote.total_monthly) }}
+                                                                {{ GBP.format(quoteTotal('MONTHLY')) }}
                                                             </td>
                                                             <td id="total_monthly_vat" class="text-end">
-                                                                {{ GBP.format(quote.total_monthly_vat) }}
+                                                                {{ GBP.format(quoteTotal('MONTHLY') * .20) }}
                                                             </td>
                                                             <td id="total_monthly_gross" class="text-end">
-                                                                {{ GBP.format(quote.total_monthly_gross) }}
+                                                                {{ GBP.format(quoteTotal('MONTHLY') * 1.20) }}
                                                             </td>
                                                         </tr>
                                                         <tr>
@@ -230,3 +317,14 @@ const items = ref([
 
     </AuthenticatedLayout>
 </template>
+<style scoped>
+.w-5 {
+    width: 5% !important;
+}
+.w-10 {
+    width: 10% !important;
+}
+.w-20 {
+    width: 20% !important;
+}
+</style>

@@ -28,7 +28,7 @@ class QuoteItemResource extends JsonResource
             'tax_order_item' => (float)$this->tax_order_item,
             'price_plan' => $this->pricePlan,
             'contract_length' => (float)$this->contract_length,
-            'children' => QuoteItemResource::collection($this->children)
+            'children' => QuoteItemResource::collection($this->children)->resolve()
         ];
     }
 }

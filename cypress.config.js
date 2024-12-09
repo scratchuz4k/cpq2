@@ -1,9 +1,11 @@
 import { defineConfig } from 'cypress'
 
 export default defineConfig({
+    retries: 2,
     chromeWebSecurity: false,
     defaultCommandTimeout: 5000,
     watchForFileChanges: false,
+    videoCompression: true,
     videosFolder: 'cypress/output/videos',
     screenshotsFolder: 'cypress/output/screenshots',
     video: true,  // Optionally, enable videos for failed tests

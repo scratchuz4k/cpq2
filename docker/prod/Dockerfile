@@ -1,4 +1,4 @@
-FROM php:8.2-fpm
+FROM php:8.3-bookworm
 
 # Set working directory
 WORKDIR /var/www
@@ -37,4 +37,4 @@ RUN chmod +x /usr/local/bin/start-app
 EXPOSE 80
 
 # Migrates and Seeds DB and Starts supervisord to manage both PHP-FPM and Nginx
-# CMD ["start-app"]
+CMD ["start-app"]
