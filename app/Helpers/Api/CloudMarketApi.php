@@ -2,6 +2,8 @@
 
 namespace App\Helpers\Api;
 
+use App\Enums\CloudMarketSuppliersEnum;
+use App\Models\ApiConfiguration;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
 
@@ -15,7 +17,10 @@ class CloudMarketApi
 
         $url =  env('CLOUDMARKET_CONNECTION_SERVICE_URL', 'https://cpq-poc-uat-api.cloudmarket.com');
         $requestTimeout = 360;
-        $apis = [];
+        $virtual1 = ApiConfiguration::where('code', CloudMarketSuppliersEnum::Virtual1->value)->first();
+        $gamma = ApiConfiguration::where('code', CloudMarketSuppliersEnum::Gamma->value)->first();
+        $giacom = ApiConfiguration::where('code', CloudMarketSuppliersEnum::Giacom->value)->first();
+        $its = ApiConfiguration::where('code', CloudMarketSuppliersEnum::ITS->value)->first();
 
         return Http::withOptions(['stream' => true])->timeout($requestTimeout)->withToken(env('ALPNET_API_TOKEN'))
             ->get(
@@ -36,14 +41,14 @@ class CloudMarketApi
 
                     "ManagedOption" => 1,
 
-                    'SupplierApiConnections.Its_Connection.Its_AccessKey' => env('ITS_CONNECTION_ACCESSKEY', '328736h87y78g823'),
-                    'SupplierApiConnections.Virtual1_Connection.Username' => env('VIRTUAL1_CONNECTION_USERNAME', 'JenniferLawrence'),
-                    'SupplierApiConnections.Virtual1_Connection.Password' => env('VIRTUAL1_CONNECTION_PASSWORD', 'secretpass'),
-                    'SupplierApiConnections.Gamma_Connection.Username' => env('GAMMA_CONNECTION_USERNAME', 'AdamSandler'),
-                    'SupplierApiConnections.Gamma_Connection.Password' => env('GAMMA_CONNECTION_PASSWORD', 'specialpass'),
-                    'SupplierApiConnections.Gamma_Connection.ClientId' => env('GAMMA_CONNECTION_CLIENTID', '134213'),
-                    'SupplierApiConnections.Giacom_Connection.Username' => env('GIACOM_CONNECTION_USERNAME', 'MasterWoo'),
-                    'SupplierApiConnections.Giacom_Connection.Password' => env('GIACOM_CONNECTION_PASSWORD', '2345678'),
+                    'SupplierApiConnections.Its_Connection.Its_AccessKey' => env('ITS_CONNECTION_ACCESSKEY', $its?->token),
+                    'SupplierApiConnections.Virtual1_Connection.Username' => env('VIRTUAL1_CONNECTION_USERNAME', $virtual1?->username),
+                    'SupplierApiConnections.Virtual1_Connection.Password' => env('VIRTUAL1_CONNECTION_PASSWORD', $virtual1?->password),
+                    'SupplierApiConnections.Gamma_Connection.Username' => env('GAMMA_CONNECTION_USERNAME', $gamma?->username),
+                    'SupplierApiConnections.Gamma_Connection.Password' => env('GAMMA_CONNECTION_PASSWORD', $gamma?->password),
+                    'SupplierApiConnections.Gamma_Connection.ClientId' => env('GAMMA_CONNECTION_CLIENTID', $gamma?->client_id),
+                    'SupplierApiConnections.Giacom_Connection.Username' => env('GIACOM_CONNECTION_USERNAME', $giacom?->username),
+                    'SupplierApiConnections.Giacom_Connection.Password' => env('GIACOM_CONNECTION_PASSWORD', $giacom?->client_id),
                 ]
             );
     }
