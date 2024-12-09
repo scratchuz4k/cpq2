@@ -17,6 +17,20 @@ class OrderItemService
                 'original_price' => $array['price']
             ]);
 
+            if (array_key_exists('children', $array)) {
+                foreach ($array['children'] as $child) {
+                    $childItem = OrderItem::create([
+                        ...$array,
+                        ...$child,
+                        'parent_id' => $orderItem->id,
+                        'tax_order_item' => 20,
+                        'original_price' => isset($child['price']) ? $child['price'] : 0,
+                    ]);
+
+                }
+            }
+
+
             return $orderItem;
         });
     }

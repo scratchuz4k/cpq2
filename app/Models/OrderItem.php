@@ -27,6 +27,7 @@ class OrderItem extends Model
         'total_gross',
         'tax_order_item',
         "contract_length",
+        'parent_id'
     ];
 
     protected function casts(): array
@@ -49,5 +50,19 @@ class OrderItem extends Model
     {
         related:
         return $this->belongsTo(Order::class);
+    }
+
+    public function pricePlan(): BelongsTo
+    {
+        related:
+        return $this->belongsTo(PricePlan::class);
+    }
+
+        /**
+     * Get the children users of this user.
+     */
+    public function children()
+    {
+        return $this->hasMany(OrderItem::class, 'parent_id', 'id');
     }
 }

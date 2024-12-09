@@ -4,6 +4,7 @@ namespace App\Listeners;
 
 use App\Enums\QuoteStatusesEnum;
 use App\Events\QuoteStatusEvent;
+use App\Http\Resources\QuoteResource;
 use App\Models\Quote;
 use App\Services\OrderItemService;
 use App\Services\OrderService;
@@ -39,7 +40,8 @@ class QuoteStatusRegistryListener
 
         try {
             $order = DB::transaction(function () use ($quote) {
-                $this->orderService->store([...$quote->toArray(), 'items' => $quote->items->toArray(), 'user_id' => null, 'quote_id' => $quote->id]);
+                $quote = (new QuoteResource($quote->load(['items', 'items.children'])))->resolve();
+                $this->orderService->store([...$quote, 'user_id' => null, 'quote_id' => $quote['id']]);
             });
         } catch (\Exception $e) {
 			if (!env('APP_DEBUG')) {

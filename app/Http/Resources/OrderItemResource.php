@@ -32,6 +32,9 @@ class OrderItemResource extends JsonResource
             'total_monthly_tax' => (float)$this->total_monthly_tax,
             'total_monthly_gross' => (float)$this->total_monthly_gross,
             'tax_order_item' => (float)$this->tax_order_item,
+            'price_plan' => $this->pricePlan,
+            'contract_length' => (float)$this->contract_length,
+            'children' => OrderItemResource::collection($this->children)->resolve()
         ];
     }
 }

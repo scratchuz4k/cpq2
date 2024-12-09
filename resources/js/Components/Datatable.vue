@@ -224,7 +224,7 @@ getData()
                 <template v-else>{{ getValue(data, field) }}</template>
             </template>
         </Column>
-        <Column v-if="allow.update || allow.link || allow.delete" :class="['p-0']" style="width:10%;">
+        <Column v-if="allow.update || allow.link || allow.delete" :class="['p-0']" style="width:auto;">
             <template #body="{ data, index }">
                 <div class="d-flex justify-content-center">
                     <template v-if="allow.update">
@@ -276,6 +276,9 @@ getData()
     z-index: 1;
 }
 
+.p-datatable-thead{
+    z-index: 1;
+}
 .p-datatable-header {
     padding: 0.75rem 0rem 0rem !important;
     border-bottom: 0 !important;

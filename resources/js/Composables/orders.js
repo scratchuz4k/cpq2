@@ -26,7 +26,7 @@ export const createOrder = async (id, getData = null) => {
     }
 }
 
-export const assignOrder = async (id) => {
+export const assignOrder = async (id, getData) => {
     swal.fire({
         title: 'Do you want to assign this Order to you?'
     }).then(async (result) => {
@@ -38,7 +38,7 @@ export const assignOrder = async (id) => {
                 { user_id: page.props.auth.user.id }
             )
             notyf.success('Order assigned to you with success');
-            return
+            getData()
         } catch (err) {
             notyf.error(err?.response?.data?.message ?? 'Something went wrong')
         }
@@ -62,11 +62,12 @@ export const rejectOrder = async (order) => {
     }).then((result) => {
         if (result.isConfirmed) {
             swal.fire({
-                title: 'Enter a rejection Note',
+                title: 'Please specify a reason for the rejection',
                 input: 'textarea',
+                width: 640,
                 preConfirm: (note) => {
                     if (!note) {
-                        swal.showValidationMessage('Please enter a note!');
+                        swal.showValidationMessage('Order rejected');
                         return false;
                     }
                     return note;
@@ -76,8 +77,8 @@ export const rejectOrder = async (order) => {
                     data.note = noteResult.value
                     try {
                         let res = await axios.put('/api/orders/' + order.id, data)
-                        notyf.success('Order rejected with success');
-                        return
+                        notyf.success('Order rejected');
+                        window.location = '/dashboard'
                     } catch (err) {
                         notyf.error(err?.response?.data?.message ?? 'Something went wrong')
                     }
@@ -89,10 +90,7 @@ export const rejectOrder = async (order) => {
 }
 
 export const proceedOrder = async (order) => {
-    let message = 'Are you sure you want to proceed with this Order?'
-    if (!order.user_id) {
-        message = 'This action will assign this order to you. Do you wan\'t to continue'
-    }
+    let message = 'I want to proceed with this Order?'
 
     const data = {
         status: 'ORDERED',

@@ -14,15 +14,13 @@ class OrderService
     public function store(array $array): Order
     {
         $order = Order::create($array);
-
         if (array_key_exists('items', $array)) {
             foreach ($array['items'] as $order_item) {
-                $order_item['order_id'] = $order->id;
-                $this->orderItemService->store($order_item);
+                    $this->orderItemService->store([...$order_item, 'order_id' =>  $order->id]);
             }
         }
 
-        return $order;
+        return $order->refresh();
     }
 
     public function update(Order $order, array $array): Order

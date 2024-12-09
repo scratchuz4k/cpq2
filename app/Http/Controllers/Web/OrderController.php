@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Web;
 
+use App\Enums\OrderStatusesEnum;
 use App\Http\Requests\OrderCreateRequest;
 use App\Http\Resources\OrderResource;
 use App\Models\Order;
@@ -14,6 +15,8 @@ use App\Models\SolutionType;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\BaseController;
+use App\Http\Requests\OrderUpdateRequest;
+
 use function Spatie\LaravelPdf\Support\pdf;
 
 class OrderController extends BaseController
@@ -43,7 +46,7 @@ class OrderController extends BaseController
         return Inertia::render('Orders/Index', [
             "users" => $users->values(),
             "solutions" => SolutionType::all(),
-            "status" => ["PRICE", "QUOTE", "CONFIGURE"]
+            "status" => array_map(fn($status) => $status->name, OrderStatusesEnum::cases())
         ]);
     }
 
@@ -81,6 +84,7 @@ class OrderController extends BaseController
      */
     public function show(Order $order)
     {
+        $test = new OrderResource($order->load(['items']));
         return Inertia::render('Orders/Show', [
             'order' => new OrderResource($order->load(['items']))
         ]);

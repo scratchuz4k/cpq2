@@ -530,8 +530,10 @@ const items = ref([
                     <InfoBox v-if="quote.orders.length>0">
                         <div style="font-size: 14px;">
                             <div class="mb-3">
-                                <h6>An Order related to this Quote was {{ quote.status }}</h6>
-                                <button class="btn btn-primary" @click="showModal = true">See Rejection Notes</button>
+                                <h6>An Order related to this Quote was
+                                    <span class="badge text-bg-secondary">{{ quote.status }}</span>
+                                </h6>
+                                <button class="btn btn-sm btn-primary" @click="showModal = true">See Rejection Notes</button>
                             </div>
                         </div>
                     </InfoBox>
@@ -678,6 +680,10 @@ input[type="number"] {
     background-color: #dfe3e6;
     color:#646464;
     border-color: #bdbdbd;
+}
+
+.p-dialog-header {
+    justify-content: end;
 }
 
 </style>
