@@ -73,8 +73,8 @@ class ApiConfigurationController extends BaseController
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(ApiConfiguration $apiConfiguration)
+    public function destroy(ApiConfiguration $api)
     {
-        //
+        $api->delete();
     }
 }

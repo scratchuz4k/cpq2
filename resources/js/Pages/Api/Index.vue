@@ -28,7 +28,8 @@ const items = ref([
                     link: false,
                 }" :columns="[
                     { data: 'id', title: '#', style: 'width:5%' },
-                    { data: 'code', title: 'code', },
+                    { data: 'code', title: 'Code', },
+                    { data: 'name', title: 'Name', },
                     { data: 'auth_type', title: 'Auth Type', },
                     { data: 'username', title: 'Username', },
                 ]" route="/apis">
