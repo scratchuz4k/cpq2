@@ -139,15 +139,15 @@ const getArticles = async (clearCache = false, runTimeout = false) => {
 
         articles.value = res.data.data
         const errorMessages = {
-            "BadGateway": "An error occurred, resulting in partial or no results.",
+            "BadGateway": "A Bad Gateway error occurred, resulting in partial or no results.",
             "Request timed out": "The request timed out, resulting in partial or no results.",
             "InternalServerError": "An error occurred on the server.",
-            "An error occurred while sending the request": "An error occurred while sending the request.",
+            "An error occurred while sending the request": "There was an issue sending your request.",
             "TooManyRequests": "The system is experiencing a high volume of requests.",
-            "Too Many Attempts": "The system is currently processing many requests.",
-            "System.Text.Json.JsonException": "The request could not be processed due to a data format error.",
-            "Service Unavailable": "System.Exception: The service is currently unavailable.",
-            "There is an error in XML document": "The request could not be processed due to an XML serialization error.",
+            "Too Many Attempts": "There are currently too many requests being processed.",
+            "System.Text.Json.JsonException": "The request could not be processed due to a data format issue.",
+            "Service Unavailable": "The service is temporarily unavailable.",
+            "There is an error in XML document": "The request could not be processed due to a data format issue.",
         };
 
         errors.value = res.data.errors.map((error) => {
@@ -156,7 +156,7 @@ const getArticles = async (clearCache = false, runTimeout = false) => {
                     return { provider: error.provider, response: message };
                 }
             }
-            return error;
+            return { provider: error.provider, response: 'An error occurred, resulting in partial or no results' }
         });
 
         articles.value = articles.value.map((article) => {
