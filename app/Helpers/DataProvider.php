@@ -111,6 +111,8 @@ class DataProvider
         switch ($operator) {
             case 'in':
                 return $query->whereIn($column, $value);
+            case 'not_in':
+                return $query->whereNotIn($column, $value);
             case 'is_null':
                 return $query->whereNull($column);
             default:
@@ -131,6 +133,8 @@ class DataProvider
             switch ($operator) {
                 case 'in':
                     return $query->whereIn($relatedTableName . '.' . $column, $value);
+                case 'not_in':
+                    return $query->whereNotIn($relatedTableName . '.' . $column, $value);
                 case 'is_null':
                     return $query->whereNull($relatedTableName . '.' . $column);
                 default:
@@ -215,6 +219,10 @@ class DataProvider
             ],
             'in' => [
                 'operator' => 'in',
+                'value' => explode(',', $value),
+            ],
+            'not_in' => [
+                'operator' => 'not_in',
                 'value' => explode(',', $value),
             ],
             'search' => [
