@@ -23,12 +23,22 @@ const articles = ref([])
 const errors = ref([])
 const selectedFilters = ref([]);
 const filters = reactive({
+    productName: {
+        operator: "not_in",
+        value: [
+            'ADSL 2+ MPF',
+            'Software Defined SOGEA',
+            'Broadband FTTC MPF',
+            'Cellular Ethernet'
+        ],
+        name: 'Product'
+    },
     providerName: {
         operator: "in",
         value: null,
         name: 'Provider'
     },
-    connectivitySupplierName: {
+    connectivitySupplierGroup: {
         operator: "in",
         value: null,
         name: 'Subprovider'
@@ -52,7 +62,7 @@ const filters = reactive({
 
 const filterList = reactive({
     providerName: [],
-    connectivitySupplierName: [],
+    connectivitySupplierGroup: [],
     contractTermMonths: [],
     bearer: [],
     speed: []
@@ -139,15 +149,15 @@ const getArticles = async (clearCache = false, runTimeout = false) => {
 
         articles.value = res.data.data
         const errorMessages = {
-            "BadGateway": "An error occurred, resulting in partial or no results.",
+            "BadGateway": "A Bad Gateway error occurred, resulting in partial or no results.",
             "Request timed out": "The request timed out, resulting in partial or no results.",
             "InternalServerError": "An error occurred on the server.",
-            "An error occurred while sending the request": "An error occurred while sending the request.",
+            "An error occurred while sending the request": "There was an issue sending your request.",
             "TooManyRequests": "The system is experiencing a high volume of requests.",
-            "Too Many Attempts": "The system is currently processing many requests.",
-            "System.Text.Json.JsonException": "The request could not be processed due to a data format error.",
-            "Service Unavailable": "System.Exception: The service is currently unavailable.",
-            "There is an error in XML document": "The request could not be processed due to an XML serialization error.",
+            "Too Many Attempts": "There are currently too many requests being processed.",
+            "System.Text.Json.JsonException": "The request could not be processed due to a data format issue.",
+            "Service Unavailable": "The service is temporarily unavailable.",
+            "There is an error in XML document": "The request could not be processed due to a data format issue.",
         };
 
         errors.value = res.data.errors.map((error) => {
@@ -156,7 +166,7 @@ const getArticles = async (clearCache = false, runTimeout = false) => {
                     return { provider: error.provider, response: message };
                 }
             }
-            return error;
+            return { provider: error.provider, response: 'An error occurred, resulting in partial or no results' }
         });
 
         articles.value = articles.value.map((article) => {
@@ -250,7 +260,9 @@ const orderBy = (column) => {
 }
 
 const resetFilters = () => {
-    Object.keys(filters).forEach((key) => {
+    Object.keys(filters)
+    .filter((key) => key !== 'productName')
+    .forEach((key) => {
         filters[key].value = null
     })
 
@@ -403,7 +415,7 @@ getArticles(false, true)
                                 <li>
                                     <template v-for="(selectedFilter, column) in selectedFilters">
                                         <Badge
-                                            v-for="value in (Array.isArray(selectedFilter.value) ? selectedFilter.value : [selectedFilter.value]).filter(v => v !== null)"
+                                            v-for="value in  column === 'productName' ? [] : (Array.isArray(selectedFilter.value) ? selectedFilter.value : [selectedFilter.value]).filter(v => v !== null)"
                                             :value="['speed', 'bearer'].includes(column) ? 'Min. ' + format.speed(value) : (['contractTermMonths'].includes(column) ? value + ' Months' : value)"
                                             class="px-3 py-1" data-toggle="tooltip" data-placement="top"
                                             :title="selectedFilter.name">
@@ -433,12 +445,12 @@ getArticles(false, true)
                     </div>
                     <div class="col-lg-2 col-12 p-0 pe-1">
                         <label for="filter-subprovider" class="form-label">Subprovider</label>
-                        <MultiSelect id="subprovider-multiselect" v-model="filters['connectivitySupplierName'].value"
-                            style="width:100%" :options="Object.keys(filterList.connectivitySupplierName)"
+                        <MultiSelect id="subprovider-multiselect" v-model="filters['connectivitySupplierGroup'].value"
+                            style="width:100%" :options="Object.keys(filterList.connectivitySupplierGroup)"
                             placeholder="All" class="me-3 custom-multiselect">
                             <template #option="slotProps">
                                 <div style="font-size:14px;line-height: 1.5rem;">{{ slotProps.option }}
-                                    ( {{ filterList.connectivitySupplierName[slotProps.option] }} )
+                                    ( {{ filterList.connectivitySupplierGroup[slotProps.option] }} )
                                 </div>
                             </template>
                         </MultiSelect>
@@ -674,11 +686,12 @@ getArticles(false, true)
                                         :alt="article.providerName" :title="article.providerName"
                                         :data-bs-original-title="article.providerName" v-tooltip /> </td>
                                 <td>
-                                    <img class="img-subprovider" @error="setAltImg"
-                                        :src="`/images/providers/${getSubproviderImage(article.connectivitySupplierName?.toLowerCase())}.png`"
-                                        :alt="article.connectivitySupplierName"
-                                        :title="article.connectivitySupplierName"
-                                        :data-bs-original-title="article.connectivitySupplierName" v-tooltip />
+                                   <img class="img-subprovider" @error="setAltImg"
+                                         :src="`/images/providers/${article.connectivitySupplierGroup?.replace(/ /g, '_').toLowerCase()}.png`"
+                                         :alt="article.connectivitySupplierName"
+                                         :title="article.connectivitySupplierName"
+                                         :data-bs-original-title="article.connectivitySupplierName" v-tooltip
+                                    />
                                 </td>
                                 <td>{{ bytesFormatter(article.bearer) }} </td>
                                 <td>{{ bytesFormatter(article.speed) }} </td>
