@@ -107,7 +107,7 @@ export const proceedOrder = async (order) => {
         try {
             let res = await axios.put('/api/orders/' + order.id, data)
             notyf.success('Order submited success');
-            return
+            window.location = '/dashboard'
         } catch (err) {
             notyf.error(err?.response?.data?.message ?? 'Something went wrong')
         }

@@ -84,4 +84,11 @@ describe('Creates a Connectivity quote', () => {
                 expect(items).to.equal(5);
             });
     })
+
+    it("I can Create an order from a quote", () => {
+        cy.visit("/")
+        cy.get("#datatable-btn-0-crete-order").click()
+        cy.get('.swal2-confirm').eq(0).click()
+        cy.get(".notyf").contains("Order created with success")
+    })
 })

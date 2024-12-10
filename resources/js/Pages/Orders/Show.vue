@@ -1,8 +1,8 @@
 <script setup>
 import { proceedOrder, rejectOrder } from '@/Composables/orders';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import {Head, Link, usePage} from '@inertiajs/vue3';
-import {reactive, ref} from "vue";
+import { Head, Link, usePage } from '@inertiajs/vue3';
+import { reactive, ref } from "vue";
 
 const page = usePage()
 const props = defineProps({
@@ -15,7 +15,7 @@ const getLeafNodesWithChildren = (objects) => {
         for (const item of items) {
             if (item.children && item.children.length > 0) {
                 findLeaves(item.children);
-} else {
+            } else {
                 leaves.push(item);
             }
         }
@@ -40,26 +40,31 @@ const orderTotal = (key) => {
 }
 
 const items = ref([
-    {label: 'Home', url: '/dashboard'},
-    {label: `Orders`, url: '/orders'},
-    {label: `Order #${props.order?.id} Preview`},
+    { label: 'Home', url: '/dashboard' },
+    { label: `Orders`, url: '/orders' },
+    { label: `Order #${props.order?.id} Preview` },
 ]);
 
 </script>
 
 <template>
-    <Head :title="'Preview Order #' + order.id"/>
+
+    <Head :title="'Preview Order #' + order.id" />
     <AuthenticatedLayout :order="order">
         <div class="row mb-3">
             <div class="col">
                 <Header title="Create a order" :breadcrumbs="items"></Header>
             </div>
             <div class="col" style="text-align: right">
-                <button :disabled="order.user_id && order.user_id !== page.props.auth.user.id" class="btn btn-secondary mx-2" @click="rejectOrder(props.order)">
+                <button id="reject-order-btn"
+                    :disabled="(order.user_id && order.user_id !== page.props.auth.user.id) || order.status !== 'REGISTRY'"
+                    class="btn btn-secondary mx-2" @click="rejectOrder(props.order)">
                     <font-awesome-icon :icon="['fas', 'x']"></font-awesome-icon>
                     Reject
                 </button>
-                <button :disabled="order.user_id && order.user_id !== page.props.auth.user.id" class="btn btn-primary mx-2" @click="proceedOrder(props.order)">
+                <button id="proceed-order-btn"
+                    :disabled="(order.user_id && order.user_id !== page.props.auth.user.id) || order.status !== 'REGISTRY'"
+                    class="btn btn-primary mx-2" @click="proceedOrder(props.order)">
                     <font-awesome-icon :icon="['fas', 'check']"></font-awesome-icon>
                     Proceed
                 </button>
@@ -117,67 +122,67 @@ const items = ref([
                                     <table class="table">
                                         <!-- Headers -->
                                         <thead>
-                                        <tr>
-                                            <th class="w-5">ID</th>
-                                            <th v-if="order.solution_type_id === 1"
-                                                class="text-center d-none d-xl-table-cell w-5">Provider
-                                            </th>
-                                            <th class="w-auto">Product</th>
-                                            <th class="text-center w-5">Months</th>
-                                            <th v-if="order.solution_type_id === 1"
-                                                class="d-none d-xl-table-cell text-center w-10"
-                                                style="white-space: nowrap;">Supplier Order Ref.
-                                            </th>
-                                            <th class="text-center w-10">Type</th>
-                                            <th class="text-center w-5">Qty</th>
-                                            <th class="text-center w-10">Price</th>
-                                            <th class="text-end w-10" style="white-space: nowrap;">Total Price</th>
-                                        </tr>
+                                            <tr>
+                                                <th class="w-5">ID</th>
+                                                <th v-if="order.solution_type_id === 1"
+                                                    class="text-center d-none d-xl-table-cell w-5">Provider
+                                                </th>
+                                                <th class="w-auto">Product</th>
+                                                <th class="text-center w-5">Months</th>
+                                                <th v-if="order.solution_type_id === 1"
+                                                    class="d-none d-xl-table-cell text-center w-10"
+                                                    style="white-space: nowrap;">Supplier Order Ref.
+                                                </th>
+                                                <th class="text-center w-10">Type</th>
+                                                <th class="text-center w-5">Qty</th>
+                                                <th class="text-center w-10">Price</th>
+                                                <th class="text-end w-10" style="white-space: nowrap;">Total Price</th>
+                                            </tr>
                                         </thead>
                                         <tbody>
-                                        <tr class="item-row"
-                                            v-for="(item, index) in order.items.filter((x) => x.price_plan && x.price_plan.code == 'MONTHLY')"
-                                            style="vertical-align: middle;">
-                                            <td class="position-relative">
-                                                {{ index + 1 }}
-                                            </td>
-                                            <td v-if="order.solution_type_id === 1"
-                                                class="text-center d-none d-xl-table-cell">
-                                                <img v-if="item.data?.providerKey" class="img-provider"
-                                                     @error="setAltImg"
-                                                     :src="`/images/providers/${item.data.providerKey}.png`"
-                                                     :alt="item.data.providerName" :title="item.data.providerName"/>
-                                            </td>
-                                            <td>
-                                                {{ item.name }}
-                                                <span v-if="item.data?.additionalInfo['Primary Router Model']"
-                                                      v-tooltip data-bs-toggle="tooltip" data-bs-placement="top"
-                                                      title="Primary Router Model"
-                                                      class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm router-model">
+                                            <tr class="item-row"
+                                                v-for="(item, index) in order.items.filter((x) => x.price_plan && x.price_plan.code == 'MONTHLY')"
+                                                style="vertical-align: middle;">
+                                                <td class="position-relative">
+                                                    {{ index + 1 }}
+                                                </td>
+                                                <td v-if="order.solution_type_id === 1"
+                                                    class="text-center d-none d-xl-table-cell">
+                                                    <img v-if="item.data?.providerKey" class="img-provider"
+                                                        @error="setAltImg"
+                                                        :src="`/images/providers/${item.data.providerKey}.png`"
+                                                        :alt="item.data.providerName" :title="item.data.providerName" />
+                                                </td>
+                                                <td>
+                                                    {{ item.name }}
+                                                    <span v-if="item.data?.additionalInfo['Primary Router Model']"
+                                                        v-tooltip data-bs-toggle="tooltip" data-bs-placement="top"
+                                                        title="Primary Router Model"
+                                                        class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm router-model">
                                                         <font-awesome-icon :icon="['fas', 'plug']"></font-awesome-icon>
                                                         {{ item.data.additionalInfo['Primary Router Model'] }}
                                                     </span>
-                                            </td>
-                                            <td class="text-center">
-                                                {{ item.contract_length }}
-                                            </td>
-                                            <td v-if="order.solution_type_id === 1"
-                                                class="d-none d-xl-table-cell text-center">
-                                                {{ item.data?.productCode }}
-                                            </td>
-                                            <td class="text-center">
-                                                Monthly
-                                            </td>
-                                            <td class="text-center">
-                                                {{ item.quantity }}
-                                            </td>
-                                            <td class="text-center">
-                                                {{ GBP.format(item.price) }}
-                                            </td>
-                                            <td class="text-end">
-                                                {{ GBP.format(item.total) }}
-                                            </td>
-                                        </tr>
+                                                </td>
+                                                <td class="text-center">
+                                                    {{ item.contract_length }}
+                                                </td>
+                                                <td v-if="order.solution_type_id === 1"
+                                                    class="d-none d-xl-table-cell text-center">
+                                                    {{ item.data?.productCode }}
+                                                </td>
+                                                <td class="text-center">
+                                                    Monthly
+                                                </td>
+                                                <td class="text-center">
+                                                    {{ item.quantity }}
+                                                </td>
+                                                <td class="text-center">
+                                                    {{ GBP.format(item.price) }}
+                                                </td>
+                                                <td class="text-end">
+                                                    {{ GBP.format(item.total) }}
+                                                </td>
+                                            </tr>
                                         </tbody>
                                     </table>
                                     <br>
@@ -185,64 +190,64 @@ const items = ref([
                                     <table class="table">
                                         <!-- Headers -->
                                         <thead>
-                                        <tr>
-                                            <th class="w-5">ID</th>
-                                            <th v-if="order.solution_type_id === 1"
-                                                class="text-center d-none d-xl-table-cell w-5">Provider
-                                            </th>
-                                            <th class="w-auto">Product</th>
-                                            <th v-if="order.solution_type_id === 1"
-                                                class="d-none d-xl-table-cell w-10 text-center"
-                                                style="white-space: nowrap;">Supplier
-                                                Order Ref.
-                                            </th>
-                                            <th class="text-center w-10">Type</th>
-                                            <th class="text-center w-5">Qty</th>
-                                            <th class="text-center w-10">Price</th>
-                                            <th class="text-end w-10" style="white-space: nowrap;">Total Price</th>
-                                        </tr>
+                                            <tr>
+                                                <th class="w-5">ID</th>
+                                                <th v-if="order.solution_type_id === 1"
+                                                    class="text-center d-none d-xl-table-cell w-5">Provider
+                                                </th>
+                                                <th class="w-auto">Product</th>
+                                                <th v-if="order.solution_type_id === 1"
+                                                    class="d-none d-xl-table-cell w-10 text-center"
+                                                    style="white-space: nowrap;">Supplier
+                                                    Order Ref.
+                                                </th>
+                                                <th class="text-center w-10">Type</th>
+                                                <th class="text-center w-5">Qty</th>
+                                                <th class="text-center w-10">Price</th>
+                                                <th class="text-end w-10" style="white-space: nowrap;">Total Price</th>
+                                            </tr>
                                         </thead>
                                         <tbody>
-                                        <tr class="item-row"
-                                            v-for="(item, index) in order.items.filter((x) => x.price_plan && x.price_plan.code == 'SINGLE')"
-                                            style="vertical-align: middle;">
-                                            <td class="position-relative">
-                                                {{ index + 1 }}
-                                            </td>
-                                            <td v-if="order.solution_type_id === 1"
-                                                class="text-center d-none d-xl-table-cell">
-                                                <img v-if="item.data?.providerKey" class="img-provider"
-                                                     @error="setAltImg"
-                                                     :src="`/images/providers/${item.data.providerKey}.png`"
-                                                     :alt="item.data.providerName" :title="item.data.providerName"/>
-                                            </td>
-                                            <td>
-                                                {{ item.name }}
-                                                <span v-if="item.data?.additionalInfo['Primary Router Model']"
-                                                      v-tooltip data-bs-toggle="tooltip" data-bs-placement="top"
-                                                      title="Primary Router Model"
-                                                      class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm router-model">
+                                            <tr class="item-row"
+                                                v-for="(item, index) in order.items.filter((x) => x.price_plan && x.price_plan.code == 'SINGLE')"
+                                                style="vertical-align: middle;">
+                                                <td class="position-relative">
+                                                    {{ index + 1 }}
+                                                </td>
+                                                <td v-if="order.solution_type_id === 1"
+                                                    class="text-center d-none d-xl-table-cell">
+                                                    <img v-if="item.data?.providerKey" class="img-provider"
+                                                        @error="setAltImg"
+                                                        :src="`/images/providers/${item.data.providerKey}.png`"
+                                                        :alt="item.data.providerName" :title="item.data.providerName" />
+                                                </td>
+                                                <td>
+                                                    {{ item.name }}
+                                                    <span v-if="item.data?.additionalInfo['Primary Router Model']"
+                                                        v-tooltip data-bs-toggle="tooltip" data-bs-placement="top"
+                                                        title="Primary Router Model"
+                                                        class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm router-model">
                                                         <font-awesome-icon :icon="['fas', 'plug']"></font-awesome-icon>
                                                         {{ item.data.additionalInfo['Primary Router Model'] }}
                                                     </span>
-                                            </td>
-                                            <td v-if="order.solution_type_id === 1"
-                                                class="d-none d-xl-table-cell text-center">
-                                                {{ item.data?.productCode }}
-                                            </td>
-                                            <td class="text-center">
-                                                Single
-                                            </td>
-                                            <td class="text-center">
-                                                {{ item.quantity }}
-                                            </td>
-                                            <td class="text-center">
-                                                {{ GBP.format(item.price) }}
-                                            </td>
-                                            <td class="text-end">
-                                                {{ GBP.format(item.total) }}
-                                            </td>
-                                        </tr>
+                                                </td>
+                                                <td v-if="order.solution_type_id === 1"
+                                                    class="d-none d-xl-table-cell text-center">
+                                                    {{ item.data?.productCode }}
+                                                </td>
+                                                <td class="text-center">
+                                                    Single
+                                                </td>
+                                                <td class="text-center">
+                                                    {{ item.quantity }}
+                                                </td>
+                                                <td class="text-center">
+                                                    {{ GBP.format(item.price) }}
+                                                </td>
+                                                <td class="text-end">
+                                                    {{ GBP.format(item.total) }}
+                                                </td>
+                                            </tr>
                                         </tbody>
                                     </table>
                                     <br>
@@ -253,38 +258,38 @@ const items = ref([
                                             <div class="col">
                                                 <table class="table">
                                                     <thead>
-                                                    <tr>
-                                                        <th></th>
-                                                        <th>NET</th>
-                                                        <th>VAT (20%)</th>
-                                                        <th>GROSS</th>
-                                                    </tr>
+                                                        <tr>
+                                                            <th></th>
+                                                            <th>NET</th>
+                                                            <th>VAT (20%)</th>
+                                                            <th>GROSS</th>
+                                                        </tr>
                                                     </thead>
                                                     <tbody>
-                                                    <tr>
-                                                        <th>Total Monthly</th>
-                                                        <td id="total_monthly_net" class="text-end">
-                                                            {{ GBP.format(orderTotal('MONTHLY')) }}
-                                                        </td>
-                                                        <td id="total_monthly_vat" class="text-end">
-                                                            {{ GBP.format(orderTotal('MONTHLY') * .20) }}
-                                                        </td>
-                                                        <td id="total_monthly_gross" class="text-end">
-                                                            {{ GBP.format(orderTotal('MONTHLY') * 1.20) }}
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <th>Total One-off Costs</th>
-                                                        <td id="total_net" class="text-end">
-                                                            {{ GBP.format(order.total) }}
-                                                        </td>
-                                                        <td id="total_vat" class="text-end">
-                                                            {{ GBP.format(order.total_vat) }}
-                                                        </td>
-                                                        <td id="total_gross" class="text-end">
-                                                            {{ GBP.format(order.total_gross) }}
-                                                        </td>
-                                                    </tr>
+                                                        <tr>
+                                                            <th>Total Monthly</th>
+                                                            <td id="total_monthly_net" class="text-end">
+                                                                {{ GBP.format(orderTotal('MONTHLY')) }}
+                                                            </td>
+                                                            <td id="total_monthly_vat" class="text-end">
+                                                                {{ GBP.format(orderTotal('MONTHLY') * .20) }}
+                                                            </td>
+                                                            <td id="total_monthly_gross" class="text-end">
+                                                                {{ GBP.format(orderTotal('MONTHLY') * 1.20) }}
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <th>Total One-off Costs</th>
+                                                            <td id="total_net" class="text-end">
+                                                                {{ GBP.format(order.total) }}
+                                                            </td>
+                                                            <td id="total_vat" class="text-end">
+                                                                {{ GBP.format(order.total_vat) }}
+                                                            </td>
+                                                            <td id="total_gross" class="text-end">
+                                                                {{ GBP.format(order.total_gross) }}
+                                                            </td>
+                                                        </tr>
                                                     </tbody>
                                                 </table>
                                             </div>

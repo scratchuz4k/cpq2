@@ -93,7 +93,7 @@ beforeEach(function () {
         'price' => 0,
         'price_monthly' => 13.59,
     ];
-    
+
     $this->post('api/quote-items', $quote_item);
     $this->quote = $this->get('api/quotes')->json();
 
@@ -116,9 +116,9 @@ it('Assert Order and Quote status equals rejected on Order reject', function () 
     $order = Order::first();
 
     $data = [
-        'note' => 'Rejection Note', 
-        'status' => OrderStatusesEnum::REJECTED->name, 
-        'user_id' => $this->order_manager->id, 
+        'note' => 'Rejection Note',
+        'status' => OrderStatusesEnum::REJECTED->name,
+        'user_id' => $this->order_manager->id,
     ];
     $response = $this->put('api/orders/'. $order->id, $data);
     $updated_order = $response->json();
@@ -126,7 +126,7 @@ it('Assert Order and Quote status equals rejected on Order reject', function () 
     $this->assertEquals($updated_order['user_id'], $this->order_manager->id);
     $this->assertEquals($updated_order['status'], OrderStatusesEnum::REJECTED->name);
     $this->assertEquals($updated_order['note'], $data['note']);
-    
+
     $quote = Quote::find($order->quote_id);
     $this->assertEquals($quote['status'], QuoteStatusesEnum::REJECTED->name);
 });
@@ -136,15 +136,15 @@ it('Assert Order and Quote status equals ordered on Order Approval', function ()
     $order = Order::first();
 
     $data = [
-        'status' => OrderStatusesEnum::ORDERED->name, 
-        'user_id' => $this->order_manager->id, 
+        'status' => OrderStatusesEnum::ORDERED->name,
+        'user_id' => $this->order_manager->id,
     ];
     $response = $this->put('api/orders/'. $order->id, $data);
     $updated_order = $response->json();
 
     $this->assertEquals($updated_order['user_id'], $this->order_manager->id);
     $this->assertEquals($updated_order['status'], OrderStatusesEnum::ORDERED->name);
-    
+
     $quote = Quote::find($order->quote_id);
     $this->assertEquals($quote['status'], QuoteStatusesEnum::ORDERED->name);
 });
