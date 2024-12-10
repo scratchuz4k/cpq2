@@ -9,7 +9,7 @@ const props = defineProps({
     modelValue: Object,
     pricePlans: Array
 })
-const showShare = ref(false)
+const showShareDialog = ref(false)
 const isLoading = ref(false)
 
 const getLeafNodesWithChildren = (objects) => {
@@ -200,7 +200,7 @@ const quoteTotal = (key) => {
 }
 
 const openShare = () => {
-    showShare.value = true
+    showShareDialog.value = true
 }
 
 const createSharedLink = async () => {
@@ -376,10 +376,11 @@ const items = ref([
                             </tr>
                             <tr v-else>
                                 <th colspan="10">
-                                    <div role="button" id="btn-recurring-add" class="d-flex justify-content-center align-items-center px-2 py-1"
+                                    <div role="button" id="btn-recurring-add"
+                                        class="d-flex justify-content-center align-items-center px-2 py-1"
                                         style="font-size: 12px;" @click="() => recurringNewLine.show = true">
-                                            <span>Add New</span>
-                                            <font-awesome-icon class="ms-2" :icon="['fas', 'plus']" />
+                                        <span>Add New</span>
+                                        <font-awesome-icon class="ms-2" :icon="['fas', 'plus']" />
                                     </div>
                                 </th>
                             </tr>
@@ -493,10 +494,11 @@ const items = ref([
                             </tr>
                             <tr v-else>
                                 <th colspan="10">
-                                    <div role="button" id="btn-one_off-add" class="d-flex justify-content-center align-items-center px-2 py-1"
+                                    <div role="button" id="btn-one_off-add"
+                                        class="d-flex justify-content-center align-items-center px-2 py-1"
                                         style="font-size: 12px;" @click="() => oneOffNewLine.show = true">
-                                            <span>Add New</span>
-                                            <font-awesome-icon class="ms-2" :icon="['fas', 'plus']" />
+                                        <span>Add New</span>
+                                        <font-awesome-icon class="ms-2" :icon="['fas', 'plus']" />
                                     </div>
                                 </th>
                             </tr>
@@ -515,11 +517,12 @@ const items = ref([
                         </p>
                     </div>
                     <div class="d-flex justify-content-between">
-                        <a id="btn-previous" class="btn text-primary" :href="route('quotes.edit', { quote: quote.id }) + '?step=2'">
+                        <a id="btn-previous" class="btn text-primary"
+                            :href="route('quotes.edit', { quote: quote.id }) + '?step=2'">
                             <font-awesome-icon class="me-2" :icon="['fas', 'arrow-left']"></font-awesome-icon>
                             Previous</a>
                         <div>
-                            <button id="btn-shareable-open"  class="btn btn-outline-primary me-2" @click="openShare()">
+                            <button id="btn-shareable-open" class="btn btn-outline-primary me-2" @click="openShare()">
                                 <font-awesome-icon :icon="['fas', 'share-nodes']"></font-awesome-icon>
                                 Share
                             </button>
@@ -569,28 +572,33 @@ const items = ref([
                     </div>
                     <div class="price-mobile-sidebar commission-calculator px-4 pt-4 pb-2 mb-3">
                         <h3 class="mb-3">Commission Calculator</h3>
-                        <p class="mb-2" style="font-size: 14px;"> Currently, you will make <b>{{ GBP.format(quote.commission_value) }}</b>
+                        <p class="mb-2" style="font-size: 14px;"> Currently, you will make <b>{{
+                            GBP.format(quote.commission_value)
+                                }}</b>
                             commission and
                             <b>{{ quote.margin.toFixed(2) }} %</b>
                             margin on
-                            this quote.</p>
+                            this quote.
+                        </p>
                         <div class="p-3 mb-3" style="background: #E9EDF0;">
                             <div class="mb-3">
                                 <label class="form-label">Margin</label>
                                 <div class="input-group">
                                     <input id="input-margin-order" class="form-control"
                                         :value="quote.margin.toFixed(2) + ' %'" disabled>
-                                    <span class="input-group-text"><font-awesome-icon :icon="['fas', 'lock']"></font-awesome-icon></span>
+                                    <span class="input-group-text"><font-awesome-icon
+                                            :icon="['fas', 'lock']"></font-awesome-icon></span>
                                 </div>
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">Commission <b>(<span id="order-tax-commission">
-                                        {{ quote.commission_rate }}</span>%)</b>
+                                            {{ quote.commission_rate }}</span>%)</b>
                                 </label>
                                 <div class="input-group">
                                     <input id="input-commission_value-order" class="form-control"
                                         :value="GBP.format(quote.commission_value)" disabled>
-                                    <span class="input-group-text"><font-awesome-icon :icon="['fas', 'lock']"></font-awesome-icon></span>
+                                    <span class="input-group-text"><font-awesome-icon
+                                            :icon="['fas', 'lock']"></font-awesome-icon></span>
                                 </div>
                             </div>
                         </div>
@@ -599,23 +607,26 @@ const items = ref([
             </div>
         </div>
 
-        <Dialog v-model:visible="showShare" modal :style="{ width: '40rem'}" :draggable="false">
+        <Dialog v-model:visible="showShareDialog" modal :style="{ width: '40rem' }" :draggable="false">
             <template #header>
                 <h2>Share quote</h2>
             </template>
             <div v-if="!shareLink.link">
                 <div class="mb-3">
                     <label for="expiration_data" class="form-label">Expiration Date</label>
-                    <DatePicker v-model="shareLink.expires_at" dateFormat="dd-mm-yy" :minDate="dateNow.toJSDate()" showIcon fluid iconDisplay="input" />
+                    <DatePicker v-model="shareLink.expires_at" dateFormat="dd-mm-yy" :minDate="dateNow.toJSDate()"
+                        showIcon fluid iconDisplay="input" />
                 </div>
                 <div class="mb-3">
                     <label for="expiration_data" class="form-label">Password</label>
-                    <input id="input-shareable-password" type="text" class="form-control" v-model="shareLink.password" />
+                    <input id="input-shareable-password" type="text" class="form-control"
+                        v-model="shareLink.password" />
                 </div>
 
                 <div class="mb-3">
-                    <button id="btn-shareable-create"  class="btn btn-primary" @click="createSharedLink()"> Create</button>
-                    <button class="btn" @click="() => showShare= !showShare"> Cancel</button>
+                    <button id="btn-shareable-create" class="btn btn-primary" @click="createSharedLink()">
+                        Create</button>
+                    <button class="btn" @click="() => showShareDialog = !showShareDialog"> Cancel</button>
                 </div>
             </div>
             <div v-else>
@@ -624,11 +635,11 @@ const items = ref([
                         Anyone with this link can view the quote.
                     </label>
                     <div class="input-group mb-3">
-                        <input id="input-shareable-link" type="text" class="form-control" v-model="shareLink.link" disabled />
+                        <input id="input-shareable-link" type="text" class="form-control" v-model="shareLink.link"
+                            disabled />
 
                         <button class="input-group-text" @click="copyToClipboard(shareLink.link)"><font-awesome-icon
-                                role="button" :icon="['far', 'clipboard']"
-                                @click="edit(p)" /></button>
+                                role="button" :icon="['far', 'clipboard']" @click="edit(p)" /></button>
                     </div>
                     <p class="small">
                         Expires at: {{ shareLink.expires_at }}
@@ -698,8 +709,7 @@ input[type="number"] {
 
 .commission-calculator .input-group .input-group-text {
     background-color: #dfe3e6;
-    color:#646464;
+    color: #646464;
     border-color: #bdbdbd;
 }
-
 </style>
