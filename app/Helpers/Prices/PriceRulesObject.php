@@ -3,10 +3,12 @@
 namespace App\Helpers\Prices;
 
 use App\Models\User;
+use App\Models\Tenant;
 use App\Models\Account;
 use App\Models\Product;
 use App\Models\Supplier;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Auth;
 
 class PriceRulesObject
 {
@@ -15,6 +17,7 @@ class PriceRulesObject
     public ?User $user;
     public ?Supplier $supplier;
     public ?Account $account;
+    public Tenant $tenant;
 
     public function __construct(
         $product = null,
@@ -26,6 +29,7 @@ class PriceRulesObject
         $this->user = $user;
         $this->supplier = $supplier;
         $this->account = $account;
+        $this->tenant = Auth::user()->currentTenant;
         $this->spas = collect([]);
     }
 }
