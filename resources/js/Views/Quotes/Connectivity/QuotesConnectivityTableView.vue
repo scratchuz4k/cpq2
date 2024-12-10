@@ -28,7 +28,7 @@ const filters = reactive({
         value: null,
         name: 'Provider'
     },
-    connectivitySupplierName: {
+    connectivitySupplierGroup: {
         operator: "in",
         value: null,
         name: 'Subprovider'
@@ -52,7 +52,7 @@ const filters = reactive({
 
 const filterList = reactive({
     providerName: [],
-    connectivitySupplierName: [],
+    connectivitySupplierGroup: [],
     contractTermMonths: [],
     bearer: [],
     speed: []
@@ -424,12 +424,12 @@ getArticles(false, true)
                     </div>
                     <div class="col-lg-2 col-12 p-0 pe-1">
                         <label for="filter-subprovider" class="form-label">Subprovider</label>
-                        <MultiSelect id="subprovider-multiselect" v-model="filters['connectivitySupplierName'].value"
-                            style="width:100%" :options="Object.keys(filterList.connectivitySupplierName)"
+                        <MultiSelect id="subprovider-multiselect" v-model="filters['connectivitySupplierGroup'].value"
+                            style="width:100%" :options="Object.keys(filterList.connectivitySupplierGroup)"
                             placeholder="All" class="me-3 custom-multiselect">
                             <template #option="slotProps">
                                 <div style="font-size:14px;line-height: 1.5rem;">{{ slotProps.option }}
-                                    ( {{ filterList.connectivitySupplierName[slotProps.option] }} )
+                                    ( {{ filterList.connectivitySupplierGroup[slotProps.option] }} )
                                 </div>
                             </template>
                         </MultiSelect>
@@ -665,11 +665,12 @@ getArticles(false, true)
                                         :alt="article.providerName" :title="article.providerName"
                                         :data-bs-original-title="article.providerName" v-tooltip /> </td>
                                 <td>
-                                    <img class="img-subprovider" @error="setAltImg"
-                                        :src="`/images/providers/${getSubproviderImage(article.connectivitySupplierName?.toLowerCase())}.png`"
-                                        :alt="article.connectivitySupplierName"
-                                        :title="article.connectivitySupplierName"
-                                        :data-bs-original-title="article.connectivitySupplierName" v-tooltip />
+                                   <img class="img-subprovider" @error="setAltImg"
+                                         :src="`/images/providers/${article.connectivitySupplierGroup?.replace(/ /g, '_').toLowerCase()}.png`"
+                                         :alt="article.connectivitySupplierName"
+                                         :title="article.connectivitySupplierName"
+                                         :data-bs-original-title="article.connectivitySupplierName" v-tooltip
+                                    />
                                 </td>
                                 <td>{{ bytesFormatter(article.bearer) }} </td>
                                 <td>{{ bytesFormatter(article.speed) }} </td>

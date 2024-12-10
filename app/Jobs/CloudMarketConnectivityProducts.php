@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Repositories\CloudMarketRepository;
 use Exception;
 use JsonMachine\Items;
 use Illuminate\Support\Str;
@@ -26,7 +27,7 @@ class CloudMarketConnectivityProducts implements ShouldQueue, TenantAware
     public $started_at = null;
     public $tempFilters = [
         "providerName" => [],
-        "connectivitySupplierName" => [],
+        "connectivitySupplierGroup" => [],
         "contractTermMonths" => [],
         "bearer" => [],
         "speed" => []
@@ -42,6 +43,7 @@ class CloudMarketConnectivityProducts implements ShouldQueue, TenantAware
      */
     public function handle(): void
     {
+        $cloudMarketRepository = new CloudMarketRepository();
         $res = CloudMarketApi::getQuotes($this->connectivityType, $this->address);
         $this->started_at = now();
         if (!$this->file->exists()) {
@@ -66,6 +68,7 @@ class CloudMarketConnectivityProducts implements ShouldQueue, TenantAware
             }
 
             $temp = (array)$value;
+            $temp['connectivitySupplierGroup'] = $cloudMarketRepository->getConsolidatedProviderGroup($temp['connectivitySupplierName']);
             $temp["code"] = "";
             foreach (array_keys($temp) as $itemKey) {
                 if (!(is_string($temp[$itemKey]) || is_numeric($temp[$itemKey]))) {
