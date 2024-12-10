@@ -164,7 +164,7 @@ getData()
             </div>
         </template>
         <Column v-for="(column, key) in columns.filter(x => !x.hide)" :field="column.data" :style="column.style">
-            <template #header>
+            <template #header v-if="column.data != 'actions'">
                 <div class="d-flex justify-content-between align-items-center w-100 pe-3 position-relative">
                     <b class="column-title sortable d-inline-flex align-items-center" @click="sortBy(column.data)"
                         :style="{ textDecoration: column.data == form.orderBy ? 'underline' : 'none' }">

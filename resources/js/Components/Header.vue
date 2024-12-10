@@ -11,7 +11,7 @@
     <div class="my-2">
         <Breadcrumb :model="breadcrumbs">
             <template #item="{ item, props }">
-                <a v-if="item.url" :href="item.url" :target="item.target" v-bind="props.action">
+                <a v-if="item.url && item.url !== '#'" :href="item.url" :target="item.target" v-bind="props.action">
                     <span class="text-surface-700 dark:text-surface-0">{{ item.label }}</span>
                 </a>
                 <p v-else class="text-surface-700 dark:text-surface-0 m-0 font-bold" :href="item.url">

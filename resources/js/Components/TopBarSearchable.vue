@@ -63,6 +63,9 @@ import Dialog from 'primevue/dialog';
 import axios from 'axios';
 import { reactive, ref, watch } from 'vue'
 import queryString from 'query-string';
+import { usePage } from '@inertiajs/vue3';
+
+const page = usePage()
 
 const visible = ref(false);
 const showSearch = () => {
@@ -84,6 +87,7 @@ const results = reactive({
 
 
 const searchCloudMarket = _.debounce(async () => {
+    debugger
     if (!visible.value || !search.value) {
         return
     }

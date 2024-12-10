@@ -1,8 +1,10 @@
 <script setup>
+import { proceedOrder, rejectOrder } from '@/Composables/orders';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import {Head, Link} from '@inertiajs/vue3';
+import {Head, Link, usePage} from '@inertiajs/vue3';
 import {reactive, ref} from "vue";
 
+const page = usePage()
 const props = defineProps({
     order: Object,
 });
@@ -22,7 +24,7 @@ const getLeafNodesWithChildren = (objects) => {
     findLeaves(objects);
     return leaves;
 }
-debugger
+
 const order = reactive(props.order)
 Object.assign(order.items, getLeafNodesWithChildren(order.items))
 
@@ -39,19 +41,8 @@ const orderTotal = (key) => {
 
 const items = ref([
     {label: 'Home', url: '/dashboard'},
-    {
-        label: `Order #${props.order?.id}`,
-        url: props.order
-            ? (['REGISTRY', 'ORDERED'].includes(props.order.status)) ? '#' : `/orders/${props.order.id}/edit`
-            : '#'
-    },
-    {
-        label: `Summary`,
-        url: props.order
-            ? (['REGISTRY', 'ORDERED'].includes(props.order.status)) ? '#' : `/orders/${props.order.id}`
-            : '#'
-    },
-    {label: 'Preview PDF'}
+    {label: `Orders`, url: '/orders'},
+    {label: `Order #${props.order?.id} Preview`},
 ]);
 
 </script>
@@ -64,10 +55,14 @@ const items = ref([
                 <Header title="Create a order" :breadcrumbs="items"></Header>
             </div>
             <div class="col" style="text-align: right">
-                <a :href="route('orders.download', { order: order.id })" class="btn btn-secondary mx-2">
-                    <font-awesome-icon :icon="['fas', 'file-pdf']"></font-awesome-icon>
-                    Download PDF
-                </a>
+                <button :disabled="order.user_id && order.user_id !== page.props.auth.user.id" class="btn btn-secondary mx-2" @click="rejectOrder(props.order)">
+                    <font-awesome-icon :icon="['fas', 'x']"></font-awesome-icon>
+                    Reject
+                </button>
+                <button :disabled="order.user_id && order.user_id !== page.props.auth.user.id" class="btn btn-primary mx-2" @click="proceedOrder(props.order)">
+                    <font-awesome-icon :icon="['fas', 'check']"></font-awesome-icon>
+                    Proceed
+                </button>
             </div>
         </div>
         <div class="panel">

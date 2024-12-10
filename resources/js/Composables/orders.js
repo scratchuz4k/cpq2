@@ -9,7 +9,7 @@ export const createOrder = async (id, getData = null) => {
     })
 
     if (['cancel', 'backdrop'].includes(result.dismiss)) {
-        return
+        return false
     }
     try {
         let res = await axios.put('/api/quotes/' + id,
@@ -20,9 +20,10 @@ export const createOrder = async (id, getData = null) => {
             getData();
         }
         notyf.success('Order created with success');
-        return
+        return true
     } catch (err) {
         notyf.error(err?.response?.data?.message ?? 'Something went wrong')
+        return false
     }
 }
 

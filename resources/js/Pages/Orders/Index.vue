@@ -64,8 +64,8 @@ const items = ref([
                     </template>
                     <template #assign_order="{ data, value, index, getData }">
                         <div class="d-flex justify-content-end">
-                            <button :disabled="data.user_id != null" :id="'datatable-btn-' + index + '-assign-order'" @click="assignOrder(data.id, getData)"
-                                     class="btn px-0 py-2 border-0">
+                            <button v-if="data.user_id === null" :id="'datatable-btn-' + index + '-assign-order'" @click="assignOrder(data.id, getData)"
+                                     class="btn px-0 py-0 border-0">
                                 <font-awesome-icon :icon="['fas', 'user-plus']" />
                             </button>
                         </div>

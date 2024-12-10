@@ -1,7 +1,7 @@
 <script setup>
 import { Link, router } from '@inertiajs/vue3';
 import { ref, reactive } from 'vue'
-import {createOrder} from "@/Composables/orders.js";
+import { createOrder } from "@/Composables/orders.js";
 import Dialog from "primevue/dialog";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 
@@ -206,8 +206,11 @@ const quoteTotal = (key) => {
 const disableButtonSendToOrder = ref(false)
 const createOrderAndRedirect = async (id) => {
     disableButtonSendToOrder.value = true
-    await createOrder(id)
-    window.location = '/dashboard'
+    const res = await createOrder(id)
+    if (!res) {
+        window.location = '/dashboard'
+    }
+    disableButtonSendToOrder.value = false
 }
 
 getHardwareProducts()
@@ -357,10 +360,11 @@ const items = ref([
                             </tr>
                             <tr v-else>
                                 <th colspan="10">
-                                    <div role="button" id="btn-recurring-add" class="d-flex justify-content-center align-items-center px-2 py-1"
+                                    <div role="button" id="btn-recurring-add"
+                                        class="d-flex justify-content-center align-items-center px-2 py-1"
                                         style="font-size: 12px;" @click="() => recurringNewLine.show = true">
-                                            <span>Add New</span>
-                                            <font-awesome-icon class="ms-2" :icon="['fas', 'plus']" />
+                                        <span>Add New</span>
+                                        <font-awesome-icon class="ms-2" :icon="['fas', 'plus']" />
                                     </div>
                                 </th>
                             </tr>
@@ -474,10 +478,11 @@ const items = ref([
                             </tr>
                             <tr v-else>
                                 <th colspan="10">
-                                    <div role="button" id="btn-one_off-add" class="d-flex justify-content-center align-items-center px-2 py-1"
+                                    <div role="button" id="btn-one_off-add"
+                                        class="d-flex justify-content-center align-items-center px-2 py-1"
                                         style="font-size: 12px;" @click="() => oneOffNewLine.show = true">
-                                            <span>Add New</span>
-                                            <font-awesome-icon class="ms-2" :icon="['fas', 'plus']" />
+                                        <span>Add New</span>
+                                        <font-awesome-icon class="ms-2" :icon="['fas', 'plus']" />
                                     </div>
                                 </th>
                             </tr>
@@ -496,7 +501,8 @@ const items = ref([
                         </p>
                     </div>
                     <div class="d-flex justify-content-between">
-                        <a id="btn-previous" class="btn text-primary" :href="route('quotes.edit', { quote: quote.id }) + '?step=2'">
+                        <a id="btn-previous" class="btn text-primary"
+                            :href="route('quotes.edit', { quote: quote.id }) + '?step=2'">
                             <font-awesome-icon class="me-2" :icon="['fas', 'arrow-left']"></font-awesome-icon>
                             Previous</a>
                         <div>
@@ -509,7 +515,8 @@ const items = ref([
                                 <font-awesome-icon class="me-2" :icon="['fas', 'envelope']">
                                 </font-awesome-icon> Email this quote
                             </button>
-                            <button :disabled="disableButtonSendToOrder" class="btn btn-primary" @click="createOrderAndRedirect(quote.id)">
+                            <button :disabled="disableButtonSendToOrder" class="btn btn-primary"
+                                @click="createOrderAndRedirect(quote.id)">
                                 <font-awesome-icon class="me-2" :icon="['fas', 'thumbtack']">
                                 </font-awesome-icon>Send to Order
                             </button>
@@ -527,13 +534,14 @@ const items = ref([
                             Email: firstname.lastname@gmail.com
                         </div>
                     </InfoBox>
-                    <InfoBox v-if="quote.orders.length>0">
+                    <InfoBox v-if="quote.orders.length > 0">
                         <div style="font-size: 14px;">
                             <div class="mb-3">
                                 <h6>An Order related to this Quote was
                                     <span class="badge text-bg-secondary">{{ quote.status }}</span>
                                 </h6>
-                                <button class="btn btn-sm btn-primary" @click="showModal = true">See Rejection Notes</button>
+                                <button class="btn btn-sm btn-primary" @click="showModal = true">See Rejection
+                                    Notes</button>
                             </div>
                         </div>
                     </InfoBox>
@@ -560,28 +568,33 @@ const items = ref([
                     </div>
                     <div class="price-mobile-sidebar commission-calculator px-4 pt-4 pb-2 mb-3">
                         <h3 class="mb-3">Commission Calculator</h3>
-                        <p class="mb-2" style="font-size: 14px;"> Currently, you will make <b>{{ GBP.format(quote.commission_value) }}</b>
+                        <p class="mb-2" style="font-size: 14px;"> Currently, you will make <b>{{
+                            GBP.format(quote.commission_value)
+                                }}</b>
                             commission and
                             <b>{{ quote.margin.toFixed(2) }} %</b>
                             margin on
-                            this quote.</p>
+                            this quote.
+                        </p>
                         <div class="p-3 mb-3" style="background: #E9EDF0;">
                             <div class="mb-3">
                                 <label class="form-label">Margin</label>
                                 <div class="input-group">
                                     <input id="input-margin-order" class="form-control"
                                         :value="quote.margin.toFixed(2) + ' %'" disabled>
-                                    <span class="input-group-text"><font-awesome-icon :icon="['fas', 'lock']"></font-awesome-icon></span>
+                                    <span class="input-group-text"><font-awesome-icon
+                                            :icon="['fas', 'lock']"></font-awesome-icon></span>
                                 </div>
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">Commission <b>(<span id="order-tax-commission">
-                                        {{ quote.commission_rate }}</span>%)</b>
+                                            {{ quote.commission_rate }}</span>%)</b>
                                 </label>
                                 <div class="input-group">
                                     <input id="input-commission_value-order" class="form-control"
                                         :value="GBP.format(quote.commission_value)" disabled>
-                                    <span class="input-group-text"><font-awesome-icon :icon="['fas', 'lock']"></font-awesome-icon></span>
+                                    <span class="input-group-text"><font-awesome-icon
+                                            :icon="['fas', 'lock']"></font-awesome-icon></span>
                                 </div>
                             </div>
                         </div>
@@ -590,23 +603,25 @@ const items = ref([
             </div>
         </div>
         <Dialog v-model:visible="showModal" modal :style="{ marginTop: '4rem' }"
-                :breakpoints="{ '1199px': '75vw', '575px': '90vw' }" :draggable="false" position="top">
+            :breakpoints="{ '1199px': '75vw', '575px': '90vw' }" :draggable="false" position="top">
             <div class="panel px-3">
                 <div class="row">
                     <h2>Rejected Reasons</h2>
                     <table class="table reject-reasons-table my-4">
                         <thead>
-                        <tr>
-                            <th>Order</th>
-                            <th>Note</th>
-                        </tr>
+                            <tr>
+                                <th>Order</th>
+                                <th>Note</th>
+                            </tr>
                         </thead>
 
                         <tbody>
-                        <tr v-for="order in quote.orders">
-                            <td>#{{ order.id }}</td>
-                            <td>{{ order.note }}</td>
-                        </tr>
+                            <tr v-for="order in quote.orders">
+                                <td>#{{ order.id }}</td>
+                                <td>
+                                    <pre class="custom-pre">{{ order.note }}</pre>
+                                </td>
+                            </tr>
                         </tbody>
                     </table>
 
@@ -661,7 +676,7 @@ input[type="number"] {
 }
 
 .reject-reasons-table tr th,
-.reject-reasons-table tr td{
+.reject-reasons-table tr td {
     padding: 1rem !important;
 }
 
@@ -678,12 +693,13 @@ input[type="number"] {
 
 .commission-calculator .input-group .input-group-text {
     background-color: #dfe3e6;
-    color:#646464;
+    color: #646464;
     border-color: #bdbdbd;
 }
 
-.p-dialog-header {
-    justify-content: end;
+.custom-pre {
+    font-family: inherit;
+    white-space: pre-wrap;
+    word-wrap: break-word;
 }
-
 </style>
