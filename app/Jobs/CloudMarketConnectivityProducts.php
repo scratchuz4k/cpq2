@@ -69,8 +69,8 @@ class CloudMarketConnectivityProducts implements ShouldQueue, TenantAware
 
             $temp = (array)$value;
             $temp["providerKey"] = $temp["providerKey"]  == 'virtual1' ? 'pxc' : $temp["providerKey"];
-            $temp["providerName"] = $temp["providerName"]  == 'Virtual1' ? 'pxc' : $temp["providerName"];
-            $temp["connectivitySupplierName"] = $temp["connectivitySupplierName"]  == 'Virtual1' ? 'pxc' : $temp["connectivitySupplierName"];
+            $temp["providerName"] = $temp["providerName"]  == 'Virtual1' ? 'PXC' : $temp["providerName"];
+            $temp["connectivitySupplierName"] = $temp["connectivitySupplierName"]  == 'Virtual1' ? 'PXC' : $temp["connectivitySupplierName"];
             $temp["connectivitySupplierGroup"] = $cloudMarketRepository->getConsolidatedProviderGroup($temp['connectivitySupplierName']);
             $temp["code"] = "";
             foreach (array_keys($temp) as $itemKey) {

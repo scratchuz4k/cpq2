@@ -29,7 +29,7 @@ Object.assign(quote.items, getLeafNodesWithChildren(quote.items))
 
 const warningProviders = ref([
     { 'its': quote.items.some(item => item.data?.providerName === 'ITS') },
-    { 'virtual1': quote.items.some(item => item.data?.providerName === 'Virtual1') }
+    { 'pxc': quote.items.some(item => item.data?.providerName === 'PXC') }
 ])
 
 const pricePlansDiscounts = ref([])
@@ -235,7 +235,7 @@ const items = ref([
                                                 used to place an order. To obtain a valid quote for ordering please
                                                 generate
                                                 the quote directly on the {{ Object.keys(provider)[0].toUpperCase() }}
-                                                portal
+                                                portal.
                                             </i>
                                         </div>
                                     </div>
