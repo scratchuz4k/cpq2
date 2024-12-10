@@ -236,7 +236,7 @@ const items = ref([
                                                 Please note, quote references for ITS and PXC quotes cannot currently be
                                                 used to place an order. To obtain a valid quote for ordering please
                                                 generate
-                                                the quote directly on the ITS or PXC portal
+                                                the quote directly on the {{ Object.keys(provider)[0] }} portal
                                             </i>
                                         </div>
                                     </div>
