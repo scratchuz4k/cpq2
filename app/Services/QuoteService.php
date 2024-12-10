@@ -41,7 +41,7 @@ class QuoteService
                 }
 
                 $model = $this->discounsEntities[$discount['entity']];
-                $object = app($model)::where('code', $key)->first();
+                $object = app($model)::where('code', $discount['code'])->first();
 
                 if (!$object) {
                     continue;
