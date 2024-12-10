@@ -540,10 +540,10 @@ getArticles(false, true)
                                     </span>
                                 </th>
                                 <th class="text-center" :style="{ whiteSpace: 'nowrap' }"
-                                    @click="orderBy('connectivitySupplierGroup')">
+                                    @click="orderBy('connectivitySupplierName')">
                                     Subprovider
                                     <span class="text-center d-inline-block align-middle" style="width: 20px;">
-                                        <template v-if="sort.field == 'connectivitySupplierGroup'">
+                                        <template v-if="sort.field == 'connectivitySupplierName'">
                                             <font-awesome-icon v-if="sort.order == 'desc'"
                                                 :icon="['fa-solid', 'fa-sort-amount-up-alt']" />
                                             <font-awesome-icon v-else :icon="['fa-solid', 'fa-sort-amount-down-alt']" />
