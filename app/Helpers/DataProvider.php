@@ -23,17 +23,35 @@ class DataProvider
         $this->builder = app($model);
     }
 
-    public function with(array $items)
+    public function getCollection()
     {
-        array_push($this->relations, ...$items);
-
-        return $this;
+        $this->init();
+        return $this->builder->get();
     }
 
-    private function asd()
+    public function get()
     {
-        $this->builder = $this->builder->with($this->relations);
+        $this->init();
+        $page = request()->input("page", 1);
+        $limit = request()->input("limit", 10);
+        $order = request()->input("order", "asc");
+        $orderBy = request()->input("orderBy", "id");
+        $orderByArray = explode('.', $orderBy);
 
+        if (count($orderByArray) == 2) {
+            $table = $this->builder->getModel()->getTable();
+
+            $this->builder = $this->builder->select($table . '.*')->joinRelation(Str::camel($orderByArray[0]) . ' as ' . $orderByArray[0])
+                ->orderBy($orderByArray[0] . '.' . $orderByArray[1], $order);
+            return  $this->builder->paginate(perPage: $limit, page: $page);
+        }
+
+        return $this->builder->orderBy($orderBy, $order)->paginate(perPage: $limit, page: $page);
+    }
+
+
+    private function init()
+    {
         $search = request()->input('search', null);
         $filters = request()->input('filters', []);
         $filters = is_string($filters) ? json_decode($filters, true) : $filters;
@@ -62,52 +80,26 @@ class DataProvider
             $this->builder = $this->buildSearch($this->builder, $filter['column'], $queryParts['operator'], $queryParts['value'], $func);
         }
     }
-    public function getCollection()
-    {
-        $this->asd();
-        return $this->builder->get();
-    }
-
-    public function get()
-    {
-        $this->asd();
-        $page = request()->input("page", 1);
-        $limit = request()->input("limit", 10);
-        $order = request()->input("order", "asc");
-        $orderBy = request()->input("orderBy", "id");
-        $orderByArray = explode('.', $orderBy);
-
-        if (count($orderByArray) == 2) {
-            $table = $this->builder->getModel()->getTable();
-
-            $this->builder = $this->builder->select($table . '.*')->joinRelation(Str::camel($orderByArray[0]) . ' as ' . $orderByArray[0])
-                ->orderBy($orderByArray[0] . '.' . $orderByArray[1], $order);
-            return  $this->builder->paginate(perPage: $limit, page: $page);
-        }
-
-        return $this->builder->orderBy($orderBy, $order)->paginate(perPage: $limit, page: $page);
-    }
-
     public function buildSearch($builder, $column, $operator, $value, $func)
     {
         $relations = explode('.', $column);
         $column = array_pop($relations);
 
         if (count($relations) == 0) {
-            return $this->query($builder, $column, $operator, $value, $func);
-        } else {
-            return $this->queryRelated(
-                $builder,
-                Str::camel(implode('.', $relations)),
-                $column,
-                $operator,
-                $value,
-                $func,
-            );
+            return $this->basicQuery($builder, $column, $operator, $value, $func);
         }
+
+        return $this->relatedQuery(
+            $builder,
+            Str::camel(implode('.', $relations)),
+            $column,
+            $operator,
+            $value,
+            $func,
+        );
     }
 
-    protected function query($query, $column, $operator, $value, $func)
+    protected function basicQuery($query, $column, $operator, $value, $func)
     {
         $column = $query->getModel()->getTable() . '.' . $column;
 
@@ -125,7 +117,7 @@ class DataProvider
         }
     }
 
-    protected function queryRelated($query, $relation, $column, $operator, $value, $func)
+    protected function relatedQuery($query, $relation, $column, $operator, $value, $func)
     {
         $temp = $func == 'orWhere' ? 'orWhereHas' : 'whereHas';
         return $query->{$temp}($relation, function ($query) use ($column, $operator, $value) {
