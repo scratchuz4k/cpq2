@@ -27,6 +27,11 @@ const getLeafNodesWithChildren = (objects) => {
 const quote = reactive(props.modelValue)
 Object.assign(quote.items, getLeafNodesWithChildren(quote.items))
 
+const warningProviders = ref([
+    { 'its': quote.items.some(item => item.data['providerName'] === 'ITS') },
+    { 'virtual1': quote.items.some(item => item.data['providerName'] === 'Virtual1') }
+])
+
 const discounts = reactive({
     pricePlans: {}
 })
@@ -215,6 +220,31 @@ const items = ref([
         <div class="row justify-content-between">
             <div class="col-lg-8 mb-5 price-summary">
                 <Header title="Build your deal" :breadcrumbs="items"></Header>
+                <div v-if="warningProviders.some(obj => Object.values(obj).includes(true))">
+                    <div class="row">
+                        <div class="col">
+                            <InfoBox class="mb-2 py-0" severity="info">
+                                <div class="small">
+                                    <div class="mb-2 fw-bold">Important Information</div>
+                                    <div v-for="provider in warningProviders" class="mb-2">
+                                        <div v-if="Object.values(provider)[0]">
+                                            <span
+                                                class="small fw-bold bg-light rounded-2 py-1 px-2 me-1 text-capitalize">
+                                                {{ Object.keys(provider)[0] }}
+                                            </span>
+                                            <i>
+                                                Please note, quote references for {{ Object.keys(provider)[0] }} quotes cannot currently be
+                                                used to place an order. To obtain a valid quote for ordering please
+                                                generate
+                                                the quote directly on the {{ Object.keys(provider)[0] }} portal
+                                            </i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </InfoBox>
+                        </div>
+                    </div>
+                </div>
                 <div class="mb-5">
                     <div
                         class="mobile-price-group-heading border-bottom mb-3 d-flex justify-content-between align-items-center">
@@ -341,10 +371,11 @@ const items = ref([
                             </tr>
                             <tr v-else>
                                 <th colspan="10">
-                                    <div role="button" id="btn-recurring-add" class="d-flex justify-content-center align-items-center px-2 py-1"
+                                    <div role="button" id="btn-recurring-add"
+                                        class="d-flex justify-content-center align-items-center px-2 py-1"
                                         style="font-size: 12px;" @click="() => recurringNewLine.show = true">
-                                            <span>Add New</span>
-                                            <font-awesome-icon class="ms-2" :icon="['fas', 'plus']" />
+                                        <span>Add New</span>
+                                        <font-awesome-icon class="ms-2" :icon="['fas', 'plus']" />
                                     </div>
                                 </th>
                             </tr>
@@ -458,10 +489,11 @@ const items = ref([
                             </tr>
                             <tr v-else>
                                 <th colspan="10">
-                                    <div role="button" id="btn-one_off-add" class="d-flex justify-content-center align-items-center px-2 py-1"
+                                    <div role="button" id="btn-one_off-add"
+                                        class="d-flex justify-content-center align-items-center px-2 py-1"
                                         style="font-size: 12px;" @click="() => oneOffNewLine.show = true">
-                                            <span>Add New</span>
-                                            <font-awesome-icon class="ms-2" :icon="['fas', 'plus']" />
+                                        <span>Add New</span>
+                                        <font-awesome-icon class="ms-2" :icon="['fas', 'plus']" />
                                     </div>
                                 </th>
                             </tr>
@@ -480,7 +512,8 @@ const items = ref([
                         </p>
                     </div>
                     <div class="d-flex justify-content-between">
-                        <a id="btn-previous" class="btn text-primary" :href="route('quotes.edit', { quote: quote.id }) + '?step=2'">
+                        <a id="btn-previous" class="btn text-primary"
+                            :href="route('quotes.edit', { quote: quote.id }) + '?step=2'">
                             <font-awesome-icon class="me-2" :icon="['fas', 'arrow-left']"></font-awesome-icon>
                             Previous</a>
                         <div>
@@ -530,28 +563,33 @@ const items = ref([
                     </div>
                     <div class="price-mobile-sidebar commission-calculator px-4 pt-4 pb-2 mb-3">
                         <h3 class="mb-3">Commission Calculator</h3>
-                        <p class="mb-2" style="font-size: 14px;"> Currently, you will make <b>{{ GBP.format(quote.commission_value) }}</b>
+                        <p class="mb-2" style="font-size: 14px;"> Currently, you will make <b>{{
+                            GBP.format(quote.commission_value)
+                                }}</b>
                             commission and
                             <b>{{ quote.margin.toFixed(2) }} %</b>
                             margin on
-                            this quote.</p>
+                            this quote.
+                        </p>
                         <div class="p-3 mb-3" style="background: #E9EDF0;">
                             <div class="mb-3">
                                 <label class="form-label">Margin</label>
                                 <div class="input-group">
                                     <input id="input-margin-order" class="form-control"
                                         :value="quote.margin.toFixed(2) + ' %'" disabled>
-                                    <span class="input-group-text"><font-awesome-icon :icon="['fas', 'lock']"></font-awesome-icon></span>
+                                    <span class="input-group-text"><font-awesome-icon
+                                            :icon="['fas', 'lock']"></font-awesome-icon></span>
                                 </div>
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">Commission <b>(<span id="order-tax-commission">
-                                        {{ quote.commission_rate }}</span>%)</b>
+                                            {{ quote.commission_rate }}</span>%)</b>
                                 </label>
                                 <div class="input-group">
                                     <input id="input-commission_value-order" class="form-control"
                                         :value="GBP.format(quote.commission_value)" disabled>
-                                    <span class="input-group-text"><font-awesome-icon :icon="['fas', 'lock']"></font-awesome-icon></span>
+                                    <span class="input-group-text"><font-awesome-icon
+                                            :icon="['fas', 'lock']"></font-awesome-icon></span>
                                 </div>
                             </div>
                         </div>
@@ -618,8 +656,7 @@ input[type="number"] {
 
 .commission-calculator .input-group .input-group-text {
     background-color: #dfe3e6;
-    color:#646464;
+    color: #646464;
     border-color: #bdbdbd;
 }
-
 </style>
