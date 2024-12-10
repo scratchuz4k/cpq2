@@ -233,7 +233,7 @@ const items = ref([
                                                 {{ Object.keys(provider)[0] }}
                                             </span>
                                             <i>
-                                                Please note, quote references for ITS and PXC quotes cannot currently be
+                                                Please note, quote references for {{ Object.keys(provider)[0] }} quotes cannot currently be
                                                 used to place an order. To obtain a valid quote for ordering please
                                                 generate
                                                 the quote directly on the {{ Object.keys(provider)[0] }} portal
