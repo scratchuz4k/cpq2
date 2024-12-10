@@ -35,6 +35,24 @@
                     </div>
                 </a>
             </template>
+            <template v-if="results.orders.length">
+                <p class="search-title">Orders</p>
+                <a class="search-option" v-for="order in results.orders"
+                    :href="route('orders.show', { order: order.id })">
+                    <font-awesome-icon class="search-option-icon me-3" :icon="['far', 'file']"></font-awesome-icon>
+                    <div class="w-100 m-0 d-flex justify-content-between">
+                        <p class="m-0">
+                        {{order.user?.name }}
+                            <b>#{{ order.id }} - {{ order.account?.name }} </b> / {{ order.solution_type.name }} <br>
+                            <span style="font-size: 12px;"> {{ order.user?.name }} - {{ format.date(order.updated_at)
+                                }}</span>
+                        </p>
+                        <p class="m-0">
+                            <span class="badge text-bg-secondary">{{ order.status }}</span>
+                        </p>
+                    </div>
+                </a>
+            </template>
             <template v-if="results.accounts.length">
                 <p class="search-title">Accounts</p>
                 <a class="search-option" v-for="account in results.accounts"
@@ -48,7 +66,7 @@
                     </div>
                 </a>
             </template>
-            <template v-if="!results.accounts.length && !results.quotes.length">
+            <template v-if="!results.accounts.length && !results.quotes.length && !results.orders.length">
                 <p class="m-0">
                     <b>No results found!</b>
                 </p>
@@ -74,7 +92,7 @@ const showSearch = () => {
     }
     results.isLoading = true
     visible.value = true
-    searchCloudMarket()
+    searchCloudMarket(page)
 }
 
 
@@ -82,40 +100,54 @@ const search = ref('')
 const results = reactive({
     isLoading: false,
     quotes: [],
+    orders: [],
     accounts: []
 })
 
 
-const searchCloudMarket = _.debounce(async () => {
-    debugger
+const searchCloudMarket = _.debounce(async (page) => {
+    const is_order_manager = page.props.auth.roles.includes('Order Manager')
+
     if (!visible.value || !search.value) {
         return
     }
     results.isLoading = true
-    let queryQuote = queryString.stringify({
-        columns: 'id,items.data,items.name,account.name,account.contacts.email,solution_type.name,user.name,status,updated_at',
-        search: search.value,
-        limit: 5,
-        order: 'desc',
-        orderBy: 'updated_at'
-    })
-    let resQuote = await axios.get('/api/quotes?' + queryQuote)
-    results.quotes = resQuote.data.data
+    if (is_order_manager) {
+        let queryOrder = queryString.stringify({
+            columns: 'id,items.data,items.name,account.name,account.contacts.email,solution_type.name,user.name,status,updated_at',
+            search: search.value,
+            limit: 5,
+            order: 'desc',
+            orderBy: 'updated_at'
+        })
+        let resOrder = await axios.get('/api/orders?' + queryOrder)
+        results.orders = resOrder.data.data
+    } else {
+        let queryQuote = queryString.stringify({
+            columns: 'id,items.data,items.name,account.name,account.contacts.email,solution_type.name,user.name,status,updated_at',
+            search: search.value,
+            limit: 5,
+            order: 'desc',
+            orderBy: 'updated_at'
+        })
+        let resQuote = await axios.get('/api/quotes?' + queryQuote)
+        results.quotes = resQuote.data.data
 
-    let queryAcc = queryString.stringify({
-        columns: 'id,name,reference,contacts.primary_contact_name,contacts.email,updated_at',
-        search: search.value,
-        limit: 5,
-        order: 'desc',
-        orderBy: 'updated_at'
-    })
-    let resAcc = await axios.get('/api/accounts?' + queryAcc)
-    results.accounts = resAcc.data.data
+        let queryAcc = queryString.stringify({
+            columns: 'id,name,reference,contacts.primary_contact_name,contacts.email,updated_at',
+            search: search.value,
+            limit: 5,
+            order: 'desc',
+            orderBy: 'updated_at'
+        })
+        let resAcc = await axios.get('/api/accounts?' + queryAcc)
+        results.accounts = resAcc.data.data
+    }
+
     results.isLoading = false
 }, 500)
 
-
 watch(search, () => {
-    searchCloudMarket()
+    searchCloudMarket(page)
 })
 </script>
