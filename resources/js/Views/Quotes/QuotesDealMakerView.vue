@@ -32,13 +32,10 @@ const warningProviders = ref([
     { 'virtual1': quote.items.some(item => item.data?.providerName === 'Virtual1') }
 ])
 
-const discounts = reactive({
-    pricePlans: {}
-})
-
+const pricePlansDiscounts = ref([])
 props.pricePlans.forEach((e) => {
     let discount = props.modelValue.discounts.find(x => x.entity?.code == e.code)
-    discounts.pricePlans[e.code] = discount ? discount.discount : 0
+    pricePlansDiscounts.value.push({ ...e, value: discount ? discount.discount : 0, entity: 'price_plans' })
 })
 
 const recurringNewLine = reactive({
@@ -140,7 +137,7 @@ const saveQuote = async () => {
     try {
         let res = await axios.put(`/api/quotes/${quote.id}`,
             {
-                discounts: discounts,
+                discounts: [...pricePlansDiscounts.value],
             })
         Object.assign(quote, res.data)
         Object.assign(quote.items, getLeafNodesWithChildren(quote.items))
@@ -163,11 +160,11 @@ const resetQuote = async () => {
     }
 
     quote.items.forEach((e) => { e.discount = 0; })
-    Object.keys(discounts).forEach((key) => Object.keys(discounts[key]).forEach((discount) => discounts[key][discount] = 0))
+    pricePlansDiscounts.value.forEach((e) => e.value = 0)
     try {
         let res = await axios.put(`/api/quotes/${quote.id}`,
             {
-                discounts: discounts,
+                discounts: [...pricePlansDiscounts.value],
                 items: quote.items,
             })
         Object.assign(quote, res.data)
@@ -233,10 +230,12 @@ const items = ref([
                                                 {{ Object.keys(provider)[0].toUpperCase() }}
                                             </span>
                                             <i>
-                                                Please note, quote references for {{ Object.keys(provider)[0].toUpperCase() }} quotes cannot currently be
+                                                Please note, quote references for {{
+                                                    Object.keys(provider)[0].toUpperCase() }} quotes cannot currently be
                                                 used to place an order. To obtain a valid quote for ordering please
                                                 generate
-                                                the quote directly on the {{ Object.keys(provider)[0].toUpperCase() }} portal
+                                                the quote directly on the {{ Object.keys(provider)[0].toUpperCase() }}
+                                                portal
                                             </i>
                                         </div>
                                     </div>
@@ -542,13 +541,13 @@ const items = ref([
                     </InfoBox>
                     <div class="price-mobile-sidebar total-quote-discount px-4 pt-4 pb-2 mb-3">
                         <h3 class="mb-3">Total Quote Discount</h3>
-                        <div v-for="pricePlan in props.pricePlans"
+                        <div v-for="pricePlan in pricePlansDiscounts"
                             class="d-flex justify-content-between align-items-center mb-3">
                             <label class="form-label m-0">{{ pricePlan.name }}</label>
 
                             <div class="input-group p-0 w-50">
                                 <input :id="`input-global-${pricePlan.code}-discount`" type="number"
-                                    class="form-control" v-model="discounts.pricePlans[pricePlan.code]">
+                                    class="form-control" v-model="pricePlan.value">
                                 <span class="input-group-text">%</span>
                             </div>
 
