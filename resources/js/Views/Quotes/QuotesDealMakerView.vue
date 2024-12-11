@@ -30,13 +30,15 @@ const getLeafNodesWithChildren = (objects) => {
 const quote = reactive(props.modelValue)
 Object.assign(quote.items, getLeafNodesWithChildren(quote.items))
 
-const discounts = reactive({
-    pricePlans: {}
-})
+const warningProviders = ref([
+    { 'its': quote.items.some(item => item.data?.providerName === 'ITS') },
+    { 'pxc': quote.items.some(item => item.data?.providerName === 'PXC') }
+])
 
+const pricePlansDiscounts = ref([])
 props.pricePlans.forEach((e) => {
     let discount = props.modelValue.discounts.find(x => x.entity?.code == e.code)
-    discounts.pricePlans[e.code] = discount ? discount.discount : 0
+    pricePlansDiscounts.value.push({ ...e, value: discount ? discount.discount : 0, entity: 'price_plans' })
 })
 
 const recurringNewLine = reactive({
@@ -138,7 +140,7 @@ const saveQuote = async () => {
     try {
         let res = await axios.put(`/api/quotes/${quote.id}`,
             {
-                discounts: discounts,
+                discounts: [...pricePlansDiscounts.value],
             })
         Object.assign(quote, res.data)
         Object.assign(quote.items, getLeafNodesWithChildren(quote.items))
@@ -161,11 +163,11 @@ const resetQuote = async () => {
     }
 
     quote.items.forEach((e) => { e.discount = 0; })
-    Object.keys(discounts).forEach((key) => Object.keys(discounts[key]).forEach((discount) => discounts[key][discount] = 0))
+    pricePlansDiscounts.value.forEach((e) => e.value = 0)
     try {
         let res = await axios.put(`/api/quotes/${quote.id}`,
             {
-                discounts: discounts,
+                discounts: [...pricePlansDiscounts.value],
                 items: quote.items,
             })
         Object.assign(quote, res.data)
@@ -234,6 +236,33 @@ const items = ref([
         <div class="row justify-content-between">
             <div class="col-lg-8 mb-5 price-summary">
                 <Header title="Build your deal" :breadcrumbs="items"></Header>
+                <div v-if="warningProviders.some(obj => Object.values(obj).includes(true))">
+                    <div class="row">
+                        <div class="col">
+                            <InfoBox class="mb-2 py-0" severity="info">
+                                <div class="small">
+                                    <div class="mb-2 fw-bold">Important Information</div>
+                                    <div v-for="provider in warningProviders" class="mb-2">
+                                        <div v-if="Object.values(provider)[0]">
+                                            <span
+                                                class="small fw-bold bg-light rounded-2 py-1 px-2 me-1 text-capitalize">
+                                                {{ Object.keys(provider)[0].toUpperCase() }}
+                                            </span>
+                                            <i>
+                                                Please note, quote references for {{
+                                                    Object.keys(provider)[0].toUpperCase() }} quotes cannot currently be
+                                                used to place an order. To obtain a valid quote for ordering please
+                                                generate
+                                                the quote directly on the {{ Object.keys(provider)[0].toUpperCase() }}
+                                                portal.
+                                            </i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </InfoBox>
+                        </div>
+                    </div>
+                </div>
                 <div class="mb-5">
                     <div
                         class="mobile-price-group-heading border-bottom mb-3 d-flex justify-content-between align-items-center">
@@ -547,13 +576,13 @@ const items = ref([
                     </InfoBox>
                     <div class="price-mobile-sidebar total-quote-discount px-4 pt-4 pb-2 mb-3">
                         <h3 class="mb-3">Total Quote Discount</h3>
-                        <div v-for="pricePlan in props.pricePlans"
+                        <div v-for="pricePlan in pricePlansDiscounts"
                             class="d-flex justify-content-between align-items-center mb-3">
                             <label class="form-label m-0">{{ pricePlan.name }}</label>
 
                             <div class="input-group p-0 w-50">
                                 <input :id="`input-global-${pricePlan.code}-discount`" type="number"
-                                    class="form-control" v-model="discounts.pricePlans[pricePlan.code]">
+                                    class="form-control" v-model="pricePlan.value">
                                 <span class="input-group-text">%</span>
                             </div>
 

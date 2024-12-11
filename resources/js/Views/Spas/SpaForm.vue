@@ -1,6 +1,8 @@
 <script setup>
 import InputSelect from "@/Components/InputSelect.vue";
-import InputSelectMultiple from "@/Components/InputSelectMultiple.vue";
+import { usePage } from "@inertiajs/vue3";
+
+const page = usePage();
 
 const props = defineProps({
     operations: Array,
@@ -11,10 +13,18 @@ const check = (value) => {
     return !!value
 }
 
+const changeEntity1 = (index) => {
+    props.modelValue.entity_1 = index;
+    props.modelValue.entity_1_value = index == 'Global' ? page.props.tenant: null;
+    props.modelValue.entity_2 = null;
+    props.modelValue.entity_2_value = null
+}
+
 const icons = {
     'Product': ['far', 'rectangle-list'],
     'Account': ['far', 'address-card'],
     'Supplier': ['far', 'handshake'],
+    'Global': ['fas', 'landmark'],
     null: ['fas', 'fa-slash']
 }
 </script>
@@ -25,8 +35,7 @@ const icons = {
             <ul class="d-flex flex-wrap p-0 m-0 mb-3" style="list-style: none;">
                 <li v-for="(rule, index) in rules">
                     <div :id="'spa-entity-' + index" :class="{ 'active': modelValue.entity_1 === index }"
-                        class="rule d-flex flex-column p-2"
-                        @click="() => { modelValue.entity_1 = index; modelValue.entity_1_value = null; modelValue.entity_2 = null; modelValue.entity_2_value = null }">
+                        class="rule d-flex flex-column p-2" @click="changeEntity1(index)">
                         <font-awesome-icon class="p-2 " :icon="icons[index]" size="2x"></font-awesome-icon>
                         <p>{{ index }}</p>
                     </div>

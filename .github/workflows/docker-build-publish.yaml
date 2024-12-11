@@ -1,6 +1,8 @@
 name: Docker Build & Publish
 
-on: [pull_request]
+on:
+    pull_request:
+      types: [opened, synchronize]
 
 env:
   REGISTRY: ghcr.io

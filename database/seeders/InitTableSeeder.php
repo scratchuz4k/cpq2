@@ -49,7 +49,7 @@ class InitTableSeeder extends Seeder
         SolutionType::updateOrCreate([
             "code" => 3
         ], [
-            "name" => "Connectivity - Ethernet & Fibre",
+            "name" => "Connectivity - Ethernet",
         ]);
         SolutionType::updateOrCreate([
             "code" => 4

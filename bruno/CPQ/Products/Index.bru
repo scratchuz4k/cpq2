@@ -1,0 +1,31 @@
+meta {
+  name: Index
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{base_url}}/api/products
+  body: json
+  auth: bearer
+}
+
+headers {
+  : 
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "filters": [
+      {
+        "column": "productName",
+        "operator": "not_in",
+        "value": "ADSL 2+ MPF, Software Defined SOGEA, Broadband FTTC MPF, Cellular Ethernet"
+      }
+    ]
+  }
+}
