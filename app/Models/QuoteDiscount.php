@@ -23,12 +23,14 @@ class QuoteDiscount extends Model
             foreach ($discount->quote->items as $item) {
                 $item->computeTotals();
             };
+            $discount->quote->computeTotals();
         });
 
         static::deleted(function ($discount) {
             foreach ($discount->quote->items as $item) {
                 $item->computeTotals();
             };
+            $discount->quote->computeTotals();
         });
     }
 

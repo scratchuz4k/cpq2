@@ -20,8 +20,6 @@ class QuoteService
 
     public function update(Quote $quote, array $array): Quote
     {
-        $quote->update($array);
-
         #TODO: MOVE THIS LOGIC TO A SPECIFIC CONTROLLER
         if (array_key_exists('discounts', $array)) {
             foreach ($array['discounts'] as $key => $discount) {

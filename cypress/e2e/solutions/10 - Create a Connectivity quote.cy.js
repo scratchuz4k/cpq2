@@ -18,7 +18,7 @@ describe('Creates a Connectivity quote', () => {
         cy.get(".notyf").contains("Created with Success")
     })
 
-    it('Create a Connectivity order', () => {
+    it('Create a Connectivity Quote', () => {
         cy.visit("/")
         cy.get("#create-tab").click()
         cy.get("#account_id").select(account.name)
