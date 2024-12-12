@@ -156,9 +156,11 @@ class QuoteController extends BaseController
 
         // return view('pdf.invoice', compact('order', 'totals', 'solution_types'));
 
+        $quote = QuoteResource::make($quote->load(['items']))->resolve();
+
         return pdf()
             ->view('pdf.invoice', compact('quote', 'solution_types'))
-            ->name('quote-' . $quote->id . '.pdf')
+            ->name('quote-' . $quote['id'] . '.pdf')
             ->download();
     }
 }

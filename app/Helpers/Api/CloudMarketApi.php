@@ -16,7 +16,7 @@ class CloudMarketApi
     {
 
         $url =  env('CLOUDMARKET_CONNECTION_SERVICE_URL', 'https://cpq-poc-uat-api.cloudmarket.com');
-        $requestTimeout = 360;
+        $requestTimeout = 420;
         $virtual1 = ApiConfiguration::where('code', CloudMarketSuppliersEnum::Virtual1->value)->first();
         $gamma = ApiConfiguration::where('code', CloudMarketSuppliersEnum::Gamma->value)->first();
         $giacom = ApiConfiguration::where('code', CloudMarketSuppliersEnum::Giacom->value)->first();
@@ -39,7 +39,7 @@ class CloudMarketApi
                     "Address1.Street" =>  $address->street,
                     "Address1.Town" =>  $address->town,
 
-                    "ManagedOption" => 1,
+                    "ManagedOption" => 0,
 
                     'SupplierApiConnections.Its_Connection.Its_AccessKey' => env('ITS_CONNECTION_ACCESSKEY', $its?->token),
                     'SupplierApiConnections.Virtual1_Connection.Username' => env('VIRTUAL1_CONNECTION_USERNAME', $virtual1?->username),
