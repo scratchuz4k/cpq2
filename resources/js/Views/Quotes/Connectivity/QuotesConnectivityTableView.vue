@@ -29,7 +29,8 @@ const filters = reactive({
             'ADSL 2+ MPF',
             'Software Defined SOGEA',
             'Broadband FTTC MPF',
-            'Cellular Ethernet'
+            'Cellular Ethernet',
+            'Internet Access (Wires Only)'
         ],
         name: 'Product'
     },
