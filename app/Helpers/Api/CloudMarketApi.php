@@ -48,7 +48,7 @@ class CloudMarketApi
                     'SupplierApiConnections.Gamma_Connection.Password' => env('GAMMA_CONNECTION_PASSWORD', $gamma?->password),
                     'SupplierApiConnections.Gamma_Connection.ClientId' => env('GAMMA_CONNECTION_CLIENTID', $gamma?->client_id),
                     'SupplierApiConnections.Giacom_Connection.Username' => env('GIACOM_CONNECTION_USERNAME', $giacom?->username),
-                    'SupplierApiConnections.Giacom_Connection.Password' => env('GIACOM_CONNECTION_PASSWORD', $giacom?->client_id),
+                    'SupplierApiConnections.Giacom_Connection.Password' => env('GIACOM_CONNECTION_PASSWORD', $giacom?->password),
                 ]
             );
     }

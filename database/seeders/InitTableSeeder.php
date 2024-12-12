@@ -17,8 +17,6 @@ use Illuminate\Database\Seeder;
 use App\Enums\SpaOperationsEnum;
 use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Hash;
-use App\Enums\CloudMarketSuppliersEnum;
-use App\Models\ApiConfiguration;
 use Spatie\Permission\Models\Permission;
 
 class InitTableSeeder extends Seeder

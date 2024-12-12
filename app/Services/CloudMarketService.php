@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enums\CloudMarketSuppliersEnum;
 use DateTime;
 use Exception;
 use JsonMachine\Items;
@@ -15,6 +16,7 @@ use Illuminate\Support\Facades\Cache;
 use App\Helpers\Api\CloudMarketAddress;
 use App\Repositories\CloudMarketRepository;
 use App\Jobs\CloudMarketConnectivityProducts;
+use App\Models\ApiConfiguration;
 
 class CloudMarketService
 {
@@ -35,6 +37,17 @@ class CloudMarketService
         $path = storage_path("/app/products/");
         $filename = $address->toString() . '.json';
         $file = new CloudMarketFile($path, $filename);
+        $content = $file->getContent();
+        $createdAt = Carbon::parse($content['created_at']);
+
+        $apis = array_map(fn($case) => $case->value, CloudMarketSuppliersEnum::cases());
+        if (!count(ApiConfiguration::whereIn('code', $apis)->get())) {
+            $file->write([], true, now(), now(), [], [[
+                "provider" => "CPQ",
+                "response" => "No provider is configured",
+            ]]);
+            return $this->cloudMarketRepository->sendResponse($content, $filters);
+        }
 
         if (request()->input("clearCache", false)) {
             Cache::forget($filename);
@@ -44,9 +57,6 @@ class CloudMarketService
             $file->write([], true, null, now());
             CloudMarketConnectivityProducts::dispatch($file, $connectivityType, $address);
         }
-
-        $content = $file->getContent();
-        $createdAt = Carbon::parse($content['created_at']);
 
         if (!$file->exists() || (is_null($content['finished_at']) && $createdAt->addMinutes(10)->isPast())) {
             $file->write([], true, null, now());

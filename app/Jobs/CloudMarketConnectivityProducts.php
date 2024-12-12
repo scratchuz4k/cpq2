@@ -43,7 +43,6 @@ class CloudMarketConnectivityProducts implements ShouldQueue, TenantAware
      */
     public function handle(): void
     {
-        $cloudMarketRepository = new CloudMarketRepository();
         $res = CloudMarketApi::getQuotes($this->connectivityType, $this->address);
         $this->started_at = now();
         if (!$this->file->exists()) {
@@ -53,10 +52,7 @@ class CloudMarketConnectivityProducts implements ShouldQueue, TenantAware
         $stream = StreamWrapper::getResource($res->toPsrResponse()->getBody());
         foreach (Items::fromStream($stream) as $key => $value) {
             if ($value->hasErrors && $value->quoteResponseError) {
-                $error = [
-                    "provider" => $value->quoteResponseError->requestInfo->supplier,
-                    "response" => $value->quoteResponseError->errorMessage,
-                ];
+                $error = $this->processErrors($value->quoteResponseError->requestInfo->supplier, $value->quoteResponseError->errorMessage);
 
                 if (!in_array($error, $this->errors)) {
                     $this->errors[] = $error;
@@ -71,7 +67,7 @@ class CloudMarketConnectivityProducts implements ShouldQueue, TenantAware
             $temp["providerKey"] = $temp["providerKey"]  == 'virtual1' ? 'pxc' : $temp["providerKey"];
             $temp["providerName"] = $temp["providerName"]  == 'Virtual1' ? 'PXC' : $temp["providerName"];
             $temp["connectivitySupplierName"] = $temp["connectivitySupplierName"]  == 'Virtual1' ? 'PXC' : $temp["connectivitySupplierName"];
-            $temp["connectivitySupplierGroup"] = $cloudMarketRepository->getConsolidatedProviderGroup($temp['connectivitySupplierName']);
+            $temp["connectivitySupplierGroup"] = $this->getConsolidatedProviderGroup($temp['connectivitySupplierName']);
             $temp["code"] = "";
             foreach (array_keys($temp) as $itemKey) {
                 if (!(is_string($temp[$itemKey]) || is_numeric($temp[$itemKey]))) {
@@ -115,5 +111,34 @@ class CloudMarketConnectivityProducts implements ShouldQueue, TenantAware
         if (env("DISCORD_CLOUDMARKET_JOBS")) {
             Http::post(env("DISCORD_CLOUDMARKET_JOBS"), ["content" =>  $message]);
         }
+    }
+
+    private function getConsolidatedProviderGroup($provider): string
+    {
+        $sub_provider_mapping = [
+            'BT' => ['BT Wholesale', 'BTW', 'BT'],
+            'Virgin' => ['Virgin Media', 'Virgin Media Business', 'Virgin'],
+            'ITS' => ['ITS Technology Group', 'ITS'],
+            'TalkTalk' => ['TalkTalk Business', 'TalkTalk']
+        ];
+
+        foreach ($sub_provider_mapping as $consolidated_name => $sub_providers) {
+            if (in_array($provider, $sub_providers)) {
+                return $consolidated_name;
+            }
+        }
+
+        return $provider;
+    }
+    private function processErrors($supplier, $message)
+    {
+        if (str_contains($message, "Request failed with status code Unauthorized")) {
+            $message = "Request failed with status Unauthorized";
+        }
+
+        return [
+            "provider" => $supplier,
+            "response" => $message,
+        ];
     }
 }
