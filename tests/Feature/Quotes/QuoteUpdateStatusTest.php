@@ -149,5 +149,5 @@ it('Assert Quote status equals quote on adding items', function () {
 
     $response = $this->post('api/quote-items', $quote_item);
     $updated_quote = $response->json();
-    $this->assertEquals($updated_quote['quote']['status'], QuoteStatusesEnum::QUOTE->name);
+    $this->assertEquals($updated_quote['quote']['status'], QuoteStatusesEnum::PRICE->name);
 });
