@@ -21,6 +21,7 @@ class CloudMarketApi
         $gamma = ApiConfiguration::where('code', CloudMarketSuppliersEnum::Gamma->value)->first();
         $giacom = ApiConfiguration::where('code', CloudMarketSuppliersEnum::Giacom->value)->first();
         $its = ApiConfiguration::where('code', CloudMarketSuppliersEnum::ITS->value)->first();
+        $vorboss = ApiConfiguration::where('code', CloudMarketSuppliersEnum::Vorboss->value)->first();
 
         return Http::withOptions(['stream' => true])->timeout($requestTimeout)->withToken(env('ALPNET_API_TOKEN'))
             ->get(
@@ -49,6 +50,7 @@ class CloudMarketApi
                     'SupplierApiConnections.Gamma_Connection.ClientId' => env('GAMMA_CONNECTION_CLIENTID', $gamma?->client_id),
                     'SupplierApiConnections.Giacom_Connection.Username' => env('GIACOM_CONNECTION_USERNAME', $giacom?->username),
                     'SupplierApiConnections.Giacom_Connection.Password' => env('GIACOM_CONNECTION_PASSWORD', $giacom?->password),
+                    'SupplierApiConnections.Vorboss_Connection.BearerToken' => env('VORBOSS_CONNECTION_ACCESSKEY', $vorboss?->token),
                 ]
             );
     }

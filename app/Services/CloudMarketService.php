@@ -41,7 +41,7 @@ class CloudMarketService
         $createdAt = Carbon::parse($content['created_at']);
 
         $apis = array_map(fn($case) => $case->value, CloudMarketSuppliersEnum::cases());
-        if (!count(ApiConfiguration::whereIn('code', $apis)->get())) {
+        if (!count(ApiConfiguration::whereIn('code', $apis)->get()) && !env("APP_DEBUG")) {
             $file->write([], true, now(), now(), [], [[
                 "provider" => "CPQ",
                 "response" => "No provider is configured",
