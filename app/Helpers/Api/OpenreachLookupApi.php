@@ -89,7 +89,7 @@ class OpenreachLookupApi
         }
 
         $addresses = [];
-        if (array_key_exists("body", $response) && array_key_exists("addresses", $response["body"]) && !empty($response["body"]["addresses"])) {
+        if (!is_null($response) &&array_key_exists("body", $response) && array_key_exists("addresses", $response["body"]) && !empty($response["body"]["addresses"])) {
             foreach ($response["body"]["addresses"] as $address) {
                 $openReachAddress = new AddressLookup(
                     addressKey : $address["value"] ?? null,

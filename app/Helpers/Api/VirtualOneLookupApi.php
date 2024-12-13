@@ -13,7 +13,7 @@ class VirtualOneLookupApi
     private function request($endpoint, $options)
     {
         $authentication = [
-            'auth' => [env('VIRTUAL1_CONNECTION_USERNAME', 'JenniferLawrence'), env('VIRTUAL1_CONNECTION_PASSWORD', 'secretpass')]
+            'auth' => [env('VIRTUAL1_ADDRESS_USERNAME', default: 'JenniferLawrence'), env('VIRTUAL1_ADDRESS_PASSWORD', 'secretpass')]
         ];
 
         $options += $authentication;
