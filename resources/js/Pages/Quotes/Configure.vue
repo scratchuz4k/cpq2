@@ -14,9 +14,9 @@ const form = reactive({
     isLoading: false,
     account: props.quote.account ?? null,
     solution_type:  props.quote.solution_type ?? null,
-    address: null,
-    postCode: null,
-    position: null,
+    address: props.quote.address_data ?? null,
+    postCode: props.quote.address_postcode ?? null,
+    position: props.quote.address_position ?? null,
     solutionCheck: true
 })
 
@@ -60,7 +60,7 @@ const items = ref([
                     </button>
                 </div>
             </div>
-            <QuotesSolutionView v-model="form" :solution_types="solution_types"></QuotesSolutionView>
+            <QuotesSolutionView v-model="form" :solution_types="solution_types" :is_updating_quote="true"></QuotesSolutionView>
         </form>
     </AuthenticatedLayout>
 </template>
