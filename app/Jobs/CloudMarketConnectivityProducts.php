@@ -50,36 +50,36 @@ class CloudMarketConnectivityProducts implements ShouldQueue, TenantAware
         }
 
         $stream = StreamWrapper::getResource($res->toPsrResponse()->getBody());
-        // foreach (Items::fromStream($stream) as $key => $value) {
-        //     if ($value->hasErrors && $value->quoteResponseError) {
-        //         $error = $this->processErrors($value->quoteResponseError->requestInfo->supplier, $value->quoteResponseError->errorMessage);
+        foreach (Items::fromStream($stream) as $key => $value) {
+            if ($value->hasErrors && $value->quoteResponseError) {
+                $error = $this->processErrors($value->quoteResponseError->requestInfo->supplier, $value->quoteResponseError->errorMessage);
 
-        //         if (!in_array($error, $this->errors)) {
-        //             $this->errors[] = $error;
-        //         }
-        //     }
+                if (!in_array($error, $this->errors)) {
+                    $this->errors[] = $error;
+                }
+            }
 
-        //     if (empty($value->providerKey) || !$value->quoteId) {
-        //         continue;
-        //     }
+            if (empty($value->providerKey) || !$value->quoteId) {
+                continue;
+            }
 
-        //     $temp = (array)$value;
-        //     $temp["providerKey"] = $temp["providerKey"]  == 'virtual1' ? 'pxc' : $temp["providerKey"];
-        //     $temp["providerName"] = $temp["providerName"]  == 'Virtual1' ? 'PXC' : $temp["providerName"];
-        //     $temp["connectivitySupplierName"] = $temp["connectivitySupplierName"]  == 'Virtual1' ? 'PXC' : $temp["connectivitySupplierName"];
-        //     $temp["connectivitySupplierGroup"] = $this->getConsolidatedProviderGroup($temp['connectivitySupplierName']);
-        //     $temp["code"] = "";
-        //     foreach (array_keys($temp) as $itemKey) {
-        //         if (!(is_string($temp[$itemKey]) || is_numeric($temp[$itemKey]))) {
-        //             continue;
-        //         }
-        //         $temp["code"] .= $temp[$itemKey];
-        //     }
+            $temp = (array)$value;
+            $temp["providerKey"] = $temp["providerKey"]  == 'virtual1' ? 'pxc' : $temp["providerKey"];
+            $temp["providerName"] = $temp["providerName"]  == 'Virtual1' ? 'PXC' : $temp["providerName"];
+            $temp["connectivitySupplierName"] = $temp["connectivitySupplierName"]  == 'Virtual1' ? 'PXC' : $temp["connectivitySupplierName"];
+            $temp["connectivitySupplierGroup"] = $this->getConsolidatedProviderGroup($temp['connectivitySupplierName']);
+            $temp["code"] = "";
+            foreach (array_keys($temp) as $itemKey) {
+                if (!(is_string($temp[$itemKey]) || is_numeric($temp[$itemKey]))) {
+                    continue;
+                }
+                $temp["code"] .= $temp[$itemKey];
+            }
 
-        //     $this->prices[] = [...$temp, "code" => md5(Str::slug($temp["code"]))];
-        //     $this->tempFilters = FilterProvider::process($this->tempFilters, $temp);
-        //     $this->file->write($this->prices, false, null, $this->started_at, $this->tempFilters, $this->errors);
-        // }
+            $this->prices[] = [...$temp, "code" => md5(Str::slug($temp["code"]))];
+            $this->tempFilters = FilterProvider::process($this->tempFilters, $temp);
+            $this->file->write($this->prices, false, null, $this->started_at, $this->tempFilters, $this->errors);
+        }
 
         $this->file->write($this->prices, false, now(), $this->started_at, $this->tempFilters, $this->errors);
         Log::info($res->toPsrResponse()->getBody()->getContents());
@@ -133,11 +133,17 @@ class CloudMarketConnectivityProducts implements ShouldQueue, TenantAware
     }
     private function processErrors($supplier, $message)
     {
-        if (str_contains($message, "Request failed with status code Unauthorized")) {
-            $message = "Request failed with status Unauthorized";
-        }
-        if (str_contains($message, 'Un-authorised user')) {
-            $message = "Request failed with status Unauthorized";
+        $unauthorizedMessages = [
+            "Request failed with status code Unauthorized",
+            "Un-authorised user",
+            "Bad credentials"
+        ];
+
+        foreach ($unauthorizedMessages as $unauthorizedMessage) {
+            if (str_contains($message, $unauthorizedMessage)) {
+                $message = "Request failed with status Unauthorized";
+                break;
+            }
         }
 
         return [
