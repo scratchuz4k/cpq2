@@ -39,8 +39,8 @@ jobs:
         run: |
           echo "SHOPBLOCKS_API_KEY=${{ secrets.SHOPBLOCKS_API_KEY }}" >> .env
           echo "TOMTOM_API_KEY=${{ secrets.TOMTOM_API_KEY }}" >> .env
-          echo "VIRTUAL1_CONNECTION_PASSWORD=${{ secrets.VIRTUAL1_CONNECTION_PASSWORD }}" >> .env
-          echo "VIRTUAL1_CONNECTION_USERNAME=${{ secrets.VIRTUAL1_CONNECTION_USERNAME }}" >> .env
+          echo "VIRTUAL1_ADDRESS_PASSWORD=${{ secrets.VIRTUAL1_ADDRESS_PASSWORD }}" >> .env
+          echo "VIRTUAL1_ADDRESS_USERNAME=${{ secrets.VIRTUAL1_ADDRESS_USERNAME }}" >> .env
           echo "VITE_GOOGLE_MAPS_API_KEY=${{ secrets.VITE_GOOGLE_MAPS_API_KEY }}" >> .env
 
       - name: Create Database
