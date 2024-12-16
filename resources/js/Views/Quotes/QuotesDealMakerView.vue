@@ -209,7 +209,7 @@ const disableButtonSendToOrder = ref(false)
 const createOrderAndRedirect = async (id) => {
     disableButtonSendToOrder.value = true
     const res = await createOrder(id)
-    if (!res) {
+    if (res) {
         window.location = '/dashboard'
     }
     disableButtonSendToOrder.value = false
@@ -631,7 +631,7 @@ const items = ref([
                 </div>
             </div>
         </div>
-        <Dialog v-model:visible="showModal" modal :style="{ marginTop: '4rem' }"
+        <Dialog v-model:visible="showModal" modal :style="{ marginTop: '4rem', maxWidth: '980px' }"
             :breakpoints="{ '1199px': '75vw', '575px': '90vw' }" :draggable="false" position="top">
             <div class="panel px-3">
                 <div class="row">
@@ -639,7 +639,7 @@ const items = ref([
                     <table class="table reject-reasons-table my-4">
                         <thead>
                             <tr>
-                                <th>Order</th>
+                                <th style="width: 5%">Order</th>
                                 <th>Note</th>
                             </tr>
                         </thead>

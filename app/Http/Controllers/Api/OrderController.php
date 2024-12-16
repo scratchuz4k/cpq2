@@ -76,7 +76,7 @@ class OrderController extends BaseController
             if (!env('APP_DEBUG')) {
                 Log::error($e->getMessage());
             }
-            throw new Exception($e);
+            return response(['message' => $e->getMessage()], 500);
         }
 
         return response()->json(new OrderResource($order->refresh()));

@@ -41,7 +41,7 @@ class OrderController extends BaseController
             $users = User::all();
         }
 
-        $users = $users->filter(fn ($user) => $user->orders->count() > 0);
+        $users = $users->filter(fn ($user) => $user->orders->count() > 0 || $user->id === request()->user()->id);
 
         return Inertia::render('Orders/Index', [
             "users" => $users->values(),

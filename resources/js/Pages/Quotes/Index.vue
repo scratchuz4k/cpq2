@@ -64,11 +64,11 @@ const items = ref([
                 <Datatable :tableProps="{ id: 'dashboard-table' }" :allow="{}" :columns="[
                     { data: 'id', title: '#', style: 'width:5%' },
                     { data: 'account.name', title: 'Account', style: 'width:15%' },
-                    { data: 'solution_type.name', title: 'Solution', style: 'width:25%' },
+                    { data: 'solution_type.name', title: 'Solution', style: 'width:20%' },
                     { data: 'user.name', title: 'Owner', style: 'width:20%' },
                     { data: 'status', title: 'Status', style: 'width:10%' },
                     { data: 'updated_at', title: 'Last Updated', style: 'width:15%' },
-                    { data: 'actions', title: '' },
+                    { data: 'actions', title: '', style: 'width:15%' },
                     { data: 'items.data', title: 'Last Updated', hide: true },
                     { data: 'items.name', title: 'Last Updated', hide: true },
                     { data: 'account.contacts.email', title: 'Last Updated', hide: true },

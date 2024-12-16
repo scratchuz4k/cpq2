@@ -56,18 +56,25 @@ const items = ref([
                 <Header title="Create a order" :breadcrumbs="items"></Header>
             </div>
             <div class="col" style="text-align: right">
-                <button id="reject-order-btn"
-                    :disabled="(order.user_id && order.user_id !== page.props.auth.user.id) || order.status !== 'REGISTRY'"
-                    class="btn btn-secondary mx-2" @click="rejectOrder(props.order)">
-                    <font-awesome-icon :icon="['fas', 'x']"></font-awesome-icon>
-                    Reject
-                </button>
-                <button id="proceed-order-btn"
-                    :disabled="(order.user_id && order.user_id !== page.props.auth.user.id) || order.status !== 'REGISTRY'"
-                    class="btn btn-primary mx-2" @click="proceedOrder(props.order)">
-                    <font-awesome-icon :icon="['fas', 'check']"></font-awesome-icon>
-                    Proceed
-                </button>
+                <template v-if="order.status !== 'REGISTRY'">
+                    <div class="badge text-bg-dark h2">
+                        {{ order.status }}
+                    </div>
+                </template>
+                <template v-else>
+                    <button id="reject-order-btn"
+                            v-if="(order.user_id === page.props.auth.user.id || order.user_id === null)"
+                            class="btn btn-secondary mx-2" @click="rejectOrder(props.order)">
+                        <font-awesome-icon :icon="['fas', 'x']"></font-awesome-icon>
+                        Reject
+                    </button>
+                    <button id="proceed-order-btn"
+                            v-if="(order.user_id === page.props.auth.user.id || order.user_id === null)"
+                            class="btn btn-primary mx-2" @click="proceedOrder(props.order)">
+                        <font-awesome-icon :icon="['fas', 'check']"></font-awesome-icon>
+                        Proceed
+                    </button>
+                </template>
             </div>
         </div>
         <div class="panel">

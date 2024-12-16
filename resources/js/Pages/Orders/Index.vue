@@ -47,7 +47,7 @@ const items = ref([
                     { data: 'user.name', title: 'Owner', style: 'width:20%' },
                     { data: 'status', title: 'Status', style: 'width:10%' },
                     { data: 'updated_at', title: 'Last Updated', style: 'width:15%' },
-                    { data: 'assign_order', title: ''},
+                    { data: 'actions', title: ''},
                     { data: 'items.data', title: 'Last Updated', hide: true },
                     { data: 'items.name', title: 'Last Updated', hide: true },
                     { data: 'account.contacts.email', title: 'Last Updated', hide: true },
@@ -62,7 +62,7 @@ const items = ref([
                     <template #updated_at="{ value }">
                         {{ format.date(value) }}
                     </template>
-                    <template #assign_order="{ data, value, index, getData }">
+                    <template #actions="{ data, value, index, getData }">
                         <div class="d-flex justify-content-end">
                             <button v-if="data.user_id === null" :id="'datatable-btn-' + index + '-assign-order'" @click="assignOrder(data.id, getData)"
                                      class="btn px-0 py-0 border-0">

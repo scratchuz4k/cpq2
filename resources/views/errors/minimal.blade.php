@@ -39,7 +39,7 @@
             <div class="max-w-xl mx-auto sm:px-6 lg:px-8">
                 <div class="logo text-center">
                     <a class="brand-logo d-block w-100" href="/">
-                        <img class="w-100" src="/images/cloud-market-tools-logo.png">
+                        <img src="/images/cloud-market-tools-logo.png">
                     </a>
                 </div>
                 <div class="flex items-center pt-8 justify-center sm:pt-0">
