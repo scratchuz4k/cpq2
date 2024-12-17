@@ -33,7 +33,7 @@ class CloudMarketApi
             "ManagedOption" => 0,
         ];
 
-        Log::debug('CloudMarketApi::getQuotes', $quoteAddress);
+        Log::debug('CloudMarketApi::getQuotes lookup:', $quoteAddress);
 
         $quoteCredentials = [
             'SupplierApiConnections.Its_Connection.Its_AccessKey' => env('ITS_CONNECTION_ACCESSKEY', '328736h87y78g823'),
