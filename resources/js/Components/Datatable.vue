@@ -122,6 +122,10 @@ const getValue = (item, key) => {
     return result;
 }
 
+emitter.on("datatable-refresh", () => {
+    getData();
+})
+
 setFilters()
 
 watch(() => [
@@ -141,8 +145,7 @@ getData()
 
 </script>
 <template>
-    <DataTable :tableProps="props.tableProps" :value="data" :rows="form.limit" stripedRows
-        :reorderableColumns="false">
+    <DataTable :tableProps="props.tableProps" :value="data" :rows="form.limit" stripedRows :reorderableColumns="false">
         <template #header>
             <div class="d-flex justify-content-between">
                 <div>
@@ -220,7 +223,8 @@ getData()
                 </div>
             </template>
             <template #body="{ data, field, index }">
-                <slot v-if="usedSlots.includes(field)" :index="index" :data="data" :name="field" :value="getValue(data, field)" :id="`${field}-${index}`"/>
+                <slot v-if="usedSlots.includes(field)" :index="index" :data="data" :name="field"
+                    :value="getValue(data, field)" :id="`${field}-${index}`" />
                 <template v-else>{{ getValue(data, field) }}</template>
             </template>
         </Column>
@@ -276,9 +280,10 @@ getData()
     z-index: 1;
 }
 
-.p-datatable-thead{
+.p-datatable-thead {
     z-index: 1;
 }
+
 .p-datatable-header {
     padding: 0.75rem 0rem 0rem !important;
     border-bottom: 0 !important;

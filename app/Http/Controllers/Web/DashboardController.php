@@ -17,12 +17,6 @@ class DashboardController extends BaseController
     {
         $user = request()->user();
 
-        if ($user->hasRole('Order Manager')) {
-            return redirect()->route('orders.index');
-        } else {
-            return redirect()->route('quotes.index');
-        }
-
         $users = User::descendants();
         if (!$user->hasRole('Sales Rep')) {
             $users = User::all();

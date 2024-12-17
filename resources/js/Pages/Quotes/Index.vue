@@ -5,7 +5,6 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link } from '@inertiajs/vue3';
 import { ref } from "vue";
 import Button from "primevue/button";
-import axios from "axios";
 
 DataTable.use(DataTablesCore);
 const props = defineProps({
@@ -27,7 +26,7 @@ const props = defineProps({
     },
 })
 
-const deleteRecord = async (id) => {
+const deleteRecord = (id) => {
     swal.fire({
         title: 'Are you sure?'
     }).then(async (result) => {
@@ -35,7 +34,7 @@ const deleteRecord = async (id) => {
             return
         }
         try {
-            let res = await axios.delete('/api' + props.route + '/' + id)
+            let res = await axios.delete('/api/quotes/' + id)
             notyf.success('Removed with success');
             return
         } catch (err) {
@@ -46,26 +45,26 @@ const deleteRecord = async (id) => {
 
 }
 
-const createOrder = async (id) => {
-    let result = await swal.fire({
+const createOrder = (id) => {
+    swal.fire({
         title: 'Do you want to create an Order from this Quote?'
+    }).then(async (result) => {
+        if (['cancel', 'backdrop'].includes(result.dismiss)) {
+            return false
+        }
+        axios.put('http://localhost:8000/api/quotes/' + id,
+            { status: 'REGISTRY' }
+        ).then((res) => {
+            notyf.success('Order created with success');
+            emitter.emit('datatable-refresh')
+            return true
+        }).catch((err) => {
+            notyf.error(err?.response?.data?.message ?? 'Something went wrong')
+            return false
+        })
+
     })
 
-    if (['cancel', 'backdrop'].includes(result.dismiss)) {
-        return false
-    }
-    try {
-        let res = await axios.put('/api/quotes/' + id,
-            { status: 'REGISTRY'}
-        )
-
-        notyf.success('Order created with success');
-    } catch (err) {
-        debugger
-        notyf.error(err?.response?.data?.message ?? 'Something went wrong')
-        return false
-    }
-    return true
 }
 
 const items = ref([
@@ -106,8 +105,8 @@ const items = ref([
                     <template #actions="{ data, value, index }">
                         <div v-if="!['REGISTRY', 'ORDERED'].includes(data.status)" class="d-flex justify-content-end">
                             <button type="button" title="Send to Order" :id="'datatable-btn-' + index + '-crete-order'"
-                                @click="createOrder(data.id)" class="btn px-2 py-0 mx-1 border-0">
-                                <font-awesome-icon :icon="['fas', 'thumbtack']" />  {{ data.id}}
+                                @click="() => createOrder(data.id)" class="btn px-2 py-0 mx-1 border-0">
+                                <font-awesome-icon :icon="['fas', 'thumbtack']" />
                             </button>
                             <Link :id="'datatable-btn-' + index + '-edit'" :href="'quotes/' + data.id + '/edit'"
                                 class="btn px-2 py-0 mx-1 border-0">

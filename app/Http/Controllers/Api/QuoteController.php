@@ -4,15 +4,10 @@ namespace App\Http\Controllers\Api;
 
 use Exception;
 use App\Models\User;
-use App\Models\Order;
 use App\Models\Quote;
-use App\Models\OrderItem;
 use Illuminate\Http\Request;
 use App\Helpers\DataProvider;
-use App\Services\OrderService;
 use App\Services\QuoteService;
-use App\Enums\OrderStatusesEnum;
-use App\Events\QuoteStatusEvent;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Http\Resources\QuoteResource;
@@ -84,7 +79,7 @@ class QuoteController extends BaseController
     {
         try {
             $quote = DB::transaction(function () use ($request, $quote) {
-                $quote =  $this->quoteService->update($quote, $request->all());
+                $quote = $this->quoteService->update($quote, $request->all());
                 return $quote;
             });
         } catch (Exception $e) {
