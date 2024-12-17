@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Helpers\DataProvider;
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\BaseController;
 use App\Http\Resources\SpaResource;
 use App\Models\Spa;
 use Illuminate\Http\Request;
@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Pagination\LengthAwarePaginator;
 
-class SpaController extends Controller
+class SpaController extends BaseController
 {
     protected $model = Spa::class;
     /**

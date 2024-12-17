@@ -2,19 +2,24 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Helpers\Api\CloudMarketAddress;
-use App\Helpers\Api\ShopBlocksApi;
+use App\Models\Account;
+use App\Models\PricePlan;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
-use App\Services\CloudMarketService;
-use App\Helpers\Api\OpenreachLookup;
+use App\Helpers\FilterProvider;
+use App\Helpers\Api\ShopBlocksApi;
+use App\Helpers\Prices\PriceRules;
 use App\Http\Controllers\Controller;
+use App\Services\CloudMarketService;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Cache;
+use App\Helpers\Api\CloudMarketAddress;
+use App\Helpers\Api\OpenreachLookupApi;
+use App\Helpers\Api\VirtualOneLookupApi;
 
 class ExternalController extends Controller
 {
-    public function __construct(protected CloudMarketService $cloudMarketService){}
+    public function __construct(protected CloudMarketService $cloudMarketService) {}
     /**
      * Request Openreach Api to get all address with a Postal Code.
      */
@@ -24,8 +29,24 @@ class ExternalController extends Controller
             "postCode" => "required|min:4",
         ]);
 
-        $openreachLookup = new OpenreachLookup;
-        return $openreachLookup->findAddresses($request->postCode);
+        $virtualOneLookup = new VirtualOneLookupApi;
+        $addressesByPostCode = $virtualOneLookup->findAddresses($request->postCode);
+
+        if (empty($addressesByPostCode)) {
+            return;
+            /*
+            $openreachLookup = new OpenreachLookupApi;
+            $addressesByPostCode = $openreachLookup->findAddresses($request->postCode);
+            if (empty($addressesByPostCode)) {
+                return;
+            }
+            */
+        }
+
+        return collect($addressesByPostCode)
+            ->sortBy('label')
+            ->values()
+            ->all();
     }
 
     /**
@@ -42,7 +63,7 @@ class ExternalController extends Controller
         }
 
         $cache_key = 'address_lookup_' . Str::slug($address);
-        return  Cache::remember($cache_key, 3600, function () use ($address) {
+        return  Cache::remember($cache_key, 43200, function () use ($address) {
             $res = Http::get('https://api.tomtom.com/search/2/geocode/' . $address . '.json?key=' . env('TOMTOM_API_KEY') . '&countryCode=GB');
             $res = json_decode($res->body(), true);
             $position = [];
@@ -102,8 +123,9 @@ class ExternalController extends Controller
 
     public function getArticlesFromShopBlocks(Request $request)
     {
-        $cache_key = md5("shop-blocks" . json_encode($request->all()));
-        return Cache::remember($cache_key, 3600, function () use ($request) {
+        $cache_key = md5("shop-blocks" . $request->input('category_id', 22));
+
+        $res = Cache::remember($cache_key, 43200, function () use ($request) {
             $products = [];
             $page = 0;
             do {
@@ -117,13 +139,51 @@ class ExternalController extends Controller
                 $last_page = array_key_exists("meta", $res) ? $res["meta"]["last_page"] : 1;
             } while ($page != $last_page);
 
+            $tempFilters = [
+                "model" => [],
+            ];
+
             foreach ($products as $key => $product) {
+                $temp = '';
+                foreach (array_keys($product) as $itemKey) {
+                    if (!(is_string($product[$itemKey]) || is_numeric($product[$itemKey]))) {
+                        continue;
+                    }
+                    $temp .= $product[$itemKey];
+                }
                 $model = (string) Str::of($product['name'])->words(3, '');
+                $products[$key]['code'] = md5(Str::slug($temp));
                 $products[$key]['model'] = $model;
+                $products[$key]['price'] = [
+                    "code" => 1,
+                    "tax_rate" => 20,
+                    "net" => (float)$product['price'],
+                    "tax" => (float)$product['price'] * 0.2,
+                    "gross" => (float)$product['price'] * 1.2,
+                    "price_plan_id" => PricePlan::where("code", "single")->value('id'),
+                ];
                 $products[$key]['url'] = 'https://hardware.cloud.market/smartphones/' . $product['slug'];
+                $tempFilters = FilterProvider::process($tempFilters, $products[$key], true);
             }
 
-            return $products;
+            return ['items' => $products, 'filters' => $tempFilters];
         });
+
+        $items = FilterProvider::get($res['items'], request()->input('filters', []));
+        $meta = FilterProvider::paginate($items);
+
+        $priceRules = new PriceRules();
+        $account = Account::find($request->input('account_id', null));
+
+        $meta['data'] = $meta['data']->map(function ($item) use ($priceRules, $account) {
+            $net_spa = $priceRules->calculate($item['price']['net'], account: $account);
+            $item['price']['net_spa'] = $net_spa;
+            $item['price']["tax"] = $net_spa * 0.2;
+            $item['price']["gross"] = $net_spa * 1.2;
+            $item['price']["active_spas"] = $priceRules->getAppliedSpas();
+            return $item;
+        });
+
+        return [...$meta, 'filters' => $res['filters']];
     }
 }

@@ -39,8 +39,17 @@ class DataProvider
         $filters = is_string($filters) ? json_decode($filters, true) : $filters;
 
         if ($search) {
-            $columns = request()->get('columns') ? explode(",", request()->get('columns')) :  $this->builder->getModel()->getFillable();
-            $this->builder = $this->searchModel($this->builder, $columns, $search);
+            $columns = request()->get('columns') ? explode(",", request()->get('columns')) : $this->builder->getModel()->getFillable();
+            $hidden = $this->builder->getModel()->getHidden();
+
+            $columns = array_filter($columns, function ($column) use ($hidden) {
+                $firstPart = explode('.', $column)[0];
+                return !in_array($firstPart, $hidden);
+            });
+
+            $this->builder = $this->builder->where(function ($query) use ($columns, $search) {
+                return $this->searchModel($query, $columns, $search);
+            });
         }
 
         foreach ($filters as $filter) {
@@ -93,6 +102,8 @@ class DataProvider
 
     protected function query($query, $column, $operator, $value, $func)
     {
+        $column = $query->getModel()->getTable() . '.' . $column;
+
         if ($this->model->translatable && in_array($column, $this->model->translatable)) {
             $column = $column . '->' . app()->getLocale();
         }
@@ -100,6 +111,8 @@ class DataProvider
         switch ($operator) {
             case 'in':
                 return $query->whereIn($column, $value);
+            case 'not_in':
+                return $query->whereNotIn($column, $value);
             case 'is_null':
                 return $query->whereNull($column);
             default:
@@ -120,6 +133,8 @@ class DataProvider
             switch ($operator) {
                 case 'in':
                     return $query->whereIn($relatedTableName . '.' . $column, $value);
+                case 'not_in':
+                    return $query->whereNotIn($relatedTableName . '.' . $column, $value);
                 case 'is_null':
                     return $query->whereNull($relatedTableName . '.' . $column);
                 default:
@@ -204,6 +219,10 @@ class DataProvider
             ],
             'in' => [
                 'operator' => 'in',
+                'value' => explode(',', $value),
+            ],
+            'not_in' => [
+                'operator' => 'not_in',
                 'value' => explode(',', $value),
             ],
             'search' => [

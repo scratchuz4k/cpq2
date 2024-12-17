@@ -8,7 +8,7 @@
             <slot name="buttons"></slot>
         </div>
     </div>
-    <div class="mb-4">
+    <div class="my-2">
         <Breadcrumb :model="breadcrumbs">
             <template #item="{ item, props }">
                 <a v-if="item.url" :href="item.url" :target="item.target" v-bind="props.action">

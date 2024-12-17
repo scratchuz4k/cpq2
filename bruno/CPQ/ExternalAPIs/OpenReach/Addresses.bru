@@ -1,0 +1,20 @@
+meta {
+  name: Addresses
+  type: http
+  seq: 1
+}
+
+get {
+  url: https://api.openreach.com/services/ecc/?postcode=W2 1HB
+  body: none
+  auth: none
+}
+
+params:query {
+  postcode: W2 1HB
+}
+
+headers {
+  Referer: https://www.openreach.com/
+  User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36
+}

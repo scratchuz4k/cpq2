@@ -1,16 +1,19 @@
 import { defineConfig } from 'cypress'
 
 export default defineConfig({
-    chromeWebSecurity: false,
     retries: 2,
+    chromeWebSecurity: false,
     defaultCommandTimeout: 5000,
     watchForFileChanges: false,
-    videosFolder: 'cypress/videos',
-    screenshotsFolder: 'cypress/screenshots',
+    videoCompression: true,
+    videosFolder: 'cypress/output/videos',
+    screenshotsFolder: 'cypress/output/screenshots',
+    video: true,  // Optionally, enable videos for failed tests
+    screenshotOnRunFailure: true,  // Ensure screenshots are captured on test failure
     fixturesFolder: 'cypress/fixture',
     e2e: {
         baseUrl: 'http://localhost:8000',
-        specPattern: 'cypress/integration/**/*.cy.{js,jsx,ts,tsx}',
+        specPattern: 'cypress/e2e/**/*.cy.{js,jsx,ts,tsx}',
         supportFile: 'cypress/support/index.js',
     },
 })

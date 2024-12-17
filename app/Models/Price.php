@@ -2,18 +2,12 @@
 
 namespace App\Models;
 
-use Money\Currency;
-use Money\Currencies;
-use Money\MoneyParser;
-use Money\MoneyFormatter;
+use App\Models\PricePlan;
 use App\Trait\SetTenantId;
+use App\Helpers\Prices\PriceRules;
 use App\Models\Scopes\TenantScope;
-use Illuminate\Support\Facades\Log;
-use Money\Currencies\ISOCurrencies;
-use Illuminate\Support\Facades\Auth;
+use App\Helpers\Prices\PriceRulesSpa;
 use Illuminate\Database\Eloquent\Model;
-use Money\Formatter\DecimalMoneyFormatter;
-use Money\Parser\IntlLocalizedDecimalParser;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -40,13 +34,42 @@ class Price extends Model
 {
     use HasFactory, SetTenantId;
 
-    protected $fillable = ["tax_rate", "net", "tax", "gross", "spa_id", "product_id", "tenant_id"];
+    protected static PriceRules $priceRules;
 
-    protected static $supplier_cache = [];
-    protected static $ancestor_cache = [];
-    protected static $spa_cache = [];
+    public function __construct()
+    {
+        parent::__construct();
+        static::$priceRules = new PriceRules();
+    }
+    protected static function boot()
+    {
+        parent::boot();
 
-    protected $table = 'prices';
+        static::retrieved(function ($model) {
+            //TODO: switch to a account saved in the user model
+            $account = Account::find(request() ? request()->input("account_id", null) : null);
+            static::$priceRules->find($model->product, $model->product->supplier, $account);
+            $model->setAttribute('net_spa', static::$priceRules->apply((float)$model->net));
+            $model->setAttribute('active_spas', static::$priceRules->getAppliedSpas());
+            $model->calculate();
+        });
+        static::saving(function ($model) {
+            unset($model->attributes['net_spa']);
+            unset($model->attributes['active_spas']);
+        });
+    }
+
+    protected $fillable = [
+        "code",
+        "tax_rate",
+        "net",
+        "tax",
+        "gross",
+        "price_plan_id",
+        "product_id",
+        "tenant_id"
+    ];
+
 
     protected static function booted(): void
     {
@@ -58,92 +81,20 @@ class Price extends Model
         return $this->belongsTo(Tenant::class);
     }
 
-    public function spa(): HasOne
+    public function product(): BelongsTo
     {
-        return $this->hasOne(Spa::class, 'id', 'spa_id');
+        return $this->belongsTo(Product::class, "product_id", "id");
     }
 
-    public function product(): HasOne
+    public function pricePlan(): BelongsTo
     {
-        return $this->hasOne(Product::class, 'id', 'product_id');
-    }
-    public static function calculate(array $params): array
-    {
-        $supplier = null;
-        $user_id = Auth::id();
-
-        if (!isset(static::$ancestor_cache[$user_id])) {
-            $userAncestors = User::ancestors(Auth::id());
-            $userAncestors[] = $user_id;
-            static::$ancestor_cache[$user_id] = $userAncestors;
-        } else {
-            $userAncestors = static::$ancestor_cache[$user_id];
-        }
-
-        if (!empty($params['supplier'])) {
-            if (!isset(static::$supplier_cache[$params['supplier']])) {
-                if ($supplier = Supplier::where('reference', $params['supplier'])->first()) {
-                    $supplier_id = $supplier->id;
-                    static::$supplier_cache[$params['supplier']] = $supplier_id ?: false;
-                }
-            } else {
-                $supplier_id = static::$supplier_cache[$params['supplier']];
-            }
-
-            if (!empty($supplier_id)) {
-                if (!isset(static::$spa_cache[$supplier_id])) {
-                    Log::debug('calc spa check for supplier:' . $supplier_id . ', users: ' . json_encode($userAncestors));
-                    // Check for SPA associated with this specific user, if not found, check for ancestors
-                    $spa = Spa::where('supplier_id', $supplier_id)
-                        ->where('user_id', $user_id)
-                        ->first() ?: Spa::where('supplier_id', $supplier_id)
-                        ->whereIn('user_id', $userAncestors)
-                        ->first();
-                    static::$spa_cache[$supplier_id] = $spa ?: false;
-                } else {
-                    $spa = static::$spa_cache[$supplier_id] ?? false;
-                }
-
-                if ($spa && !empty($spa->data)) {
-                    $output = $params['data'] ?? [];
-
-                    $currency = new Currency('GBP');
-                    $currencies = new ISOCurrencies();
-                    $numberFormatter = new \NumberFormatter('en_GB', \NumberFormatter::DECIMAL);
-                    $moneyParser = new IntlLocalizedDecimalParser($numberFormatter, $currencies);
-                    $outputFormatter = new DecimalMoneyFormatter($currencies);
-
-                    foreach ($params['prices'] as $price_field) {
-                        if (isset($output[$price_field])) {
-                            $output[$price_field] = static::reprice($output[$price_field], $spa, $currency, $currencies, $numberFormatter, $moneyParser, $outputFormatter);
-                        }
-                    }
-
-                    return $output;
-                }
-            }
-        }
-
-        return $params['data'] ?? [];
+        related:
+        return $this->belongsTo(PricePlan::class);
     }
 
-    public static function reprice($price, Spa $spa, Currency $currency, Currencies $currencies, \NumberFormatter $formatter, MoneyParser $parser, MoneyFormatter $ouputFormatter)
+    public function calculate()
     {
-        $money = $parser->parse($price, $currency);
-
-        $spa_data = json_decode($spa->data, 1);
-
-        foreach ($spa_data as $operation => $value) {
-            // supports add, subtract, multiply, divide
-            if ($operation == 'ADD' || $operation == 'SUBTRACT') {
-                $valueMoney = $parser->parse($value, $currency);
-                $money = $money->$operation($valueMoney);
-            } else {
-                $money = $money->$operation($value);
-            }
-        }
-
-        $outputFormatter = new DecimalMoneyFormatter($currencies);
-        return $outputFormatter->format($money);
+        $this->tax = $this->net * ($this->tax_rate / 100);
+        $this->gross = $this->net_spa * (1 + ($this->tax_rate / 100));
     }
 }

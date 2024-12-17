@@ -34,10 +34,10 @@ Cypress.Commands.add("login", (email, password) => {
         cy.get("#email").type(email, { force: true })
         cy.get("#password").type(password, { force: true })
         cy.get("#btn-login").click()
-        cy.location('pathname')
-           .should('eq', '/dashboard')
+        cy.get('#welcome-msg').contains('Welcome')
     },
-    {
-        cacheAcrossSpecs: true,
-    }
-)})
+        {
+            cacheAcrossSpecs: true,
+        }
+    )
+})

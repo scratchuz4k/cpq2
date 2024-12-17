@@ -1,0 +1,18 @@
+meta {
+  name: Create Token
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{base_url}}/api/create/token
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "email": "companyadmin@example.com",
+    "password": "werwerwer"
+  }
+}

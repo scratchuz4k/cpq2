@@ -2,20 +2,21 @@
 
 namespace App\Http\Controllers\Web;
 
-use App\Http\Requests\ProductCreateRequest;
-use App\Http\Requests\ProductUpdateRequest;
-use App\Http\Resources\ProductResource;
+use Inertia\Inertia;
 use App\Models\Brand;
 use App\Models\Product;
 use App\Models\Supplier;
 use App\Services\ProductsService;
-use Inertia\Inertia;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use App\Http\Resources\ProductResource;
 use App\Http\Controllers\BaseController;
+use App\Http\Requests\ProductCreateRequest;
+use App\Http\Requests\ProductUpdateRequest;
 
 class ProductController extends BaseController
 {
-     protected $model = Product::class;
+    protected $model = Product::class;
 
     public function __construct(protected ProductsService $productsService)
     {
@@ -46,7 +47,9 @@ class ProductController extends BaseController
     public function store(ProductCreateRequest $request)
     {
         try {
-            $product = $this->productsService->store($request->all());
+            $product = DB::transaction(function () use ($request) {
+                return $this->productsService->store($request->all());
+            });
         } catch (\Exception $e) {
             if (!env('APP_DEBUG')) {
                 Log::error($e->getMessage());
@@ -62,7 +65,7 @@ class ProductController extends BaseController
     public function show(Product $product)
     {
         return Inertia::render('Products/Show', [
-            'product' => new ProductResource($product)
+            'product' => new ProductResource($product->load('prices'))
         ]);
     }
 
@@ -85,7 +88,9 @@ class ProductController extends BaseController
     public function update(ProductUpdateRequest $request, Product $product)
     {
         try {
-            $product = $this->productsService->update($product, $request->all());
+            $product = DB::transaction(function () use ($product, $request) {
+                return $this->productsService->update($product, $request->all());
+            });
         } catch (\Exception $e) {
             if (!env('APP_DEBUG')) {
                 Log::error($e->getMessage());

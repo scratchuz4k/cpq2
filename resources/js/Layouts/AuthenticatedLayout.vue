@@ -6,15 +6,26 @@ import axios from 'axios';
 import Dialog from 'primevue/dialog';
 import { reactive, ref, watch } from 'vue'
 import queryString from 'query-string';
+import { usePage } from "@inertiajs/vue3";
+
+
+const page = usePage();
+import * as Sentry from "@sentry/vue";
+Sentry.setUser({
+    fullName: page.props.auth.user.name,
+    email: page.props.auth.user.email,
+});
+
+
 defineProps({
-    order: Object
+    quote: Object
 })
 
 const visible = ref(false);
 const search = ref('')
 const results = reactive({
     isLoading: false,
-    orders: [],
+    quotes: [],
     accounts: []
 })
 
@@ -32,15 +43,15 @@ const searchCloudMarket = _.debounce(async () => {
         return
     }
     results.isLoading = true
-    let queryOrder = queryString.stringify({
+    let queryQuote = queryString.stringify({
         columns: 'id,items.data,items.name,account.name,account.contacts.email,solution_type.name,user.name,status,updated_at',
         search: search.value,
         limit: 5,
         order: 'desc',
         orderBy: 'updated_at'
     })
-    let resOrder = await axios.get('/api/orders?' + queryOrder)
-    results.orders = resOrder.data.data
+    let resQuote = await axios.get('/api/quotes?' + queryQuote)
+    results.quotes = resQuote.data.data
 
     let queryAcc = queryString.stringify({
         columns: 'id,name,reference,contacts.primary_contact_name,contacts.email,updated_at',
@@ -95,7 +106,7 @@ watch(search, () => {
                     </li>
 
                     <li class="nav-item">
-                        <a class="nav-link" :href="route('myaccount')">
+                        <a id="my-account" class="nav-link" :href="route('myaccount')">
                             <font-awesome-icon :icon="['far', 'user']" />
 
                         </a>
@@ -123,24 +134,24 @@ watch(search, () => {
                             aria-controls="dashboard" aria-selected="false">DASHBOARD</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" :class="{ 'active': $page.component == 'Orders/Create' }" id="create-tab"
-                            data-toggle="tab" href="/orders/create" role="tab" aria-controls="create"
+                        <a class="nav-link" :class="{ 'active': $page.component == 'Quotes/Create' }" id="create-tab"
+                            data-toggle="tab" href="/quotes/create" role="tab" aria-controls="create"
                             aria-selected="false">
                             <font-awesome-icon :icon="['fas', 'plus']" />
                             NEW
                         </a>
                     </li>
-                    <li class="nav-item" v-if="order">
-                        <Link :href="route('orders.configure', { order: order.id })" class="nav-link"
-                            :class="{ 'active': $page.component == 'Orders/Configure' }">CONFIGURE</Link>
+                    <li class="nav-item" v-if="quote">
+                        <Link :href="route('quotes.configure', { quote: quote.id })" class="nav-link"
+                            :class="{ 'active': $page.component == 'Quotes/Configure' }">CONFIGURE</Link>
                     </li>
-                    <li class="nav-item" v-if="order">
-                        <Link :href="route('orders.edit', { order: order.id })" class="nav-link"
-                            :class="{ 'active': $page.component == 'Orders/Edit' }">PRICE</Link>
+                    <li class="nav-item" v-if="quote">
+                        <Link :href="route('quotes.edit', { quote: quote.id })" class="nav-link"
+                            :class="{ 'active': $page.component == 'Quotes/Edit' }">PRICE</Link>
                     </li>
-                    <li class="nav-item" v-if="order">
-                        <Link :href="route('orders.show', { order: order.id })" class="nav-link"
-                            :class="{ 'active': $page.component == 'Orders/Show' }">QUOTE</Link>
+                    <li class="nav-item" v-if="quote">
+                        <Link :href="route('quotes.show', { quote: quote.id })" class="nav-link"
+                            :class="{ 'active': $page.component == 'Quotes/Show' }">QUOTE</Link>
                     </li>
                 </ul>
                 <form class="d-md-flex d-none" @submit.prevent="showSearch()">
@@ -166,17 +177,17 @@ watch(search, () => {
             </div>
         </template>
         <Loader v-if="results.isLoading"></Loader>
-        <template v-if="results.orders.length">
-            <p class="search-title">Orders</p>
-            <a class="search-option" v-for="order in results.orders" :href="route('orders.show', { order: order.id })">
+        <template v-if="results.quotes.length">
+            <p class="search-title">Quotes</p>
+            <a class="search-option" v-for="quote in results.quotes" :href="route('quotes.show', { quote: quote.id })">
                 <font-awesome-icon class="search-option-icon me-3" :icon="['far', 'file']"></font-awesome-icon>
                 <div class="w-100 m-0 d-flex justify-content-between">
                     <p class="m-0">
-                        <b>#{{ order.id }} - {{ order.account?.name }} </b> / {{ order.solution_type.name }} <br>
-                        <span style="font-size: 12px;"> {{ order.user.name }} - {{ helpers.formatDate(order.updated_at) }}</span>
+                        <b>#{{ quote.id }} - {{ quote.account?.name }} </b> / {{ quote.solution_type.name }} <br>
+                        <span style="font-size: 12px;"> {{ quote.user.name }} - {{ format.date(quote.updated_at) }}</span>
                     </p>
                     <p class="m-0">
-                        <span class="badge text-bg-secondary">{{ order.status }}</span>
+                        <span class="badge text-bg-secondary">{{ quote.status }}</span>
                     </p>
                 </div>
             </a>
@@ -189,12 +200,12 @@ watch(search, () => {
                 <div class="w-100 m-0 d-flex justify-content-between">
                     <p class="m-0">
                         <b>#{{ account.id }} - {{ account.name }} </b> / {{ account.reference }} <br>
-                        {{ helpers.formatDate(account.updated_at) }}
+                        {{ format.date(account.updated_at) }}
                     </p>
                 </div>
             </a>
         </template>
-        <template v-if="!results.accounts.length && !results.orders.length">
+        <template v-if="!results.accounts.length && !results.quotes.length">
             <p class="m-0">
                 <b>No results found!</b>
             </p>

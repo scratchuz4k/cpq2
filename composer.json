@@ -1,4 +1,4 @@
-{
+{ 
     "name": "laravel/laravel",
     "type": "project",
     "description": "The skeleton application for the Laravel framework.",
@@ -17,6 +17,7 @@
         "maatwebsite/excel": "^3.1",
         "moneyphp/money": "^4.5",
         "reedware/laravel-relation-joins": "^6.0",
+        "sentry/sentry-laravel": "^4.9",
         "socialiteproviders/google": "^4.1",
         "socialiteproviders/saml2": "^4.7",
         "spatie/laravel-multitenancy": "^4.0",
@@ -25,6 +26,7 @@
         "tightenco/ziggy": "^2.0"
     },
     "require-dev": {
+        "barryvdh/laravel-debugbar": "^3.14",
         "fakerphp/faker": "^1.23",
         "laracasts/cypress": "^3.0",
         "laravel/breeze": "^2.1",
@@ -32,7 +34,7 @@
         "laravel/sail": "^1.31",
         "mockery/mockery": "^1.6",
         "nunomaduro/collision": "^8.0",
-        "pestphp/pest": "^3.0"
+        "pestphp/pest": "^3.5"
     },
     "autoload": {
         "psr-4": {

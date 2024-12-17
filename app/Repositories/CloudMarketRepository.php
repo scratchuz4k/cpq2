@@ -2,107 +2,79 @@
 
 namespace App\Repositories;
 
-use Illuminate\Support\Str;
-use App\Helpers\Prices\PriceRulesConnectivity;
+use App\Models\Supplier;
+use App\Helpers\FilterProvider;
+use App\Helpers\Prices\PriceRules;
+use App\Models\Account;
 
 class CloudMarketRepository
 {
 
+    protected $providers = [];
+
     public function sendResponse($file, $filters)
     {
-        $priceRules = new PriceRulesConnectivity();
-        foreach ($file['data'] as $key => $value) {
-            $file['data'][$key] = $priceRules->calculate($value);
-        }
+        $items = FilterProvider::get($file['data'], $filters);
 
-        $items = $this->filterData($file['data'], $filters);
         foreach ($items as $key => $value) {
-            $file['filters'] = $this->processFilters($file['filters'] , $value, true);
+            $file['filters'] = FilterProvider::process($file['filters'], $value, true);
         }
 
-        $order = request()->input('order', 'asc');
-        $orderBy = request()->input('orderBy', 'productName');
 
-        $items = $order == 'asc' ? $items->sortBy($orderBy) : $items->sortByDesc($orderBy);
-        $perPage =  request()->input('perPage', 10);
-        $currentPage = request()->input('page', 1);
-        $temp = $items->slice(($currentPage - 1) * $perPage, $perPage)->values();
+        $priceRules = new PriceRules();
+        $account = Account::where('id', request()->input('account_id', null))->first();
+        $items = $items->map(function ($product) use ($priceRules, $account) {
+            $supplier = null;
 
-        return [
-            "data" => $temp,
-            'current_page' => $currentPage,
-            'per_page' => $perPage,
-            'total' => $items->count(),
-            'overall_total' => $file['total'],
-            'finished_at' => $file['finished_at'],
-            'created_at' =>  $file['created_at'],
-            'filters' =>  $file['filters'],
-        ];
-    }
-
-    public function filterData($data, $filters)
-    {
-        $data = collect($data);
-        foreach ($filters as $filter) {
-            if (!$filter['value']) {
-                continue;
-            }
-            $data = $this->resolveQuery($filter['operator'], $filter['column'], $filter['value'], $data);
-        }
-        return  $data;
-    }
-    private function resolveQuery($operator,  $column, $value, $data)
-    {
-        switch ($operator) {
-            case "in":
-                return $data->whereIn($column, $value);
-            case "between":
-                return $data->whereBetween($column, $value);
-            case "lowest-cost":
-                $keys = [];
-                $temp = collect($data->reduce(function ($carry, array $item) use (&$keys) {
-                    $key = Str::slug(
-                        $item['productName'] .
-                            $item['providerName'] .
-                            $item['connectivitySupplierName'] .
-                            $item['bearer'] .
-                            $item['speed'] .
-                            $item['priceInstall'] .
-                            $item['priceECC'] .
-                            $item['contractTermMonths']
-                    );
-                    if (in_array($key, $keys)) {
-                        if ($item['priceMonthly'] < $carry[$key]['priceMonthly']) {
-                            $carry[$key] = $item;
-                        }
-                        return $carry;
-                    }
-                    array_push($keys, $key);
-                    $carry[$key] = $item;
-                    return $carry;
-                }, []));
-                return $temp->values();
-            default:
-                return $data;
-        }
-    }
-
-    public function processFilters($filters, $value, $addCount = false)
-    {
-        foreach ($filters as $filterKey => $items) {
-            if (!array_key_exists($filterKey, $value) || !$value[$filterKey]) {
-                continue;
-            }
-
-            if (array_key_exists($value[$filterKey], $items) && $addCount) {
-
-                $filters[$filterKey][$value[$filterKey]]++;
-                continue;
+            if (array_key_exists($product['providerKey'], $this->providers)) {
+                $priceRules->setAppliedSpas($this->providers[$product['providerKey']]);
             } else {
-                $filters[$filterKey][$value[$filterKey]] = 0;
+                $supplier = Supplier::where('reference', $product['providerKey'])->first();
+                $priceRules->find(supplier: $supplier, account: $account);
+                $this->providers[$product['providerKey']] = $priceRules->getAppliedSpas();
+            }
+
+            foreach (['priceMonthly', 'priceAnnual', 'priceInstall'] as $key) {
+                if (!array_key_exists($key, $product)) {
+                    continue;
+                }
+                $product[$key . '_spa'] = $priceRules->apply($product[$key]);
+            }
+
+            $product['active_spas'] = $priceRules->getAppliedSpas();
+
+            return $product;
+        });
+
+        $meta = FilterProvider::paginate($items);
+
+        return array_merge(
+            $meta,
+            [
+                'overall_total' => $file['total'],
+                'finished_at' => $file['finished_at'],
+                'created_at' =>  $file['created_at'],
+                'filters' =>  $file['filters'],
+                'errors' =>  array_key_exists('errors', $file) ? $file['errors'] : [],
+            ]
+        );
+    }
+
+    function getConsolidatedProviderGroup($provider): string
+    {
+        $sub_provider_mapping = [
+            'BT' => ['BT Wholesale', 'BTW', 'BT'],
+            'Virgin' => ['Virgin Media', 'Virgin Media Business', 'Virgin'],
+            'ITS' => ['ITS Technology Group', 'ITS'],
+            'TalkTalk' => ['TalkTalk Business', 'TalkTalk']
+        ];
+
+        foreach ($sub_provider_mapping as $consolidated_name => $sub_providers) {
+            if (in_array($provider, $sub_providers)) {
+                return $consolidated_name;
             }
         }
 
-        return $filters;
+        return $provider;
     }
 }

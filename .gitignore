@@ -1,9 +1,16 @@
 /.phpunit.cache
 /node_modules
 /public/build
+/cypress/output
+/cypress/screenshots
+/cypress/downloads
 /public/hot
 /public/storage
 /storage/*.key
+/storage/debugbar
+/storage/app
+/storage/framework
+/storage/logs
 /vendor
 .env
 .env.backup

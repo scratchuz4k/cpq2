@@ -16,20 +16,4 @@ class SolutionType extends Model
         // "2" => 'Connectivity - Fibre',
     ];
 
-    public static function getSolutionTypeName($id): string
-    {
-        return self::$solution_types[$id] ?? "Unknown";
-    }
-
-    public static function getSolutionMap()
-    {
-        $solution_map = [];
-
-        foreach (static::$solution_types as $solution_id => $solution_name) {
-            $solution_key = (string) Str::of($solution_name)->slug()->replace('-', '_')->upper();
-            $solution_map[$solution_key] = $solution_id;
-        }
-
-        return $solution_map;
-    }
 }

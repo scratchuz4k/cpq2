@@ -9,19 +9,15 @@ class SpasService
 {
     public function store(array $array): Spa
     {
-        return DB::transaction(function () use ($array) {
-            $spa = Spa::create($array);
+        $spa = Spa::create($array);
 
-            return $spa;
-        });
+        return $spa;
     }
 
     public function update(Spa $spa, array $array): Spa
     {
-        return DB::transaction(function () use ($spa, $array) {
-            $spa->update($array);
+        $spa->update($array);
 
-            return $spa;
-        });
+        return $spa;
     }
 }

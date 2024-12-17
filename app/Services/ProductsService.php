@@ -9,17 +9,13 @@ class ProductsService
 {
     public function store(array $array): Product
     {
-        return DB::transaction(function () use ($array) {
-            $product = Product::create($array);
-            return $product;
-        });
+        $product = Product::create($array);
+        return $product;
     }
 
     public function update(Product $product, array $array): Product
     {
-        return DB::transaction(function () use ($product, $array) {
-            $product->update($array);
-            return $product;
-        });
+        $product->update($array);
+        return $product;
     }
 }

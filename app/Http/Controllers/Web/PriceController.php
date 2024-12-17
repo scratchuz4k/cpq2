@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers\Web;
 
-use App\Models\Product;
 use App\Models\Spa;
 use Inertia\Inertia;
 use App\Models\Price;
+use App\Models\Product;
 use App\Services\PriceService;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Http\Resources\PriceResource;
 use App\Http\Controllers\BaseController;
@@ -46,7 +47,9 @@ class PriceController extends BaseController
     public function store(PriceCreateRequest $request)
     {
         try {
-            $price = $this->priceService->store($request->all());
+            $price = DB::transaction(function () use ($request) {
+                return $this->priceService->store($request->all());
+            });
         } catch (\Exception $e) {
             if (!env('APP_DEBUG')) {
                 Log::error($e->getMessage());
@@ -62,7 +65,7 @@ class PriceController extends BaseController
     public function show(Price $price)
     {
         return Inertia::render('Prices/Show', [
-            'order' => new PriceResource($price)
+            'quote' => new PriceResource($price)
         ]);
     }
 
@@ -85,7 +88,9 @@ class PriceController extends BaseController
     public function update(PriceUpdateRequest $request, Price $price)
     {
         try {
-            $price = $this->priceService->update($price, $request->all());
+            $price = DB::transaction(function () use ($price, $request) {
+                return $this->priceService->update($price, $request->all());
+            });
         } catch (\Exception $e) {
             if (!env('APP_DEBUG')) {
                 Log::error($e->getMessage());

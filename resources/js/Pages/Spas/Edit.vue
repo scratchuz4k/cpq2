@@ -3,26 +3,54 @@ import { reactive, ref } from "vue";
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, router } from "@inertiajs/vue3";
+import SpaForm from "@/Views/Spas/SpaForm.vue";
 
 const props = defineProps({
     spa: Object,
-    users: Object,
-    suppliers: Object
+    suppliers: Object,
+    rules: Array,
+    operations: Array,
 })
 
-if(!props.spa.data) {
-    props.spa.data = {};
-}
+const rules = {}
+props.rules.forEach(element => {
+    let str = element.code;
+    const splitResult = str.split(/(?=[A-Z])/);
+    if (!Object.keys(rules).includes(splitResult[0])) {
+        rules[splitResult[0]] = []
+    }
 
-const operations = [
-    'Add',
-    'Subtract',
-    'Multiply',
-    'Divide'
-]
+    if (!rules[splitResult[0]].find(x => x === splitResult[1])) {
+        rules[splitResult[0]].push(splitResult[1] ?? null)
+    }
+});
+
+const splitResult = props.spa.rule.code.split(/(?=[A-Z])/);
+
+const spa = reactive({
+    entity_1: splitResult.length ? splitResult[0] : null,
+    entity_1_value: props.spa.field_1,
+    entity_2: splitResult.length == 2 ? splitResult[1] : null,
+    entity_2_value: props.spa.field_2,
+    operation_id: props.spa.operation_id,
+    value: props.spa.value,
+    percentage: props.spa.percentage
+})
 
 const saveSpa = () => {
-    router.put(`/spas/${props.spa.id}`, props.spa,
+    let rule = props.rules.find(x => x.code == spa.entity_1 + '' + (spa.entity_2 ?? ''))
+
+
+    let item = {
+        rule_id: rule.id,
+        field_1: spa.entity_1_value?.id,
+        field_2: spa.entity_2_value?.id,
+        operation_id: spa.operation_id,
+        value: !spa.value ? 0 : spa.value,
+        percentage: !spa.percentage ? 0 : spa.percentage,
+    }
+
+    router.put(`/spas/${props.spa.id}`, item,
         {
             onSuccess: (page) => {
                 notyf.success("Updated with Success")
@@ -37,6 +65,8 @@ const saveSpa = () => {
         }
     )
 }
+
+
 const items = ref([
     { label: 'Home', url: '/' },
     { label: 'My Account', url: '/myaccount' },
@@ -47,49 +77,15 @@ const items = ref([
 </script>
 <template>
 
-    <Head :title="'Edit SPA #' + spa.id" />
+    <Head title="New SPA" />
     <AuthenticatedLayout>
-        <div class="panel">
-            <Header :title="'Edit SPA #' + spa.id" :breadcrumbs="items">
-                <template #buttons>
-                    <PrimaryButton @click="saveSpa()">
-                        <font-awesome-icon class="me-2" :icon="['fas', 'save']"></font-awesome-icon> Save
-                    </PrimaryButton>
-                </template>
-            </Header>
-            <div class="row mb-3">
-                <div class="col-6">
-                    <div class="row mb-3">
-                        <label for="spa-name" class="form-label">Name:</label>
-                        <input id="spa-name" class="form-control" v-model="spa.name">
-                    </div>
-                    <div class="row mb-3">
-                        <label for="spa-name" class="form-label">User:</label>
-                        <select class="form-select" v-model="spa.user_id">
-                            <option v-for="user in users" :value="user.id">{{ user.name }}</option>
-                        </select>
-                    </div>
-                    <div class="row mb-3">
-                        <label for="supplier-name" class="form-label">Supplier:</label>
-                        <select class="form-select" v-model="spa.supplier_id">
-                            <option v-for="supplier in suppliers" :value="supplier.id">{{ supplier.name }}</option>
-                        </select>
-                    </div>
-                    <div class="row mb-3">
-                        <label for="supplier-name" class="form-label">Pricing Rules:</label>
-                        <div class="d-flex p-0">
-                            <select class="form-select w-50" v-model="spa.data.operation">
-                                <option v-for="operation in operations" :value="operation">{{ operation}}</option>
-                            </select>
-                            <input id="spa-value" class="form-control w-50" v-model="spa.data.value">
-                        </div>
-                        <div class="form-text px-0">
-                            Example: to increase prices by 20%, select the "MULTIPLY" operation and enter "1.2" as the value.
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-        </div>
+        <Header title="Edit SPA" :breadcrumbs="items">
+            <template #buttons>
+                <PrimaryButton @click="saveSpa()">
+                    <font-awesome-icon class="me-2" :icon="['fas', 'save']"></font-awesome-icon> Save
+                </PrimaryButton>
+            </template>
+        </Header>
+        <SpaForm v-model="spa" :rules="rules" :operations="props.operations"></SpaForm>
     </AuthenticatedLayout>
 </template>

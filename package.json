@@ -3,7 +3,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build"
+    "build": "vite build",
+    "cy:run": "cypress run"
   },
   "devDependencies": {
     "@chromatic-com/storybook": "^1.9.0",
@@ -29,6 +30,7 @@
     "@fortawesome/vue-fontawesome": "^3.0.8",
     "@popperjs/core": "^2.11.8",
     "@primevue/themes": "^4.0.5",
+    "@sentry/vue": "^8.34.0",
     "bootstrap": "^5.3.3",
     "datatables.net-bs5": "^2.1.5",
     "datatables.net-dt": "^2.1.5",

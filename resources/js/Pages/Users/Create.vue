@@ -1,6 +1,6 @@
 <script setup>
+import {computed, ref, watch} from "vue";import Button from 'primevue/button';
 import MultiSelect from 'primevue/multiselect';
-import { ref } from "vue";
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, router, useForm, usePage } from "@inertiajs/vue3";
@@ -11,6 +11,7 @@ const page = usePage();
 const props = defineProps({
     roles: Object,
     managers: Object,
+    parent_id: Number,
     tenants: Array
 })
 
@@ -18,9 +19,16 @@ const user = useForm({
     name: null,
     email: null,
     password: null,
-    role_id: null,
-    parent_id: null,
-    tenants: [page.props.tenant.id]
+    role_id: props.roles.find(role => role.name.toLowerCase() === 'sales rep').id,
+    parent_id: props.parent_id ?? 0,
+    commission_rate: 0,
+    tenants: [page.props.tenant.id],
+    sso: false
+})
+
+const showCommissionRate = computed(() => {
+    let temp = props.roles.find((item) => item.name.toLowerCase() === 'sales rep')
+    return temp.id === user.role_id;
 })
 
 const saveUser = () => {
@@ -54,7 +62,7 @@ const items = ref([
         <div class="panel">
             <Header title="New User" :breadcrumbs="items">
                 <template #buttons>
-                    <PrimaryButton @click="saveUser()">
+                    <PrimaryButton id="btn-save-user" @click="saveUser()">
                         <font-awesome-icon class="me-2" :icon="['fas', 'save']"></font-awesome-icon> Save
                     </PrimaryButton>
                 </template>
@@ -81,9 +89,18 @@ const items = ref([
                         <option v-for="role in roles" :value="role.id">{{ role.name }}</option>
                     </select>
                 </div>
+                <div v-if="showCommissionRate" class="row mb-3">
+                    <label for="user-commission-rate" class="form-label">Commission Rate:</label>
+                    <div class="input-group p-0">
+                        <input id="user-commission-rate" type="number" class="form-control" v-model="user.commission_rate">
+                        <div class="text-danger" v-if="user.errors.commission_rate">{{ user.errors.commission_rate }}</div>
+                        <span class="input-group-text">%</span>
+                    </div>
+                </div>
                 <div class="row mb-3">
                     <label for="user-manager" class="form-label">Manager:</label>
                     <select id="user-manager" class="form-select" v-model="user.parent_id">
+                        <option value="0">No Manager</option>
                         <option v-for="manager in managers" :value="manager.id">{{ manager.name }}</option>
                     </select>
                 </div>
@@ -96,8 +113,15 @@ const items = ref([
                         </template>
                     </MultiSelect>
                 </div>
+                <div class="row mb-3">
+                    <div class="form-check p-0">
+                        <Checkbox id="user-sso" name="user-sso" class="form-check-input" v-model:checked="user.sso" />
+                        <label class="form-check-label ms-2" for="user-sso">
+                            Single sign-on (SSO) login only
+                        </label>
+                    </div>
+                </div>
             </div>
-
         </div>
     </AuthenticatedLayout>
 </template>

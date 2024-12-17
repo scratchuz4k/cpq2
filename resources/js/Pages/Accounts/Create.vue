@@ -64,7 +64,7 @@ const items = ref([
         <div class="panel">
             <Header title="New Account" :breadcrumbs="items">
                 <template #buttons>
-                    <PrimaryButton @click="saveAccount()">
+                    <PrimaryButton id="btn-save-account" @click="saveAccount()">
                         <font-awesome-icon class="me-2" :icon="['fas', 'save']"></font-awesome-icon> Save
                     </PrimaryButton>
                 </template>
@@ -75,8 +75,8 @@ const items = ref([
                     <input id="account-name" class="form-control" v-model="account.name">
                 </div>
                 <div class="col">
-                    <label for="account-name" class="form-label">Reference:</label>
-                    <input id="account-name" class="form-control" v-model="account.reference">
+                    <label for="account-reference" class="form-label">Reference:</label>
+                    <input id="account-reference" class="form-control" v-model="account.reference">
                 </div>
             </div>
             <h2>Contacts</h2>

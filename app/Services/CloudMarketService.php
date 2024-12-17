@@ -7,6 +7,7 @@ use Exception;
 use JsonMachine\Items;
 use Illuminate\Support\Str;
 use Illuminate\Support\Carbon;
+use App\Helpers\FilterProvider;
 use GuzzleHttp\Psr7\StreamWrapper;
 use App\Helpers\Api\CloudMarketApi;
 use App\Helpers\Api\CloudMarketFile;
@@ -23,7 +24,7 @@ class CloudMarketService
 
     public function get($connectivityType, CloudMarketAddress $address, $filters = [])
     {
-        if (env('PARTNER_QUOTE_SERVICE_ENDPOINT') == 'mock') {
+        if (!env('CLOUDMARKET_CONNECTION_LIVE_DATA')) {
             $mock_prices = storage_path('mocks/prices.json');
             if (!is_file($mock_prices)) {
                 return [];
@@ -35,68 +36,23 @@ class CloudMarketService
         $filename = $address->toString() . '.json';
         $file = new CloudMarketFile($path, $filename);
 
+        if (request()->input("clearCache", false)) {
+            Cache::forget($filename);
+        }
+
         if (!Cache::has($filename)) {
             $file->write([], true, null, now());
-
-            if (env('PARTNER_QUOTE_AS_JOB')) {
-                CloudMarketConnectivityProducts::dispatch($file, $connectivityType, $address);
-            } else {
-                $this->getConnectivityProducts($file, $connectivityType, $address, $filters);
-            }
+            CloudMarketConnectivityProducts::dispatch($file, $connectivityType, $address);
         }
 
         $content = $file->getContent();
         $createdAt = Carbon::parse($content['created_at']);
 
-        if (is_null($content['finished_at']) && $createdAt->addMinutes(2)->isPast()) {
-            if (env('PARTNER_QUOTE_AS_JOB')) {
-                CloudMarketConnectivityProducts::dispatch($file, $connectivityType, $address);
-            } else {
-                $this->getConnectivityProducts($file, $connectivityType, $address, $filters);
-            }
+        if (!$file->exists() || (is_null($content['finished_at']) && $createdAt->addMinutes(10)->isPast())) {
+            $file->write([], true, null, now());
+            CloudMarketConnectivityProducts::dispatch($file, $connectivityType, $address);
         }
 
         return $this->cloudMarketRepository->sendResponse($file->getContent(), $filters);
-    }
-
-    private function getConnectivityProducts(CloudMarketFile $file, $connectivityType, $address, $filters)
-    {
-        $res = CloudMarketApi::getQuotes($connectivityType, $address);
-        $started_at = now();
-
-        $prices = [];
-        $tempFilters = [
-            "providerName" => [],
-            "connectivitySupplierName" => [],
-            "contractTermMonths" => []
-        ];
-
-        $stream = StreamWrapper::getResource($res->toPsrResponse()->getBody());
-        foreach (Items::fromStream($stream) as $key => $value) {
-            if (empty($value->providerKey) || !$value->quoteId) {
-                continue;
-            }
-
-            $temp = (array)$value;
-            $temp['code'] = '';
-            foreach (array_keys($temp) as $itemKey) {
-                if (!(is_string($temp[$itemKey]) || is_numeric($temp[$itemKey]))) {
-                    continue;
-                }
-                $temp['code'] .= $temp[$itemKey];
-            }
-
-            $prices[] = [...$temp, 'code' => md5(Str::slug($temp['code']))];
-            $tempFilters = $this->cloudMarketRepository->processFilters($tempFilters, $temp);
-            $file->write($prices, false, null, $started_at, $tempFilters);
-			/*
-            if (($key % 250) == 0) {
-                echo json_encode($this->cloudMarketRepository->sendResponse($file->getContent(), $filters));
-            }
-			*/
-        }
-
-        $file->write($prices, false, now(), $started_at, $tempFilters);
-        //echo json_encode($this->cloudMarketRepository->sendResponse($file->getContent(), $filters));
     }
 }

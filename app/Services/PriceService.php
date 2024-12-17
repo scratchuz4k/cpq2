@@ -9,19 +9,13 @@ class PriceService
 {
     public function store(array $array): Price
     {
-        return DB::transaction(function () use ($array) {
-            $price = Price::create($array);
-
-
-            return $price;
-        });
+        $price = Price::create($array);
+        return $price;
     }
 
     public function update(Price $price, array $array): Price
     {
-        return DB::transaction(function () use ($price, $array) {
-            $price->update($array);
-            return $price;
-        });
+        $price->update($array);
+        return $price;
     }
 }

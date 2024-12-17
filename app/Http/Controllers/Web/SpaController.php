@@ -2,15 +2,18 @@
 
 namespace App\Http\Controllers\Web;
 
-use App\Http\Controllers\BaseController;
+use App\Models\Spa;
+use App\Models\User;
+use Inertia\Inertia;
+use App\Models\Supplier;
+use App\Services\SpasService;
+use Illuminate\Support\Facades\DB;
+use App\Http\Resources\SpaResource;
 use App\Http\Requests\SpaCreateRequest;
 use App\Http\Requests\SpaUpdateRequest;
-use App\Http\Resources\SpaResource;
-use App\Models\Spa;
-use App\Models\Supplier;
-use App\Models\User;
-use App\Services\SpasService;
-use Inertia\Inertia;
+use App\Http\Controllers\BaseController;
+use App\Models\SpaOperation;
+use App\Models\SpaRule;
 
 class SpaController extends BaseController
 {
@@ -34,8 +37,9 @@ class SpaController extends BaseController
     public function create()
     {
         return Inertia::render('Spas/Create', [
+            'rules' => SpaRule::all(),
+            'operations' => SpaOperation::all(),
             'suppliers' => Supplier::all(),
-            'users' => User::all()
         ]);
     }
 
@@ -45,7 +49,9 @@ class SpaController extends BaseController
     public function store(SpaCreateRequest $request)
     {
         try {
-            $spa = $this->spasService->store($request->all());
+            $spa = DB::transaction(function () use ($request) {
+                return $this->spasService->store($request->all());
+            });
         } catch (\Exception $e) {
             throw new \Exception($e);
         }
@@ -69,7 +75,8 @@ class SpaController extends BaseController
         $temp = new SpaResource($spa);
         return Inertia::render('Spas/Edit', [
             'spa' => $temp->toArray(request()),
-            'users' => User::all(),
+            'rules' => SpaRule::all(),
+            'operations' => SpaOperation::all(),
             'suppliers' => Supplier::all(),
         ]);
     }
@@ -80,7 +87,9 @@ class SpaController extends BaseController
     public function update(SpaUpdateRequest $request, Spa $spa)
     {
         try {
-            $spa = $this->spasService->update($spa, $request->all());
+            $spa = DB::transaction(function () use ($spa, $request) {
+                return $this->spasService->update($spa, $request->all());
+            });
         } catch (\Exception $e) {
             throw new \Exception($e);
         }

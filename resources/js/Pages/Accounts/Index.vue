@@ -18,7 +18,7 @@ const items = ref([
         <div class="panel">
             <Header title="Accounts" :breadcrumbs="items">
                 <template #buttons>
-                    <Link href="/accounts/create" class="btn btn-primary me-2">
+                    <Link href="/accounts/create" id="account-create-btn" class="btn btn-primary me-2">
                     <font-awesome-icon :icon="['fas', 'plus']"></font-awesome-icon> New Account
                     </Link>
                 </template>
@@ -36,10 +36,10 @@ const items = ref([
                     { data: 'updated_at', title: 'Updated At', style: 'width:15%' },
                 ]" route="/accounts">
                     <template #updated_at="{ value }">
-                        {{ helpers.formatDate(value) }}
+                        {{ format.date(value) }}
                     </template>
                     <template #created_at="{ value }">
-                        {{ helpers.formatDate(value) }}
+                        {{ format.date(value) }}
                     </template>
                 </Datatable>
             </div>

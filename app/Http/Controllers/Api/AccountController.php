@@ -6,6 +6,7 @@ use Exception;
 use App\Models\Account;
 use App\Helpers\DataProvider;
 use App\Services\AccountService;
+use Illuminate\Support\Facades\DB;
 use App\Http\Requests\IndexRequest;
 use Illuminate\Support\Facades\Log;
 use App\Http\Resources\AccountResource;
@@ -46,7 +47,9 @@ class AccountController extends BaseController
     public function store(AccountCreateRequest $request)
     {
         try {
-            $account = $this->accountService->store($request->all());
+            $account = DB::transaction(function () use ($request) {
+                return $this->accountService->store($request->all());
+            });
         } catch (Exception $e) {
             Log::debug($e->getMessage());
             throw new Exception($e);
@@ -68,7 +71,9 @@ class AccountController extends BaseController
     public function update(AccountUpdateRequest $request, Account $account)
     {
         try {
-            $account = $this->accountService->update($account, $request->all());
+            $account = DB::transaction(function () use ($account, $request) {
+                return $this->accountService->update($account, $request->all());
+            });
         } catch (Exception $e) {
             Log::debug($e->getMessage());
             throw new Exception($e);
