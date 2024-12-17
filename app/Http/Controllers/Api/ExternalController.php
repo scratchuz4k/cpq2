@@ -33,11 +33,14 @@ class ExternalController extends Controller
         $addressesByPostCode = $virtualOneLookup->findAddresses($request->postCode);
 
         if (empty($addressesByPostCode)) {
+            return;
+            /*
             $openreachLookup = new OpenreachLookupApi;
             $addressesByPostCode = $openreachLookup->findAddresses($request->postCode);
             if (empty($addressesByPostCode)) {
                 return;
             }
+            */
         }
 
         return collect($addressesByPostCode)
