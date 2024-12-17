@@ -25,7 +25,12 @@ class OrderService
 
     public function update(Order $order, array $array): Order
     {
-        if (array_key_exists('user_id', $array) && !is_null($array['user_id']) && !is_null($order->user_id)) {
+        if (
+            array_key_exists('user_id', $array)
+            && !is_null($array['user_id'])
+            && !is_null($order->user_id)
+            && $order->user_id !== $array['user_id']
+        ) {
             throw new \Exception('Order already assigned to another user');
         }
         $order->update($array);

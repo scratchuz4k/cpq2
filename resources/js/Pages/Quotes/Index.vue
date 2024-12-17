@@ -5,7 +5,6 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link } from '@inertiajs/vue3';
 import { ref } from "vue";
 import Button from "primevue/button";
-import { createOrder } from "@/Composables/orders.js";
 import axios from "axios";
 
 DataTable.use(DataTablesCore);
@@ -37,7 +36,6 @@ const deleteRecord = async (id) => {
         }
         try {
             let res = await axios.delete('/api' + props.route + '/' + id)
-            getData()
             notyf.success('Removed with success');
             return
         } catch (err) {
@@ -46,6 +44,28 @@ const deleteRecord = async (id) => {
 
     })
 
+}
+
+const createOrder = async (id) => {
+    let result = await swal.fire({
+        title: 'Do you want to create an Order from this Quote?'
+    })
+
+    if (['cancel', 'backdrop'].includes(result.dismiss)) {
+        return false
+    }
+    try {
+        let res = await axios.put('/api/quotes/' + id,
+            { status: 'REGISTRY'}
+        )
+
+        notyf.success('Order created with success');
+    } catch (err) {
+        debugger
+        notyf.error(err?.response?.data?.message ?? 'Something went wrong')
+        return false
+    }
+    return true
 }
 
 const items = ref([
@@ -83,11 +103,11 @@ const items = ref([
                     <template #updated_at="{ value }">
                         {{ format.date(value) }}
                     </template>
-                    <template #actions="{ data, value, index, getData }">
+                    <template #actions="{ data, value, index }">
                         <div v-if="!['REGISTRY', 'ORDERED'].includes(data.status)" class="d-flex justify-content-end">
-                            <button title="Send to Order" :id="'datatable-btn-' + index + '-crete-order'"
-                                @click="createOrder(data.id, getData)" class="btn px-2 py-0 mx-1 border-0">
-                                <font-awesome-icon :icon="['fas', 'thumbtack']" />
+                            <button type="button" title="Send to Order" :id="'datatable-btn-' + index + '-crete-order'"
+                                @click="createOrder(data.id)" class="btn px-2 py-0 mx-1 border-0">
+                                <font-awesome-icon :icon="['fas', 'thumbtack']" />  {{ data.id}}
                             </button>
                             <Link :id="'datatable-btn-' + index + '-edit'" :href="'quotes/' + data.id + '/edit'"
                                 class="btn px-2 py-0 mx-1 border-0">

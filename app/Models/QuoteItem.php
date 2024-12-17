@@ -31,6 +31,7 @@ class QuoteItem extends Model
         'total_gross',
         'tax_quote_item',
         "contract_length",
+        'tenant_id'
     ];
 
     protected function casts(): array
@@ -44,16 +45,18 @@ class QuoteItem extends Model
     {
         static::addGlobalScope(new TenantScope);
 
-        static::updating(function ($quoteItem) {
+        static::saving(function ($quoteItem) {
             $quoteItem->computeTotals();
         });
 
         static::saved(function ($quoteItem) {
             $quoteItem->quote->computeTotals();
+            $quoteItem->quote->saveQuietly();
         });
 
         static::deleted(function ($quoteItem) {
             $quoteItem->quote->computeTotals();
+            $quoteItem->quote->saveQuietly();
         });
     }
     /**
@@ -91,6 +94,7 @@ class QuoteItem extends Model
 
     public function computeTotals()
     {
+        $this->refresh();
         $price = $this->original_price;
 
         $discounts = $this->quote->discounts->where('discountable_type', PricePlan::class)->where('discountable_id', $this->pricePlan->id)->pluck('discount');
@@ -105,6 +109,5 @@ class QuoteItem extends Model
         $this->total = ($this->price * $this->quantity);
         $this->total_tax = ($this->total * ($this->tax_quote_item / 100));
         $this->total_gross = ($this->total * (($this->tax_quote_item / 100) + 1));
-        $this->saveQuietly();
     }
 }

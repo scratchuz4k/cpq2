@@ -16,15 +16,16 @@ export const createOrder = async (id, getData = null) => {
             { status: 'REGISTRY'}
         )
 
-        if (getData) {
-            getData();
-        }
         notyf.success('Order created with success');
-        return true
     } catch (err) {
         notyf.error(err?.response?.data?.message ?? 'Something went wrong')
         return false
     }
+debugger
+    if (getData) {
+        getData();
+    }
+    return true
 }
 
 export const assignOrder = async (id, getData) => {
@@ -60,15 +61,24 @@ export const rejectOrder = async (order) => {
 
     swal.fire({
         title: message,
-    }).then((result) => {
+    }).then( async (result) => {
         if (result.isConfirmed) {
+            if (!order.user_id) {
+                try {
+                    let res = await axios.put('/api/orders/' + order.id, data)
+                    notyf.success('Order assigned to you with success');
+                } catch (err) {
+                    notyf.error(err?.response?.data?.message ?? 'Something went wrong')
+                }
+            }
+
             swal.fire({
                 title: 'Please specify a reason for the rejection',
                 input: 'textarea',
                 width: 640,
                 preConfirm: (note) => {
                     if (!note) {
-                        swal.showValidationMessage('Order rejected');
+                        swal.showValidationMessage('You must provide a reason for the rejection');
                         return false;
                     }
                     return note;
