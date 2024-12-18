@@ -1,15 +1,16 @@
 <script setup>
 import ShareLayout from '@/Layouts/ShareLayout.vue';
-import { Head, router } from '@inertiajs/vue3';
-import { ref } from 'vue';
+import { Head,  useForm } from '@inertiajs/vue3';
 const props = defineProps({
     isAuthorized: Boolean,
     url: String
 });
-const password = ref('')
+const form = useForm({
+    password: '',
+});
 
-const withPassword = async () => {
-    await router.post(`${props.url}`, { password: password.value }, {
+const withPassword = () => {
+    form.post(`${props.url}`, {
         onError: (errors) => {
             let string = ''
             Object.keys(errors).forEach((key) => {
@@ -27,17 +28,17 @@ const withPassword = async () => {
         <h1 v-if="isAuthorized"> Nothing to Show</h1>
         <div v-else class="panel-login row justify-content-center " style="min-height: 50vh;">
             <div class="col-12 col-md-8 col-lg-6 col-xl-4 d-flex align-items-center">
-                <div class="card">
+                <form class="card" @submit.prevent="withPassword()">
                     <div class="card-body p-4">
                         <h2>Password Protected</h2>
                         <div class="mb-3">
                             <label class="form-label">Please enter the password to access the content:</label>
-                            <input class="form-control" type="password" v-model="password" placeholder="Enter password"
+                            <input class="form-control" type="password" v-model="form.password" placeholder="Enter password"
                                 autocomplete="off" autofocus />
                         </div>
-                        <button class="btn btn-primary" @click="withPassword">Submit</button>
+                        <button type="submit" class="btn btn-primary" >Submit</button>
                     </div>
-                </div>
+                </form>
             </div>
         </div>
     </ShareLayout>

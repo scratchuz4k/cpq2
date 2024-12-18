@@ -65,6 +65,8 @@ const temp = reactive({
     quantity: 0
 })
 
+const dateNow = DateTime.now();
+
 const shareLink = reactive({
     password: null,
     expires_at: quote.shared_link?.expires_at ?? null,
@@ -642,7 +644,7 @@ const items = ref([
                 <div class="mb-3">
                     <label for="expiration_data" class="form-label">Expiration Date</label>
                     <DatePicker v-model="shareLink.expires_at" dateFormat="dd-mm-yy" showIcon fluid
-                        iconDisplay="input" />
+                        iconDisplay="input" :minDate="dateNow.toJSDate()"/>
                 </div>
                 <div class="mb-3">
                     <label for="expiration_data" class="form-label">Password</label>
