@@ -17,7 +17,7 @@ class QuoteItemCreateRequest extends FormRequest
     public function prepareForValidation()
     {
         if (!$this->has('price_plan_id')) {
-            $this->merge(['price_plan_id' => PricePlan::where('code', 'single')->value('id')]);
+            $this->merge(['price_plan_id' => PricePlan::where('code', strtoupper('single'))->value('id')]);
         }
     }
     /**

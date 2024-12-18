@@ -89,9 +89,9 @@ beforeEach(function () {
             'active_spas' => [],
         ],
         'price' => 0,
-        'price_monthly' => 13.59,
+        'price_monthly' => 13.59
     ];
-    
+
     $this->post('api/quote-items', $quote_item);
     $this->quote = $this->get('api/quotes')->json();
 });
@@ -106,7 +106,7 @@ it('Assert Quote status equals registry on Order create', function () {
 
     $this->assertEquals(QuoteStatusesEnum::REGISTRY->name, $quote['status']);
     expect(Order::count())->toBe(1);
-    
+
     $order = Order::where('quote_id', $quote['id'])->firstOrFail();
     expect($order->quote_id)->toBe($quote['id']);
     expect($order->status)->toBe($quote['status']);

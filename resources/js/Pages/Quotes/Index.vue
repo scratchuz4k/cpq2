@@ -5,6 +5,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link } from '@inertiajs/vue3';
 import { ref } from "vue";
 import Button from "primevue/button";
+import { createOrder } from "@/Composables/orders.js";
 
 DataTable.use(DataTablesCore);
 const props = defineProps({
@@ -40,28 +41,6 @@ const deleteRecord = (id) => {
         } catch (err) {
             notyf.error(err?.response?.data?.message ?? 'Something went wrong')
         }
-
-    })
-
-}
-
-const createOrder = (id) => {
-    swal.fire({
-        title: 'Do you want to create an Order from this Quote?'
-    }).then(async (result) => {
-        if (['cancel', 'backdrop'].includes(result.dismiss)) {
-            return false
-        }
-        axios.put('http://localhost:8000/api/quotes/' + id,
-            { status: 'REGISTRY' }
-        ).then((res) => {
-            notyf.success('Order created with success');
-            emitter.emit('datatable-refresh')
-            return true
-        }).catch((err) => {
-            notyf.error(err?.response?.data?.message ?? 'Something went wrong')
-            return false
-        })
 
     })
 
@@ -105,7 +84,7 @@ const items = ref([
                     <template #actions="{ data, value, index }">
                         <div v-if="!['REGISTRY', 'ORDERED'].includes(data.status)" class="d-flex justify-content-end">
                             <button type="button" title="Send to Order" :id="'datatable-btn-' + index + '-crete-order'"
-                                @click="() => createOrder(data.id)" class="btn px-2 py-0 mx-1 border-0">
+                                @click="createOrder(data.id)" class="btn px-2 py-0 mx-1 border-0">
                                 <font-awesome-icon :icon="['fas', 'thumbtack']" />
                             </button>
                             <Link :id="'datatable-btn-' + index + '-edit'" :href="'quotes/' + data.id + '/edit'"
