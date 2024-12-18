@@ -149,6 +149,11 @@ const items = ref([
                                                         <font-awesome-icon :icon="['fas', 'plug']"></font-awesome-icon>
                                                         {{ item.data.additionalInfo['Primary Router Model'] }}
                                                     </span>
+                                                    <span v-if="item.data?.isContended"
+                                                          class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm is-contended"
+                                                          data-bs-toggle="tooltip" data-bs-placement="top" title="Contended" v-tooltip>
+                                                        <font-awesome-icon :icon="['fas', 'network-wired']" />
+                                                    </span>
                                                 </td>
                                                 <td class="text-center">
                                                     {{ item.contract_length }}
@@ -214,6 +219,11 @@ const items = ref([
                                                         class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm router-model">
                                                         <font-awesome-icon :icon="['fas', 'plug']"></font-awesome-icon>
                                                         {{ item.data.additionalInfo['Primary Router Model'] }}
+                                                    </span>
+                                                    <span v-if="item.data?.isContended"
+                                                          class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm is-contended"
+                                                          data-bs-toggle="tooltip" data-bs-placement="top" title="Contended" v-tooltip>
+                                                        <font-awesome-icon :icon="['fas', 'network-wired']" />
                                                     </span>
                                                 </td>
                                                 <td v-if="quote.solution_type_id === 1"
@@ -316,5 +326,8 @@ const items = ref([
 }
 .w-20 {
     width: 20% !important;
+}
+.badge.is-contended{
+    font-size: 10px;
 }
 </style>
