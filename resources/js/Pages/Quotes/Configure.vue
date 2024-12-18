@@ -14,9 +14,9 @@ const form = reactive({
     isLoading: false,
     account: props.quote.account ?? null,
     solution_type:  props.quote.solution_type ?? null,
-    address: null,
-    postCode: null,
-    position: null,
+    address: props.quote.address_data ?? null,
+    postCode: props.quote.address_postcode ?? null,
+    position: props.quote.address_position ?? null,
     solutionCheck: true
 })
 
@@ -51,16 +51,19 @@ const items = ref([
                     <Header title="Edit quote" :breadcrumbs="items"></Header>
                     <h5 class="font-bold my-3">Select an account to start a quote</h5>
                 </div>
-                <div class="col " style="text-align: right">
-                    <button class="btn btn-primary" :disabled="form.solutionCheck" type="submit" @click="submit()">
-                        Save Quote
+            </div>
+            <QuotesSolutionView v-model="form" :solution_types="solution_types" :is_updating_quote="true"></QuotesSolutionView>
+            <div class="row mb-3 ">
+                <div class="col-6 d-flex justify-content-end">
+                    <button id="btn-create-quote" class="btn btn-primary" type="submit" :disabled="!form.address" @click="submit()">
+                        Get prices
+                        <font-awesome-icon :icon="['fas', 'arrow-right']" class="ms-2"></font-awesome-icon>
                         <div v-if="form.isLoading" class="spinner-border  spinner-border-sm" role="status">
                             <span class="visually-hidden">Loading...</span>
                         </div>
                     </button>
                 </div>
             </div>
-            <QuotesSolutionView v-model="form" :solution_types="solution_types"></QuotesSolutionView>
         </form>
     </AuthenticatedLayout>
 </template>
