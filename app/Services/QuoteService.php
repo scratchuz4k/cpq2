@@ -9,7 +9,9 @@ use Illuminate\Support\Facades\DB;
 
 class QuoteService
 {
-
+    protected $discounsEntities = [
+        'price_plans' => PricePlan::class
+    ];
     public function __construct(protected QuoteItemService $quoteItemService) {}
     public function store(array $array): Quote
     {
@@ -30,23 +32,26 @@ class QuoteService
     {
         $quote->update($array);
 
+        #TODO: MOVE THIS LOGIC TO A SPECIFIC CONTROLLER
         if (array_key_exists('discounts', $array)) {
-            $discounts = $array['discounts'];
-            if (array_key_exists('pricePlans', $discounts)) {
-                foreach ($discounts['pricePlans'] as $key => $discount) {
-                    $pricePlan = PricePlan::where('code', $key)->first();
-
-                    if (!$pricePlan) {
-                        continue;
-                    }
-
-                    $quote->discounts()->updateOrCreate([
-                        "discountable_type" => PricePlan::class,
-                        "discountable_id" => $pricePlan->id,
-                    ], [
-                        "discount" =>  $discount
-                    ]);
+            foreach ($array['discounts'] as $key => $discount) {
+                if (!array_key_exists('entity', $discount)) {
+                    continue;
                 }
+
+                $model = $this->discounsEntities[$discount['entity']];
+                $object = app($model)::where('code', $discount['code'])->first();
+
+                if (!$object) {
+                    continue;
+                }
+
+                $quote->discounts()->updateOrCreate([
+                    "discountable_type" => $model,
+                    "discountable_id" => $object->id,
+                ], [
+                    "discount" =>  $discount['value']
+                ]);
             }
 
             foreach ($quote->itemsNoTree as $item) {
