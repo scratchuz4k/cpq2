@@ -1,10 +1,6 @@
 <script setup>
-import DataTable from 'datatables.net-vue3';
-import DataTablesCore from 'datatables.net-bs5';
-import { Head } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-
-DataTable.use(DataTablesCore);
+import { Head } from '@inertiajs/vue3';
 const props = defineProps({
     users: {
         type: Array,

@@ -16,32 +16,7 @@ use App\Http\Controllers\Web\ProductController;
 use App\Http\Controllers\Web\ProfileController;
 use App\Http\Controllers\Web\SupplierController;
 use App\Http\Controllers\Web\DashboardController;
-
-Route::get('/health', function () {
-    try {
-        // Check database connection
-        DB::connection()->getPdo();
-
-        // Check cache
-        cache()->put('health_check', 'ok', 1);
-        $cacheStatus = cache()->get('health_check') === 'ok';
-
-        // Check storage
-        $storageStatus = is_writable(storage_path('app'));
-
-        return response()->json([
-            'status' => 'healthy',
-            'database' => 'connected',
-            'cache' => $cacheStatus ? 'working' : 'not working',
-            'storage' => $storageStatus ? 'writable' : 'not writable',
-        ], 200);
-    } catch (\Exception $e) {
-        return response()->json([
-            'status' => 'unhealthy',
-            'error' => $e->getMessage(),
-        ], 500);
-    }
-})->name('health');
+use App\Http\Controllers\Web\SharedLinkController;
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('index');
@@ -82,5 +57,33 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 });
 
+Route::get('/health', function () {
+    try {
+        // Check database connection
+        DB::connection()->getPdo();
+
+        // Check cache
+        cache()->put('health_check', 'ok', 1);
+        $cacheStatus = cache()->get('health_check') === 'ok';
+
+        // Check storage
+        $storageStatus = is_writable(storage_path('app'));
+
+        return response()->json([
+            'status' => 'healthy',
+            'database' => 'connected',
+            'cache' => $cacheStatus ? 'working' : 'not working',
+            'storage' => $storageStatus ? 'writable' : 'not writable',
+        ], 200);
+    } catch (\Exception $e) {
+        return response()->json([
+            'status' => 'unhealthy',
+            'error' => $e->getMessage(),
+        ], 500);
+    }
+})->name('health');
+
+Route::get('/s/{token}', [SharedLinkController::class, 'show']);
+Route::post('/s/{token}', [SharedLinkController::class, 'verifyPassword']);
 
 require __DIR__ . '/auth.php';

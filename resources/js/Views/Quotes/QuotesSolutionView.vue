@@ -6,10 +6,14 @@ const GOOGLE_MAPS_API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY
 
 const props = defineProps({
     solution_types: Object,
-    modelValue: Object
+    modelValue: Object,
+    is_updating_quote: Boolean
 })
 
 const solutionChange = (form) => {
+    if (props.is_updating_quote)
+        return
+
     addressPostCode.value = ''
     form.postCode = ''
     form.address = null
@@ -35,7 +39,7 @@ const solutionChange = (form) => {
     form.solutionCheck = false
 }
 
-const addressPostCode = ref('')
+const addressPostCode = ref(props.modelValue.postCode ?? '')
 const addresses = ref([])
 const addressSearch = _.debounce(async (form) => {
     addresses.value = []
@@ -89,8 +93,11 @@ const addressSelect = async (form) => {
     }
 }
 
-solutionChange(props.modelValue)
 
+solutionChange(props.modelValue)
+addressSearch({
+    postCode: props.modelValue.postCode ?? '',
+})
 watch(addressPostCode, () => {
     props.modelValue.postCode = addressPostCode.value
     addressSearch(props.modelValue)
@@ -105,7 +112,7 @@ watch(addressPostCode, () => {
                         <h5 class="font-bold mb-3">Now, select an solution type</h5>
                         <div class="mb-3">
                             <label class="form-label">Solution Type <span class="text-primary fw-bold">*</span></label>
-                            <select id="solution_id" class="form-select" @change="solutionChange(modelValue)"
+                            <select :disabled="is_updating_quote" id="solution_id" class="form-select" @change="solutionChange(modelValue)"
                                 v-model="modelValue.solution_type">
                                 <option :value="null">Select an option</option>
                                 <option v-for="(solution, key) in solution_types" :value="solution">
@@ -164,6 +171,4 @@ watch(addressPostCode, () => {
                 </div>
         </div>
     </div>
-
-
 </template>

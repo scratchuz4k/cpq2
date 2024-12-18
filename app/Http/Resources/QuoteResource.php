@@ -24,6 +24,7 @@ class QuoteResource extends JsonResource
             'total_gross' => $this->total * 1.2,
             'account' => $this->account,
             'solution_type' => $this->solutionType,
+            'shared_link' => new SharedLinkResource($this->sharedLink),
             'discounts' => QuoteDiscountResource::collection($this->discounts)->resolve(),
             'items' => QuoteItemResource::collection($this->whenLoaded('items', default: collect([])))->resolve(),
             'updated_at' => $this->updated_at,

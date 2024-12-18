@@ -91,4 +91,12 @@ describe('Creates a Connectivity quote', () => {
         cy.get('.swal2-confirm').eq(0).click()
         cy.get(".notyf").contains("Order created with success")
     })
+
+    it('I can Edit the quote Address', () => {
+        cy.visit('/')
+        cy.get('#datatable-btn-0-edit').click()
+        cy.get('.edit-quote-address').eq(0).click()
+        cy.get('#solution_id').should('be.disabled')
+        cy.get('#input_address').should('have.value', 'EH32 9NT');
+    })
 })
