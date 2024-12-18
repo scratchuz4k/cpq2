@@ -33,7 +33,7 @@ const withPassword = async () => {
                         <div class="mb-3">
                             <label class="form-label">Please enter the password to access the content:</label>
                             <input class="form-control" type="password" v-model="password" placeholder="Enter password"
-                                @keyup.enter="checkPassword" />
+                                autocomplete="off" autofocus />
                         </div>
                         <button class="btn btn-primary" @click="withPassword">Submit</button>
                     </div>

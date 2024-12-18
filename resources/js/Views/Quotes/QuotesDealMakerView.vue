@@ -68,12 +68,9 @@ const temp = reactive({
     quantity: 0
 })
 
-const dateNow = DateTime.now();
-const formattedDate = dateNow.plus({ days: 7 }).toISODate();
-
 const shareLink = reactive({
     password: null,
-    expires_at: quote.shared_link?.expires_at ?? formattedDate,
+    expires_at: quote.shared_link?.expires_at ?? null,
     link: quote.shared_link?.url,
     id: quote.shared_link?.id
 })
@@ -218,6 +215,7 @@ const createSharedLink = async () => {
                 expires_at: shareLink.expires_at,
                 password: shareLink.password
             })
+        shareLink.expires_at = res.data.data.expires_at
         shareLink.link = res.data.data.url
         shareLink.id = res.data.data.id
     } catch (ex) {
@@ -268,10 +266,12 @@ const items = ref([
                                                 {{ Object.keys(provider)[0].toUpperCase() }}
                                             </span>
                                             <i>
-                                                Please note, quote references for {{ Object.keys(provider)[0].toUpperCase() }} quotes cannot currently be
+                                                Please note, quote references for {{
+                                                    Object.keys(provider)[0].toUpperCase() }} quotes cannot currently be
                                                 used to place an order. To obtain a valid quote for ordering please
                                                 generate
-                                                the quote directly on the {{ Object.keys(provider)[0].toUpperCase() }} portal
+                                                the quote directly on the {{ Object.keys(provider)[0].toUpperCase() }}
+                                                portal
                                             </i>
                                         </div>
                                     </div>
@@ -644,13 +644,13 @@ const items = ref([
             <div v-if="!shareLink.link">
                 <div class="mb-3">
                     <label for="expiration_data" class="form-label">Expiration Date</label>
-                    <DatePicker v-model="shareLink.expires_at" dateFormat="dd-mm-yy" :minDate="dateNow.toJSDate()"
-                        showIcon fluid iconDisplay="input" />
+                    <DatePicker v-model="shareLink.expires_at" dateFormat="dd-mm-yy" showIcon fluid
+                        iconDisplay="input" />
                 </div>
                 <div class="mb-3">
                     <label for="expiration_data" class="form-label">Password</label>
-                    <input id="input-shareable-password" type="text" class="form-control"
-                        v-model="shareLink.password" />
+                    <input type="password" id="input-shareable-password"  class="form-control"
+                        v-model="shareLink.password" autocomplete="off"/>
                 </div>
 
                 <div class="mb-3">
@@ -669,10 +669,10 @@ const items = ref([
                             disabled />
 
                         <button class="input-group-text" @click="copyToClipboard(shareLink.link)"><font-awesome-icon
-                                role="button" :icon="['far', 'clipboard']" @click="edit(p)" /></button>
+                                role="button" :icon="['far', 'clipboard']" /></button>
                     </div>
                     <p class="small">
-                        Expires at: {{ shareLink.expires_at }}
+                        Expires at: {{ shareLink.expires_at ?? 'without expiration date' }}
                     </p>
                 </div>
                 <div class="mb-3">

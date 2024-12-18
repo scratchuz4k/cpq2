@@ -39,7 +39,7 @@ class SharedLink extends Model
     // Check if the link has expired
     public function isExpired(): bool
     {
-        return $this->expires_at && $this->expires_at->isPast();
+        return $this->expires_at && $this->expires_at->isPast() && !$this->expires_at->isToday();
     }
 
     // Generate a URL for the shared link

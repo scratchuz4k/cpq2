@@ -21,7 +21,7 @@ class SharedLinkResource extends JsonResource
             'token' => $this->token,
             'shareable_type' => $this->shareable_type,
             'shareable_id' => $this->shareable_id,
-            'expires_at' =>$date->format('Y-m-d'),
+            'expires_at' => $this->expires_at ? $date->format('d-m-Y') : null,
             'url' => $this->url,
         ];
     }
