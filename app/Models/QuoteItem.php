@@ -49,12 +49,12 @@ class QuoteItem extends Model
             $quoteItem->computeTotals();
             $quoteItem->saveQuietly();
             $quoteItem->quote->computeTotals();
-            $quoteItem->quote->saveQuietly();
+            $quoteItem->quote->save();
         });
 
         static::deleted(function ($quoteItem) {
             $quoteItem->quote->computeTotals();
-            $quoteItem->quote->saveQuietly();
+            $quoteItem->quote->save();
         });
     }
     /**

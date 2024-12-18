@@ -25,7 +25,7 @@ class QuoteDiscount extends Model
                 $item->saveQuietly();
             };
             $discount->quote->computeTotals();
-            $discount->quote->saveQuietly();
+            $discount->quote->save();
         });
 
         static::deleted(function ($discount) {
@@ -34,7 +34,7 @@ class QuoteDiscount extends Model
                 $item->saveQuietly();
             };
             $discount->quote->computeTotals();
-            $discount->quote->saveQuietly();
+            $discount->quote->save();
         });
     }
 
