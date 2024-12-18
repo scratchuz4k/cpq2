@@ -34,6 +34,7 @@ Cypress.Commands.add("login", (email, password) => {
         cy.get("#email").type(email, { force: true })
         cy.get("#password").type(password, { force: true })
         cy.get("#btn-login").click()
-        cy.get('#welcome-msg').contains('Welcome')
-    })
+            cy.get('#page-title').contains(/Quotes|Orders/);
+        }
+    )
 })
