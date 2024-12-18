@@ -3,7 +3,7 @@ import {usePage} from "@inertiajs/vue3";
 import { get } from "lodash";
 
 const page = usePage()
-export const createOrder = async (id, getData = null) => {
+export const createOrder = async (id) => {
     let result = await swal.fire({
         title: 'Do you want to create an Order from this Quote?'
     })
@@ -15,20 +15,16 @@ export const createOrder = async (id, getData = null) => {
         let res = await axios.put('/api/quotes/' + id,
             { status: 'REGISTRY'}
         )
-
         notyf.success('Order created with success');
+        emitter.emit('datatable-refresh')
+        return true
     } catch (err) {
         notyf.error(err?.response?.data?.message ?? 'Something went wrong')
         return false
     }
-debugger
-    if (getData) {
-        getData();
-    }
-    return true
 }
 
-export const assignOrder = async (id, getData) => {
+export const assignOrder = async (id) => {
     swal.fire({
         title: 'Do you want to assign this Order to you?'
     }).then(async (result) => {
@@ -40,7 +36,7 @@ export const assignOrder = async (id, getData) => {
                 { user_id: page.props.auth.user.id }
             )
             notyf.success('Order assigned to you with success');
-            getData()
+            emitter.emit('datatable-refresh')
         } catch (err) {
             notyf.error(err?.response?.data?.message ?? 'Something went wrong')
         }
