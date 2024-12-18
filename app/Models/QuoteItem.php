@@ -45,11 +45,9 @@ class QuoteItem extends Model
     {
         static::addGlobalScope(new TenantScope);
 
-        static::saving(function ($quoteItem) {
-            $quoteItem->computeTotals();
-        });
-
         static::saved(function ($quoteItem) {
+            $quoteItem->computeTotals();
+            $quoteItem->saveQuietly();
             $quoteItem->quote->computeTotals();
             $quoteItem->quote->saveQuietly();
         });
