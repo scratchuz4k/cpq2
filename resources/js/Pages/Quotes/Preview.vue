@@ -46,6 +46,7 @@ const items = ref([
 </script>
 
 <template>
+
     <Head :title="'Preview Quote #' + quote.id" />
     <AuthenticatedLayout :quote="quote">
         <div class="row mb-3">
