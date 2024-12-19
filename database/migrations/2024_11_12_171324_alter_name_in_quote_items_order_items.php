@@ -12,7 +12,6 @@ return new class extends Migration
      */
     public function up(): void
     {
-
         Schema::table('quote_items', function (Blueprint $table) {
             $table->string('name')->nullable()->change();
         });
@@ -26,8 +25,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        DB::statement("UPDATE `quote_items` SET `column_name` = LEFT(`name`, 100)");
-        DB::statement("UPDATE `order_items` SET `column_name` = LEFT(`name`, 100)");
+        DB::statement("UPDATE `quote_items` SET `name` = LEFT(`name`, 100)");
+        DB::statement("UPDATE `order_items` SET `name` = LEFT(`name`, 100)");
 
         Schema::table('quote_items', function (Blueprint $table) {
             $table->string('name',100)->nullable()->change();});
