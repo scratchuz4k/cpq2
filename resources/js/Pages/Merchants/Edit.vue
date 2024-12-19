@@ -41,7 +41,7 @@ const items = ref([
         <div class="panel">
             <Header :title="'Edit Merchant #' + merchant.id" :breadcrumbs="items">
                 <template #buttons>
-                    <PrimaryButton @click="saveMerchant()">
+                    <PrimaryButton id="btn-save-merchant" @click="saveMerchant()">
                         <font-awesome-icon class="me-2" :icon="['fas', 'save']"></font-awesome-icon> Save
                     </PrimaryButton>
                 </template>
