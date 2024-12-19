@@ -78,7 +78,7 @@ jobs:
         run: npm run cy:run
 
       - name: Check for failed Cypress tests and send screenshot to Discord
-        if: steps.execute-cypress-tests.outcome == 'failure'
+        if: steps.execute-cypress-tests.outcome == 'failure' && failure()
         run: |
           # Zip the screenshot file
           zip -r screenshot.zip cypress/output/*
