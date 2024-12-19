@@ -8,7 +8,7 @@ const user = {
 
 describe("Create Order Manager User.cy", () => {
     it("Creates Order Manager User", () => {
-        cy.login("super@example.com", "werwerwersdgf")
+        cy.login("super@example.com", "werwerwer")
         cy.visit("/users")
         cy.get("#link-to-create-user").click()
 
