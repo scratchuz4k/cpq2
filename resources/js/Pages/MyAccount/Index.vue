@@ -138,6 +138,15 @@ const items = ref([
                                 </a>
                             </div>
                         </div>
+                        <div class="col" v-if="hasRole('Super Admin') || can('viewAny merchant')">
+                            <div class="card bg-light border-0">
+                                <a id="link-merchants" :href="route('merchants.index')"
+                                    class="card-body text-center p-2 text-decoration-none">
+                                    <font-awesome-icon class="py-3 opacity-25" :icon="['fas', 'shop']" size="2x"/>
+                                    <span class="d-block h5">Merchants</span>
+                                </a>
+                            </div>
+                        </div>
                         <div class="col" v-if="hasRole('Super Admin') || can('viewAny tenant')">
                             <div class="card bg-light border-0">
                                 <a :href="hasRole('Super Admin') ? route('tenant.index') : route('tenant.edit', { tenant: $page.props.auth.user.current_tenant.id })"

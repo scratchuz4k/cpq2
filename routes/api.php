@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\BrandController;
+use App\Http\Controllers\Api\MerchantController;
 use App\Http\Controllers\Api\QuoteController;
 use App\Http\Controllers\Api\AccountController;
 use App\Http\Controllers\Api\ContactController;
@@ -35,6 +36,7 @@ Route::apiResources([
     'solution-types' => SolutionTypeController::class,
     'permissions' => PermissionController::class,
     'brands' => BrandController::class,
+    'merchants' => MerchantController::class,
     'prices' => PriceController::class,
     'suppliers' => SupplierController::class,
     'regions' => RegionController::class,
