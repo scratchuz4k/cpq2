@@ -80,7 +80,9 @@ class VirtualOneLookupApi
                 ]
             ]);
 
-            Cache::put($cache_key, $response);
+            if (array_key_exists("address", $response) && !empty($response["address"])) {
+                Cache::put($cache_key, $response);
+            }
         }
 
         $addresses = [];
