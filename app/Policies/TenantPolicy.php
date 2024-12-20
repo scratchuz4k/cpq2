@@ -13,7 +13,7 @@ class TenantPolicy
      */
     public function viewAny(User $user): bool
     {
-        if (!$user->can("view $this->model")) {
+        if (!$user->can("viewAny $this->model")) {
             return false;
         }
 

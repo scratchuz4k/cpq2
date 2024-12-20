@@ -16,9 +16,7 @@ use App\Models\SpaOperation;
 use Illuminate\Database\Seeder;
 use App\Enums\OrderStatusesEnum;
 use App\Enums\SpaOperationsEnum;
-use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Hash;
-use Spatie\Permission\Models\Permission;
 
 class InitTableSeeder extends Seeder
 {
@@ -73,8 +71,6 @@ class InitTableSeeder extends Seeder
         foreach (PricePlanEnum::cases() as $case) {
             PricePlan::updateOrCreate(['code' => $case->name], ['name' => $case->value]);
         }
-
-
 
         foreach (OrderStatusesEnum::cases() as $status) {
             OrderStatus::updateOrCreate([
