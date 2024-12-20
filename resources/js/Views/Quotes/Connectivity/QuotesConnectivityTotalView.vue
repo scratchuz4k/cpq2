@@ -2,8 +2,7 @@
 import _ from 'lodash'
 import {reactive, ref} from 'vue';
 import InputQuantity from "@/Components/InputQuantity.vue";
-import {router} from "@inertiajs/vue3";
-import {createOrder} from "@/Composables/orders.js";
+import {createOrder} from "@/Composables/useOrders.js";
 const props = defineProps({
     modelValue: Object,
     preview: Boolean

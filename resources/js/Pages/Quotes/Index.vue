@@ -5,7 +5,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link } from '@inertiajs/vue3';
 import { ref } from "vue";
 import Button from "primevue/button";
-import { createOrder } from "@/Composables/orders.js";
+import { createOrder } from "@/Composables/useOrders.js";
 
 DataTable.use(DataTablesCore);
 const props = defineProps({
@@ -27,6 +27,13 @@ const props = defineProps({
     },
 })
 
+const createOrderAndRefresh = async (id) => {
+    const res = await createOrder(id)
+    if (res) {
+        emitter.emit('datatable-refresh')
+    }
+}
+
 const deleteRecord = (id) => {
     swal.fire({
         title: 'Are you sure?'
@@ -41,9 +48,7 @@ const deleteRecord = (id) => {
         } catch (err) {
             notyf.error(err?.response?.data?.message ?? 'Something went wrong')
         }
-
     })
-
 }
 
 const items = ref([
@@ -84,7 +89,7 @@ const items = ref([
                     <template #actions="{ data, value, index }">
                         <div v-if="!['REGISTRY', 'ORDERED'].includes(data.status)" class="d-flex justify-content-end">
                             <button type="button" title="Send to Order" :id="'datatable-btn-' + index + '-crete-order'"
-                                @click="createOrder(data.id)" class="btn px-2 py-0 mx-1 border-0">
+                                @click="createOrderAndRefresh(data.id)" class="btn px-2 py-0 mx-1 border-0">
                                 <font-awesome-icon :icon="['fas', 'thumbtack']" />
                             </button>
                             <Link :id="'datatable-btn-' + index + '-edit'" :href="'quotes/' + data.id + '/edit'"

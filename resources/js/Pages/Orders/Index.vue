@@ -4,7 +4,7 @@ import DataTablesCore from 'datatables.net-bs5';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head } from '@inertiajs/vue3';
 import {ref} from "vue";
-import {assignOrder, createOrder} from "@/Composables/orders.js";
+import {assignOrder, createOrder} from "@/Composables/useOrders.js";
 import Button from "primevue/button";
 DataTable.use(DataTablesCore);
 const props = defineProps({
@@ -26,6 +26,12 @@ const props = defineProps({
     },
 })
 
+const assignOrderAndRefresh = async (id) => {
+    const res = await assignOrder(id)
+    if (res) {
+        emitter.emit('datatable-refresh')
+    }
+}
 const items = ref([
     { label: 'Home', url: '/' },
     { label: 'Orders' },
@@ -64,7 +70,7 @@ const items = ref([
                     </template>
                     <template #actions="{ data, value, index, getData }">
                         <div class="d-flex justify-content-end">
-                            <button v-if="data.user_id === null" :id="'datatable-btn-' + index + '-assign-order'" @click="assignOrder(data.id, getData)"
+                            <button v-if="data.user_id === null" :id="'datatable-btn-' + index + '-assign-order'" @click="assignOrderAndRefresh(data.id)"
                                      class="btn px-0 py-0 border-0">
                                 <font-awesome-icon :icon="['fas', 'user-plus']" />
                             </button>

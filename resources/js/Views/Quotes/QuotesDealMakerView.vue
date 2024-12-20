@@ -4,7 +4,7 @@ import { ref, reactive } from 'vue'
 import Dialog from "primevue/dialog";
 import DatePicker from 'primevue/datepicker';
 import { DateTime } from "luxon";
-import { createOrder } from "@/Composables/orders.js";
+import { createOrder } from "@/Composables/useOrders.js";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 
 const props = defineProps({

@@ -16,7 +16,6 @@ export const createOrder = async (id) => {
             { status: 'REGISTRY'}
         )
         notyf.success('Order created with success');
-        emitter.emit('datatable-refresh')
         return true
     } catch (err) {
         notyf.error(err?.response?.data?.message ?? 'Something went wrong')
@@ -25,22 +24,24 @@ export const createOrder = async (id) => {
 }
 
 export const assignOrder = async (id) => {
-    swal.fire({
+    let result = await swal.fire({
         title: 'Do you want to assign this Order to you?'
-    }).then(async (result) => {
-        if (['cancel', 'backdrop'].includes(result.dismiss)) {
-            return
-        }
-        try {
-            let res = await axios.put('/api/orders/' + id,
-                { user_id: page.props.auth.user.id }
-            )
-            notyf.success('Order assigned to you with success');
-            emitter.emit('datatable-refresh')
-        } catch (err) {
-            notyf.error(err?.response?.data?.message ?? 'Something went wrong')
-        }
     })
+
+    if (['cancel', 'backdrop'].includes(result.dismiss)) {
+        return
+    }
+
+    try {
+        let res = await axios.put('/api/orders/' + id,
+            { user_id: page.props.auth.user.id }
+        )
+        notyf.success('Order assigned to you with success');
+        return true
+    } catch (err) {
+        notyf.error(err?.response?.data?.message ?? 'Something went wrong')
+        return false
+    }
 }
 
 export const rejectOrder = async (order) => {

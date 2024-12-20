@@ -1,5 +1,5 @@
 <script setup>
-import { proceedOrder, rejectOrder } from '@/Composables/orders';
+import { proceedOrder, rejectOrder } from '@/Composables/useOrders.js';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link, usePage } from '@inertiajs/vue3';
 import { reactive, ref } from "vue";
