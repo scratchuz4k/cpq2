@@ -654,6 +654,11 @@ getArticles(false, true)
                                         <font-awesome-icon :icon="['fas', 'plug']"></font-awesome-icon>
                                         {{ article.additionalInfo['Primary Router Model'] }}
                                     </span>
+                                    <span v-if="article?.isContended"
+                                          class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm is-contended"
+                                          data-bs-toggle="tooltip" data-bs-placement="top" title="Contended" v-tooltip>
+                                        <font-awesome-icon :icon="['fas', 'network-wired']" />
+                                    </span>
                                 </td>
                                 <td><img class="img-provider" @error="setAltImg"
                                         :src="`/images/providers/${article.providerKey}.png`"
@@ -785,5 +790,8 @@ tr.active td {
     width: 0%;
     background-color: var(--purple);
     animation: progressBar 240s linear forwards;
+}
+.badge.is-contended{
+    font-size: 10px;
 }
 </style>
