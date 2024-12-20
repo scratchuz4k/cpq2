@@ -29,7 +29,8 @@ const filters = reactive({
             'ADSL 2+ MPF',
             'Software Defined SOGEA',
             'Broadband FTTC MPF',
-            'Cellular Ethernet'
+            'Cellular Ethernet',
+            'Internet Access (Wires Only)'
         ],
         name: 'Product'
     },
@@ -270,16 +271,22 @@ const add = async (article) => {
             })
         }
 
-        let res = await axios.post('/api/quote-items',
-            {
-                quote_id: props.modelValue.id,
-                product_id: null,
-                quantity: 1,
-                product_code: article.code,
-                name: article.productName,
-                data: article,
-                children: childs
-            })
+        let item = {
+            quote_id: props.modelValue.id,
+            product_id: null,
+            quantity: 1,
+            product_code: article.code,
+            name: article.productName,
+            data: article,
+        }
+
+        if (childs.length == 1) {
+            item = { ...item, ...childs[0] }
+        } else {
+            item.children = childs
+        }
+
+        let res = await axios.post('/api/quote-items', item)
         props.modelValue.items.push(res.data)
     } catch (ex) {
         alert(ex.response.data.message)

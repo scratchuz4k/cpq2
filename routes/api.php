@@ -17,6 +17,13 @@ use App\Http\Controllers\Api\QuoteItemController;
 use App\Http\Controllers\Api\PermissionController;
 use App\Http\Controllers\Api\SolutionTypeController;
 use App\Http\Controllers\Api\ApiConfigurationController;
+use App\Http\Controllers\Api\SupplierController;
+use App\Http\Controllers\Api\RegionController;
+use App\Http\Controllers\Api\SpaController;
+use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\Api\PriceController;
+use App\Http\Controllers\Api\SharedLinkController;
+use App\Http\Controllers\Api\TokenController;
 
 Route::prefix("external")->group(function () {
     Route::post("get-address-by-postcode", [ExternalController::class, "getAddressesByPostCode"]);
@@ -41,5 +48,6 @@ Route::apiResources([
     'regions' => RegionController::class,
     'spas' => SpaController::class,
     'users' => UserController::class,
-    'tokens' => TokenController::class
+    'tokens' => TokenController::class,
+    'shared-links' => SharedLinkController::class,
 ]);
