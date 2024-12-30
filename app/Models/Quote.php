@@ -14,6 +14,7 @@ class Quote extends Model
 {
     use HasFactory, SetTenantId, RegisterActivity;
 
+    protected $activity_field = ['status', 'solution_type_id', 'commission_rate', 'commission_value', 'total', 'total_tax', 'total_gross', 'margin'];
     protected $fillable = [
         "account_id",
         "solution_type_id",

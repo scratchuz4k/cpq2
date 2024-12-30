@@ -9,6 +9,7 @@ const props = defineProps({
     modelValue: Object,
     pricePlans: Array
 })
+const showActivity = ref(false)
 const showShareDialog = ref(false)
 const isLoading = ref(false)
 
@@ -204,6 +205,9 @@ const openShare = () => {
     showShareDialog.value = true
 }
 
+const openActivity = () => {
+    showActivity.value = true
+}
 const createSharedLink = async () => {
     try {
 
@@ -551,6 +555,11 @@ const items = ref([
                             <font-awesome-icon class="me-2" :icon="['fas', 'arrow-left']"></font-awesome-icon>
                             Previous</a>
                         <div>
+                            <button id="btn-shareable-open" class="btn btn-outline-primary me-2"
+                                @click="openActivity()">
+                                <font-awesome-icon :icon="['fas', 'clock-rotate-left']"></font-awesome-icon>
+                                Activity
+                            </button>
                             <button id="btn-shareable-open" class="btn btn-outline-primary me-2" @click="openShare()">
                                 <font-awesome-icon :icon="['fas', 'share-nodes']"></font-awesome-icon>
                                 Share
@@ -643,13 +652,13 @@ const items = ref([
             <div v-if="!shareLink.link">
                 <div class="mb-3">
                     <label for="expiration_data" class="form-label">Expiration Date</label>
-                    <DatePicker v-model="shareLink.expires_at" dateFormat="dd-mm-yy" showIcon fluid
-                        iconDisplay="input" :minDate="dateNow.toJSDate()"/>
+                    <DatePicker v-model="shareLink.expires_at" dateFormat="dd-mm-yy" showIcon fluid iconDisplay="input"
+                        :minDate="dateNow.toJSDate()" />
                 </div>
                 <div class="mb-3">
                     <label for="expiration_data" class="form-label">Password</label>
-                    <input type="password" id="input-shareable-password"  class="form-control"
-                        v-model="shareLink.password" autocomplete="off"/>
+                    <input type="password" id="input-shareable-password" class="form-control"
+                        v-model="shareLink.password" autocomplete="off" />
                 </div>
 
                 <div class="mb-3">
@@ -679,6 +688,7 @@ const items = ref([
                 </div>
             </div>
         </Dialog>
+        <ActivityDialog v-model="showActivity" model="App\Models\Quote" :id="quote.id"></ActivityDialog>
     </div>
 </template>
 <style scoped>

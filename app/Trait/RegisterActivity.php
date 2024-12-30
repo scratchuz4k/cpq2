@@ -2,11 +2,16 @@
 
 namespace App\Trait;
 
-use App\Models\ActivityLog;
+use App\Models\Activity;
 use Illuminate\Database\Eloquent\Model;
 
 trait RegisterActivity
 {
+    public function activity()
+    {
+        return $this->morphMany(Activity::class, 'activitable');
+    }
+
     protected static function eventsToBeRecorded()
     {
         $events = collect([
@@ -47,10 +52,14 @@ trait RegisterActivity
                 $changes = $model->getDirty();
                 foreach ($changes as $field => $newValue) {
                     $originalValue = $model->getOriginal($field);
+                    if (isset($model->activity_field) &&  !in_array($field, $model->activity_field)) {
+                        continue;
+                    }
                     $data[] = "Field '$field' changed from '$originalValue' to '$newValue'.";
                 }
 
-                ActivityLog::create([
+
+                Activity::create([
                     'operation' => $description,
                     'activitable_id' => $model->getValue($model),
                     'activitable_type' => $model::class,

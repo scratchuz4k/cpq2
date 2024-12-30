@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\ActivityController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\SpaController;
 use App\Http\Controllers\Api\UserController;
@@ -29,6 +30,7 @@ Route::prefix("external")->group(function () {
 
 Route::apiResources([
     'apis' => ApiConfigurationController::class,
+    'activity' => ActivityController::class,
     'accounts' => AccountController::class,
     'contacts' => ContactController::class,
     'products' => ProductController::class,

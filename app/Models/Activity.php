@@ -5,7 +5,7 @@ namespace App\Models;
 use App\Trait\SetTenantId;
 use Illuminate\Database\Eloquent\Model;
 
-class ActivityLog extends Model
+class Activity extends Model
 {
     use SetTenantId;
     protected $fillable = [
