@@ -15,7 +15,11 @@
                                 <font-awesome-icon v-else :icon="['fas', 'minus']"></font-awesome-icon>
                             </button>
 
-                            {{ activity.user.name }} <p class="badge bg-primary text-white">{{ activity.operation }}</p>
+                            {{ activity.user.name }}
+                            <p class="smaller badge bg-secondary text-white ">{{ activity.activitable_type }}</p>
+                            <p class="badge  text-white mx-2"
+                                :class="[activity.operation == 'created' ? 'bg-success' : 'bg-primary']">{{
+                                    activity.operation }}</p>
                         </td>
                         <td>
                             <p class="text-end"> {{ format.date(activity.created_at) }}</p>
@@ -38,7 +42,8 @@ import Dialog from "primevue/dialog";
 const props = defineProps({
     model: String,
     id: Number,
-    modelValue: Boolean
+    modelValue: Boolean,
+    filters: Array
 })
 const emit = defineEmits(["update:modelValue"])
 const proxyValue = computed({
@@ -49,20 +54,10 @@ const activityLog = ref([])
 const getActivity = async () => {
     let string = queryString.stringify({
         page: 1,
-        filters: JSON.stringify([
-            {
-                column: "activitable_type",
-                operator: "equals",
-                value: props.model
-            },
-            {
-                column: "activitable_id",
-                operator: "equals",
-                value: props.id
-            }
-        ]),
+        filters: JSON.stringify(props.filters),
         order: "desc",
         orderBy: "created_at",
+        limit: 50
     })
     const res = await axios.get('/api/activity' + '?' + string)
     activityLog.value = res.data.data

@@ -688,7 +688,28 @@ const items = ref([
                 </div>
             </div>
         </Dialog>
-        <ActivityDialog v-model="showActivity" model="App\Models\Quote" :id="quote.id"></ActivityDialog>
+        <ActivityDialog v-model="showActivity" model="App\Models\Quote" :id="quote.id" :filters="[
+            {
+                column: 'activitable_type',
+                operator: 'equals',
+                value: 'App\\Models\\Quote'
+            },
+            {
+                column: 'activitable_id',
+                operator: 'in',
+                value: quote.id
+            }, {
+                column: 'activitable_type',
+                operator: 'equals',
+                value: 'App\\Models\\QuoteItem',
+                function: 'orWhere'
+            },
+            {
+                column: 'activitable_id',
+                operator: 'in',
+                value: quote.items.map(x => x.id).join(','),
+            }
+        ]"></ActivityDialog>
     </div>
 </template>
 <style scoped>
