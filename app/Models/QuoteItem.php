@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Trait\SetTenantId;
+use App\Trait\RegisterActivity;
 use App\Models\Scopes\TenantScope;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -11,7 +12,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class QuoteItem extends Model
 {
-    use HasFactory, SetTenantId;
+    use HasFactory, SetTenantId, RegisterActivity;
     protected $fillable = [
         "quote_id",
         "product_id",

@@ -4,7 +4,7 @@ namespace App\Models;
 
 use App\Trait\SetTenantId;
 use App\Models\Scopes\TenantScope;
-use Illuminate\Support\Facades\Auth;
+use App\Trait\RegisterActivity;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Quote extends Model
 {
-    use HasFactory, SetTenantId;
+    use HasFactory, SetTenantId, RegisterActivity;
 
     protected $fillable = [
         "account_id",
@@ -46,7 +46,6 @@ class Quote extends Model
     protected static function booted(): void
     {
         static::addGlobalScope(new TenantScope);
-
     }
     public function user(): BelongsTo
     {
