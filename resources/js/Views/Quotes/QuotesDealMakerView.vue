@@ -708,7 +708,18 @@ const items = ref([
                 column: 'activitable_id',
                 operator: 'in',
                 value: quote.items.map(x => x.id).join(','),
-            }
+            },
+            {
+                column: 'activitable_type',
+                operator: 'equals',
+                value: 'App\\Models\\QuoteDiscount',
+                function: 'orWhere'
+            },
+            {
+                column: 'activitable_id',
+                operator: 'in',
+                value: quote.discounts.map(x => x.id).join(','),
+            },
         ]"></ActivityDialog>
     </div>
 </template>

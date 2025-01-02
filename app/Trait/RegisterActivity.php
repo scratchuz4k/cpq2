@@ -55,7 +55,7 @@ trait RegisterActivity
                     if (isset($model->activity_field) &&  !in_array($field, $model->activity_field)) {
                         continue;
                     }
-                    $data[] = "Field '$field' changed from '$originalValue' to '$newValue'.";
+                    $data[] = ["field" =>  $field, "from" => $originalValue, "to" =>  $newValue];
                 }
 
 

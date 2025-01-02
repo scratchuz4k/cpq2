@@ -1,10 +1,16 @@
 <template>
-    <Dialog v-model:visible="proxyValue" modal :style="{ width: '60rem', marginTop: '100px' }" position="top"
-        :draggable="false">
+    <Dialog v-model:visible="proxyValue" modal :style="{ width: '60rem' }" position="top" :draggable="false">
         <template #header>
             <h2>Activity</h2>
         </template>
         <table class="table w-100">
+            <thead>
+                <tr>
+                    <th style="width: 50%;">Field</th>
+                    <th>From</th>
+                    <th class="text-end">To</th>
+                </tr>
+            </thead>
             <tbody>
                 <template v-for="activity in activityLog">
                     <tr>
@@ -26,8 +32,14 @@
                         </td>
                     </tr>
                     <tr v-for="item in activity.data" v-if="activity.show_data">
-                        <td colspan="3">
-                            <p class="small">{{ item }}</p>
+                        <td>
+                            <p class="small">{{ item.field }}</p>
+                        </td>
+                        <td>
+                            <p class="small">{{ item.from ?? 'null' }}</p>
+                        </td>
+                        <td class="text-end">
+                            <p class="small">{{ item.to ?? 'null' }}</p>
                         </td>
                     </tr>
                 </template>
