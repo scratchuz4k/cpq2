@@ -1,50 +1,61 @@
 <template>
     <Dialog v-model:visible="proxyValue" modal :style="{ width: '60rem' }" position="top" :draggable="false">
         <template #header>
-            <h2>Activity</h2>
+            <div>
+                <h2>Activity</h2>
+                <p>This dialog contains the last activities for the selected entities</p>
+            </div>
         </template>
-        <table class="table w-100">
-            <thead>
-                <tr>
-                    <th style="width: 50%;">Field</th>
-                    <th>From</th>
-                    <th class="text-end">To</th>
-                </tr>
-            </thead>
-            <tbody>
-                <template v-for="activity in activityLog">
-                    <tr>
-                        <td colspan="2">
-                            <button class="btn p-0" @click="toggle(activity)">
-                                <font-awesome-icon v-if="!activity.show_data"
-                                    :icon="['fas', 'plus']"></font-awesome-icon>
-                                <font-awesome-icon v-else :icon="['fas', 'minus']"></font-awesome-icon>
-                            </button>
+        <div style="position: relative;">
+            <table class="table w-100">
+                <thead>
+                    <tr style="position:sticky; top: 0;">
+                        <th style="width: 40%;">Field</th>
+                        <th style="width: 30%;">From</th>
+                        <th>To</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <template v-for="activity in activityLog">
+                        <tr @click="toggle(activity)" style="cursor: pointer;">
+                            <td colspan="2">
+                                <p>
+                                    <!-- <button class="btn p-0">
+                                        <font-awesome-icon v-if="!activity.show_data"
+                                            :icon="['fas', 'plus']"></font-awesome-icon>
+                                        <font-awesome-icon v-else :icon="['fas', 'minus']"></font-awesome-icon>
+                                    </button> -->
 
-                            {{ activity.user.name }}
-                            <p class="smaller badge bg-secondary text-white ">{{ activity.activitable_type }}</p>
-                            <p class="badge  text-white mx-2"
-                                :class="[activity.operation == 'created' ? 'bg-success' : 'bg-primary']">{{
-                                    activity.operation }}</p>
-                        </td>
-                        <td>
-                            <p class="text-end"> {{ format.date(activity.created_at) }}</p>
-                        </td>
-                    </tr>
-                    <tr v-for="item in activity.data" v-if="activity.show_data">
-                        <td>
-                            <p class="small">{{ item.field }}</p>
-                        </td>
-                        <td>
-                            <p class="small">{{ item.from ?? 'null' }}</p>
-                        </td>
-                        <td class="text-end">
-                            <p class="small">{{ item.to ?? 'null' }}</p>
-                        </td>
-                    </tr>
-                </template>
-            </tbody>
-        </table>
+                                    <span class="me-3">{{ activity.user.name }}</span>
+                                    <span class="smaller badge bg-secondary text-white ">
+                                        {{ activity.activitable_type }}
+                                    </span>
+                                </p>
+                            </td>
+                            <td>
+                                <p class="text-end">
+                                    {{ format.date(activity.created_at) }}
+                                    <span class="badge text-white ms-2"
+                                        :class="[activity.operation == 'created' ? 'bg-success' : 'bg-primary']">{{
+                                            activity.operation }}</span>
+                                </p>
+                            </td>
+                        </tr>
+                        <tr v-for="item in activity.data" v-if="activity.show_data" class="field-info">
+                            <td>
+                                <p class="small">{{ item.field }}</p>
+                            </td>
+                            <td>
+                                <p class="small">{{ item.from ?? 'null' }}</p>
+                            </td>
+                            <td>
+                                <p class="small">{{ item.to ?? 'null' }}</p>
+                            </td>
+                        </tr>
+                    </template>
+                </tbody>
+            </table>
+        </div>
     </Dialog>
 </template>
 <script setup>
@@ -86,3 +97,8 @@ watch(proxyValue, () => {
 
 })
 </script>
+<style scoped>
+.field-info>td {
+    background-color: whitesmoke
+}
+</style>
