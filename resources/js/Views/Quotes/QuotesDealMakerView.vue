@@ -690,35 +690,16 @@ const items = ref([
         </Dialog>
         <ActivityDialog v-model="showActivity" model="App\Models\Quote" :id="quote.id" :filters="[
             {
-                column: 'activitable_type',
-                operator: 'equals',
-                value: 'App\\Models\\Quote'
+                entity: 'Quote',
+                values: quote.id
             },
             {
-                column: 'activitable_id',
-                operator: 'in',
-                value: quote.id
-            }, {
-                column: 'activitable_type',
-                operator: 'equals',
-                value: 'App\\Models\\QuoteItem',
-                function: 'orWhere'
+                entity: 'QuoteItem',
+                values: quote.items.map(x => x.id).join(',')
             },
             {
-                column: 'activitable_id',
-                operator: 'in',
-                value: quote.items.map(x => x.id).join(','),
-            },
-            {
-                column: 'activitable_type',
-                operator: 'equals',
-                value: 'App\\Models\\QuoteDiscount',
-                function: 'orWhere'
-            },
-            {
-                column: 'activitable_id',
-                operator: 'in',
-                value: quote.discounts.map(x => x.id).join(','),
+                entity: 'QuoteDiscount',
+                values: quote.discounts.map(x => x.id).join(','),
             },
         ]"></ActivityDialog>
     </div>

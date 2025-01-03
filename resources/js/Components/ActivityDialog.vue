@@ -1,5 +1,5 @@
 <template>
-    <Dialog v-model:visible="proxyValue" modal :style="{ width: '60rem' }" position="top" :draggable="false">
+    <Dialog v-model:visible="proxyValue" modal :style="{ width: '60rem' }" position="top" :draggable="false"  >
         <template #header>
             <div>
                 <h2>Activity</h2>
@@ -7,6 +7,13 @@
             </div>
         </template>
         <div style="position: relative;">
+            <div class="d-flex">
+                <div class="mb-3">
+                    <label class="form-label">Entities:</label>
+                    <MultiSelect v-model="entities" :options="options" class="form-select p-0" :maxSelectedLabels="1">
+                    </MultiSelect>
+                </div>
+            </div>
             <table class="table w-100">
                 <thead>
                     <tr style="position:sticky; top: 0;">
@@ -62,12 +69,41 @@
 import { ref, onMounted, computed, watch } from "vue"
 import queryString from 'query-string';
 import Dialog from "primevue/dialog";
+import MultiSelect from 'primevue/multiselect';
 const props = defineProps({
     model: String,
     id: Number,
     modelValue: Boolean,
     filters: Array
 })
+
+const options = props.filters.map(x => x.entity)
+const entities = ref(props.filters.map(x => x.entity))
+
+const getFilters = () => {
+    let temp = []
+    props.filters.forEach((e, i) => {
+        if (!entities.value.includes(e.entity)) {
+            return
+        }
+        let item = {
+            column: 'activitable_type',
+            operator: 'equals',
+            value: 'App\\Models\\' + e.entity,
+            function: 'orWhere'
+        }
+        item.function = i == 0 ? 'where' : 'orWhere'
+        temp.push(item)
+        temp.push({
+            column: 'activitable_id',
+            operator: 'in',
+            value: e.values,
+        },)
+    })
+    debugger
+    return temp
+}
+
 const emit = defineEmits(["update:modelValue"])
 const proxyValue = computed({
     get: () => props.modelValue,
@@ -77,7 +113,7 @@ const activityLog = ref([])
 const getActivity = async () => {
     let string = queryString.stringify({
         page: 1,
-        filters: JSON.stringify(props.filters),
+        filters: JSON.stringify(getFilters()),
         order: "desc",
         orderBy: "created_at",
         limit: 50
@@ -95,6 +131,9 @@ onMounted(() => {
 watch(proxyValue, () => {
     getActivity()
 
+})
+watch(entities, () => {
+    getActivity()
 })
 </script>
 <style scoped>
