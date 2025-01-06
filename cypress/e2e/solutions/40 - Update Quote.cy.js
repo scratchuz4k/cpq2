@@ -1,4 +1,4 @@
-describe('Creates a Connectivity quote', () => {
+describe('40 - Update Quote.cy', () => {
     beforeEach(() => {
         cy.login("companyadmin@example.com", "werwerwer")
     })
