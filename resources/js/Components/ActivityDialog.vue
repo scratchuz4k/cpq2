@@ -1,5 +1,5 @@
 <template>
-    <Dialog v-model:visible="proxyValue" modal :style="{ width: '60rem' }" position="top" :draggable="false"  >
+    <Dialog v-model:visible="proxyValue" modal :style="{ width: '60rem' }" position="top" :draggable="false">
         <template #header>
             <div>
                 <h2>Activity</h2>
@@ -62,14 +62,19 @@
                     </template>
                 </tbody>
             </table>
+
+            <Paginator v-model:first="meta.first" :rows="meta.limit" :totalRecords="meta.total"
+                :rowsPerPageOptions="[20, 30, 50]" @page="handlePaginator">
+            </Paginator>
         </div>
     </Dialog>
 </template>
 <script setup>
-import { ref, onMounted, computed, watch } from "vue"
+import { ref, onMounted, computed, watch, reactive } from "vue"
 import queryString from 'query-string';
 import Dialog from "primevue/dialog";
 import MultiSelect from 'primevue/multiselect';
+import Paginator from 'primevue/paginator';
 const props = defineProps({
     model: String,
     id: Number,
@@ -79,6 +84,13 @@ const props = defineProps({
 
 const options = props.filters.map(x => x.entity)
 const entities = ref(props.filters.map(x => x.entity))
+const meta = reactive({
+    page: 1,
+    total: 0,
+    first: 1,
+    limit: 20,
+    isLoading: false
+})
 
 const getFilters = () => {
     let temp = []
@@ -100,7 +112,6 @@ const getFilters = () => {
             value: e.values,
         },)
     })
-    debugger
     return temp
 }
 
@@ -112,14 +123,16 @@ const proxyValue = computed({
 const activityLog = ref([])
 const getActivity = async () => {
     let string = queryString.stringify({
-        page: 1,
+        page: meta.page,
         filters: JSON.stringify(getFilters()),
         order: "desc",
         orderBy: "created_at",
-        limit: 50
+        limit: meta.limit
     })
     const res = await axios.get('/api/activity' + '?' + string)
     activityLog.value = res.data.data
+    meta.total = res.data.meta.total
+    meta.first = (meta.page - 1) * meta.limit
 }
 
 const toggle = (activity) => {
@@ -135,6 +148,11 @@ watch(proxyValue, () => {
 watch(entities, () => {
     getActivity()
 })
+const handlePaginator = (ev) => {
+    meta.limit = ev.rows
+    meta.page = ev.page + 1
+    getActivity()
+}
 </script>
 <style scoped>
 .field-info>td {

@@ -688,7 +688,7 @@ const items = ref([
                 </div>
             </div>
         </Dialog>
-        <ActivityDialog v-model="showActivity" model="App\Models\Quote" :id="quote.id" :filters="[
+        <ActivityDialog v-model="showActivity"  :filters="[
             {
                 entity: 'Quote',
                 values: quote.id
