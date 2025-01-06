@@ -54,7 +54,7 @@ const getData = async () => {
     let string = queryString.stringify({
         ...form,
         page: meta.page,
-        columns: props.columns.map(x => x.data).join(","),
+        columns: props.columns.filter(column => column.data !== 'actions').map(x => x.data).join(","),
         filters: JSON.stringify([...form.filters]),
         search: global.value
     })
@@ -122,6 +122,10 @@ const getValue = (item, key) => {
     return result;
 }
 
+emitter.on("datatable-refresh", () => {
+    getData();
+})
+
 setFilters()
 
 watch(() => [
@@ -141,8 +145,7 @@ getData()
 
 </script>
 <template>
-    <DataTable :tableProps="props.tableProps" :value="data" :rows="form.limit" stripedRows
-        :reorderableColumns="false">
+    <DataTable :tableProps="props.tableProps" :value="data" :rows="form.limit" stripedRows :reorderableColumns="false">
         <template #header>
             <div class="d-flex justify-content-between">
                 <div>
@@ -164,7 +167,7 @@ getData()
             </div>
         </template>
         <Column v-for="(column, key) in columns.filter(x => !x.hide)" :field="column.data" :style="column.style">
-            <template #header>
+            <template #header v-if="column.data != 'actions'">
                 <div class="d-flex justify-content-between align-items-center w-100 pe-3 position-relative">
                     <b class="column-title sortable d-inline-flex align-items-center" @click="sortBy(column.data)"
                         :style="{ textDecoration: column.data == form.orderBy ? 'underline' : 'none' }">
@@ -220,11 +223,12 @@ getData()
                 </div>
             </template>
             <template #body="{ data, field, index }">
-                <slot v-if="usedSlots.includes(field)" :index="index" :name="field" :value="getValue(data, field)" :id="`${field}-${index}`"/>
+                <slot v-if="usedSlots.includes(field)" :index="index" :data="data" :name="field"
+                    :value="getValue(data, field)" :id="`${field}-${index}`" />
                 <template v-else>{{ getValue(data, field) }}</template>
             </template>
         </Column>
-        <Column v-if="allow.update || allow.link || allow.delete" :class="['p-0']" style="width:10%;">
+        <Column v-if="allow.update || allow.link || allow.delete" :class="['p-0']" style="width:auto;">
             <template #body="{ data, index }">
                 <div class="d-flex justify-content-center">
                     <template v-if="allow.update">
@@ -273,6 +277,10 @@ getData()
 }
 
 .p-datatable {
+    z-index: 1;
+}
+
+.p-datatable-thead {
     z-index: 1;
 }
 

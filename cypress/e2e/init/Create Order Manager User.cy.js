@@ -1,16 +1,10 @@
 const crypto = require("crypto");
-const {getCurrentDate, generateHash} = require("../../support/utils.js");
 
-const slugify = (string) => {
-    return string
-        .toLowerCase() // Converte para letras minúsculas
-        .trim() // Remove espaços em branco no início e no final
-        .replace(/[^\w\s-]/g, '') // Remove caracteres especiais (exceto espaços e hífens)
-        .replace(/\s+/g, '-') // Substitui espaços por hífens
-        .replace(/-+/g, '-'); // Remove múltiplos hífens consecutivos
+const user = {
+    name: 'Order Manager',
+    email: 'orders@example.com',
+    password: 'werwerwer'
 }
-const temp = getCurrentDate()
-const user = { name: slugify(temp), email: slugify(temp) + "@email.com", password: generateHash(temp) }
 
 describe("Create Order Manager User.cy", () => {
     it("Creates Order Manager User", () => {

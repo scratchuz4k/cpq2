@@ -2,7 +2,7 @@
 import _ from 'lodash'
 import {reactive, ref} from 'vue';
 import InputQuantity from "@/Components/InputQuantity.vue";
-import {router} from "@inertiajs/vue3";
+import {createOrder} from "@/Composables/useOrders.js";
 const props = defineProps({
     modelValue: Object,
     preview: Boolean
@@ -49,7 +49,12 @@ const changeQuantity = async (item, ev) => {
 
 const items = ref([
     { label: 'Home', url: '/dashboard' },
-    { label: `Quote #${quote?.id}`, url: quote ? `/quotes/${quote.id}/edit` : '#' },
+    {
+        label: `Quote #${quote?.id}`,
+        url: quote
+            ? (['REGISTRY', 'ORDERED'].includes(quote.status)) ? '#' : `/quotes/${quote.id}/edit`
+            : '#'
+    },
     { label: 'Summary' }
 ]);
 
@@ -64,6 +69,10 @@ const items = ref([
             <p class="mb-0 text-primary bold fs-5 pt-1">STEP 2/2</p>
         </div>
         <div class="d-flex justify-content-between align-items-center">
+            <button class="btn btn-outline-primary me-2" @click="createOrder(quote.id)">
+                <font-awesome-icon class="me-2" :icon="['fas', 'thumbtack']">
+                </font-awesome-icon>Send to Order
+            </button>
             <button v-if="modelValue.items.length == 0" class="btn btn-outline-primary me-2" type="button" disabled>
                 <font-awesome-icon :icon="['far', 'file-pdf']"></font-awesome-icon>
                 Preview PDF
@@ -202,6 +211,10 @@ const items = ref([
 
     <div>
         <div class="d-flex justify-content-end align-items-center">
+            <button class="btn btn-outline-primary me-2" @click="createOrder(quote.id)">
+                <font-awesome-icon class="me-2" :icon="['fas', 'thumbtack']">
+                </font-awesome-icon>Send to Order
+            </button>
             <button v-if="modelValue.items.length == 0" class="btn btn-outline-primary me-2" type="button" disabled>
                 <font-awesome-icon :icon="['far', 'file-pdf']"></font-awesome-icon>
                 Preview PDF

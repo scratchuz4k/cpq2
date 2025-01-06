@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\BrandController;
 use App\Http\Controllers\Api\PriceController;
 use App\Http\Controllers\Api\QuoteController;
+use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\TokenController;
 use App\Http\Controllers\Api\RegionController;
 use App\Http\Controllers\Api\AccountController;
@@ -14,6 +15,7 @@ use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\ExternalController;
 use App\Http\Controllers\Api\SupplierController;
 use App\Http\Controllers\Api\QuoteItemController;
+use App\Http\Controllers\Api\OrderItemController;
 use App\Http\Controllers\Api\PermissionController;
 use App\Http\Controllers\Api\SolutionTypeController;
 use App\Http\Controllers\Api\ApiConfigurationController;
@@ -26,6 +28,8 @@ Route::prefix("external")->group(function () {
     Route::post("get-articles-from-shop-blocks", [ExternalController::class, "getArticlesFromShopBlocks"]);
 });
 
+Route::get('/quotes/{quote}/create_order', [QuoteController::class, 'createOrder'])->name('quotes.order');
+
 
 Route::apiResources([
     'apis' => ApiConfigurationController::class,
@@ -34,6 +38,8 @@ Route::apiResources([
     'products' => ProductController::class,
     'quotes' => QuoteController::class,
     'quote-items' => QuoteItemController::class,
+    'orders' => OrderController::class,
+    'order-items' => OrderItemController::class,
     'solution-types' => SolutionTypeController::class,
     'permissions' => PermissionController::class,
     'brands' => BrandController::class,

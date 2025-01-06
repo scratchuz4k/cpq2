@@ -38,8 +38,18 @@ const quoteTotal = (key) => {
 
 const items = ref([
     { label: 'Home', url: '/dashboard' },
-    { label: `Quote #${quote?.id}`, url: quote ? `/quotes/${quote.id}/edit` : '#' },
-    { label: `Summary`, url: quote ? `/quotes/${quote.id}` : '#' },
+    {
+        label: `Quote #${props.quote?.id}`,
+        url: props.quote
+            ? (['REGISTRY', 'ORDERED'].includes(props.quote.status)) ? '#' : `/quotes/${props.quote.id}/edit`
+            : '#'
+    },
+    {
+        label: `Summary`,
+        url: props.quote
+            ? (['REGISTRY', 'ORDERED'].includes(props.quote.status)) ? '#' : `/quotes/${props.quote.id}`
+            : '#'
+    },
     { label: 'Preview PDF' }
 ]);
 
