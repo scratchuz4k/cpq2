@@ -12,6 +12,7 @@ const props = defineProps({
     pricePlans: Array
 })
 const showShareDialog = ref(false)
+let showModal = ref(false)
 const isLoading = ref(false)
 
 const getLeafNodesWithChildren = (objects) => {
@@ -667,7 +668,31 @@ const items = ref([
                 </div>
             </div>
         </div>
-
+        <Dialog v-model:visible="showModal" modal :style="{ marginTop: '4rem', maxWidth: '980px' }"
+                :breakpoints="{ '1199px': '75vw', '575px': '90vw' }" :draggable="false" position="top">
+            <div class="panel px-3">
+                <div class="row">
+                    <h2>Rejected Reasons</h2>
+                    <table class="table reject-reasons-table my-4">
+                        <thead>
+                        <tr>
+                            <th style="width: 5%">Order</th>
+                            <th>Note</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr v-for="order in quote.orders">
+                            <td>#{{ order.id }}</td>
+                            <td>
+                                <pre class="custom-pre">{{ order.note }}</pre>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <button class="btn btn-primary" @click="showModal = false">Close</button>
+                </div>
+            </div>
+        </Dialog>
         <Dialog v-model:visible="showShareDialog" modal :style="{ width: '40rem' }" :draggable="false">
             <template #header>
                 <h2>Share quote</h2>
