@@ -7,6 +7,7 @@ import { ref } from "vue";
 import Button from "primevue/button";
 import { createOrder } from "@/Composables/useOrders.js";
 import Datatable from "@/Components/Datatable.vue";
+import {hasRole} from "@/Composables/useAuth.js";
 
 DataTable.use(DataTablesCore);
 const props = defineProps({
@@ -95,19 +96,19 @@ const items = ref([
                     </template>
                     <template #actions="{ data, value, index }">
                         <div v-if="!['REGISTRY', 'ORDERED'].includes(data.status)" class="d-flex justify-content-end">
-                            <button v-if="auth_user === data.user_id" type="button" title="Send to Order" :id="'datatable-btn-' + index + '-crete-order'"
+                            <button v-if="auth_user === data.user_id || hasRole('Super Admin')" type="button" title="Send to Order" :id="'datatable-btn-' + index + '-crete-order'"
                                 @click="createOrderAndRefresh(data.id)" class="btn px-2 py-0 mx-1 border-0">
                                 <font-awesome-icon :icon="['fas', 'thumbtack']" />
                             </button>
-                            <Link v-if="auth_user === data.user_id" :id="'datatable-btn-' + index + '-edit'" :href="'quotes/' + data.id + '/edit'"
+                            <Link v-if="auth_user === data.user_id || hasRole('Super Admin')" :id="'datatable-btn-' + index + '-edit'" :href="'quotes/' + data.id + '/edit'"
                                 class="btn px-2 py-0 mx-1 border-0">
                             <font-awesome-icon :icon="['fas', 'edit']" />
                             </Link>
-                            <Link :id="'datatable-btn-' + index + '-show'" :href="(auth_user === data.user_id) ? 'quotes/' + data.id : 'quotes/' + data.id + '/preview'"
+                            <Link :id="'datatable-btn-' + index + '-show'" :href="(auth_user === data.user_id || hasRole('Super Admin')) ? 'quotes/' + data.id : 'quotes/' + data.id + '/preview'"
                                 class="btn px-2 py-0 mx-1 border-0">
                             <font-awesome-icon :icon="['fas', 'eye']" />
                             </Link>
-                            <button v-if="auth_user === data.user_id" :id="'datatable-btn-' + index + '-delete'" class="btn px-2 py-0 mx-1 border-0"
+                            <button v-if="auth_user === data.user_id || hasRole('Super Admin')" :id="'datatable-btn-' + index + '-delete'" class="btn px-2 py-0 mx-1 border-0"
                                 @click="deleteRecord(data.id)">
                                 <font-awesome-icon icon="fas fa-trash-alt" />
                             </button>
