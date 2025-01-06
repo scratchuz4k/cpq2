@@ -2,6 +2,7 @@
 
 namespace App\Policies;
 
+use App\Models\Quote;
 use App\Models\QuoteItem;
 use App\Models\User;
 use Illuminate\Auth\Access\Response;
@@ -36,10 +37,18 @@ class QuoteItemPolicy
      */
     public function create(User $user): bool
     {
-        if ($user->can("create $this->model")) {
-            return true;
+        if (!request()->has('quote_id')) {
+            return false;
         }
-        return false;
+
+        $quote = Quote::find(request('quote_id'));
+
+        if ($user->id !== $quote->user_id) return false;
+
+        if (!$user->can("create $this->model")) {
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -47,10 +56,15 @@ class QuoteItemPolicy
      */
     public function update(User $user, QuoteItem $quoteItem): bool
     {
-        if ($user->can("update $this->model")) {
-            return true;
+        if ($user->id !== $quoteItem->quote->user_id) {
+            return false;
         }
-        return false;
+
+        if (!$user->can("update $this->model")) {
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -58,10 +72,15 @@ class QuoteItemPolicy
      */
     public function delete(User $user, QuoteItem $quoteItem): bool
     {
-        if ($user->can("delete $this->model")) {
-            return true;
+        if ($user->id !== $quoteItem->quote->user_id) {
+            return false;
         }
-        return false;
+
+        if (!$user->can("delete $this->model")) {
+            return false;
+        }
+
+        return true;
     }
 
     /**

@@ -2,10 +2,11 @@
 import DataTable from 'datatables.net-vue3';
 import DataTablesCore from 'datatables.net-bs5';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head, Link } from '@inertiajs/vue3';
+import {Head, Link, usePage} from '@inertiajs/vue3';
 import { ref } from "vue";
 import Button from "primevue/button";
 import { createOrder } from "@/Composables/useOrders.js";
+import Datatable from "@/Components/Datatable.vue";
 
 DataTable.use(DataTablesCore);
 const props = defineProps({
@@ -27,6 +28,8 @@ const props = defineProps({
     },
 })
 
+const page = usePage()
+const auth_user = page.props.auth.user.id;
 const createOrderAndRefresh = async (id) => {
     const res = await createOrder(id)
     if (res) {
@@ -46,7 +49,11 @@ const deleteRecord = (id) => {
             notyf.success('Removed with success');
             return
         } catch (err) {
-            notyf.error(err?.response?.data?.message ?? 'Something went wrong')
+            let message = 'Something went wrong'
+            if (err.response?.status === 403) {
+                message = 'This action is unauthorized.'
+            }
+            notyf.error(err?.response?.data?.message ?? message)
         }
     })
 }
@@ -88,19 +95,19 @@ const items = ref([
                     </template>
                     <template #actions="{ data, value, index }">
                         <div v-if="!['REGISTRY', 'ORDERED'].includes(data.status)" class="d-flex justify-content-end">
-                            <button type="button" title="Send to Order" :id="'datatable-btn-' + index + '-crete-order'"
+                            <button v-if="auth_user === data.user_id" type="button" title="Send to Order" :id="'datatable-btn-' + index + '-crete-order'"
                                 @click="createOrderAndRefresh(data.id)" class="btn px-2 py-0 mx-1 border-0">
                                 <font-awesome-icon :icon="['fas', 'thumbtack']" />
                             </button>
-                            <Link :id="'datatable-btn-' + index + '-edit'" :href="'quotes/' + data.id + '/edit'"
+                            <Link v-if="auth_user === data.user_id" :id="'datatable-btn-' + index + '-edit'" :href="'quotes/' + data.id + '/edit'"
                                 class="btn px-2 py-0 mx-1 border-0">
                             <font-awesome-icon :icon="['fas', 'edit']" />
                             </Link>
-                            <Link :id="'datatable-btn-' + index + '-show'" :href="'quotes/' + data.id"
+                            <Link :id="'datatable-btn-' + index + '-show'" :href="(auth_user === data.user_id) ? 'quotes/' + data.id : 'quotes/' + data.id + '/preview'"
                                 class="btn px-2 py-0 mx-1 border-0">
                             <font-awesome-icon :icon="['fas', 'eye']" />
                             </Link>
-                            <button :id="'datatable-btn-' + index + '-delete'" class="btn px-2 py-0 mx-1 border-0"
+                            <button v-if="auth_user === data.user_id" :id="'datatable-btn-' + index + '-delete'" class="btn px-2 py-0 mx-1 border-0"
                                 @click="deleteRecord(data.id)">
                                 <font-awesome-icon icon="fas fa-trash-alt" />
                             </button>
