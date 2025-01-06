@@ -668,11 +668,12 @@ const items = ref([
                 </div>
             </div>
         </div>
-        <Dialog v-model:visible="showModal" modal :style="{ marginTop: '4rem', maxWidth: '980px' }"
-                :breakpoints="{ '1199px': '75vw', '575px': '90vw' }" :draggable="false" position="top">
+        <Dialog v-model:visible="showModal" modal :style="{ width: '40rem' }" :draggable="false">
+            <template #header>
+                <h2>Rejected Reasons</h2>
+            </template>
             <div class="panel px-3">
                 <div class="row">
-                    <h2>Rejected Reasons</h2>
                     <table class="table reject-reasons-table my-4">
                         <thead>
                         <tr>
@@ -808,5 +809,9 @@ input[type="number"] {
     font-family: inherit;
     white-space: pre-wrap;
     word-wrap: break-word;
+}
+
+.p-dialog-header {
+    justify-content: right !important;
 }
 </style>
