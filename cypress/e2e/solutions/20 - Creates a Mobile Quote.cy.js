@@ -179,5 +179,11 @@ describe("Creates a Mobile Quote", () => {
         cy.get("body > div.swal2-container.swal2-center.swal2-backdrop-show > div > div.swal2-actions > button.swal2-confirm.btn.text-light.btn-lg.mr-2.fs-6.swal2-styled.swal2-default-outline").click()
     })
 
+    it("I can Create an order from a quote", () => {
+        cy.visit("/")
+        cy.get("#datatable-btn-0-crete-order").click()
+        cy.get('.swal2-confirm').eq(0).click()
+        cy.get(".notyf").contains("Order created with success")
+    })
 });
 

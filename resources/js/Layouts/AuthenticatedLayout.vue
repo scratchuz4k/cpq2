@@ -11,6 +11,7 @@ import { usePage } from "@inertiajs/vue3";
 
 const page = usePage();
 import * as Sentry from "@sentry/vue";
+import TopBarSearchable from "@/Components/TopBarSearchable.vue";
 Sentry.setUser({
     fullName: page.props.auth.user.name,
     email: page.props.auth.user.email,
@@ -18,7 +19,8 @@ Sentry.setUser({
 
 
 defineProps({
-    quote: Object
+    quote: Object,
+    order: Object
 })
 
 const visible = ref(false);
@@ -28,6 +30,8 @@ const results = reactive({
     quotes: [],
     accounts: []
 })
+const activeTab = ref(window.location.pathname.replace(/^\/|\/$/g, ''))
+
 
 const showSearch = () => {
     if (!search.value) {
@@ -90,10 +94,10 @@ watch(search, () => {
                         <a class="nav-link" href="#">ASSETS</a>
                     </li>
                     <li class="nav-item d-md-none d-lg-block">
-                        <a class="nav-link active" aria-current="page" href="#">QUOTES</a>
+                        <a class="nav-link" :class="{ 'active': activeTab === 'quotes' }" aria-current="page" :href="route('quotes.index')">QUOTES</a>
                     </li>
                     <li class="nav-item d-md-none d-lg-block">
-                        <a class="nav-link" href="#">ORDER</a>
+                        <a class="nav-link" :class="{ 'active': activeTab === 'orders' }" aria-current="page" :href="route('orders.index')">ORDER</a>
                     </li>
                     <li class="nav-item d-md-none d-lg-block">
                         <a class="nav-link" href="#">BILLING</a>
@@ -131,9 +135,11 @@ watch(search, () => {
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
                         <a class="nav-link" id="dashboard-tab" data-toggle="tab" href="/" role="tab"
-                            aria-controls="dashboard" aria-selected="false">DASHBOARD</a>
+                            aria-controls="dashboard" aria-selected="false"
+                           :class="{ 'active': activeTab === ''}"
+                        >DASHBOARD</a>
                     </li>
-                    <li class="nav-item">
+                    <li class="nav-item" v-if="!page.props.auth.roles.includes('Order Manager')">
                         <a class="nav-link" :class="{ 'active': $page.component == 'Quotes/Create' }" id="create-tab"
                             data-toggle="tab" href="/quotes/create" role="tab" aria-controls="create"
                             aria-selected="false">
@@ -141,76 +147,25 @@ watch(search, () => {
                             NEW
                         </a>
                     </li>
-                    <li class="nav-item" v-if="quote">
-                        <Link :href="route('quotes.configure', { quote: quote.id })" class="nav-link"
-                            :class="{ 'active': $page.component == 'Quotes/Configure' }">CONFIGURE</Link>
-                    </li>
-                    <li class="nav-item" v-if="quote">
-                        <Link :href="route('quotes.edit', { quote: quote.id })" class="nav-link"
-                            :class="{ 'active': $page.component == 'Quotes/Edit' }">PRICE</Link>
-                    </li>
-                    <li class="nav-item" v-if="quote">
-                        <Link :href="route('quotes.show', { quote: quote.id })" class="nav-link"
-                            :class="{ 'active': $page.component == 'Quotes/Show' }">QUOTE</Link>
-                    </li>
+                    <template v-if="quote && quote.status !== 'REGISTRY'">
+                        <li class="nav-item">
+                            <Link :href="route('quotes.configure', { quote: quote.id })" class="nav-link"
+                                :class="{ 'active': $page.component == 'Quotes/Configure' }">CONFIGURE</Link>
+                        </li>
+                        <li class="nav-item">
+                            <Link :href="route('quotes.edit', { quote: quote.id })" class="nav-link"
+                                :class="{ 'active': $page.component == 'Quotes/Edit' }">PRICE</Link>
+                        </li>
+                        <li class="nav-item">
+                            <Link :href="route('quotes.show', { quote: quote.id })" class="nav-link"
+                                :class="{ 'active': $page.component == 'Quotes/Show' }">QUOTE</Link>
+                        </li>
+                    </template>
                 </ul>
-                <form class="d-md-flex d-none" @submit.prevent="showSearch()">
-                    <div class="input-group">
-                        <input type="search" class="form-control" placeholder="Type to search" v-model="search">
-                        <button class="btn btn-primary btn-search" type="submit" id="button-addon2">
-                            <font-awesome-icon :icon="['fas', 'magnifying-glass']" />
-                        </button>
-                    </div>
-                </form>
+                <TopBarSearchable></TopBarSearchable>
             </div>
         </div>
     </nav>
-    <Dialog v-model:visible="visible" modal :style="{ width: '50rem', marginTop: '4rem' }"
-        :breakpoints="{ '1199px': '75vw', '575px': '90vw' }" :draggable="false" position="top">
-        <template #header>
-            <div class="d-flex align-items-center w-100">
-                <div class="search-control  d-flex align-items-center w-100">
-                    <font-awesome-icon :icon="['fas', 'search']"></font-awesome-icon>
-                    <input v-model="search" class="search-button mx-3 border-0 hover-0 w-100"
-                        placeholder="Search CloudMarket">
-                </div>
-            </div>
-        </template>
-        <Loader v-if="results.isLoading"></Loader>
-        <template v-if="results.quotes.length">
-            <p class="search-title">Quotes</p>
-            <a class="search-option" v-for="quote in results.quotes" :href="route('quotes.show', { quote: quote.id })">
-                <font-awesome-icon class="search-option-icon me-3" :icon="['far', 'file']"></font-awesome-icon>
-                <div class="w-100 m-0 d-flex justify-content-between">
-                    <p class="m-0">
-                        <b>#{{ quote.id }} - {{ quote.account?.name }} </b> / {{ quote.solution_type.name }} <br>
-                        <span style="font-size: 12px;"> {{ quote.user.name }} - {{ format.date(quote.updated_at) }}</span>
-                    </p>
-                    <p class="m-0">
-                        <span class="badge text-bg-secondary">{{ quote.status }}</span>
-                    </p>
-                </div>
-            </a>
-        </template>
-        <template v-if="results.accounts.length">
-            <p class="search-title">Accounts</p>
-            <a class="search-option" v-for="account in results.accounts"
-                :href="route('accounts.edit', { account: account.id })">
-                <font-awesome-icon class="search-option-icon me-3" :icon="['far', 'building']"></font-awesome-icon>
-                <div class="w-100 m-0 d-flex justify-content-between">
-                    <p class="m-0">
-                        <b>#{{ account.id }} - {{ account.name }} </b> / {{ account.reference }} <br>
-                        {{ format.date(account.updated_at) }}
-                    </p>
-                </div>
-            </a>
-        </template>
-        <template v-if="!results.accounts.length && !results.quotes.length">
-            <p class="m-0">
-                <b>No results found!</b>
-            </p>
-        </template>
-    </Dialog>
     <!-- Page Content -->
     <main>
         <div class="container ">

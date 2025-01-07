@@ -39,7 +39,7 @@ class QuoteItemController extends BaseController
             if (!env("APP_DEBUG")) {
                 Log::error($e->getMessage());
             }
-            throw new \Exception($e);
+            return response()->json($e->getMessage(), 500);
         }
         return response()->json($quoteItem);
     }

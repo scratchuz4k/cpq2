@@ -14,6 +14,9 @@ class QuoteDiscountResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        if (is_null($this->resource)) {
+            return [];
+        }
 
         $entity1 = app($this->discountable_type)::where('id', $this->discountable_id)->first();
 

@@ -29,7 +29,6 @@ class OpenreachLookupApi
             }
 
             return json_decode($json, true);
-
         } catch (\Exception $e) {
             return ['error' => $e->getMessage()];
         }

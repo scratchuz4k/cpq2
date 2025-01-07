@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use App\Trait\SetTenantId;
+use App\Enums\QuoteStatusesEnum;
+use App\Events\QuoteStatusEvent;
 use App\Models\Scopes\TenantScope;
 use App\Trait\RegisterActivity;
 use Illuminate\Database\Eloquent\Model;
@@ -47,6 +49,7 @@ class Quote extends Model
     {
         static::addGlobalScope(new TenantScope);
     }
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
@@ -66,6 +69,11 @@ class Quote extends Model
     public function itemsNoTree(): HasMany
     {
         return $this->hasMany(QuoteItem::class);
+    }
+
+    public function orders(): HasMany
+    {
+        return $this->hasMany(Order::class);
     }
     public function discounts(): HasMany
     {
@@ -97,6 +105,27 @@ class Quote extends Model
 
         $this->margin = $total_cost ? ($margin_value / $total_cost) * 100 : 100;
         $this->commission_value = $margin_value * ($this->commission_rate / 100);
-        $this->save();
+    }
+
+    public static function resolveStatus(Quote $quote): string {
+        $statuses_to_ignore = [
+            QuoteStatusesEnum::REJECTED->name,
+            QuoteStatusesEnum::REGISTRY->name,
+            QuoteStatusesEnum::ORDERED->name,
+        ];
+
+        if (in_array($quote->status, $statuses_to_ignore)) {
+            return $quote->status;
+        }
+
+        if ($quote->items->count()) {
+            return QuoteStatusesEnum::QUOTE->name;
+        }
+
+        if (!empty($quote->address_data)) {
+            return QuoteStatusesEnum::PRICE->name;
+        }
+
+        return QuoteStatusesEnum::CONFIGURE->name;
     }
 }

@@ -4,6 +4,8 @@ import { ref, reactive } from 'vue'
 import Dialog from "primevue/dialog";
 import DatePicker from 'primevue/datepicker';
 import { DateTime } from "luxon";
+import { createOrder } from "@/Composables/useOrders.js";
+import PrimaryButton from "@/Components/PrimaryButton.vue";
 
 const props = defineProps({
     modelValue: Object,
@@ -11,6 +13,7 @@ const props = defineProps({
 })
 const showActivity = ref(false)
 const showShareDialog = ref(false)
+let showModal = ref(false)
 const isLoading = ref(false)
 
 const getLeafNodesWithChildren = (objects) => {
@@ -200,6 +203,15 @@ const saveNewLine = async (item) => {
 const quoteTotal = (key) => {
     return quote.items.filter((x) => x.price_plan && x.price_plan.code == key).reduce((acc, item) => acc += item.total, 0)
 }
+const disableButtonSendToOrder = ref(false)
+const createOrderAndRedirect = async (id) => {
+    disableButtonSendToOrder.value = true
+    const res = await createOrder(id)
+    if (res) {
+        window.location = '/dashboard'
+    }
+    disableButtonSendToOrder.value = false
+}
 
 const openShare = () => {
     showShareDialog.value = true
@@ -246,7 +258,12 @@ const deleteShareLink = async () => {
 
 const items = ref([
     { label: 'Home', url: '/' },
-    { label: `Quote #${quote?.id}`, url: quote ? `/quotes/${quote.id}/edit` : '#' },
+    {
+        label: `Quote #${quote?.id}`,
+        url: quote
+            ? (['REGISTRY', 'ORDERED'].includes(quote.status)) ? '#' : `/quotes/${quote.id}/edit`
+            : '#'
+    },
     { label: 'Summary' },
 ]);
 
@@ -569,9 +586,14 @@ const items = ref([
                                 <font-awesome-icon :icon="['far', 'file-pdf']"></font-awesome-icon>
                                 Preview
                             </a>
-                            <button class="btn btn-primary">
+                            <button class="btn btn-outline-primary me-2">
                                 <font-awesome-icon class="me-2" :icon="['fas', 'envelope']">
                                 </font-awesome-icon> Email this quote
+                            </button>
+                            <button :disabled="disableButtonSendToOrder" class="btn btn-primary"
+                                @click="createOrderAndRedirect(quote.id)">
+                                <font-awesome-icon class="me-2" :icon="['fas', 'thumbtack']">
+                                </font-awesome-icon>Send to Order
                             </button>
                         </div>
                     </div>
@@ -585,6 +607,17 @@ const items = ref([
                             <br>
                             Contact Number: 0124567890<br>
                             Email: firstname.lastname@gmail.com
+                        </div>
+                    </InfoBox>
+                    <InfoBox v-if="quote.orders.length > 0">
+                        <div style="font-size: 14px;">
+                            <div class="mb-3">
+                                <h6>An Order related to this Quote was
+                                    <span class="badge text-bg-secondary">{{ quote.status }}</span>
+                                </h6>
+                                <button class="btn btn-sm btn-primary" @click="showModal = true">See Rejection
+                                    Notes</button>
+                            </div>
                         </div>
                     </InfoBox>
                     <div class="price-mobile-sidebar total-quote-discount px-4 pt-4 pb-2 mb-3">
@@ -644,7 +677,32 @@ const items = ref([
                 </div>
             </div>
         </div>
-
+        <Dialog v-model:visible="showModal" modal :style="{ width: '40rem' }" :draggable="false">
+            <template #header>
+                <h2>Rejected Reasons</h2>
+            </template>
+            <div class="panel px-3">
+                <div class="row">
+                    <table class="table reject-reasons-table my-4">
+                        <thead>
+                        <tr>
+                            <th style="width: 5%">Order</th>
+                            <th>Note</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr v-for="order in quote.orders">
+                            <td>#{{ order.id }}</td>
+                            <td>
+                                <pre class="custom-pre">{{ order.note }}</pre>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <button class="btn btn-primary" @click="showModal = false">Close</button>
+                </div>
+            </div>
+        </Dialog>
         <Dialog v-model:visible="showShareDialog" modal :style="{ width: '40rem' }" :draggable="false">
             <template #header>
                 <h2>Share quote</h2>
@@ -748,6 +806,11 @@ input[type="number"] {
     opacity: 0.75
 }
 
+.reject-reasons-table tr th,
+.reject-reasons-table tr td {
+    padding: 1rem !important;
+}
+
 .form-control {
     font-size: 0.9rem;
     line-height: 1.5rem;
@@ -763,5 +826,15 @@ input[type="number"] {
     background-color: #dfe3e6;
     color: #646464;
     border-color: #bdbdbd;
+}
+
+.custom-pre {
+    font-family: inherit;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+.p-dialog-header {
+    justify-content: right !important;
 }
 </style>

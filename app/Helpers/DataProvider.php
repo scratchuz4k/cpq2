@@ -2,6 +2,7 @@
 
 namespace App\Helpers;
 
+use App\Models\Order;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 
@@ -73,9 +74,8 @@ class DataProvider
         }
         if (count($orderByArray) == 2) {
             $table = $this->builder->getModel()->getTable();
-
-            $this->builder = $this->builder->select($table . '.*')->joinRelation(Str::camel($orderByArray[0]) . ' as ' . $orderByArray[0])
-                ->orderBy($orderByArray[0] . '.' . $orderByArray[1], $order);
+                $this->builder = $this->builder->select($table . '.*')->leftJoinRelation(Str::camel($orderByArray[0]) . ' as ' . $orderByArray[0])
+                    ->orderBy($orderByArray[0] . '.' . $orderByArray[1], $order);
             return  $this->builder->paginate(perPage: $limit, page: $page);
         }
         return $this->builder->paginate(perPage: $limit, page: $page);

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Web;
 
+use App\Enums\QuoteStatusesEnum;
 use App\Models\User;
 use Inertia\Inertia;
 use App\Models\Quote;
@@ -9,6 +10,7 @@ use App\Models\Account;
 use App\Models\PricePlan;
 use App\Models\SolutionType;
 use App\Services\QuoteService;
+use App\Events\QuoteStatusEvent;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Http\Resources\QuoteResource;
@@ -40,10 +42,10 @@ class QuoteController extends BaseController
 
         $users = $users->filter(fn($user) => $user->quotes->count() > 0);
 
-        return Inertia::render('Dashboard', [
+        return Inertia::render('Quotes/Index', [
             "users" => $users->values(),
             "solutions" => SolutionType::all(),
-            "status" => ["PRICE", "QUOTE", "CONFIGURE"]
+            "status" => array_map(fn($status) => $status->name, QuoteStatusesEnum::cases())
         ]);
     }
     /**
@@ -64,7 +66,8 @@ class QuoteController extends BaseController
     {
         try {
             $quote = DB::transaction(function () use ($request) {
-                return $this->quoteService->store($request->all());
+                $quote = $this->quoteService->store($request->all());
+                return $quote;
             });
         } catch (\Exception $e) {
             if (!env('APP_DEBUG')) {
@@ -82,7 +85,7 @@ class QuoteController extends BaseController
     {
         return Inertia::render('Quotes/Show', [
             'pricePlans' => PricePlan::all(),
-            'quote' => new QuoteResource($quote->load(['items']))
+            'quote' => new QuoteResource($quote->load(['items', 'orders']))
         ]);
     }
 
@@ -105,7 +108,7 @@ class QuoteController extends BaseController
     {
         try {
             $quote = DB::transaction(function () use ($request, $quote) {
-                return $this->quoteService->update($quote, $request->all());
+                return  $this->quoteService->update($quote, $request->all());
             });
         } catch (\Exception $e) {
             if (!env('APP_DEBUG')) {

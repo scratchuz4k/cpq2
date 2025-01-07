@@ -12,7 +12,6 @@ return new class extends Migration
      */
     public function up(): void
     {
-
         Schema::table('quote_items', function (Blueprint $table) {
             $table->string('name')->nullable()->change();
         });
