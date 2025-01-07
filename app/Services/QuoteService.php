@@ -8,48 +8,38 @@ use App\Models\QuoteItem;
 
 class QuoteService
 {
-
+    protected $discounsEntities = [
+        'price_plans' => PricePlan::class
+    ];
     public function __construct(protected QuoteItemService $quoteItemService) {}
     public function store(array $array): Quote
     {
         $quote = Quote::create($array);
-
-        if (array_key_exists('items', $array)) {
-            foreach ($array['items'] as $quote_item) {
-                $quote_item['quote_id'] = $quote->id;
-                $this->quoteItemService->store($quote_item);
-            }
-        }
-
-        $quote->update(['status' => get_quote_status($quote->refresh())]);
-        return $quote->refresh();
+        return $quote;
     }
 
     public function update(Quote $quote, array $array): Quote
     {
-        $quote->update($array);
-
+        #TODO: MOVE THIS LOGIC TO A SPECIFIC CONTROLLER
         if (array_key_exists('discounts', $array)) {
-            $discounts = $array['discounts'];
-            if (array_key_exists('pricePlans', $discounts)) {
-                foreach ($discounts['pricePlans'] as $key => $discount) {
-                    $pricePlan = PricePlan::where('code', $key)->first();
-
-                    if (!$pricePlan) {
-                        continue;
-                    }
-
-                    $quote->discounts()->updateOrCreate([
-                        "discountable_type" => PricePlan::class,
-                        "discountable_id" => $pricePlan->id,
-                    ], [
-                        "discount" =>  $discount
-                    ]);
+            foreach ($array['discounts'] as $key => $discount) {
+                if (!array_key_exists('entity', $discount)) {
+                    continue;
                 }
-            }
 
-            foreach ($quote->itemsNoTree as $item) {
-                $item->computeTotals();
+                $model = $this->discounsEntities[$discount['entity']];
+                $object = app($model)::where('code', $discount['code'])->first();
+
+                if (!$object) {
+                    continue;
+                }
+
+                $quote->discounts()->updateOrCreate([
+                    "discountable_type" => $model,
+                    "discountable_id" => $object->id,
+                ], [
+                    "discount" =>  $discount['value']
+                ]);
             }
         }
 
@@ -73,7 +63,7 @@ class QuoteService
             }
         }
 
-        $quote->update(['status' => get_quote_status($quote->refresh())]);
+        $quote->update($array);
         return $quote->refresh();
     }
 }

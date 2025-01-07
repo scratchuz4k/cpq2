@@ -1,6 +1,8 @@
 name: Docker Build & Publish
 
-on: [pull_request]
+on:
+    pull_request:
+      types: [opened, synchronize]
 
 env:
   REGISTRY: ghcr.io
@@ -37,8 +39,8 @@ jobs:
         run: |
           echo "SHOPBLOCKS_API_KEY=${{ secrets.SHOPBLOCKS_API_KEY }}" >> .env
           echo "TOMTOM_API_KEY=${{ secrets.TOMTOM_API_KEY }}" >> .env
-          echo "VIRTUAL1_CONNECTION_PASSWORD=${{ secrets.VIRTUAL1_CONNECTION_PASSWORD }}" >> .env
-          echo "VIRTUAL1_CONNECTION_USERNAME=${{ secrets.VIRTUAL1_CONNECTION_USERNAME }}" >> .env
+          echo "VIRTUAL1_ADDRESS_PASSWORD=${{ secrets.VIRTUAL1_ADDRESS_PASSWORD }}" >> .env
+          echo "VIRTUAL1_ADDRESS_USERNAME=${{ secrets.VIRTUAL1_ADDRESS_USERNAME }}" >> .env
           echo "VITE_GOOGLE_MAPS_API_KEY=${{ secrets.VITE_GOOGLE_MAPS_API_KEY }}" >> .env
 
       - name: Create Database
@@ -72,10 +74,11 @@ jobs:
         run: curl http://localhost:8000/health
 
       - name: Execute cypress tests
+        id: execute-cypress-tests
         run: npm run cy:run
 
       - name: Check for failed Cypress tests and send screenshot to Discord
-        if: failure()
+        if: steps.execute-cypress-tests.outcome == 'failure' && failure()
         run: |
           # Zip the screenshot file
           zip -r screenshot.zip cypress/output/*

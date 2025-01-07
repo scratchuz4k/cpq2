@@ -18,11 +18,11 @@ describe('Creates a Connectivity quote', () => {
         cy.get(".notyf").contains("Created with Success")
     })
 
-    it('Create a Connectivity order', () => {
+    it('Create a Connectivity Quote', () => {
         cy.visit("/")
         cy.get("#create-tab").click()
         cy.get("#account_id").select(account.name)
-        cy.get("#solution_id").select("Connectivity - Ethernet & Fibre")
+        cy.get("#solution_id").select("Connectivity - Ethernet")
         cy.get("#input_address").type('EH32 9NT')
         cy.get("#select_address").should('be.visible').select(1)
         cy.get("#btn-create-quote").should('not.be.disabled').click()
@@ -83,5 +83,12 @@ describe('Creates a Connectivity quote', () => {
             .then((items) => {
                 expect(items).to.equal(5);
             });
+    })
+
+    it("I can Create an order from a quote", () => {
+        cy.visit("/")
+        cy.get("#datatable-btn-0-crete-order").click()
+        cy.get('.swal2-confirm').eq(0).click()
+        cy.get(".notyf").contains("Order created with success")
     })
 })

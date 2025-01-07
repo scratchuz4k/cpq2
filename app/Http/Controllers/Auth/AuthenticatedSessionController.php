@@ -29,7 +29,7 @@ class AuthenticatedSessionController extends Controller
     /**
      * Handle an incoming authentication request.
      */
-    public function store(LoginRequest $request): RedirectResponse
+    public function store(LoginRequest $request)
     {
         try {
             $request->authenticate();
@@ -41,7 +41,11 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->intended(route('dashboard', absolute: false));
+        if (auth()->user()->hasRole('Order Manager')) {
+            return Inertia::location('/orders');
+        }
+
+        return Inertia::location('/quotes');
     }
 
     /**

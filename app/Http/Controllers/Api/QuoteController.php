@@ -8,7 +8,6 @@ use App\Models\Quote;
 use Illuminate\Http\Request;
 use App\Helpers\DataProvider;
 use App\Services\QuoteService;
-use App\Services\OrderService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Http\Resources\QuoteResource;
@@ -80,16 +79,17 @@ class QuoteController extends BaseController
     {
         try {
             $quote = DB::transaction(function () use ($request, $quote) {
-                return $this->quoteService->update($quote, $request->all());
+                $quote = $this->quoteService->update($quote, $request->all());
+                return $quote;
             });
         } catch (Exception $e) {
             if (!env('APP_DEBUG')) {
                 Log::error($e->getMessage());
             }
-            throw new Exception($e);
+            return response(['message' => $e->getMessage()], 500);
         }
 
-        return response()->json(new QuoteResource($quote->refresh()));
+        return response()->json(new QuoteResource($quote->refresh()->load(['items'])));
     }
 
     /**

@@ -2,6 +2,7 @@
 
 namespace App\Helpers;
 
+use App\Models\Order;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 
@@ -79,6 +80,23 @@ class DataProvider
             $func = $this->getFunction($filter);
             $this->builder = $this->buildSearch($this->builder, $filter['column'], $queryParts['operator'], $queryParts['value'], $func);
         }
+
+        $page = request()->input("page", 1);
+        $limit = request()->input("limit", 10);
+        $order = request()->input("order", "asc");
+        $orderBy = request()->input("orderBy", "id");
+
+        $orderByArray = explode('.', $orderBy);
+        if (count($orderByArray) == 1) {
+            return $this->builder->orderBy($orderBy, $order)->paginate(perPage: $limit, page: $page);
+        }
+        if (count($orderByArray) == 2) {
+            $table = $this->builder->getModel()->getTable();
+                $this->builder = $this->builder->select($table . '.*')->leftJoinRelation(Str::camel($orderByArray[0]) . ' as ' . $orderByArray[0])
+                    ->orderBy($orderByArray[0] . '.' . $orderByArray[1], $order);
+            return  $this->builder->paginate(perPage: $limit, page: $page);
+        }
+        return $this->builder->paginate(perPage: $limit, page: $page);
     }
     public function buildSearch($builder, $column, $operator, $value, $func)
     {
@@ -110,6 +128,8 @@ class DataProvider
         switch ($operator) {
             case 'in':
                 return $query->whereIn($column, $value);
+            case 'not_in':
+                return $query->whereNotIn($column, $value);
             case 'is_null':
                 return $query->whereNull($column);
             default:
@@ -130,6 +150,8 @@ class DataProvider
             switch ($operator) {
                 case 'in':
                     return $query->whereIn($relatedTableName . '.' . $column, $value);
+                case 'not_in':
+                    return $query->whereNotIn($relatedTableName . '.' . $column, $value);
                 case 'is_null':
                     return $query->whereNull($relatedTableName . '.' . $column);
                 default:
@@ -214,6 +236,10 @@ class DataProvider
             ],
             'in' => [
                 'operator' => 'in',
+                'value' => explode(',', $value),
+            ],
+            'not_in' => [
+                'operator' => 'not_in',
                 'value' => explode(',', $value),
             ],
             'search' => [
