@@ -2,7 +2,7 @@
     <div class="d-flex justify-content-between align-items-center pb-1">
         <!--style="border-bottom: 1px solid lightgray; " -->
         <div class="d-flex justify-content-between " style="justify-content: space-between;;">
-            <h1 class="m-0 font-bold">{{ title }} </h1> <!--<span>.</span>-->
+            <h1 id="page-title" class="m-0 font-bold">{{ title }} </h1> <!--<span>.</span>-->
         </div>
         <div>
             <slot name="buttons"></slot>
@@ -11,7 +11,7 @@
     <div class="my-2">
         <Breadcrumb :model="breadcrumbs">
             <template #item="{ item, props }">
-                <a v-if="item.url" :href="item.url" :target="item.target" v-bind="props.action">
+                <a v-if="item.url && item.url !== '#'" :href="item.url" :target="item.target" v-bind="props.action">
                     <span class="text-surface-700 dark:text-surface-0">{{ item.label }}</span>
                 </a>
                 <p v-else class="text-surface-700 dark:text-surface-0 m-0 font-bold" :href="item.url">

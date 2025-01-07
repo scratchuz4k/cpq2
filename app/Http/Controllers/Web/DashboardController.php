@@ -15,6 +15,12 @@ class DashboardController extends BaseController
      */
     public function index()
     {
+        if (auth()->user()->hasRole('Order Manager')) {
+            return Inertia::location('/orders');
+        }
+
+        return Inertia::location('/quotes');
+
         $user = request()->user();
 
         $users = User::descendants();

@@ -53,6 +53,9 @@ $monthly_items = array_filter($quote['items'], function ($item) {
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Quote #{{ $quote['id'] }}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+          integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <style>
@@ -240,9 +243,11 @@ $monthly_items = array_filter($quote['items'], function ($item) {
                                             </td>
                                             @if ($quote['solution_type_id'] === 1)
                                                 <td class="text-center">
-                                                    <img class="img-provider"
+                                                    @if ($item['data']?->providerKey)
+                                                        <img class="img-provider"
                                                         style="max-width: 60px; max-height: 20px; width: auto; height: auto;"
                                                         src="{{ $item['image'] ?? public_path() . '/images/providers/' . $item['data']?->providerKey . '.png' }}" />
+                                                    @endif
                                                 </td>
                                             @endif
                                             <td>
@@ -250,9 +255,15 @@ $monthly_items = array_filter($quote['items'], function ($item) {
                                                 @if (isset($item['data']->additionalInfo->{'Primary Router Model'}))
                                                     <span
                                                         class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm router-model">
-                                                        <font-awesome-icon :icon="['fas', 'plug']"></font-awesome-icon>
+                                                        <i class="fa-solid fa-plug"></i>
                                                         {{ $item['data']->additionalInfo->{'Primary Router Model'} }}
                                                     </span>
+                                                @endif
+                                                @if (isset($item['data']->isContended) and $item['data']->isContended)
+                                                    <span class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm is-contended"
+                                                          data-bs-toggle="tooltip" data-bs-placement="top" title="Contended" v-tooltip>
+                                                            <i class="fa-solid fa-network-wired"></i>
+                                                        </span>
                                                 @endif
                                             </td>
                                             <td class="text-center">
@@ -260,7 +271,7 @@ $monthly_items = array_filter($quote['items'], function ($item) {
                                             </td>
                                             @if ($quote['solution_type_id'] === 1)
                                                 <td class="d-xl-table-cell text-center">
-                                                    {{ $item['data']->productCode }}
+                                                    {{ $item['data']?->productCode }}
                                                 </td>
                                             @endif
                                             <td class="text-center">
@@ -309,9 +320,11 @@ $monthly_items = array_filter($quote['items'], function ($item) {
                                             </td>
                                             @if ($quote['solution_type_id'] === 1)
                                                 <td class="text-center">
-                                                    <img class="img-provider"
-                                                        style="max-width: 60px; max-height: 20px; width: auto; height: auto;"
-                                                        src="{{ $item['image'] ?? public_path() . '/images/providers/' . $item['data']?->providerKey . '.png' }}" />
+                                                    @if ($item['data']?->providerKey)
+                                                        <img class="img-provider"
+                                                            style="max-width: 60px; max-height: 20px; width: auto; height: auto;"
+                                                            src="{{ $item['image'] ?? public_path() . '/images/providers/' . $item['data']?->providerKey . '.png' }}" />
+                                                    @endif
                                                 </td>
                                             @endif
                                             <td>
@@ -319,14 +332,20 @@ $monthly_items = array_filter($quote['items'], function ($item) {
                                                 @if (isset($item['data']->additionalInfo->{'Primary Router Model'}))
                                                     <span
                                                         class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm router-model">
-                                                        <font-awesome-icon :icon="['fas', 'plug']"></font-awesome-icon>
+                                                        <i class="fa-solid fa-plug"></i>
                                                         {{ $item['data']->additionalInfo->{'Primary Router Model'} }}
                                                     </span>
+                                                    @if (isset($item['data']->isContended) and $item['data']->isContended)
+                                                        <span class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm is-contended"
+                                                              data-bs-toggle="tooltip" data-bs-placement="top" title="Contended" v-tooltip>
+                                                            <i class="fa-solid fa-network-wired"></i>
+                                                        </span>
+                                                    @endif
                                                 @endif
                                             </td>
                                             @if ($quote['solution_type_id'] === 1)
                                                 <td class="d-xl-table-cell text-center">
-                                                    {{ $item['data']->productCode }}
+                                                    {{ $item['data']?->productCode }}
                                                 </td>
                                             @endif
                                             <td class="text-center">
