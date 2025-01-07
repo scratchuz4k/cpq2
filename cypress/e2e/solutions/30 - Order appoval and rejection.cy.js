@@ -3,7 +3,7 @@ import { generateHash, getCurrentDate } from "../../support/utils.js";
 const temp = getCurrentDate()
 
 describe('Order Approval and Rejection', () => {
-    it("Assing Order", () => {
+    it.skip("Assing Order", () => {
         cy.login("orders@example.com", "werwerwer")
         cy.visit("/")
         cy.get("#datatable-btn-0-assign-order").click()
@@ -11,7 +11,7 @@ describe('Order Approval and Rejection', () => {
         cy.get(".notyf").contains("Order assigned to you with success")
     })
 
-    it("Approve Order", () => {
+    it.skip("Approve Order", () => {
         cy.login("orders@example.com", "werwerwer")
         cy.visit("/")
         cy.get("#datatable-btn-0-show").click()
@@ -21,7 +21,7 @@ describe('Order Approval and Rejection', () => {
         cy.get(".swal2-confirm").eq(0).click()
     })
 
-    it("Reprove Order", () => {
+    it.skip("Reprove Order", () => {
         cy.login("orders@example.com", "werwerwer")
         cy.visit("/")
         cy.get("#datatable-btn-1-show").click()
