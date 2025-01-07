@@ -6,7 +6,6 @@ use App\Http\Controllers\Web\SpaController;
 use App\Http\Controllers\Web\UserController;
 use App\Http\Controllers\Web\BrandController;
 use App\Http\Controllers\Web\OrderController;
-use App\Http\Controllers\Web\PriceController;
 use App\Http\Controllers\Web\QuoteController;
 use App\Http\Controllers\Web\TokenController;
 use App\Http\Controllers\Web\RegionController;
@@ -40,7 +39,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resources([
         'categories' => CategoryController::class,
         'apis' => ApiConfigurationController::class,
-        'prices' => PriceController::class,
         'quotes' => QuoteController::class,
         'orders' => OrderController::class,
         'accounts' => AccountController::class,

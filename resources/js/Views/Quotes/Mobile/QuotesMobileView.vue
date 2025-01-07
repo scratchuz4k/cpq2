@@ -238,7 +238,7 @@ watch(search, _.debounce(() => {
                                 <h4 class="m-0">{{ product.name }}</h4>
                                 <p class="m-0 ms-2">
                                     {{ product.description }} /
-                                    {{ GBP.format(product.price.net_spa) }}
+                                    {{ GBP.format(product.price?.net_spa ?? 0) }}
                                 </p>
                             </div>
                             <font-awesome-icon :icon="['fa', 'circle-info']" />
@@ -360,7 +360,7 @@ watch(search, _.debounce(() => {
                                             </p>
                                         </div>
                                         <div>
-                                            <p class="bold big"> {{ GBP.format(product.price.net_spa) }}</p>
+                                            <p class="bold big"> {{ GBP.format(product.price?.net_spa ?? 0) }}</p>
                                         </div>
                                     </div>
                                 </div>

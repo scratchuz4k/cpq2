@@ -19,8 +19,11 @@ const product = reactive({
 const categories = ref([])
 
 const saveProduct = () => {
-    router.post(`/products`, { ...product, categories: categories.value.map(item => item.id) },
-        {
+    router.post(`/products`, { ...product,
+            supplier_id: product.supplier?.id,
+            brand_id: product.brand?.id,
+            categories: categories.value.map(item => item.id)
+        }, {
             onSuccess: (page) => {
                 notyf.success("Created with Success")
             },

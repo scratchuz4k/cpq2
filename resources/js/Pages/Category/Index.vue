@@ -29,6 +29,8 @@ const items = ref([
                     { data: 'id', title: '#', style: 'width:5%' },
                     { data: 'code', title: 'Code', style: 'width:20%' },
                     { data: 'name', title: 'Name' },
+                    { data: 'created_at', title: 'Created At', style: 'width:15%' },
+                    { data: 'updated_at', title: 'Updated At', style: 'width:15%' },
                 ]" route="/categories">
                     <template #updated_at="{ value }">
                         {{ format.date(value) }}

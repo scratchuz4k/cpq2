@@ -1,14 +1,15 @@
 <template>
     <MultiSelect :id="'select-' + props.id" :inputId="'select-' + props.id + '-input'" v-model="proxyValue"
-        :options="options" showClear :optionLabel="props.field" placeholder="Select multiple options" class="w-100"
+        :options="options" showClear :optionLabel="props.field" placeholder="Select options" class="w-100"
         display="chip">
         <template #value="{ value, placeholder }">
             <div >
-                <span v-for="(item, index) in value" class="chip">
+                <span  v-if="value.length" v-for="(item, index) in value" class="chip">
                     {{ item ? item[props.field] : placeholder }}
                     <font-awesome-icon :id="'select-' + props.id + '-remove-' + index" @click="remove(index)"
                         class="ms-1" :icon="['far', 'circle-xmark']"></font-awesome-icon>
                 </span>
+                <span v-else>{{ placeholder }}</span>
             </div>
         </template>
         <template #header>
