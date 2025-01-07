@@ -27,7 +27,17 @@ class ProductCreateRequest extends FormRequest
             "name" => "required|string|max:255",
             "supplier_id" => "nullable|exists:suppliers,id",
             "brand_id" => "nullable|exists:brands,id",
-            "price_plan_id" => "required|exists:price_plans,id"
+            "price_plan_id" => "required|exists:price_plans,id",
+            "prices.*.code" => [
+                "required",
+                "numeric",
+                Rule::unique("prices")
+                    ->where(function ($query) {
+                        return $query->where("product_id", $this->input("product_id"));
+                    }),
+            ],
+            "prices.*.tax_rate" => "required|numeric",
+            "prices.*.net" => "required|numeric",
         ];
     }
 }
