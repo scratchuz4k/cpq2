@@ -581,7 +581,7 @@ const items = ref([
                                 <font-awesome-icon class="me-2" :icon="['fas', 'envelope']">
                                 </font-awesome-icon> Email this quote
                             </button>
-                            <button :disabled="disableButtonSendToOrder" class="btn btn-primary"
+                            <button hidden :disabled="disableButtonSendToOrder" class="btn btn-primary"
                                 @click="createOrderAndRedirect(quote.id)">
                                 <font-awesome-icon class="me-2" :icon="['fas', 'thumbtack']">
                                 </font-awesome-icon>Send to Order

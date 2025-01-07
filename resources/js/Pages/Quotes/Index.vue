@@ -88,7 +88,7 @@ const items = ref([
                     </template>
                     <template #actions="{ data, value, index }">
                         <div v-if="!['REGISTRY', 'ORDERED'].includes(data.status)" class="d-flex justify-content-end">
-                            <button type="button" title="Send to Order" :id="'datatable-btn-' + index + '-crete-order'"
+                            <button hidden type="button" title="Send to Order" :id="'datatable-btn-' + index + '-crete-order'"
                                 @click="createOrderAndRefresh(data.id)" class="btn px-2 py-0 mx-1 border-0">
                                 <font-awesome-icon :icon="['fas', 'thumbtack']" />
                             </button>
