@@ -54,8 +54,6 @@ class Price extends Model
         "code",
         "tax_rate",
         "net",
-        "tax",
-        "gross",
         "product_id",
         "tenant_id"
     ];
