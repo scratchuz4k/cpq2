@@ -48,6 +48,16 @@ class Quote extends Model
     protected static function booted(): void
     {
         static::addGlobalScope(new TenantScope);
+
+        static::saving(function (Quote $quote) {
+            $quote->status = Quote::resolveStatus($quote);
+        });
+
+        static::saved(function ($quote) {
+            if ($quote->isDirty('status')) {
+                QuoteStatusEvent::dispatch($quote);
+            }
+        });
     }
 
     public function user(): BelongsTo
