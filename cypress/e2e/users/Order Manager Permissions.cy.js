@@ -1,4 +1,4 @@
-import {generateHash, getCurrentDate, slugify} from "../../support/utils.js";
+import { generateHash, getCurrentDate, slugify } from "../../support/utils.js";
 
 const temp = getCurrentDate()
 const user = { name: slugify(temp), email: slugify(temp) + "@email.com", password: generateHash(temp) }
@@ -11,12 +11,12 @@ const models = [
             {
                 id: '#account-name',
                 type: 'text',
-                value: 'Account' + getCurrentDate()
+                value: 'Account' + temp
             },
             {
                 id: '#account-reference',
                 type: 'text',
-                value: generateHash('Account' + getCurrentDate())
+                value: generateHash('Account' + slugify(temp))
             }
         ]
     },
