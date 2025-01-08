@@ -63,6 +63,7 @@ class QuoteService
             }
         }
 
+
         $quote->update($array);
         return $quote->refresh();
     }
