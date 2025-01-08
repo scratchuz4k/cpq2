@@ -572,7 +572,7 @@ const items = ref([
                             <font-awesome-icon class="me-2" :icon="['fas', 'arrow-left']"></font-awesome-icon>
                             Previous</a>
                         <div>
-                            <button id="btn-shareable-open" class="btn btn-outline-primary me-2"
+                            <button id="btn-activity-open" class="btn btn-outline-primary me-2"
                                 @click="openActivity()">
                                 <font-awesome-icon :icon="['fas', 'clock-rotate-left']"></font-awesome-icon>
                                 Activity
