@@ -59,8 +59,8 @@ const saveProduct = () => {
 };
 
 const savePrice = async () => {
-  price.tax = (price.net * (price.tax_rate / 100)).toFixed(2);
-  price.gross = (price.net * (1 + price.tax_rate / 100)).toFixed(2);
+  price.tax = parseFloat((price.net * (price.tax_rate / 100)).toFixed(2));
+  price.gross = parseFloat((price.net * (1 + price.tax_rate / 100)).toFixed(2));
   let temp = {};
   Object.assign(temp, price);
   product.prices.push(temp);
@@ -83,8 +83,8 @@ const deletePrice = async (id) => {
 const onRowEditSave = async (event) => {
   let { newData, index } = event;
 
-  newData.tax = (newData.net * (newData.tax_rate / 100)).toFixed(2);
-  newData.gross = (newData.net * (1 + newData.tax_rate / 100)).toFixed(2);
+  newData.tax = parseFloat((newData.net * (newData.tax_rate / 100)).toFixed(2));
+  newData.gross = parseFloat((newData.net * (1 + newData.tax_rate / 100)).toFixed(2));
 
   product.prices[index] = newData;
 };
