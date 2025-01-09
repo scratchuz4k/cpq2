@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enums\QuoteStatusesEnum;
 use App\Models\PricePlan;
 use App\Models\Quote;
 use App\Models\QuoteItem;
@@ -20,6 +21,9 @@ class QuoteService
 
     public function update(Quote $quote, array $array): Quote
     {
+        if (array_key_exists('status', $array) && $array['status'] === QuoteStatusesEnum::REGISTRY->name) {
+            throw new \Exception('You cannot perform this action!');
+        }
         #TODO: MOVE THIS LOGIC TO A SPECIFIC CONTROLLER
         if (array_key_exists('discounts', $array)) {
             foreach ($array['discounts'] as $key => $discount) {
