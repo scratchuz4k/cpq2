@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\SpaController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\BrandController;
+use App\Http\Controllers\Api\MerchantController;
 use App\Http\Controllers\Api\PriceController;
 use App\Http\Controllers\Api\QuoteController;
 use App\Http\Controllers\Api\OrderController;
@@ -43,6 +44,7 @@ Route::apiResources([
     'solution-types' => SolutionTypeController::class,
     'permissions' => PermissionController::class,
     'brands' => BrandController::class,
+    'merchants' => MerchantController::class,
     'prices' => PriceController::class,
     'suppliers' => SupplierController::class,
     'regions' => RegionController::class,

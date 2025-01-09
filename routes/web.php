@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Web\SpaController;
 use App\Http\Controllers\Web\UserController;
 use App\Http\Controllers\Web\BrandController;
+use App\Http\Controllers\Web\MerchantController;
 use App\Http\Controllers\Web\OrderController;
 use App\Http\Controllers\Web\PriceController;
 use App\Http\Controllers\Web\QuoteController;
@@ -44,6 +45,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         'accounts' => AccountController::class,
         'tenant' => TenantController::class,
         'brands' => BrandController::class,
+        'merchants' => MerchantController::class,
         'products' => ProductController::class,
         'suppliers' => SupplierController::class,
         'regions' => RegionController::class,
