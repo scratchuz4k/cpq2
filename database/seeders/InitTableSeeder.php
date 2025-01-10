@@ -15,6 +15,7 @@ use App\Models\SolutionType;
 use App\Models\SpaOperation;
 use Illuminate\Database\Seeder;
 use App\Enums\OrderStatusesEnum;
+use App\Enums\SolutionTypesEnum;
 use App\Enums\SpaOperationsEnum;
 use Illuminate\Support\Facades\Hash;
 
@@ -44,21 +45,9 @@ class InitTableSeeder extends Seeder
 
         $super_user->tenants()->sync([$super_user->id]);
 
-        SolutionType::updateOrCreate([
-            "code" => 3
-        ], [
-            "name" => "Connectivity - Ethernet",
-        ]);
-        SolutionType::updateOrCreate([
-            "code" => 4
-        ], [
-            "name" => "Mobile",
-        ]);
-        SolutionType::updateOrCreate([
-            "code" => 5
-        ], [
-            "name" => "Hardware",
-        ]);
+        foreach (SolutionTypesEnum::cases() as $case) {
+            SolutionType::updateOrCreate(['code' => $case->value], ['name' => $case->getName()]);
+        }
 
         foreach (SpaRulesEnum::cases() as $case) {
             SpaRule::updateOrCreate(['code' => $case->name], ['class' => $case->value, ...$case->getTasks()]);

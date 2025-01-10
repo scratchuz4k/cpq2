@@ -16,6 +16,7 @@ class SolutionTypeResource extends JsonResource
     {
         return [
             ...$this->resource->toArray(),
+            "configurations" => $this->configs
         ];
     }
 }

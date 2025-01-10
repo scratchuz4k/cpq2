@@ -11,6 +11,6 @@ class SolutionType extends Model
 {
     use HasFactory, HasConfigurations;
 
-    protected $fillable = ['code'];
+    protected $fillable = ["code", "name"];
 
 }

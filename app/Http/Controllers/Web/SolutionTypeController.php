@@ -8,6 +8,7 @@ use Inertia\Inertia;
 use App\Enums\PricePlanEnum;
 use App\Models\SolutionType;
 use Illuminate\Http\Request;
+use App\Enums\TablesEnum;
 use App\Enums\SolutionTypesEnum;
 use Illuminate\Support\Facades\DB;
 use App\Services\SolutionTypeService;
@@ -60,17 +61,9 @@ class SolutionTypeController extends BaseController
      */
     public function edit(SolutionType $solutionType)
     {
-        $columns = [];
-        foreach (SolutionTypesEnum::cases() as $case) {
-            if ($case->value == $solutionType->code) {
-                $columns = $case->getColumns();
-            }
-        }
-
         return Inertia::render('SolutionTypes/Edit', [
             'solution_type' => (new SolutionTypeResource($solutionType))->resolve(),
-            'price_plans' => PricePlanEnum::cases(),
-            'available_columns' => $columns,
+            'available_tables' => TablesEnum::cases(),
         ]);
     }
 
