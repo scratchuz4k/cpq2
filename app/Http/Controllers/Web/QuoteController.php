@@ -83,7 +83,6 @@ class QuoteController extends BaseController
      */
     public function show(Quote $quote)
     {
-        $quote->solutionType->configurations;
         return Inertia::render('Quotes/Show', [
             'pricePlans' => PricePlan::all(),
             'quote' => new QuoteResource($quote->load(['items', 'orders']))

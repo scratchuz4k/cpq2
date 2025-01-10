@@ -3,29 +3,25 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head } from '@inertiajs/vue3';
 import { ref } from "vue";
 
+
 const props = defineProps({
     quote: Object,
-    pricePlans: Object,
-    modelValue: Object
+    pricePlans: Object
 });
 
 const solutionsViews = {
-    3: 'QuotesDealMakerView', //QuotesConnectivityTotalView
-    4: 'QuotesDealMakerView',
-    5: 'QuotesHardwareTotalView',
+    Simple: 'QuotesTotalSimpleView',
+    DealMaker: 'QuotesTotalDealMakerView',
 }
 
-const items = ref([
-    { label: 'Home', url: '/' },
-    { label: 'Create a quote' },
-]);
+let component = props.quote.solution_type.configurations?.component
+let view = component && Object.keys(solutionsViews).includes(component) ? solutionsViews[component] : 'QuotesTotalDealMakerView'
 </script>
 
 <template>
-
     <Head :title="'Quote #' + quote.id" />
     <AuthenticatedLayout :quote="quote">
-        <component :is="solutionsViews[quote.solution_type.code]" v-bind="{
+        <component :is="view" v-bind="{
             modelValue: quote,
             pricePlans: props.pricePlans,
             preview: false

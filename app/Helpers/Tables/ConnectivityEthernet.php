@@ -1,7 +1,7 @@
 <?php
 
 return [
-    "simple" => [
+    "Simple" => [
         ["name" => "Provider",  "value" => "provider"],
         ["name" => "SubProvider",  "value" => "subprovider"],
         ["name" => "Name", "value" => "name"],
@@ -15,7 +15,7 @@ return [
         ["name" => "Total",  "value" => "total"],
 
     ],
-    "dealmaker" => [
+    "DealMaker" => [
         ["name" => "Provider",  "value" => "provider"],
         ["name" => "SubProvider",  "value" => "subprovider"],
         ["name" => "Name", "value" => "name"],

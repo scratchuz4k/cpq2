@@ -1,7 +1,7 @@
 <?php
 
 return [
-    "simple" => [
+    "Simple" => [
         ["name" => "Name", "value" => "name"],
         ["name" => "Months", "value" => "contract_length"],
         ["name" => "Price Plan",  "value" => "price_plan"],
@@ -10,7 +10,7 @@ return [
         ["name" => "Total",  "value" => "total"],
 
     ],
-    "dealmaker" => [
+    "DealMaker" => [
         ["name" => "Name", "value" => "name"],
         ["name" => "Months", "value" => "contract_length"],
         ["name" => "Quantity", "value" => "quantity"],
