@@ -1,11 +1,12 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Web;
 
-use App\Models\Configuration;
+use App\Http\Controllers\BaseController;
 use Illuminate\Http\Request;
+use App\Models\Configuration;
 
-class ConfigurationController extends Controller
+class ConfigurationController extends BaseController
 {
     /**
      * Display a listing of the resource.
