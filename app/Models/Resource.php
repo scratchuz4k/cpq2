@@ -19,8 +19,23 @@ class Resource extends Model
         'resource_type_id'
     ];
 
-    protected $appends = ['full_route', 'file_content'];
+    protected $appends = ['full_route'];
 
+    public function toArray()
+    {
+        $array = parent::toArray();
+
+        if ($this->isXmlFile()) {
+            $array['file_content'] = $this->file_content;
+        }
+
+        return $array;
+    }
+
+    public function isXmlFile(): bool
+    {
+        return $this->mime_type === 'application/xml' || $this->mime_type === 'text/xml';
+    }
     public function getFileContentAttribute()
     {
         return $this->getContent();

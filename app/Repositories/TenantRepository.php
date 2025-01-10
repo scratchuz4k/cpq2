@@ -43,4 +43,18 @@ class TenantRepository
 
         return $resource->id;
     }
+
+    public function storeLogoForTenant($data, $tenant)
+    {
+        $path = $data['logo']->store('logo', 'public');
+        $resource = Resource::create([
+            'title' => $tenant->name . '-logo.png',
+            'mime_type' => 'image/png',
+            'route' => $path,
+            'tenant_id' => $tenant->id,
+            'alt_text' => $tenant->name
+        ]);
+
+        return $resource->id;
+    }
 }

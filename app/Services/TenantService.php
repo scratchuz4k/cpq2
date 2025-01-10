@@ -16,7 +16,13 @@ class TenantService
             || array_key_exists('sso_text_area', $data) && !is_null($data['sso_text_area'])
         ) {
             $data = [
-                'config_id' => $this->tenantRepository->createSooFileForTenant($data, $tenant)
+                'sso_id' => $this->tenantRepository->createSooFileForTenant($data, $tenant)
+            ];
+        }
+
+        if (array_key_exists('logo', $data) && !is_null($data['logo'])) {
+            $data = [
+                'logo_id' =>  $this->tenantRepository->storeLogoForTenant($data, $tenant)
             ];
         }
 
