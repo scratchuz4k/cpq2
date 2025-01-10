@@ -2,18 +2,15 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Table;
+use App\Trait\HasConfigurations;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class SolutionType extends Model
 {
-    use HasFactory;
+    use HasFactory, HasConfigurations;
 
-    private static $solution_types = [
-        "3" => 'Connectivity - Ethernet & Fibre',
-        "4" => 'Mobile',
-        // "1" => 'Connectivity - Ethernet Point to Point',
-        // "2" => 'Connectivity - Fibre',
-    ];
+    protected $fillable = ['code'];
 
 }
