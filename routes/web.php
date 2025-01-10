@@ -12,12 +12,13 @@ use App\Http\Controllers\Web\TokenController;
 use App\Http\Controllers\Web\RegionController;
 use App\Http\Controllers\Web\TenantController;
 use App\Http\Controllers\Web\AccountController;
-use App\Http\Controllers\Web\ApiConfigurationController;
 use App\Http\Controllers\Web\ProductController;
 use App\Http\Controllers\Web\ProfileController;
 use App\Http\Controllers\Web\SupplierController;
 use App\Http\Controllers\Web\DashboardController;
 use App\Http\Controllers\Web\SharedLinkController;
+use App\Http\Controllers\Web\SolutionTypeController;
+use App\Http\Controllers\Web\ApiConfigurationController;
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('index');
@@ -50,6 +51,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         'spas' => SpaController::class,
         'users' => UserController::class,
         'tokens' => TokenController::class,
+        'solution-types' =>  SolutionTypeController::class
     ]);
 
     Route::middleware('auth')->group(function () {
