@@ -16,9 +16,9 @@ class QuoteResource extends JsonResource
     {
         return [
             ...$this->resource->toArray(),
-            'margin' => (float)$this->margin,
-            'discount' => (float)$this->discount,
-            'commission_rate' => (float)$this->commission_rate,
+            'margin' => round((float)$this->margin,4),
+            'discount' => round((float)$this->discount,4),
+            'commission_rate' => round((float)$this->commission_rate,2),
             'user' => $this->user,
             'total_vat' => $this->total * 0.2,
             'total_gross' => $this->total * 1.2,

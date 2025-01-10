@@ -1,20 +1,24 @@
 <template>
-    <MultiSelect :inputId="props.id" v-model="proxyValue" :options="options" showClear :optionLabel="props.field"
-        placeholder="Select multiple options" class="w-100">
+    <MultiSelect :id="'select-' + props.id" :inputId="'select-' + props.id + '-input'" v-model="proxyValue"
+        :options="options" showClear :optionLabel="props.field" placeholder="Select options" class="w-100"
+        display="chip">
         <template #value="{ value, placeholder }">
-            <p v-if="value">
-                <template v-for="(item, index) in value">
-                    <span v-if="index != 0">,</span> {{ item ? item[props.field] : placeholder }}
-                </template>
-            </p>
-            <template v-else>{{ placeholder }}</template>
+            <div >
+                <span  v-if="value.length" v-for="(item, index) in value" class="chip">
+                    {{ item ? item[props.field] : placeholder }}
+                    <font-awesome-icon :id="'select-' + props.id + '-remove-' + index" @click="remove(index)"
+                        class="ms-1" :icon="['far', 'circle-xmark']"></font-awesome-icon>
+                </span>
+                <span v-else>{{ placeholder }}</span>
+            </div>
         </template>
         <template #header>
             <IconField class="p-1">
                 <InputIcon>
                     <font-awesome-icon icon="fas fa-search" />
                 </InputIcon>
-                <InputText :id="props.id + '-search'" class="w-100" v-model="searchInput" placeholder="Search" />
+                <InputText :id="'select-' + props.id + '-search'" class="w-100" v-model="searchInput"
+                    placeholder="Search" />
             </IconField>
         </template>
     </MultiSelect>
@@ -60,10 +64,16 @@ const search = _.debounce(async () => {
     isLoading.value = true
     let res = await axios.get(`/api${props.url}?${string}`)
     isLoading.value = false
-    options.value = res.data.data
+    options.value = res.data.data.map((e) => {
+        let item = { id: e.id }
+        item[props.field] = e[props.field]
+        return item
+    })
 }, 500)
 
-
+const remove = (index) => {
+    proxyValue.value.splice(index, 1)
+}
 watch(searchInput, () => {
     search()
 })
@@ -71,7 +81,7 @@ search()
 
 </script>
 
-<style scoped>
+<style >
 .select-options {
     min-height: 2.5em;
     height: auto;
@@ -126,5 +136,15 @@ search()
 
 .text-bold {
     font-weight: bold;
+}
+
+.chip {
+    background-color: whitesmoke;
+    padding: 0 5px;
+    border-radius: 5px;
+    margin-left: 5px
+}
+.p-multiselect-label{
+    white-space: normal!important;
 }
 </style>

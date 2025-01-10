@@ -143,6 +143,7 @@ class ExternalController extends Controller
                 "model" => [],
             ];
 
+            $pricePlanId = PricePlan::where("code", "single")->value('id');
             foreach ($products as $key => $product) {
                 $temp = '';
                 foreach (array_keys($product) as $itemKey) {
@@ -154,13 +155,13 @@ class ExternalController extends Controller
                 $model = (string) Str::of($product['name'])->words(3, '');
                 $products[$key]['code'] = md5(Str::slug($temp));
                 $products[$key]['model'] = $model;
+                $products[$key]["price_plan_id"] = $pricePlanId;
                 $products[$key]['price'] = [
                     "code" => 1,
                     "tax_rate" => 20,
                     "net" => (float)$product['price'],
                     "tax" => (float)$product['price'] * 0.2,
-                    "gross" => (float)$product['price'] * 1.2,
-                    "price_plan_id" => PricePlan::where("code", "single")->value('id'),
+                    "gross" => (float)$product['price'] * 1.2
                 ];
                 $products[$key]['url'] = 'https://hardware.cloud.market/smartphones/' . $product['slug'];
                 $tempFilters = FilterProvider::process($tempFilters, $products[$key], true);

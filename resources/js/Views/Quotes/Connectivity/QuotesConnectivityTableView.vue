@@ -663,7 +663,7 @@ getArticles(false, true)
                                 <td><img class="img-provider" @error="setAltImg"
                                         :src="`/images/providers/${article.providerKey}.png`"
                                         :alt="article.providerName" :title="article.providerName"
-                                        :data-bs-original-title="article.providerName" v-tooltip /> </td>
+                                        :data-bs-original-title="article.providerName" v-tooltip/> </td>
                                 <td>
                                     <img class="img-subprovider" @error="setAltImg"
                                         :src="`/images/providers/${article.connectivitySupplierGroup?.replace(/ /g, '_').toLowerCase()}.png`"

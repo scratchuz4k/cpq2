@@ -11,6 +11,7 @@ use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\TokenController;
 use App\Http\Controllers\Api\RegionController;
 use App\Http\Controllers\Api\AccountController;
+use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\ContactController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\ExternalController;
@@ -36,6 +37,7 @@ Route::apiResources([
     'apis' => ApiConfigurationController::class,
     'accounts' => AccountController::class,
     'contacts' => ContactController::class,
+    'categories' => CategoryController::class,
     'products' => ProductController::class,
     'quotes' => QuoteController::class,
     'quote-items' => QuoteItemController::class,

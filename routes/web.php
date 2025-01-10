@@ -7,12 +7,12 @@ use App\Http\Controllers\Web\UserController;
 use App\Http\Controllers\Web\BrandController;
 use App\Http\Controllers\Web\MerchantController;
 use App\Http\Controllers\Web\OrderController;
-use App\Http\Controllers\Web\PriceController;
 use App\Http\Controllers\Web\QuoteController;
 use App\Http\Controllers\Web\TokenController;
 use App\Http\Controllers\Web\RegionController;
 use App\Http\Controllers\Web\TenantController;
 use App\Http\Controllers\Web\AccountController;
+use App\Http\Controllers\Web\CategoryController;
 use App\Http\Controllers\Web\ApiConfigurationController;
 use App\Http\Controllers\Web\ProductController;
 use App\Http\Controllers\Web\ProfileController;
@@ -38,8 +38,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/users/import', [UserController::class, 'importUsers'])->name('users.import');
 
     Route::resources([
+        'categories' => CategoryController::class,
         'apis' => ApiConfigurationController::class,
-        'prices' => PriceController::class,
         'quotes' => QuoteController::class,
         'orders' => OrderController::class,
         'accounts' => AccountController::class,
