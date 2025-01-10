@@ -13,6 +13,10 @@ return new class extends Migration
     {
         Schema::create('configurations', function (Blueprint $table) {
             $table->id();
+            $table->morphs('configurable');
+            $table->text('key');
+            $table->text('value');
+            $table->foreignId('tenant_id')->constrained()->cascadeOnDelete();
             $table->timestamps();
         });
     }
