@@ -3,34 +3,15 @@ import _ from "lodash";
 import { reactive, ref } from "vue";
 import InputQuantity from "@/Components/InputQuantity.vue";
 import { createOrder } from "@/Composables/useOrders.js";
+import { setQuote, quote } from "@composables/useQuote";
+
 const props = defineProps({
   modelValue: Object,
+  pricePlans: Array,
   preview: Boolean,
 });
 
-const quote = reactive(props.modelValue);
-
-const remove = async (index) => {
-  swal
-    .fire({
-      title: "Are you sure?",
-    })
-    .then(async (result) => {
-      if (["cancel", "backdrop"].includes(result.dismiss)) {
-        return;
-      }
-
-      try {
-        quote.items.splice(index, 1);
-        let res = await axios.put(`/api/quotes/${quote.id}`, {
-          items: quote.items,
-        });
-        Object.assign(quote, res.data);
-      } catch (ex) {
-        alert(ex.response.data.message);
-      }
-    });
-};
+setQuote(props.modelValue);
 
 const saveQuote = _.debounce(async () => {
   try {
@@ -42,11 +23,6 @@ const saveQuote = _.debounce(async () => {
     alert(ex.response.data.message);
   }
 }, 500);
-
-const changeQuantity = async (item, ev) => {
-  item.quantity = ev;
-  saveQuote();
-};
 
 const items = ref([
   { label: "Home", url: "/dashboard" },
@@ -103,100 +79,9 @@ const items = ref([
     <div class="col">
       <!-- Product List -->
       <!-- In a real application, this would be dynamically generated based on the selected solution type -->
-      <table
-        :class="{ 'table-hover': !preview }"
-        class="table table-bordered table-dealmaker"
-      >
-        <!-- Headers -->
-        <thead>
-          <tr>
-            <th class="text-center d-none d-xl-table-cell">Provider</th>
-            <th>Product</th>
-            <th class="d-none d-xl-table-cell" style="white-space: nowrap">
-              Supplier quote ref.
-            </th>
-            <th>Type</th>
-            <th>Qty.</th>
-            <th>Contract Len.</th>
-            <th style="white-space: nowrap">Monthly price</th>
-            <th style="white-space: nowrap">Install price</th>
-            <th style="width: 60px" class="text-center"></th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr
-            class="item-row"
-            v-for="(item, index) in quote.items"
-            style="vertical-align: middle"
-          >
-            <td class="text-center d-none d-xl-table-cell">
-              <img
-                v-if="item.data.providerKey"
-                class="img-provider"
-                @error="setAltImg"
-                :src="`/images/providers/${item.data.providerKey}.png`"
-                :alt="item.data.providerName"
-                :title="item.data.providerName"
-              />
-            </td>
-            <td>
-              {{ item.name }}
-              <span
-                v-if="item.data.additionalInfo['Primary Router Model']"
-                v-tooltip
-                data-bs-toggle="tooltip"
-                data-bs-placement="top"
-                title="Primary Router Model"
-                class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm router-model"
-              >
-                <font-awesome-icon :icon="['fas', 'plug']"></font-awesome-icon>
-                {{ item.data.additionalInfo["Primary Router Model"] }}
-              </span>
-            </td>
-            <td class="d-none d-xl-table-cell">
-              {{ item.data?.productCode }}
-            </td>
-            <td>Monthly</td>
-            <td>
-              <template v-if="!preview">
-                <div class="cpq-qty d-flex">
-                  <InputQuantity
-                    :id="'line-' + index"
-                    v-model="item.quantity"
-                    @change="(ev) => changeQuantity(item, ev)"
-                  />
-                </div>
-              </template>
-              <template v-else>
-                {{ item.quantity }}
-              </template>
-            </td>
-            <td>
-              {{ item.contract_length }}
-            </td>
-            <td>
-              {{ GBP.format(item.data?.priceMonthly ?? item.data?.price) }}
-            </td>
-            <td>
-              {{ GBP.format(item.data?.priceInstall ?? 0) }}
-            </td>
-            <td class="text-center p-0">
-              <template v-if="!preview">
-                <button
-                  :id="'delete-btn-' + index"
-                  class="btn delete-btn w-100 border-0 py-2 px-0 text-center"
-                  @click="remove(index)"
-                >
-                  <font-awesome-icon :icon="['fas', 'trash']"></font-awesome-icon>
-                </button>
-              </template>
-              <template v-else>
-                {{ quote.items.indexOf(item) + 1 }}
-              </template>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+
+      <TableSimple :preview="preview"></TableSimple>
+
       <div class="row justify-content-end" style="min-height: 50vh">
         <div class="col-6">
           <TableTotal :quote="quote"></TableTotal>

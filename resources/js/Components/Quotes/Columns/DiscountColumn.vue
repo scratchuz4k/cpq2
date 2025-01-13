@@ -3,14 +3,14 @@ import { temp } from '@composables/useQuoteItem'
 defineProps({
     code: String,
     column: Object,
-    isParent: Boolean,
+    isGroup: Boolean,
     preview: Boolean,
     index: Number
 })
 const item = defineModel()
 </script>
 <template>
-    <div v-if="!isParent">
+    <div v-if="!isGroup">
         <p class="small" v-if="!item.is_editing" :id="code + '-discount-' + index">
             {{ item[column.value] }} %
         </p>

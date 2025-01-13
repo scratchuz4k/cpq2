@@ -5,15 +5,14 @@ import { updateQuoteItem, removeQuoteItem, temp } from "@composables/useQuoteIte
 const props = defineProps({
   code: String,
   index: Number,
-  isParent: Boolean,
   showToggle: Boolean,
+  isChild: Boolean,
   preview: Boolean,
   columns: Array,
-  parentColumns: Array,
+  groupColumns: Array,
   item: Object,
 });
 const item = defineModel("item");
-const showChildren = ref(true);
 
 const edit = (p) => {
   temp.quantity = p.quantity;
@@ -54,7 +53,6 @@ const remove = async (p) => {
   }
 
   if (await removeQuoteItem(id)) {
-    debugger
     emitter.emit("quote:refresh");
   }
 };
@@ -64,60 +62,16 @@ const cancel = (p) => {
 };
 
 emitter.on("quote-items:toggle:is-editing", () => item.value.is_editing);
-
-const colspan = props.columns.length - props.parentColumns.length;
 </script>
 <template>
   <tr
-    v-if="isParent"
-    class="item-row"
-    :class="[isParent ? 'child-bg' : '', props.code + '-item-parent']"
-    :style="{ 'vertical-align': 'middle' }"
-  >
-    <td class="text-center" v-if="showToggle && !preview">
-      <button class="btn p-0 border-0" @click="() => (showChildren = !showChildren)">
-        <font-awesome-icon
-          v-if="!showChildren"
-          :icon="['fas', 'plus']"
-        ></font-awesome-icon>
-        <font-awesome-icon v-else :icon="['fas', 'minus']"></font-awesome-icon>
-      </button>
-    </td>
-    <td :colspan="colspan">
-      <div class="d-flex">
-        <template v-for="(column, index) in parentColumns">
-          <div class="me-3">
-            <component
-              :is="format.toCamelCase(column.value) + 'Column'"
-              v-bind="{
-                column: column,
-                modelValue: item,
-                preview: preview,
-                index: index,
-                code: props.code,
-                isParent: isParent,
-              }"
-            >
-            </component>
-          </div>
-        </template>
-      </div>
-    </td>
-    <td :class="['text-center p-0']">
-      <template v-if="preview">
-        {{ index + 1 }}
-      </template>
-    </td>
-  </tr>
-  <tr
-    v-else
-    :class="['item-row', props.code + '-item']"
+    :class="['item-row', props.code + '-item', isChild ? 'child-bg' : '']"
     :style="{ 'vertical-align': 'middle' }"
   >
     <td class="text-center" v-if="showToggle && !preview"></td>
     <template v-for="column in columns">
       <td
-        v-if="!parentColumns.find((x) => x.value == column.value)"
+        v-if="!groupColumns.find((x) => x.value == column.value)"
         :class="[`column-${column.value}-body`]"
       >
         <component
@@ -125,7 +79,7 @@ const colspan = props.columns.length - props.parentColumns.length;
           v-bind="{
             column: column,
             modelValue: item,
-            isParent: isParent,
+            isGroup: false,
             preview: preview,
             index: index,
             code: props.code,
@@ -134,7 +88,7 @@ const colspan = props.columns.length - props.parentColumns.length;
         </component>
       </td>
     </template>
-    <td v-if="!preview"  class="text-center p-0">
+    <td v-if="!preview" class="text-center p-0">
       <template>
         <div class="d-flex justify-content-end">
           <template v-if="!item.is_editing && item.id">
@@ -173,8 +127,6 @@ const colspan = props.columns.length - props.parentColumns.length;
       </template>
     </td>
   </tr>
-
-  <slot v-if="showChildren"></slot>
 </template>
 <style scoped>
 .child-bg > td {

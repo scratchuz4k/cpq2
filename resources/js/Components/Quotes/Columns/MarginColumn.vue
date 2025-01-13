@@ -2,14 +2,14 @@
 defineProps({
     code: String,
     column: Object,
-    isParent: Boolean,
+    isGroup: Boolean,
     preview: Boolean,
     index: Number
 })
 const item = defineModel()
 </script>
 <template>
-    <p class="small" v-if="!isParent" :id="code + '-' + index + '-margin'" style="white-space: nowrap;">
+    <p class="small" v-if="!isGroup" :id="code + '-' + index + '-margin'" style="white-space: nowrap;">
         {{ item[column.value] }} %
     </p>
 </template>

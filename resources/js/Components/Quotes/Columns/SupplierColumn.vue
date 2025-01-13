@@ -2,7 +2,7 @@
 defineProps({
     code: String,
     column: Object,
-    isParent: Boolean,
+    isGroup: Boolean,
     preview: Boolean,
     index: Number
 })

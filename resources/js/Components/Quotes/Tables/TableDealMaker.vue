@@ -1,27 +1,11 @@
 <script setup>
 import { reactive } from "vue";
-import { quote } from "@composables/useQuote";
+import { quote, setQuote } from "@composables/useQuote";
 
 defineProps({
   pricePlans: Array,
   preview: Boolean,
 });
-
-const getLeafNodesWithChildren = (objects) => {
-  let leaves = [];
-  const findLeaves = (items) => {
-    for (const item of items) {
-      if (item.children && item.children.length > 0) {
-        findLeaves(item.children);
-      } else {
-        leaves.push(item);
-      }
-    }
-  };
-
-  findLeaves(objects);
-  return leaves;
-};
 
 const pricePlanskeys = { SINGLE: "one_off", MONTHLY: "recurring" };
 const columns = quote.solution_type?.table?.columns ?? [];
@@ -41,8 +25,7 @@ const saveNewLine = async (item) => {
     let res = await axios.put(`/api/quotes/${quote.id}`, {
       items: [...quote.items, item],
     });
-    Object.assign(quote, res.data);
-    Object.assign(quote.items, getLeafNodesWithChildren(quote.items));
+    setQuote(res.data);
     item.show = false;
     Object.assign(item, {
       name: null,
@@ -66,7 +49,6 @@ const toggleNewLine = (key) => {
   newLine.contract_length = 1;
   newLine.price_plan_code = key;
 };
-
 </script>
 <template>
   <div class="mb-5" v-for="pricePlan in pricePlans">
@@ -96,7 +78,7 @@ const toggleNewLine = (key) => {
             :index="index"
             :columns="columns"
             :preview="preview"
-            :parentColumns="[]"
+            :groupColumns="[]"
             :code="pricePlanskeys[pricePlan.code]"
           >
           </TableItem>

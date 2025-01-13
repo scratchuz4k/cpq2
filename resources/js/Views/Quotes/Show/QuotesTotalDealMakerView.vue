@@ -191,7 +191,6 @@ emitter.on("quote:refresh", async () => {
           </div>
         </div>
         <TableDealMaker
-          v-model="quote"
           :pricePlans="pricePlans"
           :preview="preview"
         ></TableDealMaker>
