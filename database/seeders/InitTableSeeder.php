@@ -62,11 +62,7 @@ class InitTableSeeder extends Seeder
         }
 
         foreach (OrderStatusesEnum::cases() as $status) {
-            OrderStatus::updateOrCreate([
-                "code" => $status->name,
-            ],[
-                "name" => $status->value,
-            ]);
+            OrderStatus::updateOrCreate(["code" => $status->name,], ["name" => $status->value,]);
         }
     }
 }

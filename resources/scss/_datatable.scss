@@ -1,0 +1,45 @@
+.column-total-header {
+    text-align: right;
+}
+
+.column-total-body {
+    text-align: right;
+}
+
+.column-margin-header,
+.column-discount-header {
+    width: 80px;
+    text-align: center;
+}
+
+.column-margin-body,
+.column-discount-body {
+    text-align: center;
+}
+
+.column-name-header {
+    width: 30%;
+}
+
+.column-total-header,
+.column-total-body {
+    font-weight: bold !important;
+}
+
+.column-discount-body,
+.column-discount-header,
+.column-contract_length-body,
+.column-contract_length-header,
+.column-quantity-body,
+.column-quantity-header {
+    width: 8% !important;
+    text-align: center;
+}
+
+
+.column-margin-header,
+.column-margin-body,
+.column-price-header,
+.column-price-body{
+    text-align: right;
+}

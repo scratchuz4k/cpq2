@@ -152,6 +152,11 @@ class QuoteController extends BaseController
         $user = request()->user();
         $dir = 'pdf/' . $user->currentTenant->id;
 
+        $html = Inertia::render('Quotes/Preview', [
+            'pricePlans' => PricePlan::all(),
+            'quote' => new QuoteResource($quote->load(['items', 'orders']))
+        ]);
+
         if (!Storage::makeDirectory($dir)) {
             throw new \Exception("Could not create directory for PDFs");
         }

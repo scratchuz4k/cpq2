@@ -1,6 +1,4 @@
 <script setup>
-import Panel from "primevue/panel";
-import draggable from "vuedraggable";
 import Select from "primevue/select";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import { Head, router } from "@inertiajs/vue3";
