@@ -171,6 +171,12 @@ const items = ref([
   { label: "Summary" },
 ]);
 
+emitter.on("quote:refresh", async () => {
+    debugger
+  Object.assign(quote, await getQuote(quote.id));
+  Object.assign(quote.items, getLeafNodesWithChildren(quote.items));
+});
+
 </script>
 <template>
   <div class="panel panel-mobile">

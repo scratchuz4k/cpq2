@@ -51,6 +51,7 @@ const edit = (p) => {
   quote.value.items.forEach((e) => (e.is_editing = false));
   p.is_editing = !p.is_editing;
 };
+
 const save = async (p) => {
   p.quantity = temp.quantity;
   p.discount = temp.discount;
