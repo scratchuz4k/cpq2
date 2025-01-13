@@ -1,14 +1,19 @@
 <script setup>
-import { reactive } from 'vue';
-defineProps({});
+import { reactive } from "vue";
+defineProps({
+  pricePlans: Array,
+  preview: Boolean,
+});
 const quote = defineModel();
+
+const pricePlanskeys = { "One-Off": "SINGLE", Recurring: "MONTHLY" };
+const columns = quote.value.solution_type?.table?.columns ?? [];
 
 const temp = reactive({
   contract_length: 1,
   discount: 0,
   quantity: 0,
 });
-
 
 const recurringNewLine = reactive({
   name: null,
@@ -19,12 +24,11 @@ const recurringNewLine = reactive({
   price_plan_code: "MONTHLY",
 });
 
-const oneOffNewLine = reactive({
+const newLine = reactive({
   name: null,
   discount: 0,
   quantity: 0,
   price: 0,
-  price_plan_code: "SINGLE",
 });
 
 const getLeafNodesWithChildren = (objects) => {
@@ -42,7 +46,6 @@ const getLeafNodesWithChildren = (objects) => {
   findLeaves(objects);
   return leaves;
 };
-
 
 const edit = (p) => {
   temp.quantity = p.quantity;
@@ -67,7 +70,6 @@ const save = async (p) => {
     notyf.error(ex.response.data.message);
   }
 };
-
 
 const cancel = (p) => {
   p.is_editing = !p.is_editing;
@@ -119,7 +121,6 @@ const saveNewLine = async (item) => {
   }
 };
 
-
 const quoteTotal = (key) => {
   return quote.value.items
     .filter((x) => x.price_plan && x.price_plan.code == key)
@@ -127,192 +128,99 @@ const quoteTotal = (key) => {
 };
 </script>
 <template>
-  <div class="mb-5">
+  <div class="mb-5" v-for="pricePlan in pricePlans">
     <div
       class="mobile-price-group-heading border-bottom mb-3 d-flex justify-content-between align-items-center"
     >
-      <h3>Recurring charges</h3>
-      <h3 id="recurring_total">{{ GBP.format(quoteTotal("MONTHLY")) }}</h3>
+      <h3>{{ pricePlan.name }} charges</h3>
+      <h3 id="recurring_total">{{ GBP.format(quoteTotal(pricePlan.code)) }}</h3>
     </div>
-    <table id="table-recurring" class="table">
+    <table :id="'table-' + pricePlan.code" class="table">
       <thead>
         <tr>
-          <th style="width: 30%">Product</th>
-          <th class="text-center" style="width: 8%">Months</th>
-          <th class="text-center" style="width: 8%">Qty</th>
-          <th class="text-right" style="width: 11%">Your Price</th>
-          <th class="text-right" style="width: 10%">Margin</th>
-          <th class="text-center" style="width: 10%">Discount</th>
-          <th class="text-right" style="width: 13%">Sell Price</th>
-          <th class="text-right" style="width: 10%"></th>
+          <th v-for="column in columns" :class="[`column-${column.value}-header`]">
+            {{ column.name }}
+          </th>
+          <th style="width: 60px" class="text-center"></th>
         </tr>
       </thead>
       <tbody>
-        <tr
-          v-for="(p, i) in quote.items.filter(
-            (x) => x.price_plan && x.price_plan.code == 'MONTHLY'
+        <template
+          v-for="(item, index) in quote.items.filter(
+            (x) => x.price_plan.code == pricePlan.code
           )"
-          class="recurring-item bg-light-grey"
         >
-          <td>
-            {{ p.name }}
-          </td>
-          <td class="text-center">
-            <span
-              v-if="quote.solution_type.code == 3"
-              :id="'recurring-' + i + '-contract_length'"
-            >
-              {{ p.contract_length }}
-            </span>
-            <template v-else>
-              <input
-                :id="'input-recurring-' + i + '-contract_length'"
-                v-if="p.is_editing"
-                class="form-control text-center p-0 px-1"
-                type="number"
-                min="0"
-                max="100"
-                v-model="temp.contract_length"
-              />
-              <span v-else :id="'recurring-' + i + '-contract_length'">
-                {{ p.contract_length }}
-              </span>
-            </template>
-          </td>
-          <td class="text-center">
-            <span v-if="!p.is_editing" :id="'recurring-' + i + '-quantity'">
-              x{{ p.quantity }}
-            </span>
-            <input
-              :id="'input-recurring-' + i + '-quantity'"
-              v-else
-              class="form-control text-center p-0 px-1"
-              type="number"
-              min="0"
-              max="100"
-              v-model="temp.quantity"
-            />
-          </td>
-          <td class="text-right">{{ GBP.format(p.price) }}</td>
-          <td class="text-right">
-            <span :id="'recurring-' + i + '-margin'">
-              {{ GBP.format(p.margin) }}
-            </span>
-          </td>
-          <td class="text-center">
-            <span v-if="!p.is_editing" :id="'recurring-' + i + '-discount'">
-              {{ p.discount }} %
-            </span>
-            <input
-              :id="'input-recurring-' + i + '-discount'"
-              v-else
-              class="form-control text-center p-0 px-1"
-              type="number"
-              min="0"
-              max="100"
-              v-model="temp.discount"
-            />
-          </td>
-          <td class="text-right fw-bold">
-            {{ GBP.format(p.total) }}
-          </td>
-          <td class="text-right">
-            <div class="d-flex justify-content-center">
-              <template v-if="!p.is_editing && p.id">
-                <font-awesome-icon
-                  :id="'btn-recurring-' + i + '-edit'"
-                  role="button"
-                  class="px-2 py-3 text-primary"
-                  :icon="['fas', 'edit']"
-                  @click="edit(p)"
-                />
-                <font-awesome-icon
-                  :id="'btn-recurring-' + i + '-remove'"
-                  role="button"
-                  class="px-2 py-3 text-secondary"
-                  :icon="['fas', 'trash']"
-                  @click="remove(p)"
-                />
-              </template>
-              <template v-else>
-                <font-awesome-icon
-                  :id="'btn-recurring-' + i + '-cancel'"
-                  role="button"
-                  class="px-2 py-3 text-secondary"
-                  :icon="['fas', 'cancel']"
-                  @click="cancel(p)"
-                />
-                <font-awesome-icon
-                  :id="'btn-recurring-' + i + '-save'"
-                  role="button"
-                  class="px-2 py-3 text-primary"
-                  :icon="['fas', 'save']"
-                  @click="save(p)"
-                />
-              </template>
-            </div>
-          </td>
-        </tr>
+          <TableItem
+            :item="item"
+            :index="index"
+            :columns="columns"
+            :preview="preview"
+            :parentColumns="[]"
+            :code="pricePlan.code"
+          >
+          </TableItem>
+        </template>
       </tbody>
-      <tfoot>
-        <tr v-if="recurringNewLine.show">
+      <tfoot v-if="!preview">
+        <tr v-if="newLine.show && newLine.price_plan_code == pricePlan.code">
           <th>
             <input
-              :id="'input-new-recurring-name'"
+              :id="'input-new-' + pricePlan.code + '-name'"
               class="form-control p-0 px-1"
               type="text"
-              v-model="recurringNewLine.name"
+              v-model="newLine.name"
             />
           </th>
           <th class="text-center">
             <input
-              :id="'input-new-recurring-contract_length'"
+              v-if="newLine.price_plan_code == 'MONTHLY'"
+              :id="'input-new-' + pricePlan.code + '-contract_length'"
               class="form-control text-center p-0 px-1"
               type="number"
-              v-model="recurringNewLine.contract_length"
+              v-model="newLine.contract_length"
             />
           </th>
           <th class="text-center">
             <input
-              :id="'input-new-recurring-qty'"
+              :id="'input-new-' + pricePlan.code + '-qty'"
               class="form-control text-center p-0 px-1"
               type="number"
-              v-model="recurringNewLine.quantity"
+              v-model="newLine.quantity"
             />
           </th>
           <th>
             <input
-              :id="'input-new-recurring-price_monthly'"
+              :id="'input-new-' + pricePlan.code + '-price'"
               class="form-control text-center p-0 px-1"
               type="number"
-              v-model="recurringNewLine.price"
+              v-model="newLine.price"
             />
           </th>
           <th></th>
           <th class="text-center">
             <input
-              :id="'input-new-recurring-discount'"
+              :id="'input-new-' + pricePlan.code + '-discount'"
               class="form-control text-center p-0 px-1"
               type="number"
-              v-model="recurringNewLine.discount"
+              v-model="newLine.discount"
             />
           </th>
           <th class="text-right"></th>
           <th class="text-right">
             <div class="d-flex justify-content-center">
               <font-awesome-icon
-                :id="'btn-new-recurring-cancel'"
+                :id="'btn-new-' + pricePlan.code + '-cancel'"
                 role="button"
                 class="px-2 py-3 text-secondary"
                 :icon="['fas', 'cancel']"
-                @click="() => (recurringNewLine.show = false)"
+                @click="() => (newLine.show = false)"
               />
               <font-awesome-icon
-                id="btn-new-recurring-add"
+                :id="'btn-new-' + pricePlan.code + '-add'"
                 :icon="['fas', 'save']"
                 role="button"
                 class="px-2 py-3 text-primary"
-                @click="saveNewLine(recurringNewLine)"
+                @click="saveNewLine(newLine)"
               />
             </div>
           </th>
@@ -321,10 +229,10 @@ const quoteTotal = (key) => {
           <th colspan="10">
             <div
               role="button"
-              id="btn-recurring-add"
+              :id="'btn-' + pricePlan.code + '-add'"
               class="d-flex justify-content-center align-items-center px-2 py-1"
               style="font-size: 12px"
-              @click="() => (recurringNewLine.show = true)"
+              @click="toggleNewLine(pricePlan.code)"
             >
               <span>Add New</span>
               <font-awesome-icon class="ms-2" :icon="['fas', 'plus']" />
@@ -334,7 +242,7 @@ const quoteTotal = (key) => {
       </tfoot>
     </table>
   </div>
-  <div class="mb-5">
+  <!-- <div class="mb-5">
     <div
       class="mobile-price-group-heading border-bottom mb-3 d-flex justify-content-between align-items-center"
     >
@@ -509,7 +417,7 @@ const quoteTotal = (key) => {
         </tr>
       </tfoot>
     </table>
-  </div>
+  </div> -->
 </template>
 
 <style scoped>
