@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Web;
 
-use App\Enums\QuoteStatusesEnum;
 use App\Models\User;
 use Inertia\Inertia;
 use App\Models\Quote;
@@ -10,14 +9,18 @@ use App\Models\Account;
 use App\Models\PricePlan;
 use App\Models\SolutionType;
 use App\Services\QuoteService;
+use App\Enums\QuoteStatusesEnum;
 use App\Events\QuoteStatusEvent;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Spatie\Browsershot\Browsershot;
 use App\Http\Resources\QuoteResource;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\QuoteCreateRequest;
 use App\Http\Requests\QuoteUpdateRequest;
+use Spatie\LaravelPdf\Facades\Pdf;
+
 use function Spatie\LaravelPdf\Support\pdf;
 
 class QuoteController extends BaseController
@@ -148,26 +151,25 @@ class QuoteController extends BaseController
 
     public function download(Quote $quote)
     {
-        $solution_types = SolutionType::get();
-        $user = request()->user();
-        $dir = 'pdf/' . $user->currentTenant->id;
 
-        $html = Inertia::render('Quotes/Preview', [
+        return Inertia::render('Quotes/Invoice', [
             'pricePlans' => PricePlan::all(),
             'quote' => new QuoteResource($quote->load(['items', 'orders']))
         ]);
 
-        if (!Storage::makeDirectory($dir)) {
-            throw new \Exception("Could not create directory for PDFs");
-        }
+        // $solution_types = SolutionType::get();
+        // $user = request()->user();
+        // $dir = 'pdf/' . $user->currentTenant->id;
 
-        // return view('pdf.invoice', compact('order', 'totals', 'solution_types'));
+        // if (!Storage::makeDirectory($dir)) {
+        //     throw new \Exception("Could not create directory for PDFs");
+        // }
 
-        $quote = QuoteResource::make($quote->load(['items']))->resolve();
+        // $quote = QuoteResource::make($quote->load(['items']))->resolve();
 
-        return pdf()
-            ->view('pdf.invoice', compact('quote', 'solution_types'))
-            ->name('quote-' . $quote['id'] . '.pdf')
-            ->download();
+        // return pdf()
+        //     ->view('pdf.invoice', compact('quote', 'solution_types'))
+        //     ->name('quote-' . $quote['id'] . '.pdf')
+        //     ->download();
     }
 }

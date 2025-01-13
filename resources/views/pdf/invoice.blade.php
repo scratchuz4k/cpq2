@@ -5,44 +5,44 @@
             if (isset($item['children']) && is_array($item['children']) && count($item['children']) > 0) {
                 findLeaves($item['children'], $leaves);
             } else {
-            $leaves[] = $item;
+                $leaves[] = $item;
+            }
         }
     }
-}
 
-function getLeafNodesWithChildren(array $objects)
-{
-    $leaves = [];
-    findLeaves($objects, $leaves);
-    return $leaves;
-}
+    function getLeafNodesWithChildren(array $objects)
+    {
+        $leaves = [];
+        findLeaves($objects, $leaves);
+        return $leaves;
+    }
 
-function quoteTotal($key, $items)
-{
-    $filteredItems = array_filter($items, function ($item) use ($key) {
-        return isset($item['price_plan']) && $item['price_plan']['code'] == $key;
+    function quoteTotal($key, $items)
+    {
+        $filteredItems = array_filter($items, function ($item) use ($key) {
+            return isset($item['price_plan']) && $item['price_plan']['code'] == $key;
+        });
+
+        $total = array_reduce(
+            $filteredItems,
+            function ($acc, $item) {
+                return $acc + $item['total'];
+            },
+            0,
+        );
+
+        return $total;
+    }
+
+    $leafNodes = getLeafNodesWithChildren($quote['items']);
+    $quote['items'] = $leafNodes;
+
+    $single_items = array_filter($quote['items'], function ($item) {
+        return isset($item['price_plan']) && $item['price_plan']->code === 'SINGLE';
     });
 
-    $total = array_reduce(
-        $filteredItems,
-        function ($acc, $item) {
-            return $acc + $item['total'];
-        },
-        0,
-    );
-
-    return $total;
-}
-
-$leafNodes = getLeafNodesWithChildren($quote['items']);
-$quote['items'] = $leafNodes;
-
-$single_items = array_filter($quote['items'], function ($item) {
-    return isset($item['price_plan']) && $item['price_plan']->code === 'SINGLE';
-});
-
-$monthly_items = array_filter($quote['items'], function ($item) {
-    return isset($item['price_plan']) && $item['price_plan']->code === 'MONTHLY';
+    $monthly_items = array_filter($quote['items'], function ($item) {
+        return isset($item['price_plan']) && $item['price_plan']->code === 'MONTHLY';
     });
 @endphp
 
@@ -54,7 +54,8 @@ $monthly_items = array_filter($quote['items'], function ($item) {
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Quote #{{ $quote['id'] }}</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
-          integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+        integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
@@ -157,9 +158,11 @@ $monthly_items = array_filter($quote['items'], function ($item) {
         .w-5 {
             width: 5% !important;
         }
+
         .w-10 {
             width: 10% !important;
         }
+
         .w-20 {
             width: 20% !important;
         }
@@ -168,6 +171,7 @@ $monthly_items = array_filter($quote['items'], function ($item) {
 
 <body>
     <div class="container-fluid">
+        <h1 id="mystuff"></h1>
         <div class="row" id="header">
             <div class="col" id="header_left">
                 <img src="https://img.logoipsum.com/331.svg" alt="Sample Logo" class="img-fluid">
@@ -245,8 +249,8 @@ $monthly_items = array_filter($quote['items'], function ($item) {
                                                 <td class="text-center">
                                                     @if ($item['data']?->providerKey)
                                                         <img class="img-provider"
-                                                        style="max-width: 60px; max-height: 20px; width: auto; height: auto;"
-                                                        src="{{ $item['image'] ?? public_path() . '/images/providers/' . $item['data']?->providerKey . '.png' }}" />
+                                                            style="max-width: 60px; max-height: 20px; width: auto; height: auto;"
+                                                            src="{{ $item['image'] ?? public_path() . '/images/providers/' . $item['data']?->providerKey . '.png' }}" />
                                                     @endif
                                                 </td>
                                             @endif
@@ -260,10 +264,12 @@ $monthly_items = array_filter($quote['items'], function ($item) {
                                                     </span>
                                                 @endif
                                                 @if (isset($item['data']->isContended) and $item['data']->isContended)
-                                                    <span class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm is-contended"
-                                                          data-bs-toggle="tooltip" data-bs-placement="top" title="Contended" v-tooltip>
-                                                            <i class="fa-solid fa-network-wired"></i>
-                                                        </span>
+                                                    <span
+                                                        class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm is-contended"
+                                                        data-bs-toggle="tooltip" data-bs-placement="top"
+                                                        title="Contended" v-tooltip>
+                                                        <i class="fa-solid fa-network-wired"></i>
+                                                    </span>
                                                 @endif
                                             </td>
                                             <td class="text-center">
@@ -336,8 +342,10 @@ $monthly_items = array_filter($quote['items'], function ($item) {
                                                         {{ $item['data']->additionalInfo->{'Primary Router Model'} }}
                                                     </span>
                                                     @if (isset($item['data']->isContended) and $item['data']->isContended)
-                                                        <span class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm is-contended"
-                                                              data-bs-toggle="tooltip" data-bs-placement="top" title="Contended" v-tooltip>
+                                                        <span
+                                                            class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm is-contended"
+                                                            data-bs-toggle="tooltip" data-bs-placement="top"
+                                                            title="Contended" v-tooltip>
                                                             <i class="fa-solid fa-network-wired"></i>
                                                         </span>
                                                     @endif
@@ -430,6 +438,24 @@ $monthly_items = array_filter($quote['items'], function ($item) {
             </div>
         </div>
     </div>
+
+    <script>
+        const app = Vue.createApp({
+            data() {
+                return {
+                    heading: 'Hello, Vue!'
+                };
+            },
+            methods: {
+                changeHeading() {
+                    this.heading = 'The content has changed with Vue!';
+                }
+            }
+        });
+
+        // Mount the app to #app
+        app.mount('#app');
+    </script>
 </body>
 
 </html>

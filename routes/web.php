@@ -19,6 +19,7 @@ use App\Http\Controllers\Web\DashboardController;
 use App\Http\Controllers\Web\SharedLinkController;
 use App\Http\Controllers\Web\SolutionTypeController;
 use App\Http\Controllers\Web\ApiConfigurationController;
+use App\Http\Middleware\AllowPrint;
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('index');
@@ -27,9 +28,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 
     Route::get('/tenant/{tenant}/make-current', [TenantController::class, 'switch'])->name('tenant.make-current');
-
     Route::get('/quotes/{quote}/preview', [QuoteController::class, 'preview'])->name('quotes.preview');
-    Route::get('/quotes/{quote}/download', [QuoteController::class, 'download'])->name('quotes.download');
+
+    Route::middleware(AllowPrint::class)->group(function () {
+        Route::get('/quotes/{quote}/download', [QuoteController::class, 'download'])->name('quotes.download');
+    });
+
     Route::get('/quotes/{quote}/configure', [QuoteController::class, 'configure'])->name('quotes.configure');
 
     Route::get('/orders/{order}/preview', [OrderController::class, 'preview'])->name('orders.preview');
