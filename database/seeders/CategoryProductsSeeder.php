@@ -59,7 +59,7 @@ class CategoryProductsSeeder extends Seeder
 
         foreach (Tenant::all() as $tenant) {
             $categories = [];
-            $pricePlan = PricePlan::where("code", "monthly")->first();
+            $pricePlan = PricePlan::where("code", "MONTHLY")->first();
             $categories["plan"]  = Category::updateOrCreate(["code" => "plan", "tenant_id" => $tenant->id], ["name" => "Plans"]);
 
             foreach ($products as $temp) {

@@ -143,7 +143,7 @@ class ExternalController extends Controller
                 "model" => [],
             ];
 
-            $pricePlanId = PricePlan::where("code", "single")->value('id');
+            $pricePlanId = PricePlan::where("code", "SINGLE")->value('id');
             foreach ($products as $key => $product) {
                 $temp = '';
                 foreach (array_keys($product) as $itemKey) {
