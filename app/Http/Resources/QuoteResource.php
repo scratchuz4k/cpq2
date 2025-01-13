@@ -26,7 +26,7 @@ class QuoteResource extends JsonResource
             'solution_type' => (new SolutionTypeResource($this->solutionType))->resolve(),
             'shared_link' => (new SharedLinkResource($this->sharedLink))->resolve(),
             'discounts' => QuoteDiscountResource::collection($this->discounts)->resolve(),
-            'items' => QuoteItemResource::collection($this->whenLoaded('items', default: collect([])))->resolve(),
+            'items' => QuoteItemResource::collection($this->items)->resolve(),
             'updated_at' => $this->updated_at,
             'orders' => $this->whenLoaded('orders')
         ];
