@@ -30,7 +30,7 @@ const format = {
         return dt.toISOString().slice(0, 16).replace('T', ' '); // Y-m-d H:i format
     },
 
-    speed: (value) => {
+    bytes: (value) => {
         let number = value;
         let suffix = "Mb";
         let rounding = 10;
@@ -52,6 +52,28 @@ const format = {
             " " +
             suffix;
         return result;
+    },
+    toCamelCase: (str) => {
+        if (!str) {
+            return ''
+        }
+        return str
+            .toLowerCase()
+            .replace(/_([a-z])/g, (_, letter) => letter.toUpperCase()) // Convert characters after dashes to uppercase
+            .replace(/^([a-z])/, (_, letter) => letter.toUpperCase());;
+    },
+    toSnakeCase: (str) => {
+        if (!str) {
+            return ''
+        }
+        return str
+            .toLowerCase() // Convert the entire string to lowercase
+            .split(/[\s-_]+/) // Split by spaces, hyphens, or underscores
+            .map((word, index) =>
+                index === 0 ? word : word.charAt(0).toUpperCase() + word.slice(1)
+            ) // Capitalize words except the first one
+            .join(''); // Join all words into a single string
+
     }
 }
 

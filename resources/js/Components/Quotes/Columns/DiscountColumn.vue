@@ -15,6 +15,6 @@ const item = defineModel()
             {{ item[column.value] }} %
         </p>
         <input v-else :id="'input-' + code + '-' + index + '-discount'" class="form-control text-center p-0 px-1"
-            type="number" v-model="temp.discount">
+            type="number" v-model="temp.discount" min="0">
     </div>
 </template>

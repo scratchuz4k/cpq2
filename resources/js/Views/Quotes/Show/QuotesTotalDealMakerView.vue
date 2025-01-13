@@ -1,5 +1,4 @@
 <script setup>
-import { router } from "@inertiajs/vue3";
 import { ref, reactive } from "vue";
 import Dialog from "primevue/dialog";
 import DatePicker from "primevue/datepicker";
@@ -9,7 +8,7 @@ import { createOrder } from "@/Composables/useOrders.js";
 const props = defineProps({
   modelValue: Object,
   pricePlans: Array,
-  preview: Boolean
+  preview: Boolean,
 });
 
 const showShareDialog = ref(false);
@@ -173,6 +172,7 @@ const items = ref([
 ]);
 
 emitter.on("quote:refresh", async () => {
+  debugger;
   Object.assign(quote, await getQuote(quote.id));
   Object.assign(quote.items, getLeafNodesWithChildren(quote.items));
 });
@@ -211,7 +211,11 @@ emitter.on("quote:refresh", async () => {
             </div>
           </div>
         </div>
-        <TableDealMaker v-model="quote" :pricePlans="pricePlans" :preview="preview"></TableDealMaker>
+        <TableDealMaker
+          v-model="quote"
+          :pricePlans="pricePlans"
+          :preview="preview"
+        ></TableDealMaker>
 
         <div class="mb-5">
           <div>

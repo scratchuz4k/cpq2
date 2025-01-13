@@ -54,6 +54,7 @@ const remove = async (p) => {
   }
 
   if (await removeQuoteItem(id)) {
+    debugger
     emitter.emit("quote:refresh");
   }
 };
