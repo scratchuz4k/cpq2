@@ -57,16 +57,6 @@ const models = [
                 value: 'Product' + getCurrentDate()
             },
             {
-                id: '#supplier-name',
-                type: 'select',
-                value: 'Supplier' + temp
-            },
-            {
-                id: '#brand-name',
-                type: 'select',
-                value: 'Brand' + temp
-            },
-            {
                 id: '#product-code',
                 type: 'text',
                 value: generateHash('Brand' + temp)
