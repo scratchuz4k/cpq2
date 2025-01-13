@@ -12,7 +12,7 @@ const props = defineProps({
   parentColumns: Array,
   item: Object,
 });
-const item = ref(props.item);
+const item = defineModel("item");
 const showChildren = ref(true);
 
 const edit = (p) => {
@@ -134,8 +134,8 @@ const colspan = props.columns.length - props.parentColumns.length;
         </component>
       </td>
     </template>
-    <td class="text-center p-0">
-      <template v-if="!preview">
+    <td v-if="!preview"  class="text-center p-0">
+      <template>
         <div class="d-flex justify-content-end">
           <template v-if="!item.is_editing && item.id">
             <font-awesome-icon
@@ -170,9 +170,6 @@ const colspan = props.columns.length - props.parentColumns.length;
             />
           </template>
         </div>
-      </template>
-      <template v-else-if="!preview">
-        {{ index + 1 }}
       </template>
     </td>
   </tr>

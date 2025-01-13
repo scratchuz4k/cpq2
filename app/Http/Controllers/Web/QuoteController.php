@@ -141,9 +141,8 @@ class QuoteController extends BaseController
     public function preview(Quote $quote)
     {
         return Inertia::render('Quotes/Preview', [
-            'accounts' => Account::all(),
-            'solution_types' => SolutionType::get(),
-            'quote' => new QuoteResource($quote->load(['items']))
+            'pricePlans' => PricePlan::all(),
+            'quote' => new QuoteResource($quote->load(['items', 'orders']))
         ]);
     }
 

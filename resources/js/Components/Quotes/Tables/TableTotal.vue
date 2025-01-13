@@ -19,7 +19,7 @@ const quoteTotal = (price_plan, column = "total") => {
 };
 </script>
 <template>
-  <table class="table-cpq table table-bordered">
+  <table class="table-dealmaker table table-bordered">
     <thead>
       <tr>
         <th></th>

@@ -9,7 +9,7 @@ defineProps({
 const item = defineModel()
 </script>
 <template>
-    <p class="small" v-if="!isParent" :id="code + '-' + index + '-margin'">
+    <p class="small" v-if="!isParent" :id="code + '-' + index + '-margin'" style="white-space: nowrap;">
         {{ item[column.value] }} %
     </p>
 </template>

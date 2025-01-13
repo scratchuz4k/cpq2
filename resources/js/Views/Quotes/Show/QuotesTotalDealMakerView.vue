@@ -4,7 +4,7 @@ import Dialog from "primevue/dialog";
 import DatePicker from "primevue/datepicker";
 import { DateTime } from "luxon";
 import { createOrder } from "@/Composables/useOrders.js";
-import { getQuote } from "@composables/useQuote";
+import { getQuote, setQuote, quote } from "@composables/useQuote";
 
 const props = defineProps({
   modelValue: Object,
@@ -15,25 +15,7 @@ const props = defineProps({
 const showShareDialog = ref(false);
 let showModal = ref(false);
 const isLoading = ref(false);
-
-const getLeafNodesWithChildren = (objects) => {
-  let leaves = [];
-  const findLeaves = (items) => {
-    for (const item of items) {
-      if (item.children && item.children.length > 0) {
-        findLeaves(item.children);
-      } else {
-        leaves.push(item);
-      }
-    }
-  };
-
-  findLeaves(objects);
-  return leaves;
-};
-
-const quote = reactive(props.modelValue);
-Object.assign(quote.items, getLeafNodesWithChildren(quote.items));
+setQuote(props.modelValue);
 
 const warningProviders = ref([
   { its: quote.items.some((item) => item.data?.providerName === "ITS") },
@@ -69,8 +51,7 @@ const saveQuote = async () => {
     let res = await axios.put(`/api/quotes/${quote.id}`, {
       discounts: [...pricePlansDiscounts.value],
     });
-    Object.assign(quote, res.data);
-    Object.assign(quote.items, getLeafNodesWithChildren(quote.items));
+    setQuote(res.data);
     isLoading.value = false;
   } catch (ex) {
     isLoading.value = false;
@@ -98,8 +79,7 @@ const resetQuote = async () => {
       discounts: [...pricePlansDiscounts.value],
       items: quote.items,
     });
-    Object.assign(quote, res.data);
-    Object.assign(quote.items, getLeafNodesWithChildren(quote.items));
+    setQuote(res.data);
     isLoading.value = false;
   } catch (ex) {
     notyf.error(ex.response.data.message);
@@ -111,6 +91,7 @@ const quoteTotal = (key) => {
     .filter((x) => x.price_plan && x.price_plan.code == key)
     .reduce((acc, item) => (acc += item.total), 0);
 };
+
 const disableButtonSendToOrder = ref(false);
 const createOrderAndRedirect = async (id) => {
   disableButtonSendToOrder.value = true;
@@ -173,11 +154,8 @@ const items = ref([
 ]);
 
 emitter.on("quote:refresh", async () => {
-  debugger;
-  Object.assign(quote, await getQuote(quote.id));
-  Object.assign(quote.items, getLeafNodesWithChildren(quote.items));
+  await getQuote(quote.id);
 });
-
 </script>
 <template>
   <div class="panel panel-mobile">

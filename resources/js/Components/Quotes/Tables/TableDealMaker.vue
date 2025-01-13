@@ -1,19 +1,10 @@
 <script setup>
 import { reactive } from "vue";
+import { quote } from "@composables/useQuote";
+
 defineProps({
   pricePlans: Array,
   preview: Boolean,
-});
-const quote = defineModel();
-
-const pricePlanskeys = { SINGLE: "one_off", MONTHLY: "recurring" };
-const columns = quote.value.solution_type?.table?.columns ?? [];
-
-const newLine = reactive({
-  name: null,
-  discount: 0,
-  quantity: 0,
-  price: 0,
 });
 
 const getLeafNodesWithChildren = (objects) => {
@@ -32,13 +23,26 @@ const getLeafNodesWithChildren = (objects) => {
   return leaves;
 };
 
+const pricePlanskeys = { SINGLE: "one_off", MONTHLY: "recurring" };
+const columns = quote.solution_type?.table?.columns ?? [];
+
+const newLine = reactive({
+  show: false,
+  name: null,
+  discount: 0,
+  quantity: 0,
+  price: 0,
+  contract_length: 1,
+  price_plan_code: null,
+});
+
 const saveNewLine = async (item) => {
   try {
-    let res = await axios.put(`/api/quotes/${quote.value.id}`, {
-      items: [...quote.value.items, item],
+    let res = await axios.put(`/api/quotes/${quote.id}`, {
+      items: [...quote.items, item],
     });
     Object.assign(quote, res.data);
-    Object.assign(quote.value.items, getLeafNodesWithChildren(quote.value.items));
+    Object.assign(quote.items, getLeafNodesWithChildren(quote.items));
     item.show = false;
     Object.assign(item, {
       name: null,
@@ -52,10 +56,17 @@ const saveNewLine = async (item) => {
 };
 
 const quoteTotal = (key) => {
-  return quote.value.items
+  return quote.items
     .filter((x) => x.price_plan && x.price_plan.code == key)
     .reduce((acc, item) => (acc += item.total), 0);
 };
+
+const toggleNewLine = (key) => {
+  newLine.show = true;
+  newLine.contract_length = 1;
+  newLine.price_plan_code = key;
+};
+
 </script>
 <template>
   <div class="mb-5" v-for="pricePlan in pricePlans">
@@ -65,13 +76,13 @@ const quoteTotal = (key) => {
       <h3>{{ pricePlan.name }} charges</h3>
       <h3 id="recurring_total">{{ GBP.format(quoteTotal(pricePlan.code)) }}</h3>
     </div>
-    <table :id="'table-' + pricePlan.code" class="table">
+    <table :id="'table-' + pricePlan.code" class="table-dealmaker table table-bordered">
       <thead>
         <tr>
           <th v-for="column in columns" :class="[`column-${column.value}-header`]">
             {{ column.name }}
           </th>
-          <th style="width: 60px" class="text-center"></th>
+          <th style="width: 60px" class="text-center" v-if="!preview"></th>
         </tr>
       </thead>
       <tbody>
@@ -175,32 +186,6 @@ const quoteTotal = (key) => {
 </template>
 
 <style scoped>
-.table {
-  font-size: 14px !important;
-  vertical-align: middle;
-}
-
-tr td,
-tr th {
-  padding: 0px 10px !important;
-}
-
-tr td:last-child,
-tr th:last-child {
-  padding: 0px !important;
-}
-
-thead {
-  vertical-align: middle !important;
-}
-
-thead tr th {
-  padding: 10px !important;
-  background: #e8e8e8;
-  font-weight: normal;
-  font-size: 12px !important;
-}
-
 /* For Chrome, Safari, Edge, Opera */
 input[type="number"]::-webkit-outer-spin-button,
 input[type="number"]::-webkit-inner-spin-button {

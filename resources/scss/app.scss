@@ -188,7 +188,7 @@ body {
 
     .badge {
         line-height: 15px;
-        border:0;
+        border: 0;
     }
 
     h1 {
@@ -212,7 +212,8 @@ body {
         background-color: var(--color-purple-light);
         border-left: var(--color-purple-dark) 5px solid;
 
-        .fa,.svg-inline--fa {
+        .fa,
+        .svg-inline--fa {
             color: var(--color-purple-dark);
         }
 
@@ -230,7 +231,8 @@ body {
         background-color: var(--color-blue-light);
         border-left: var(--color-blue) 5px solid;
 
-        .fa,.svg-inline--fa {
+        .fa,
+        .svg-inline--fa {
             color: var(--color-blue);
         }
 
@@ -526,7 +528,7 @@ body {
         }
     }
 
-    #table_products, .table-hover, .cpq-total table thead {
+    .table-dealmaker thead {
 
         th {
             background: var(--table-header-grey);
@@ -605,13 +607,14 @@ body {
 
     }
 
-    .cpq-total table {
-        th, td {
+    .table-dealmaker {
+        th,
+        td {
             border: none;
         }
     }
 
-    #table-quotes {
+    .table-dealmaker {
         .container-form-check-input {
             position: absolute;
             left: 0;
@@ -915,6 +918,7 @@ body {
             background: none;
             padding: 0;
         }
+
         .p-paginator-page {
             color: black;
             padding: 8px 12px;
@@ -932,7 +936,8 @@ body {
             }
         }
 
-        .p-paginator-next, .p-paginator-prev {
+        .p-paginator-next,
+        .p-paginator-prev {
             border-radius: 4px;
             font-weight: 400;
 
@@ -990,7 +995,7 @@ body {
     }
 }
 
-.p-multiselect-header{
+.p-multiselect-header {
     display: none !important
 }
 
