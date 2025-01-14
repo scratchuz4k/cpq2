@@ -27,4 +27,7 @@ export default defineConfig({
             '@composables': fileURLToPath(new URL('./resources/js/Composables', import.meta.url)),
         }
     },
+    build: {
+        cssCodeSplit: false, // Disable CSS splitting
+    },
 });

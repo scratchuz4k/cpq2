@@ -11,7 +11,9 @@ const item = defineModel();
 </script>
 <template>
   <template v-if="!isGroup">
-    <p class="small" v-if="!item.is_editing">{{ item[column.value] }}</p>
+    <p class="small" v-if="!item.is_editing">
+      {{ item[column.value] > 1 ? item[column.value] : "" }}
+    </p>
     <input
       v-else
       :id="'input-' + code + '-' + index + '-contract_length'"

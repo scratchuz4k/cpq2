@@ -2,13 +2,19 @@
 import { reactive } from "vue";
 import { quote, setQuote } from "@composables/useQuote";
 
-defineProps({
+const props = defineProps({
   pricePlans: Array,
   preview: Boolean,
 });
 
 const pricePlanskeys = { SINGLE: "one_off", MONTHLY: "recurring" };
-const columns = quote.solution_type?.table?.columns ?? [];
+let columns = quote.solution_type?.table?.columns ?? [];
+
+if (props.preview) {
+  columns = columns.filter((x) => {
+    return x.value != "margin";
+  });
+}
 
 const newLine = reactive({
   show: false,
@@ -49,11 +55,18 @@ const toggleNewLine = (key) => {
   newLine.contract_length = 1;
   newLine.price_plan_code = key;
 };
+
+const filterColumns = (columns, code) => {
+  if (code == "SINGLE") {
+    return columns.filter((x) => x.value != "contract_length");
+  }
+  return columns;
+};
 </script>
 <template>
   <div class="mb-5" v-for="pricePlan in pricePlans">
     <div
-      class="mobile-price-group-heading border-bottom mb-3 d-flex justify-content-between align-items-center"
+      class="mobile-price-group-heading mt-3 d-flex justify-content-between align-items-center"
     >
       <h3>{{ pricePlan.name }} charges</h3>
       <h3 id="recurring_total">{{ GBP.format(quoteTotal(pricePlan.code)) }}</h3>
@@ -61,7 +74,7 @@ const toggleNewLine = (key) => {
     <table :id="'table-' + pricePlan.code" class="table-dealmaker table table-bordered">
       <thead>
         <tr>
-          <th v-for="column in columns" :class="[`column-${column.value}-header`]">
+          <th v-for="column in filterColumns(columns, pricePlan.code)" :class="[`column-${column.value}-header`]">
             {{ column.name }}
           </th>
           <th style="width: 60px" class="text-center" v-if="!preview"></th>
@@ -76,7 +89,7 @@ const toggleNewLine = (key) => {
           <TableItem
             :item="item"
             :index="index"
-            :columns="columns"
+            :columns="filterColumns(columns, pricePlan.code)"
             :preview="preview"
             :groupColumns="[]"
             :code="pricePlanskeys[pricePlan.code]"

@@ -19,7 +19,8 @@ use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\QuoteCreateRequest;
 use App\Http\Requests\QuoteUpdateRequest;
-use Spatie\LaravelPdf\Facades\Pdf;
+use Spatie\LaravelPdf\Enums\Format;
+use Spatie\LaravelPdf\Enums\Unit;
 
 use function Spatie\LaravelPdf\Support\pdf;
 
@@ -151,25 +152,26 @@ class QuoteController extends BaseController
 
     public function download(Quote $quote)
     {
+        $solution_types = SolutionType::get();
+        $user = request()->user();
+        $dir = 'pdf/' . $user->currentTenant->id;
 
-        return Inertia::render('Quotes/Invoice', [
-            'pricePlans' => PricePlan::all(),
-            'quote' => new QuoteResource($quote->load(['items', 'orders']))
-        ]);
+        if (!Storage::makeDirectory($dir)) {
+            throw new \Exception("Could not create directory for PDFs");
+        }
 
-        // $solution_types = SolutionType::get();
-        // $user = request()->user();
-        // $dir = 'pdf/' . $user->currentTenant->id;
+        $view  = array_key_exists("component", $quote->solutionType->configs) ? strtolower($quote->solutionType->configs["component"]) : "dealmaker";
+        $quote = QuoteResource::make($quote->load(['items']))->resolve();
 
-        // if (!Storage::makeDirectory($dir)) {
-        //     throw new \Exception("Could not create directory for PDFs");
-        // }
 
-        // $quote = QuoteResource::make($quote->load(['items']))->resolve();
-
-        // return pdf()
-        //     ->view('pdf.invoice', compact('quote', 'solution_types'))
-        //     ->name('quote-' . $quote['id'] . '.pdf')
-        //     ->download();
+        // return view("pdf.$view", compact('quote', 'solution_types'));
+        return pdf()
+            ->view("pdf.$view", compact('quote', 'solution_types'))
+            ->format(Format::A4)
+            ->withBrowsershot(function (Browsershot $browsershot) {
+                $browsershot->waitUntilNetworkIdle();
+            })
+            ->name('quote-' . $quote['id'] . '.pdf')
+            ->download();
     }
 }

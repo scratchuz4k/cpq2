@@ -21,7 +21,7 @@ export const setQuote = (temp) => {
     Object.assign(quote.items, getLeafNodesWithChildren(quote.items));
 }
 
-const getLeafNodesWithChildren = (objects) => {
+export const getLeafNodesWithChildren = (objects) => {
     let leaves = [];
     const findLeaves = (items) => {
         for (const item of items) {

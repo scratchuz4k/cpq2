@@ -501,7 +501,7 @@ getArticles(false, true)
                             class="btn btn-primary  btn-sm js-clear-filters ms-3">Clear filters</button></div>
                 </div>
                 <div v-if="articles.length" class="table-wrapper">
-                    <table id="table_products" class="table  table-bordered table-hover">
+                    <table class="table-dealmaker table table-bordered table-hover">
                         <thead>
                             <tr>
                                 <th class="ps-3" :style="{

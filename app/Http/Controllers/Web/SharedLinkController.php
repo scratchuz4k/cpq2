@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Web;
 
 use Inertia\Inertia;
 use App\Models\Quote;
+use App\Models\PricePlan;
 use App\Models\SharedLink;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -34,9 +35,7 @@ class SharedLinkController extends Controller
         $component = $this->sharedModels[$sharedLink->shareable_type];
         $resource = $this->getResource($component, $sharedLink->shareable);
 
-        return Inertia::render("Shareable/$component", [
-            'model' => $resource,
-        ]);
+        return Inertia::render("Shareable/$component", $resource);
     }
 
     public function verifyPassword(Request $request, $token)
@@ -66,7 +65,10 @@ class SharedLinkController extends Controller
     {
         switch ($component) {
             case 'Quotes':
-                return new QuoteResource($item->load(['items']));
+                return [
+                    'pricePlans' => PricePlan::all(),
+                    'model' => new QuoteResource($item->load(['items']))
+                ];
             default:
                 return $item;
         }

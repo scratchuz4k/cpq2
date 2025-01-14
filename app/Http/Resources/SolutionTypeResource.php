@@ -32,6 +32,8 @@ class SolutionTypeResource extends JsonResource
             $data = require $file;
             if (array_key_exists("component", $this->configs) && array_key_exists($this->configs["component"], $data)) {
                 $columns = $data[$this->configs["component"]];
+            }else{
+                $columns = $data["DealMaker"];
             }
         }
 

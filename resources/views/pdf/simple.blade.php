@@ -33,6 +33,20 @@
 
         return $total;
     }
+    function getCss()
+    {
+        $directory = 'build/assets/';
+        if (!is_dir($directory)) {
+            return null;
+        }
+        $files = scandir($directory);
+        foreach ($files as $file) {
+            if (is_file($directory . '/' . $file) && pathinfo($file, PATHINFO_EXTENSION) === 'css') {
+                return public_path('build/assets/' . $file);
+            }
+        }
+        return null;
+    }
 
     $leafNodes = getLeafNodesWithChildren($quote['items']);
     $quote['items'] = $leafNodes;
@@ -53,125 +67,11 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Quote #{{ $quote['id'] }}</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
-        integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
-        crossorigin="anonymous" referrerpolicy="no-referrer" />
-
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-    <style>
-        :root {
-            --pdf-header-logo-width: 30px;
-            --pdf-footer-logo-width: 20px;
-            --pdf-bg: #ffffff;
-            --pdf-color: #16c095;
-            --pdf-header-bg: #eeeeee;
-            --pdf-header-border-color: #f4a9a9;
-            --pdf-footer-bg: #eeeeee;
-            --pdf-footer-border-color: #999999;
-            --pdf-table-color: #000000;
-            --pdf-table-totals-bg: #eeeeee;
-            --pdf-table-grand-total-bg: #000000;
-            --pdf-main-color: #000000;
-            --pdf-terms-color: #ff0000;
-            --pdf-header-border-width: 10px;
-            --pdf-footer-border-width: 10px;
-        }
-
-        body {
-            background: var(--pdf-bg);
-            color: var(--pdf-color);
-            font-family: arial;
-            font-size: 14px;
-        }
-
-        html,
-        body,
-        div,
-        p,
-        span,
-        li,
-        ul,
-        ol,
-        h1,
-        h2,
-        h3,
-        h4,
-        h5,
-        h6 {
-            padding: 0px;
-            margin: 0px;
-        }
-
-        th,
-        td {
-            color: var(--pdf-table-color);
-        }
-
-        .text-right {
-            text-align: right;
-        }
-
-        .row-totals {
-            background: var(--pdf-table-totals-bg);
-        }
-
-        .row-totals-grand {
-            background: var(--pdf-table-grand-total-bg);
-        }
-
-        #header {
-            background: var(--pdf-header-bg);
-            border-bottom: var(--pdf-header-border-color) var(--pdf-header-border-width) solid;
-            padding: 30px;
-            margin-bottom: 30px;
-        }
-
-        #header_right {
-            font-size: 12px;
-        }
-
-        #main {
-            color: var(--pdf-main-color);
-        }
-
-        #terms {
-            color: var(--pdf-terms-color);
-        }
-
-        #footer {
-            background: var(--pdf-footer-bg);
-            border-bottom: var(--pdf-footer-border-color) var(--pdf-footer-border-width) solid;
-            padding: 30px;
-            margin-bottom: 30px;
-            font-size: 12px;
-        }
-
-        #header img {
-            width: var(--pdf-header-logo-width);
-        }
-
-        #footer img {
-            width: var(--pdf-footer-logo-width);
-        }
-
-        .w-5 {
-            width: 5% !important;
-        }
-
-        .w-10 {
-            width: 10% !important;
-        }
-
-        .w-20 {
-            width: 20% !important;
-        }
-    </style>
+    <link href="{{ getCss() }}" rel="stylesheet">
 </head>
 
 <body>
     <div class="container-fluid">
-        <h1 id="mystuff"></h1>
         <div class="row" id="header">
             <div class="col" id="header_left">
                 <img src="https://img.logoipsum.com/331.svg" alt="Sample Logo" class="img-fluid">
@@ -439,23 +339,6 @@
         </div>
     </div>
 
-    <script>
-        const app = Vue.createApp({
-            data() {
-                return {
-                    heading: 'Hello, Vue!'
-                };
-            },
-            methods: {
-                changeHeading() {
-                    this.heading = 'The content has changed with Vue!';
-                }
-            }
-        });
-
-        // Mount the app to #app
-        app.mount('#app');
-    </script>
 </body>
 
 </html>
