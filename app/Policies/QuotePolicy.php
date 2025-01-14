@@ -2,6 +2,7 @@
 
 namespace App\Policies;
 
+use App\Enums\QuoteStatusesEnum;
 use App\Models\Quote;
 use App\Models\User;
 
@@ -11,6 +12,10 @@ class QuotePolicy
      * Determine whether the user can view any models.
      */
     private string $model = "quote";
+    private array $statusToBlockQuotes = [
+        QuoteStatusesEnum::REGISTRY->name,
+        QuoteStatusesEnum::ORDERED->name
+    ];
     public function viewAny(User $user): bool
     {
         if ($user->can("viewAny $this->model")) {
@@ -24,10 +29,13 @@ class QuotePolicy
      */
     public function view(User $user, Quote $quote): bool
     {
-        if ($user->can("view $this->model")) {
-            return true;
+        if (!$user->can("view $this->model")) {
+            return false;
         }
-        return false;
+        if (in_array($quote->status, $this->statusToBlockQuotes)) {
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -46,10 +54,14 @@ class QuotePolicy
      */
     public function update(User $user, Quote $quote): bool
     {
-        if ($user->can("update $this->model")) {
-            return true;
+        if (!$user->can("update $this->model")) {
+            return false;
         }
-        return false;
+
+        if (in_array($quote->status, $this->statusToBlockQuotes)) {
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -57,10 +69,13 @@ class QuotePolicy
      */
     public function delete(User $user, Quote $quote): bool
     {
-        if ($user->can("delete $this->model")) {
-            return true;
+        if (!$user->can("delete $this->model")) {
+            return false;
         }
-        return false;
+        if (in_array($quote->status, $this->statusToBlockQuotes)) {
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -68,10 +83,13 @@ class QuotePolicy
      */
     public function restore(User $user, Quote $quote): bool
     {
-        if ($user->can("restore $this->model")) {
-            return true;
+        if (!$user->can("restore $this->model")) {
+            return false;
         }
-        return false;
+        if (in_array($quote->status, $this->statusToBlockQuotes)) {
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -79,9 +97,12 @@ class QuotePolicy
      */
     public function forceDelete(User $user, Quote $quote): bool
     {
-        if ($user->can("forceDelete $this->model")) {
-            return true;
+        if (!$user->can("forceDelete $this->model")) {
+            return false;
         }
-        return false;
+        if (in_array($quote->status, $this->statusToBlockQuotes)) {
+            return false;
+        }
+        return true;
     }
 }

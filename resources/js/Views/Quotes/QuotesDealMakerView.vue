@@ -1,11 +1,18 @@
 <script setup>
 import { Link, router } from '@inertiajs/vue3';
 import { ref, reactive } from 'vue'
+import Dialog from "primevue/dialog";
+import DatePicker from 'primevue/datepicker';
+import { DateTime } from "luxon";
+import { createOrder } from "@/Composables/useOrders.js";
+import PrimaryButton from "@/Components/PrimaryButton.vue";
 
 const props = defineProps({
     modelValue: Object,
     pricePlans: Array
 })
+const showShareDialog = ref(false)
+let showModal = ref(false)
 const isLoading = ref(false)
 
 const getLeafNodesWithChildren = (objects) => {
@@ -55,29 +62,22 @@ const oneOffNewLine = reactive({
     price_plan_code: 'SINGLE'
 })
 
-
 const temp = reactive({
     contract_length: 1,
     discount: 0,
     quantity: 0
 })
 
-const planProducts = ref([
-]);
+const dateNow = DateTime.now();
 
-const boltOnProducts = ref([
-]);
+const shareLink = reactive({
+    password: null,
+    expires_at: quote.shared_link?.expires_at ?? null,
+    link: quote.shared_link?.url,
+    id: quote.shared_link?.id
+})
 
-const hardwareProducts = ref([])
 
-const getHardwareProducts = () => {
-    quote.items.forEach(element => {
-        if (boltOnProducts.value.find(x => x.name == element.name) || planProducts.value.find(x => x.name == element.name)) {
-            return
-        }
-        hardwareProducts.value.push(element)
-    });
-}
 const remove = async (p) => {
     let id = p.id
     let result = null
@@ -202,12 +202,64 @@ const saveNewLine = async (item) => {
 const quoteTotal = (key) => {
     return quote.items.filter((x) => x.price_plan && x.price_plan.code == key).reduce((acc, item) => acc += item.total, 0)
 }
+const disableButtonSendToOrder = ref(false)
+const createOrderAndRedirect = async (id) => {
+    disableButtonSendToOrder.value = true
+    const res = await createOrder(id)
+    if (res) {
+        window.location = '/dashboard'
+    }
+    disableButtonSendToOrder.value = false
+}
 
-getHardwareProducts()
+const openShare = () => {
+    showShareDialog.value = true
+}
+
+const createSharedLink = async () => {
+    try {
+
+        let res = await axios.post(`/api/shared-links`,
+            {
+                shareable_type: 'quotes',
+                shareable_id: quote.id,
+                expires_at: shareLink.expires_at,
+                password: shareLink.password
+            })
+        shareLink.expires_at = res.data.data.expires_at
+        shareLink.link = res.data.data.url
+        shareLink.id = res.data.data.id
+    } catch (ex) {
+        notyf.error(ex.response.data.message)
+    }
+}
+
+const copyToClipboard = async (msg) => {
+    try {
+        await navigator.clipboard.writeText(msg);
+        notyf.success('Copied to clipboard!');
+    } catch (err) {
+        notyf.error('Failed to copy text: ' + err);
+    }
+}
+
+const deleteShareLink = async () => {
+    try {
+        let res = await axios.delete(`/api/shared-links/${shareLink.id}`)
+        shareLink.link = null
+    } catch (ex) {
+        notyf.error(ex.response.data.message)
+    }
+}
 
 const items = ref([
     { label: 'Home', url: '/' },
-    { label: `Quote #${quote?.id}`, url: quote ? `/quotes/${quote.id}/edit` : '#' },
+    {
+        label: `Quote #${quote?.id}`,
+        url: quote
+            ? (['REGISTRY', 'ORDERED'].includes(quote.status)) ? '#' : `/quotes/${quote.id}/edit`
+            : '#'
+    },
     { label: 'Summary' },
 ]);
 
@@ -516,14 +568,23 @@ const items = ref([
                             <font-awesome-icon class="me-2" :icon="['fas', 'arrow-left']"></font-awesome-icon>
                             Previous</a>
                         <div>
+                            <button id="btn-shareable-open" class="btn btn-outline-primary me-2" @click="openShare()">
+                                <font-awesome-icon :icon="['fas', 'share-nodes']"></font-awesome-icon>
+                                Share
+                            </button>
                             <a class="btn btn-outline-primary me-2"
                                 :href="route('quotes.preview', { quote: quote.id })">
                                 <font-awesome-icon :icon="['far', 'file-pdf']"></font-awesome-icon>
                                 Preview
                             </a>
-                            <button class="btn btn-primary">
+                            <button class="btn btn-outline-primary me-2">
                                 <font-awesome-icon class="me-2" :icon="['fas', 'envelope']">
                                 </font-awesome-icon> Email this quote
+                            </button>
+                            <button hidden :disabled="disableButtonSendToOrder" class="btn btn-primary"
+                                @click="createOrderAndRedirect(quote.id)">
+                                <font-awesome-icon class="me-2" :icon="['fas', 'thumbtack']">
+                                </font-awesome-icon>Send to Order
                             </button>
                         </div>
                     </div>
@@ -537,6 +598,17 @@ const items = ref([
                             <br>
                             Contact Number: 0124567890<br>
                             Email: firstname.lastname@gmail.com
+                        </div>
+                    </InfoBox>
+                    <InfoBox v-if="quote.orders.length > 0">
+                        <div style="font-size: 14px;">
+                            <div class="mb-3">
+                                <h6>An Order related to this Quote was
+                                    <span class="badge text-bg-secondary">{{ quote.status }}</span>
+                                </h6>
+                                <button class="btn btn-sm btn-primary" @click="showModal = true">See Rejection
+                                    Notes</button>
+                            </div>
                         </div>
                     </InfoBox>
                     <div class="price-mobile-sidebar total-quote-discount px-4 pt-4 pb-2 mb-3">
@@ -596,6 +668,75 @@ const items = ref([
                 </div>
             </div>
         </div>
+        <Dialog v-model:visible="showModal" modal :style="{ width: '40rem' }" :draggable="false">
+            <template #header>
+                <h2>Rejected Reasons</h2>
+            </template>
+            <div class="panel px-3">
+                <div class="row">
+                    <table class="table reject-reasons-table my-4">
+                        <thead>
+                        <tr>
+                            <th style="width: 5%">Order</th>
+                            <th>Note</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr v-for="order in quote.orders">
+                            <td>#{{ order.id }}</td>
+                            <td>
+                                <pre class="custom-pre">{{ order.note }}</pre>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <button class="btn btn-primary" @click="showModal = false">Close</button>
+                </div>
+            </div>
+        </Dialog>
+        <Dialog v-model:visible="showShareDialog" modal :style="{ width: '40rem' }" :draggable="false">
+            <template #header>
+                <h2>Share quote</h2>
+            </template>
+            <div v-if="!shareLink.link">
+                <div class="mb-3">
+                    <label for="expiration_data" class="form-label">Expiration Date</label>
+                    <DatePicker v-model="shareLink.expires_at" dateFormat="dd-mm-yy" showIcon fluid
+                        iconDisplay="input" :minDate="dateNow.toJSDate()"/>
+                </div>
+                <div class="mb-3">
+                    <label for="expiration_data" class="form-label">Password</label>
+                    <input type="password" id="input-shareable-password"  class="form-control"
+                        v-model="shareLink.password" autocomplete="off"/>
+                </div>
+
+                <div class="mb-3">
+                    <button id="btn-shareable-create" class="btn btn-primary" @click="createSharedLink()">
+                        Create</button>
+                    <button class="btn" @click="() => showShareDialog = !showShareDialog"> Cancel</button>
+                </div>
+            </div>
+            <div v-else>
+                <div class="mb-3">
+                    <label for="expiration_data" class="form-label">
+                        Anyone with this link can view the quote.
+                    </label>
+                    <div class="input-group mb-3">
+                        <input id="input-shareable-link" type="text" class="form-control" v-model="shareLink.link"
+                            disabled />
+
+                        <button class="input-group-text" @click="copyToClipboard(shareLink.link)"><font-awesome-icon
+                                role="button" :icon="['far', 'clipboard']" /></button>
+                    </div>
+                    <p class="small">
+                        Expires at: {{ shareLink.expires_at ?? 'without expiration date' }}
+                    </p>
+                </div>
+                <div class="mb-3">
+                    <button class="btn btn-outline-primary" @click="deleteShareLink()"> Delete</button>
+                </div>
+            </div>
+        </Dialog>
     </div>
 </template>
 <style scoped>
@@ -642,6 +783,11 @@ input[type="number"] {
     opacity: 0.75
 }
 
+.reject-reasons-table tr th,
+.reject-reasons-table tr td {
+    padding: 1rem !important;
+}
+
 .form-control {
     font-size: 0.9rem;
     line-height: 1.5rem;
@@ -657,5 +803,15 @@ input[type="number"] {
     background-color: #dfe3e6;
     color: #646464;
     border-color: #bdbdbd;
+}
+
+.custom-pre {
+    font-family: inherit;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+.p-dialog-header {
+    justify-content: right !important;
 }
 </style>

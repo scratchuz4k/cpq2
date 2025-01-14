@@ -17,7 +17,7 @@ class Category extends Model
     {
         static::addGlobalScope(new TenantScope);
     }
-    public function articles(): BelongsToMany
+    public function products(): BelongsToMany
     {
         return $this->belongsToMany(Product::class, 'product_category', 'category_id');
     }

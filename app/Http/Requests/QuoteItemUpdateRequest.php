@@ -30,7 +30,7 @@ class QuoteItemUpdateRequest extends FormRequest
             "price" => "numeric",
             "margin" => "numeric|min:0|max:100",
             "discount" => "numeric|min:0|max:100",
-            "price_plan_id" => "nullable|numeric|exists:price_plans,id",
+            "price_plan_id" => "numeric|exists:price_plans,id",
             "contract_length" => "numeric|min:1",
         ];
     }

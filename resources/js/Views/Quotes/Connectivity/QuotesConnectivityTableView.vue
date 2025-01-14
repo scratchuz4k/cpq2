@@ -29,7 +29,8 @@ const filters = reactive({
             'ADSL 2+ MPF',
             'Software Defined SOGEA',
             'Broadband FTTC MPF',
-            'Cellular Ethernet'
+            'Cellular Ethernet',
+            'Internet Access (Wires Only)'
         ],
         name: 'Product'
     },
@@ -77,35 +78,6 @@ const meta = reactive({
     isRequestCompleted: false
 })
 
-const getSubproviderImage = (img) => {
-    const subProviders = {
-        "btw": "bt",
-        "bt": "bt",
-        "bt wholesale": "bt",
-        "cityfibre": "cityfibre",
-        "colt": "colt",
-        "gamma": "gamma",
-        "gamma openreach": "gamma",
-        "giacom": "giacom",
-        "glide": "glide",
-        "its": "its",
-        "its technology group": "its",
-        "neos networks": "neos",
-        "sky": "sky",
-        "talktalk": "talktalk",
-        "talktalk business": "talktalk",
-        "virgin media": "virgin",
-        "virgin media business": "virgin_media_business",
-        "virgin": "virgin",
-        "virtual1": "virtual1",
-        "vodafone": "vodafone",
-    };
-    if (Object.keys(subProviders).includes(img)) {
-        return subProviders[img]
-    }
-    return 'no_image'
-}
-
 const getArticles = async (clearCache = false, runTimeout = false) => {
     isLoading.value = true
     let temp = []
@@ -119,7 +91,7 @@ const getArticles = async (clearCache = false, runTimeout = false) => {
     if (showLowestCost.value) {
         temp.push({ column: '*', operator: 'lowest-cost', value: true })
     }
-    if(clearCache){
+    if (clearCache) {
         showLoadingModal.value = true
     }
 
@@ -158,6 +130,8 @@ const getArticles = async (clearCache = false, runTimeout = false) => {
             "System.Text.Json.JsonException": "The request could not be processed due to a data format issue.",
             "Service Unavailable": "The service is temporarily unavailable.",
             "There is an error in XML document": "The request could not be processed due to a data format issue.",
+            "No provider is configured": "No provider is configured, please add at least one provider with the required credentials to obtain a quote.",
+            "Request failed with status Unauthorized": "Request failed with status Unauthorized (Check login credentials for this provider)",
         };
 
         errors.value = res.data.errors.map((error) => {
@@ -183,7 +157,7 @@ const getArticles = async (clearCache = false, runTimeout = false) => {
         });
 
         isLoading.value = false
-        if(!showLoadingModal.value && (meta.overallTotal !== res.data.overall_total) && (meta.overallTotal>0)) {
+        if (!showLoadingModal.value && (meta.overallTotal !== res.data.overall_total) && (meta.overallTotal > 0)) {
             notyf.success("New products added!")
         }
         meta.first = (meta.page - 1) * meta.limit
@@ -261,10 +235,10 @@ const orderBy = (column) => {
 
 const resetFilters = () => {
     Object.keys(filters)
-    .filter((key) => key !== 'productName')
-    .forEach((key) => {
-        filters[key].value = null
-    })
+        .filter((key) => key !== 'productName')
+        .forEach((key) => {
+            filters[key].value = null
+        })
 
     showLowestCost.value = true
     showQuoted.value = false
@@ -297,16 +271,22 @@ const add = async (article) => {
             })
         }
 
-        let res = await axios.post('/api/quote-items',
-            {
-                quote_id: props.modelValue.id,
-                product_id: null,
-                quantity: 1,
-                product_code: article.code,
-                name: article.productName,
-                data: article,
-                children: childs
-            })
+        let item = {
+            quote_id: props.modelValue.id,
+            product_id: null,
+            quantity: 1,
+            product_code: article.code,
+            name: article.productName,
+            data: article,
+        }
+
+        if (childs.length == 1) {
+            item = { ...item, ...childs[0] }
+        } else {
+            item.children = childs
+        }
+
+        let res = await axios.post('/api/quote-items', item)
         props.modelValue.items.push(res.data)
     } catch (ex) {
         alert(ex.response.data.message)
@@ -386,8 +366,10 @@ getArticles(false, true)
                                     </div>
                                 </div>
                                 <div v-if="meta.isRequestCompleted" class="small d-flex align-items-center">
-                                    <button class="btn btn-sm btn-outline-primary" @click="getArticles(true, true)">Get fresh data
-                                        <font-awesome-icon :icon="['fas', 'refresh']" class="ps-2"></font-awesome-icon></button>
+                                    <button class="btn btn-sm btn-outline-primary" @click="getArticles(true, true)">Get
+                                        fresh data
+                                        <font-awesome-icon :icon="['fas', 'refresh']"
+                                            class="ps-2"></font-awesome-icon></button>
                                 </div>
                             </div>
                         </InfoBox>
@@ -398,7 +380,8 @@ getArticles(false, true)
                         <div class="filters d-flex">
                             <div class="d-flex mb-2">
                                 <p class="fs-5 bold me-2">
-                                    <font-awesome-icon v-if="!meta.isRequestCompleted" :icon="['fas', 'refresh']" class="fa-spin me-2"></font-awesome-icon>Filters
+                                    <font-awesome-icon v-if="!meta.isRequestCompleted" :icon="['fas', 'refresh']"
+                                        class="fa-spin me-2"></font-awesome-icon>Filters
                                     <span class="fw-normal">({{ meta.total }})</span>
                                 </p>
                             </div>
@@ -406,7 +389,7 @@ getArticles(false, true)
                                 <li>
                                     <template v-for="(selectedFilter, column) in selectedFilters">
                                         <Badge
-                                            v-for="value in  column === 'productName' ? [] : (Array.isArray(selectedFilter.value) ? selectedFilter.value : [selectedFilter.value]).filter(v => v !== null)"
+                                            v-for="value in column === 'productName' ? [] : (Array.isArray(selectedFilter.value) ? selectedFilter.value : [selectedFilter.value]).filter(v => v !== null)"
                                             :value="['speed', 'bearer'].includes(column) ? 'Min. ' + format.speed(value) : (['contractTermMonths'].includes(column) ? value + ' Months' : value)"
                                             class="px-3 py-1" data-toggle="tooltip" data-placement="top"
                                             :title="selectedFilter.name">
@@ -671,18 +654,22 @@ getArticles(false, true)
                                         <font-awesome-icon :icon="['fas', 'plug']"></font-awesome-icon>
                                         {{ article.additionalInfo['Primary Router Model'] }}
                                     </span>
+                                    <span v-if="article?.isContended"
+                                          class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm is-contended"
+                                          data-bs-toggle="tooltip" data-bs-placement="top" title="Contended" v-tooltip>
+                                        <font-awesome-icon :icon="['fas', 'network-wired']" />
+                                    </span>
                                 </td>
                                 <td><img class="img-provider" @error="setAltImg"
                                         :src="`/images/providers/${article.providerKey}.png`"
                                         :alt="article.providerName" :title="article.providerName"
-                                        :data-bs-original-title="article.providerName" v-tooltip /> </td>
+                                        :data-bs-original-title="article.providerName" v-tooltip/> </td>
                                 <td>
-                                   <img class="img-subprovider" @error="setAltImg"
-                                         :src="`/images/providers/${article.connectivitySupplierGroup?.replace(/ /g, '_').toLowerCase()}.png`"
-                                         :alt="article.connectivitySupplierName"
-                                         :title="article.connectivitySupplierName"
-                                         :data-bs-original-title="article.connectivitySupplierName" v-tooltip
-                                    />
+                                    <img class="img-subprovider" @error="setAltImg"
+                                        :src="`/images/providers/${article.connectivitySupplierGroup?.replace(/ /g, '_').toLowerCase()}.png`"
+                                        :alt="article.connectivitySupplierName"
+                                        :title="article.connectivitySupplierName"
+                                        :data-bs-original-title="article.connectivitySupplierName" v-tooltip />
                                 </td>
                                 <td>{{ bytesFormatter(article.bearer) }} </td>
                                 <td>{{ bytesFormatter(article.speed) }} </td>
@@ -803,5 +790,8 @@ tr.active td {
     width: 0%;
     background-color: var(--purple);
     animation: progressBar 240s linear forwards;
+}
+.badge.is-contended{
+    font-size: 10px;
 }
 </style>

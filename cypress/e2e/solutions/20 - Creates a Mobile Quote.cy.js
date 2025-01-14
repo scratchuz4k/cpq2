@@ -1,4 +1,3 @@
-const crypto = require("crypto");
 const { getCurrentDate, generateHash } = require("../../support/utils.js");
 const rand = (notAllowedNumber, max = 101) => {
     let randomNumber = Math.floor(Math.random() * max); // Generate a random number
@@ -12,15 +11,14 @@ const rand = (notAllowedNumber, max = 101) => {
 
 const temp = getCurrentDate()
 const account = { ref: generateHash(temp), name: temp }
-const quantities = []
 
 
 describe("Creates a Mobile Quote", () => {
-    let hardwareCount = 0;
 
     beforeEach(() => {
         cy.login("super@example.com", "werwerwer")
     })
+
     it("Creates an Account", () => {
         cy.visit("/")
         cy.get("#create-tab").click()
@@ -181,5 +179,11 @@ describe("Creates a Mobile Quote", () => {
         cy.get("body > div.swal2-container.swal2-center.swal2-backdrop-show > div > div.swal2-actions > button.swal2-confirm.btn.text-light.btn-lg.mr-2.fs-6.swal2-styled.swal2-default-outline").click()
     })
 
+    it.skip("I can Create an order from a quote", () => {
+        cy.visit("/")
+        cy.get("#datatable-btn-0-crete-order").click()
+        cy.get('.swal2-confirm').eq(0).click()
+        cy.get(".notyf").contains("Order created with success")
+    })
 });
 

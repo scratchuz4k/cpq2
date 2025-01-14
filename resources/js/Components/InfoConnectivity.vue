@@ -16,11 +16,10 @@ const props = defineProps({
                 <p class="mb-0 fw-medium" v-if="quote?.solution_type">
                     <span>
                         Solution Type: {{ quote?.solution_type.name }}
-                        <Link :href="route('quotes.configure', { quote: quote.id })" class="text-primary">Edit</Link>
                     </span>
                     <span class="mx-3">|</span>
                     <span>
-                        Address: {{ quote?.address_line1 }} <Link :href="route('quotes.configure', { quote: quote.id })" class="text-primary">Edit</Link>
+                        Address: {{ quote?.address_line1 }} <Link :href="route('quotes.configure', { quote: quote.id })" class="edit-quote-address text-primary">Edit</Link>
                     </span>
                 </p>
             </InfoBox>

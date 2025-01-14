@@ -37,11 +37,9 @@ class QuoteItemService
                     'original_price' => isset($child['price']) ? $child['price'] : 0,
                 ]);
 
-                $childItem->computeTotals();
             }
         }
 
-        $quoteItem->computeTotals();
         return $quoteItem;
     }
 

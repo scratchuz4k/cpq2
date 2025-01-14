@@ -84,6 +84,8 @@ const getProducts = async () => {
             operator: 'equals',
             value: 'plan'
         }]),
+        orderBy: 'price.net_spa',
+        order: 'desc',
         account_id: props.modelValue.account_id
     })
     let res = await axios.get("/api/products" + '?' + query)
@@ -143,19 +145,6 @@ const checkQuantity = async (product, temp, hardwareCheck = false) => {
 
     product.quantity = temp
 
-    if (checkPlansHardwareQuantity() <= 0 && hardwareCheck) {
-        let result = await swal.fire({
-            title: 'Quantity exceeds plans limit',
-            text: 'Your hardware quantity exceeds plans limit'
-        })
-
-        if (['cancel', 'backdrop'].includes(result.dismiss)) {
-            product.quantity = oldQty
-        } else {
-            product.quantity += checkPlansHardwareQuantity()
-        }
-    }
-
     let indexItems = quote.items.findIndex(x => x.product_code == product.code)
     let indexNew = quote.new.findIndex(x => x.code == product.code)
 
@@ -191,7 +180,7 @@ const saveQuote = async () => {
             name: x.name,
             raw_price: x.price ? x.price.net : 0,
             price: x.price ? x.price.net_spa : 0,
-            price_plan_id: x.price ? x.price.price_plan_id : null,
+            price_plan_id: x.price_plan_id
         })
     })
 
@@ -249,7 +238,7 @@ watch(search, _.debounce(() => {
                                 <h4 class="m-0">{{ product.name }}</h4>
                                 <p class="m-0 ms-2">
                                     {{ product.description }} /
-                                    {{ GBP.format(product.price.net_spa) }}
+                                    {{ GBP.format(product.price?.net_spa ?? 0) }}
                                 </p>
                             </div>
                             <font-awesome-icon :icon="['fa', 'circle-info']" />
@@ -371,7 +360,7 @@ watch(search, _.debounce(() => {
                                             </p>
                                         </div>
                                         <div>
-                                            <p class="bold big"> {{ GBP.format(product.price.net_spa) }}</p>
+                                            <p class="bold big"> {{ GBP.format(product.price?.net_spa ?? 0) }}</p>
                                         </div>
                                     </div>
                                 </div>
@@ -381,21 +370,17 @@ watch(search, _.debounce(() => {
                                     <p style="font-weight: 500;">Quantity</p>
                                     <div class="d-flex align-items-center mb-2">
                                         <InputQuantity :id="'hardware-' + index" v-model="product.quantity"
-                                            :disabled="checkPlansHardwareQuantity() <= 0"
                                             @change="(val) => checkQuantity(product, val, true)" />
 
                                         <button :id="'btn-hardware-' + index + '-add-25'"
                                             class="btn btn-sm ms-4 btn-add-custom-quantity"
-                                            @click="checkQuantity(product, product.quantity + 25, true)"
-                                            :disabled="checkPlansHardwareQuantity() <= 0">+25</button>
+                                            @click="checkQuantity(product, product.quantity + 25, true)">+25</button>
                                         <button :id="'btn-hardware-' + index + '-add-50'"
                                             class="btn btn-sm ms-2 btn-add-custom-quantity"
-                                            @click="checkQuantity(product, product.quantity + 50, true)"
-                                            :disabled="checkPlansHardwareQuantity() <= 0">+50</button>
+                                            @click="checkQuantity(product, product.quantity + 50, true)">+50</button>
                                         <button :id="'btn-hardware-' + index + '-add-100'"
                                             class="btn btn-sm ms-2 btn-add-custom-quantity"
-                                            @click="checkQuantity(product, product.quantity + 100, true)"
-                                            :disabled="checkPlansHardwareQuantity() <= 0">+100</button>
+                                            @click="checkQuantity(product, product.quantity + 100, true)">+100</button>
                                     </div>
                                 </div>
                             </div>
@@ -411,8 +396,7 @@ watch(search, _.debounce(() => {
                                 @click="() => step--">
                                 <font-awesome-icon :icon="['fas', 'arrow-left']" /> Previous
                             </button>
-                            <button class="btn btn-outline-primary text-primary" @click="saveQuote()"
-                                :disabled="checkPlansHardwareQuantity() < 0">
+                            <button class="btn btn-outline-primary text-primary" @click="saveQuote()">
                                 Save
                             </button>
                         </div>
@@ -457,8 +441,7 @@ watch(search, _.debounce(() => {
                                 </span>
                             </div>
                         </div>
-                        <button class="btn btn-primary mt-2" @click="saveQuote()"
-                            :disabled="checkPlansHardwareQuantity() < 0">
+                        <button class="btn btn-primary mt-2" @click="saveQuote()">
                             Save
                         </button>
                     </div>

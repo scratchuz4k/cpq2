@@ -2,11 +2,10 @@
 
 namespace App\Services;
 
+use App\Enums\QuoteStatusesEnum;
 use App\Models\PricePlan;
 use App\Models\Quote;
-use App\Models\QuoteDiscount;
 use App\Models\QuoteItem;
-use Illuminate\Support\Facades\DB;
 
 class QuoteService
 {
@@ -17,22 +16,14 @@ class QuoteService
     public function store(array $array): Quote
     {
         $quote = Quote::create($array);
-
-        if (array_key_exists('items', $array)) {
-            foreach ($array['items'] as $quote_item) {
-                $quote_item['quote_id'] = $quote->id;
-                $this->quoteItemService->store($quote_item);
-            }
-        }
-
-        $quote->update(['status' => get_quote_status($quote->refresh())]);
-        return $quote->refresh();
+        return $quote;
     }
 
     public function update(Quote $quote, array $array): Quote
     {
-        $quote->update($array);
-
+        if (array_key_exists('status', $array) && $array['status'] === QuoteStatusesEnum::REGISTRY->name) {
+            throw new \Exception('You cannot perform this action!');
+        }
         #TODO: MOVE THIS LOGIC TO A SPECIFIC CONTROLLER
         if (array_key_exists('discounts', $array)) {
             foreach ($array['discounts'] as $key => $discount) {
@@ -53,10 +44,6 @@ class QuoteService
                 ], [
                     "discount" =>  $discount['value']
                 ]);
-            }
-
-            foreach ($quote->itemsNoTree as $item) {
-                $item->computeTotals();
             }
         }
 
@@ -80,7 +67,7 @@ class QuoteService
             }
         }
 
-        $quote->update(['status' => get_quote_status($quote->refresh())]);
+        $quote->update($array);
         return $quote->refresh();
     }
 }
