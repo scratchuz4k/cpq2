@@ -82,7 +82,7 @@ const items = ref([
 
       <TableSimple :preview="preview"></TableSimple>
 
-      <div class="row justify-content-end" style="min-height: 50vh">
+      <div class="row justify-content-end">
         <div class="col-6">
           <TableTotal :quote="quote"></TableTotal>
         </div>

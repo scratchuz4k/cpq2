@@ -89,42 +89,40 @@ emitter.on("quote-items:toggle:is-editing", () => item.value.is_editing);
       </td>
     </template>
     <td v-if="!preview" class="text-center p-0">
-      <template>
-        <div class="d-flex justify-content-end">
-          <template v-if="!item.is_editing && item.id">
-            <font-awesome-icon
-              :id="'btn-' + props.code + '-' + index + '-edit'"
-              role="button"
-              class="px-2 py-3 text-primary"
-              :icon="['fas', 'edit']"
-              @click="edit(item)"
-            />
-            <font-awesome-icon
-              :id="'btn-' + props.code + '-' + index + '-remove'"
-              role="button"
-              class="px-2 py-3 text-secondary"
-              :icon="['fas', 'trash']"
-              @click="remove(item)"
-            />
-          </template>
-          <template v-else>
-            <font-awesome-icon
-              :id="'btn-' + props.code + '-' + index + '-cancel'"
-              role="button"
-              class="px-2 py-3 text-secondary"
-              :icon="['fas', 'cancel']"
-              @click="cancel(item)"
-            />
-            <font-awesome-icon
-              :id="'btn-' + props.code + '-' + index + '-save'"
-              role="button"
-              class="px-2 py-3 text-primary"
-              :icon="['fas', 'save']"
-              @click="save(item)"
-            />
-          </template>
-        </div>
-      </template>
+      <div class="d-flex justify-content-end">
+        <template v-if="!item.is_editing">
+          <font-awesome-icon
+            :id="'btn-' + props.code + '-' + index + '-edit'"
+            role="button"
+            class="px-2 py-3 text-primary"
+            :icon="['fas', 'edit']"
+            @click="edit(item)"
+          />
+          <font-awesome-icon
+            :id="'btn-' + props.code + '-' + index + '-remove'"
+            role="button"
+            class="px-2 py-3 text-secondary"
+            :icon="['fas', 'trash']"
+            @click="remove(item)"
+          />
+        </template>
+        <template v-else>
+          <font-awesome-icon
+            :id="'btn-' + props.code + '-' + index + '-cancel'"
+            role="button"
+            class="px-2 py-3 text-secondary"
+            :icon="['fas', 'cancel']"
+            @click="cancel(item)"
+          />
+          <font-awesome-icon
+            :id="'btn-' + props.code + '-' + index + '-save'"
+            role="button"
+            class="px-2 py-3 text-primary"
+            :icon="['fas', 'save']"
+            @click="save(item)"
+          />
+        </template>
+      </div>
     </td>
   </tr>
 </template>

@@ -1,5 +1,4 @@
 <script setup>
-import { reactive } from "vue";
 import { quote } from "@composables/useQuote";
 
 defineProps({
@@ -25,6 +24,7 @@ const groupColumns = columns.filter((x) => x.is_group);
             {{ column.name }}
           </th>
         </template>
+        <th style="width: 5%" v-if="!preview"></th>
       </tr>
     </thead>
     <tbody>

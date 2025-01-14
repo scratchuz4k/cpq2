@@ -50,6 +50,7 @@ const colspan = props.columns.length - props.groupColumns.length;
         </template>
       </div>
     </td>
+    <td class="text-center" v-if="!preview"></td>
   </tr>
   <slot v-if="showChildren"></slot>
 </template>
