@@ -2,20 +2,21 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Models\Account;
-use App\Models\PricePlan;
-use Illuminate\Support\Str;
-use Illuminate\Http\Request;
-use App\Helpers\FilterProvider;
-use App\Helpers\Api\ShopBlocksApi;
-use App\Helpers\Prices\PriceRules;
-use App\Http\Controllers\Controller;
-use App\Services\CloudMarketService;
-use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Cache;
+use App\Enums\PricePlanEnum;
 use App\Helpers\Api\CloudMarketAddress;
 use App\Helpers\Api\OpenreachLookupApi;
+use App\Helpers\Api\ShopBlocksApi;
 use App\Helpers\Api\VirtualOneLookupApi;
+use App\Helpers\FilterProvider;
+use App\Helpers\Prices\PriceRules;
+use App\Http\Controllers\Controller;
+use App\Models\Account;
+use App\Models\PricePlan;
+use App\Services\CloudMarketService;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Str;
 
 class ExternalController extends Controller
 {
@@ -143,7 +144,7 @@ class ExternalController extends Controller
                 "model" => [],
             ];
 
-            $pricePlanId = PricePlan::where("code", "single")->value('id');
+            $pricePlanId = PricePlan::where("code", PricePlanEnum::SINGLE->name)->value('id');
             foreach ($products as $key => $product) {
                 $temp = '';
                 foreach (array_keys($product) as $itemKey) {
