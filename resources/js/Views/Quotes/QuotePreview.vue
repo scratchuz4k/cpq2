@@ -64,7 +64,7 @@ let view =
               </p>
             </div>
           </div>
-          <div class="row mb-4">
+          <div class="row mb-5">
             <div class="col">
               <p class="big bold">BILL FROM</p>
               <p>

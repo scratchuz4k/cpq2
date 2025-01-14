@@ -17,16 +17,16 @@
         return $leaves;
     }
 
-    function quoteTotal($key, $items)
+    function quoteTotal($price_plan, $column, $items)
     {
-        $filteredItems = array_filter($items, function ($item) use ($key) {
-            return isset($item['price_plan']) && $item['price_plan']['code'] == $key;
+        $filteredItems = array_filter($items, function ($item) use ($price_plan) {
+            return isset($item['price_plan']) && $item['price_plan']['code'] == $price_plan;
         });
 
         $total = array_reduce(
             $filteredItems,
-            function ($acc, $item) {
-                return $acc + $item['total'];
+            function ($acc, $item) use ($column) {
+                return $acc + $item[$column];
             },
             0,
         );
@@ -48,16 +48,40 @@
         return null;
     }
 
+    function formatBytes($value)
+    {
+        $temp = $value ?? 0;
+        $number = $temp;
+        $suffix = 'Mb';
+        $rounding = 10;
+
+        if ($temp < 1000) {
+            $number = $temp;
+        } elseif ($temp < 10000) {
+            $number = $temp / 1000;
+            $suffix = 'Gb';
+            $rounding = 1;
+        } else {
+            $number = $temp / 1000;
+            $suffix = 'Gb';
+            $rounding = 1;
+        }
+
+        // Remove rounding if value < 1000
+        if ($value < 1000) {
+            $result = $number . ' ' . $suffix;
+        } else {
+            $result = ceil($number / $rounding) * $rounding . ' ' . $suffix;
+        }
+
+        return $result;
+    }
+
+    $isConnectivity = !is_null($quote['solution_type']) && $quote['solution_type']['code'] == 3 ? true : false;
+
     $leafNodes = getLeafNodesWithChildren($quote['items']);
     $quote['items'] = $leafNodes;
 
-    $single_items = array_filter($quote['items'], function ($item) {
-        return isset($item['price_plan']) && $item['price_plan']->code === 'SINGLE';
-    });
-
-    $monthly_items = array_filter($quote['items'], function ($item) {
-        return isset($item['price_plan']) && $item['price_plan']->code === 'MONTHLY';
-    });
 @endphp
 
 <!doctype html>
@@ -71,7 +95,7 @@
 </head>
 
 <body>
-    <div class="container-fluid">
+    <div id="print">
         <div class="row" id="header">
             <div class="col" id="header_left">
                 <img src="https://img.logoipsum.com/331.svg" alt="Sample Logo" class="img-fluid">
@@ -83,7 +107,7 @@
                 <p>Email: sales@example.com</p>
             </div>
         </div>
-        <div class="cpq-summary row px-3" id="main">
+        <div class="row">
             <div class="col">
                 <h1 class="mb-3">Quote Q-{{ $quote['id'] }}</h1>
                 <div class="row mb-3">
@@ -99,62 +123,59 @@
                         </p>
                     </div>
                 </div>
-                <div class="row mb-4">
+                <div class="row mb-5">
                     <div class="col">
-                        <h2>BILL FROM</h2>
+                        <p class="big bold">BILL FROM</p>
                         <p>Name Surname<br>
                             Company address, city, state, post code<br>
                             sales@example.com<br>
                             +44 (0) 123 456 7890</p>
                     </div>
                     <div class="col">
-                        <h2>BILL TO</h2>
+                        <p class="big bold">BILL TO</p>
                         <p>Name Surname<br>
                             Company address, city, state, post code<br>
                             contact@account.test<br>
                             +44 (0) 234 567 8910</p>
                     </div>
                 </div>
-                <div class="panel">
-                    <div class="row mb-4" style="min-height: 50vh;">
-                        <div class="col">
-                            <h3>Recurring charges</h3>
-                            <table class="table">
+                <div class="row mb-4">
+                    <div class="col">
+                        <div class="mb-5">
+                            <table id="table-MONTHLY" class="table table-dealmaker table-bordered  ">
                                 <!-- Headers -->
                                 <thead>
                                     <tr>
-                                        <th class="w-5">ID</th>
-                                        @if ($quote['solution_type_id'] === 1)
-                                            <th class="text-center d-xl-table-cell w-5">Provider</th>
+                                        <th class="column-contract_lenght-header w-5">Months</th>
+                                        <th class="column-name-header w-20">Price Plan</th>
+                                        @if ($isConnectivity)
+                                            <th class="column-name-header w-20">Quote Reference</th>
                                         @endif
-                                        <th class="w-auto">Product</th>
-                                        <th class="text-center w-5">Months</th>
-                                        @if ($quote['solution_type_id'] === 1)
-                                            <th class="d-xl-table-cell text-center w-10" style="white-space: nowrap;">
-                                                Supplier Quote Ref.</th>
-                                        @endif
-                                        <th class="text-center w-10">Type</th>
-                                        <th class="text-center w-5">Qty</th>
-                                        <th class="text-center w-10">Price</th>
-                                        <th class="text-end w-10" style="white-space: nowrap;">Total Price</th>
+                                        <th class="column-quantity-header w-5">Quantity</th>
+                                        <th class="column-price-header w-10">Price</th>
+                                        <th class="column-total-header">Total </th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach ($monthly_items as $key => $item)
+                                    @foreach ($quote['items'] as $key => $item)
                                         <tr class="item-row" style="vertical-align: middle;">
-                                            <td class="position-relative">
-                                                {{ $key + 1 }}
-                                            </td>
-                                            @if ($quote['solution_type_id'] === 1)
-                                                <td class="text-center">
+                                            @if ($isConnectivity)
+                                                <td class="column-provider-body">
                                                     @if ($item['data']?->providerKey)
                                                         <img class="img-provider"
                                                             style="max-width: 60px; max-height: 20px; width: auto; height: auto;"
                                                             src="{{ $item['image'] ?? public_path() . '/images/providers/' . $item['data']?->providerKey . '.png' }}" />
                                                     @endif
                                                 </td>
+                                                <td class="column-subprovider-body ">
+                                                    @if ($item['data']?->connectivitySupplierGroup)
+                                                        <img class="img-provider"
+                                                            style="max-width: 60px; max-height: 20px; width: auto; height: auto;"
+                                                            src="{{ $item['image'] ?? public_path() . '/images/providers/' . strtolower($item['data']?->connectivitySupplierGroup) . '.png' }}" />
+                                                    @endif
+                                                </td>
                                             @endif
-                                            <td>
+                                            <td class="column-name-body">
                                                 {{ $item['name'] }}
                                                 @if (isset($item['data']->additionalInfo->{'Primary Router Model'}))
                                                     <span
@@ -172,152 +193,91 @@
                                                     </span>
                                                 @endif
                                             </td>
-                                            <td class="text-center">
+                                            <td class="column-contract_length-body">
                                                 {{ $item['contract_length'] }}
                                             </td>
-                                            @if ($quote['solution_type_id'] === 1)
-                                                <td class="d-xl-table-cell text-center">
-                                                    {{ $item['data']?->productCode }}
+                                            @if ($isConnectivity)
+                                                <td class="column-speed-body">
+                                                    {{ formatBytes($item['data']?->speed) }}
+                                                </td>
+                                                <td class="column-bearer-body">
+                                                    {{ formatBytes($item['data']?->bearer) }}
                                                 </td>
                                             @endif
-                                            <td class="text-center">
-                                                Monthly
-                                            </td>
-                                            <td class="text-center">
+                                            <td class="column-quantity-body">
                                                 {{ $item['quantity'] }}
                                             </td>
-                                            <td class="text-center">
+                                            <td class="column-price-body">
                                                 £{{ number_format($item['price'], 2) }}
                                             </td>
-                                            <td class="text-end">
+                                            <td class="column-discount-body">
+                                                {{ number_format((float) $item['discount']) }}%
+                                            </td>
+                                            <td class="column-total-body">
                                                 £{{ number_format($item['total'], 2) }}
                                             </td>
                                         </tr>
                                     @endforeach
                                 </tbody>
                             </table>
-                            <br>
-                            <h3>One off charges</h3>
-                            <table class="table">
-                                <!-- Headers -->
-                                <thead>
-                                    <tr>
-                                        <th class="w-5">ID</th>
-                                        @if ($quote['solution_type_id'] === 1)
-                                            <th class="text-center d-xl-table-cell w-5">Provider</th>
-                                        @endif
-                                        <th class="w-auto">Product</th>
-                                        @if ($quote['solution_type_id'] === 1)
-                                            <th class="d-xl-table-cell w-10 text-center" style="white-space: nowrap;">
-                                                Supplier
-                                                Quote Ref.</th>
-                                        @endif
-                                        <th class="text-center w-10">Type</th>
-                                        <th class="text-center w-5">Qty</th>
-                                        <th class="text-center w-10">Price</th>
-                                        <th class="text-end w-10" style="white-space: nowrap;">Total Price</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach ($single_items as $key => $item)
-                                        <tr class="item-row" style="vertical-align: middle;">
-                                            <td claszooms="position-relative">
-                                                {{ $key + 1 }}
-                                            </td>
-                                            @if ($quote['solution_type_id'] === 1)
-                                                <td class="text-center">
-                                                    @if ($item['data']?->providerKey)
-                                                        <img class="img-provider"
-                                                            style="max-width: 60px; max-height: 20px; width: auto; height: auto;"
-                                                            src="{{ $item['image'] ?? public_path() . '/images/providers/' . $item['data']?->providerKey . '.png' }}" />
-                                                    @endif
-                                                </td>
-                                            @endif
-                                            <td>
-                                                {{ $item['name'] }}
-                                                @if (isset($item['data']->additionalInfo->{'Primary Router Model'}))
-                                                    <span
-                                                        class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm router-model">
-                                                        <i class="fa-solid fa-plug"></i>
-                                                        {{ $item['data']->additionalInfo->{'Primary Router Model'} }}
-                                                    </span>
-                                                    @if (isset($item['data']->isContended) and $item['data']->isContended)
-                                                        <span
-                                                            class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm is-contended"
-                                                            data-bs-toggle="tooltip" data-bs-placement="top"
-                                                            title="Contended" v-tooltip>
-                                                            <i class="fa-solid fa-network-wired"></i>
-                                                        </span>
-                                                    @endif
-                                                @endif
-                                            </td>
-                                            @if ($quote['solution_type_id'] === 1)
-                                                <td class="d-xl-table-cell text-center">
-                                                    {{ $item['data']?->productCode }}
-                                                </td>
-                                            @endif
-                                            <td class="text-center">
-                                                Single
-                                            </td>
-                                            <td class="text-center">
-                                                {{ $item['quantity'] }}
-                                            </td>
-                                            <td class="text-center">
-                                                £{{ number_format($item['price'], 2) }}
-                                            </td>
-                                            <td class="text-end">
-                                                £{{ number_format($item['total'], 2) }}
-                                            </td>
-                                        </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                            <br>
-                            <br>
-                            <div class="text-right">
-                                <div class="row">
-                                    <div class="col"></div>
-                                    <div class="col">
-                                        <table class="table">
-                                            <thead>
-                                                <tr>
-                                                    <th></th>
-                                                    <th>NET</th>
-                                                    <th>VAT (20%)</th>
-                                                    <th>GROSS</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <tr>
-                                                    <th>Total Monthly</th>
-                                                    <td id="total_monthly_net" class="text-end">
-                                                        £{{ number_format(quoteTotal('MONTHLY', $quote['items']), 2) }}
-                                                    </td>
-                                                    <td id="total_monthly_vat" class="text-end">
-                                                        £{{ number_format(quoteTotal('MONTHLY', $quote['items']) * 0.2, 2) }}
-                                                    </td>
-                                                    <td id="total_monthly_gross" class="text-end">
-                                                        £{{ number_format(quoteTotal('MONTHLY', $quote['items']) * 1.2, 2) }}
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <th>Total One-off Costs</th>
-                                                    <td id="total_net" class="text-end">
-                                                        £{{ number_format($quote['total'], 2) }}
-                                                    </td>
-                                                    <td id="total_vat" class="text-end">
-                                                        £{{ number_format($quote['total_vat'], 2) }}
-                                                    </td>
-                                                    <td id="total_gross" class="text-end">
-                                                        £{{ number_format($quote['total_gross'], 2) }}
-                                                    </td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
                         </div>
+                        <div class="mobile-price-group-heading mt-3 d-flex justify-content-between align-items-center">
+                            <h3>Totals</h3>
+                        </div>
+                        <table class="table table-dealmaker table-bordered text-end">
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <th>NET</th>
+                                    <th>VAT (20%)</th>
+                                    <th>GROSS</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <th>
+                                        <p class="small text-start">Monthly Total</p>
+                                    </th>
+                                    <td id="total_monthly_net">
+                                        £{{ number_format(quoteTotal('MONTHLY', 'total', $quote['items']), 2) }}
+                                    </td>
+                                    <td id="total_monthly_vat">
+                                        £{{ number_format(quoteTotal('MONTHLY', 'total_tax', $quote['items']) * 0.2, 2) }}
+                                    </td>
+                                    <td id="total_monthly_gross">
+                                        £{{ number_format(quoteTotal('MONTHLY', 'total_gross', $quote['items']) * 1.2, 2) }}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>
+                                        <p class="small text-start">One Off Total</p>
+                                    </th>
+                                    <td id="total_single_net">
+                                        £{{ number_format(quoteTotal('SINGLE', 'total', $quote['items']), 2) }}
+                                    </td>
+                                    <td id="total_single_vat">
+                                        £{{ number_format(quoteTotal('SINGLE', 'total_tax', $quote['items']), 2) }}
+                                    </td>
+                                    <td id="total_single_gross">
+                                        £{{ number_format(quoteTotal('SINGLE', 'total_gross', $quote['items']), 2) }}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>
+                                        <p class="small text-start">Total</p>
+                                    </th>
+                                    <td id="total_net">
+                                        £{{ number_format($quote['total'], 2) }}
+                                    </td>
+                                    <td id="total_vat">
+                                        £{{ number_format($quote['total_tax'], 2) }}
+                                    </td>
+                                    <td id="total_gross">
+                                        £{{ number_format($quote['total_gross'], 2) }}
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
@@ -328,17 +288,8 @@
                 <p>Lorem ipsum dolor sit amet...</p>
             </div>
         </div>
-        <div class="row mb-2" id="footer">
-            <div class="col">
-                <img src="https://img.logoipsum.com/331.svg">
-                <p>Insert Tagline</p>
-            </div>
-            <div class="col text-end">
-                <p>Lorem ipsum dolor sit amet...</p>
-            </div>
-        </div>
-    </div>
 
+    </div>
 </body>
 
 </html>

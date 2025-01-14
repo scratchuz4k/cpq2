@@ -1,4 +1,5 @@
 #print {
+
     .table-dealmaker thead {
         th {
             background: none !important;
@@ -162,19 +163,22 @@
 }
 
 #table-SINGLE .column-name-header {
-    width: 38% !important;
+    width: 40% !important;
 }
 
 .column-total-header,
 .column-total-body {
     font-weight: bold !important;
 }
-
-.column-discount-body,
-.column-discount-header,
-.column-contract_length-body,
 .column-quantity-body,
-.column-quantity-header {
+.column-quantity-header,
+.column-contract_length-header,
+.column-contract_length-body{
+    width: 10% !important;
+    text-align: center;
+}
+.column-discount-body,
+.column-discount-header {
     width: 8% !important;
     text-align: center;
 }
