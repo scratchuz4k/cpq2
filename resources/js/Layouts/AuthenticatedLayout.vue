@@ -12,6 +12,7 @@ import { usePage } from "@inertiajs/vue3";
 const page = usePage();
 import * as Sentry from "@sentry/vue";
 import TopBarSearchable from "@/Components/TopBarSearchable.vue";
+import Resources from "@/Components/Resources.vue";
 Sentry.setUser({
     fullName: page.props.auth.user.name,
     email: page.props.auth.user.email,
@@ -173,6 +174,7 @@ watch(search, () => {
         </div>
     </main>
     <Footer></Footer>
+    <Resources></Resources>
 </template>
 <style>
 .search-button:focus-visible,

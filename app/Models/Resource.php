@@ -41,6 +41,11 @@ class Resource extends Model
         return $this->getContent();
     }
 
+    public function getRouteAttribute(): string
+    {
+        return asset('storage/' . $this->attributes['route']);
+    }
+
     public function getFullRouteAttribute(): string
     {
         return asset('storage/' . $this->attributes['route']);
@@ -58,7 +63,7 @@ class Resource extends Model
 
     public function getContent(): string
     {
-        return Storage::get($this->route) ?? '';
+        return Storage::disk('public')->get($this->getRouteValue()) ?? '';
     }
 
 

@@ -4,6 +4,7 @@ import Tabs from "@/Components/Tabs.vue";
 import Tab from "@/Components/Tab.vue";
 import {Head, router} from "@inertiajs/vue3";
 import {ref} from 'vue';
+import Button from "primevue/button";
 
 defineProps({
     isSuperAdmin: Boolean,
@@ -17,14 +18,15 @@ const onFileChange = (event, tenant) => {
 
 const submitFileForm = (tenant) => {
     isLoading.value = true
-    if (tenant.temp_file === null) {
+    if (!tenant.sso_id) {
+        notyf.error("You need to select a file")
         isLoading.value = false
         return
     }
     router.post(`/tenant/${tenant.id}`,
         {
             _method: "PUT",
-            file: tenant.temp_file
+            sso_id: tenant.sso_id
         },{
             onSuccess: (page) => {
                 notyf.success("Created with Success")
@@ -45,14 +47,15 @@ const submitFileForm = (tenant) => {
 
 const submitLogoForm = (tenant) => {
     isLoading.value = true
-    if (tenant.temp_file === null) {
+    if (!tenant.logo_id) {
+        notyf.error("You need to select a file")
         isLoading.value = false
         return
     }
     router.post(`/tenant/${tenant.id}`,
         {
             _method: "PUT",
-            logo: tenant.temp_file
+            logo_id: tenant.logo_id
         },{
             onSuccess: (page) => {
                 notyf.success("Created with Success")
@@ -110,8 +113,8 @@ const items = ref([
                 <div class="row">
                     <div class="d-flex align-items-start">
                         <div class="nav flex-column nav-pills me-3" id="v-pills-tab" role="tablist" aria-orientation="vertical">
-                            <button class="nav-link active" id="v-pills-sso-tab" data-bs-toggle="pill" data-bs-target="#v-pills-sso" type="button" role="tab" aria-controls="v-pills-sso" aria-selected="true">Home</button>
-                            <button class="nav-link" id="v-pills-logo-tab" data-bs-toggle="pill" data-bs-target="#v-pills-logo" type="button" role="tab" aria-controls="v-pills-logo" aria-selected="false">Profile</button>
+                            <button class="nav-link active" id="v-pills-sso-tab" data-bs-toggle="pill" data-bs-target="#v-pills-sso" type="button" role="tab" aria-controls="v-pills-sso" aria-selected="true">SSO</button>
+                            <button class="nav-link" id="v-pills-logo-tab" data-bs-toggle="pill" data-bs-target="#v-pills-logo" type="button" role="tab" aria-controls="v-pills-logo" aria-selected="false">Logo</button>
                         </div>
                         <div class="tab-content ps-3 w-100" id="v-pills-tabContent">
                             <div class="tab-pane fade show active" id="v-pills-sso" role="tabpanel" aria-labelledby="v-pills-sso-tab">
@@ -123,24 +126,29 @@ const items = ref([
                                             <h4>Import XML file for {{ tenant.name }}</h4>
                                             <p>The file to upload must be a .xml</p>
                                             <form @submit.prevent="submitFileForm(tenant)" enctype="multipart/form-data">
-                                                <input type="file" accept=".xml" required @input="(ev) => onFileChange(ev, tenant)" :value="tenant.temp_file_name"/>
-                                                <button type="submit" class="btn btn-success ms-2" :disabled="isLoading">
+                                                <InputResource v-model="tenant.sso_id" :resource="tenant.file" :acceptedFiles="['text/xml']"></InputResource>
+                                                <button type="submit" class="btn btn-primary mt-2" :disabled="isLoading">
                                                     <span v-if="isLoading">
                                                         <font-awesome-icon :icon="['fa', 'spinner']" class="fa-spin"></font-awesome-icon>
                                                         Uploading...
                                                     </span>
-                                                    <span v-else>Upload</span>
+                                                    <span v-else>
+                                                        <font-awesome-icon class="me-2" :icon="['fas', 'save']"/>
+                                                        Save
+                                                    </span>
                                                 </button>
                                             </form>
                                             <div class="seperator"> OR</div>
-                                            {{ tenant}}
                                             <div class="mt-4">
                                                 <h4>Input SSO configuration for {{ tenant.name }}</h4>
                                                 <p>Please provide a valid xml syntax</p>
                                                 <form @submit.prevent="submitTextForm(tenant)" enctype="multipart/form-data">
                                                     <textarea v-if="tenant.file" v-model="tenant.file.file_content" class="w-100 p-4" rows="10"></textarea>
                                                     <textarea v-else v-model="tenant.sso_text" class="w-100 p-4" rows="10"></textarea>
-                                                    <button type="submit" class="btn btn-success">Save</button>
+                                                    <button type="submit" class="btn btn-primary mt-2">
+                                                        <font-awesome-icon class="me-2" :icon="['fas', 'save']"/>
+                                                        Save
+                                                    </button>
                                                 </form>
                                             </div>
                                         </tab>
@@ -157,25 +165,18 @@ const items = ref([
                                                     <h4>Import Logo for {{ tenant.name }}</h4>
                                                     <p>The file to upload must be a .png</p>
                                                     <form @submit.prevent="submitLogoForm(tenant)" enctype="multipart/form-data">
-                                                        <!--                                                        <InputImage v-model="tenant.id" ></InputImage>-->
-                                                        <input type="file" accept=".png" required @input="(ev) => onFileChange(ev, tenant)" :value="tenant.temp_file_name"/>
-                                                        <button type="submit" class="btn btn-success ms-2" :disabled="isLoading">
-                                                    <span v-if="isLoading">
-                                                        <font-awesome-icon :icon="['fa', 'spinner']" class="fa-spin"></font-awesome-icon>
-                                                        Uploading...
-                                                    </span>
-                                                            <span v-else>Upload</span>
+                                                        <InputResource v-model="tenant.logo_id" :resource="tenant.logo" :showLikeLine="false" :acceptedFiles="['image/jpeg', 'image/png', 'image/gif', ]"></InputResource>
+                                                        <button type="submit" class="btn btn-primary mt-2" :disabled="isLoading">
+                                                            <span v-if="isLoading">
+                                                                <font-awesome-icon :icon="['fa', 'spinner']" class="fa-spin"></font-awesome-icon>
+                                                                Uploading...
+                                                            </span>
+                                                            <span v-else>
+                                                                <font-awesome-icon class="me-2" :icon="['fas', 'save']"/>
+                                                                Save
+                                                            </span>
                                                         </button>
                                                     </form>
-                                                </div>
-                                                <div class="logo-image ms-4">
-                                                    <p class="h6">
-                                                        Current Logo:
-                                                    </p>
-                                                    <img class="tenant-logo w-100"
-                                                         @error="setAltImg"
-                                                         :src="tenant.logo.full_route"
-                                                         :alt="tenant.logo.alt_text" :title="tenant.logo.alt_text" />
                                                 </div>
                                             </div>
                                         </tab>
@@ -184,9 +185,6 @@ const items = ref([
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="row">
-
                 </div>
             </div>
         </div>
@@ -219,5 +217,12 @@ const items = ref([
 }
 .tab-content {
     border-left: 1px solid var(--light-grey);
+}
+.nav-link {
+    color: var(--color-purple);
+    font-weight: 600;
+}
+.nav-link.active {
+    background-color: var(--color-purple);
 }
 </style>

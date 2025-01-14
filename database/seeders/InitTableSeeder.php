@@ -34,6 +34,21 @@ class InitTableSeeder extends Seeder
             "database" => "cloudmarket"
         ]);
 
+        Tenant::updateOrCreate([
+            "name" => "tenant test"
+        ], [
+            "domain" => "locsdfgsdfgalhost",
+            "database" => "cloudmsdfgdarket"
+        ]);
+
+
+        Tenant::updateOrCreate([
+            "name" => "test tenant"
+        ], [
+            "domain" => "localhsdfgsdfgost",
+            "database" => "clousdfgsdmarket"
+        ]);
+
         $super_user = User::updateOrCreate([
             'email' => 'super@example.com',
         ], [
