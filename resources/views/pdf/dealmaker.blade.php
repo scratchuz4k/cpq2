@@ -68,7 +68,7 @@
         }
 
         // Remove rounding if value < 1000
-        if ($value < 1000) {
+        if ($temp < 1000) {
             $result = $number . ' ' . $suffix;
         } else {
             $result = ceil($number / $rounding) * $rounding . ' ' . $suffix;

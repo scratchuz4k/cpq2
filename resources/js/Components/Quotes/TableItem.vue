@@ -130,8 +130,4 @@ emitter.on("quote-items:toggle:is-editing", () => item.value.is_editing);
 .child-bg > td {
   background-color: whitesmoke;
 }
-.form-control {
-  font-size: 0.9rem;
-  line-height: 1.5rem;
-}
 </style>

@@ -33,15 +33,16 @@ const groupColumns = columns.filter((x) => x.is_group);
     <tbody>
       <template v-for="(item, index) in quote.items">
         <TableGroup
-          v-if="item.children.length"
+          v-if="quote.solution_type.code == 3"
           :item="item"
           :columns="columns"
           :index="index"
           :preview="preview"
           :groupColumns="groupColumns"
         >
-          <template v-for="(child, childIndex) in item.children">
+          <template v-if="item.children.length">
             <TableItem
+              v-for="(child, childIndex) in item.children"
               :item="child"
               :columns="columns"
               :index="childIndex"
@@ -53,6 +54,18 @@ const groupColumns = columns.filter((x) => x.is_group);
             >
             </TableItem>
           </template>
+          <template v-else>
+            <TableItem
+              :item="item"
+              :columns="columns"
+              :groupColumns="groupColumns"
+              :index="index"
+              :showToggle="true"
+              :preview="preview"
+              :isChild="true"
+              code="Simple"
+            ></TableItem>
+          </template>
         </TableGroup>
         <TableItem
           v-else
@@ -60,7 +73,7 @@ const groupColumns = columns.filter((x) => x.is_group);
           :columns="columns"
           :groupColumns="groupColumns"
           :index="index"
-          :showToggle="quote.items.find((e) => !!e.children.length)"
+          :showToggle="false"
           :preview="preview"
           code="Simple"
         >

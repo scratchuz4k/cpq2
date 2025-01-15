@@ -33,7 +33,7 @@ const colspan = props.columns.length - props.groupColumns.length;
     <td :colspan="colspan">
       <div class="d-flex">
         <template v-for="(column, index) in groupColumns">
-          <div class="me-3">
+          <div class="me-3 py-2">
             <component
               :is="format.toCamelCase(column.value) + 'Column'"
               v-bind="{

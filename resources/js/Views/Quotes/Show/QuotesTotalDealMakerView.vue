@@ -152,7 +152,6 @@ const items = ref([
   },
   { label: "Summary" },
 ]);
-
 </script>
 <template>
   <div class="panel panel-mobile">
@@ -233,6 +232,7 @@ const items = ref([
                 Email this quote
               </button>
               <button
+                hidden
                 :disabled="disableButtonSendToOrder"
                 class="btn btn-primary"
                 @click="createOrderAndRedirect(quote.id)"
@@ -490,7 +490,6 @@ input[type="number"] {
 .reject-reasons-table tr td {
   padding: 1rem !important;
 }
-
 
 .commission-calculator .input-group input {
   border-right: none;

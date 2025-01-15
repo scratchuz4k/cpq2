@@ -68,7 +68,7 @@
         }
 
         // Remove rounding if value < 1000
-        if ($value < 1000) {
+        if ($temp < 1000) {
             $result = $number . ' ' . $suffix;
         } else {
             $result = ceil($number / $rounding) * $rounding . ' ' . $suffix;
@@ -218,7 +218,7 @@
                                                     {{ formatBytes($item['data']?->bearer) }}
                                                 </td>
                                                 <td class="column-quote_ref-body">
-                                                    {{ formatBytes($item['data']?->productCode) }}
+                                                    {{ $item['data']?->productCode }}
                                                 </td>
                                             @endif
                                             <td class="column-quantity-body">

@@ -13,7 +13,7 @@ const setAltImg = (event) => {
 
 </script>
 <template>
-    <img v-if="item.data?.connectivitySupplierGroup" class="img-provider" @error="setAltImg"
+    <img  class="img-provider" @error="setAltImg"
             :src="`/images/providers/${format.toSnakeCase(item.data?.connectivitySupplierGroup)}.png`" :alt="item.data?.connectivitySupplierGroup"
             :title="item.data?.connectivitySupplierGroup" />
 </template>

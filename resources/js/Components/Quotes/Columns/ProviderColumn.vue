@@ -14,7 +14,7 @@ const setAltImg = (event) => {
 </script>
 <template>
     <div>
-        <img v-if="item.data?.providerKey" class="img-provider" @error="setAltImg"
+        <img class="img-provider" @error="setAltImg"
             :src="`/images/providers/${item.data?.providerKey}.png`" :alt="item.data?.providerName"
             :title="item.data?.providerName" />
     </div>

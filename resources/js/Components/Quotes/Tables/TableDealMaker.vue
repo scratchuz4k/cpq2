@@ -1,7 +1,7 @@
 <script setup>
 import { reactive } from "vue";
 import { quote, getQuote } from "@composables/useQuote";
-import {createQuoteItem } from "@/Composables/useQuoteItem";
+import { createQuoteItem } from "@/Composables/useQuoteItem";
 
 const props = defineProps({
   pricePlans: Array,
@@ -115,6 +115,7 @@ const editableColumns = (columns, code) => {
               v-if="column.is_editable"
               :id="'input-new-' + pricePlanskeys[pricePlan.code] + '-name'"
               class="form-control p-0 px-1"
+              :class="[column.value == 'name' ? 'text-start' : '']"
               type="text"
               v-model="newLine[column.value]"
             />
