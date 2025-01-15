@@ -30,7 +30,7 @@ class PriceRules
         static::$spas = $this->object->spas;
     }
 
-    public function apply($price)
+    public function apply(float $price)
     {
         foreach (static::$spas as $spa) {
             $price = app($spa->operation->class)->apply($price, $spa);
