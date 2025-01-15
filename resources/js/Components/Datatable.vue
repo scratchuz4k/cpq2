@@ -61,7 +61,7 @@ const getData = async () => {
 
     let res = await axios.get('/api' + props.route + '?' + string)
     data.value = res.data.data
-    meta.total = res.data.meta.total
+    meta.total = res.data.meta?.total ?? res.data.total
     meta.first = (meta.page - 1) * form.limit
 }
 

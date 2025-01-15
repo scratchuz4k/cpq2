@@ -39,10 +39,3 @@ export default defineComponent({
 })
 
 </script>
-
-<style scoped>
-.active{
-    color:white!important;
-    background-color: var(--primary-light)!important;
-    font-weight: bold;
-}</style>

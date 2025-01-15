@@ -84,6 +84,8 @@ const getProducts = async () => {
             operator: 'equals',
             value: 'plan'
         }]),
+        orderBy: 'price.net_spa',
+        order: 'desc',
         account_id: props.modelValue.account_id
     })
     let res = await axios.get("/api/products" + '?' + query)
@@ -178,7 +180,7 @@ const saveQuote = async () => {
             name: x.name,
             raw_price: x.price ? x.price.net : 0,
             price: x.price ? x.price.net_spa : 0,
-            price_plan_id: x.price ? x.price.price_plan_id : null,
+            price_plan_id: x.price_plan_id
         })
     })
 
@@ -236,7 +238,7 @@ watch(search, _.debounce(() => {
                                 <h4 class="m-0">{{ product.name }}</h4>
                                 <p class="m-0 ms-2">
                                     {{ product.description }} /
-                                    {{ GBP.format(product.price.net_spa) }}
+                                    {{ GBP.format(product.price?.net_spa ?? 0) }}
                                 </p>
                             </div>
                             <font-awesome-icon :icon="['fa', 'circle-info']" />
@@ -358,7 +360,7 @@ watch(search, _.debounce(() => {
                                             </p>
                                         </div>
                                         <div>
-                                            <p class="bold big"> {{ GBP.format(product.price.net_spa) }}</p>
+                                            <p class="bold big"> {{ GBP.format(product.price?.net_spa ?? 0) }}</p>
                                         </div>
                                     </div>
                                 </div>

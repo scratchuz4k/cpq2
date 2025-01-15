@@ -88,13 +88,13 @@ const items = ref([
                                 </a>
                             </div>
                         </div>
-                        <div class="col" v-if="hasRole('Super Admin') || can('viewAny price')">
+                        <div class="col" v-if="hasRole('Super Admin') || can('viewAny category')">
                             <div class="card bg-light border-0">
-                                <a id="link-prices" :href="route('prices.index')"
+                                <a id="link-categories" :href="route('categories.index')"
                                     class="card-body text-center p-2 text-decoration-none">
-                                    <font-awesome-icon class="py-3 opacity-25" :icon="['far', 'money-bill-1']"
+                                    <font-awesome-icon class="py-3 opacity-25" :icon="['far', 'folder']"
                                         size="2x"></font-awesome-icon>
-                                    <span class="d-block h5">Prices</span>
+                                    <span class="d-block h5">Categories</span>
                                 </a>
                             </div>
                         </div>
@@ -145,6 +145,15 @@ const items = ref([
                                     <font-awesome-icon class="py-3 opacity-25" :icon="['far', 'handshake']"
                                         size="2x"></font-awesome-icon>
                                     <span class="d-block h5">Suppliers</span>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="col" v-if="hasRole('Super Admin') || can('viewAny merchant')">
+                            <div class="card bg-light border-0">
+                                <a id="link-merchants" :href="route('merchants.index')"
+                                    class="card-body text-center p-2 text-decoration-none">
+                                    <font-awesome-icon class="py-3 opacity-25" :icon="['fas', 'shop']" size="2x"/>
+                                    <span class="d-block h5">Merchants</span>
                                 </a>
                             </div>
                         </div>

@@ -42,6 +42,7 @@ class RolePermissionSeeder extends Seeder
                 'account' => 'Account',
                 'contact' => 'Contact',
                 'price' => 'Price',
+                'category' => 'Category',
                 'product' => 'Product',
                 'region' => 'Region',
                 'brand' => 'Brand',
@@ -63,17 +64,17 @@ class RolePermissionSeeder extends Seeder
             'Support Agent' => [
                 'parent' => 'Super Admin',
                 'permissions' => ['merchant', 'account', 'contact', 'token', 'quote', 'quote_item'],
-                'simple_permission' => ['viewAny product', 'view product']
+                'simple_permission' => ['viewAny product', 'view product', 'viewAny category', 'view category']
             ],
             'Company Admin' => [
                 'parent' => 'Super Admin',
-                'permissions' => ['quote', 'quote_item', 'merchant', 'account', 'contact',  'price', 'product', 'region', 'tenant', 'brand', 'supplier', 'spa', 'user'],
+                'permissions' => ['quote', 'quote_item', 'merchant', 'account', 'contact',  'price', 'product', 'category', 'region', 'tenant', 'brand', 'supplier', 'spa', 'user'],
                 'simple_permission' => []
             ],
             'Sales Rep' => [
                 'parent' => 'Company Admin',
                 'permissions' => ['quote', 'quote_item', 'account', 'contact', 'brand', 'supplier'],
-                'simple_permission' => ['viewAny product', 'view product']
+                'simple_permission' => ['viewAny product', 'view product', 'viewAny category', 'view category']
             ],
             'Order Manager' => [
                 'parent' => 'Company Admin',
@@ -81,6 +82,8 @@ class RolePermissionSeeder extends Seeder
                 'simple_permission' => [
                     'viewAny product',
                     'view product',
+                    'viewAny category',
+                    'view category',
                     'viewAny account',
                     'view account',
                     'viewAny contact',

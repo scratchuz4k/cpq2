@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Validation\Rule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class PriceUpdateRequest extends FormRequest
@@ -21,13 +22,22 @@ class PriceUpdateRequest extends FormRequest
      */
     public function rules(): array
     {
+        $price_id = null;
+        if (array_key_exists('price', $this->route()->parameters()))
+            $price_id = $this->route()->parameters()['price']->id;
+
         return [
+            "code" => [
+                "numeric",
+                Rule::unique("prices")
+                    ->where(function ($query) {
+                        return $query->where("product_id", $this->input("product_id"));
+                    })
+                    ->ignore($price_id),
+            ],
             "tax_rate" => "required|numeric",
             "net" => "required|numeric",
-            "tax" => "required|numeric",
-            "gross" => "required|numeric",
-            "spa_id" => "required|exists:spas,id",
-            "product_id" => "required|exists:products,id",
+            "product_id" => "exists:products,id",
         ];
     }
 }
