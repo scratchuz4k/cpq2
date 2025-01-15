@@ -1,6 +1,7 @@
 <script setup>
 import { reactive } from "vue";
-import { quote, setQuote } from "@composables/useQuote";
+import { quote, getQuote } from "@composables/useQuote";
+import {createQuoteItem } from "@/Composables/useQuoteItem";
 
 const props = defineProps({
   pricePlans: Array,
@@ -26,22 +27,17 @@ const newLine = reactive({
   price_plan_code: null,
 });
 
-const saveNewLine = async (item) => {
-  try {
-    let res = await axios.put(`/api/quotes/${quote.id}`, {
-      items: [...quote.items, item],
-    });
-    setQuote(res.data);
-    item.show = false;
-    Object.assign(item, {
+const saveNewLine = async () => {
+  if (await createQuoteItem({ quote_id: quote.id, ...newLine })) {
+    getQuote(quote.id);
+    newLine.show = false;
+    Object.assign(newLine, {
       name: null,
       margin: 0,
       quantity: 0,
       price: 0,
       discount: 0,
     });
-  } catch (ex) {
-    notyf.error(ex.response.data.message);
   }
 };
 
