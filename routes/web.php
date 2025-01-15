@@ -13,7 +13,6 @@ use App\Http\Controllers\Web\RegionController;
 use App\Http\Controllers\Web\TenantController;
 use App\Http\Controllers\Web\AccountController;
 use App\Http\Controllers\Web\CategoryController;
-use App\Http\Controllers\Web\ApiConfigurationController;
 use App\Http\Controllers\Web\ProductController;
 use App\Http\Controllers\Web\ProfileController;
 use App\Http\Controllers\Web\SupplierController;
