@@ -23,8 +23,7 @@ class QuoteItemUpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "quote_id" => "required",
-            "name" => "required",
+            "name" => "nullable",
             "quantity" => "required|numeric",
             "raw_price" => "numeric",
             "price" => "numeric",

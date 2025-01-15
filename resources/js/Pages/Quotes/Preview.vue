@@ -83,7 +83,4 @@ const items = ref([
 .w-20 {
   width: 20% !important;
 }
-.badge.is-contended {
-  font-size: 10px;
-}
 </style>

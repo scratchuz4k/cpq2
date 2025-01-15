@@ -60,7 +60,7 @@ const groupColumns = columns.filter((x) => x.is_group);
           :columns="columns"
           :groupColumns="groupColumns"
           :index="index"
-          :showToggle="false"
+          :showToggle="quote.items.find((e) => !!e.children.length)"
           :preview="preview"
           code="Simple"
         >

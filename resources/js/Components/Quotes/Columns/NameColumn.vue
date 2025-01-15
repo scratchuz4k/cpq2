@@ -34,3 +34,10 @@ const item = defineModel();
     </span>
   </p>
 </template>
+
+<style>
+.is-contended,
+.router-model {
+  font-size: 0.625rem !important;
+}
+</style>

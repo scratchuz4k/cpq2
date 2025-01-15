@@ -1,6 +1,7 @@
 <script setup>
 import { ref } from "vue";
 import { updateQuoteItem, removeQuoteItem, temp } from "@composables/useQuoteItem";
+import { getQuote, quote } from "@/Composables/useQuote";
 
 const props = defineProps({
   code: String,
@@ -28,7 +29,7 @@ const save = async (p) => {
   item.value.contract_length = temp.contract_length;
   if (await updateQuoteItem(item.value.id, item.value)) {
     item.value.is_editing = false;
-    emitter.emit("quote:refresh");
+    getQuote(quote.id);
   }
 };
 
@@ -51,9 +52,8 @@ const remove = async (p) => {
   if (["cancel", "backdrop"].includes(result.dismiss)) {
     return;
   }
-
   if (await removeQuoteItem(id)) {
-    emitter.emit("quote:refresh");
+    getQuote(quote.id);
   }
 };
 
@@ -94,14 +94,14 @@ emitter.on("quote-items:toggle:is-editing", () => item.value.is_editing);
           <font-awesome-icon
             :id="'btn-' + props.code + '-' + index + '-edit'"
             role="button"
-            class="px-2 py-3 text-primary"
+            class="px-2 py-2 text-primary"
             :icon="['fas', 'edit']"
             @click="edit(item)"
           />
           <font-awesome-icon
             :id="'btn-' + props.code + '-' + index + '-remove'"
             role="button"
-            class="px-2 py-3 text-secondary"
+            class="px-2 py-2 text-secondary"
             :icon="['fas', 'trash']"
             @click="remove(item)"
           />
@@ -110,14 +110,14 @@ emitter.on("quote-items:toggle:is-editing", () => item.value.is_editing);
           <font-awesome-icon
             :id="'btn-' + props.code + '-' + index + '-cancel'"
             role="button"
-            class="px-2 py-3 text-secondary"
+            class="px-2 py-2 text-secondary"
             :icon="['fas', 'cancel']"
             @click="cancel(item)"
           />
           <font-awesome-icon
             :id="'btn-' + props.code + '-' + index + '-save'"
             role="button"
-            class="px-2 py-3 text-primary"
+            class="px-2 py-2 text-primary"
             :icon="['fas', 'save']"
             @click="save(item)"
           />
@@ -129,5 +129,9 @@ emitter.on("quote-items:toggle:is-editing", () => item.value.is_editing);
 <style scoped>
 .child-bg > td {
   background-color: whitesmoke;
+}
+.form-control {
+  font-size: 0.9rem;
+  line-height: 1.5rem;
 }
 </style>

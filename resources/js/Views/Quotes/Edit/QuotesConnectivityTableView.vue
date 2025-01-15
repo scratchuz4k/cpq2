@@ -783,7 +783,4 @@ tr.active td {
     background-color: var(--purple);
     animation: progressBar 240s linear forwards;
 }
-.badge.is-contended{
-    font-size: 10px;
-}
 </style>

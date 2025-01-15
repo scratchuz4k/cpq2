@@ -79,8 +79,7 @@
 
     $isConnectivity = !is_null($quote['solution_type']) && $quote['solution_type']['code'] == 3 ? true : false;
 
-    $leafNodes = getLeafNodesWithChildren($quote['items']);
-    $quote['items'] = $leafNodes;
+    // $quote['items']  = getLeafNodesWithChildren($quote['items']);
 
 @endphp
 
@@ -151,9 +150,16 @@
                                 <!-- Headers -->
                                 <thead>
                                     <tr>
-                                        <th class="column-contract_lenght-header w-5">Months</th>
-                                        <th class="column-name-header w-20">Price Plan</th>
                                         @if ($isConnectivity)
+                                            <th class="column-provider-header d-xl-table-cell w-5">Provider</th>
+                                            <th class="column-subprovider-header d-xl-table-cell w-5">SubProvider</th>
+                                        @endif
+                                        <th class="column-name-header w-20">Name</th>
+                                        <th class="column-price_plan-header w-20">Price Plan</th>
+                                        <th class="column-contract_lenght-header w-5">Months</th>
+                                        @if ($isConnectivity)
+                                            <th class="column-speed-header w-5">Speed</th>
+                                            <th class="column-bearer-header w-5">Bearer</th>
                                             <th class="column-name-header w-20">Quote Reference</th>
                                         @endif
                                         <th class="column-quantity-header w-5">Quantity</th>
@@ -198,6 +204,9 @@
                                                     </span>
                                                 @endif
                                             </td>
+                                            <td class="column-price_plan-body">
+                                                {{ $item['price_plan']?->name }}
+                                            </td>
                                             <td class="column-contract_length-body">
                                                 {{ $item['contract_length'] }}
                                             </td>
@@ -208,15 +217,15 @@
                                                 <td class="column-bearer-body">
                                                     {{ formatBytes($item['data']?->bearer) }}
                                                 </td>
+                                                <td class="column-quote_ref-body">
+                                                    {{ formatBytes($item['data']?->productCode) }}
+                                                </td>
                                             @endif
                                             <td class="column-quantity-body">
                                                 {{ $item['quantity'] }}
                                             </td>
                                             <td class="column-price-body">
                                                 £{{ number_format($item['price'], 2) }}
-                                            </td>
-                                            <td class="column-discount-body">
-                                                {{ number_format((float) $item['discount']) }}%
                                             </td>
                                             <td class="column-total-body">
                                                 £{{ number_format($item['total'], 2) }}

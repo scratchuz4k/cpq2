@@ -153,9 +153,6 @@ const items = ref([
   { label: "Summary" },
 ]);
 
-emitter.on("quote:refresh", async () => {
-  await getQuote(quote.id);
-});
 </script>
 <template>
   <div class="panel panel-mobile">
@@ -494,10 +491,6 @@ input[type="number"] {
   padding: 1rem !important;
 }
 
-.form-control {
-  font-size: 0.9rem;
-  line-height: 1.5rem;
-}
 
 .commission-calculator .input-group input {
   border-right: none;

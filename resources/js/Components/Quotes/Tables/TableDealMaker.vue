@@ -48,7 +48,7 @@ const saveNewLine = async (item) => {
 const quoteTotal = (key) => {
   return quote.items
     .filter((x) => x.price_plan && x.price_plan.code == key)
-    .reduce((acc, item) => (acc += item.total), 0);
+    .reduce((acc, item) => (acc += item.quantity * item.price), 0);
 };
 
 const toggleNewLine = (key) => {
@@ -79,7 +79,9 @@ const editableColumns = (columns, code) => {
       class="mobile-price-group-heading mt-3 d-flex justify-content-between align-items-center"
     >
       <h3>{{ pricePlan.name }} charges</h3>
-      <h3 id="recurring_total">{{ GBP.format(quoteTotal(pricePlan.code)) }}</h3>
+      <h3 id="recurring_total">
+        {{ GBP.format(quoteTotal(pricePlan.code)) }}
+      </h3>
     </div>
     <table :id="'table-' + pricePlan.code" class="table-dealmaker table table-bordered">
       <thead>
@@ -159,5 +161,4 @@ const editableColumns = (columns, code) => {
   </div>
 </template>
 
-<style scoped>
-</style>
+<style scoped></style>

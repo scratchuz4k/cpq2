@@ -15,7 +15,7 @@ const item = defineModel();
       {{ item[column.value] > 1 ? item[column.value] : "" }}
     </p>
     <input
-      v-else
+      v-else-if="item.price_plan.code == 'MONTHLY'"
       :id="'input-' + code + '-' + index + '-contract_length'"
       class="form-control text-center p-0 px-1"
       type="number"

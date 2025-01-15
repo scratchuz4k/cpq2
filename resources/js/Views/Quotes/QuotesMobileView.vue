@@ -171,9 +171,8 @@ const checkQuantity = _.debounce(async (product, temp) => {
       updateQuoteItem(item.id, { quantity: product.quantity });
     }
   }
-  getQuote(quote.id);
 
-  Object.assign(quote, await getQuote(quote.id));
+  getQuote(quote.id);
 }, 500);
 
 const saveQuote = async () => {

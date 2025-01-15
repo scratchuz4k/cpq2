@@ -80,7 +80,7 @@ const items = ref([
       <!-- Product List -->
       <!-- In a real application, this would be dynamically generated based on the selected solution type -->
 
-      <TableSimple :preview="preview"></TableSimple>
+      <TableSimple :preview="preview" ></TableSimple>
 
       <div class="row justify-content-end">
         <div class="col-6">
@@ -122,9 +122,6 @@ const items = ref([
 </template>
 
 <style>
-.router-model {
-  font-size: 0.625rem !important;
-}
 .delete-btn {
   all: unset;
   height: 25px;
