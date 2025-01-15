@@ -93,8 +93,17 @@
     <link href="{{ getCss() }}" rel="stylesheet">
     <style>
         body {
-            background: none !important
+            background: none !important;
+            -webkit-print-color-adjust: exact !important;
         }
+
+        html {
+            -webkit-print-color-adjust: exact;
+        }
+        .child-bg>td {
+            background-color: whitesmoke;
+        }
+
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
         integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
@@ -155,86 +164,155 @@
                                 <thead>
                                     <tr>
                                         @if ($isConnectivity)
-                                            <th class="column-provider-header d-xl-table-cell w-5">Provider</th>
-                                            <th class="column-subprovider-header d-xl-table-cell w-5">SubProvider</th>
+                                            <th class="column-quote_ref-header w-20">Quote Reference</th>
+                                            <th class="column-speed-header w-20">Speed</th>
+                                            <th class="column-bearer-header w-20">Bearer</th>
+                                        @else
+                                            <th class="column-name-header w-20">Name</th>
                                         @endif
-                                        <th class="column-name-header w-20">Name</th>
                                         <th class="column-price_plan-header w-20">Price Plan</th>
                                         <th class="column-contract_lenght-header w-5">Months</th>
-                                        @if ($isConnectivity)
-                                            <th class="column-speed-header w-5">Speed</th>
-                                            <th class="column-bearer-header w-5">Bearer</th>
-                                            <th class="column-name-header w-20">Quote Reference</th>
-                                        @endif
                                         <th class="column-quantity-header w-5">Quantity</th>
                                         <th class="column-price-header w-10">Price</th>
                                         <th class="column-total-header">Total </th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach ($quote['items'] as $key => $item)
-                                        <tr class="item-row" style="vertical-align: middle;">
-                                            @if ($isConnectivity)
-                                                <td class="column-provider-body">
-                                                    @if ($item['data']?->providerKey)
-                                                        <img class="img-provider"
-                                                            style="max-width: 60px; max-height: 20px; width: auto; height: auto;"
-                                                            src="{{ $item['image'] ?? public_path() . '/images/providers/' . $item['data']?->providerKey . '.png' }}" />
-                                                    @endif
+                                    @foreach ($quote['items'] as $key => $group)
+                                        @if ($isConnectivity)
+                                            <tr class="group-row" style="vertical-align: middle;">
+                                                <td class="group-body" colspan="8">
+                                                    <div class="d-flex py-2">
+                                                        <div class="me-3">
+                                                            @if ($group['data']?->providerKey)
+                                                                <img class="img-provider"
+                                                                    style="max-width: 60px; max-height: 20px; width: auto; height: auto;"
+                                                                    src="{{ $group['image'] ?? public_path() . '/images/providers/' . $group['data']?->providerKey . '.png' }}" />
+                                                            @endif
+                                                        </div>
+                                                        <div class="me-3">
+                                                            @if ($group['data']?->connectivitySupplierGroup)
+                                                                <img class="img-provider"
+                                                                    style="max-width: 60px; max-height: 20px; width: auto; height: auto;"
+                                                                    src="{{ $group['image'] ?? public_path() . '/images/providers/' . strtolower($group['data']?->connectivitySupplierGroup) . '.png' }}" />
+                                                            @endif
+                                                        </div>
+                                                        <div class="me-3 d-flex">
+                                                            <p class="m-0">{{ $group['name'] }}
+                                                                @if (isset($group['data']->additionalInfo->{'Primary Router Model'}))
+                                                                    <span
+                                                                        class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm router-model">
+                                                                        <i class="fa-solid fa-plug"></i>
+                                                                        {{ $group['data']->additionalInfo->{'Primary Router Model'} }}
+                                                                    </span>
+                                                                @endif
+                                                                @if (isset($group['data']->isContended) and $group['data']->isContended)
+                                                                    <span
+                                                                        class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm is-contended"
+                                                                        data-bs-toggle="tooltip" data-bs-placement="top"
+                                                                        title="Contended" v-tooltip>
+                                                                        <i class="fa-solid fa-network-wired"></i>
+                                                                    </span>
+                                                                @endif
+                                                            <p>
+                                                        </div>
+                                                    </div>
                                                 </td>
-                                                <td class="column-subprovider-body ">
-                                                    @if ($item['data']?->connectivitySupplierGroup)
-                                                        <img class="img-provider"
-                                                            style="max-width: 60px; max-height: 20px; width: auto; height: auto;"
-                                                            src="{{ $item['image'] ?? public_path() . '/images/providers/' . strtolower($item['data']?->connectivitySupplierGroup) . '.png' }}" />
-                                                    @endif
-                                                </td>
+                                            </tr>
+                                            @if (count($group['children']))
+                                                @foreach ($group['children'] as $key => $item)
+                                                    <tr class="item-row child-bg" style="vertical-align: middle;">
+                                                        <td class="column-quote_ref-body" style="">
+                                                            {{ $item['data']?->productCode }}
+                                                        </td>
+                                                        <td class="column-speed-body">
+                                                            {{ formatBytes($item['data']?->speed) }}
+                                                        </td>
+                                                        <td class="column-bearer-body">
+                                                            {{ formatBytes($item['data']?->bearer) }}
+                                                        </td>
+                                                        <td class="column-price_plan-body">
+                                                            {{ $item['price_plan']?->name }}
+                                                        </td>
+                                                        <td class="column-contract_length-body">
+                                                            {{ $item['contract_length'] > 1 ? $item['contract_length'] : '' }}
+                                                        </td>
+                                                        <td class="column-quantity-body">
+                                                            {{ $item['quantity'] }}
+                                                        </td>
+                                                        <td class="column-price-body">
+                                                            £{{ number_format($item['price'], 2) }}
+                                                        </td>
+                                                        <td class="column-total-body">
+                                                            £{{ number_format($item['total'], 2) }}
+                                                        </td>
+                                                    </tr>
+                                                @endforeach
+                                            @else
+                                                <tr class="item-row child-bg" style="vertical-align: middle;">
+                                                    <td class="column-quote_ref-body">
+                                                        {{ $group['data']?->productCode }}
+                                                    </td>
+                                                    <td class="column-speed-body">
+                                                        {{ formatBytes($group['data']?->speed) }}
+                                                    </td>
+                                                    <td class="column-bearer-body">
+                                                        {{ formatBytes($group['data']?->bearer) }}
+                                                    </td>
+                                                    <td class="column-price_plan-body">
+                                                        {{ $group['price_plan']?->name }}
+                                                    </td>
+                                                    <td class="column-contract_length-body">
+                                                        {{ $group['contract_length'] > 1 ? $group['contract_length'] : '' }}
+                                                    </td>
+                                                    <td class="column-quantity-body">
+                                                        {{ $group['quantity'] }}
+                                                    </td>
+                                                    <td class="column-price-body">
+                                                        £{{ number_format($group['price'], 2) }}
+                                                    </td>
+                                                    <td class="column-total-body">
+                                                        £{{ number_format($group['total'], 2) }}
+                                                    </td>
+                                                </tr>
                                             @endif
-                                            <td class="column-name-body">
-                                                {{ $item['name'] }}
-                                                @if (isset($item['data']->additionalInfo->{'Primary Router Model'}))
-                                                    <span
-                                                        class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm router-model">
-                                                        <i class="fa-solid fa-plug"></i>
-                                                        {{ $item['data']->additionalInfo->{'Primary Router Model'} }}
-                                                    </span>
-                                                @endif
-                                                @if (isset($item['data']->isContended) and $item['data']->isContended)
-                                                    <span
-                                                        class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm is-contended"
-                                                        data-bs-toggle="tooltip" data-bs-placement="top"
-                                                        title="Contended" v-tooltip>
-                                                        <i class="fa-solid fa-network-wired"></i>
-                                                    </span>
-                                                @endif
-                                            </td>
-                                            <td class="column-price_plan-body">
-                                                {{ $item['price_plan']?->name }}
-                                            </td>
-                                            <td class="column-contract_length-body">
-                                                {{ $item['contract_length'] }}
-                                            </td>
-                                            @if ($isConnectivity)
-                                                <td class="column-speed-body">
-                                                    {{ formatBytes($item['data']?->speed) }}
-                                                </td>
-                                                <td class="column-bearer-body">
-                                                    {{ formatBytes($item['data']?->bearer) }}
-                                                </td>
+                                        @else
+                                            <tr class="item-row" style="vertical-align: middle;">
                                                 <td class="column-quote_ref-body">
-                                                    {{ $item['data']?->productCode }}
+                                                    {{ $group['name'] }}
+                                                    @if (isset($group['data']->additionalInfo->{'Primary Router Model'}))
+                                                        <span
+                                                            class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm router-model">
+                                                            <i class="fa-solid fa-plug"></i>
+                                                            {{ $group['data']->additionalInfo->{'Primary Router Model'} }}
+                                                        </span>
+                                                    @endif
+                                                    @if (isset($group['data']->isContended) and $group['data']->isContended)
+                                                        <span
+                                                            class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm is-contended"
+                                                            data-bs-toggle="tooltip" data-bs-placement="top"
+                                                            title="Contended" v-tooltip>
+                                                            <i class="fa-solid fa-network-wired"></i>
+                                                        </span>
+                                                    @endif
                                                 </td>
-                                            @endif
-                                            <td class="column-quantity-body">
-                                                {{ $item['quantity'] }}
-                                            </td>
-                                            <td class="column-price-body">
-                                                £{{ number_format($item['price'], 2) }}
-                                            </td>
-                                            <td class="column-total-body">
-                                                £{{ number_format($item['total'], 2) }}
-                                            </td>
-                                        </tr>
+                                                <td class="column-price_plan-body">
+                                                    {{ $group['price_plan']?->name }}
+                                                </td>
+                                                <td class="column-contract_length-body">
+                                                    {{ $group['contract_length'] > 1 ? $group['contract_length'] : '' }}
+                                                </td>
+                                                <td class="column-quantity-body">
+                                                    {{ $group['quantity'] }}
+                                                </td>
+                                                <td class="column-price-body">
+                                                    £{{ number_format($group['price'], 2) }}
+                                                </td>
+                                                <td class="column-total-body">
+                                                    £{{ number_format($group['total'], 2) }}
+                                                </td>
+                                            </tr>
+                                        @endif
                                     @endforeach
                                 </tbody>
                             </table>

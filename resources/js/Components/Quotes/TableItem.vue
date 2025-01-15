@@ -126,7 +126,7 @@ emitter.on("quote-items:toggle:is-editing", () => item.value.is_editing);
     </td>
   </tr>
 </template>
-<style scoped>
+<style>
 .child-bg > td {
   background-color: whitesmoke;
 }

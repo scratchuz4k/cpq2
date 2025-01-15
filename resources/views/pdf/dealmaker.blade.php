@@ -102,7 +102,16 @@
     <link href="{{ getCss() }}" rel="stylesheet">
     <style>
         body {
-            background: none !important
+            background: none !important;
+            -webkit-print-color-adjust: exact!important;
+        }
+
+        html {
+            -webkit-print-color-adjust: exact!important;
+        }
+
+        .child-bg>td {
+            background-color: whitesmoke;
         }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
