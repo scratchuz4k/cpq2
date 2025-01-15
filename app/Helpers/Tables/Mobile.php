@@ -3,6 +3,7 @@
 return [
     "Simple" => [
         ["name" => "Name", "value" => "name", "is_group" => false],
+        ["name" => "Price Plan",  "value" => "price_plan", "is_group" => false],
         ["name" => "Months", "value" => "contract_length", "is_group" => false],
         ["name" => "Quantity", "value" => "quantity", "is_group" => false],
         ["name" => "Price", "value" => "price", "is_group" => false],

@@ -190,10 +190,7 @@ emitter.on("quote:refresh", async () => {
             </div>
           </div>
         </div>
-        <TableDealMaker
-          :pricePlans="pricePlans"
-          :preview="preview"
-        ></TableDealMaker>
+        <TableDealMaker :pricePlans="pricePlans" :preview="preview"></TableDealMaker>
 
         <div class="mb-5">
           <div>
@@ -474,3 +471,53 @@ emitter.on("quote:refresh", async () => {
     </Dialog>
   </div>
 </template>
+<style>
+/* For Chrome, Safari, Edge, Opera */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* For Firefox */
+input[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+[role="button"]:hover {
+  opacity: 0.75;
+}
+
+.reject-reasons-table tr th,
+.reject-reasons-table tr td {
+  padding: 1rem !important;
+}
+
+.form-control {
+  font-size: 0.9rem;
+  line-height: 1.5rem;
+}
+
+.commission-calculator .input-group input {
+  border-right: none;
+  background-color: #dfe3e6;
+  border-color: #bdbdbd;
+}
+
+.commission-calculator .input-group .input-group-text {
+  background-color: #dfe3e6;
+  color: #646464;
+  border-color: #bdbdbd;
+}
+
+.custom-pre {
+  font-family: inherit;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.p-dialog-header {
+  justify-content: right !important;
+}
+</style>

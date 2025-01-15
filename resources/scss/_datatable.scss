@@ -155,11 +155,11 @@
 }
 
 .column-name-header {
-    width: 30%;
+    width: 40%;
 }
 
 #table-SINGLE .column-name-header {
-    width: 40% !important;
+    width: 50% !important;
 }
 
 .column-total-header,
@@ -167,6 +167,8 @@
     font-weight: bold !important;
 }
 
+.column-price-body,
+.column-price-header,
 .column-quantity-body,
 .column-quantity-header,
 .column-contract_length-header,

@@ -15,7 +15,10 @@ const groupColumns = columns.filter((x) => x.is_group);
     <!-- Headers -->
     <thead>
       <tr>
-        <th style="width: 5%" v-if="!preview"></th>
+        <th
+          style="width: 5%"
+          v-if="!preview && quote.items.find((e) => !!e.children.length)"
+        ></th>
         <template v-for="column in columns">
           <th
             :class="[`column-${column.value}-header`]"
@@ -57,7 +60,7 @@ const groupColumns = columns.filter((x) => x.is_group);
           :columns="columns"
           :groupColumns="groupColumns"
           :index="index"
-          :showToggle="true"
+          :showToggle="false"
           :preview="preview"
           code="Simple"
         >
