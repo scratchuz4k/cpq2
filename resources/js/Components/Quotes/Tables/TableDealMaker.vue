@@ -20,7 +20,7 @@ const newLine = reactive({
   show: false,
   name: null,
   discount: 0,
-  quantity: 0,
+  quantity: 1,
   price: 0,
   contract_length: 1,
   price_plan_code: null,
@@ -38,6 +38,7 @@ const saveNewLine = async (item) => {
       margin: 0,
       quantity: 0,
       price: 0,
+      discount: 0,
     });
   } catch (ex) {
     notyf.error(ex.response.data.message);
@@ -62,6 +63,15 @@ const filterColumns = (columns, code) => {
   }
   return columns;
 };
+
+const editableColumns = (columns, code) => {
+  let temp = filterColumns(columns, code);
+  let editable = ["name", "price", "discount", "contract_length", "quantity"];
+  temp.forEach((e) => {
+    e.is_editable = editable.includes(e.value);
+  });
+  return temp;
+};
 </script>
 <template>
   <div class="mb-5" v-for="pricePlan in pricePlans">
@@ -74,7 +84,10 @@ const filterColumns = (columns, code) => {
     <table :id="'table-' + pricePlan.code" class="table-dealmaker table table-bordered">
       <thead>
         <tr>
-          <th v-for="column in filterColumns(columns, pricePlan.code)" :class="[`column-${column.value}-header`]">
+          <th
+            v-for="column in filterColumns(columns, pricePlan.code)"
+            :class="[`column-${column.value}-header`]"
+          >
             {{ column.name }}
           </th>
           <th style="width: 60px" class="text-center" v-if="!preview"></th>
@@ -99,55 +112,21 @@ const filterColumns = (columns, code) => {
       </tbody>
       <tfoot v-if="!preview">
         <tr v-if="newLine.show && newLine.price_plan_code == pricePlan.code">
-          <th>
+          <th v-for="column in editableColumns(columns, pricePlan.code)">
             <input
+              v-if="column.is_editable"
               :id="'input-new-' + pricePlanskeys[pricePlan.code] + '-name'"
               class="form-control p-0 px-1"
               type="text"
-              v-model="newLine.name"
+              v-model="newLine[column.value]"
             />
           </th>
-          <th class="text-center">
-            <input
-              v-if="newLine.price_plan_code == 'MONTHLY'"
-              :id="'input-new-' + pricePlanskeys[pricePlan.code] + '-contract_length'"
-              class="form-control text-center p-0 px-1"
-              type="number"
-              v-model="newLine.contract_length"
-            />
-          </th>
-          <th class="text-center">
-            <input
-              :id="'input-new-' + pricePlanskeys[pricePlan.code] + '-qty'"
-              class="form-control text-center p-0 px-1"
-              type="number"
-              v-model="newLine.quantity"
-            />
-          </th>
-          <th>
-            <input
-              :id="'input-new-' + pricePlanskeys[pricePlan.code] + '-price'"
-              class="form-control text-center p-0 px-1"
-              type="number"
-              v-model="newLine.price"
-            />
-          </th>
-          <th></th>
-          <th class="text-center">
-            <input
-              :id="'input-new-' + pricePlanskeys[pricePlan.code] + '-discount'"
-              class="form-control text-center p-0 px-1"
-              type="number"
-              v-model="newLine.discount"
-            />
-          </th>
-          <th class="text-right"></th>
           <th class="text-right">
             <div class="d-flex justify-content-center">
               <font-awesome-icon
                 :id="'btn-new-' + pricePlanskeys[pricePlan.code] + '-cancel'"
                 role="button"
-                class="px-2 py-3 text-secondary"
+                class="px-2 py-2 text-secondary"
                 :icon="['fas', 'cancel']"
                 @click="() => (newLine.show = false)"
               />
@@ -155,7 +134,7 @@ const filterColumns = (columns, code) => {
                 :id="'btn-new-' + pricePlanskeys[pricePlan.code] + '-add'"
                 :icon="['fas', 'save']"
                 role="button"
-                class="px-2 py-3 text-primary"
+                class="px-2 py-2 text-primary"
                 @click="saveNewLine(newLine)"
               />
             </div>

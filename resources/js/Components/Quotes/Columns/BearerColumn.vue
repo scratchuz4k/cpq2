@@ -10,9 +10,9 @@ defineProps({
 const item = defineModel()
 </script>
 <template>
-    <p class="small" v-if="!isGroup"> {{ format.bytes(item.data?.bearer) }}</p>
+    <p class="small" v-if="!isGroup"> {{ format.speed(item.data?.bearer) }}</p>
     <p v-else class="badge border border-secondary" v-tooltip data-bs-toggle="tooltip" data-bs-placement="top" :title="column.name">
         <font-awesome-icon :icon="['fas', 'tower-cell']"></font-awesome-icon> {{
-            format.bytes(item.data?.bearer) }}
+            format.speed(item.data?.bearer) }}
     </p>
 </template>

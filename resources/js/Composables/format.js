@@ -30,24 +30,25 @@ const format = {
         return dt.toISOString().slice(0, 16).replace('T', ' '); // Y-m-d H:i format
     },
 
-    bytes: (value) => {
-        let number = value;
+    speed: (value) => {
+        let temp = value ?? 0;
+        let number = temp;
         let suffix = "Mb";
         let rounding = 10;
 
-        if (value < 1000) {
-            number = value;
-        } else if (value < 10000) {
-            number = value / 1000;
+        if (temp < 1000) {
+            number = temp;
+        } else if (temp < 10000) {
+            number = temp / 1000;
             suffix = "Gb";
             rounding = 1;
         } else {
-            number = value / 1000;
+            number = temp / 1000;
             suffix = "Gb";
             rounding = 1;
         }
 
-        let result = //TODO: remove round if value < 1000
+        let result = //TODO: remove round if temp < 1000
             parseInt(Math.ceil(number / rounding) * rounding) +
             " " +
             suffix;

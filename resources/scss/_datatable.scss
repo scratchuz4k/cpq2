@@ -6,10 +6,6 @@
         }
     }
 
-    tr th,
-    td {
-        padding: 0.2rem 0.2rem;
-    }
 }
 
 .table-dealmaker thead {
@@ -25,6 +21,11 @@
         cursor: pointer;
         font-weight: normal;
         border: none;
+        font-weight: bold;
+    }
+
+    tr th {
+        padding: 0.5rem 0.2rem;
     }
 
     thead th:hover {
@@ -33,14 +34,6 @@
 
     thead th.sorted {
         background: var(--color-purple-light);
-    }
-
-    td {
-        position: relative;
-        font-size: 14px;
-        font-weight: 500;
-        vertical-align: middle;
-        border: none;
     }
 
     @media (max-width: 1200px) {
@@ -92,9 +85,12 @@
 }
 
 .table-dealmaker {
-
     th,
     td {
+        padding: 0.2rem 0.2rem!important;
+        position: relative;
+        font-size: 14px;
+        vertical-align: middle;
         border: none;
     }
 
@@ -170,13 +166,15 @@
 .column-total-body {
     font-weight: bold !important;
 }
+
 .column-quantity-body,
 .column-quantity-header,
 .column-contract_length-header,
-.column-contract_length-body{
+.column-contract_length-body {
     width: 10% !important;
     text-align: center;
 }
+
 .column-discount-body,
 .column-discount-header {
     width: 8% !important;

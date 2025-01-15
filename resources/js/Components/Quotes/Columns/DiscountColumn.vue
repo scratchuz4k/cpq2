@@ -12,7 +12,7 @@ const item = defineModel()
 <template>
     <div v-if="!isGroup">
         <p class="small" v-if="!item.is_editing" :id="code + '-discount-' + index">
-            {{ item[column.value] }} %
+            {{ GBP.format(item[column.value] ) }}
         </p>
         <input v-else :id="'input-' + code + '-' + index + '-discount'" class="form-control text-center p-0 px-1"
             type="number" v-model="temp.discount" min="0">

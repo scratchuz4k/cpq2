@@ -213,14 +213,6 @@ const setAltImg = (event) => {
     event.target.src = '/images/no_image.png'
 }
 
-const bytesFormatter = (value) => {
-    let temp = Math.ceil(value)
-    if ((temp / 1000) >= 1) {
-        return Math.ceil((temp / 1000)) + " Gb"
-    }
-    return temp + " Mb"
-}
-
 const sort = reactive({
     field: "priceMonthly",
     order: "asc"
@@ -671,8 +663,8 @@ getArticles(false, true)
                                         :title="article.connectivitySupplierName"
                                         :data-bs-original-title="article.connectivitySupplierName" v-tooltip />
                                 </td>
-                                <td>{{ bytesFormatter(article.bearer) }} </td>
-                                <td>{{ bytesFormatter(article.speed) }} </td>
+                                <td>{{ format.speed(article.bearer) }} </td>
+                                <td>{{ format.speed(article.speed) }} </td>
                                 <td :id="'line-' + index + '-price-install'">{{ GBP.format(article.priceInstall_spa) }}
                                 </td>
                                 <td :id="'line-' + index + '-price-monthly'">{{ GBP.format(article.priceMonthly_spa) }}
