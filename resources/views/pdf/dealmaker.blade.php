@@ -100,6 +100,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Quote #{{ $quote['id'] }}</title>
     <link href="{{ getCss() }}" rel="stylesheet">
+    <style>
+        body{
+            background: none!important
+        }
+    </style>
 </head>
 
 <body>
