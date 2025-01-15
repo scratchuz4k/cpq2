@@ -38,7 +38,7 @@ class CloudMarketRepository
                 if (!array_key_exists($key, $product)) {
                     continue;
                 }
-                $product[$key . '_spa'] = $priceRules->apply($product[$key]);
+                $product[$key . '_spa'] = $priceRules->apply($product[$key] ?? 0);
             }
 
             $product['active_spas'] = $priceRules->getAppliedSpas();
