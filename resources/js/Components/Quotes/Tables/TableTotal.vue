@@ -66,7 +66,7 @@ const quoteTotal = (price_plan, column = "total") => {
           {{ GBP.format(quote.total) }}
         </td>
         <td id="total_vat">
-          {{ GBP.format(quote.total_vat) }}
+          {{ GBP.format(quote.total_vat ?? 0) }}
         </td>
         <td id="total_gross">
           {{ GBP.format(quote.total_gross) }}

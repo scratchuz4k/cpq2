@@ -387,7 +387,7 @@
                                         £{{ number_format($quote['total'], 2) }}
                                     </td>
                                     <td id="total_vat">
-                                        £{{ number_format($quote['total_tax'], 2) }}
+                                        £{{ number_format($quote['total_tax'] ?? 0, 2) }}
                                     </td>
                                     <td id="total_gross">
                                         £{{ number_format($quote['total_gross'], 2) }}
