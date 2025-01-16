@@ -46,3 +46,27 @@ if (! function_exists('get_order_status')) {
         return 'CONFIGURE';
     }
 }
+
+
+
+if (! function_exists('resolve_request')) {
+    function resolve_request($context, $entity, $method)
+    {
+        switch ($method) {
+            case 'index':
+                return $context->get($entity);
+            case 'show':
+                return $context->get("$entity/1");
+            case 'create':
+                return $context->get("$entity/create");
+            case 'store':
+                return $context->post("$entity", []);
+            case 'edit':
+                return $context->get("$entity/1/edit");
+            case 'update':
+                return $context->put("$entity/1", []);
+            case 'destroy':
+                return $context->delete("$entity/1");
+        }
+    }
+}
