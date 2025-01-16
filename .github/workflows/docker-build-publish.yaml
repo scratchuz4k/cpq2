@@ -1,8 +1,8 @@
 name: Docker Build & Publish
 
 on:
-    pull_request:
-      types: [opened, synchronize]
+  pull_request:
+    types: [opened, synchronize]
 
 env:
   REGISTRY: ghcr.io
@@ -43,6 +43,10 @@ jobs:
           echo "VIRTUAL1_ADDRESS_USERNAME=${{ secrets.VIRTUAL1_ADDRESS_USERNAME }}" >> .env
           echo "VITE_GOOGLE_MAPS_API_KEY=${{ secrets.VITE_GOOGLE_MAPS_API_KEY }}" >> .env
 
+      - name: Generate App Key
+        run: |
+          php artisan key:generate
+
       - name: Create Database
         run: |
           sudo systemctl start mysql
@@ -58,7 +62,6 @@ jobs:
 
       - name: Prepare Laravel DB
         run: |
-          php artisan key:generate
           php artisan migrate:fresh --seed
           php artisan db:seed CategoryProductsSeeder
 
