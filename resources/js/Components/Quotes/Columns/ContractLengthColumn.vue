@@ -12,7 +12,7 @@ const item = defineModel();
 <template>
   <template v-if="!isGroup">
     <p class="small" v-if="!item.is_editing">
-      {{ item[column.value] > 1 ? item[column.value] : "" }}
+      {{ item.price_plan.code == "MONTHLY" ? item[column.value] : "" }}
     </p>
     <input
       v-else-if="item.price_plan.code == 'MONTHLY'"

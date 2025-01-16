@@ -1,5 +1,5 @@
 <script setup>
-defineProps({
+const props = defineProps({
   code: String,
   column: Object,
   isGroup: Boolean,
@@ -7,28 +7,28 @@ defineProps({
   index: Number,
 });
 const item = defineModel();
+const render = () => {
+  return "Overall Cost: " + GBP.format(item.value[props.column.value]);
+};
 </script>
 <template>
   <template v-if="!isGroup">
     <p
-      v-if="item.quantity * item.price == item[column.value]"
+      v-if="item.quantity * item.price == item[column.value] || preview"
       :id="'total-' + index"
       class="small column_total"
     >
       {{ GBP.format(item.quantity * item.price) }}
     </p>
 
-    <p
+    <div
       v-else
       v-if="item.quantity * item.price != item[column.value]"
       :id="'total-' + index"
-      v-tooltip
-      data-bs-toggle="tooltip"
-      data-bs-placement="bottom"
-      :title="'Overall Cost: ' + GBP.format(item[column.value])"
-      class="small column_total"
+      class="small column_total cpq-tooltip"
     >
       {{ GBP.format(item.quantity * item.price) }}
-    </p>
+      <span class="cpq-tooltip-text">{{ render() }}</span>
+    </div>
   </template>
 </template>

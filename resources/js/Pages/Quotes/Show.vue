@@ -36,7 +36,6 @@ let view =
 
 <style >
 .form-control {
-  text-align: center;
   font-size: 0.9rem;
   line-height: 1.5rem;
 }

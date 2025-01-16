@@ -1021,3 +1021,33 @@ body {
     --button-primary-background: var(--color-purple);
     --button-primary-hover-background: var(--color-purple-dark);
 }
+
+.cpq-tooltip {
+    position: relative;
+    display: inline-block;
+    border-bottom: 1px dotted black;
+    cursor: pointer;
+}
+
+/* Tooltip text */
+.cpq-tooltip .cpq-tooltip-text {
+    visibility: hidden;
+    width: 120px;
+    background-color: #555;
+    color: #fff;
+    text-align: center;
+    padding: 5px 0;
+    border-radius: 6px;
+    position: absolute;
+    z-index: 1;
+    bottom: 125%;
+    left: 50%;
+    transform: translateX(-50%);
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.cpq-tooltip:hover .cpq-tooltip-text {
+    visibility: visible;
+    opacity: 1;
+}

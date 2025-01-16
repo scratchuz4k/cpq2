@@ -100,10 +100,10 @@
         html {
             -webkit-print-color-adjust: exact;
         }
+
         .child-bg>td {
             background-color: whitesmoke;
         }
-
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
         integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
@@ -235,7 +235,7 @@
                                                             {{ $item['price_plan']?->name }}
                                                         </td>
                                                         <td class="column-contract_length-body">
-                                                            {{ $item['contract_length'] > 1 ? $item['contract_length'] : '' }}
+                                                            {{ $item['price_plan']['code'] == 'MONTHLY' ? $item['contract_length'] : '' }}
                                                         </td>
                                                         <td class="column-quantity-body">
                                                             {{ $item['quantity'] }}

@@ -115,7 +115,7 @@ const editableColumns = (columns, code) => {
               v-if="column.is_editable"
               :id="'input-new-' + pricePlanskeys[pricePlan.code] + '-' + column.value"
               class="form-control p-0 px-1"
-              :class="[column.value == 'name' ? 'text-start' : '']"
+              :class="[column.value != 'name' ? 'text-center' : '']"
               type="text"
               v-model="newLine[column.value]"
             />

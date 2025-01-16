@@ -508,8 +508,4 @@ input[type="number"] {
   white-space: pre-wrap;
   word-wrap: break-word;
 }
-
-.p-dialog-header {
-  justify-content: right !important;
-}
 </style>

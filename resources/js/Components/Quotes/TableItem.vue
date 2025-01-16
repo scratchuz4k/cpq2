@@ -60,7 +60,7 @@ const cancel = (p) => {
   p.is_editing = !p.is_editing;
 };
 
-emitter.on("quote-items:toggle:is-editing", () => item.value.is_editing);
+emitter.on("quote-items:toggle:is-editing", () => item.value.is_editing = false);
 </script>
 <template>
   <tr
