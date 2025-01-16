@@ -1,5 +1,4 @@
 <script setup>
-import { ref } from "vue";
 import { updateQuoteItem, removeQuoteItem, temp } from "@composables/useQuoteItem";
 import { getQuote, quote } from "@/Composables/useQuote";
 

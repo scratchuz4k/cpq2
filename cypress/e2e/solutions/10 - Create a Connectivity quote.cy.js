@@ -53,27 +53,27 @@ describe('Creates a Connectivity quote', () => {
 
         //Save quote
         cy.get('.continue-btn').eq(0).click()
-        cy.get('.Recurring-item').its('length').should('eq', 5);
-        cy.get('.One-Off-item').its('length').should('eq', 5);
+        cy.get('.recurring-item').its('length').should('eq', 5);
+        cy.get('.one_off-item').its('length').should('eq', 5);
     })
     it("I can add a Custom Line and check quoted items", () => {
         cy.visit("/")
         cy.get("#datatable-btn-0-show").click()
-        cy.get("#btn-Recurring-add").click()
-        cy.get("#input-new-Recurring-name").type("Custom line recurring")
-        cy.get("#input-new-Recurring-qty").type(10)
-        cy.get("#input-new-Recurring-price").type(10)
-        cy.get("#input-new-Recurring-discount").type(10)
-        cy.get("#btn-new-Recurring-add").click()
-        cy.get("#table-Recurring").contains("Custom line recurring")
+        cy.get("#btn-recurring-add").click()
+        cy.get("#input-new-recurring-name").type("Custom line recurring")
+        cy.get("#input-new-recurring-quantity").type(10)
+        cy.get("#input-new-recurring-price").type(10)
+        cy.get("#input-new-recurring-discount").type(10)
+        cy.get("#btn-new-recurring-add").click()
+        cy.get("#table-recurring").contains("Custom line recurring")
 
-        cy.get("#btn-One-Off-add").click()
-        cy.get("#input-new-One-Off-name").type("Custom line one_off")
-        cy.get("#input-new-One-Off-qty").type(10)
-        cy.get("#input-new-One-Off-price").type(10)
-        cy.get("#input-new-One-Off-discount").type(10)
-        cy.get("#btn-new-One-Off-add").click()
-        cy.get("#table-One-Off").contains("Custom line one_off")
+        cy.get("#btn-one_off-add").click()
+        cy.get("#input-new-one_off-name").type("Custom line one_off")
+        cy.get("#input-new-one_off-quantity").type(10)
+        cy.get("#input-new-one_off-price").type(10)
+        cy.get("#input-new-one_off-discount").type(10)
+        cy.get("#btn-new-one_off-add").click()
+        cy.get("#table-one_off").contains("Custom line one_off")
 
         cy.get("#btn-previous").click()
         cy.get("#btn-more-filters").click()

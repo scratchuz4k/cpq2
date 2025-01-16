@@ -9,6 +9,7 @@ const groupColumns = columns.filter((x) => x.is_group);
 </script>
 <template>
   <table
+  id="table-simple"
     :class="{ 'table-hover': !preview }"
     class="table table-dealmaker table-bordered"
   >

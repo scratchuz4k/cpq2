@@ -59,8 +59,8 @@ describe("Creates a Mobile Quote", () => {
 
         cy.get("#btn-step-2-next").click()
 
-        cy.get(".Recurring-item").should("have.length", 2)
-        cy.get(".One-Off-item").then(($items) => {
+        cy.get(".recurring-item").should("have.length", 2)
+        cy.get(".one_off-item").then(($items) => {
             cy.then(() => {
                 expect(hardwareCount).to.equal($items.length);
             });
@@ -70,7 +70,7 @@ describe("Creates a Mobile Quote", () => {
         cy.visit("/")
         cy.get("#datatable-btn-0-show").click()
 
-        let items = ["Recurring", "One-Off"]
+        let items = ["recurring", "one_off"]
 
         items.forEach((key) => {
             let total = null
@@ -134,9 +134,9 @@ describe("Creates a Mobile Quote", () => {
         cy.get("body > div.swal2-container.swal2-center.swal2-backdrop-show > div > div.swal2-actions > button.swal2-confirm.btn.text-light.btn-lg.mr-2.fs-6.swal2-styled.swal2-default-outline").click()
         cy.get("#btn-reset-quote", { timeout: 3000 }).should("not.be.disabled");
 
-        cy.get(".Recurring-item").each(($el, index, $list) => {
+        cy.get(".recurring-item").each(($el, index, $list) => {
             // You can perform actions on each element here
-            cy.get(`#Recurring-discount-${index}`).invoke("text")
+            cy.get(`#recurring-discount-${index}`).invoke("text")
                 .then((text) => {
                     expect(text).to.not.equal("0 %");
                 });
@@ -145,33 +145,33 @@ describe("Creates a Mobile Quote", () => {
     it("I can add and delete a Custom Line", () => {
         cy.visit("/")
         cy.get("#datatable-btn-0-show").click()
-        cy.get("#btn-Recurring-add").click()
-        cy.get("#input-new-Recurring-name").type("Custom line recurring")
-        cy.get("#input-new-Recurring-qty").type(10)
-        cy.get("#input-new-Recurring-price").type(10)
-        cy.get("#input-new-Recurring-discount").type(10)
-        cy.get("#btn-new-Recurring-add").click()
-        cy.get("#table-Recurring").contains("Custom line recurring")
+        cy.get("#btn-recurring-add").click()
+        cy.get("#input-new-recurring-name").type("Custom line recurring")
+        cy.get("#input-new-recurring-quantity").type(10)
+        cy.get("#input-new-recurring-price").type(10)
+        cy.get("#input-new-recurring-discount").type(10)
+        cy.get("#btn-new-recurring-add").click()
+        cy.get("#table-recurring").contains("Custom line recurring")
 
-        cy.get("#btn-One-Off-add").click()
-        cy.get("#input-new-One-Off-name").type("Custom line one_off")
-        cy.get("#input-new-One-Off-qty").type(10)
-        cy.get("#input-new-One-Off-price").type(10)
-        cy.get("#input-new-One-Off-discount").type(10)
-        cy.get("#btn-new-One-Off-add").click()
-        cy.get("#table-One-Off").contains("Custom line one_off")
+        cy.get("#btn-one_off-add").click()
+        cy.get("#input-new-one_off-name").type("Custom line one_off")
+        cy.get("#input-new-one_off-quantity").type(10)
+        cy.get("#input-new-one_off-price").type(10)
+        cy.get("#input-new-one_off-discount").type(10)
+        cy.get("#btn-new-one_off-add").click()
+        cy.get("#table-one_off").contains("Custom line one_off")
 
-        cy.get(".Recurring-item")
+        cy.get(".recurring-item")
             .its("length")
             .then(count => {
-                cy.get(`#btn-Recurring-${count - 1}-remove`).click()
+                cy.get(`#btn-recurring-${count - 1}-remove`).click()
             });
 
         cy.get("body > div.swal2-container.swal2-center.swal2-backdrop-show > div > div.swal2-actions > button.swal2-confirm.btn.text-light.btn-lg.mr-2.fs-6.swal2-styled.swal2-default-outline").click()
-        cy.get(".One-Off-item")
+        cy.get(".one_off-item")
             .its("length")
             .then(count => {
-                cy.get(`#btn-One-Off-${count - 1}-remove`).click()
+                cy.get(`#btn-one_off-${count - 1}-remove`).click()
             });
         cy.get("body > div.swal2-container.swal2-center.swal2-backdrop-show > div > div.swal2-actions > button.swal2-confirm.btn.text-light.btn-lg.mr-2.fs-6.swal2-styled.swal2-default-outline").click()
     })

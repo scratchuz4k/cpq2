@@ -152,6 +152,7 @@ const checkQuantity = _.debounce(async (product, temp) => {
 
   let item = quote.items.find((x) => x.product_code == product.code);
 
+  debugger
   if (!item) {
     createQuoteItem({
       quote_id: props.modelValue.id,
@@ -173,7 +174,7 @@ const checkQuantity = _.debounce(async (product, temp) => {
   }
 
   getQuote(quote.id);
-}, 500);
+}, 200);
 
 const saveQuote = async () => {
   if (step.value == 2) {

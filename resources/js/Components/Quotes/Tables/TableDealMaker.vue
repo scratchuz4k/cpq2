@@ -75,11 +75,11 @@ const editableColumns = (columns, code) => {
       class="mobile-price-group-heading mt-3 d-flex justify-content-between align-items-center"
     >
       <h3>{{ pricePlan.name }} charges</h3>
-      <h3 id="recurring_total">
+      <h3 :id="pricePlanskeys[pricePlan.code] + '-total'">
         {{ GBP.format(quoteTotal(pricePlan.code)) }}
       </h3>
     </div>
-    <table :id="'table-' + pricePlan.code" class="table-dealmaker table table-bordered">
+    <table :id="'table-' + pricePlanskeys[pricePlan.code]" class="table-dealmaker table table-bordered">
       <thead>
         <tr>
           <th
@@ -113,7 +113,7 @@ const editableColumns = (columns, code) => {
           <th v-for="column in editableColumns(columns, pricePlan.code)">
             <input
               v-if="column.is_editable"
-              :id="'input-new-' + pricePlanskeys[pricePlan.code] + '-name'"
+              :id="'input-new-' + pricePlanskeys[pricePlan.code] + '-' + column.value"
               class="form-control p-0 px-1"
               :class="[column.value == 'name' ? 'text-start' : '']"
               type="text"

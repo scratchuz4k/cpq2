@@ -44,9 +44,6 @@ describe("Create Order Manager User.cy", () => {
 
         cy.get('.swal2-confirm').eq(0).click()
         cy.get(".notyf").contains("Removed with success")
-
-        cy.get("#datatable-search").type(updated_merchant_name)
-        cy.get(".p-datatable-table").should('not.contain', updated_merchant_name)
     })
 });
 

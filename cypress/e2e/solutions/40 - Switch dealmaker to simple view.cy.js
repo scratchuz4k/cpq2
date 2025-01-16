@@ -1,3 +1,4 @@
+const { isSymbol } = require("lodash");
 const { getCurrentDate, generateHash } = require("../../support/utils.js");
 
 describe("Creates a Mobile Quote", () => {
@@ -10,6 +11,7 @@ describe("Creates a Mobile Quote", () => {
         cy.visit("/")
         cy.get("#my-account").click()
         cy.get("#link-apis").click()
+        cy.get("#datatable-search").type("Connectivity - Ethernet")
         cy.get("#datatable-btn-0-edit").click()
         cy.get("#1-1").click()
         cy.get("#solution_type-component").click()
@@ -21,7 +23,8 @@ describe("Creates a Mobile Quote", () => {
         cy.get("#btn-save-solution-type").click()
         cy.get(".notyf").contains("Updated with Success")
     })
-    it("Creates Connectivity quote and checks table ", () => {
+
+    it("Creates Connectivity quote and has simple Table", () => {
         cy.visit("/")
         cy.get("#create-tab").click()
         cy.get("#account_id").select(1)
@@ -55,12 +58,46 @@ describe("Creates a Mobile Quote", () => {
         //Save quote
         cy.get('.continue-btn').eq(0).click()
         cy.get('.Simple-item').its('length').should('eq', 6);
-        cy.get("#app > main > div > div.row.mb-4 > div > table > thead").contains("Price Plan")
-        cy.get("#app > main > div > div.row.mb-4 > div > table > thead").contains("Contract Length")
-        cy.get("#app > main > div > div.row.mb-4 > div > table > thead").contains("Price")
-        cy.get("#app > main > div > div.row.mb-4 > div > table > thead").contains("Margin")
-        cy.get("#app > main > div > div.row.mb-4 > div > table > thead").contains("Discount")
-        cy.get("#app > main > div > div.row.mb-4 > div > table > thead").contains("Total")
+        cy.get("#table-simple > thead").contains("Quote Reference")
+        cy.get("#table-simple > thead").contains("Speed")
+        cy.get("#table-simple > thead").contains("Bearer")
+        cy.get("#table-simple > thead").contains("Price Plan")
+        cy.get("#table-simple > thead").contains("Months")
+        cy.get("#table-simple > thead").contains("Price")
+        cy.get("#table-simple > thead").contains("Total")
+    })
+    it("Formats connectivity table to DealMaker view", () => {
+        cy.visit("/")
+        cy.get("#my-account").click()
+        cy.get("#link-apis").click()
+        cy.get("#datatable-search").type("Connectivity - Ethernet")
+        cy.get("#datatable-btn-0-edit").click()
+        cy.get("#1-1").click()
+        cy.get("#solution_type-component").click()
+        cy.wait(500)
+        cy.get(".p-select-list-container").eq(0).within(() => {
+            cy.get(".p-select-option").eq(0).click()
+        })
+
+        cy.get("#btn-save-solution-type").click()
+        cy.get(".notyf").contains("Updated with Success")
+    })
+    it("Creates Connectivity quote and has DealMaker Table", () => {
+        cy.visit("/")
+        cy.get("#datatable-btn-0-show").click()
+
+        cy.get('.recurring-item').its('length').should('eq', 3);
+        cy.get("#table-recurring > thead").contains("Provider")
+        cy.get("#table-recurring > thead").contains("SubProvider")
+        cy.get("#table-recurring > thead").contains("Name")
+        cy.get("#table-recurring > thead").contains("Months")
+        cy.get("#table-recurring > thead").contains("Speed")
+        cy.get("#table-recurring > thead").contains("Bearer")
+        cy.get("#table-recurring > thead").contains("Quantity")
+        cy.get("#table-recurring > thead").contains("Price")
+        cy.get("#table-recurring > thead").contains("Margin")
+        cy.get("#table-recurring > thead").contains("Discount")
+        cy.get("#table-recurring > thead").contains("Total")
     })
 
 });

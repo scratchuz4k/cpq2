@@ -174,7 +174,7 @@
                                 <h3 id="recurring_total">
                                     £{{ number_format(quoteTotal('MONTHLY', 'total', $quote['items']), 2) }}</h3>
                             </div>
-                            <table id="table-MONTHLY" class="table table-dealmaker table-bordered  ">
+                            <table id="table-recurring" class="table table-dealmaker table-bordered  ">
                                 <!-- Headers -->
                                 <thead>
                                     <tr>
@@ -268,7 +268,7 @@
                                 <h3 id="recurring_total">
                                     £{{ number_format(quoteTotal('SINGLE', 'total', $quote['items']), 2) }}</h3>
                             </div>
-                            <table id="table-SINGLE" class="table table-dealmaker table-bordered">
+                            <table id="table-one_off" class="table table-dealmaker table-bordered">
                                 <!-- Headers -->
                                 <thead>
                                     <tr>

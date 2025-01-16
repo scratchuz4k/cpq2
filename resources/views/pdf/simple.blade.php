@@ -159,7 +159,7 @@
                 <div class="row mb-4">
                     <div class="col">
                         <div class="mb-5">
-                            <table id="table-MONTHLY" class="table table-dealmaker table-bordered  ">
+                            <table id="table-recurrring" class="table table-dealmaker table-bordered  ">
                                 <!-- Headers -->
                                 <thead>
                                     <tr>
