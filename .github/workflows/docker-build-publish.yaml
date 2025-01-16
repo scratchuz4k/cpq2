@@ -58,15 +58,15 @@ jobs:
           php artisan migrate:fresh --seed
           php artisan db:seed CategoryProductsSeeder
 
-      - name: Laravel Tests and sqlite
-        run: |
-          touch database/database.sqlite
-          php artisan test
-
       - name: Install Node Dependencies
         run: |
           npm install
           npm run build
+
+      - name: Laravel Tests and sqlite
+        run: |
+          touch database/database.sqlite
+          php artisan test
 
       - name: Run Laravel Server
         run: php artisan serve --host=0.0.0.0 --port=8000 &
