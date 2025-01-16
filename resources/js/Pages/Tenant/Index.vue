@@ -169,7 +169,7 @@ emitter.on('remove-file', (params) => {
                                             <h4>Import Logo for {{ tenant.name }}</h4>
                                             <p>The file to upload must be a .png</p>
                                             <form @submit.prevent="submitLogoForm" enctype="multipart/form-data">
-                                                <InputResource v-model="tenant.logo_id" :resource="tenant.logo" :showLikeLine="false" :acceptedFiles="['image/jpeg', 'image/png', 'image/gif', ]" :resource_type="'logo_id'"></InputResource>
+                                                <InputResource v-model="tenant.logo_id" :resource="tenant.logo" :showLikeLine="false" :acceptedFiles="['image/jpeg', 'image/png', 'image/gif', ]" @change="submitLogoForm"></InputResource>
                                             </form>
                                         </div>
                                     </div>
