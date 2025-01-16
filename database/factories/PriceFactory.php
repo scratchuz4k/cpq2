@@ -29,7 +29,6 @@ class PriceFactory extends Factory
             "net" => $net,
             "tax" => $tax,
             "gross" => $gross,
-            "price_plan_id" => 1,
         ];
     }
 }
