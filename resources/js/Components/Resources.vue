@@ -6,25 +6,41 @@
         </template>
         <dropzone @resource:created="getImages"></dropzone>
         <h5 class="mb-4 text-center">Only {{ Object.values(extensions).join(', ')}} files can be selected</h5>
-        <div class="row row-cols-6 gap-3 mb-3">
-            <Card v-for="image in images" :class="[image == selectedItem ? 'selected' : '', 'd-flex', 'justify-center']" style="overflow:hidden">
-                <template #header>
-                    <div class="d-flex justify-content-center w-100">
-                        <img alt="user header" :src="image.mime_type === 'text/xml' ? '/images/xml_icon.svg' : image.route"
-                             style="height: 8rem;object-fit: cover;object-position: center;" />
-                    </div>
-                </template>
-                <template #footer>
-                    <div class="flex justify-end">
-                        <Button label="Select" :severity="image == selectedItem ? '' : 'secondary'"
-                                @click="selectItem(image)" />
-                    </div>
-                </template>
-            </Card>
+        <div class="row row-cols-6 mb-3">
+            <div v-for="image in images" class="col mb-4">
+                <Card :class="[image == selectedItem ? 'selected' : '', 'd-flex', 'justify-center', 'file-card', 'h-100']" style="overflow:hidden"
+                      :pt="{
+                    body: {class: 'justify-content-between h-100'}
+                }"
+                >
+                    <template #header>
+                        <div class="d-flex justify-content-center w-100">
+                            <img alt="user header" :src="image.mime_type === 'text/xml' ? '/images/xml_icon.svg' : image.route"
+                                 style="max-height: 100%;max-width: 100%;object-fit: cover;object-position: center;" />
+                        </div>
+                    </template>
+                    <template #title>
+                        <div class="d-flex justify-content-center w-100">
+                            <h5 class="mb-4 text-center">
+                                {{ image.title }}
+                            </h5>
+                        </div>
+                    </template>
+                    <template #footer>
+                        <div class="d-flex justify-content-between">
+                            <Button label="Select" :severity="image == selectedItem ? '' : 'secondary'" class="btn input-file-save btn-primary"
+                                    @click="selectItem(image)" />
+                            <Button @click="remove(image)" class="d-inline-block btn-secondary">
+                                <font-awesome-icon icon="fas fa-trash-alt" />
+                            </Button>
+                        </div>
+                    </template>
+                </Card>
+            </div>
         </div>
         <div class="d-flex justify-end">
-            <Button label="Close" class="me-2" @click="() => showModal = !showModal" />
-            <Button label="Save" severity="success" @click="() => saveItem()" />
+            <Button label="Close" class="btn btn-secondary close-modal me-2" @click="() => showModal = !showModal" />
+            <Button label="Save" class="btn btn-primary" severity="success" @click="() => saveItem()" />
         </div>
     </Dialog>
 </template>
@@ -34,7 +50,9 @@ import queryString from 'query-string';
 import Button from 'primevue/button';
 import Card from 'primevue/card';
 import Dialog from "primevue/dialog";
-import { onMounted, ref } from 'vue';
+import {onMounted, ref} from 'vue';
+import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
+import axios from "axios";
 
 const page = usePage()
 
@@ -44,8 +62,8 @@ let selectedItem = ref(null)
 const images = ref([])
 const global = ref('')
 const acceptedFiles = ref([])
-
 const extensions = ref('')
+const resource_type = ref('')
 
 const getImages = async () => {
     images.value = []
@@ -71,6 +89,28 @@ const selectItem = (item) => {
     selectedItem.value = item
 }
 
+const remove = async (item) => {
+    swal.fire({
+        title: 'Are you sure?',
+        customClass: {
+            container: 'deleteFileConfirm'
+        }
+    }).then(async (result) => {
+        if (['cancel', 'backdrop'].includes(result.dismiss)) {
+            return
+        }
+        try {
+            let res = await axios.delete('/api/resources/' +  item.id)
+            getImages()
+            notyf.success('Removed with success');
+            return
+        } catch (err) {
+            notyf.error(err?.response?.data?.message ?? 'Something went wrong')
+        }
+
+    })
+}
+
 const saveItem = () => {
     showModal.value = !showModal.value
     emitter.emit(event.value, selectedItem.value);
@@ -80,6 +120,7 @@ emitter.on("resources:open", (params) => {
     acceptedFiles.value = params.acceptedFiles
     event.value = params.event
     showModal.value = true
+    resource_type.value = params.resource_type
     getImages()
 });
 

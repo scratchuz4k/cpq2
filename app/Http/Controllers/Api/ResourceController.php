@@ -9,6 +9,7 @@ use App\Helpers\DataProvider;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Storage;
 
 class ResourceController extends Controller
 {
@@ -52,15 +53,15 @@ class ResourceController extends Controller
                         'mime_type' => $key->getClientMimeType(),
                         'route' => $path,
                         'size' => $key->getSize(),
-                        'user_id' => auth()->id(),
+                        'tenant_id' => auth()->user()->tenant_id
                     ]);
                 }
             }
         } catch (\Exception $e) {
-            return response(['message' => 'Ocorreu um erro ao carregar o recurso!', 'error' => true], 500);
+            return response(['message' => 'An error occurred while uploading the resource.!', 'error' => true], 500);
         }
 
-        return response(['file' => $newFile, 'message' => 'Recurso carregado com sucesso!', 'error' => false], 200);
+        return response(['file' => $newFile, 'message' => 'Resource uploaded successfully!', 'error' => false], 200);
     }
 
     /**
@@ -92,6 +93,9 @@ class ResourceController extends Controller
      */
     public function destroy(Resource $resource)
     {
-        //
+        $resource->delete();
+        if (Storage::disk('public')->exists($resource->getRouteValue())) {
+            Storage::disk('public')->delete($resource->getRouteValue());
+        }
     }
 }

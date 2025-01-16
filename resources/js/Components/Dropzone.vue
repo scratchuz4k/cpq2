@@ -25,7 +25,7 @@ onMounted(() => {
                  .querySelector('meta[name="csrf-token"]')
                  .getAttribute("content"),
              },
-         dictDefaultMessage: "Clique ou arraste para carregar um ficheiro",
+         dictDefaultMessage: "Click or drag to upload a file",
          init: function () { },
          success: (res, data) => onUpload(data),
          error: (res, data) => onError(data)

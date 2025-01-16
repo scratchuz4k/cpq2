@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Models\Scopes\TenantScope;
+use App\Trait\SetTenantId;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
@@ -9,6 +11,8 @@ use Illuminate\Support\Facades\Storage;
 
 class Resource extends Model
 {
+    use SetTenantId;
+
     protected $fillable = [
         'title',
         'route',
@@ -21,6 +25,10 @@ class Resource extends Model
 
     protected $appends = ['full_route'];
 
+    protected static function booted(): void
+    {
+        static::addGlobalScope(new TenantScope());
+    }
     public function toArray()
     {
         $array = parent::toArray();
@@ -41,9 +49,14 @@ class Resource extends Model
         return $this->getContent();
     }
 
+    public function setFileContentAttribute()
+    {
+        return $this->getContent();
+    }
+
     public function getRouteAttribute(): string
     {
-        return asset('storage/' . $this->attributes['route']);
+        return 'storage/' . $this->attributes['route'];
     }
 
     public function getFullRouteAttribute(): string

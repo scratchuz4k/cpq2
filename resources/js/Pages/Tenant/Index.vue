@@ -1,22 +1,20 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import Tabs from "@/Components/Tabs.vue";
-import Tab from "@/Components/Tab.vue";
 import {Head, router} from "@inertiajs/vue3";
-import {ref} from 'vue';
+import {reactive, ref} from 'vue';
 import Button from "primevue/button";
 
-defineProps({
+const props = defineProps({
     isSuperAdmin: Boolean,
-    tenants: Array
+    tenant: Object
 })
 
-const isLoading =ref(false)
-const onFileChange = (event, tenant) => {
-    tenant.temp_file = event.target.files[0];
-};
+const isLoading = ref(false)
+const event = ref(null)
+const tenant = reactive(props.tenant)
+const item = ref(null)
 
-const submitFileForm = (tenant) => {
+const submitFileForm = () => {
     isLoading.value = true
     if (!tenant.sso_id) {
         notyf.error("You need to select a file")
@@ -29,7 +27,7 @@ const submitFileForm = (tenant) => {
             sso_id: tenant.sso_id
         },{
             onSuccess: (page) => {
-                notyf.success("Created with Success")
+                notyf.success("File uploaded with Success")
             },
             onError: (errors) => {
                 let string = ''
@@ -37,15 +35,11 @@ const submitFileForm = (tenant) => {
                     string += errors[key] + '<br>'
                 })
                 notyf.error(string)
-            },
-            onFinish: () => {
-                // tenant.temp_file_name = null
-                isLoading.value = false
             }
         })
 };
 
-const submitLogoForm = (tenant) => {
+const submitLogoForm = () => {
     isLoading.value = true
     if (!tenant.logo_id) {
         notyf.error("You need to select a file")
@@ -58,7 +52,7 @@ const submitLogoForm = (tenant) => {
             logo_id: tenant.logo_id
         },{
             onSuccess: (page) => {
-                notyf.success("Created with Success")
+                notyf.success("Logo uploaded with Success")
             },
             onError: (errors) => {
                 let string = ''
@@ -74,7 +68,7 @@ const submitLogoForm = (tenant) => {
         })
 };
 
-const submitTextForm = (tenant) => {
+const submitTextForm = () => {
     router.post(`/tenant/${tenant.id}`,
         {
             _method: "PUT",
@@ -97,11 +91,40 @@ const submitTextForm = (tenant) => {
     )
 }
 
+const removeFile = (resource_type) => {
+
+    router.post(`/tenant/${tenant.id}`,
+        {
+            _method: "PUT",
+            resource_type: resource_type
+        },{
+            onSuccess: () => {
+                notyf.success(`File removed successfully`)
+                isLoading.value = false
+
+            },
+            onError: (errors) => {
+                let string = ''
+                Object.keys(errors).forEach((key) => {
+                    string += errors[key] + '<br>'
+                })
+                notyf.error(string)
+                isLoading.value = false
+            }
+        }
+    )
+}
+
 const items = ref([
     { label: 'Home', url: '/' },
     { label: 'My Account', url: '/myaccount' },
     { label: 'Tenants' },
 ]);
+
+emitter.on('remove-file', (params) => {
+    removeFile(params.resource_type)
+})
+
 </script>
 
 <template>
@@ -119,68 +142,37 @@ const items = ref([
                         <div class="tab-content ps-3 w-100" id="v-pills-tabContent">
                             <div class="tab-pane fade show active" id="v-pills-sso" role="tabpanel" aria-labelledby="v-pills-sso-tab">
                                 <div class="col xml-in-tabs">
-                                    <tabs>
-                                        <tab v-for="(tenant, index) in tenants" :title="tenant.name" :selected="index == 0"
-                                             :key="tenant.id">
-                                            <br>
-                                            <h4>Import XML file for {{ tenant.name }}</h4>
-                                            <p>The file to upload must be a .xml</p>
-                                            <form @submit.prevent="submitFileForm(tenant)" enctype="multipart/form-data">
-                                                <InputResource v-model="tenant.sso_id" :resource="tenant.file" :acceptedFiles="['text/xml']"></InputResource>
-                                                <button type="submit" class="btn btn-primary mt-2" :disabled="isLoading">
-                                                    <span v-if="isLoading">
-                                                        <font-awesome-icon :icon="['fa', 'spinner']" class="fa-spin"></font-awesome-icon>
-                                                        Uploading...
-                                                    </span>
-                                                    <span v-else>
-                                                        <font-awesome-icon class="me-2" :icon="['fas', 'save']"/>
-                                                        Save
-                                                    </span>
-                                                </button>
-                                            </form>
-                                            <div class="seperator"> OR</div>
-                                            <div class="mt-4">
-                                                <h4>Input SSO configuration for {{ tenant.name }}</h4>
-                                                <p>Please provide a valid xml syntax</p>
-                                                <form @submit.prevent="submitTextForm(tenant)" enctype="multipart/form-data">
-                                                    <textarea v-if="tenant.file" v-model="tenant.file.file_content" class="w-100 p-4" rows="10"></textarea>
-                                                    <textarea v-else v-model="tenant.sso_text" class="w-100 p-4" rows="10"></textarea>
-                                                    <button type="submit" class="btn btn-primary mt-2">
-                                                        <font-awesome-icon class="me-2" :icon="['fas', 'save']"/>
-                                                        Save
-                                                    </button>
-                                                </form>
-                                            </div>
-                                        </tab>
-                                    </tabs>
+                                    <h4>Import XML file for {{ tenant.name }}</h4>
+                                    <p>The file to upload must be a .xml</p>
+                                    <form @submit.prevent="submitFileForm" enctype="multipart/form-data">
+                                        <InputResource v-model="tenant.sso_id" :resource="tenant.file" :acceptedFiles="['text/xml']" @change="submitFileForm"></InputResource>
+                                    </form>
+                                    <div class="seperator"> OR</div>
+                                    <div class="mt-4">
+                                        <h4>Input SSO configuration for {{ tenant.name }}</h4>
+                                        <p>Please provide a valid xml syntax</p>
+                                        <form @submit.prevent="submitTextForm" enctype="multipart/form-data">
+                                            <textarea v-if="tenant.file" v-model="tenant.file.file_content" class="w-100 p-4" rows="10"></textarea>
+                                            <textarea v-else v-model="tenant.sso_text" class="w-100 p-4" rows="10"></textarea>
+                                            <button type="submit" class="btn btn-primary mt-2">
+                                                <font-awesome-icon class="me-2" :icon="['fas', 'save']"/>
+                                                Save
+                                            </button>
+                                        </form>
+                                    </div>
                                 </div>
                             </div>
                             <div class="tab-pane fade" id="v-pills-logo" role="tabpanel" aria-labelledby="v-pills-logo-tab">
                                 <div class="col xml-in-tabs">
-                                    <tabs>
-                                        <tab v-for="(tenant, index) in tenants" :title="tenant.name" :selected="index == 0"
-                                             :key="tenant.id">
-                                            <div class="d-flex mt-4">
-                                                <div class="logo-form">
-                                                    <h4>Import Logo for {{ tenant.name }}</h4>
-                                                    <p>The file to upload must be a .png</p>
-                                                    <form @submit.prevent="submitLogoForm(tenant)" enctype="multipart/form-data">
-                                                        <InputResource v-model="tenant.logo_id" :resource="tenant.logo" :showLikeLine="false" :acceptedFiles="['image/jpeg', 'image/png', 'image/gif', ]"></InputResource>
-                                                        <button type="submit" class="btn btn-primary mt-2" :disabled="isLoading">
-                                                            <span v-if="isLoading">
-                                                                <font-awesome-icon :icon="['fa', 'spinner']" class="fa-spin"></font-awesome-icon>
-                                                                Uploading...
-                                                            </span>
-                                                            <span v-else>
-                                                                <font-awesome-icon class="me-2" :icon="['fas', 'save']"/>
-                                                                Save
-                                                            </span>
-                                                        </button>
-                                                    </form>
-                                                </div>
-                                            </div>
-                                        </tab>
-                                    </tabs>
+                                    <div class="d-flex mt-4">
+                                        <div class="logo-form">
+                                            <h4>Import Logo for {{ tenant.name }}</h4>
+                                            <p>The file to upload must be a .png</p>
+                                            <form @submit.prevent="submitLogoForm" enctype="multipart/form-data">
+                                                <InputResource v-model="tenant.logo_id" :resource="tenant.logo" :showLikeLine="false" :acceptedFiles="['image/jpeg', 'image/png', 'image/gif', ]" :resource_type="'logo_id'"></InputResource>
+                                            </form>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>

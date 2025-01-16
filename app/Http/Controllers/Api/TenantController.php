@@ -56,7 +56,7 @@ class TenantController extends BaseController
             }
             throw new \Exception($e);
         }
-        return $tenant->load('file');
+        return response()->json($tenant->load('file', 'logo'));
     }
 
     /**

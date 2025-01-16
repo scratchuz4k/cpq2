@@ -32,7 +32,8 @@ const results = reactive({
     accounts: []
 })
 const activeTab = ref(window.location.pathname.replace(/^\/|\/$/g, ''))
-
+const tenants = ref(page.props.auth.user.tenants)
+const currentTenant = ref(page.props.tenant)
 
 const showSearch = () => {
     if (!search.value) {
@@ -103,17 +104,27 @@ watch(search, () => {
                     <li class="nav-item d-md-none d-lg-block">
                         <a class="nav-link" href="#">BILLING</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <font-awesome-icon :icon="['far', 'building']" />
-                            {{ $page.props.tenant?.name }} ( T{{ $page.props.tenant?.id }} )
+                            {{ currentTenant.name }} (T{{ currentTenant.id }})
                         </a>
-                    </li>
 
+                        <ul class="dropdown-menu">
+                            <li v-for="tenant in tenants">
+                                <Link
+                                    :class="currentTenant.id === tenant.id && 'active'"
+                                    class="dropdown-item fw-bold"
+                                    :href="route('tenant.make-current', { tenant: tenant.id })"
+                                >
+                                    {{ tenant.name }} (T{{ tenant.id }})
+                                </Link>
+                            </li>
+                        </ul>
+                    </li>
                     <li class="nav-item">
                         <a id="my-account" class="nav-link" :href="route('myaccount')">
                             <font-awesome-icon :icon="['far', 'user']" />
-
                         </a>
                     </li>
                     <li class="nav-item">

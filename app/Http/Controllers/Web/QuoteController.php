@@ -143,7 +143,8 @@ class QuoteController extends BaseController
         return Inertia::render('Quotes/Preview', [
             'accounts' => Account::all(),
             'solution_types' => SolutionType::get(),
-            'quote' => new QuoteResource($quote->load(['items']))
+            'quote' => new QuoteResource($quote->load(['items'])),
+            'tenant' => request()->user()->currentTenant()->with('file','logo')->first()
         ]);
     }
 
@@ -151,6 +152,7 @@ class QuoteController extends BaseController
     {
         $solution_types = SolutionType::get();
         $user = request()->user();
+        $tenant = $user->currentTenant()->with('file','logo')->first();
         $dir = 'pdf/' . $user->currentTenant->id;
 
         if (!Storage::makeDirectory($dir)) {
@@ -162,7 +164,7 @@ class QuoteController extends BaseController
         $quote = QuoteResource::make($quote->load(['items']))->resolve();
 
         return pdf()
-            ->view('pdf.invoice', compact('quote', 'solution_types'))
+            ->view('pdf.invoice', compact('quote', 'solution_types', 'tenant'))
             ->name('quote-' . $quote['id'] . '.pdf')
             ->download();
     }

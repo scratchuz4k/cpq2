@@ -1,14 +1,19 @@
 <template>
     <div class="" @click="openResources()" style="cursor: pointer;">
         <p>Upload file</p>
-        <img v-if="item" :src="coverImage(item)" style="object-fit: contain;height: 150px;">
+        <div v-if="item">
+            <img :src="coverImage(item)" style="object-fit: contain;height: 150px;">
+            <h5 class="mt-2 text-start">
+                {{ item?.title }}
+            </h5>
+        </div>
         <div v-else class="d-flex justify-center my-3"
              style="height: 120px; width:120px; align-items: center;border:3px dotted grey;border-radius: 10px;">
             <font-awesome-icon class="w-100" style="font-size: 4rem" :icon="['fas', 'plus']" />
         </div>
     </div>
     <div>
-        <button v-if="item" type="button" class="btn btn-outline-primary mt-2" @click="remove">
+        <button v-if="item" type="button" class="btn btn-outline-primary mt-2" @click="remove(props.resource_type)">
             <font-awesome-icon icon="fas fa-trash-alt" />
             Remove file
         </button>
@@ -22,10 +27,11 @@ const props = defineProps({
     resource: Object,
     modelValue: Number,
     showLikeLine: Boolean,
-    acceptedFiles: Array
+    acceptedFiles: Array,
+    resource_type: String
 })
 
-const emit = defineEmits(["update:modelValue"])
+const emit = defineEmits(["update:modelValue", "change"])
 const eventFire = `resources:images:${uuid()}`
 
 const item = ref(props.resource)
@@ -46,16 +52,20 @@ const coverImage = (item) => {
         return '/images/xml_icon.svg'
     }
 }
-const remove = () => {
+const remove = (resource_type) => {
+    emitter.emit('remove-file', { resource_type: resource_type })
     item.value = null
     proxyValue.value = null
 }
+
 const openResources = () => {
-    emitter.emit("resources:open", { event: eventFire, acceptedFiles: props.acceptedFiles})
+    emitter.emit("resources:open", { event: eventFire, acceptedFiles: props.acceptedFiles, resource_type: props.resource_type })
 }
 emitter.on(eventFire, (res) => {
     item.value = res
     proxyValue.value = res.id
+
+    emit('change', item.value)
 })
 </script>
 

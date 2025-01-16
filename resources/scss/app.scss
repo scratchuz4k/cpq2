@@ -154,6 +154,33 @@ body {
         text-align: right !important;
     }
 
+    .navbar {
+        .nav-item {
+            &.dropdown{
+                .dropdown-menu {
+                    width: 100%;
+                    margin: 4px;
+                    
+                    .dropdown-item {
+                        background-color: var(--white)!important;
+                        color: var(--dark-purple)!important;
+
+                        &.active {
+                            background-color: var(--color-purple)!important;
+                            color: white!important;
+                            pointer-events: none;
+                            cursor: default;
+                        }
+                        &:hover {
+                            background-color: var(--color-purple-dark)!important;
+                            color: white!important;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     .navbar .nav-link {
         color: var(--white);
         font-weight: bold;
@@ -1049,14 +1076,14 @@ body {
 
 .p-dialog-content {
     .btn-primary {
-        background-color: var(--primary-light);
-        border-color: var(--primary-light);
+        background-color: var(--color-purple);
+        border-color: var(--color-purple);
         font-weight: bold;
     }
 
-    .btn-primary:hover {
-        background-color: var(--primary-light);
-        border-color: var(--primary-light);
+    .btn-primary:not(:disabled):hover {
+        background-color: var(--color-purple-dark);
+        border-color: var(--color-purple-dark);
     }
 
     .btn-outline-primary {
@@ -1075,8 +1102,8 @@ body {
         font-weight: bold;
     }
 
-    .btn-secondary:hover {
-        background-color: var(--secondary-dark-lighter);
+    .btn-secondary:not(:disabled):hover {
+        background-color: var(--secondary-dark);
         border-color: var(--secondary-dark);
     }
 
@@ -1108,6 +1135,9 @@ body {
     }
 }
 
+.deleteFileConfirm {
+    z-index: 1101!important;
+}
 
 .notyf-error {
     background: var(--red) !important;
@@ -1151,4 +1181,38 @@ body {
     --font-family: var(--font-primary);
     --button-primary-background: var(--color-purple);
     --button-primary-hover-background: var(--color-purple-dark);
+}
+
+.file-card {
+    .p-card-header {
+        padding: 20px;
+    }
+    .input-file-save {
+        &.p-button {
+            &.btn-primary {
+                background-color: var(--color-purple);
+                border: 0.175rem solid var(--color-purple);
+                font-weight: 600;
+
+                &:hover {
+                    background-color: var(--color-purple-dark);
+                    border-color: var(--color-purple-dark);
+                }
+
+                &.p-button-secondary {
+                    background-color: transparent;
+                    border: 0.175rem solid var(--color-purple);
+                    color: var(--color-purple);
+                    font-weight: 600;
+
+                    &:hover {
+                        border-color: var(--color-purple-dark);
+                        background-color: var(--color-purple-dark);
+                        color: var(--white);
+                    }
+                }
+            }
+        }
+    }
+
 }

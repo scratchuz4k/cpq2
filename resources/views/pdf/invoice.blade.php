@@ -146,14 +146,6 @@ $monthly_items = array_filter($quote['items'], function ($item) {
             font-size: 12px;
         }
 
-        #header img {
-            width: var(--pdf-header-logo-width);
-        }
-
-        #footer img {
-            width: var(--pdf-footer-logo-width);
-        }
-
         .w-5 {
             width: 5% !important;
         }
@@ -163,6 +155,19 @@ $monthly_items = array_filter($quote['items'], function ($item) {
         .w-20 {
             width: 20% !important;
         }
+
+        .tenant-logo{
+            display: flex;
+            flex-direction: column;
+            height: 75px;
+            width: 200px;
+        }
+        .tenant-logo>img{
+            max-height: 75px;
+            max-width: 200px;
+            object-fit: contain;
+            object-position: left;
+        }
     </style>
 </head>
 
@@ -170,8 +175,10 @@ $monthly_items = array_filter($quote['items'], function ($item) {
     <div class="container-fluid">
         <div class="row" id="header">
             <div class="col" id="header_left">
-                <img src="https://img.logoipsum.com/331.svg" alt="Sample Logo" class="img-fluid">
-                <p>Insert Tagline</p>
+                <div class="tenant-logo">
+                    <img src="{{ $tenant->logo?->route ? storage_path('app/public/images/').str_replace('storage/images/', '' , $tenant->logo?->route) : 'https://img.logoipsum.com/331.svg' }}" alt="{{ $tenant->name }}">
+                </div>
+                <p>{{ $tenant->name }}</p>
             </div>
             <div class="col text-end" id="header_right">
                 <p>{{ $quote['account']->name }}<br>{{ $quote['address_data']?->label }}</p>
@@ -422,8 +429,10 @@ $monthly_items = array_filter($quote['items'], function ($item) {
         </div>
         <div class="row mb-2" id="footer">
             <div class="col">
-                <img src="https://img.logoipsum.com/331.svg">
-                <p>Insert Tagline</p>
+                <div class="tenant-logo">
+                    <img src="{{ $tenant->logo?->route ? storage_path('app/public/images/').str_replace('storage/images/', '' , $tenant->logo?->route) : 'https://img.logoipsum.com/331.svg' }}" alt="{{ $tenant->name }}">
+                </div>
+                <p>{{ $tenant->name }}</p>
             </div>
             <div class="col text-end">
                 <p>Lorem ipsum dolor sit amet...</p>

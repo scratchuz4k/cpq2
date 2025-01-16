@@ -43,7 +43,7 @@ class DashboardController extends BaseController
     public function myAccount()
     {
         $user = request()->user();
-        $tenants =  $user->hasRole('Super Admin') ? Tenant::all() : $user->tenants;
+        $tenants =  $user->tenants;
         $permissions = $user->getAllPermissions();
         return Inertia::render('MyAccount/Index', [
             'permissions' => $permissions,
