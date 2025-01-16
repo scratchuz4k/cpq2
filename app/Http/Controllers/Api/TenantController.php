@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Http\Requests\TenantUpdateRequest;
 use App\Models\Tenant;
 use Illuminate\Http\Request;
 use App\Services\TenantService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use App\Http\Controllers\Controller;
 use App\Http\Controllers\BaseController;
 
 class TenantController extends BaseController
@@ -44,7 +44,7 @@ class TenantController extends BaseController
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Tenant $tenant)
+    public function update(TenantUpdateRequest $request, Tenant $tenant)
     {
         try {
             $tenant = DB::transaction(function () use ($tenant, $request) {
