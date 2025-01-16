@@ -44,7 +44,7 @@ it('Run Permissions for Order Manager', function () {
         // 'contact' => ['index' => true, 'show' => true, 'create' => false, 'store' => false, 'edit' => false, 'update' => false, 'destroy' => false],
         // 'regions' => ['index' => false, 'show' => false, 'create' => false, 'store' => false, 'edit' => false, 'update' => false, 'destroy' => false],
         'tenant' => ['index' => false, 'show' => false, 'create' => false, 'store' => false, 'edit' => false, 'update' => false, 'destroy' => false],
-        'accounts' => ['index' => true, 'show' => true, 'create' => false, 'store' => false, 'edit' => false, 'update' => false, 'destroy' => false],
+        'api/accounts' => ['index' => true, 'show' => true, 'create' => false, 'store' => false, 'edit' => false, 'update' => false, 'destroy' => false],
         'api/prices' => ['index' => false, 'show' => false, 'create' => false, 'store' => false, 'edit' => false, 'update' => false, 'destroy' => false],
         'products' => ['index' => true, 'show' => true, 'create' => false, 'store' => false, 'edit' => false, 'update' => false, 'destroy' => false],
         'brands' => ['index' => true, 'show' => true, 'create' => false, 'store' => false, 'edit' => false, 'update' => false, 'destroy' => false],
