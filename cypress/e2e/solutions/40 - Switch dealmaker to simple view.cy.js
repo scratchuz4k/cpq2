@@ -17,7 +17,9 @@ describe("Creates a Mobile Quote", () => {
         cy.get("#solution_type-component").click()
         cy.wait(500)
         cy.get(".p-select-list-container").eq(0).within(() => {
-            cy.get(".p-select-option").eq(1).click()
+            cy.get('li[aria-label="Simple"]')
+                .should('exist')
+                .click();
         })
 
         cy.get("#btn-save-solution-type").click()
@@ -76,7 +78,9 @@ describe("Creates a Mobile Quote", () => {
         cy.get("#solution_type-component").click()
         cy.wait(500)
         cy.get(".p-select-list-container").eq(0).within(() => {
-            cy.get(".p-select-option").eq(0).click()
+            cy.get('li[aria-label="DealMaker"]')
+                .should('exist')
+                .click();
         })
 
         cy.get("#btn-save-solution-type").click()
