@@ -43,9 +43,6 @@ jobs:
           echo "VIRTUAL1_ADDRESS_USERNAME=${{ secrets.VIRTUAL1_ADDRESS_USERNAME }}" >> .env
           echo "VITE_GOOGLE_MAPS_API_KEY=${{ secrets.VITE_GOOGLE_MAPS_API_KEY }}" >> .env
 
-      - name: Generate App Key
-        run: |
-          php artisan key:generate
 
       - name: Create Database
         run: |
@@ -55,15 +52,16 @@ jobs:
       - name: Install Composer Dependencies
         run: composer install --prefer-dist --optimize-autoloader --no-scripts --no-progress --no-interaction && composer dump-autoload --optimize -q
 
+      - name: Generate App Key
+        run: |
+          php artisan key:generate
+          php artisan migrate:fresh --seed
+          php artisan db:seed CategoryProductsSeeder
+
       - name: Laravel Tests and sqlite
         run: |
           touch database/database.sqlite
           php artisan test
-
-      - name: Prepare Laravel DB
-        run: |
-          php artisan migrate:fresh --seed
-          php artisan db:seed CategoryProductsSeeder
 
       - name: Install Node Dependencies
         run: |
