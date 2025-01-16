@@ -127,6 +127,6 @@ emitter.on("quote-items:toggle:is-editing", () => item.value.is_editing = false)
 </template>
 <style>
 .child-bg > td {
-  background-color: whitesmoke;
+  background-color: whitesmoke!important;
 }
 </style>

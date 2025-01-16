@@ -1,5 +1,5 @@
 #print {
-
+    .table-connectivity thead,
     .table-dealmaker thead {
         th {
             background: none !important;
@@ -8,6 +8,7 @@
 
 }
 
+.table-connectivity thead,
 .table-dealmaker thead {
 
     th {
@@ -83,18 +84,24 @@
     }
 
 }
-
+.table-connectivity ,
 .table-dealmaker {
     th,
     td {
-        padding: 0.2rem 0.2rem!important;
         position: relative;
         font-size: 14px;
         vertical-align: middle;
         border: none;
     }
-
 }
+
+.table-dealmaker {
+    th,
+    td {
+        padding: 0.2rem 0.2rem !important;
+    }
+}
+
 
 .table-dealmaker {
     .container-form-check-input {
@@ -125,7 +132,6 @@
 
     .form-check-input:focus {
         border-color: var(--red);
-        ;
         box-shadow: 0 0 0 0.25rem var(--light-red);
     }
 
@@ -149,7 +155,9 @@
     text-align: center;
 }
 
+.column-speed-header,
 .column-speed-body,
+.column-bearer-header,
 .column-bearer-body,
 .column-provider-body,
 .column-subprovider-body,

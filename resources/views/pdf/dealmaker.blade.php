@@ -90,6 +90,14 @@
         return isset($item['price_plan']) && $item['price_plan']->code === 'MONTHLY';
     });
 
+    $monthly_items_total = array_reduce(
+        $monthly_items,
+        function ($acc, $item) {
+            return $acc + $item['quantity'] * $item['price'];
+        },
+        0,
+    );
+
 @endphp
 
 <!doctype html>
@@ -172,7 +180,7 @@
                                 class="mobile-price-group-heading mt-3 d-flex justify-content-between align-items-center">
                                 <h3>Recurring charges</h3>
                                 <h3 id="recurring_total">
-                                    £{{ number_format(quoteTotal('MONTHLY', 'total', $quote['items']), 2) }}</h3>
+                                    £{{ number_format($monthly_items_total,2) }}</h3>
                             </div>
                             <table id="table-recurring" class="table table-dealmaker table-bordered  ">
                                 <!-- Headers -->
@@ -254,7 +262,7 @@
                                                 {{ number_format((float) $item['discount']) }}%
                                             </td>
                                             <td class="column-total-body">
-                                                £{{ number_format($item['total'], 2) }}
+                                                £{{ number_format($item['price'] * $item['quantity'] , 2) }}
                                             </td>
                                         </tr>
                                     @endforeach

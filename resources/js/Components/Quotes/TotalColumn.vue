@@ -25,7 +25,7 @@ const render = () => {
       v-else
       v-if="item.quantity * item.price != item[column.value]"
       :id="'total-' + index"
-      class="small column_total cpq-tooltip"
+      class="column_total cpq-tooltip"
     >
       {{ GBP.format(item.quantity * item.price) }}
       <span class="cpq-tooltip-text">{{ render() }}</span>

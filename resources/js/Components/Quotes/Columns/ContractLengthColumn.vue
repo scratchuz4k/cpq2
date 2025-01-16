@@ -1,5 +1,6 @@
 <script setup>
 import { temp } from "@composables/useQuoteItem";
+import { quote } from "@composables/useQuote";
 defineProps({
   code: String,
   column: Object,
@@ -11,8 +12,8 @@ const item = defineModel();
 </script>
 <template>
   <template v-if="!isGroup">
-    <p class="small" v-if="!item.is_editing">
-      {{ item.price_plan.code == "MONTHLY" ? item[column.value] : "" }}
+    <p class="small" v-if="!item.is_editing || quote.solution_type.code == 3">
+      {{ item.price_plan.code == "MONTHLY" && quote ? item[column.value] : "" }}
     </p>
     <input
       v-else-if="item.price_plan.code == 'MONTHLY'"
