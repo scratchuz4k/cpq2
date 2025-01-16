@@ -16,6 +16,26 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
 
+function resolve_request($entity, $method)
+{
+    switch ($method) {
+        case 'index':
+            return ["method" => "get", "url" => $entity];
+        case 'show':
+            return ["method" => "get", "url" => "$entity/1"];
+        case 'create':
+            return ["method" => "get", "url" => "$entity/create"];
+        case 'store':
+            return ["method" => "post", "url" => "$entity", "content" =>  []];
+        case 'edit':
+            return ["method" => "get", "url" => "$entity/1/edit"];
+        case 'update':
+            return ["method" => "put", "url" => "$entity/1", "content" =>  []];
+        case 'destroy':
+            return ["method" => "delete", "url" => "$entity/1"];
+    }
+}
+
 beforeEach(function () {
     $this->artisan('db:seed');
     $this->user = User::factory()->create();
@@ -36,6 +56,7 @@ it('Run Permissions for Order Manager', function () {
     $token = Token::factory()->create();
     $quote = Quote::factory()->create();
     $quoteItem = QuoteItem::factory()->state(["quote_id" => $quote->id, "product_id" => $product->id])->create();
+
 
     $permissions = [
         // 'order' => ['index' => true, 'show' => true, 'create' => true, 'store' => true, 'edit' => true, 'update' => true, 'destroy' => true],
@@ -63,11 +84,14 @@ it('Run Permissions for Order Manager', function () {
                 continue;
             }
             try {
+                $request = resolve_request($entity, $key);
+                $response =
+                    array_key_exists("content", $request)
+                    ? $this->{$request["method"]}($request["url"], [])
+                    : $this->{$request["method"]}($request["url"]);
                 if ($hasPermission) {
-                    $response = resolve_request($this, $entity, $key);
                     $response->assertStatus(200);
                 } else {
-                    $response = resolve_request($this, $entity, $key);
                     $response->assertStatus(403);
                 }
             } catch (Exception $exception) {

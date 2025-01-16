@@ -61,7 +61,7 @@ jobs:
       - name: Install Node Dependencies
         run: |
           npm install
-          npm run dev &
+          npm run build
 
       - name: Run Laravel Server
         run: php artisan serve --host=0.0.0.0 --port=8000 &
