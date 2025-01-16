@@ -57,7 +57,7 @@ it('Run Permissions for Order Manager', function () {
     $quote = Quote::factory()->create();
     $quoteItem = QuoteItem::factory()->state(["quote_id" => $quote->id, "product_id" => $product->id])->create();
 
-
+    // In this array select what resources the role has access
     $permissions = [
         // 'order' => ['index' => true, 'show' => true, 'create' => true, 'store' => true, 'edit' => true, 'update' => true, 'destroy' => true],
         // 'order_item' =>  ['index' => true, 'show' => true, 'create' => true, 'store' => true, 'edit' => true, 'update' => true, 'destroy' => true],
