@@ -41,7 +41,6 @@
         "mitt": "^3.0.1",
         "notyf": "^3.10.0",
         "nouislider": "^15.8.1",
-        "pagedjs": "^0.4.3",
         "primevue": "^4.0.5",
         "puppeteer": "^24.0.0",
         "query-string": "^9.1.0",

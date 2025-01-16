@@ -19,7 +19,6 @@ export default defineConfig({
             },
         }),
         visualizer()
-
     ],
     resolve: {
         alias: {
@@ -28,6 +27,8 @@ export default defineConfig({
         }
     },
     build: {
-        cssCodeSplit: false, // Disable CSS splitting
+        minify: true,
+        cssCodeSplit: true,
+        modulePreload: false,
     },
 });
