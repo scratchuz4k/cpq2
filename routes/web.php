@@ -43,11 +43,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/users/import', [UserController::class, 'importUsers'])->name('users.import');
 
     Route::resources([
+        'accounts' => AccountController::class,
         'categories' => CategoryController::class,
         'apis' => ApiConfigurationController::class,
         'quotes' => QuoteController::class,
         'orders' => OrderController::class,
-        'accounts' => AccountController::class,
         'tenant' => TenantController::class,
         'brands' => BrandController::class,
         'merchants' => MerchantController::class,
