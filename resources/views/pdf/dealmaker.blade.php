@@ -241,8 +241,18 @@
                                                     <span
                                                         class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm is-contended"
                                                         data-bs-toggle="tooltip" data-bs-placement="top"
-                                                        title="Contended" v-tooltip>
-                                                        <i class="fa-solid fa-network-wired"></i>
+                                                        title="Contended, wires only full fibre service with symmetrical upload and download speeds"
+                                                        v-tooltip>
+                                                        Contended Service
+                                                    </span>
+                                                @endif
+                                                @if (isset($item['data']->additionalInfo->{'Type'}) && $item['data']->additionalInfo->{'Type'} == 'Fibre Flex 200+')
+                                                    <span
+                                                        class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm is-contended"
+                                                        data-bs-toggle="tooltip" data-bs-placement="top"
+                                                        title="This service offers guaranteed upload and download speeds of 200Mbps and can burst up to a peak of 1Gbps"
+                                                        v-tooltip>
+                                                        Burstable Service
                                                     </span>
                                                 @endif
                                             </td>
@@ -336,6 +346,19 @@
                                                         data-bs-toggle="tooltip" data-bs-placement="top"
                                                         title="Contended" v-tooltip>
                                                         <i class="fa-solid fa-network-wired"></i>
+                                                        data-bs-toggle="tooltip" data-bs-placement="top"
+                                                        title="Contended, wires only full fibre service with symmetrical upload and download speeds"
+                                                        v-tooltip>
+                                                        Contended Service
+                                                    </span>
+                                                @endif
+                                                @if (isset($item['data']->additionalInfo->{'Type'}) && $item['data']->additionalInfo->{'Type'} == 'Fibre Flex 200+')
+                                                    <span
+                                                        class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm is-contended"
+                                                        data-bs-toggle="tooltip" data-bs-placement="top"
+                                                        title="This service offers guaranteed upload and download speeds of 200Mbps and can burst up to a peak of 1Gbps"
+                                                        v-tooltip>
+                                                        Burstable Service
                                                     </span>
                                                 @endif
                                             </td>
