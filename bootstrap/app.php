@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\AllowPrint;
 use Sentry\Laravel\Integration;
 use Inertia\Inertia;
 use Illuminate\Http\Request;
@@ -51,6 +52,7 @@ return Application::configure(basePath: dirname(__DIR__))
             SetTenantBySession::class,
             NeedsTenant::class,
         ]);
+
 
         $middleware->validateCsrfTokens(except: [
             'auth/callback'

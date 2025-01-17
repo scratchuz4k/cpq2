@@ -13,12 +13,14 @@ use App\Http\Controllers\Web\RegionController;
 use App\Http\Controllers\Web\TenantController;
 use App\Http\Controllers\Web\AccountController;
 use App\Http\Controllers\Web\CategoryController;
-use App\Http\Controllers\Web\ApiConfigurationController;
 use App\Http\Controllers\Web\ProductController;
 use App\Http\Controllers\Web\ProfileController;
 use App\Http\Controllers\Web\SupplierController;
 use App\Http\Controllers\Web\DashboardController;
 use App\Http\Controllers\Web\SharedLinkController;
+use App\Http\Controllers\Web\SolutionTypeController;
+use App\Http\Controllers\Web\ApiConfigurationController;
+use App\Http\Middleware\AllowPrint;
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('index');
@@ -27,9 +29,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 
     Route::get('/tenant/{tenant}/make-current', [TenantController::class, 'switch'])->name('tenant.make-current');
-
     Route::get('/quotes/{quote}/preview', [QuoteController::class, 'preview'])->name('quotes.preview');
-    Route::get('/quotes/{quote}/download', [QuoteController::class, 'download'])->name('quotes.download');
+
+    Route::middleware(AllowPrint::class)->group(function () {
+        Route::get('/quotes/{quote}/download', [QuoteController::class, 'download'])->name('quotes.download');
+    });
+
     Route::get('/quotes/{quote}/configure', [QuoteController::class, 'configure'])->name('quotes.configure');
 
     Route::get('/orders/{order}/preview', [OrderController::class, 'preview'])->name('orders.preview');
@@ -38,11 +43,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/users/import', [UserController::class, 'importUsers'])->name('users.import');
 
     Route::resources([
+        'accounts' => AccountController::class,
         'categories' => CategoryController::class,
         'apis' => ApiConfigurationController::class,
         'quotes' => QuoteController::class,
         'orders' => OrderController::class,
-        'accounts' => AccountController::class,
         'tenant' => TenantController::class,
         'brands' => BrandController::class,
         'merchants' => MerchantController::class,
@@ -52,6 +57,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         'spas' => SpaController::class,
         'users' => UserController::class,
         'tokens' => TokenController::class,
+        'solution-types' =>  SolutionTypeController::class
     ]);
 
     Route::middleware('auth')->group(function () {

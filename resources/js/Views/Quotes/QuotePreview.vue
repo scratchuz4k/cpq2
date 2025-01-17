@@ -1,204 +1,103 @@
 <script setup>
-import { reactive } from 'vue';
-
+import { setQuote, quote } from "@composables/useQuote";
 const props = defineProps({
-    modelValue: Object
-})
-const getLeafNodesWithChildren = (objects) => {
-    let leaves = [];
-    const findLeaves = (items) => {
-        for (const item of items) {
-            if (item.children && item.children.length > 0) {
-                findLeaves(item.children);
-            } else {
-                leaves.push(item);
-            }
-        }
-    }
+  modelValue: Object,
+  pricePlans: Object,
+});
 
-    findLeaves(objects);
-    return leaves;
-}
-
-const quote = reactive(props.modelValue)
-Object.assign(quote.items, getLeafNodesWithChildren(quote.items))
+setQuote(props.modelValue);
 
 const showDate = (days = 0) => {
-    const dateObj = new Date();
-    dateObj.setDate(dateObj.getDate() + days);
-    const currentDate = dateObj.getDate() + "/" + (dateObj.getMonth() + 1) + "/" + dateObj.getFullYear();
-    return currentDate;
-}
-const quoteTotal = (key) => {
-    return quote.items.filter((x) => x.price_plan && x.price_plan.code == key).reduce((acc, item) => acc += item.total, 0)
-}
+  const dateObj = new Date();
+  dateObj.setDate(dateObj.getDate() + days);
+  const currentDate =
+    dateObj.getDate() + "/" + (dateObj.getMonth() + 1) + "/" + dateObj.getFullYear();
+  return currentDate;
+};
+
+const solutionsViews = {
+  Simple: "TableSimple",
+  DealMaker: "TableDealMaker",
+};
+
+let component = props.modelValue.solution_type.configurations?.component;
+let view =
+  component && Object.keys(solutionsViews).includes(component)
+    ? solutionsViews[component]
+    : "TableDealMaker";
 </script>
 <template>
-    <div class="panel">
-        <div class="container-fluid">
-            <div class="row" id="header">
-                <div class="col" id="header_left">
-                    <img src="https://img.logoipsum.com/331.svg" alt="Sample Logo" class="img-fluid">
-                    <p>Insert Tagline</p>
-                </div>
-                <div class="col text-end" id="header_right">
-                    <p>{{ quote.account?.name }}<br>{{ quote.address_data?.label }}</p>
-                    <p>Tel: +44 (0) 191 300 700</p>
-                    <p>Email: sales@example.com</p>
-                </div>
-            </div>
-            <div class="cpq-summary row px-3" id="main">
-                <div class="col">
-                    <h1 class="mb-3">Quote Q-{{ quote.id }}</h1>
-                    <div class="row mb-3">
-                        <div class="col">
-                            <p>Company address, city, state, post code<br>
-                                sales@example.com<br>
-                                +44 (0) 123 456 7890</p>
-                        </div>
-                        <div class="col">
-                            <p>Quote #{{ quote.id }}<br>
-                                Quotation Date: {{ showDate() }}<br>
-                                Valid Date: {{ showDate(7) }}
-                            </p>
-                        </div>
-                    </div>
-                    <div class="row mb-4">
-                        <div class="col">
-                            <h2>BILL FROM</h2>
-                            <p>Name Surname<br>
-                                Company address, city, state, post code<br>
-                                sales@example.com<br>
-                                +44 (0) 123 456 7890</p>
-                        </div>
-                        <div class="col">
-                            <h2>BILL TO</h2>
-                            <p>Name Surname<br>
-                                Company address, city, state, post code<br>
-                                contact@account.test<br>
-                                +44 (0) 234 567 8910</p>
-                        </div>
-                    </div>
-
-                    <div class="panel">
-                        <div class="row mb-4" style="min-height: 50vh;">
-                            <div class="col">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <h2>Items</h2>
-                                </div>
-                                <!-- Product List -->
-                                <!-- In a real application, this would be dynamically generated based on the selected solution type -->
-                                <table class="table">
-                                    <!-- Headers -->
-                                    <thead>
-                                        <tr>
-                                            <th>#</th>
-                                            <th>Provider</th>
-                                            <th>Name</th>
-                                            <th>Type</th>
-                                            <th class="text-center">Contract Len.</th>
-                                            <th class="text-center">Qty</th>
-                                            <th class="text-end" style="white-space: nowrap;">Price</th>
-                                            <th class="text-end" style="white-space: nowrap;">Total Price</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr class="item-row" v-for="item in quote.items"
-                                            style="vertical-align: middle;">
-                                            <td class="position-relative" style="width:40px">
-                                                {{ quote.items.indexOf(item) + 1 }}
-                                            </td>
-                                            <td>
-                                                <img v-if="item.data?.providerKey" class="img-provider"
-                                                    @error="setAltImg"
-                                                    :src="`/images/providers/${item.data.providerKey}.png`"
-                                                    :alt="item.data.providerName" :title="item.data.providerName" />
-                                            </td>
-                                            <td>
-                                                <div class="d-flex justify-content-between">
-                                                    <p>{{ item.name }}
-                                                        <span v-if="item.data?.additionalInfo['Primary Router Model']"
-                                                            v-tooltip data-bs-toggle="tooltip" data-bs-placement="top"
-                                                            title="Primary Router Model"
-                                                            class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm router-model">
-                                                            <font-awesome-icon
-                                                                :icon="['fas', 'plug']"></font-awesome-icon>
-                                                            {{ item.data.additionalInfo['Primary Router Model'] }}
-                                                        </span>
-                                                        <span v-if="item.data?.isContended"
-                                                            class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm is-contended"
-                                                            data-bs-toggle="tooltip" data-bs-placement="top" title="Contended, wires only full fibre service with symmetrical upload and download speeds" v-tooltip>
-                                                            Contended Service
-                                                        </span>
-                                                        <span v-if="item.data?.additionalInfo?.['Type']=='Fibre Flex 200+'" v-tooltip
-                                                            data-bs-toggle="tooltip" data-bs-placement="top" title="This service offers guaranteed upload and download speeds of 200Mbps and can burst up to a peak of 1Gbps"
-                                                            class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm router-model">
-                                                            Burstable Service
-                                                        </span>
-                                                    </p>
-
-                                                </div>
-                                            </td>
-                                            <td>
-                                                {{ item.price_plan?.name }}
-                                            </td>
-                                            <td class="text-center">
-                                                {{ item.contract_length }}
-                                            </td>
-                                            <td class="text-center">
-                                                {{ item.quantity }}
-                                            </td>
-                                            <td class="text-end">
-                                                {{ GBP.format(item.price) }}
-                                            </td>
-                                            <td class="text-end">
-                                                {{ GBP.format(item.total) }}
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                    <tfoot>
-                                        <tr>
-                                            <th></th>
-                                            <th></th>
-                                            <th></th>
-                                            <th></th>
-                                            <th class="text-center"></th>
-                                            <th class="text-center"></th>
-                                            <th class="text-end">Total:</th>
-                                            <th class="text-end">{{ GBP.format(quote.total) }}</th>
-                                        </tr>
-                                    </tfoot>
-                                </table>
-                                <div class="mt-5">
-                                    <p class="payment-info border-bottom pb-3 mb-3 big bold text-right">
-                                        <span class="text-primary">1 payment </span> of
-                                        {{ GBP.format(quoteTotal('SINGLE')) }}<br>
-                                        followed by
-                                        <span class="text-primary"> monthly payments</span> of
-                                        {{ GBP.format(quoteTotal('MONTHLY')) }}
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-            <div class="row px-3 mb-4" id="terms">
-                <div class="col">
-                    <p>Terms & Conditions:</p>
-                    <p>Lorem ipsum dolor sit amet...</p>
-                </div>
-            </div>
-            <div class="row mb-2" id="footer">
-                <div class="col">
-                    <img src="https://img.logoipsum.com/331.svg">
-                    <p>Insert Tagline</p>
-                </div>
-                <div class="col text-end">
-                    <p>Lorem ipsum dolor sit amet...</p>
-                </div>
-            </div>
+  <div class="panel d-flex justify-content-center">
+    <div id="print" class="page">
+      <div class="row">
+        <div class="col" id="header_left">
+          <div class="preview-logo">
+            <app-logo></app-logo>
+          </div>
         </div>
+        <div class="col text-end" id="header_right">
+          <p>{{ quote.account?.name }}<br />{{ quote.address_data?.label }}</p>
+          <p>Tel: +44 (0) 191 300 700</p>
+          <p>Email: sales@example.com</p>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">
+          <h1 class="mb-3">Quote Q-{{ quote.id }}</h1>
+          <div class="row mb-3">
+            <div class="col">
+              <p>
+                Company address, city, state, post code<br />
+                sales@example.com<br />
+                +44 (0) 123 456 7890
+              </p>
+            </div>
+            <div class="col">
+              <p>
+                Quote #{{ quote.id }}<br />
+                Quotation Date: {{ showDate() }}<br />
+                Valid Date: {{ showDate(7) }}
+              </p>
+            </div>
+          </div>
+          <div class="row mb-5">
+            <div class="col">
+              <p class="big bold">BILL FROM</p>
+              <p>
+                Name Surname<br />
+                Company address, city, state, post code<br />
+                sales@example.com<br />
+                +44 (0) 123 456 7890
+              </p>
+            </div>
+            <div class="col">
+              <p class="big bold">BILL TO</p>
+              <p>
+                Name Surname<br />
+                Company address, city, state, post code<br />
+                contact@account.test<br />
+                +44 (0) 234 567 8910
+              </p>
+            </div>
+          </div>
+          <div>
+            <component
+              :is="view"
+              v-bind="{
+                pricePlans: props.pricePlans,
+                preview: true,
+              }"
+            ></component>
+            <TableTotal :quote="quote"></TableTotal>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">
+          <p>Terms & Conditions:</p>
+          <p>Lorem ipsum dolor sit amet...</p>
+        </div>
+      </div>
     </div>
+  </div>
 </template>

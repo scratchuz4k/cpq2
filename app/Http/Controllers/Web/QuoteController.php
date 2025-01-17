@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Web;
 
-use App\Enums\QuoteStatusesEnum;
 use App\Models\User;
 use Inertia\Inertia;
 use App\Models\Quote;
@@ -10,14 +9,19 @@ use App\Models\Account;
 use App\Models\PricePlan;
 use App\Models\SolutionType;
 use App\Services\QuoteService;
+use App\Enums\QuoteStatusesEnum;
 use App\Events\QuoteStatusEvent;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Spatie\Browsershot\Browsershot;
 use App\Http\Resources\QuoteResource;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\QuoteCreateRequest;
 use App\Http\Requests\QuoteUpdateRequest;
+use Spatie\LaravelPdf\Enums\Format;
+use Spatie\LaravelPdf\Enums\Unit;
+
 use function Spatie\LaravelPdf\Support\pdf;
 
 class QuoteController extends BaseController
@@ -141,10 +145,8 @@ class QuoteController extends BaseController
     public function preview(Quote $quote)
     {
         return Inertia::render('Quotes/Preview', [
-            'accounts' => Account::all(),
-            'solution_types' => SolutionType::get(),
-            'quote' => new QuoteResource($quote->load(['items'])),
-            'tenant' => request()->user()->currentTenant()->with('file','logo')->first()
+            'pricePlans' => PricePlan::all(),
+            'quote' => new QuoteResource($quote->load(['items', 'orders']))
         ]);
     }
 
@@ -159,12 +161,17 @@ class QuoteController extends BaseController
             throw new \Exception("Could not create directory for PDFs");
         }
 
-        // return view('pdf.invoice', compact('order', 'totals', 'solution_types'));
-
+        $view  = array_key_exists("component", $quote->solutionType->configs) ? strtolower($quote->solutionType->configs["component"]) : "dealmaker";
         $quote = QuoteResource::make($quote->load(['items']))->resolve();
 
+
+        // return view("pdf.$view", compact('quote', 'solution_types'));
         return pdf()
-            ->view('pdf.invoice', compact('quote', 'solution_types', 'tenant'))
+            ->view("pdf.$view", compact('quote', 'solution_types', 'tenant'))
+            ->format(Format::A4)
+            ->withBrowsershot(function (Browsershot $browsershot) {
+                $browsershot->waitUntilNetworkIdle();
+            })
             ->name('quote-' . $quote['id'] . '.pdf')
             ->download();
     }

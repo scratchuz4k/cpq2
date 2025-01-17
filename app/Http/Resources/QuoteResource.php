@@ -20,13 +20,11 @@ class QuoteResource extends JsonResource
             'discount' => round((float)$this->discount,4),
             'commission_rate' => round((float)$this->commission_rate,2),
             'user' => $this->user,
-            'total_vat' => $this->total * 0.2,
-            'total_gross' => $this->total * 1.2,
             'account' => $this->account,
-            'solution_type' => $this->solutionType,
-            'shared_link' => new SharedLinkResource($this->sharedLink),
+            'solution_type' => (new SolutionTypeResource($this->solutionType))->resolve(),
+            'shared_link' => (new SharedLinkResource($this->sharedLink))->resolve(),
             'discounts' => QuoteDiscountResource::collection($this->discounts)->resolve(),
-            'items' => QuoteItemResource::collection($this->whenLoaded('items', default: collect([])))->resolve(),
+            'items' => QuoteItemResource::collection($this->items)->resolve(),
             'updated_at' => $this->updated_at,
             'orders' => $this->whenLoaded('orders')
         ];

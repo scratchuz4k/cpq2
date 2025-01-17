@@ -1,8 +1,8 @@
 name: Docker Build & Publish
 
 on:
-    pull_request:
-      types: [opened, synchronize]
+  pull_request:
+    types: [opened, synchronize]
 
 env:
   REGISTRY: ghcr.io
@@ -43,6 +43,7 @@ jobs:
           echo "VIRTUAL1_ADDRESS_USERNAME=${{ secrets.VIRTUAL1_ADDRESS_USERNAME }}" >> .env
           echo "VITE_GOOGLE_MAPS_API_KEY=${{ secrets.VITE_GOOGLE_MAPS_API_KEY }}" >> .env
 
+
       - name: Create Database
         run: |
           sudo systemctl start mysql
@@ -51,12 +52,7 @@ jobs:
       - name: Install Composer Dependencies
         run: composer install --prefer-dist --optimize-autoloader --no-scripts --no-progress --no-interaction && composer dump-autoload --optimize -q
 
-      - name: Laravel Tests and sqlite
-        run: |
-          touch database/database.sqlite
-          php artisan test
-
-      - name: Prepare Laravel DB
+      - name: Generate App Key
         run: |
           php artisan key:generate
           php artisan migrate:fresh --seed
@@ -69,6 +65,11 @@ jobs:
 
       - name: Run Laravel Server
         run: php artisan serve --host=0.0.0.0 --port=8000 &
+
+      - name: Laravel Tests and sqlite
+        run: |
+          touch database/database.sqlite
+          php artisan test
 
       - name: Check laravel local server
         run: curl http://localhost:8000/health

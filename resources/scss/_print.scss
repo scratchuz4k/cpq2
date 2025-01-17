@@ -1,0 +1,24 @@
+@media print {
+    @page {
+        size: A4;
+        /* Set page size to A4 */
+        margin: 10mm 15mm;
+        bleed: 6mm;
+        marks: crop cross;
+        background: none; /* Remove background for paginated pages */
+    }
+
+    .chapter {
+        break-before: right;
+    }
+}
+
+.page {
+    border:1px solid lightgray;
+    width: 210mm;
+    /* Set page size to A4 */
+    padding: 10mm 15mm;
+    bleed: 6mm;
+    marks: crop cross;
+    background: none; /* Remove background for paginated pages */
+}

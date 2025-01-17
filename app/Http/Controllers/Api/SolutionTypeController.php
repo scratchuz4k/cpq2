@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\BaseController;
-use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
 use App\Models\SolutionType;
+use Illuminate\Http\Request;
+use App\Helpers\DataProvider;
+use Illuminate\Support\Facades\Log;
+use App\Http\Controllers\Controller;
+use App\Http\Controllers\BaseController;
+use App\Http\Resources\SolutionTypeResource;
 
 class SolutionTypeController extends BaseController
 {
@@ -15,7 +18,15 @@ class SolutionTypeController extends BaseController
      */
     public function index()
     {
-        //
+        $dataProvider = new DataProvider(SolutionType::class);
+        try {
+            $data = $dataProvider->get();
+        } catch (\Exception $e) {
+            Log::debug($e->getMessage());
+            return $e->getMessage();
+        }
+
+        return SolutionTypeResource::collection($data);
     }
 
     /**

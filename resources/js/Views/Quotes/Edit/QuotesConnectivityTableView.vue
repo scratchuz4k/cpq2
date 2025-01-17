@@ -213,14 +213,6 @@ const setAltImg = (event) => {
     event.target.src = '/images/no_image.png'
 }
 
-const bytesFormatter = (value) => {
-    let temp = Math.ceil(value)
-    if ((temp / 1000) >= 1) {
-        return Math.ceil((temp / 1000)) + " Gb"
-    }
-    return temp + " Mb"
-}
-
 const sort = reactive({
     field: "priceMonthly",
     order: "asc"
@@ -501,7 +493,7 @@ getArticles(false, true)
                             class="btn btn-primary  btn-sm js-clear-filters ms-3">Clear filters</button></div>
                 </div>
                 <div v-if="articles.length" class="table-wrapper">
-                    <table id="table_products" class="table  table-bordered table-hover">
+                    <table class="table-connectivity table table-bordered table-hover">
                         <thead>
                             <tr>
                                 <th class="ps-3" :style="{
@@ -666,18 +658,18 @@ getArticles(false, true)
                                     </span>
                                 </td>
                                 <td><img class="img-provider" @error="setAltImg"
-                                        :src="`/images/providers/${article.providerKey}.png`"
+                                        :src="`/images/providers/${format.toLowerCase(article.providerKey)}.png`"
                                         :alt="article.providerName" :title="article.providerName"
                                         :data-bs-original-title="article.providerName" v-tooltip/> </td>
                                 <td>
                                     <img class="img-subprovider" @error="setAltImg"
-                                        :src="`/images/providers/${article.connectivitySupplierGroup?.replace(/ /g, '_').toLowerCase()}.png`"
+                                        :src="`/images/providers/${format.toLowerCase(article.connectivitySupplierGroup)}.png`"
                                         :alt="article.connectivitySupplierName"
                                         :title="article.connectivitySupplierName"
                                         :data-bs-original-title="article.connectivitySupplierName" v-tooltip />
                                 </td>
-                                <td>{{ bytesFormatter(article.bearer) }} </td>
-                                <td>{{ bytesFormatter(article.speed) }} </td>
+                                <td>{{ format.speed(article.bearer) }} </td>
+                                <td>{{ format.speed(article.speed) }} </td>
                                 <td :id="'line-' + index + '-price-install'">{{ GBP.format(article.priceInstall_spa) }}
                                 </td>
                                 <td :id="'line-' + index + '-price-monthly'">{{ GBP.format(article.priceMonthly_spa) }}
@@ -795,8 +787,5 @@ tr.active td {
     width: 0%;
     background-color: var(--purple);
     animation: progressBar 240s linear forwards;
-}
-.badge.is-contended{
-    font-size: 10px;
 }
 </style>
