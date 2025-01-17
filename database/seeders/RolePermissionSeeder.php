@@ -52,6 +52,7 @@ class RolePermissionSeeder extends Seeder
                 'token' => 'Token',
                 'quote' => 'Quote',
                 'quote_item' => 'Quote Item',
+                'solution_type' => 'Solution Type',
             ],
         ];
 
@@ -68,7 +69,7 @@ class RolePermissionSeeder extends Seeder
             ],
             'Company Admin' => [
                 'parent' => 'Super Admin',
-                'permissions' => ['quote', 'quote_item', 'merchant', 'account', 'contact',  'price', 'product', 'category', 'region', 'tenant', 'brand', 'supplier', 'spa', 'user'],
+                'permissions' => ['quote', 'quote_item', 'merchant', 'account', 'contact',  'price', 'product', 'category', 'region', 'tenant', 'brand', 'supplier', 'spa', 'user', 'solution_type'],
                 'simple_permission' => []
             ],
             'Sales Rep' => [

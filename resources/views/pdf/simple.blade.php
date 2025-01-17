@@ -86,6 +86,15 @@
 
     // $quote['items']  = getLeafNodesWithChildren($quote['items']);
 
+    $warningProviders = [
+        'its' => array_reduce($quote['items'], function ($carry, $item) {
+            return $carry || (isset($item['data']) && $item['data']->providerName === "ITS");
+        }, false),
+        'pxc' => array_reduce($quote['items'], function ($carry, $item) {
+            return $carry || (isset($item['data']) && $item['data']->providerName === "PXC");
+        }, false),
+    ];
+
 @endphp
 
 <!doctype html>
@@ -133,38 +142,46 @@
                 <p>Email: sales@example.com</p>
             </div>
         </div>
-        <div class="row">
+        <div class="row mt-4">
             <div class="col">
-                <h1 class="mb-3">Quote Q-{{ $quote['id'] }}</h1>
+                <h1 class="mb-1">Quote Q-{{ $quote['id'] }}</h1>
                 <div class="row mb-3">
                     <div class="col">
-                        <p>Company address, city, state, post code<br>
-                            sales@example.com<br>
-                            +44 (0) 123 456 7890</p>
-                    </div>
-                    <div class="col">
-                        <p>Quote #{{ $quote['id'] }}<br>
-                            Quotation Date: {{ date('d/m/Y') }}<br>
-                            Valid Date: {{ date('d/m/Y', strtotime('+7 days')) }}
-                        </p>
+                    <p>
+                        Quotation Date: {{ date('d/m/Y') }}<br>
+                        Valid Date: {{ date('d/m/Y', strtotime('+30 days')) }}
+                    </p>
                     </div>
                 </div>
-                <div class="row mb-5">
-                    <div class="col">
-                        <p class="big bold">BILL FROM</p>
-                        <p>Name Surname<br>
-                            Company address, city, state, post code<br>
-                            sales@example.com<br>
-                            +44 (0) 123 456 7890</p>
+                @if (count(array_filter($warningProviders)) > 0)
+                    <div class="row">
+                        <div class="col">
+                            <InfoBox class="m-4 p-0" severity="error">
+                            <div class="small">
+                                <div class="mb-2 fw-bold" style="color:#dc3545">Important Information:</div>
+                                @foreach ($warningProviders as $providerName => $hasWarning)
+                                    @if ($hasWarning)
+                                        <div class="mb-2" style="color:#dc3545; line-height: 1.2">
+                                            <span class="small fw-bold bg-light rounded-2 py-1 px-2 me-1 text-capitalize">
+                                                {{ strtoupper($providerName) }}
+                                            </span>
+                                            <i>
+                                                Please note, quote references for
+                                                {{ strtoupper($providerName) }} quotes cannot currently
+                                                be used to place an order. To obtain a valid quote for ordering
+                                                please generate the quote directly on the
+                                                {{ strtoupper($providerName) }}
+                                                portal.
+                                            </i>
+                                        </div>
+                                    @endif
+                                @endforeach
+                                </div>
+                            </div>
+                            </InfoBox>
+                        </div>
                     </div>
-                    <div class="col">
-                        <p class="big bold">BILL TO</p>
-                        <p>Name Surname<br>
-                            Company address, city, state, post code<br>
-                            contact@account.test<br>
-                            +44 (0) 234 567 8910</p>
-                    </div>
-                </div>
+                @endif
                 <div class="row mb-4">
                     <div class="col">
                         <div class="mb-5">
@@ -407,10 +424,9 @@
                 </div>
             </div>
         </div>
-        <div class="row px-3 mb-4" id="terms">
+        <div class="row mt-4" id="terms">
             <div class="col">
-                <p>Terms & Conditions:</p>
-                <p>Lorem ipsum dolor sit amet...</p>
+                <p class="small">Terms & Conditions:</p>
             </div>
         </div>
 

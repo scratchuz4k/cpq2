@@ -1,9 +1,15 @@
 <script setup>
+import { ref } from "vue";
 import { setQuote, quote } from "@composables/useQuote";
 const props = defineProps({
   modelValue: Object,
   pricePlans: Object,
 });
+
+const warningProviders = ref([
+  { its: quote.items.some((item) => item.data?.providerName === "ITS") },
+  { pxc: quote.items.some((item) => item.data?.providerName === "PXC") },
+]);
 
 setQuote(props.modelValue);
 
@@ -41,46 +47,46 @@ let view =
           <p>Email: sales@example.com</p>
         </div>
       </div>
-      <div class="row">
+      <div class="row mt-4">
         <div class="col">
-          <h1 class="mb-3">Quote Q-{{ quote.id }}</h1>
+          <h1 class="mb-1">Quote Q-{{ quote.id }}</h1>
           <div class="row mb-3">
             <div class="col">
               <p>
-                Company address, city, state, post code<br />
-                sales@example.com<br />
-                +44 (0) 123 456 7890
-              </p>
-            </div>
-            <div class="col">
-              <p>
-                Quote #{{ quote.id }}<br />
                 Quotation Date: {{ showDate() }}<br />
-                Valid Date: {{ showDate(7) }}
+                Valid Date: {{ showDate(30) }}
               </p>
             </div>
           </div>
-          <div class="row mb-5">
+        <div v-if="warningProviders.some((obj) => Object.values(obj).includes(true))">
+            <div class="row">
             <div class="col">
-              <p class="big bold">BILL FROM</p>
-              <p>
-                Name Surname<br />
-                Company address, city, state, post code<br />
-                sales@example.com<br />
-                +44 (0) 123 456 7890
-              </p>
+                <InfoBox class="mb-4 p-0" severity="error">
+                <div class="small">
+                    <div class="mb-2 fw-bold" style="color:#dc3545">Important Information:</div>
+                    <div v-for="provider in warningProviders" class="mb-2">
+                    <div v-if="Object.values(provider)[0]" style="color:#dc3545; line-height: 1.2">
+                        <span
+                        class="small fw-bold bg-light rounded-2 py-1 px-2 me-1 text-capitalize"
+                        >
+                        {{ Object.keys(provider)[0].toUpperCase() }}
+                        </span>
+                        <i>
+                        Please note, quote references for
+                        {{ Object.keys(provider)[0].toUpperCase() }} quotes cannot currently
+                        be used to place an order. To obtain a valid quote for ordering
+                        please generate the quote directly on the
+                        {{ Object.keys(provider)[0].toUpperCase() }}
+                        portal.
+                        </i>
+                    </div>
+                    </div>
+                </div>
+                </InfoBox>
             </div>
-            <div class="col">
-              <p class="big bold">BILL TO</p>
-              <p>
-                Name Surname<br />
-                Company address, city, state, post code<br />
-                contact@account.test<br />
-                +44 (0) 234 567 8910
-              </p>
             </div>
-          </div>
-          <div>
+        </div>
+        <div>
             <component
               :is="view"
               v-bind="{
@@ -92,10 +98,9 @@ let view =
           </div>
         </div>
       </div>
-      <div class="row">
+      <div class="row mt-4">
         <div class="col">
-          <p>Terms & Conditions:</p>
-          <p>Lorem ipsum dolor sit amet...</p>
+            <p class="small">Terms & Conditions:</p>
         </div>
       </div>
     </div>

@@ -88,7 +88,7 @@ const items = ref([
       <div v-if="warningProviders.some((obj) => Object.values(obj).includes(true))">
         <div class="row">
           <div class="col">
-            <InfoBox class="mb-2 py-0" severity="info">
+            <InfoBox class="mb-4 py-0" severity="info">
               <div class="small">
                 <div class="mb-2 fw-bold">Important Information</div>
                 <div v-for="provider in warningProviders" class="mb-2">

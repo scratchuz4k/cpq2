@@ -10,7 +10,7 @@ describe("Creates a Mobile Quote", () => {
     it("Formats connectivity table to simple view", () => {
         cy.visit("/")
         cy.get("#my-account").click()
-        cy.get("#link-apis").click()
+        cy.get("#link-solutions").click()
         cy.get("#datatable-search").type("Connectivity - Ethernet")
         cy.get("#datatable-btn-0-edit").click()
         cy.get("#1-1").click()
@@ -71,7 +71,7 @@ describe("Creates a Mobile Quote", () => {
     it("Formats connectivity table to DealMaker view", () => {
         cy.visit("/")
         cy.get("#my-account").click()
-        cy.get("#link-apis").click()
+        cy.get("#link-solutions").click()
         cy.get("#datatable-search").type("Connectivity - Ethernet")
         cy.get("#datatable-btn-0-edit").click()
         cy.get("#1-1").click()
@@ -105,4 +105,3 @@ describe("Creates a Mobile Quote", () => {
     })
 
 });
-
