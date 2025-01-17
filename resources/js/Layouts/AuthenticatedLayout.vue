@@ -13,6 +13,7 @@ const page = usePage();
 import * as Sentry from "@sentry/vue";
 import TopBarSearchable from "@/Components/TopBarSearchable.vue";
 import Resources from "@/Components/Resources.vue";
+import {hasRole} from "@/Composables/useAuth.js";
 Sentry.setUser({
     fullName: page.props.auth.user.name,
     email: page.props.auth.user.email,
@@ -104,7 +105,7 @@ watch(search, () => {
                     <li class="nav-item d-md-none d-lg-block">
                         <a class="nav-link" href="#">BILLING</a>
                     </li>
-                    <li class="nav-item dropdown">
+                    <li v-if="hasRole('Super Admin')" class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <font-awesome-icon :icon="['far', 'building']" />
                             {{ currentTenant.name }} (T{{ currentTenant.id }})
@@ -122,6 +123,13 @@ watch(search, () => {
                             </li>
                         </ul>
                     </li>
+                    <li v-else class="nav-item">
+                        <a class="nav-link" href="#">
+                            <font-awesome-icon :icon="['far', 'building']" />
+                            {{ $page.props.tenant?.name }} ( T{{ $page.props.tenant?.id }} )
+                        </a>
+                    </li>
+
                     <li class="nav-item">
                         <a id="my-account" class="nav-link" :href="route('myaccount')">
                             <font-awesome-icon :icon="['far', 'user']" />

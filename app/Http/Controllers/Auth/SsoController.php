@@ -34,23 +34,23 @@ class SsoController extends Controller
         $email = $request->input('email');
         $domain = substr(strrchr($email, "@"), 1);
         $domainRecord = Tenant::where('domain', $domain)->first();
-        if (!$domainRecord || !$domainRecord->config_id) {
+        if (!$domainRecord || !$domainRecord->sso_id) {
             return back()->with([
                 'status' => __('No SSO provider was found for your domain'),
             ]);
         }
 
-        $resourceFile = Resource::where('id', $domainRecord->config_id)->where('tenant_id', $domainRecord->id)->first();
-        if (!$resourceFile || !Storage::exists($resourceFile->getRouteValue())) {
+        $resourceFile = Resource::where('id', $domainRecord->sso_id)->where('tenant_id', $domainRecord->id)->first();
+        if (!$resourceFile || !Storage::disk('public')->exists($resourceFile->getRouteValue())) {
             return back()->with([
                 'status' => __('No SSO provider was found for your domain'),
             ]);
         }
 
-        $ssoXmlContent = Storage::get($resourceFile->getRouteValue());
+        $ssoXmlContent = Storage::disk('public')->get($resourceFile->getRouteValue());
         if (!simplexml_load_string($ssoXmlContent)) {
             return back()->with([
-                'status' => __('The SSO configuration found for your domain is invalid'),
+                'status' => __('The SSO cnav-link dropdown-toggleonfiguration found for your domain is invalid'),
             ]);
         }
 
