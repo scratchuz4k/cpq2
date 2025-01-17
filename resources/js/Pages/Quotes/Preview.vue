@@ -162,8 +162,13 @@ const items = ref([
                                                     </span>
                                                     <span v-if="item.data?.isContended"
                                                           class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm is-contended"
-                                                          data-bs-toggle="tooltip" data-bs-placement="top" title="Contended" v-tooltip>
-                                                        <font-awesome-icon :icon="['fas', 'network-wired']" />
+                                                          data-bs-toggle="tooltip" data-bs-placement="top" title="Contended, wires only full fibre service with symmetrical upload and download speeds" v-tooltip>
+                                                          Contended Service
+                                                    </span>
+                                                    <span v-if="item.data?.additionalInfo?.['Type']=='Fibre Flex 200+'" v-tooltip
+                                                        data-bs-toggle="tooltip" data-bs-placement="top" title="This service offers guaranteed upload and download speeds of 200Mbps and can burst up to a peak of 1Gbps"
+                                                        class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm router-model">
+                                                        Burstable Service
                                                     </span>
                                                 </td>
                                                 <td class="text-center">
@@ -233,8 +238,13 @@ const items = ref([
                                                     </span>
                                                     <span v-if="item.data?.isContended"
                                                           class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm is-contended"
-                                                          data-bs-toggle="tooltip" data-bs-placement="top" title="Contended" v-tooltip>
-                                                        <font-awesome-icon :icon="['fas', 'network-wired']" />
+                                                          data-bs-toggle="tooltip" data-bs-placement="top" title="Contended, wires only full fibre service with symmetrical upload and download speeds" v-tooltip>
+                                                          Contended Service
+                                                    </span>
+                                                    <span v-if="item.data?.additionalInfo?.['Type']=='Fibre Flex 200+'" v-tooltip
+                                                        data-bs-toggle="tooltip" data-bs-placement="top" title="This service offers guaranteed upload and download speeds of 200Mbps and can burst up to a peak of 1Gbps"
+                                                        class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm router-model">
+                                                        Burstable Service
                                                     </span>
                                                 </td>
                                                 <td v-if="quote.solution_type_id === 1"
