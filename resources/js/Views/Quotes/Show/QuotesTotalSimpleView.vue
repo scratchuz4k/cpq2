@@ -3,7 +3,7 @@ import _ from "lodash";
 import { reactive, ref } from "vue";
 import InputQuantity from "@/Components/InputQuantity.vue";
 import { createOrder } from "@/Composables/useOrders.js";
-import { setQuote, quote } from "@composables/useQuote";
+import { setQuote, quote, getLeafNodesWithChildren } from "@composables/useQuote";
 
 const props = defineProps({
   modelValue: Object,
@@ -12,6 +12,12 @@ const props = defineProps({
 });
 
 setQuote(props.modelValue);
+
+let temp = getLeafNodesWithChildren(quote.items);
+const warningProviders = ref([
+  { its: temp.some((item) => item.data?.providerName === "ITS") },
+  { pxc: temp.some((item) => item.data?.providerName === "PXC") },
+]);
 
 const saveQuote = _.debounce(async () => {
   try {
@@ -79,8 +85,35 @@ const items = ref([
     <div class="col">
       <!-- Product List -->
       <!-- In a real application, this would be dynamically generated based on the selected solution type -->
-
-      <TableSimple :preview="preview" ></TableSimple>
+      <div v-if="warningProviders.some((obj) => Object.values(obj).includes(true))">
+        <div class="row">
+          <div class="col">
+            <InfoBox class="mb-2 py-0" severity="info">
+              <div class="small">
+                <div class="mb-2 fw-bold">Important Information</div>
+                <div v-for="provider in warningProviders" class="mb-2">
+                  <div v-if="Object.values(provider)[0]">
+                    <span
+                      class="small fw-bold bg-light rounded-2 py-1 px-2 me-1 text-capitalize"
+                    >
+                      {{ Object.keys(provider)[0].toUpperCase() }}
+                    </span>
+                    <i>
+                      Please note, quote references for
+                      {{ Object.keys(provider)[0].toUpperCase() }} quotes cannot currently
+                      be used to place an order. To obtain a valid quote for ordering
+                      please generate the quote directly on the
+                      {{ Object.keys(provider)[0].toUpperCase() }}
+                      portal.
+                    </i>
+                  </div>
+                </div>
+              </div>
+            </InfoBox>
+          </div>
+        </div>
+      </div>
+      <TableSimple :preview="preview"></TableSimple>
 
       <div class="row justify-content-end">
         <div class="col-6">

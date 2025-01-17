@@ -245,116 +245,106 @@ const items = ref([
           </div>
         </div>
       </div>
-      <div class="col-lg-4">
-        <div
-          style="
-            position: sticky;
-            top: 25px;
-            max-width: 82%;
-            margin-right: 0;
-            margin-left: auto;
-          "
-        >
-          <InfoBox>
-            <div style="font-size: 14px">
-              <b style="font-size: 16px"
-                >Quote {{ quote.id }} for {{ quote.account.name }}</b
-              >
-              <br />
-              Contact Number: 0124567890<br />
-              Email: firstname.lastname@gmail.com
-            </div>
-          </InfoBox>
-          <InfoBox v-if="quote.orders.length > 0">
-            <div style="font-size: 14px">
-              <div class="mb-3">
-                <h6>
-                  An Order related to this Quote was
-                  <span class="badge text-bg-secondary">{{ quote.status }}</span>
-                </h6>
-                <button class="btn btn-sm btn-primary" @click="showModal = true">
-                  See Rejection Notes
-                </button>
-              </div>
-            </div>
-          </InfoBox>
-          <div class="price-mobile-sidebar total-quote-discount px-4 pt-4 pb-2 mb-3">
-            <h3 class="mb-3">Total Quote Discount</h3>
-            <div
-              v-for="pricePlan in pricePlansDiscounts"
-              class="d-flex justify-content-between align-items-center mb-3"
+      <div class="col-xl-4 ps-xl-5">
+        <InfoBox>
+          <div style="font-size: 14px">
+            <b style="font-size: 16px"
+              >Quote {{ quote.id }} for {{ quote.account.name }}</b
             >
-              <label class="form-label m-0">{{ pricePlan.name }}</label>
-
-              <div class="input-group p-0 w-50">
-                <input
-                  :id="`input-global-${pricePlan.code}-discount`"
-                  type="number"
-                  class="form-control"
-                  v-model="pricePlan.value"
-                />
-                <span class="input-group-text">%</span>
-              </div>
-            </div>
-            <button
-              id="btn-apply-global-discount"
-              class="btn btn-secondary w-100 mb-2"
-              @click="saveQuote()"
-              :disabled="isLoading"
-            >
-              Apply to quote
-            </button>
-            <button
-              id="btn-reset-quote"
-              class="btn w-100"
-              @click="resetQuote()"
-              :disabled="isLoading"
-            >
-              Reset quote
-            </button>
+            <br />
+            Contact Number: 0124567890<br />
+            Email: firstname.lastname@gmail.com
           </div>
-          <div class="price-mobile-sidebar commission-calculator px-4 pt-4 pb-2 mb-3">
-            <h3 class="mb-3">Commission Calculator</h3>
-            <p class="mb-2" style="font-size: 14px">
-              Currently, you will make <b>{{ GBP.format(quote.commission_value) }}</b>
-              commission and
-              <b>{{ quote.margin.toFixed(2) }} %</b>
-              margin on this quote.
-            </p>
-            <div class="p-3 mb-3" style="background: #e9edf0">
-              <div class="mb-3">
-                <label class="form-label">Margin</label>
-                <div class="input-group">
-                  <input
-                    id="input-margin-order"
-                    class="form-control"
-                    :value="quote.margin.toFixed(2) + ' %'"
-                    disabled
-                  />
-                  <span class="input-group-text"
-                    ><font-awesome-icon :icon="['fas', 'lock']"></font-awesome-icon
-                  ></span>
-                </div>
+        </InfoBox>
+        <InfoBox v-if="quote.orders.length > 0">
+          <div style="font-size: 14px">
+            <div class="mb-3">
+              <h6>
+                An Order related to this Quote was
+                <span class="badge text-bg-secondary">{{ quote.status }}</span>
+              </h6>
+              <button class="btn btn-sm btn-primary" @click="showModal = true">
+                See Rejection Notes
+              </button>
+            </div>
+          </div>
+        </InfoBox>
+        <div class="price-mobile-sidebar total-quote-discount px-4 pt-4 pb-2 mb-3">
+          <h3 class="mb-3">Total Quote Discount</h3>
+          <div
+            v-for="pricePlan in pricePlansDiscounts"
+            class="d-flex justify-content-between align-items-center mb-3"
+          >
+            <label class="form-label m-0">{{ pricePlan.name }}</label>
+
+            <div class="input-group p-0 w-50">
+              <input
+                :id="`input-global-${pricePlan.code}-discount`"
+                type="number"
+                class="form-control"
+                v-model="pricePlan.value"
+              />
+              <span class="input-group-text">%</span>
+            </div>
+          </div>
+          <button
+            id="btn-apply-global-discount"
+            class="btn btn-secondary w-100 mb-2"
+            @click="saveQuote()"
+            :disabled="isLoading"
+          >
+            Apply to quote
+          </button>
+          <button
+            id="btn-reset-quote"
+            class="btn w-100"
+            @click="resetQuote()"
+            :disabled="isLoading"
+          >
+            Reset quote
+          </button>
+        </div>
+        <div class="price-mobile-sidebar commission-calculator px-4 pt-4 pb-2 mb-3">
+          <h3 class="mb-3">Commission Calculator</h3>
+          <p class="mb-2" style="font-size: 14px">
+            Currently, you will make <b>{{ GBP.format(quote.commission_value) }}</b>
+            commission and
+            <b>{{ quote.margin.toFixed(2) }} %</b>
+            margin on this quote.
+          </p>
+          <div class="p-3 mb-3" style="background: #e9edf0">
+            <div class="mb-3">
+              <label class="form-label">Margin</label>
+              <div class="input-group">
+                <input
+                  id="input-margin-order"
+                  class="form-control"
+                  :value="quote.margin.toFixed(2) + ' %'"
+                  disabled
+                />
+                <span class="input-group-text"
+                  ><font-awesome-icon :icon="['fas', 'lock']"></font-awesome-icon
+                ></span>
               </div>
-              <div class="mb-3">
-                <label class="form-label"
-                  >Commission
-                  <b
-                    >(<span id="order-tax-commission"> {{ quote.commission_rate }}</span
-                    >%)</b
-                  >
-                </label>
-                <div class="input-group">
-                  <input
-                    id="input-commission_value-order"
-                    class="form-control"
-                    :value="GBP.format(quote.commission_value)"
-                    disabled
-                  />
-                  <span class="input-group-text"
-                    ><font-awesome-icon :icon="['fas', 'lock']"></font-awesome-icon
-                  ></span>
-                </div>
+            </div>
+            <div class="mb-3">
+              <label class="form-label"
+                >Commission
+                <b
+                  >(<span id="order-tax-commission"> {{ quote.commission_rate }}</span
+                  >%)</b
+                >
+              </label>
+              <div class="input-group">
+                <input
+                  id="input-commission_value-order"
+                  class="form-control"
+                  :value="GBP.format(quote.commission_value)"
+                  disabled
+                />
+                <span class="input-group-text"
+                  ><font-awesome-icon :icon="['fas', 'lock']"></font-awesome-icon
+                ></span>
               </div>
             </div>
           </div>
@@ -508,4 +498,5 @@ input[type="number"] {
   white-space: pre-wrap;
   word-wrap: break-word;
 }
+
 </style>

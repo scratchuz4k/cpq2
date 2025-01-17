@@ -19,7 +19,8 @@
 
     function quoteTotal($price_plan, $column, $items)
     {
-        $filteredItems = array_filter($items, function ($item) use ($price_plan) {
+        $temp = getLeafNodesWithChildren($items);
+        $filteredItems = array_filter($temp, function ($item) use ($price_plan) {
             return isset($item['price_plan']) && $item['price_plan']['code'] == $price_plan;
         });
 
@@ -41,7 +42,11 @@
         }
         $files = scandir($directory);
         foreach ($files as $file) {
-            if (is_file($directory . '/' . $file) && pathinfo($file, PATHINFO_EXTENSION) === 'css') {
+            if (
+                is_file($directory . '/' . $file) &&
+                pathinfo($file, PATHINFO_EXTENSION) === 'css' &&
+                strpos($file, 'app-') === 0
+            ) {
                 return public_path('build/assets/' . $file);
             }
         }
@@ -111,11 +116,11 @@
     <style>
         body {
             background: none !important;
-            -webkit-print-color-adjust: exact!important;
+            -webkit-print-color-adjust: exact !important;
         }
 
         html {
-            -webkit-print-color-adjust: exact!important;
+            -webkit-print-color-adjust: exact !important;
         }
 
         .child-bg>td {
@@ -180,7 +185,7 @@
                                 class="mobile-price-group-heading mt-3 d-flex justify-content-between align-items-center">
                                 <h3>Recurring charges</h3>
                                 <h3 id="recurring_total">
-                                    £{{ number_format($monthly_items_total,2) }}</h3>
+                                    £{{ number_format($monthly_items_total, 2) }}</h3>
                             </div>
                             <table id="table-recurring" class="table table-dealmaker table-bordered  ">
                                 <!-- Headers -->
@@ -219,7 +224,7 @@
                                                     @if ($item['data']?->connectivitySupplierGroup)
                                                         <img class="img-provider"
                                                             style="max-width: 60px; max-height: 20px; width: auto; height: auto;"
-                                                            src="{{ $item['image'] ?? public_path() . '/images/providers/' . strtolower($item['data']?->connectivitySupplierGroup) . '.png' }}" />
+                                                            src="{{ $item['image'] ?? public_path() . '/images/providers/' . str_replace(' ', '', strtolower($item['data']?->connectivitySupplierGroup)) . '.png' }}" />
                                                     @endif
                                                 </td>
                                             @endif
@@ -262,7 +267,7 @@
                                                 {{ number_format((float) $item['discount']) }}%
                                             </td>
                                             <td class="column-total-body">
-                                                £{{ number_format($item['price'] * $item['quantity'] , 2) }}
+                                                £{{ number_format($item['price'] * $item['quantity'], 2) }}
                                             </td>
                                         </tr>
                                     @endforeach
@@ -312,7 +317,7 @@
                                                     @if ($item['data']?->connectivitySupplierGroup)
                                                         <img class="img-provider"
                                                             style="max-width: 60px; max-height: 20px; width: auto; height: auto;"
-                                                            src="{{ $item['image'] ?? public_path() . '/images/providers/' . strtolower($item['data']?->connectivitySupplierGroup) . '.png' }}" />
+                                                            src="{{ $item['image'] ?? public_path() . '/images/providers/' . str_replace(' ', '', strtolower($item['data']?->connectivitySupplierGroup)) . '.png' }}" />
                                                     @endif
                                                 </td>
                                             @endif
@@ -380,10 +385,10 @@
                                         £{{ number_format(quoteTotal('MONTHLY', 'total', $quote['items']), 2) }}
                                     </td>
                                     <td id="total_monthly_vat">
-                                        £{{ number_format(quoteTotal('MONTHLY', 'total_tax', $quote['items']) * 0.2, 2) }}
+                                        £{{ number_format(quoteTotal('MONTHLY', 'total_tax', $quote['items']), 2) }}
                                     </td>
                                     <td id="total_monthly_gross">
-                                        £{{ number_format(quoteTotal('MONTHLY', 'total_gross', $quote['items']) * 1.2, 2) }}
+                                        £{{ number_format(quoteTotal('MONTHLY', 'total_gross', $quote['items']), 2) }}
                                     </td>
                                 </tr>
                                 <tr>

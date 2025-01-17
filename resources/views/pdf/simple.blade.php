@@ -19,7 +19,8 @@
 
     function quoteTotal($price_plan, $column, $items)
     {
-        $filteredItems = array_filter($items, function ($item) use ($price_plan) {
+        $temp = getLeafNodesWithChildren($items);
+        $filteredItems = array_filter($temp, function ($item) use ($price_plan) {
             return isset($item['price_plan']) && $item['price_plan']['code'] == $price_plan;
         });
 
@@ -41,7 +42,11 @@
         }
         $files = scandir($directory);
         foreach ($files as $file) {
-            if (is_file($directory . '/' . $file) && pathinfo($file, PATHINFO_EXTENSION) === 'css') {
+            if (
+                is_file($directory . '/' . $file) &&
+                pathinfo($file, PATHINFO_EXTENSION) === 'css' &&
+                strpos($file, 'app-') === 0
+            ) {
                 return public_path('build/assets/' . $file);
             }
         }
@@ -338,10 +343,10 @@
                                         £{{ number_format(quoteTotal('MONTHLY', 'total', $quote['items']), 2) }}
                                     </td>
                                     <td id="total_monthly_vat">
-                                        £{{ number_format(quoteTotal('MONTHLY', 'total_tax', $quote['items']) * 0.2, 2) }}
+                                        £{{ number_format(quoteTotal('MONTHLY', 'total_tax', $quote['items']), 2) }}
                                     </td>
                                     <td id="total_monthly_gross">
-                                        £{{ number_format(quoteTotal('MONTHLY', 'total_gross', $quote['items']) * 1.2, 2) }}
+                                        £{{ number_format(quoteTotal('MONTHLY', 'total_gross', $quote['items']), 2) }}
                                     </td>
                                 </tr>
                                 <tr>

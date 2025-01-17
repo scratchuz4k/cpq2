@@ -14,6 +14,6 @@ const setAltImg = (event) => {
 </script>
 <template>
     <img  class="img-provider" @error="setAltImg"
-            :src="`/images/providers/${format.toSnakeCase(item.data?.connectivitySupplierGroup)}.png`" :alt="item.data?.connectivitySupplierGroup"
+            :src="`/images/providers/${format.toLowerCase(item.data?.connectivitySupplierGroup)}.png`" :alt="item.data?.connectivitySupplierGroup"
             :title="item.data?.connectivitySupplierGroup" />
 </template>
