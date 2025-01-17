@@ -9,17 +9,14 @@ const groupColumns = columns.filter((x) => x.is_group);
 </script>
 <template>
   <table
-  id="table-simple"
+    id="table-simple"
     :class="{ 'table-hover': !preview }"
     class="table table-dealmaker table-bordered"
   >
     <!-- Headers -->
     <thead>
       <tr>
-        <th
-          style="width: 5%"
-          v-if="!preview && quote.items.find((e) => !!e.children.length)"
-        ></th>
+        <th style="width: 5%" v-if="!preview"></th>
         <template v-for="column in columns">
           <th
             :class="[`column-${column.value}-header`]"
