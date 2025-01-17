@@ -74,11 +74,10 @@ const items = ref([
         <div class="panel">
             <div class="container-fluid">
                 <div class="row" id="header">
-                    <div class="col" id="header_left">
+                    <div v-if="tenant.logo?.full_route" class="col" id="header_left">
                         <div class="tenant-logo">
-                            <img :src="tenant.logo?.full_route ?? 'https://img.logoipsum.com/331.svg'" alt="Sample Logo">
+                            <img :src="tenant.logo?.full_route" alt="{{ tenant.name }}">
                         </div>
-                        <p>{{ tenant.name }}</p>
                     </div>
                     <div class="col text-end" id="header_right">
                         <p>{{ quote.account?.name }}<br>{{ quote.address_data?.label }}</p>
@@ -318,11 +317,10 @@ const items = ref([
                     </div>
                 </div>
                 <div class="row mb-2" id="footer">
-                    <div class="col">
+                    <div v-if="tenant.logo?.full_route" class="col">
                         <div class="tenant-logo">
-                            <img :src="tenant.logo?.full_route ?? 'https://img.logoipsum.com/331.svg'" alt="Sample Logo">
+                            <img :src="tenant.logo?.full_route" alt="{{ tenant.name }}">
                         </div>
-                        <p>{{ tenant.name }}</p>
                     </div>
                     <div class="col text-end">
                         <p>Lorem ipsum dolor sit amet...</p>

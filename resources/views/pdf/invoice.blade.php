@@ -174,12 +174,13 @@ $monthly_items = array_filter($quote['items'], function ($item) {
 <body>
     <div class="container-fluid">
         <div class="row" id="header">
-            <div class="col" id="header_left">
-                <div class="tenant-logo">
-                    <img src="{{ $tenant->logo?->route ? storage_path('app/public/images/').str_replace('storage/images/', '' , $tenant->logo?->route) : 'https://img.logoipsum.com/331.svg' }}" alt="{{ $tenant->name }}">
+            @if($tenant->logo?->route)
+                <div class="col" id="header_left">
+                    <div class="tenant-logo">
+                        <img src="{{ storage_path('app/public/images/').str_replace('storage/images/', '' , $tenant->logo?->route) }}" alt="{{ $tenant->name }}">
+                    </div>
                 </div>
-                <p>{{ $tenant->name }}</p>
-            </div>
+            @endif
             <div class="col text-end" id="header_right">
                 <p>{{ $quote['account']->name }}<br>{{ $quote['address_data']?->label }}</p>
                 <p>Tel: +44 (0) 191 300 700</p>
@@ -428,12 +429,14 @@ $monthly_items = array_filter($quote['items'], function ($item) {
             </div>
         </div>
         <div class="row mb-2" id="footer">
-            <div class="col">
-                <div class="tenant-logo">
-                    <img src="{{ $tenant->logo?->route ? storage_path('app/public/images/').str_replace('storage/images/', '' , $tenant->logo?->route) : 'https://img.logoipsum.com/331.svg' }}" alt="{{ $tenant->name }}">
+
+            @if($tenant->logo?->route)
+                <div class="col">
+                    <div class="tenant-logo">
+                        <img src="{{ storage_path('app/public/images/').str_replace('storage/images/', '' , $tenant->logo?->route) }}" alt="{{ $tenant->name }}">
+                    </div>
                 </div>
-                <p>{{ $tenant->name }}</p>
-            </div>
+            @endif
             <div class="col text-end">
                 <p>Lorem ipsum dolor sit amet...</p>
             </div>

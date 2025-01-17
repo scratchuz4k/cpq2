@@ -36,11 +36,6 @@ const submitFileForm = () => {
 
 const submitLogoForm = () => {
     isLoading.value = true
-    if (!tenant.logo_id) {
-        notyf.error("You need to select a file")
-        isLoading.value = false
-        return
-    }
     router.post(`/tenant/${tenant.id}`,
         {
             _method: "PUT",
