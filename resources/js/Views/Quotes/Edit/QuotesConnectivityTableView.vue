@@ -348,7 +348,7 @@ getArticles(false, true)
                 </div>
                 <div class="row mb-3" v-if="errors.length">
                     <div class="col">
-                        <InfoBox class="mb-2 py-0" severity="info">
+                        <InfoBox class="mb-4 py-0" severity="info">
                             <div class="d-flex justify-content-between">
                                 <div class="small">
                                     <div class="mb-2 fw-bold">There were issues retrieving data from:</div>

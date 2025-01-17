@@ -79,7 +79,7 @@ const editableColumns = (columns, code) => {
         {{ GBP.format(quoteTotal(pricePlan.code)) }}
       </h3>
     </div>
-    <div style="overflow: auto">
+    <div>
       <table
         :id="'table-' + pricePlanskeys[pricePlan.code]"
         class="table-dealmaker table table-bordered"
