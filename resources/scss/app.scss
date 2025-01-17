@@ -158,24 +158,25 @@ body {
 
     .navbar {
         .nav-item {
-            &.dropdown{
+            &.dropdown {
                 .dropdown-menu {
                     width: 100%;
                     margin: 4px;
 
                     .dropdown-item {
-                        background-color: var(--white)!important;
-                        color: var(--dark-purple)!important;
+                        background-color: var(--white) !important;
+                        color: var(--dark-purple) !important;
 
                         &.active {
-                            background-color: var(--color-purple)!important;
-                            color: white!important;
+                            background-color: var(--color-purple) !important;
+                            color: white !important;
                             pointer-events: none;
                             cursor: default;
                         }
+
                         &:hover {
-                            background-color: var(--color-purple-dark)!important;
-                            color: white!important;
+                            background-color: var(--color-purple-dark) !important;
+                            color: white !important;
                         }
                     }
                 }
@@ -1006,7 +1007,7 @@ body {
 }
 
 .deleteFileConfirm {
-    z-index: 1101!important;
+    z-index: 1101 !important;
 }
 
 .notyf-error {
@@ -1057,6 +1058,7 @@ body {
     .p-card-header {
         padding: 20px;
     }
+
     .input-file-save {
         &.p-button {
             &.btn-primary {
@@ -1114,4 +1116,19 @@ body {
 .cpq-tooltip:hover .cpq-tooltip-text {
     visibility: visible;
     opacity: 1;
+}
+
+
+.preview-logo {
+    display: flex;
+    flex-direction: column;
+    height: 75px;
+    width: 200px;
+}
+
+.preview-logo>img {
+    max-height: 75px;
+    max-width: 200px;
+    object-fit: contain;
+    object-position: left;
 }

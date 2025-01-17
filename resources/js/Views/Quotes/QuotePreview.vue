@@ -31,7 +31,7 @@ let view =
     <div id="print" class="page">
       <div class="row">
         <div class="col" id="header_left">
-          <div style="width: 150px">
+          <div class="preview-logo">
             <app-logo></app-logo>
           </div>
         </div>

@@ -167,7 +167,7 @@ class QuoteController extends BaseController
 
         // return view("pdf.$view", compact('quote', 'solution_types'));
         return pdf()
-            ->view("pdf.$view", compact('quote', 'solution_types'))
+            ->view("pdf.$view", compact('quote', 'solution_types', 'tenant'))
             ->format(Format::A4)
             ->withBrowsershot(function (Browsershot $browsershot) {
                 $browsershot->waitUntilNetworkIdle();

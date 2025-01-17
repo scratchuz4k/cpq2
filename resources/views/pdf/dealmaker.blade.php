@@ -137,8 +137,12 @@
     <div id="print">
         <div class="row" id="header">
             <div class="col" id="header_left">
-                <img src="https://img.logoipsum.com/331.svg" alt="Sample Logo" class="img-fluid">
-                <p>Insert Tagline</p>
+                @if (!is_null($tenant['logo']))
+                    <div class="preview-logo">
+                        <img src="{{ public_path($tenant['logo']['route']) }}" alt="{{ $tenant['name'] }}"
+                            class="img-fluid" />
+                    </div>
+                @endif
             </div>
             <div class="col text-end" id="header_right">
                 <p>{{ $quote['account']->name }}<br>{{ $quote['address_data']?->label }}</p>
