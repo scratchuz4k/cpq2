@@ -1,12 +1,9 @@
 <script setup>
-import DataTable from 'datatables.net-vue3';
-import DataTablesCore from 'datatables.net-bs5';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head } from '@inertiajs/vue3';
 import {ref} from "vue";
 import {assignOrder, createOrder} from "@/Composables/useOrders.js";
 import Button from "primevue/button";
-DataTable.use(DataTablesCore);
 const props = defineProps({
     users: {
         type: Array,

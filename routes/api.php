@@ -22,6 +22,8 @@ use App\Http\Controllers\Api\PermissionController;
 use App\Http\Controllers\Api\SolutionTypeController;
 use App\Http\Controllers\Api\ApiConfigurationController;
 use App\Http\Controllers\Api\SharedLinkController;
+use App\Http\Controllers\Api\ResourceController;
+use App\Http\Controllers\Api\TenantController;
 
 Route::prefix("external")->group(function () {
     Route::post("get-address-by-postcode", [ExternalController::class, "getAddressesByPostCode"]);
@@ -54,4 +56,6 @@ Route::apiResources([
     'users' => UserController::class,
     'tokens' => TokenController::class,
     'shared-links' => SharedLinkController::class,
+    'resources' => ResourceController::class,
+    'tenants' => TenantController::class,
 ]);

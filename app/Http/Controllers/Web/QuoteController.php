@@ -154,6 +154,7 @@ class QuoteController extends BaseController
     {
         $solution_types = SolutionType::get();
         $user = request()->user();
+        $tenant = $user->currentTenant()->with('file','logo')->first();
         $dir = 'pdf/' . $user->currentTenant->id;
 
         if (!Storage::makeDirectory($dir)) {

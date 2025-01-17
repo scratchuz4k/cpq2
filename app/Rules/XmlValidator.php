@@ -2,9 +2,11 @@
 
 namespace App\Rules;
 
+use App\Models\Resource;
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 
 class XmlValidator implements ValidationRule
 {
@@ -15,9 +17,10 @@ class XmlValidator implements ValidationRule
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-
-        if ($value instanceof UploadedFile) {
-            $xml_content = file_get_contents($value);
+        // Find resource and get file content
+        if (is_int($value)) {
+            $res = Resource::findOrFail($value);
+            $xml_content = Storage::disk('public')->get($res->getRouteValue());
         }
 
         if (is_string($value)) {

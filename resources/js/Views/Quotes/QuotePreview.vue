@@ -1,6 +1,5 @@
 <script setup>
 import { setQuote, quote } from "@composables/useQuote";
-
 const props = defineProps({
   modelValue: Object,
   pricePlans: Object,
@@ -32,12 +31,9 @@ let view =
     <div id="print" class="page">
       <div class="row">
         <div class="col" id="header_left">
-          <img
-            src="https://img.logoipsum.com/331.svg"
-            alt="Sample Logo"
-            class="img-fluid"
-          />
-          <p>Insert Tagline</p>
+          <div style="width: 150px">
+            <app-logo></app-logo>
+          </div>
         </div>
         <div class="col text-end" id="header_right">
           <p>{{ quote.account?.name }}<br />{{ quote.address_data?.label }}</p>
