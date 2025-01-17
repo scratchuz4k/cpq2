@@ -50,7 +50,7 @@ class SsoController extends Controller
         $ssoXmlContent = Storage::disk('public')->get($resourceFile->getRouteValue());
         if (!simplexml_load_string($ssoXmlContent)) {
             return back()->with([
-                'status' => __('The SSO cnav-link dropdown-toggleonfiguration found for your domain is invalid'),
+                'status' => __('The SSO configuration found for your domain is invalid'),
             ]);
         }
 
