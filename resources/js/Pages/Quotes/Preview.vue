@@ -1,12 +1,13 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head, Link } from '@inertiajs/vue3';
+import {Head} from '@inertiajs/vue3';
 import { reactive, ref } from "vue";
 
 const props = defineProps({
     quote: Object,
+    tenant: Object
 });
-
+const tenant = props.tenant
 const getLeafNodesWithChildren = (objects) => {
     let leaves = [];
     const findLeaves = (items) => {
@@ -73,9 +74,10 @@ const items = ref([
         <div class="panel">
             <div class="container-fluid">
                 <div class="row" id="header">
-                    <div class="col" id="header_left">
-                        <img src="https://img.logoipsum.com/331.svg" alt="Sample Logo" class="img-fluid">
-                        <p>Insert Tagline</p>
+                    <div v-if="tenant.logo?.full_route" class="col" id="header_left">
+                        <div class="tenant-logo">
+                            <img :src="tenant.logo?.full_route" alt="{{ tenant.name }}">
+                        </div>
                     </div>
                     <div class="col text-end" id="header_right">
                         <p>{{ quote.account?.name }}<br>{{ quote.address_data?.label }}</p>
@@ -325,9 +327,10 @@ const items = ref([
                     </div>
                 </div>
                 <div class="row mb-2" id="footer">
-                    <div class="col">
-                        <img src="https://img.logoipsum.com/331.svg">
-                        <p>Insert Tagline</p>
+                    <div v-if="tenant.logo?.full_route" class="col">
+                        <div class="tenant-logo">
+                            <img :src="tenant.logo?.full_route" alt="{{ tenant.name }}">
+                        </div>
                     </div>
                     <div class="col text-end">
                         <p>Lorem ipsum dolor sit amet...</p>
@@ -350,5 +353,17 @@ const items = ref([
 }
 .badge.is-contended{
     font-size: 10px;
+}
+.tenant-logo{
+    display: flex;
+    flex-direction: column;
+    height: 75px;
+    width: 200px;
+}
+.tenant-logo>img{
+    max-height: 75px;
+    max-width: 200px;
+    object-fit: contain;
+    object-position: left;
 }
 </style>
