@@ -199,7 +199,7 @@
                                                             @if ($group['data']?->connectivitySupplierGroup)
                                                                 <img class="img-provider"
                                                                     style="max-width: 60px; max-height: 20px; width: auto; height: auto;"
-                                                                    src="{{ $group['image'] ?? public_path() . '/images/providers/' . strtolower($group['data']?->connectivitySupplierGroup) . '.png' }}" />
+                                                                    src="{{ $group['image'] ?? public_path() . '/images/providers/' . str_replace(' ', '', strtolower($group['data']?->connectivitySupplierGroup)) . '.png' }}" />
                                                             @endif
                                                         </div>
                                                         <div class="me-3 d-flex">
