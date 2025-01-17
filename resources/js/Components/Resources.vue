@@ -129,10 +129,8 @@ onMounted(() => {
                         'd-flex', 'justify-center',
                         'file-card',
                         'h-100',
-                        'position-relative',
-                        'overflow-visible'
+                        'position-relative'
                     ]"
-                     style="overflow:hidden"
                     :pt="{
                         body: {class: 'justify-content-between h-100'}
                     }"
@@ -151,7 +149,7 @@ onMounted(() => {
                     </template>
                     <template #title>
                         <div class="d-flex justify-content-between">
-                            <p class="overflow-hidden">
+                            <p>
                                 {{ image.title }}
                             </p>
                         </div>
@@ -183,24 +181,17 @@ onMounted(() => {
 }
 .delete-button-container {
     position: absolute;
-    top: -40px;
-    right: 0;
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-content: center;
-    justify-content: center;
-    border-radius: 50%;
-    border: 1px solid #333333;
-    background-color: white;
+    top: -10px;
+    right: -10px;
 
     &:hover {
         .delete-button {
-            font-size: 22px;
+            transform: scale(1.2);
         }
     }
 
     .delete-button {
+        font-size: 20px;
         transition: 0.3s all ease-in-out;
     }
 }
