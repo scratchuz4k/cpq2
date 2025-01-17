@@ -653,12 +653,12 @@ getArticles(false, true)
                                     </span>
                                 </td>
                                 <td><img class="img-provider" @error="setAltImg"
-                                        :src="`/images/providers/${article.providerKey}.png`"
+                                        :src="`/images/providers/${format.toLowerCase(article.providerKey)}.png`"
                                         :alt="article.providerName" :title="article.providerName"
                                         :data-bs-original-title="article.providerName" v-tooltip/> </td>
                                 <td>
                                     <img class="img-subprovider" @error="setAltImg"
-                                        :src="`/images/providers/${article.connectivitySupplierGroup?.replace(/ /g, '_').toLowerCase()}.png`"
+                                        :src="`/images/providers/${format.toLowerCase(article.connectivitySupplierGroup)}.png`"
                                         :alt="article.connectivitySupplierName"
                                         :title="article.connectivitySupplierName"
                                         :data-bs-original-title="article.connectivitySupplierName" v-tooltip />
