@@ -124,16 +124,24 @@ onMounted(() => {
         <p v-if="images.length === 0" class="h5 text-center">No files found</p>
         <div v-else class="row row-cols-5 mb-3">
             <div v-for="image in images" class="col mb-4">
-                <Card :class="[image == selectedItem ? 'selected' : '', 'd-flex', 'justify-center', 'file-card', 'h-100']" style="overflow:hidden"
-                      :pt="{
+                <Card :class="[
+                        image == selectedItem ? 'selected' : '',
+                        'd-flex', 'justify-center',
+                        'file-card',
+                        'h-100',
+                        'position-relative',
+                        'overflow-visible'
+                    ]"
+                     style="overflow:hidden"
+                    :pt="{
                         body: {class: 'justify-content-between h-100'}
                     }"
                       @click="selectItem(image)"
                 >
                     <template #header>
                         <div class="d-flex justify-content-center w-100 position-relative">
-                            <div v-if="image === selectedItem" style="position: absolute; top:0; left:0; background-color: #d3d3d3ba; width: 100%; height: 100%; display: flex; align-content: center; justify-content: center">
-                                <button class="d-inline-block p-0 m-0 btn fs-1" @click="remove(image)" label="Remove File">
+                            <div v-if="image === selectedItem" class=delete-button-container>
+                                <button class="d-inline-block p-0 m-0 btn delete-button" @click="remove(image)" label="Remove File">
                                     <font-awesome-icon icon="fas fa-trash-alt" />
                                 </button>
                             </div>
@@ -143,7 +151,7 @@ onMounted(() => {
                     </template>
                     <template #title>
                         <div class="d-flex justify-content-between">
-                            <p>
+                            <p class="overflow-hidden">
                                 {{ image.title }}
                             </p>
                         </div>
@@ -172,6 +180,29 @@ onMounted(() => {
 .selected {
     box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px, rgb(51, 51, 51) 0px 0px 0px 1px;
     background-color: whitesmoke;
+}
+.delete-button-container {
+    position: absolute;
+    top: -40px;
+    right: 0;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-content: center;
+    justify-content: center;
+    border-radius: 50%;
+    border: 1px solid #333333;
+    background-color: white;
+
+    &:hover {
+        .delete-button {
+            font-size: 22px;
+        }
+    }
+
+    .delete-button {
+        transition: 0.3s all ease-in-out;
+    }
 }
 </style>
 
