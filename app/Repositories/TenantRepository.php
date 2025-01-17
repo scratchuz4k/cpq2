@@ -15,7 +15,6 @@ class TenantRepository
 
         if ($resource) {
             Storage::disk('public')->put($resource->getRouteValue(), $data['sso_text_area']);
-
             return $resource->id;
         }
 
@@ -35,7 +34,8 @@ class TenantRepository
             'title' => $file->getClientOriginalName() ?: $file->hashName(),
             'mime_type' => 'text/xml',
             'route' => $path,
-            'size' => $file->getSize()
+            'size' => $file->getSize(),
+            'tenant_id' => auth()->user()->tenant_id
         ]);
 
         if (Storage::exists('temp/temp_file.xml')) {

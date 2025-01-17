@@ -16,11 +16,6 @@ const item = ref(null)
 
 const submitFileForm = () => {
     isLoading.value = true
-    if (!tenant.sso_id) {
-        notyf.error("You need to select a file")
-        isLoading.value = false
-        return
-    }
     router.post(`/tenant/${tenant.id}`,
         {
             _method: "PUT",
@@ -91,39 +86,11 @@ const submitTextForm = () => {
     )
 }
 
-const removeFile = (resource_type) => {
-
-    router.post(`/tenant/${tenant.id}`,
-        {
-            _method: "PUT",
-            resource_type: resource_type
-        },{
-            onSuccess: () => {
-                notyf.success(`File removed successfully`)
-                isLoading.value = false
-
-            },
-            onError: (errors) => {
-                let string = ''
-                Object.keys(errors).forEach((key) => {
-                    string += errors[key] + '<br>'
-                })
-                notyf.error(string)
-                isLoading.value = false
-            }
-        }
-    )
-}
-
 const items = ref([
     { label: 'Home', url: '/' },
     { label: 'My Account', url: '/myaccount' },
     { label: 'Tenants' },
 ]);
-
-emitter.on('remove-file', (params) => {
-    removeFile(params.resource_type)
-})
 
 </script>
 
@@ -154,6 +121,7 @@ emitter.on('remove-file', (params) => {
                                         <form @submit.prevent="submitTextForm" enctype="multipart/form-data">
                                             <textarea v-if="tenant.file" v-model="tenant.file.file_content" class="w-100 p-4" rows="10"></textarea>
                                             <textarea v-else v-model="tenant.sso_text" class="w-100 p-4" rows="10"></textarea>
+                                            <p class="small">* This will update the file content</p>
                                             <button type="submit" class="btn btn-primary mt-2">
                                                 <font-awesome-icon class="me-2" :icon="['fas', 'save']"/>
                                                 Save

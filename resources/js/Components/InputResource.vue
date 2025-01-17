@@ -13,7 +13,7 @@
         </div>
     </div>
     <div>
-        <button v-if="item" type="button" class="btn btn-outline-primary mt-2" @click="remove(props.resource_type)">
+        <button v-if="item" type="button" class="btn btn-outline-primary mt-2" @click="remove()">
             <font-awesome-icon icon="fas fa-trash-alt" />
             Remove file
         </button>
@@ -27,8 +27,7 @@ const props = defineProps({
     resource: Object,
     modelValue: Number,
     showLikeLine: Boolean,
-    acceptedFiles: Array,
-    resource_type: String
+    acceptedFiles: Array
 })
 
 const emit = defineEmits(["update:modelValue", "change"])
@@ -52,14 +51,14 @@ const coverImage = (item) => {
         return '/images/xml_icon.svg'
     }
 }
-const remove = (resource_type) => {
-    emitter.emit('remove-file', { resource_type: resource_type })
+const remove = () => {
     item.value = null
     proxyValue.value = null
+    emit('change', null)
 }
 
 const openResources = () => {
-    emitter.emit("resources:open", { event: eventFire, acceptedFiles: props.acceptedFiles, resource_type: props.resource_type })
+    emitter.emit("resources:open", { event: eventFire, acceptedFiles: props.acceptedFiles })
 }
 emitter.on(eventFire, (res) => {
     item.value = res

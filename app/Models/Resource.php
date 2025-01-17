@@ -19,8 +19,7 @@ class Resource extends Model
         'mime_type',
         'alt_text',
         'size',
-        'tenant_id',
-        'resource_type_id'
+        'tenant_id'
     ];
 
     protected $appends = ['full_route'];

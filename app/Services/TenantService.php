@@ -16,12 +16,6 @@ class TenantService
             ];
         }
 
-        if (array_key_exists('resource_type', $data) && !is_null($data['resource_type'])) {
-            $data = [
-                $data['resource_type'] => null
-            ];
-        }
-
         $tenant = $tenant->update($data);
 
         return $tenant;

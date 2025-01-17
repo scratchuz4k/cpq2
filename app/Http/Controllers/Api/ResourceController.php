@@ -80,7 +80,6 @@ class ResourceController extends Controller
         try {
             $resource = $resource->update([
                 'title' => $request->title ?? null,
-                'resource_type_id' => $request->resource_type_id ?? null,
                 'alt_text' => $request->alt_text,
             ]);
         } catch (\Exception $e) {
