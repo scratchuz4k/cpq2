@@ -6,12 +6,13 @@ const props = defineProps({
   pricePlans: Object,
 });
 
+setQuote(props.modelValue);
+
 const warningProviders = ref([
   { its: quote.items.some((item) => item.data?.providerName === "ITS") },
   { pxc: quote.items.some((item) => item.data?.providerName === "PXC") },
 ]);
 
-setQuote(props.modelValue);
 
 const showDate = (days = 0) => {
   const dateObj = new Date();
