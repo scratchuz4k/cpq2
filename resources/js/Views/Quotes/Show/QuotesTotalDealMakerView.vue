@@ -92,6 +92,18 @@ const quoteTotal = (key) => {
     .reduce((acc, item) => (acc += item.total), 0);
 };
 
+const quoteQuantityPrice = (price_plan) => {
+  let total = 0;
+  let tax = 0;
+  quote.items.forEach((e) => {
+    if (e.price_plan && e.price_plan.code == price_plan) {
+      total += e.price * e.quantity;
+      tax += e.price * e.quantity * e.tax;
+    }
+  });
+  return total + tax;
+};
+
 const disableButtonSendToOrder = ref(false);
 const createOrderAndRedirect = async (id) => {
   disableButtonSendToOrder.value = true;
@@ -195,7 +207,7 @@ const items = ref([
               {{ GBP.format(quoteTotal("SINGLE")) }}<br />
               followed by
               <span class="text-primary"> monthly payments</span> of
-              {{ GBP.format(quoteTotal("MONTHLY")) }}
+              {{ GBP.format(quoteQuantityPrice("MONTHLY")) }}
             </p>
           </div>
           <div class="d-flex justify-content-between">
@@ -498,5 +510,4 @@ input[type="number"] {
   white-space: pre-wrap;
   word-wrap: break-word;
 }
-
 </style>
