@@ -120,7 +120,7 @@ class CloudMarketConnectivityProducts implements ShouldQueue, TenantAware
             'BT' => ['BT Wholesale', 'BTW', 'BT'],
             'Virgin' => ['Virgin Media', 'Virgin Media Business', 'Virgin'],
             'ITS' => ['ITS Technology Group', 'ITS'],
-            'TalkTalk' => ['TalkTalk Business', 'TalkTalk']
+			'TalkTalk' => ['TalkTalk Business', 'TalkTalk', 'TTB'],
         ];
 
         foreach ($sub_provider_mapping as $consolidated_name => $sub_providers) {
