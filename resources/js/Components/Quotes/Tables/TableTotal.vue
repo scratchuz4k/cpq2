@@ -19,6 +19,24 @@ const quoteTotal = (price_plan, column = "total") => {
   });
   return total;
 };
+const quoteQuantityPrice = (price_plan, operation = "simple") => {
+  let total = 0;
+  let tax = 0;
+  let items = getLeafNodesWithChildren(props.quote.items);
+  items.forEach((e) => {
+    if (e.price_plan && e.price_plan.code == pricePlanskeys[price_plan]) {
+      total += e.price * e.quantity;
+      tax += e.price * e.quantity * e.tax;
+    }
+  });
+  if (operation == "tax") {
+    return tax;
+  }
+  if (operation == "total") {
+    return total + tax;
+  }
+  return total;
+};
 </script>
 <template>
   <div
@@ -39,13 +57,13 @@ const quoteTotal = (price_plan, column = "total") => {
       <tr>
         <th><p class="small text-start">Monthly Total</p></th>
         <td id="total_monthly_net">
-          {{ GBP.format(quoteTotal("Recurring")) }}
+          {{ GBP.format(quoteQuantityPrice("Recurring")) }}
         </td>
         <td id="total_monthly_vat">
-          {{ GBP.format(quoteTotal("Recurring", "total_tax")) }}
+          {{ GBP.format(quoteQuantityPrice("Recurring", "tax")) }}
         </td>
         <td id="total_monthly_gross">
-          {{ GBP.format(quoteTotal("Recurring", "total_gross")) }}
+          {{ GBP.format(quoteQuantityPrice("Recurring", "total")) }}
         </td>
       </tr>
       <tr>
