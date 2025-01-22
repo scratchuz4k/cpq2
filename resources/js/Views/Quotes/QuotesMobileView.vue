@@ -65,12 +65,12 @@ const filterList = reactive({
 
 const sorts = [
   {
-    label: "Lowet Price",
+    label: "Lowest Price",
     order: "asc",
     orderBy: "price.net",
   },
   {
-    label: "Hightest Price",
+    label: "Highest Price",
     order: "desc",
     orderBy: "price.net",
   },
@@ -130,7 +130,10 @@ const getProductsShopBlocks = async () => {
   meta.total = res.data.total;
   meta.overallTotal = res.data.overall_total;
   meta.isLoading = false;
-  filterList.models = res.data.filters.model;
+  filterList.models = Object.keys(res.data.filters.model).sort().reduce((acc, key) => {
+    acc[key] = res.data.filters.model[key];
+    return acc;
+  }, {})
 };
 
 const clearFilters = () => {
