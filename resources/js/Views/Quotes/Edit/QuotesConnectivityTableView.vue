@@ -155,7 +155,7 @@ const getArticles = async (clearCache = false, runTimeout = false) => {
     };
 
     errors.value = res.data.errors
-      .filter(error => error.provider !== 'gamma')
+      .filter((error) => error.provider !== "gamma")
       .map((error) => {
         for (const [key, message] of Object.entries(errorMessages)) {
           if (error.response.includes(key)) {
@@ -166,7 +166,21 @@ const getArticles = async (clearCache = false, runTimeout = false) => {
           provider: error.provider,
           response: "An error occurred, resulting in partial or no results",
         };
-    });
+      });
+
+    errors.value = res.data.errors
+      .filter((error) => error.provider !== "gamma")
+      .map((error) => {
+        for (const [key, message] of Object.entries(errorMessages)) {
+          if (error.response.includes(key)) {
+            return { provider: error.provider, response: message };
+          }
+        }
+        return {
+          provider: error.provider,
+          response: "An error occurred, resulting in partial or no results",
+        };
+      });
 
     articles.value = articles.value.map((article) => {
       if (article.productName.includes("with router:")) {
@@ -176,6 +190,15 @@ const getArticles = async (clearCache = false, runTimeout = false) => {
           article.additionalInfo = article.additionalInfo || {};
           article.additionalInfo["Primary Router Model"] = productInfo[1].trim();
         }
+      }
+
+      isLoading.value = false;
+      if (
+        !showLoadingModal.value &&
+        meta.overallTotal !== res.data.overall_total &&
+        meta.overallTotal > 0
+      ) {
+        notyf.success("New products added!");
       }
 
       return article;
