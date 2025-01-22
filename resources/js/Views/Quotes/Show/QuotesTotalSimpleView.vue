@@ -19,17 +19,6 @@ const warningProviders = ref([
   { pxc: temp.some((item) => item.data?.providerName === "PXC") },
 ]);
 
-const saveQuote = _.debounce(async () => {
-  try {
-    let res = await axios.put(`/api/quotes/${quote.id}`, {
-      items: quote.items,
-    });
-    Object.assign(quote, res.data);
-  } catch (ex) {
-    alert(ex.response.data.message);
-  }
-}, 500);
-
 const items = ref([
   { label: "Home", url: "/dashboard" },
   {

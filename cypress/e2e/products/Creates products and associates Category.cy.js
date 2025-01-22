@@ -17,7 +17,7 @@ describe('Creates products and associates Category.cy', () => {
         cy.get("#link-categories").click()
 
         cy.get("#datatable-search").type(category.code)
-        cy.wait(1000)
+        cy.wait(3000)
         cy.get('#categories-table').then(($table) => {
             if ($table.text().includes("No records found")) {
                 cy.get("#category-create-btn").click()
@@ -37,7 +37,7 @@ describe('Creates products and associates Category.cy', () => {
         cy.get("#link-products").click()
 
         cy.get("#datatable-search").type(product.code)
-        cy.wait(1000)
+        cy.wait(3000)
         cy.get('#products-table').then(($table) => {
             if ($table.text().includes("No records found")) {
                 cy.get("#product-create-btn").click()
@@ -47,7 +47,7 @@ describe('Creates products and associates Category.cy', () => {
 
                 cy.get("#select-product-categories > div.p-multiselect-label-container > div").click()
                 cy.get("#select-product-categories-search").type(category.name)
-                cy.wait(1000)
+                cy.wait(3000)
                 cy.get("#select-product-categories_0 > span").click()
                 cy.get("#btn-save-product").click()
                 cy.get(".notyf").contains("Created with Success")
@@ -55,7 +55,7 @@ describe('Creates products and associates Category.cy', () => {
         });
 
         cy.get("#datatable-search").type(product.code)
-        cy.wait(1000)
+        cy.wait(3000)
         cy.get("#datatable-btn-0-edit").click()
         cy.get("#select-product-categories > div.p-multiselect-label-container > div").contains(category.name)
     })
