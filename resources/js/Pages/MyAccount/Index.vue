@@ -118,6 +118,16 @@ const items = ref([
                                 </a>
                             </div>
                         </div>
+                        <div class="col" v-if="hasRole('Super Admin') || can('viewAny solution_type')">
+                            <div class="card bg-light border-0">
+                                <a id="link-solutions" :href="route('solution-types.index')"
+                                    class="card-body text-center p-2 text-decoration-none">
+                                    <font-awesome-icon class="py-3 opacity-25" :icon="['fas', 'circle-nodes']"
+                                        size="2x"></font-awesome-icon>
+                                    <span class="d-block h5">Solutions</span>
+                                </a>
+                            </div>
+                        </div>
                         <div class="col" v-if="hasRole('Super Admin') || can('viewAny spa')">
                             <div class="card bg-light border-0">
                                 <a id="link-spas" :href="route('spas.index')"

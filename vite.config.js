@@ -19,12 +19,16 @@ export default defineConfig({
             },
         }),
         visualizer()
-
     ],
     resolve: {
         alias: {
             '@assets': fileURLToPath(new URL('./resources/assets', import.meta.url)),
             '@composables': fileURLToPath(new URL('./resources/js/Composables', import.meta.url)),
         }
+    },
+    build: {
+        minify: true,
+        cssCodeSplit: true,
+        modulePreload: false,
     },
 });

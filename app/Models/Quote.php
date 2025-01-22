@@ -101,11 +101,11 @@ class Quote extends Model
         $this->total_gross = 0;
 
         foreach ($this->itemsNoTree as $item) {
-            $raw_total += ($item->raw_price * $item->quantity) * $item->contract_length;
+            $raw_total += ($item->raw_price * $item->quantity * $item->contract_length );
 
-            $this->total += $item->total * $item->contract_length;
-            $this->total_tax += $item->total_tax * $item->contract_length;
-            $this->total_gross += $item->total_gross * $item->contract_length;
+            $this->total += $item->total;
+            $this->total_tax += $item->total_tax;
+            $this->total_gross += $item->total_gross;
         }
 
         $total_cost = $raw_total;
