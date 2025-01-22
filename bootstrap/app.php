@@ -7,13 +7,13 @@ use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Middleware\AddLinkHeadersForPreloadedAssets;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful;
 use Sentry\Laravel\Integration;
 use Spatie\Multitenancy\Http\Middleware\NeedsTenant;
+use Symfony\Component\HttpFoundation\Response;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -53,6 +53,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'auth/callback',
         ]);
     })
+
     ->withExceptions(function (Exceptions $exceptions) {
         Integration::handles($exceptions);
         $exceptions->respond(function (Response $response, Throwable $exception, Request $request) {

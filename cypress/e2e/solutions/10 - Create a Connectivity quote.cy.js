@@ -78,7 +78,7 @@ describe('Creates a Connectivity quote', () => {
         cy.get("#btn-previous").click()
         cy.get("#btn-more-filters").click()
         cy.get("#filter-show-quoted").click({ force: true })
-        cy.wait(1000)
+        cy.wait(3000)
         cy.get('.connectivity-table-item').its("length")
             .then((items) => {
                 expect(items).to.equal(5);

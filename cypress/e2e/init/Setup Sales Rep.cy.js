@@ -1,15 +1,5 @@
 const crypto = require("crypto");
-const {getCurrentDate, generateHash, slugify} = require("../../support/utils.js");
-const rand = (notAllowedNumber, max = 101) => {
-    let randomNumber = Math.floor(Math.random() * max); // Generate a random number
-
-    // Keep generating until it"s not equal to the not allowed number
-    while (randomNumber === notAllowedNumber) {
-        randomNumber = Math.floor(Math.random() * max);
-    }
-    return randomNumber
-}
-
+const { getCurrentDate, generateHash, slugify } = require("../../support/utils.js");
 const temp = getCurrentDate()
 const user = { name: slugify(temp), email: slugify(temp) + "@email.com", password: generateHash(temp) }
 const account = { ref: generateHash(temp), name: temp }
