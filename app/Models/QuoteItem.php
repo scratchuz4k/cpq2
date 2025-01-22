@@ -2,36 +2,37 @@
 
 namespace App\Models;
 
-use App\Trait\SetTenantId;
 use App\Models\Scopes\TenantScope;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Trait\SetTenantId;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class QuoteItem extends Model
 {
     use HasFactory, SetTenantId;
+
     protected $fillable = [
-        "quote_id",
-        "product_id",
-        "price_plan_id",
-        "parent_id",
-        "product_code",
-        "quantity",
-        "name",
-        "data",
+        'quote_id',
+        'product_id',
+        'price_plan_id',
+        'parent_id',
+        'product_code',
+        'quantity',
+        'name',
+        'data',
         'margin',
         'discount',
         'raw_price',
         'original_price',
         'price',
+        'tax',
         'total',
         'total_tax',
         'total_gross',
-        'tax_quote_item',
-        "contract_length",
-        'tenant_id'
+        'contract_length',
+        'tenant_id',
     ];
 
     protected function casts(): array
@@ -57,6 +58,7 @@ class QuoteItem extends Model
             $quoteItem->quote->save();
         });
     }
+
     /**
      * Get the parent user of this user.
      */
@@ -96,7 +98,7 @@ class QuoteItem extends Model
         $price = $this->original_price;
 
         $discounts = $this->quote->discounts->where('discountable_type', PricePlan::class)->where('discountable_id', $this->pricePlan->id)->pluck('discount');
-        $discounts  = [$this->discount, ...$discounts];
+        $discounts = [$this->discount, ...$discounts];
 
         foreach ($discounts as $discount) {
             $price = ($price * (1 - ($discount / 100)));
@@ -104,8 +106,8 @@ class QuoteItem extends Model
 
         $this->price = $price;
         $this->margin = $this->price - $this->raw_price;
-        $this->total = ($this->price * $this->quantity);
-        $this->total_tax = ($this->total * ($this->tax_quote_item / 100));
-        $this->total_gross = ($this->total * (($this->tax_quote_item / 100) + 1));
+        $this->total = ($this->price * $this->quantity * $this->contract_length);
+        $this->total_tax = ($this->total * ($this->tax / 100));
+        $this->total_gross = ($this->total * (($this->tax / 100) + 1));
     }
 }

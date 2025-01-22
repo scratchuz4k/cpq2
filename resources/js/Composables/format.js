@@ -31,27 +31,57 @@ const format = {
     },
 
     speed: (value) => {
-        let number = value;
+        let temp = value ?? 0;
+        let number = temp;
         let suffix = "Mb";
         let rounding = 10;
 
-        if (value < 1000) {
-            number = value;
-        } else if (value < 10000) {
-            number = value / 1000;
+        if (temp < 1000) {
+            number = temp;
+        } else if (temp < 10000) {
+            number = temp / 1000;
             suffix = "Gb";
             rounding = 1;
         } else {
-            number = value / 1000;
+            number = temp / 1000;
             suffix = "Gb";
             rounding = 1;
         }
 
-        let result = //TODO: remove round if value < 1000
+        let result = //TODO: remove round if temp < 1000
             parseInt(Math.ceil(number / rounding) * rounding) +
             " " +
             suffix;
         return result;
+    },
+    toCamelCase: (str) => {
+        if (!str) {
+            return ''
+        }
+        return str
+            .toLowerCase()
+            .replace(/_([a-z])/g, (_, letter) => letter.toUpperCase()) // Convert characters after dashes to uppercase
+            .replace(/^([a-z])/, (_, letter) => letter.toUpperCase());;
+    },
+    toSnakeCase: (str) => {
+        if (!str) {
+            return ''
+        }
+        return str
+        .replace(/([a-z])([A-Z])/g, '$1_$2') // Insert an underscore between lowercase and uppercase letters
+        .replace(/\s+/g, '_')               // Replace spaces with underscores
+        .toLowerCase();
+
+    },
+    toLowerCase: (str) => {
+        if (!str) {
+            return ''
+        }
+        return str
+        .replace(/([a-z])([A-Z])/g, '$1$2') // Insert an underscore between lowercase and uppercase letters
+        .replace(/\s+/g, '')               // Replace spaces with underscores
+        .toLowerCase();
+
     }
 }
 

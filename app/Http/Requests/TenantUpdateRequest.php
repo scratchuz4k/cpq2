@@ -24,7 +24,7 @@ class TenantUpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'file' => ['nullable', new XmlValidator],
+            'sso_id' => ['nullable', new XmlValidator],
             'sso_text_area' => ['nullable', new XmlValidator]
         ];
     }
