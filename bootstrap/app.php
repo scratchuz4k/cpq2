@@ -1,31 +1,23 @@
 <?php
 
-use App\Http\Middleware\AllowPrint;
-use Sentry\Laravel\Integration;
-use Inertia\Inertia;
-use Illuminate\Http\Request;
-use Symfony\Component\HttpFoundation\Response;
-use Illuminate\Support\Facades\Route;
-use Illuminate\Foundation\Application;
-use App\Http\Middleware\EnsureSuperAdmin;
-use App\Http\Middleware\SetTenantByRequest;
-use App\Http\Middleware\SetTenantBySession;
 use App\Http\Middleware\HandleInertiaRequests;
+use App\Http\Middleware\SetTenantBySession;
+use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
-use Spatie\Multitenancy\Http\Middleware\NeedsTenant;
-use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Http\Middleware\AddLinkHeadersForPreloadedAssets;
-use Spatie\Multitenancy\Http\Middleware\EnsureValidTenantSession;
+use Illuminate\Http\Request;
+use Illuminate\Routing\Middleware\SubstituteBindings;
+use Illuminate\Support\Facades\Route;
+use Inertia\Inertia;
+use Inertia\Response;
 use Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful;
 use Sentry\Laravel\Integration;
-use Spatie\Multitenancy\Http\Middleware\EnsureValidTenantSession;
 use Spatie\Multitenancy\Http\Middleware\NeedsTenant;
-use Symfony\Component\HttpFoundation\Response;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
-        commands: __DIR__ . '/../routes/console.php',
+        commands: __DIR__.'/../routes/console.php',
         health: '/up',
         using: function () {
             Route::middleware(['api', 'auth:sanctum'])
@@ -57,9 +49,8 @@ return Application::configure(basePath: dirname(__DIR__))
             NeedsTenant::class,
         ]);
 
-
         $middleware->validateCsrfTokens(except: [
-            'auth/callback'
+            'auth/callback',
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
