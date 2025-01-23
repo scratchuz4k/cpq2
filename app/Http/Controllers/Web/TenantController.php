@@ -27,7 +27,7 @@ class TenantController extends BaseController
 
         return Inertia::render('Tenant/Index', [
             'isSuperAdmin' => $user->hasRole('Super Admin'),
-            'tenants' => $user->currentTenant->load('file', 'logo'),
+            'tenants' => $user->currentTenant->load('file', 'logo')
         ]);
     }
 

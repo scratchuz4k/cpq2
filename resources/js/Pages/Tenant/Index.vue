@@ -1,8 +1,9 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import {Head, router} from "@inertiajs/vue3";
+import {Head} from "@inertiajs/vue3";
 import {reactive, ref} from 'vue';
 import Button from "primevue/button";
+import axios from "axios";
 
 const props = defineProps({
     isSuperAdmin: Boolean,
@@ -14,71 +15,62 @@ const event = ref(null)
 const tenant = reactive(props.tenant)
 const item = ref(null)
 
-const submitFileForm = () => {
+const submitFileForm = async () => {
     isLoading.value = true
-    router.post(`/tenant/${tenant.id}`,
-        {
-            _method: "PUT",
-            sso_id: tenant.sso_id
-        },{
-            onSuccess: (page) => {
-                notyf.success("File uploaded with Success")
-            },
-            onError: (errors) => {
-                let string = ''
-                Object.keys(errors).forEach((key) => {
-                    string += errors[key] + '<br>'
-                })
-                notyf.error(string)
-            }
+
+    let data = {
+        sso_id: tenant.sso_id
+    }
+    try {
+        let res = await axios.put(`/api/tenant/` + tenant.id, data)
+        Object.assign(tenant, res.data);
+        notyf.success("File uploaded with Success")
+    } catch (err) {
+        let string = ''
+        Object.keys(err).forEach((key) => {
+            string += err[key] + '<br>'
         })
+        notyf.error(string)
+    }
 };
 
-const submitLogoForm = () => {
+const submitLogoForm = async () => {
     isLoading.value = true
-    router.post(`/tenant/${tenant.id}`,
-        {
-            _method: "PUT",
-            logo_id: tenant.logo_id
-        },{
-            onSuccess: (page) => {
-                notyf.success("Logo uploaded with Success")
-            },
-            onError: (errors) => {
-                let string = ''
-                Object.keys(errors).forEach((key) => {
-                    string += errors[key] + '<br>'
-                })
-                notyf.error(string)
-            },
-            onFinish: () => {
-                // tenant.temp_file_name = null
-                isLoading.value = false
-            }
+    let data = {
+        logo_id: tenant.logo_id
+    }
+    try {
+        let res = await axios.put(`/api/tenant/` + tenant.id, data)
+        Object.assign(tenant, res.data);
+        notyf.success("Logo uploaded with Success")
+    } catch (err) {
+        let string = ''
+        Object.keys(err).forEach((key) => {
+            string += err[key] + '<br>'
         })
+        notyf.error(string)
+    }
+
+    isLoading.value = false
 };
 
-const submitTextForm = () => {
-    router.post(`/tenant/${tenant.id}`,
-        {
-            _method: "PUT",
-            sso_text_area: tenant.file ? tenant.file?.file_content :tenant.sso_text
-        },{
-            onSuccess: () => {
-                notyf.success(`Content updated successfully`)
-                isLoading.value = false
+const submitTextForm = async () => {
+    let data = {
+        sso_text_area: tenant.file ? tenant.file?.file_content :tenant.sso_text
+    }
 
-            },
-            onError: (errors) => {
-                let string = ''
-                Object.keys(errors).forEach((key) => {
-                    string += errors[key] + '<br>'
-                })
-                notyf.error(string)
-                isLoading.value = false
-            }
-        }
-    )
+    try {
+        let res = await axios.put(`/api/tenant/` + tenant.id, data)
+        Object.assign(tenant, res.data);
+        notyf.success("Content updated successfully")
+    } catch (err) {
+        let string = ''
+        Object.keys(err).forEach((key) => {
+            string += err[key] + '<br>'
+        })
+        notyf.error(string)
+    }
+    isLoading.value = false
 }
 
 const items = ref([

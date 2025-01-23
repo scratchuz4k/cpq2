@@ -107,13 +107,21 @@ onMounted(() => {
 </script>
 <template>
     <Dialog v-model:visible="showModal" modal :style="{ marginTop: '4rem', width: '80rem' }" :draggable="false"
-            position="top">
+            position="top" class="resources-modal">
         <template #header>
 
         </template>
-        <dropzone @resource:created="getImages"></dropzone>
+        <dropzone @resource:created="getImages">
+            <div class="dz-default dz-message m-0">
+                <div class="d-flex align-content-center flex-column">
+                    <font-awesome-icon :icon="['fa-solid', 'images']" class="color-purple p-3" style="font-size: 5rem"/>
+                    <p class="fw-bold fs-5 lh-sm m-auto" style="max-width: 150px">Drag & Drop or <span class="color-purple">browse</span></p>
+                    <p>Only {{ Object.values(extensions).join(', ')}} files can be selected</p>
+                </div>
+            </div>
+        </dropzone>
         <div class="justify-content-between d-flex">
-            <h5 class="mb-4">Only {{ Object.values(extensions).join(', ')}} files can be selected</h5>
+            <h5 class="mb-4">Resources Library</h5>
             <IconField>
                 <InputIcon id="resources_search_icon">
                     <font-awesome-icon :icon="['fas', 'search']" />
@@ -144,7 +152,7 @@ onMounted(() => {
                                 </button>
                             </div>
                             <img alt="user header" :src="image.mime_type === 'text/xml' ? '/images/xml_icon.svg' : image.route"
-                                 style="height: 150px;max-width:100%; object-fit: contain;object-position: center;" />
+                                 style="height: 60px;max-width:100%; object-fit: contain;object-position: center;" />
                         </div>
                     </template>
                     <template #title>
@@ -160,7 +168,7 @@ onMounted(() => {
         <Paginator v-model:first="meta.first" :rows="meta.limit" :totalRecords="meta.total"
                    :rowsPerPageOptions="[10, 20, 50]" @page="handlePaginator">
         </Paginator>
-        <div class="d-flex justify-end">
+        <div class="d-flex justify-content-center action-button-wrapper">
             <Button label="Close" class="btn btn-secondary close-modal me-2" @click="() => showModal = !showModal" />
             <Button :disabled="!selectedItem" label="Save" class="btn btn-primary" severity="success" @click="() => saveItem()" />
         </div>
@@ -194,6 +202,10 @@ onMounted(() => {
         font-size: 20px;
         transition: 0.3s all ease-in-out;
     }
+}
+.action-button-wrapper button.p-button {
+    padding-left: 8rem;
+    padding-right: 8rem;
 }
 </style>
 

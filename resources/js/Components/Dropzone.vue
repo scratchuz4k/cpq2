@@ -25,7 +25,6 @@ onMounted(() => {
                  .querySelector('meta[name="csrf-token"]')
                  .getAttribute("content"),
              },
-         dictDefaultMessage: "Click or drag to upload a file",
          init: function () { },
          success: (res, data) => onUpload(data),
          error: (res, data) => onError(data)
@@ -38,7 +37,7 @@ const onUpload = (data) => {
 }
 
 const onError = (data) => {
-     window.notyf.error(data.message)
+     window.notyf.error(data.message ?? data)
 }
 </script>
 

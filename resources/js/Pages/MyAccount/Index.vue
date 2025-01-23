@@ -163,7 +163,7 @@ const items = ref([
                                     class="card-body text-center p-2 text-decoration-none">
                                     <font-awesome-icon class="py-3 opacity-25" :icon="['far', 'building']"
                                         size="2x"></font-awesome-icon>
-                                    <span class="d-block h5">Tenants</span>
+                                    <span class="d-block h5">Tenant</span>
                                 </a>
                             </div>
                         </div>
