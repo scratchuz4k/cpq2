@@ -190,7 +190,7 @@ onMounted(() => {
 .delete-button-container {
     position: absolute;
     top: -10px;
-    right: -10px;
+    right: 10px;
 
     &:hover {
         .delete-button {
