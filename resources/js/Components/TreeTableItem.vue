@@ -93,7 +93,7 @@ const deleteRecord = async (id) => {
         }
         try {
             let res = await axios.delete('/api' + props.route + '/' + id)
-            emitter.emit('refresh-data');
+            emitter.emit('treetable-refresh');
             notyf.success('Removed with success');
             return
         } catch (err) {
