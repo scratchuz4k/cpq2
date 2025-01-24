@@ -130,7 +130,7 @@ onMounted(() => {
             </IconField>
         </div>
         <p v-if="images.length === 0" class="h5 text-center">No files found</p>
-        <div v-else class="row row-cols-5 mb-3">
+        <div v-else class="row row-cols-5 mb-3" id="library-container">
             <div v-for="image in images" class="col mb-4">
                 <Card :class="[
                         image == selectedItem ? 'selected' : '',

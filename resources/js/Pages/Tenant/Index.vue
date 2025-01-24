@@ -26,11 +26,7 @@ const submitFileForm = async () => {
         Object.assign(tenant, res.data);
         notyf.success("File uploaded with Success")
     } catch (err) {
-        let string = ''
-        Object.keys(err).forEach((key) => {
-            string += err[key] + '<br>'
-        })
-        notyf.error(string)
+        notyf.error(err?.response?.data?.message ?? 'Something went wrong')
     }
 };
 
@@ -44,11 +40,7 @@ const submitLogoForm = async () => {
         Object.assign(tenant, res.data);
         notyf.success("Logo uploaded with Success")
     } catch (err) {
-        let string = ''
-        Object.keys(err).forEach((key) => {
-            string += err[key] + '<br>'
-        })
-        notyf.error(string)
+        notyf.error(err?.response?.data?.message ?? 'Something went wrong')
     }
 
     isLoading.value = false
@@ -64,11 +56,7 @@ const submitTextForm = async () => {
         Object.assign(tenant, res.data);
         notyf.success("Content updated successfully")
     } catch (err) {
-        let string = ''
-        Object.keys(err).forEach((key) => {
-            string += err[key] + '<br>'
-        })
-        notyf.error(string)
+        notyf.error(err?.response?.data?.message ?? 'Something went wrong')
     }
     isLoading.value = false
 }
@@ -109,7 +97,7 @@ const items = ref([
                                             <textarea v-if="tenant.file" v-model="tenant.file.file_content" class="w-100 p-4" rows="10"></textarea>
                                             <textarea v-else v-model="tenant.sso_text" class="w-100 p-4" rows="10"></textarea>
                                             <p class="small">* This will update the file content</p>
-                                            <button type="submit" class="btn btn-primary mt-2">
+                                            <button id="submit-sso-textarea" type="submit" class="btn btn-primary mt-2">
                                                 <font-awesome-icon class="me-2" :icon="['fas', 'save']"/>
                                                 Save
                                             </button>

@@ -7,13 +7,19 @@
                 {{ item?.title }}
             </h5>
         </div>
-        <div v-else class="d-flex justify-center my-3"
+        <div v-else class="d-flex justify-center my-3 input-resource"
              style="height: 120px; width:120px; align-items: center;border:3px dotted grey;border-radius: 10px;">
             <font-awesome-icon class="w-100" style="font-size: 4rem" :icon="['fas', 'plus']" />
         </div>
     </div>
     <div>
-        <button v-if="item" type="button" class="btn btn-outline-primary mt-2" @click="remove()">
+        <button
+            v-if="item"
+            type="button"
+            class="btn btn-outline-primary mt-2"
+            @click="remove()"
+            id="remove-file-button"
+        >
             <font-awesome-icon icon="fas fa-trash-alt" />
             Remove file
         </button>
