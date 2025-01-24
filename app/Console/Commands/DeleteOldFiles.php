@@ -57,5 +57,6 @@ class DeleteOldFiles extends Command
         );
 
         Log::info('Job Finished.');
+        Log::withContext([]);
     }
 }
