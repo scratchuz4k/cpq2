@@ -32,11 +32,9 @@
 
 .spinner-text {
     position: absolute;
-    font-family: Montserrat, Helvetica, Arial, sans-serif;
-    font-size: 18px;
+    font-size: 1.5rem;
     font-weight: 700;
     text-align: center;
-    color: #f8018a;
 }
 
 @keyframes spin {
