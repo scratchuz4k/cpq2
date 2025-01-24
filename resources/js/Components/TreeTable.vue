@@ -55,6 +55,9 @@ emitter.on('change-selected', (item) => {
     showModal.value = !showModal.value
 })
 
+emitter.on('refresh-data', () => {
+    getData()
+})
 watch([global], _.debounce(function () {
     getData()
 }, 500))
