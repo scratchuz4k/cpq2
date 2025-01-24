@@ -27,6 +27,7 @@ class DeleteOldFiles extends Command
      */
     public function handle()
     {
+        Log::withContext(['signature' => $this->signature]);
         Log::info('Job Started.');
 
         $count_deled_files = 0;
