@@ -13,7 +13,6 @@ const warningProviders = ref([
   { pxc: quote.items.some((item) => item.data?.providerName === "PXC") },
 ]);
 
-
 const showDate = (days = 0) => {
   const dateObj = new Date();
   dateObj.setDate(dateObj.getDate() + days);
@@ -59,35 +58,40 @@ let view =
               </p>
             </div>
           </div>
-        <div v-if="warningProviders.some((obj) => Object.values(obj).includes(true))">
+          <div v-if="warningProviders.some((obj) => Object.values(obj).includes(true))">
             <div class="row">
-            <div class="col">
+              <div class="col">
                 <InfoBox class="mb-4 p-0" severity="error">
-                <div class="small">
-                    <div class="mb-2 fw-bold" style="color:#dc3545">Important Information:</div>
+                  <div class="small">
+                    <div class="mb-2 fw-bold" style="color: #dc3545">
+                      Important Information:
+                    </div>
                     <div v-for="provider in warningProviders" class="mb-2">
-                    <div v-if="Object.values(provider)[0]" style="color:#dc3545; line-height: 1.2">
+                      <div
+                        v-if="Object.values(provider)[0]"
+                        style="color: #dc3545; line-height: 1.2"
+                      >
                         <span
-                        class="small fw-bold bg-light rounded-2 py-1 px-2 me-1 text-capitalize"
+                          class="small fw-bold bg-light rounded-2 py-1 px-2 me-1 text-capitalize"
                         >
-                        {{ Object.keys(provider)[0].toUpperCase() }}
+                          {{ Object.keys(provider)[0].toUpperCase() }}
                         </span>
                         <i>
-                        Please note, quote references for
-                        {{ Object.keys(provider)[0].toUpperCase() }} quotes cannot currently
-                        be used to place an order. To obtain a valid quote for ordering
-                        please generate the quote directly on the
-                        {{ Object.keys(provider)[0].toUpperCase() }}
-                        portal.
+                          Please note, quote references for
+                          {{ Object.keys(provider)[0].toUpperCase() }} quotes cannot
+                          currently be used to place an order. To obtain a valid quote for
+                          ordering please generate the quote directly on the
+                          {{ Object.keys(provider)[0].toUpperCase() }}
+                          portal.
                         </i>
+                      </div>
                     </div>
-                    </div>
-                </div>
+                  </div>
                 </InfoBox>
+              </div>
             </div>
-            </div>
-        </div>
-        <div>
+          </div>
+          <div>
             <component
               :is="view"
               v-bind="{
@@ -97,11 +101,6 @@ let view =
             ></component>
             <TableTotal :quote="quote"></TableTotal>
           </div>
-        </div>
-      </div>
-      <div class="row mt-4">
-        <div class="col">
-            <p class="small">Terms & Conditions:</p>
         </div>
       </div>
     </div>
