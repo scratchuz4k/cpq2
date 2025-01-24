@@ -9,4 +9,4 @@ Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose(description: 'Display an inspiring quote')->hourly();
 
-Schedule::command(DeleteOldFiles::class)->everyMinute();
+Schedule::command(DeleteOldFiles::class)->daily();
