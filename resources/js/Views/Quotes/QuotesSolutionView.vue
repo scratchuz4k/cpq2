@@ -11,8 +11,11 @@ const props = defineProps({
 })
 
 const solutionChange = (form) => {
-    if (props.is_updating_quote)
+    if (props.is_updating_quote) {
+        const selected_solution = props.modelValue.solution_type.id;
+        props.modelValue.solution_type = props.solution_types.find(item => item.id === selected_solution)
         return
+    }
 
     addressPostCode.value = ''
     form.postCode = ''
