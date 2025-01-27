@@ -134,7 +134,9 @@ const getArticles = async (clearCache = false, runTimeout = false) => {
             "Request failed with status Unauthorized": "Request failed with status Unauthorized (Check login credentials for this provider)",
         };
 
-        errors.value = res.data.errors.map((error) => {
+        errors.value = res.data.errors
+        .filter((error) => error.provider !== "gamma")
+        .map((error) => {
             for (const [key, message] of Object.entries(errorMessages)) {
                 if (error.response.includes(key)) {
                     return { provider: error.provider, response: message };
