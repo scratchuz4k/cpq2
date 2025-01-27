@@ -16,10 +16,7 @@ const groupColumns = columns.filter((x) => x.is_group);
     <!-- Headers -->
     <thead>
       <tr>
-        <th
-          style="width: 5%"
-          v-if="!preview && quote.items.find((e) => e.children.length)"
-        ></th>
+        <th style="width: 5%" v-if="!preview && quote.solution_type.code == 3"></th>
         <template v-for="column in columns">
           <th
             :class="[`column-${column.value}-header`]"
