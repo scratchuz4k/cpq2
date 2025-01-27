@@ -1,6 +1,6 @@
 <script setup>
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
-import { Head, Link } from "@inertiajs/vue3";
+import {Head, Link, usePage} from "@inertiajs/vue3";
 import { ref } from "vue";
 import Button from "primevue/button";
 import { createOrder } from "@/Composables/useOrders.js";
