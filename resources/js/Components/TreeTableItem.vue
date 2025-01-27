@@ -55,6 +55,7 @@ const getChildren = async (item, key) => {
     }
 
     let string = queryString.stringify({
+        limit:1000,
         filters: JSON.stringify([{
             'column': 'parent_id',
             'operator': 'equals ',
@@ -93,7 +94,7 @@ const deleteRecord = async (id) => {
         }
         try {
             let res = await axios.delete('/api' + props.route + '/' + id)
-            getData()
+            emitter.emit('treetable-refresh');
             notyf.success('Removed with success');
             return
         } catch (err) {
@@ -154,7 +155,7 @@ const showModal = (item) => {
                     </template>
 
                     <template v-if="allow.delete">
-                        <button class="btn p-2 mx-1 border-0" @click="deleteRecord(data.id)">
+                        <button class="btn p-2 mx-1 border-0" @click="deleteRecord(item.id)">
                             <font-awesome-icon icon="fas fa-trash-alt" />
                         </button>
                     </template>
