@@ -3,9 +3,13 @@
 namespace App\Http\Controllers\Api;
 
 use Exception;
+use App\Models\Account;
 use App\Models\Product;
+use App\Models\Supplier;
 use Illuminate\Http\Request;
 use App\Helpers\DataProvider;
+use App\Helpers\FilterProvider;
+use App\Helpers\Prices\PriceRules;
 use Illuminate\Support\Facades\Log;
 use App\Http\Resources\ProductResource;
 use App\Http\Controllers\BaseController;
@@ -24,13 +28,33 @@ class ProductController extends BaseController
         $dataProvider = new DataProvider(Product::class);
 
         try {
-            $data = $dataProvider->get();
+            $data = $dataProvider->getCollection();
         } catch (Exception $e) {
             Log::debug($e->getMessage());
             return $e->getMessage();
         }
 
-        return ProductResource::collection($data);
+        $suppliers = [];
+        $priceRules = new PriceRules();
+        $account = Account::where('id', request()->input('account_id', null))->first();
+
+        $data = $data->map(function ($product) use ($priceRules, $account, $suppliers) {
+            if (array_key_exists($product?->supplier?->id, $suppliers)) {
+                $priceRules->setAppliedSpas($suppliers[$product?->supplier?->id]);
+            } else {
+                $priceRules->find(supplier: $product?->supplier, account: $account);
+                $suppliers[$product?->supplier?->id] = $priceRules->getAppliedSpas();
+            }
+
+            $product->prices->map(function ($price) use ($priceRules) {
+                $price['net_spa'] = $priceRules->apply($price->net);
+                $price['active_spas'] = $priceRules->getAppliedSpas();
+            });
+
+            return $product;
+        });
+        $data = ProductResource::collection($data)->toArray(request());
+        return FilterProvider::paginate(collect($data));
     }
 
     /**
@@ -65,4 +89,3 @@ class ProductController extends BaseController
         $product->delete();
     }
 }
-

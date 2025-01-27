@@ -37,7 +37,7 @@ class HandleInertiaRequests extends Middleware
                 'permissions' => $request->user() ? $request->user()->getAllPermissions() : [],
                 'roles' =>  $request->user() ? $request->user()->getRoleNames() : [],
             ],
-            'tenant' =>  $request->user()?->currentTenant,
+            'tenant' =>  $request->user() ? $request->user()->currentTenant->load('file', 'logo') : [],
         ];
     }
 }

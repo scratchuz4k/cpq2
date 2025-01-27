@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Product;
 use App\Models\PricePlan;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -30,13 +31,14 @@ class QuoteItemCreateRequest extends FormRequest
         return [
             "quote_id" => 'required',
             "name" => "required",
-            "quantity" => "required|numeric",
+            "quantity" => "required|numeric|min:1",
             "raw_price" => "numeric",
             "price" => "numeric",
             "margin" => "numeric|min:0|max:100",
             "discount" => "numeric|min:0|max:100",
-            "price_plan_id" => "nullable|numeric|exists:price_plans,id",
+            "price_plan_id" => "required|numeric|exists:price_plans,id",
             "contract_length" => "numeric|min:1",
         ];
     }
+
 }

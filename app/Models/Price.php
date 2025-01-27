@@ -36,17 +36,13 @@ class Price extends Model
 
     protected static PriceRules $priceRules;
 
-    public function __construct()
-    {
-        parent::__construct();
-        static::$priceRules = new PriceRules();
-    }
     protected static function boot()
     {
         parent::boot();
 
         static::retrieved(function ($model) {
             //TODO: switch to a account saved in the user model
+            static::$priceRules = new PriceRules();
             $account = Account::find(request() ? request()->input("account_id", null) : null);
             static::$priceRules->find($model->product, $model->product->supplier, $account);
             $model->setAttribute('net_spa', static::$priceRules->apply((float)$model->net));
@@ -65,7 +61,6 @@ class Price extends Model
         "net",
         "tax",
         "gross",
-        "price_plan_id",
         "product_id",
         "tenant_id"
     ];

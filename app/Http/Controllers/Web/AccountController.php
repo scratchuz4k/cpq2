@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Web;
 
 use Inertia\Inertia;
 use App\Models\Account;
-use Illuminate\Http\Request;
 use App\Services\AccountService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
