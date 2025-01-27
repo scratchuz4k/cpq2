@@ -177,7 +177,7 @@ const items = ref([
                                 </a>
                             </div>
                         </div>
-                        <div class="col" v-if="hasRole('Super Admin') || can('viewAny api')">
+                        <div class="col" v-if="hasRole('Super Admin') || can('viewAny api_configuration')">
                             <div class="card bg-light border-0">
                                 <a id="link-apis" :href="route('apis.index')"
                                     class="card-body text-center p-2 text-decoration-none">
