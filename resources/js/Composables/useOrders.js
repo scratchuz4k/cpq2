@@ -29,7 +29,7 @@ export const assignOrder = async (id) => {
     })
 
     if (['cancel', 'backdrop'].includes(result.dismiss)) {
-        return
+        return false
     }
 
     try {
