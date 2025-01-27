@@ -1,11 +1,11 @@
 <?php
 
-use App\Enums\QuoteStatusesEnum;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use App\Models\User;
 use App\Models\Tenant;
-use App\Models\Account;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 uses(RefreshDatabase::class);
 
@@ -13,137 +13,99 @@ beforeEach(function () {
     $this->artisan('db:seed');
     $this->user = User::factory()->create();
     $this->user->tenants()->attach(Tenant::find(1));
-    $this->user->assignRole('Sales Rep');
+    $this->user->assignRole('Super Admin');
 
     Auth::login($this->user);
     $this->actingAs($this->user);
+    Storage::fake('local');
 });
 
 it('Upload a tenant logo', function () {
+    $file = UploadedFile::fake()
+        ->create('test-logo.png', 100, 'image/png');
+
+    $resource = $this
+        ->post('api/resources', [
+            'file' => $file,
+        ])
+        ->json();
+
     $data = [
-
+        'logo_id' => $resource['file']['id']
     ];
 
-    $response = $this->post('api/quotes', $quote_data);
-    $quote = $response->json();
-
-    $this->assertEquals($quote['status'], QuoteStatusesEnum::CONFIGURE->name);
+    $response = $this->put('api/tenant/' . $this->user->currentTenant->id, $data);
+    $tenant = $response->json();
+    expect($tenant['logo_id'])
+        ->toBe($resource['file']['id'])
+        ->and($tenant['logo'])
+        ->toBeArray()
+        ->not->ToBeEmpty();
 });
 
-it('Assert Quote status equals price on adding address', function () {
-    $quote_data = [
-        'account_id' => 1,
-        'address_position' => [
-            'lat' => 55.9580794,
-            'lon' => -2.9826655,
-        ],
-        'address_city' => 'Prestonpans',
-        'address_data' => [
-            'addressKey' => 'A00005766451',
-            'type' => 'Gold',
-            'uprn' => '138015158',
-            'districtCode' => 'ES',
-            'coordinatesEasting' => '338745',
-            'coordinatesNorthing' => '674332',
-            'latitude' => 55.9580794,
-            'longitude' => -2.9826655,
-            'label' => '20, West Loan, Prestonpans, EH32 9NT, United Kingdom',
-            'organisationName' => null,
-            'subPremises' => null,
-            'premisesName' => null,
-            'dependentThoroughfareName' => null,
-            'thoroughfareNumber' => '20',
-            'thoroughfareName' => 'West Loan',
-            'postTown' => 'Prestonpans',
-            'postCode' => 'EH32 9NT',
-            'country' => 'United Kingdom',
-        ],
-        'address_line1' => '20, West Loan, Prestonpans, EH32 9NT, United Kingdom',
-        'address_postcode' => 'EH32 9NT',
-        'solution_type_id' => 1,
+it('Remove tenant logo', function () {
+    $data = [
+        'logo_id' => null
     ];
 
-    $response = $this->post('api/quotes', $quote_data);
-    $quote = $response->json();
-    $this->assertEquals($quote['status'], QuoteStatusesEnum::PRICE->name);
+    $response = $this->put('api/tenant/' . $this->user->currentTenant->id, $data);
+    $tenant = $response->json();
+    expect($tenant['logo_id'])
+        ->toBeNull()
+        ->and($tenant['logo'])
+        ->toBeNull();
 });
 
-it('Assert Quote status equals quote on adding items', function () {
-    $quote_data = [
-        'account_id' => 1,
-        'address_position' => [
-            'lat' => 55.9580794,
-            'lon' => -2.9826655,
-        ],
-        'address_city' => 'Prestonpans',
-        'address_data' => [
-            'addressKey' => 'A00005766451',
-            'type' => 'Gold',
-            'uprn' => '138015158',
-            'districtCode' => 'ES',
-            'coordinatesEasting' => '338745',
-            'coordinatesNorthing' => '674332',
-            'latitude' => 55.9580794,
-            'longitude' => -2.9826655,
-            'label' => '20, West Loan, Prestonpans, EH32 9NT, United Kingdom',
-            'organisationName' => null,
-            'subPremises' => null,
-            'premisesName' => null,
-            'dependentThoroughfareName' => null,
-            'thoroughfareNumber' => '20',
-            'thoroughfareName' => 'West Loan',
-            'postTown' => 'Prestonpans',
-            'postCode' => 'EH32 9NT',
-            'country' => 'United Kingdom',
-        ],
-        'address_line1' => '20, West Loan, Prestonpans, EH32 9NT, United Kingdom',
-        'address_postcode' => 'EH32 9NT',
-        'solution_type_id' => 1,
+it('Upload a tenant SSO File with valid XML', function () {
+    $xml_content =
+        '<?xml version="1.0" encoding="UTF-8"?>
+        <root>
+            <child>Example content</child>
+        </root>';
+
+    $file = UploadedFile::fake()
+        ->createWithContent('test-xml.xml', $xml_content);
+
+    $resource = $this
+        ->post('api/resources', [
+            'file' => $file,
+        ])
+        ->json();
+
+    $data = [
+        'sso_id' => $resource['file']['id']
     ];
 
-    $response = $this->post('api/quotes', $quote_data);
-    $quote = $response->json();
-    $this->assertEquals($quote['status'], QuoteStatusesEnum::PRICE->name);
+    $response = $this->put('api/tenant/' . $this->user->currentTenant->id, $data);
+    $tenant = $response->json();
 
-    $quote_item = [
-        'quote_id' => $quote['id'],
-        'product_id' => null,
-        'quantity' => 1,
-        'name' => 'ADSL 2+ MPF',
-        'data' => [
-            'quoteId' => '902695610',
-            'providerKey' => 'virtual1',
-            'providerName' => 'Virtual1',
-            'productName' => 'ADSL 2+ MPF',
-            'productCode' => '902695972',
-            'connectivitySupplierName' => 'Virtual1',
-            'connectivityType' => 'Fibre',
-            'bearer' => null,
-            'speed' => 18,
-            'priceMonthly' => 13.59,
-            'priceAnnual' => 163.08,
-            'priceInstall' => 0,
-            'priceECC' => null,
-            'contractTermMonths' => 60,
-            'isContended' => null,
-            'isManaged' => null,
-            'isIndicative' => false,
-            'isOffnet' => null,
-            'additionalInfo' => [
-                'Access Type' => 'ADSL',
-            ],
-            'isAsymmetricService' => false,
-            'uploadSpeed' => null,
-            'quoteResponseError' => null,
-            'hasErrors' => false,
-            'code' => '3c7cccaf4e1be3ee7c9b0a497f4c2729',
-            'active_spas' => [],
-        ],
-        'price' => 0,
-        'price_monthly' => 13.59,
+    $response->assertStatus(200);
+    expect($tenant['sso_id'])
+        ->toBe($resource['file']['id'])
+        ->and($tenant['file'])
+        ->toBeArray()
+        ->not->ToBeEmpty();
+});
+
+it('Upload a tenant SSO File with invalid XML', function () {
+    $xml_content = 'Invalid XML content';
+
+    $file = UploadedFile::fake()
+        ->createWithContent('test-xml.xml', $xml_content);
+
+    $resource = $this
+        ->post('api/resources', [
+            'file' => $file,
+        ])
+        ->json();
+
+    $data = [
+        'sso_id' => $resource['file']['id']
     ];
 
-    $response = $this->post('api/quote-items', $quote_item);
-    $updated_quote = $response->json();
-    $this->assertEquals($updated_quote['quote']['status'], QuoteStatusesEnum::QUOTE->name);
+    $response = $this->put('api/tenant/' . $this->user->currentTenant->id, $data);
+    $response->assertStatus(302)
+        ->assertSessionHasErrors([
+            'sso_id' => 'The sso id must contain a valid XML.'
+        ]);
 });

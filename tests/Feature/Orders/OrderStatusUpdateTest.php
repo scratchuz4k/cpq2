@@ -7,6 +7,7 @@ use App\Models\Quote;
 use App\Models\User;
 use App\Models\Tenant;
 use App\Models\Account;
+use Illuminate\Support\Facades\Auth;
 
 beforeEach(function () {
     $this->artisan('db:seed');
