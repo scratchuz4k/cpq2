@@ -154,6 +154,11 @@ createInertiaApp({
                     networkResponseHeaders: ["Referrer-Policy"],
                 }),
                 Sentry.feedbackIntegration({
+					triggerLabel: "Provide Feedback",
+                    submitButtonLabel: "Submit Feedback",
+                    formTitle: "Provide Feedback",
+                    messagePlaceholder:
+                        "Do you have any feedback? What were you expecting to see?",
                     showBranding: false,
                     useSentryUser: {
                         name: "fullName",

@@ -55,7 +55,7 @@ const getChildren = async (item, key) => {
     }
 
     let string = queryString.stringify({
-        limit:1000,
+        limit:100,
         filters: JSON.stringify([{
             'column': 'parent_id',
             'operator': 'equals ',
