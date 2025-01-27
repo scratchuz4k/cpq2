@@ -16,12 +16,12 @@ class UserResource extends JsonResource
     {
         return [
             ...$this->resource->toArray(),
-            'roles' => $this->roles,
-            'parent' => $this->parent,
+            'has_children' => $this->hasChildren(),
+            'parent' => $this->whenLoaded('parent'),
+            'roles' => $this->whenLoaded('roles'),
+            'tenants' => $this->whenLoaded('tenants'),
             'updated_at' => $this->updated_at,
             'created_at' => $this->created_at,
-            'has_children' => !!count($this->children),
-            'tenants' => $this->tenants
         ];
     }
 }

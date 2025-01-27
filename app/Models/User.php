@@ -3,21 +3,20 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
-use App\Models\Spa;
 use App\Trait\SetTenantId;
-use Laravel\Sanctum\HasApiTokens;
-use Illuminate\Support\Facades\Auth;
-use Spatie\Permission\Traits\HasRoles;
-use Illuminate\Notifications\Notifiable;
-use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Auth;
+use Laravel\Sanctum\HasApiTokens;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable, HasRoles, SetTenantId;
+    use HasApiTokens, HasFactory, HasRoles, Notifiable, SetTenantId;
 
     public static $default_role = 'sales rep';
 
@@ -33,7 +32,7 @@ class User extends Authenticatable
         'parent_id', // Add parent_id to fillable attributes
         'tenant_id',
         'sso', // Add sso to fillable attributes
-        'commission_rate'
+        'commission_rate',
     ];
 
     /**
@@ -55,7 +54,6 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'sso' => 'boolean',
     ];
-
 
     /**
      * Get the children users of this user.
@@ -80,6 +78,12 @@ class User extends Authenticatable
     {
         return $this->hasMany(User::class, 'parent_id', 'id');
     }
+
+    public function hasChildren()
+    {
+        return $this->children()->exists();
+    }
+
     public function currentTenant(): HasOne
     {
         return $this->hasOne(Tenant::class, 'id', 'tenant_id');
@@ -110,7 +114,7 @@ class User extends Authenticatable
         do {
             $current = $userAscendents->pop();
             $users->push($current);
-            if (!$current->parent) {
+            if (! $current->parent) {
                 break;
             }
             $userAscendents->push($current->parent);
