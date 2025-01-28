@@ -16,26 +16,6 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
 
-function resolve_request($entity, $method)
-{
-    switch ($method) {
-        case 'index':
-            return ["method" => "get", "url" => $entity];
-        case 'show':
-            return ["method" => "get", "url" => "$entity/1"];
-        case 'create':
-            return ["method" => "get", "url" => "$entity/create"];
-        case 'store':
-            return ["method" => "post", "url" => "$entity", "content" =>  []];
-        case 'edit':
-            return ["method" => "get", "url" => "$entity/1/edit"];
-        case 'update':
-            return ["method" => "put", "url" => "$entity/1", "content" =>  []];
-        case 'destroy':
-            return ["method" => "delete", "url" => "$entity/1"];
-    }
-}
-
 beforeEach(function () {
     $this->artisan('db:seed');
     $this->user = User::factory()->create();

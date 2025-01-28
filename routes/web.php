@@ -19,7 +19,7 @@ use App\Http\Controllers\Web\SupplierController;
 use App\Http\Controllers\Web\DashboardController;
 use App\Http\Controllers\Web\SharedLinkController;
 use App\Http\Controllers\Web\SolutionTypeController;
-use App\Http\Controllers\Web\ApiConfigurationController;
+use App\Http\Controllers\Web\ApiController;
 use App\Http\Middleware\AllowPrint;
 
 Route::middleware(['auth', 'verified'])->group(function () {
@@ -45,7 +45,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resources([
         'accounts' => AccountController::class,
         'categories' => CategoryController::class,
-        'apis' => ApiConfigurationController::class,
+        'apis' => ApiController::class,
         'quotes' => QuoteController::class,
         'orders' => OrderController::class,
         'tenant' => TenantController::class,

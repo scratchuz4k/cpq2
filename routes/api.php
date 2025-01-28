@@ -20,7 +20,7 @@ use App\Http\Controllers\Api\QuoteItemController;
 use App\Http\Controllers\Api\OrderItemController;
 use App\Http\Controllers\Api\PermissionController;
 use App\Http\Controllers\Api\SolutionTypeController;
-use App\Http\Controllers\Api\ApiConfigurationController;
+use App\Http\Controllers\Api\ApiController;
 use App\Http\Controllers\Api\SharedLinkController;
 use App\Http\Controllers\Api\ResourceController;
 use App\Http\Controllers\Api\TenantController;
@@ -36,7 +36,7 @@ Route::get('/quotes/{quote}/create_order', [QuoteController::class, 'createOrder
 
 
 Route::apiResources([
-    'apis' => ApiConfigurationController::class,
+    'apis' => ApiController::class,
     'accounts' => AccountController::class,
     'contacts' => ContactController::class,
     'categories' => CategoryController::class,

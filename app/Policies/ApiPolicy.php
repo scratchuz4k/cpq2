@@ -2,12 +2,12 @@
 
 namespace App\Policies;
 
-use App\Models\ApiConfiguration;
+use App\Models\Api;
 use App\Models\User;
 
-class ApiConfigurationPolicy
+class ApiPolicy
 {
-    private string $model = "api_configuration";
+    private string $model = "api";
     /**
      * Determine whether the user can view any models.
      */
@@ -22,7 +22,7 @@ class ApiConfigurationPolicy
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, ApiConfiguration $apiConfiguration): bool
+    public function view(User $user, Api $api): bool
     {
         if (!$user->can("view $this->model")) {
             return false;
@@ -44,7 +44,7 @@ class ApiConfigurationPolicy
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, ApiConfiguration $apiConfiguration): bool
+    public function update(User $user, Api $api): bool
     {
         if (!$user->can("update $this->model")) {
             return false;
@@ -55,7 +55,7 @@ class ApiConfigurationPolicy
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, ApiConfiguration $apiConfiguration): bool
+    public function delete(User $user, Api $api): bool
     {
         if (!$user->can("delete $this->model")) {
             return false;
@@ -66,7 +66,7 @@ class ApiConfigurationPolicy
     /**
      * Determine whether the user can restore the model.
      */
-    public function restore(User $user, ApiConfiguration $apiConfiguration): bool
+    public function restore(User $user, Api $api): bool
     {
         if (!$user->can("restore $this->model")) {
             return false;
@@ -77,7 +77,7 @@ class ApiConfigurationPolicy
     /**
      * Determine whether the user can permanently delete the model.
      */
-    public function forceDelete(User $user, ApiConfiguration $apiConfiguration): bool
+    public function forceDelete(User $user, Api $api): bool
     {
         if (!$user->can("forceDelete $this->model")) {
             return false;

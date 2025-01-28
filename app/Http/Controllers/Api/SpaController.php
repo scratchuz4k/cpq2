@@ -50,7 +50,7 @@ class SpaController extends BaseController
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Spa $spa)
     {
         //
     }
@@ -58,7 +58,7 @@ class SpaController extends BaseController
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(Spa $spa)
     {
         //
     }
@@ -66,7 +66,7 @@ class SpaController extends BaseController
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Spa $spa)
     {
         //
     }
