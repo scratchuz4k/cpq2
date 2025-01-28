@@ -60,24 +60,21 @@ it('Run Permissions for Company Admin', function () {
             if (str_starts_with($entity, "api") && in_array($key, ["edit", "create"])) {
                 continue;
             }
-//            try {
+            try {
                 $request = resolve_request($entity, $key);
                 $response =
                     array_key_exists("content", $request)
                         ? $this->{$request["method"]}($request["url"], [])
                         : $this->{$request["method"]}($request["url"]);
                 if ($hasPermission) {
-                    if ($entity === 'quotes' && $key === 'edit') {
-                        dd($response->status());
-                    }
                     expect(in_array($response->status(), [200, 204, 302]))->toBeTrue();
                 } else {
                     $response->assertStatus(403);
                 }
-//            } catch (Exception $exception) {
-//                $message = $exception->getMessage();
-//                throw new Exception("Permissions validation errors on Company Admin: [Entity: $entity, Method: $key]\n\nContext:\n$message");
-//            }
+            } catch (Exception $exception) {
+                $message = $exception->getMessage();
+                throw new Exception("Permissions validation errors on Company Admin: [Entity: $entity, Method: $key]\n\nContext:\n$message");
+            }
         }
     }
 });
