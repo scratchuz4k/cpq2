@@ -67,6 +67,9 @@ it('Run Permissions for Company Admin', function () {
                         ? $this->{$request["method"]}($request["url"], [])
                         : $this->{$request["method"]}($request["url"]);
                 if ($hasPermission) {
+                    if ($entity === 'quotes' && $key === 'edit') {
+                        dd($response->status());
+                    }
                     expect(in_array($response->status(), [200, 204, 302]))->toBeTrue();
                 } else {
                     $response->assertStatus(403);
