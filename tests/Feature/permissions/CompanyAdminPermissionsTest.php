@@ -60,7 +60,7 @@ it('Run Permissions for Company Admin', function () {
             if (str_starts_with($entity, "api") && in_array($key, ["edit", "create"])) {
                 continue;
             }
-            try {
+//            try {
                 $request = resolve_request($entity, $key);
                 $response =
                     array_key_exists("content", $request)
@@ -71,10 +71,10 @@ it('Run Permissions for Company Admin', function () {
                 } else {
                     $response->assertStatus(403);
                 }
-            } catch (Exception $exception) {
-                $message = $exception->getMessage();
-                throw new Exception("Permissions validation errors on Company Admin: [Entity: $entity, Method: $key]\n\nContext:\n$message");
-            }
+//            } catch (Exception $exception) {
+//                $message = $exception->getMessage();
+//                throw new Exception("Permissions validation errors on Company Admin: [Entity: $entity, Method: $key]\n\nContext:\n$message");
+//            }
         }
     }
 });
