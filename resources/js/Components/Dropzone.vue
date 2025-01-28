@@ -49,7 +49,7 @@ const onError = (data) => {
 
 .dropzone {
          min-height: 150px;
-         border: 2px dashed rgba(33, 121, 253, 0.67);
+         border: 2px dashed #a34796;
          background: white;
          padding: 20px 20px;
 }
