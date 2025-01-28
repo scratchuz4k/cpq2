@@ -89,6 +89,11 @@ const saveItem = () => {
 emitter.emit(event.value, selectedItem.value);
 }
 
+const closeModal = () => {
+    showModal.value = !showModal.value
+    selectedItem.value = null
+}
+
 emitter.on("resources:open", (params) => {
     acceptedFiles.value = params.acceptedFiles
     event.value = params.event
@@ -169,7 +174,8 @@ onMounted(() => {
                    :rowsPerPageOptions="[10, 20, 50]" @page="handlePaginator">
         </Paginator>
         <div class="d-flex justify-content-center action-button-wrapper">
-            <Button label="Close" class="btn btn-secondary close-modal me-2" @click="() => showModal = !showModal" />
+            <Button label="Close" class="btn btn-secondary close-modal me-2" @click="() => closeModal()" />
+            {{ selectedItem}}
             <Button :disabled="!selectedItem" label="Save" class="btn btn-primary" severity="success" @click="() => saveItem()" />
         </div>
     </Dialog>
