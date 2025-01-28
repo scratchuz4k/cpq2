@@ -20,6 +20,33 @@ class User extends Authenticatable
 
     public static $default_role = 'sales rep';
 
+    public static function boot()
+    {
+        parent::boot();
+
+        // Update parent when a child is created
+        static::created(function ($child) {
+            if ($child->parent_id) {
+                $parent = User::find($child->parent_id);
+                if ($parent) {
+                    $parent->has_children = true;
+                    $parent->save();
+                }
+            }
+        });
+
+        // Update parent when a child is deleted
+        static::deleting(function ($child) {
+            if ($child->parent_id) {
+                $parent = User::find($child->parent_id);
+                if ($parent) {
+                    $parent->has_children = $parent->children()->exists();
+                    $parent->save();
+                }
+            }
+        });
+    }
+
     /**
      * The attributes that are mass assignable.
      *
@@ -77,11 +104,6 @@ class User extends Authenticatable
     public function children()
     {
         return $this->hasMany(User::class, 'parent_id', 'id');
-    }
-
-    public function hasChildren()
-    {
-        return $this->children()->exists();
     }
 
     public function currentTenant(): HasOne
