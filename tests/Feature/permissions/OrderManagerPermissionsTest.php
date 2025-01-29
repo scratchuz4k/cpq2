@@ -1,18 +1,18 @@
 <?php
 
-use App\Models\Spa;
-use App\Models\User;
+use App\Models\Account;
 use App\Models\Brand;
 use App\Models\Price;
-use App\Models\Quote;
-use App\Models\Token;
-use App\Models\Tenant;
-use App\Models\Account;
 use App\Models\Product;
-use App\Models\Supplier;
+use App\Models\Quote;
 use App\Models\QuoteItem;
-use Illuminate\Support\Facades\Auth;
+use App\Models\Spa;
+use App\Models\Supplier;
+use App\Models\Tenant;
+use App\Models\Token;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Auth;
 
 uses(RefreshDatabase::class);
 
@@ -29,13 +29,13 @@ beforeEach(function () {
 
 it('Run Permissions for Order Manager', function () {
     $product = Product::factory()->create();
-    $price = Price::factory()->state(["product_id" => $product->id])->create();
+    $price = Price::factory()->state(['product_id' => $product->id])->create();
     $brand = Brand::factory()->create();
     $supplier = Supplier::factory()->create();
     $spa = Spa::factory()->create();
     $token = Token::factory()->create();
     $quote = Quote::factory()->create();
-    $quoteItem = QuoteItem::factory()->state(["quote_id" => $quote->id, "product_id" => $product->id])->create();
+    $quoteItem = QuoteItem::factory()->state(['quote_id' => $quote->id, 'product_id' => $product->id])->create();
 
     // In this array select what resources the role has access
     $permissions = [
@@ -60,15 +60,15 @@ it('Run Permissions for Order Manager', function () {
 
     foreach ($permissions as $entity => $routes) {
         foreach ($routes as $key => $hasPermission) {
-            if (str_starts_with($entity, "api") && in_array($key, ["edit", "create"])) {
+            if (str_starts_with($entity, 'api') && in_array($key, ['edit', 'create'])) {
                 continue;
             }
             try {
                 $request = resolve_request($entity, $key);
                 $response =
-                    array_key_exists("content", $request)
-                    ? $this->{$request["method"]}($request["url"], [])
-                    : $this->{$request["method"]}($request["url"]);
+                    array_key_exists('content', $request)
+                    ? $this->{$request['method']}($request['url'], [])
+                    : $this->{$request['method']}($request['url']);
                 if ($hasPermission) {
                     $response->assertStatus(200);
                 } else {
