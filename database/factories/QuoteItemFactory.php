@@ -2,10 +2,8 @@
 
 namespace Database\Factories;
 
-use App\Models\Quote;
-use App\Models\Tenant;
 use App\Models\Product;
-use Illuminate\Support\Str;
+use App\Models\Quote;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -21,10 +19,12 @@ class QuoteItemFactory extends Factory
     public function definition()
     {
         return [
-            "tenant_id" => 1,
-            "name" => "example",
-            "quantity" => 1,
-            "price_plan_id" => 1
+            'tenant_id' => 1,
+            'name' => 'example',
+            'quantity' => 1,
+            'price_plan_id' => 1,
+            'product_id' => Product::factory()->create(),
+            'quote_id' => Quote::factory()->create(),
         ];
     }
 }

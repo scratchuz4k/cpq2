@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Helpers\DataProvider;
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\QuoteItemCreateRequest;
 use App\Http\Requests\QuoteItemUpdateRequest;
 use App\Http\Resources\QuoteItemResource;
 use App\Models\QuoteItem;
 use App\Services\QuoteItemService;
+use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -25,7 +27,17 @@ class QuoteItemController extends BaseController
      */
     public function index()
     {
-        return response()->json([]);
+
+        $dataProvider = new DataProvider(QuoteItem::class);
+        try {
+            $data = $dataProvider->get();
+        } catch (Exception $e) {
+            Log::debug($e->getMessage());
+
+            return $e->getMessage();
+        }
+
+        return QuoteItemResource::collection($data);
     }
 
     /**
@@ -45,7 +57,7 @@ class QuoteItemController extends BaseController
             return response()->json($e->getMessage(), 500);
         }
 
-        return response()->json($quoteItem);
+        return new QuoteItemResource($quoteItem);
     }
 
     /**
@@ -72,7 +84,7 @@ class QuoteItemController extends BaseController
             throw new \Exception($e);
         }
 
-        return response()->json($quoteItem);
+        return new QuoteItemResource($quoteItem);
     }
 
     /**

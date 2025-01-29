@@ -3,9 +3,6 @@
 namespace Database\Factories;
 
 use App\Enums\CloudMarketSuppliersEnum;
-use App\Models\Region;
-use App\Models\Tenant;
-use App\Models\Contact;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -20,7 +17,6 @@ class ApiFactory extends Factory
      */
     public function definition()
     {
-        $company_name = fake()->company();
 
         return [
             'code' => CloudMarketSuppliersEnum::ITS,
@@ -28,7 +24,7 @@ class ApiFactory extends Factory
             'auth_type' => 'basic',
             'username' => fake()->username(),
             'password' => fake()->password(),
-            'tenant_id' => Tenant::where("name", "CloudMarket")->value('id')
+            'tenant_id' => 1,
         ];
     }
 }

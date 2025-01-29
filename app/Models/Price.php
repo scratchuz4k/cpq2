@@ -2,15 +2,12 @@
 
 namespace App\Models;
 
-use App\Models\PricePlan;
-use App\Trait\SetTenantId;
 use App\Helpers\Prices\PriceRules;
 use App\Models\Scopes\TenantScope;
-use App\Helpers\Prices\PriceRulesSpa;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Trait\SetTenantId;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * All financial data will be stored as integers to eradicate rounding/floating point issues
@@ -28,7 +25,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  * MySQL BIGINT(8) SIGNED can store up to 9223372036854775807
  * - With six DP of precision this means our largest currency value is:
  * - 9,223,372,036,854.775807 (9 trillion)
- *
  */
 class Price extends Model
 {
@@ -36,39 +32,34 @@ class Price extends Model
 
     protected static PriceRules $priceRules;
 
-    protected static function boot()
-    {
-        parent::boot();
-
-        static::retrieved(function ($model) {
-            //TODO: switch to a account saved in the user model
-            static::$priceRules = new PriceRules();
-            $account = Account::find(request() ? request()->input("account_id", null) : null);
-            static::$priceRules->find($model->product, $model->product->supplier, $account);
-            $model->setAttribute('net_spa', static::$priceRules->apply((float)$model->net));
-            $model->setAttribute('active_spas', static::$priceRules->getAppliedSpas());
-            $model->calculate();
-        });
-        static::saving(function ($model) {
-            unset($model->attributes['net_spa']);
-            unset($model->attributes['active_spas']);
-        });
-    }
-
     protected $fillable = [
-        "code",
-        "tax_rate",
-        "net",
-        "tax",
-        "gross",
-        "product_id",
-        "tenant_id"
+        'code',
+        'tax_rate',
+        'net',
+        'tax',
+        'gross',
+        'product_id',
+        'tenant_id',
     ];
-
 
     protected static function booted(): void
     {
         static::addGlobalScope(new TenantScope);
+
+        static::retrieved(function ($model) {
+            //TODO: switch to a account saved in the user model
+            static::$priceRules = new PriceRules;
+            $account = Account::find(request() ? request()->input('account_id', null) : null);
+            static::$priceRules->find($model->product, $model->product->supplier, $account);
+            $model->setAttribute('net_spa', static::$priceRules->apply((float) $model->net));
+            $model->setAttribute('active_spas', static::$priceRules->getAppliedSpas());
+            $model->calculate();
+        });
+
+        static::saving(function ($model) {
+            unset($model->attributes['net_spa']);
+            unset($model->attributes['active_spas']);
+        });
     }
 
     public function tenant(): BelongsTo
@@ -78,7 +69,7 @@ class Price extends Model
 
     public function product(): BelongsTo
     {
-        return $this->belongsTo(Product::class, "product_id", "id");
+        return $this->belongsTo(Product::class, 'product_id', 'id');
     }
 
     public function pricePlan(): BelongsTo

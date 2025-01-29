@@ -59,22 +59,23 @@ function createUser()
     return $user;
 }
 
-function resolve_request($entity, $method)
+function resolve_request(string $entity, string $method, array $content)
 {
+    $id = array_key_exists('id', $content) ? $content['id'] : 1;
     switch ($method) {
         case 'index':
             return ['method' => 'get', 'url' => $entity];
         case 'show':
-            return ['method' => 'get', 'url' => "$entity/1"];
+            return ['method' => 'get', 'url' => "$entity/$id"];
         case 'create':
             return ['method' => 'get', 'url' => "$entity/create"];
         case 'store':
             return ['method' => 'post', 'url' => "$entity", 'content' => []];
         case 'edit':
-            return ['method' => 'get', 'url' => "$entity/1/edit"];
+            return ['method' => 'get', 'url' => "$entity/$id/edit"];
         case 'update':
-            return ['method' => 'put', 'url' => "$entity/1", 'content' => []];
+            return ['method' => 'put', 'url' => "$entity/$id", 'content' => []];
         case 'destroy':
-            return ['method' => 'delete', 'url' => "$entity/1"];
+            return ['method' => 'delete', 'url' => "$entity/$id"];
     }
 }

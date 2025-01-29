@@ -1,32 +1,31 @@
 <?php
 
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Web\SpaController;
-use App\Http\Controllers\Web\UserController;
+use App\Http\Controllers\Web\AccountController;
+use App\Http\Controllers\Web\ApiController;
 use App\Http\Controllers\Web\BrandController;
+use App\Http\Controllers\Web\CategoryController;
+use App\Http\Controllers\Web\DashboardController;
 use App\Http\Controllers\Web\MerchantController;
 use App\Http\Controllers\Web\OrderController;
-use App\Http\Controllers\Web\QuoteController;
-use App\Http\Controllers\Web\TokenController;
-use App\Http\Controllers\Web\RegionController;
-use App\Http\Controllers\Web\TenantController;
-use App\Http\Controllers\Web\AccountController;
-use App\Http\Controllers\Web\CategoryController;
 use App\Http\Controllers\Web\ProductController;
 use App\Http\Controllers\Web\ProfileController;
-use App\Http\Controllers\Web\SupplierController;
-use App\Http\Controllers\Web\DashboardController;
+use App\Http\Controllers\Web\QuoteController;
+use App\Http\Controllers\Web\RegionController;
 use App\Http\Controllers\Web\SharedLinkController;
 use App\Http\Controllers\Web\SolutionTypeController;
-use App\Http\Controllers\Web\ApiController;
+use App\Http\Controllers\Web\SpaController;
+use App\Http\Controllers\Web\SupplierController;
+use App\Http\Controllers\Web\TenantController;
+use App\Http\Controllers\Web\TokenController;
+use App\Http\Controllers\Web\UserController;
 use App\Http\Middleware\AllowPrint;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('index');
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/myaccount', [DashboardController::class, 'myAccount'])->name('myaccount');
-
 
     Route::get('/tenant/{tenant}/make-current', [TenantController::class, 'switch'])->name('tenant.make-current');
     Route::get('/quotes/{quote}/preview', [QuoteController::class, 'preview'])->name('quotes.preview');
@@ -48,7 +47,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         'apis' => ApiController::class,
         'quotes' => QuoteController::class,
         'orders' => OrderController::class,
-        'tenant' => TenantController::class,
+        'tenants' => TenantController::class,
         'brands' => BrandController::class,
         'merchants' => MerchantController::class,
         'products' => ProductController::class,
@@ -57,7 +56,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         'spas' => SpaController::class,
         'users' => UserController::class,
         'tokens' => TokenController::class,
-        'solution-types' =>  SolutionTypeController::class
+        'solution-types' => SolutionTypeController::class,
     ]);
 
     Route::middleware('auth')->group(function () {
@@ -96,4 +95,4 @@ Route::get('/health', function () {
 Route::get('/s/{token}', [SharedLinkController::class, 'show']);
 Route::post('/s/{token}', [SharedLinkController::class, 'verifyPassword']);
 
-require __DIR__ . '/auth.php';
+require __DIR__.'/auth.php';
