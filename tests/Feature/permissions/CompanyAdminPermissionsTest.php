@@ -28,23 +28,7 @@ beforeEach(function () {
 });
 
 it('Run Permissions for Company Admin', function () {
-
-    $dummyContent = [
-        'tenant' => Tenant::factory()->make()->toArray(),
-        'products' => Product::factory()->make()->toArray(),
-        'brands' => Brand::factory()->make()->toArray(),
-        'suppliers' => Supplier::factory()->make()->toArray(),
-        'spas' => Spa::factory()->make()->toArray(),
-        'users' => User::factory()->make()->toArray(),
-        'tokens' => Token::factory()->make()->toArray(),
-        'quotes' => Quote::factory()->make()->toArray(),
-        'solution-types' => [],
-        'apis' => Api::factory()->make()->toArray(),
-        'api/accounts' => Account::factory()->make()->toArray(),
-        'api/prices' => Price::factory()->make()->toArray(),
-        'api/quote-items' => QuoteItem::factory()->make()->toArray(),
-    ];
-
+    $modelsData = generateModelsData();
     $permissions = [
         'tenants' => ['index' => true,  'create' => true, 'store' => true, 'show' => true, 'edit' => true, 'update' => true, 'destroy' => true],
         'products' => ['index' => true,  'create' => true, 'store' => true, 'show' => true, 'edit' => true, 'update' => true, 'destroy' => true],
@@ -61,42 +45,5 @@ it('Run Permissions for Company Admin', function () {
         'api/quote-items' => ['index' => true,  'create' => true, 'store' => true, 'show' => true, 'edit' => true, 'update' => true, 'destroy' => true],
     ];
 
-    foreach ($permissions as $entity => $routes) {
-        foreach ($routes as $key => $hasPermission) {
-
-            $append = '';
-            if (str_starts_with($entity, 'api')) {
-                $append = 'Json';
-                if (in_array($key, ['edit', 'create'])) {
-                    continue;
-                }
-            }
-
-            try {
-                $content = array_key_exists($entity, $dummyContent) ? $dummyContent[$entity] : [];
-                $request = resolve_request($entity, $key, $content);
-                $response =
-                    array_key_exists('content', $request)
-                        ? $this->{$request['method'].$append}($request['url'], $content)
-                        : $this->{$request['method'].$append}($request['url']);
-                if ($hasPermission) {
-                    expect(in_array($response->status(), [200, 201, 204, 302]))->toBeTrue();
-                } else {
-                    $response->isForbidden();
-                }
-
-                if ($key == 'store' && $permissions[$entity]['index']) {
-                    $url = str_replace('api/', '', $entity);
-                    $res = $this->get("api/$url", ['order' => 'desc']);
-                    $dummyContent[$entity] = $res->json()['data'][0];
-                }
-
-            } catch (Exception $exception) {
-                $message = $exception->getMessage();
-                $error = json_encode($response->json());
-
-                throw new Exception("Permissions validation errors on Company Admin: [Entity: $entity, Method: $key]\n\nContext:\n$message\nMessage: $error");
-            }
-        }
-    }
+    runPermissionTest($permissions, $modelsData);
 });
