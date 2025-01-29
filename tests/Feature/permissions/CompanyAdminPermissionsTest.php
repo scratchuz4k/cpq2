@@ -35,7 +35,7 @@ it('Run Permissions for Company Admin', function () {
     $supplier = Supplier::factory()->create();
     $spa = Spa::factory()->create();
     $token = Token::factory()->create();
-    $quote = Quote::factory()->create();
+    $quote = Quote::factory()->create(['user_id' => $this->user->id]);
     $quoteItem = QuoteItem::factory()->state(["quote_id" => $quote->id, "product_id" => $product->id])->create();
     $api = Api::factory()->create(['tenant_id' => $this->account->tenant_id]);
 
