@@ -30,13 +30,13 @@ beforeEach(function () {
 
 it('Run Permissions for Company Admin', function () {
     $product = Product::factory()->create();
-    $price = Price::factory()->state(["product_id" => $product->id])->create();
+    $price = Price::factory()->create(["product_id" => $product->id]);
     $brand = Brand::factory()->create();
     $supplier = Supplier::factory()->create();
     $spa = Spa::factory()->create();
     $token = Token::factory()->create();
     $quote = Quote::factory()->create(['user_id' => $this->user->id]);
-    $quoteItem = QuoteItem::factory()->state(["quote_id" => $quote->id, "product_id" => $product->id])->create();
+    $quoteItem = QuoteItem::factory()->create(["quote_id" => $quote->id, "product_id" => $product->id]);
     $api = Api::factory()->create(['tenant_id' => $this->account->tenant_id]);
 
     $permissions = [
