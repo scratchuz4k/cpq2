@@ -41,8 +41,8 @@ it('Run Permissions for Company Admin', function () {
 
     $permissions = [
         // 'tenant' => ['index' => true, 'show' => true, 'create' => true, 'store' => true, 'edit' => true, 'update' => true, 'destroy' => true],
-        // 'api/accounts' => ['index' => true, 'show' => true, 'create' => true, 'store' => true, 'edit' => true, 'update' => true, 'destroy' => true],
-        // 'api/prices' => ['index' => true, 'show' => true, 'create' => true, 'store' => true, 'edit' => true, 'update' => true, 'destroy' => true],
+        'api/accounts' => ['index' => true, 'show' => true, 'create' => true, 'store' => true, 'edit' => true, 'update' => true, 'destroy' => true],
+        'api/prices' => ['index' => true, 'show' => true, 'create' => true, 'store' => true, 'edit' => true, 'update' => true, 'destroy' => true],
         // 'products' => ['index' => true, 'show' => true, 'create' => true, 'store' => true, 'edit' => true, 'update' => true, 'destroy' => true],
         // 'brands' => ['index' => true, 'show' => true, 'create' => true, 'store' => true, 'edit' => true, 'update' => true, 'destroy' => true],
         // 'suppliers' => ['index' => true, 'show' => true, 'create' => true, 'store' => true, 'edit' => true, 'update' => true, 'destroy' => true],
@@ -50,7 +50,7 @@ it('Run Permissions for Company Admin', function () {
         // 'users' => ['index' => true, 'show' => true, 'create' => true, 'store' => true, 'edit' => true, 'update' => true, 'destroy' => true],
         // 'tokens' => ['index' => false, 'show' => false, 'create' => false, 'store' => false, 'edit' => false, 'update' => false, 'destroy' => false],
         // 'quotes' => ['index' => true, 'show' => true, 'create' => true, 'store' => true, 'edit' => true, 'update' => true, 'destroy' => true],
-        'api/quote-items' => ['store' => true, 'edit' => true, 'update' => true, 'destroy' => true],
+        // 'api/quote-items' => ['index' => true, 'show' => true, 'create' => true, 'store' => true, 'edit' => true, 'update' => true, 'destroy' => true],
         // 'solution-types' => ['index' => true, 'show' => true, 'create' => true, 'store' => true, 'edit' => true, 'update' => true, 'destroy' => true],
         // 'apis' => ['index' => true, 'show' => true, 'create' => true, 'store' => true, 'edit' => true, 'update' => true, 'destroy' => true],
     ];
