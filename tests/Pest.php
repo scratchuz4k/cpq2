@@ -11,11 +11,9 @@
 |
 */
 
-use Tests\TestCase;
-use App\Models\User;
 use App\Models\Tenant;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-
 
 pest()->extend(Tests\TestCase::class)
     ->use(Illuminate\Foundation\Testing\RefreshDatabase::class)
@@ -23,7 +21,6 @@ pest()->extend(Tests\TestCase::class)
 pest()->extend(Tests\TestCase::class)
     ->use(Illuminate\Foundation\Testing\RefreshDatabase::class)
     ->in('Unit');
-
 
 uses(RefreshDatabase::class)->in('Feature');
 
@@ -58,6 +55,7 @@ function createUser()
     $tenant = Tenant::updateOrCreate(['name' => 'testing'], ['domain' => 'testing', 'database' => 'testing']);
     $user = User::factory()->create();
     $tenant->users()->sync([$tenant->id]);
+
     return $user;
 }
 
@@ -65,18 +63,18 @@ function resolve_request($entity, $method)
 {
     switch ($method) {
         case 'index':
-            return ["method" => "get", "url" => $entity];
+            return ['method' => 'get', 'url' => $entity];
         case 'show':
-            return ["method" => "get", "url" => "$entity/1"];
+            return ['method' => 'get', 'url' => "$entity/1"];
         case 'create':
-            return ["method" => "get", "url" => "$entity/create"];
+            return ['method' => 'get', 'url' => "$entity/create"];
         case 'store':
-            return ["method" => "post", "url" => "$entity", "content" =>  []];
+            return ['method' => 'post', 'url' => "$entity", 'content' => []];
         case 'edit':
-            return ["method" => "get", "url" => "$entity/1/edit"];
+            return ['method' => 'get', 'url' => "$entity/1/edit"];
         case 'update':
-            return ["method" => "put", "url" => "$entity/1", "content" =>  []];
+            return ['method' => 'put', 'url' => "$entity/1", 'content' => []];
         case 'destroy':
-            return ["method" => "delete", "url" => "$entity/1"];
+            return ['method' => 'delete', 'url' => "$entity/1"];
     }
 }

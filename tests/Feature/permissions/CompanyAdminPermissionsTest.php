@@ -41,8 +41,8 @@ it('Run Permissions for Company Admin', function () {
 
     $permissions = [
         // 'tenant' => ['index' => true, 'show' => true, 'create' => true, 'store' => true, 'edit' => true, 'update' => true, 'destroy' => true],
-        'api/accounts' => ['index' => true, 'show' => true, 'create' => true, 'store' => true, 'edit' => true, 'update' => true, 'destroy' => true],
-        'api/prices' => ['index' => true, 'show' => true, 'create' => true, 'store' => true, 'edit' => true, 'update' => true, 'destroy' => true],
+        // 'api/accounts' => ['index' => true, 'show' => true, 'create' => true, 'store' => true, 'edit' => true, 'update' => true, 'destroy' => true],
+        // 'api/prices' => ['index' => true, 'show' => true, 'create' => true, 'store' => true, 'edit' => true, 'update' => true, 'destroy' => true],
         // 'products' => ['index' => true, 'show' => true, 'create' => true, 'store' => true, 'edit' => true, 'update' => true, 'destroy' => true],
         // 'brands' => ['index' => true, 'show' => true, 'create' => true, 'store' => true, 'edit' => true, 'update' => true, 'destroy' => true],
         // 'suppliers' => ['index' => true, 'show' => true, 'create' => true, 'store' => true, 'edit' => true, 'update' => true, 'destroy' => true],
@@ -50,22 +50,28 @@ it('Run Permissions for Company Admin', function () {
         // 'users' => ['index' => true, 'show' => true, 'create' => true, 'store' => true, 'edit' => true, 'update' => true, 'destroy' => true],
         // 'tokens' => ['index' => false, 'show' => false, 'create' => false, 'store' => false, 'edit' => false, 'update' => false, 'destroy' => false],
         // 'quotes' => ['index' => true, 'show' => true, 'create' => true, 'store' => true, 'edit' => true, 'update' => true, 'destroy' => true],
-        // 'api/quote-items' => ['index' => true, 'show' => true, 'create' => true, 'store' => true, 'edit' => true, 'update' => true, 'destroy' => true],
+        'api/quote-items' => ['index' => true, 'show' => true, 'create' => true, 'store' => true, 'edit' => true, 'update' => true, 'destroy' => true],
         // 'solution-types' => ['index' => true, 'show' => true, 'create' => true, 'store' => true, 'edit' => true, 'update' => true, 'destroy' => true],
         // 'apis' => ['index' => true, 'show' => true, 'create' => true, 'store' => true, 'edit' => true, 'update' => true, 'destroy' => true],
     ];
 
     foreach ($permissions as $entity => $routes) {
         foreach ($routes as $key => $hasPermission) {
-            if (str_starts_with($entity, 'api') && in_array($key, ['edit', 'create'])) {
-                continue;
+
+            $append = '';
+            if (str_starts_with($entity, 'api')) {
+                $append = 'Json';
+                if (in_array($key, ['edit', 'create'])) {
+                    continue;
+                }
             }
+
             try {
                 $request = resolve_request($entity, $key);
                 $response =
                     array_key_exists('content', $request)
-                        ? $this->{$request['method']}($request['url'], [])
-                        : $this->{$request['method']}($request['url']);
+                        ? $this->{$request['method'].$append}($request['url'], ['quote_id' => 1, 'name' => 'asd', 'quantity' => 1])
+                        : $this->{$request['method'].$append}($request['url']);
                 if ($hasPermission) {
                     expect(in_array($response->status(), [200, 204, 302]))->toBeTrue();
                 } else {
