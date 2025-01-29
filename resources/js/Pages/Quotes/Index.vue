@@ -1,6 +1,6 @@
 <script setup>
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
-import { Head, Link } from "@inertiajs/vue3";
+import {Head, Link, usePage} from "@inertiajs/vue3";
 import { ref } from "vue";
 import Button from "primevue/button";
 import { createOrder } from "@/Composables/useOrders.js";
@@ -24,6 +24,8 @@ const props = defineProps({
   },
 });
 
+const page = usePage()
+const auth_user = page.props.auth.user.id;
 const createOrderAndRefresh = async (id) => {
   const res = await createOrder(id);
   if (res) {
