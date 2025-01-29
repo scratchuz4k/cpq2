@@ -22,6 +22,8 @@ beforeEach(function () {
     $this->user->tenants()->attach(Tenant::find(1));
     $this->user->assignRole('Order Manager');
     $this->account = Account::factory()->create();
+    Brand::factory()->create();
+    Supplier::factory()->create();
 
     Auth::login($this->user);
     $this->actingAs($this->user);
@@ -31,18 +33,18 @@ it('Run Permissions for Order Manager', function () {
     $modelsData = generateModelsData();
 
     $permissions = [
-        'tenant' => ['index' => false, 'show' => false, 'create' => false, 'store' => false, 'edit' => false, 'update' => false, 'destroy' => false],
-        'api/accounts' => ['index' => true, 'show' => true, 'create' => false, 'store' => false, 'edit' => false, 'update' => false, 'destroy' => false],
-        'api/prices' => ['index' => false, 'show' => false, 'create' => false, 'store' => false, 'edit' => false, 'update' => false, 'destroy' => false],
-        'products' => ['index' => true, 'show' => true, 'create' => false, 'store' => false, 'edit' => false, 'update' => false, 'destroy' => false],
-        'brands' => ['index' => true, 'show' => true, 'create' => false, 'store' => false, 'edit' => false, 'update' => false, 'destroy' => false],
-        'suppliers' => ['index' => true, 'show' => true, 'create' => false, 'store' => false, 'edit' => false, 'update' => false, 'destroy' => false],
-        'spas' => ['index' => false, 'show' => false, 'create' => false, 'store' => false, 'edit' => false, 'update' => false, 'destroy' => false],
-        'users' => ['index' => false, 'show' => false, 'create' => false, 'store' => false, 'edit' => false, 'update' => false, 'destroy' => false],
-        'tokens' => ['index' => false, 'show' => false, 'create' => false, 'store' => false, 'edit' => false, 'update' => false, 'destroy' => false],
-        'quotes' => ['index' => false, 'show' => false, 'create' => false, 'store' => false, 'edit' => false, 'update' => false, 'destroy' => false],
-        'api/quote-items' => ['index' => false, 'show' => false, 'create' => false, 'store' => false, 'edit' => false, 'update' => false, 'destroy' => false],
-        'solution-types' => ['index' => false, 'show' => false, 'create' => false, 'store' => false, 'edit' => false, 'update' => false, 'destroy' => false],
+        'tenant' =>         ['index' => false, 'create' => false, 'show' => false, 'store' => false, 'edit' => false, 'update' => false, 'destroy' => false],
+        'api/accounts' =>   ['index' => true, 'create' => false, 'show' => true, 'store' => false, 'edit' => false, 'update' => false, 'destroy' => false],
+        'api/prices' =>     ['index' => false, 'create' => false, 'show' => false, 'store' => false, 'edit' => false, 'update' => false, 'destroy' => false],
+        'products' =>       ['index' => true, 'create' => false, 'show' => true, 'store' => false, 'edit' => false, 'update' => false, 'destroy' => false],
+        'brands' =>         ['index' => true, 'create' => false, 'show' => true, 'store' => false, 'edit' => false, 'update' => false, 'destroy' => false],
+        'suppliers' =>      ['index' => true, 'create' => false, 'show' => true, 'store' => false, 'edit' => false, 'update' => false, 'destroy' => false],
+        'spas' =>           ['index' => false, 'create' => false, 'show' => false, 'store' => false, 'edit' => false, 'update' => false, 'destroy' => false],
+        'users' =>          ['index' => false, 'create' => false, 'show' => false, 'store' => false, 'edit' => false, 'update' => false, 'destroy' => false],
+        'tokens' =>         ['index' => false, 'create' => false, 'show' => false, 'store' => false, 'edit' => false, 'update' => false, 'destroy' => false],
+        'quotes' =>         ['index' => false, 'create' => false, 'show' => false, 'store' => false, 'edit' => false, 'update' => false, 'destroy' => false],
+        'api/quote-items' => ['index' => false, 'create' => false, 'show' => false, 'store' => false, 'edit' => false, 'update' => false, 'destroy' => false],
+        'solution-types' => ['index' => false, 'create' => false, 'show' => false, 'store' => false, 'edit' => false, 'update' => false, 'destroy' => false],
     ];
 
     runPermissionTest($permissions, $modelsData);
