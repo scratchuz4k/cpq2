@@ -30,15 +30,15 @@ class QuoteItemCreateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            // 'quote_id' => 'required',
-            // 'name' => 'required',
-            // 'quantity' => 'required|numeric|min:1',
-            // 'raw_price' => 'numeric',
-            // 'price' => 'numeric',
-            // 'margin' => 'numeric|min:0|max:100',
-            // 'discount' => 'numeric|min:0|max:100',
-            // 'price_plan_id' => 'required|exists:price_plans,id',
-            // 'contract_length' => 'numeric|min:1',
+            'quote_id' => 'required',
+            'name' => 'required',
+            'quantity' => 'required|numeric|min:1',
+            'raw_price' => 'numeric',
+            'price' => 'numeric',
+            'margin' => 'numeric|min:0|max:100',
+            'discount' => 'numeric|min:0|max:100',
+            'price_plan_id' => 'required|exists:price_plans,id',
+            'contract_length' => 'numeric|min:1',
         ];
     }
 }
