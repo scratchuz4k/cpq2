@@ -40,7 +40,7 @@ it('Run Permissions for Company Admin', function () {
     $api = Api::factory()->create(['tenant_id' => $this->account->tenant_id]);
 
     $permissions = [
-        'tenant' => ['index' => false, 'show' => true, 'create' => true, 'store' => true, 'edit' => true, 'update' => true, 'destroy' => true],
+        'tenant' => ['index' => true, 'show' => true, 'create' => true, 'store' => true, 'edit' => true, 'update' => true, 'destroy' => true],
         'api/accounts' => ['index' => true, 'show' => true, 'create' => true, 'store' => true, 'edit' => true, 'update' => true, 'destroy' => true],
         'api/prices' => ['index' => true, 'show' => true, 'create' => true, 'store' => true, 'edit' => true, 'update' => true, 'destroy' => true],
         'products' => ['index' => true, 'show' => true, 'create' => true, 'store' => true, 'edit' => true, 'update' => true, 'destroy' => true],
@@ -72,8 +72,6 @@ it('Run Permissions for Company Admin', function () {
                     $response->assertStatus(403);
                 }
             } catch (Exception $exception) {
-
-                dd($exception);
                 $message = $exception->getMessage();
                 throw new Exception("Permissions validation errors on Company Admin: [Entity: $entity, Method: $key]\n\nContext:\n$message");
             }

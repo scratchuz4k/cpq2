@@ -75,7 +75,7 @@ jobs:
       - name: Laravel Tests and sqlite
         run: |
           touch database/database.sqlite
-          php artisan test --verbose
+          php artisan test -vvv
 
       - name: Check laravel local server
         run: curl http://localhost:8000/health
