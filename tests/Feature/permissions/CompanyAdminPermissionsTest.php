@@ -73,7 +73,9 @@ it('Run Permissions for Company Admin', function () {
                 }
             } catch (Exception $exception) {
                 $message = $exception->getMessage();
-                throw new Exception("Permissions validation errors on Company Admin: [Entity: $entity, Method: $key]\n\nContext:\n$message");
+                $error = json_encode($response->body());
+
+                throw new Exception("Permissions validation errors on Company Admin: [Entity: $entity, Method: $key]\n\nContext:\n$message\nMessage: $error");
             }
         }
     }
