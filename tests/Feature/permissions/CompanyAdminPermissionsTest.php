@@ -72,6 +72,7 @@ it('Run Permissions for Company Admin', function () {
                     $response->assertStatus(403);
                 }
             } catch (Exception $exception) {
+                dd($quote->toArray(), $quoteItem->toArray(), $this->user->toArray(), $product);
                 $message = $exception->getMessage();
                 throw new Exception("Permissions validation errors on Company Admin: [Entity: $entity, Method: $key]\n\nContext:\n$message");
             }
