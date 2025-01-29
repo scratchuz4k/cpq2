@@ -18,13 +18,15 @@ const item = ref(null)
 const submitFileForm = async () => {
     isLoading.value = true
 
+    let success_message = tenant.sso_id ? 'File uploaded with Success' : 'File deleted successfully'
+
     let data = {
         sso_id: tenant.sso_id
     }
     try {
         let res = await axios.put(`/api/tenant/` + tenant.id, data)
         Object.assign(tenant, res.data);
-        notyf.success("File uploaded with Success")
+        notyf.success(success_message)
     } catch (err) {
         notyf.error(err?.response?.data?.message ?? 'Something went wrong')
     }
@@ -32,13 +34,15 @@ const submitFileForm = async () => {
 
 const submitLogoForm = async () => {
     isLoading.value = true
+
+    let success_message = tenant.logo_id ? 'File uploaded with Success' : 'File deleted successfully'
     let data = {
         logo_id: tenant.logo_id
     }
     try {
         let res = await axios.put(`/api/tenant/` + tenant.id, data)
         Object.assign(tenant, res.data);
-        notyf.success("Logo uploaded with Success")
+        notyf.success(success_message)
     } catch (err) {
         notyf.error(err?.response?.data?.message ?? 'Something went wrong')
     }

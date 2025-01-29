@@ -86,7 +86,8 @@ const remove = async (item) => {
 
 const saveItem = () => {
     showModal.value = !showModal.value
-emitter.emit(event.value, selectedItem.value);
+    emitter.emit(event.value, selectedItem.value);
+    selectedItem.value = null
 }
 
 const closeModal = () => {
@@ -162,7 +163,7 @@ onMounted(() => {
                     </template>
                     <template #title>
                         <div class="d-flex justify-content-between">
-                            <p>
+                            <p class="w-100 overflow-hidden loaded-file-title">
                                 {{ image.title }}
                             </p>
                         </div>
@@ -175,7 +176,6 @@ onMounted(() => {
         </Paginator>
         <div class="d-flex justify-content-center action-button-wrapper">
             <Button label="Close" class="btn btn-secondary close-modal me-2" @click="() => closeModal()" />
-            {{ selectedItem}}
             <Button :disabled="!selectedItem" label="Save" class="btn btn-primary" severity="success" @click="() => saveItem()" />
         </div>
     </Dialog>
@@ -184,7 +184,9 @@ onMounted(() => {
 #resources_search_icon {
     --p-icon-size: 1.5rem;
 }
-
+.loaded-file-title{
+    text-overflow: ellipsis;
+}
 .file-card:hover {
     box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px, rgb(51, 51, 51) 0px 0px 0px 1px;
     cursor: pointer;
