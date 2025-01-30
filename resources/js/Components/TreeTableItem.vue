@@ -53,7 +53,7 @@ const getValue = (key) => {
   return result;
 };
 
-const getChildren = async (key) => {
+const getChildren = async () => {
   showChild.value = true;
   if (meta.page != 0 && meta.page == meta.total) {
     return;
@@ -118,6 +118,11 @@ const deleteRecord = async (id) => {
 const showModal = () => {
   emitter.emit("change-selected", props.item);
 };
+
+emitter.on("reset-items", () => {
+  meta.page = 0;
+  showChild.value = false;
+});
 </script>
 
 <template>

@@ -34,6 +34,8 @@ const meta = reactive({
   total: 0,
   first: 1,
   limit: 20,
+  order: "asc",
+  orderBy: "id",
 });
 
 let data = ref([]);
@@ -76,9 +78,24 @@ const handlePaginator = (ev) => {
   getData();
 };
 
+const sortBy = (column) => {
+  let changeSort = meta.order == "asc" ? "desc" : "asc";
+  meta.order = meta.orderBy === column ? changeSort : meta.order;
+  meta.orderBy = column;
+};
+
+watch(
+  () => [meta.order, meta.orderBy],
+  function () {
+    meta.page = 1;
+    getData();
+  }
+);
+
 watch(
   [global],
   _.debounce(function () {
+    emitter.emit("reset-items");
     getData();
   }, 500)
 );
@@ -103,7 +120,15 @@ watch(
       <thead>
         <tr>
           <th v-for="(column, key) in columns" :key="key">
-            {{ column.title }}
+            <p
+              @click="sortBy(column.data)"
+              :style="{
+                cursor: 'pointer',
+                textDecoration: column.data == meta.orderBy ? 'underline' : 'none',
+              }"
+            >
+              {{ column.title }}
+            </p>
           </th>
           <th></th>
         </tr>
