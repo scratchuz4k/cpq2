@@ -85,15 +85,7 @@ const sortBy = (column) => {
 };
 
 watch(
-  () => [meta.order, meta.orderBy],
-  function () {
-    meta.page = 1;
-    getData();
-  }
-);
-
-watch(
-  [global],
+  () => [global.value, meta.order, meta.orderBy],
   _.debounce(function () {
     emitter.emit("reset-items");
     getData();
