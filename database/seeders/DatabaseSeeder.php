@@ -6,6 +6,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Database\Seeders\InitTableSeeder;
+use Database\Seeders\EmailTemplateSeeder;
 
 class DatabaseSeeder extends Seeder
 {
@@ -18,7 +19,8 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             InitTableSeeder::class,
-            RolePermissionSeeder::class
+            RolePermissionSeeder::class,
+            EmailTemplateSeeder::class,
         ]);
     }
 }
