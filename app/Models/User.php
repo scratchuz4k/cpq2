@@ -4,15 +4,17 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Trait\SetTenantId;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
-use Illuminate\Support\Facades\Auth;
 use Laravel\Sanctum\HasApiTokens;
+use App\Models\Scopes\TenantScope;
+use Illuminate\Support\Facades\Auth;
 use Spatie\Permission\Traits\HasRoles;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class User extends Authenticatable
 {
@@ -23,6 +25,13 @@ class User extends Authenticatable
     public static function boot()
     {
         parent::boot();
+        
+        static::creating(function (Model $model) {
+            // Check if tenant_id is not set and the user is authenticated
+            if (auth()->check() && !$model->tenant_id) {
+                $model->tenant_id = auth()->user()->tenant_id;
+            }
+        });
 
         // Update parent when a child is created
         static::created(function ($child) {
@@ -60,6 +69,7 @@ class User extends Authenticatable
         'tenant_id',
         'sso', // Add sso to fillable attributes
         'commission_rate',
+        'has_children',
     ];
 
     /**
