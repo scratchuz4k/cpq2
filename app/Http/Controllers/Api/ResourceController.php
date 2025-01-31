@@ -35,6 +35,7 @@ class ResourceController extends Controller
      */
     public function store(Request $request)
     {
+        //TODO on php upgrade to 8.4 implement LIBXML_NO_XXE verification to prevent xxe injextion
         $request->validate([
             'file' => 'required',
         ]);

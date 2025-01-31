@@ -1,6 +1,5 @@
 <template>
-    <div class="" @click="openResources()" style="cursor: pointer;">
-        <p>Upload file</p>
+    <div class="mt-2" @click="openResources()" style="cursor: pointer;">
         <div v-if="item">
             <img :src="coverImage(item)" style="object-fit: contain;height: 150px;">
             <h5 class="mt-2 text-start">

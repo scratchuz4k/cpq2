@@ -113,10 +113,10 @@ const items = ref([
                             </div>
                             <div class="tab-pane fade" id="v-pills-logo" role="tabpanel" aria-labelledby="v-pills-logo-tab">
                                 <div class="col xml-in-tabs">
-                                    <div class="d-flex mt-4">
+                                    <div class="d-flex">
                                         <div class="logo-form">
                                             <h4>Import Logo for {{ tenant.name }}</h4>
-                                            <p>The file to upload must be a .png</p>
+                                            <p>The file to upload must be a .jpeg, .png, .gif</p>
                                             <form @submit.prevent="submitLogoForm" enctype="multipart/form-data">
                                                 <InputResource v-model="tenant.logo_id" :resource="tenant.logo" :showLikeLine="false" :acceptedFiles="['image/jpeg', 'image/png', 'image/gif', ]" @change="submitLogoForm"></InputResource>
                                             </form>
