@@ -8,7 +8,7 @@
             </h5>
         </div>
         <div v-else class="d-flex justify-center my-3 input-resource"
-             style="height: 120px; width:120px; align-items: center;border:3px dotted grey;border-radius: 10px;">
+             style="height: 120px; width:120px; align-items: center;border:3px dotted #a34796;border-radius: 10px;">
             <font-awesome-icon class="w-100" style="font-size: 4rem" :icon="['fas', 'plus']" />
         </div>
     </div>
@@ -27,7 +27,7 @@
 </template>
 <script setup>
 import { v4 as uuid } from "uuid"
-import { computed, ref } from 'vue';
+import {computed, ref, watch} from 'vue';
 import Button from "primevue/button";
 const props = defineProps({
     resource: Object,
@@ -72,6 +72,10 @@ emitter.on(eventFire, (res) => {
 
     emit('change', item.value)
 })
+
+watch(() => props.resource, (newValue, oldValue) => {
+    item.value = newValue
+});
 </script>
 
 

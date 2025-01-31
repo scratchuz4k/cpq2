@@ -31,7 +31,7 @@ const meta = reactive({
 const getImages = async () => {
     images.value = []
     extensions.value = Object.fromEntries(
-        acceptedFiles.value.map(mimeType => [mimeType, mimeType.split('/')[1]])
+        acceptedFiles.value.map(mimeType => [mimeType, `.${mimeType.split('/')[1]}`])
     )
     let string = queryString.stringify({
         page: meta.page,
@@ -117,7 +117,7 @@ onMounted(() => {
         <template #header>
 
         </template>
-        <dropzone @resource:created="getImages">
+        <dropzone @resource:created="getImages" :acceptedFiles="Object.values(extensions).join(', ')">
             <div class="dz-default dz-message m-0">
                 <div class="d-flex align-content-center flex-column">
                     <font-awesome-icon :icon="['fa-solid', 'images']" class="color-purple p-3" style="font-size: 5rem"/>

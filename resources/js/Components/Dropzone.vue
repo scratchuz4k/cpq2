@@ -9,6 +9,9 @@
 import Dropzone from "dropzone"
 import {onMounted} from "vue"
 
+const props = defineProps({
+    acceptedFiles: String
+})
 const emit = defineEmits(["resource:created"])
 
 onMounted(() => {
@@ -17,9 +20,9 @@ onMounted(() => {
     new Dropzone(element, {
         url: '/api/resources',
         paramName: "file",
-        maxFilesize: 5000,
+        maxFilesize: 2,
         uploadMultiple: true,
-        acceptedFiles: "image/*,application/pdf, text/*",
+        acceptedFiles: props.acceptedFiles,
         addRemoveLinks: true,
         dictRemoveFile: "×",
         dictCancelUpload: null,

@@ -25,7 +25,9 @@ const submitFileForm = async () => {
     }
     try {
         let res = await axios.put(`/api/tenant/` + tenant.id, data)
+
         Object.assign(tenant, res.data);
+        if (!tenant.file) tenant.sso_text = null
         notyf.success(success_message)
     } catch (err) {
         notyf.error(err?.response?.data?.message ?? 'Something went wrong')
