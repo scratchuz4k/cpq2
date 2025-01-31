@@ -25,6 +25,6 @@ class LogoValidator implements ValidationRule
 
         $res = Resource::findOrFail($value);
 
-        if (!in_array($res, $allowed_logo_formats)) $fail('The :attribute be of type jpeg, png or gif.');
+        if (!in_array($res->mime_type, $allowed_logo_formats)) $fail('The :attribute be of type jpeg, png or gif.');
     }
 }
