@@ -74,6 +74,7 @@ const items = ref([{ label: "Home", url: "/" }, { label: "Quotes" }]);
             { data: 'actions', title: '', style: 'width:15%' },
             { data: 'items.data', title: 'Last Updated', hide: true },
             { data: 'items.name', title: 'Last Updated', hide: true },
+            { data: 'address_data', title: 'Last Updated', hide: true },
             { data: 'account.contacts.email', title: 'Last Updated', hide: true },
           ]"
           :filters="{
