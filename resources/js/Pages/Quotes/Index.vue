@@ -66,13 +66,13 @@ const items = ref([{ label: "Home", url: "/" }, { label: "Quotes" }]);
           :allow="{}"
           :columns="[
             { data: 'id', title: '#', style: 'width:5%' },
-            { data: 'account.name', title: 'Account', style: 'width:15%' },
-            { data: 'solution_type.name', title: 'Solution', style: 'width:20%' },
-            { data: 'address_postcode', title: 'Postcode', style: 'width:10%' },
-            { data: 'user.name', title: 'Owner', style: 'width:20%' },
+            { data: 'account.name', title: 'Account', style: 'width:13%' },
+            { data: 'solution_type.name', title: 'Solution', style: 'width:18%' },
+            { data: 'address_postcode', title: 'Postcode', style: 'width:8%' },
+            { data: 'user.name', title: 'Owner', style: 'width:18%' },
             { data: 'status', title: 'Status', style: 'width:10%' },
             { data: 'updated_at', title: 'Last Updated', style: 'width:15%' },
-            { data: 'actions', title: '', style: 'width:15%' },
+            { data: 'actions', title: '', style: 'width:13%' },
             { data: 'items.data', title: 'Last Updated', hide: true },
             { data: 'items.name', title: 'Last Updated', hide: true },
             { data: 'address_data', title: 'Last Updated', hide: true },
@@ -100,7 +100,6 @@ const items = ref([{ label: "Home", url: "/" }, { label: "Quotes" }]);
               class="d-flex justify-content-end"
             >
               <button
-                hidden
                 type="button"
                 title="Send to Order"
                 :id="'datatable-btn-' + index + '-crete-order'"
