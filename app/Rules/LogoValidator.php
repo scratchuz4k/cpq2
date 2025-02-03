@@ -5,8 +5,6 @@ namespace App\Rules;
 use App\Models\Resource;
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
-use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Storage;
 
 class LogoValidator implements ValidationRule
 {
@@ -19,12 +17,15 @@ class LogoValidator implements ValidationRule
     {
         $allowed_logo_formats = [
             'image/jpeg',
+            'image/jpg',
             'image/png',
             'image/gif',
         ];
 
         $res = Resource::findOrFail($value);
 
-        if (!in_array($res->mime_type, $allowed_logo_formats)) $fail('The :attribute be of type jpeg, png or gif.');
+        if (! in_array($res->mime_type, $allowed_logo_formats)) {
+            $fail('The :attribute be of type jpeg, jpg, png or gif.');
+        }
     }
 }

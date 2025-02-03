@@ -116,9 +116,9 @@ const items = ref([
                                     <div class="d-flex">
                                         <div class="logo-form">
                                             <h4>Import Logo for {{ tenant.name }}</h4>
-                                            <p>The file to upload must be a .jpeg, .png, .gif</p>
+                                            <p>The file to upload must be a .jpeg, .jpg, .png, .gif</p>
                                             <form @submit.prevent="submitLogoForm" enctype="multipart/form-data">
-                                                <InputResource v-model="tenant.logo_id" :resource="tenant.logo" :showLikeLine="false" :acceptedFiles="['image/jpeg', 'image/png', 'image/gif', ]" @change="submitLogoForm"></InputResource>
+                                                <InputResource v-model="tenant.logo_id" :resource="tenant.logo" :showLikeLine="false" :acceptedFiles="['image/jpeg', 'image/jpg', 'image/png', 'image/gif', ]" @change="submitLogoForm"></InputResource>
                                             </form>
                                         </div>
                                     </div>

@@ -47,7 +47,7 @@ class ResourceController extends Controller
 
         try {
             foreach ($files as $key) {
-                $folder = in_array($key->getClientMimeType(), ['image/jpeg', 'image/png', 'image/gif']) ? 'images' : 'files';
+				$folder = in_array($key->getClientMimeType(), ['image/jpeg', 'image/jpg', 'image/png', 'image/gif']) ? 'images' : 'files';
                 if ($path = $key->store($folder, 'public')) {
                     $newFile = Resource::create([
                         'title' => $key->getClientOriginalName(),

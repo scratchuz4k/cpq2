@@ -49,7 +49,7 @@ const proxyValue = computed({
 });
 
 const coverImage = (item) => {
-    let image_types = ['image/jpeg', 'image/png', 'image/gif'];
+    let image_types = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
     if (image_types.includes(item.mime_type)) {
         return item.route
     } else {
@@ -76,6 +76,3 @@ watch(() => props.resource, (newValue, oldValue) => {
     item.value = newValue
 });
 </script>
-
-
-
