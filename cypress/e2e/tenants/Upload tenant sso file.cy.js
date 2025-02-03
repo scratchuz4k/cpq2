@@ -86,7 +86,7 @@ describe('Update tenant SSO', () => {
 
     it('Remove tenant SSO file', () => {
         cy.get('#v-pills-sso').find('#remove-file-button').click()
-        cy.get('.notyf').contains('File uploaded with Success')
+        cy.get('.notyf').contains('File deleted with Success')
         cy.get('#v-pills-sso').find('.input-resource').should('exist')
     })
 })
