@@ -6,11 +6,12 @@ describe('Update tenant logo', () => {
         cy.visit('/')
         cy.get('#my-account').click()
         cy.get('#link-tenant').click()
-        cy.get('#v-pills-logo-tab').click()
     })
 
     it('upload image', () => {
-        cy.get('#v-pills-logo').find('.input-resource').click()
+        cy.get('#v-pills-logo-tab').click()
+        // cy.get('#v-pills-logo').find('.input-resource').click()
+        cy.get('#v-pills-logo .input-resource').click();
 
         // Create a virtual file in the test
         const fileName = 'exampleFile.png'
@@ -64,7 +65,7 @@ describe('Update tenant logo', () => {
 
     it('Remove tenant logo', () => {
         cy.get('#v-pills-logo').find('#remove-file-button').click()
-        cy.get('.notyf').contains('Logo uploaded with Success')
+        cy.get('.notyf').contains('File deleted with Success')
         cy.get('#v-pills-logo').find('.input-resource').should('exist')
     })
 })

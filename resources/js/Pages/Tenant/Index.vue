@@ -18,7 +18,7 @@ const item = ref(null)
 const submitFileForm = async () => {
     isLoading.value = true
 
-    let success_message = tenant.sso_id ? 'File uploaded with Success' : 'File deleted successfully'
+    let success_message = tenant.sso_id ? 'File uploaded with Success' : 'File deleted with Success'
 
     let data = {
         sso_id: tenant.sso_id
@@ -37,7 +37,7 @@ const submitFileForm = async () => {
 const submitLogoForm = async () => {
     isLoading.value = true
 
-    let success_message = tenant.logo_id ? 'File uploaded with Success' : 'File deleted successfully'
+    let success_message = tenant.logo_id ? 'Logo uploaded with Success' : 'Logo deleted with Success'
     let data = {
         logo_id: tenant.logo_id
     }
