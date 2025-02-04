@@ -8,14 +8,12 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class EmailTemplate extends Model
 {
     protected $fillable = [
-        'code',
         'description',
         'to',
         'cc',
         'bcc',
         'subject',
         'body',
-        'notes',
     ];
 
     public function tokens(): HasMany

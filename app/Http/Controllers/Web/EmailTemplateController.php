@@ -47,7 +47,7 @@ class EmailTemplateController extends BaseController
      */
     public function edit(EmailTemplate $emailTemplate)
     {
-        return Inertia::render(component: 'Emails/Edit');
+        return Inertia::render('Emails/Edit', ["email" => $emailTemplate->load(['tokens'])->toArray()]);
     }
 
     /**
