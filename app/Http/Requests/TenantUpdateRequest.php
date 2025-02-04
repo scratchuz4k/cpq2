@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests;
 
-use App\Rules\LogoValidator;
+use App\Rules\FileValidator;
 use App\Rules\XmlValidator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\File;
@@ -25,9 +25,9 @@ class TenantUpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'sso_id' => ['nullable', new XmlValidator],
+            'sso_id' => ['nullable', new FileValidator('xml')],
             'sso_text_area' => ['nullable', new XmlValidator],
-            'logo_id' => ['nullable', new LogoValidator],
+            'logo_id' => ['nullable', new FileValidator('image')],
         ];
     }
 }
