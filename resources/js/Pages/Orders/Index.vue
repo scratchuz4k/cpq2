@@ -50,12 +50,12 @@ const items = ref([{ label: "Home", url: "/" }, { label: "Orders" }]);
             { data: 'address_postcode', title: 'Postcode', style: 'width:8%' },
             { data: 'user.name', title: 'Owner', style: 'width:18%' },
             { data: 'status', title: 'Status', style: 'width:10%' },
-            { data: 'updated_at', title: 'Last Updated', style: 'width:15%' },
+            { data: 'updated_at', title: 'Updated At', style: 'width:15%' },
             { data: 'actions', title: '', style: 'width:13%' },
-            { data: 'items.data', title: 'Last Updated', hide: true },
-            { data: 'items.name', title: 'Last Updated', hide: true },
-            { data: 'address_data', title: 'Last Updated', hide: true },
-            { data: 'account.contacts.email', title: 'Last Updated', hide: true },
+            { data: 'items.data', title: 'Data', hide: true },
+            { data: 'items.name', title: 'Name', hide: true },
+            { data: 'address_data', title: 'Address', hide: true },
+            { data: 'account.contacts.email', title: 'Email', hide: true },
           ]"
           :filters="{
             'user.name': { type: 'options', options: users.map((x) => x.name) },
