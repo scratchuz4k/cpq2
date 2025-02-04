@@ -47,10 +47,10 @@ class ResourceController extends Controller
 
         try {
             foreach ($files as $key) {
-				$folder = in_array($key->getMimeType(), ['image/jpeg', 'image/jpg', 'image/png', 'image/gif']) ? 'images' : 'files';
+				$folder = in_array($key->getClientMimeType(), ['image/jpeg', 'image/jpg', 'image/png', 'image/gif']) ? 'images' : 'files';
 
                 [$mimeType, $originalName, $fileContent, $size] = [
-                    $key->getMimeType(), $key->getClientOriginalName(), $key->get(), $key->getSize()
+                    $key->getClientMimeType(), $key->getClientOriginalName(), $key->get(), $key->getSize()
                 ];
 
                 if (in_array($mimeType, ['text/xml', 'application/xml'])  && !simplexml_load_string($key->get(), null, LIBXML_NOERROR)) {

@@ -9,7 +9,10 @@ use Illuminate\Contracts\Validation\ValidationRule;
 class FileValidator implements ValidationRule
 {
     private $allowed_logo_formats = [
-        'xml' => ['text/xml'],
+        'xml' => [
+            'text/xml',
+            'application/xml'
+        ],
         'image' => [
             'image/jpeg',
             'image/jpg',
@@ -37,11 +40,11 @@ class FileValidator implements ValidationRule
         }
 
         if (! in_array($res->mime_type, $this->allowed_logo_formats[$this->filetype])) {
-            $extensions = implode(', ', array_map(
+            $extensions = implode(', ', array_unique(array_map(
                 fn($mime) => '.' . explode('/', $mime)[1] ?? '',
                 $this->allowed_logo_formats[$this->filetype]
-            ));
-            $fail('The file be of type ' . $extensions . '.');
+            )));
+            $fail('The file must be of type ' . $extensions . '.');
         }
     }
 }
