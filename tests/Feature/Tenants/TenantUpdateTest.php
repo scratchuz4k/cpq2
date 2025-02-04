@@ -64,7 +64,8 @@ it('Upload a tenant SSO File with valid XML', function () {
         </root>';
 
     $file = UploadedFile::fake()
-        ->createWithContent('test-xml.xml', $xml_content);
+        ->createWithContent('test-xml.xml', $xml_content)
+        ->mimeType('text/xml');
 
     $resource = $this
         ->post('api/resources', [
@@ -93,19 +94,11 @@ it('Upload a tenant SSO File with invalid XML', function () {
     $file = UploadedFile::fake()
         ->createWithContent('test-xml.xml', $xml_content);
 
-    $resource = $this
+    $response = $this
         ->post('api/resources', [
             'file' => $file,
-        ])
-        ->json();
-
-    $data = [
-        'sso_id' => $resource['file']['id']
-    ];
-
-    $response = $this->put('api/tenant/' . $this->user->currentTenant->id, $data);
-    $response->assertStatus(302)
-        ->assertSessionHasErrors([
-            'sso_id' => 'The sso id must contain a valid XML.'
         ]);
+
+    $response->assertStatus(422)
+        ->assertJsonPath('message', 'The file must contain a valid XML.');
 });

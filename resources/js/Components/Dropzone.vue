@@ -32,30 +32,18 @@ onMounted(() => {
                 .getAttribute("content"),
         },
         init: function () {
-            this.on("addedfile", function(file) {
-                const maxSize = this.options.maxFilesize * 1024 * 1024;
-                const acceptedFiles = this.options.acceptedFiles ? this.options.acceptedFiles.split(",") : [];
-                const isAcceptedType = acceptedFiles.some(ext => {
-                    return file.name.toLowerCase().endsWith(ext.trim());
-                });
-
-                if (file.size > maxSize || !isAcceptedType) {
-                    this.removeFile(file);
-                }
-            });
+            this.on("error", function(file, response) {
+                window.notyf.error(response.message ?? response);
+                this.removeFile(file);
+            })
         },
         success: (res, data) => onUpload(data),
-        error: (res, data) => onError(data)
     })
 })
 
 const onUpload = (data) => {
     window.notyf.success(data.message)
     emit("resource:created")
-}
-
-const onError = (data) => {
-    window.notyf.error(data.message ?? data)
 }
 </script>
 

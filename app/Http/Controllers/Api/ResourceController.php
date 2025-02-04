@@ -47,13 +47,26 @@ class ResourceController extends Controller
 
         try {
             foreach ($files as $key) {
-				$folder = in_array($key->getClientMimeType(), ['image/jpeg', 'image/jpg', 'image/png', 'image/gif']) ? 'images' : 'files';
+				$folder = in_array($key->getMimeType(), ['image/jpeg', 'image/jpg', 'image/png', 'image/gif']) ? 'images' : 'files';
+
+                [$mimeType, $originalName, $fileContent, $size] = [
+                    $key->getMimeType(), $key->getClientOriginalName(), $key->get(), $key->getSize()
+                ];
+
+                if (in_array($mimeType, ['text/xml', 'application/xml'])  && !simplexml_load_string($key->get(), null, LIBXML_NOERROR)) {
+                    return response()->json([
+                        'message' => 'The file must contain a valid XML.',
+                        'error' => true,
+                    ], 422);
+                }
+
+                // check content file
                 if ($path = $key->store($folder, 'public')) {
                     $newFile = Resource::create([
-                        'title' => $key->getClientOriginalName(),
-                        'mime_type' => $key->getClientMimeType(),
+                        'title' => $originalName,
+                        'mime_type' => $mimeType,
                         'route' => $path,
-                        'size' => $key->getSize(),
+                        'size' => $size,
                         'tenant_id' => auth()->user()->tenant_id
                     ]);
                 }

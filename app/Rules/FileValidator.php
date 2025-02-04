@@ -9,7 +9,7 @@ use Illuminate\Contracts\Validation\ValidationRule;
 class FileValidator implements ValidationRule
 {
     private $allowed_logo_formats = [
-        'xml' => [],
+        'xml' => ['text/xml'],
         'image' => [
             'image/jpeg',
             'image/jpg',
@@ -26,7 +26,6 @@ class FileValidator implements ValidationRule
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-
         $res = Resource::find(id: $value);
 
         if (!$res) {
@@ -34,11 +33,15 @@ class FileValidator implements ValidationRule
         }
 
         if (! array_key_exists($this->filetype, $this->allowed_logo_formats)) {
-            $fail('The file typ attribute is not present.');
+            $fail('The file type attribute is not present.');
         }
 
-        if (! in_array($res->mime_type, $this->allowed_logo_formats)) {
-            $fail('The :attribute be of type jpeg, jpg, png or gif.');
+        if (! in_array($res->mime_type, $this->allowed_logo_formats[$this->filetype])) {
+            $extensions = implode(', ', array_map(
+                fn($mime) => '.' . explode('/', $mime)[1] ?? '',
+                $this->allowed_logo_formats[$this->filetype]
+            ));
+            $fail('The file be of type ' . $extensions . '.');
         }
     }
 }
