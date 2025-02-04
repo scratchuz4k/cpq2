@@ -64,12 +64,7 @@ describe('Update tenant SSO', () => {
             dataTransfer
         });
 
-        cy.get('#library-container').should('contain', fileName);
-
-        cy.get('#library-container').find('.p-card').first().click()
-        cy.get('.action-button-wrapper').find('.p-button').eq(1).click()
-
-        cy.get('.notyf').contains('The sso id must contain a valid XML.')
+        cy.get('.notyf').contains('The file must contain a valid XML.')
     })
 
     it('Update text area content', () => {
