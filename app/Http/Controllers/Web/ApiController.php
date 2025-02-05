@@ -2,19 +2,20 @@
 
 namespace App\Http\Controllers\Web;
 
+use App\Http\Requests\ApiCreateRequest;
 use Inertia\Inertia;
 use Illuminate\Http\Request;
-use App\Models\ApiConfiguration;
+use App\Models\Api;
 use Illuminate\Support\Facades\DB;
 use App\Enums\CloudMarketSuppliersEnum;
 use App\Http\Controllers\BaseController;
-use App\Http\Resources\ApiConfigurationResource;
-use App\Services\ApiConfigurationService;
+use App\Http\Resources\ApiResource;
+use App\Services\ApiService;
 
-class ApiConfigurationController extends BaseController
+class ApiController extends BaseController
 {
-    protected $model = ApiConfiguration::class;
-    public function __construct(protected ApiConfigurationService $apiConfiguratioService)
+    protected $model = Api::class;
+    public function __construct(protected ApiService $apiService)
     {
         parent::__construct();
     }
@@ -39,11 +40,11 @@ class ApiConfigurationController extends BaseController
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(ApiCreateRequest $request)
     {
         try {
             $api = DB::transaction(function () use ($request) {
-                return $this->apiConfiguratioService->store($request->all());
+                return $this->apiService->store($request->all());
             });
         } catch (\Exception $e) {
             throw new \Exception($e);
@@ -54,7 +55,7 @@ class ApiConfigurationController extends BaseController
     /**
      * Display the specified resource.
      */
-    public function show(ApiConfiguration $apiConfiguration)
+    public function show(Api $api)
     {
         //
     }
@@ -62,10 +63,10 @@ class ApiConfigurationController extends BaseController
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(ApiConfiguration $api)
+    public function edit(Api $api)
     {
         return Inertia::render('Api/Edit', [
-            'api' => (new ApiConfigurationResource($api))->resolve(),
+            'api' => (new ApiResource($api))->resolve(),
             'suppliers' => CloudMarketSuppliersEnum::asArray()
         ]);
     }
@@ -73,11 +74,11 @@ class ApiConfigurationController extends BaseController
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, ApiConfiguration $api)
+    public function update(Request $request, Api $api)
     {
         try {
             $api = DB::transaction(function () use ($api, $request) {
-                return $this->apiConfiguratioService->update($api, $request->all());
+                return $this->apiService->update($api, $request->all());
             });
         } catch (\Exception $e) {
             throw new \Exception($e);
@@ -88,7 +89,7 @@ class ApiConfigurationController extends BaseController
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(ApiConfiguration $api)
+    public function destroy(Api $api)
     {
         $api->delete();
         return redirect()->route('apis.index');

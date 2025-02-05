@@ -62,7 +62,7 @@ class SpaController extends BaseController
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Spa $spa)
     {
         //
     }
@@ -100,7 +100,7 @@ class SpaController extends BaseController
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Spa $spa)
     {
         //
     }

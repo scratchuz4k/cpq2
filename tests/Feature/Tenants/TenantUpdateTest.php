@@ -34,7 +34,7 @@ it('Upload a tenant logo', function () {
         'logo_id' => $resource['file']['id']
     ];
 
-    $response = $this->put('api/tenant/' . $this->user->currentTenant->id, $data);
+    $response = $this->put('api/tenants/' . $this->user->currentTenant->id, $data);
     $tenant = $response->json();
     expect($tenant['logo_id'])
         ->toBe($resource['file']['id'])
@@ -48,7 +48,7 @@ it('Remove tenant logo', function () {
         'logo_id' => null
     ];
 
-    $response = $this->put('api/tenant/' . $this->user->currentTenant->id, $data);
+    $response = $this->put('api/tenants/' . $this->user->currentTenant->id, $data);
     $tenant = $response->json();
     expect($tenant['logo_id'])
         ->toBeNull()
@@ -77,7 +77,7 @@ it('Upload a tenant SSO File with valid XML', function () {
         'sso_id' => $resource['file']['id']
     ];
 
-    $response = $this->put('api/tenant/' . $this->user->currentTenant->id, $data);
+    $response = $this->put('api/tenants/' . $this->user->currentTenant->id, $data);
     $tenant = $response->json();
 
     $response->assertStatus(200);

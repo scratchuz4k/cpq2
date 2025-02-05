@@ -11,11 +11,19 @@
 |
 */
 
-use Tests\TestCase;
-use App\Models\User;
+use App\Models\Account;
+use App\Models\Api;
+use App\Models\Brand;
+use App\Models\Price;
+use App\Models\Product;
+use App\Models\Quote;
+use App\Models\QuoteItem;
+use App\Models\Spa;
+use App\Models\Supplier;
 use App\Models\Tenant;
+use App\Models\Token;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-
 
 pest()->extend(Tests\TestCase::class)
     ->use(Illuminate\Foundation\Testing\RefreshDatabase::class)
@@ -23,7 +31,6 @@ pest()->extend(Tests\TestCase::class)
 pest()->extend(Tests\TestCase::class)
     ->use(Illuminate\Foundation\Testing\RefreshDatabase::class)
     ->in('Unit');
-
 
 uses(RefreshDatabase::class)->in('Feature');
 
@@ -58,5 +65,85 @@ function createUser()
     $tenant = Tenant::updateOrCreate(['name' => 'testing'], ['domain' => 'testing', 'database' => 'testing']);
     $user = User::factory()->create();
     $tenant->users()->sync([$tenant->id]);
+
     return $user;
+}
+
+function resolve_request(string $entity, string $method, array $content) {
+    $id = array_key_exists('id', $content) ? $content['id'] : 1;
+    switch ($method) {
+        case 'index':
+            return ['method' => 'get', 'url' => $entity];
+        case 'show':
+            return ['method' => 'get', 'url' => "$entity/$id"];
+        case 'create':
+            return ['method' => 'get', 'url' => "$entity/create"];
+        case 'store':
+            return ['method' => 'post', 'url' => "$entity", 'content' => []];
+        case 'edit':
+            return ['method' => 'get', 'url' => "$entity/$id/edit"];
+        case 'update':
+            return ['method' => 'put', 'url' => "$entity/$id", 'content' => []];
+        case 'destroy':
+            return ['method' => 'delete', 'url' => "$entity/$id"];
+    }
+}
+
+function generateModelsData() {
+    return [
+        'tenants' => Tenant::factory()->make()->toArray(),
+        'products' => Product::factory()->make()->toArray(),
+        'brands' => Brand::factory()->make()->toArray(),
+        'suppliers' => Supplier::factory()->make()->toArray(),
+        'spas' => Spa::factory()->make()->toArray(),
+        'users' => User::factory()->make()->toArray(),
+        'tokens' => Token::factory()->make()->toArray(),
+        'quotes' => Quote::factory()->make()->toArray(),
+        'solution-types' => [],
+        'apis' => Api::factory()->make()->toArray(),
+        'api/accounts' => Account::factory()->make()->toArray(),
+        'api/prices' => Price::factory()->make()->toArray(),
+        'api/quote-items' => QuoteItem::factory()->make()->toArray(),
+    ];
+}
+
+function runPermissionTest(array $permissions, array &$modelsData) {
+    foreach ($permissions as $entity => $routes) {
+        foreach ($routes as $key => $hasPermission) {
+
+            $append = '';
+            if (str_starts_with($entity, 'api')) {
+                $append = 'Json';
+                if (in_array($key, ['edit', 'create'])) {
+                    continue;
+                }
+            }
+
+            try {
+                $content = array_key_exists($entity, $modelsData) ? $modelsData[$entity] : [];
+                $request = resolve_request($entity, $key, $content);
+                $response =
+                    array_key_exists('content', $request)
+                        ? test()->{$request['method'].$append}($request['url'], $content)
+                        : test()->{$request['method'].$append}($request['url']);
+                if ($hasPermission) {
+                    expect(in_array($response->status(), [200, 201, 204, 302]))->toBeTrue();
+                } else {
+                    $response->isForbidden();
+                }
+
+                if ($key == 'store' && $permissions[$entity]['index']) {
+                    $url = str_replace('api/', '', $entity);
+                    $res = test()->get("api/$url", ['order' => 'desc']);
+                    $modelsData[$entity] = $res->json()['data'][0];
+                }
+
+            } catch (Exception $exception) {
+                $message = $exception->getMessage();
+                $error = json_encode($response->json());
+
+                throw new Exception("Permissions validation errors on Company Admin: [Entity: $entity, Method: $key]\n\nContext:\n$message\nMessage: $error");
+            }
+        }
+    }
 }

@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Cache;
 use App\Helpers\Api\CloudMarketAddress;
 use App\Repositories\CloudMarketRepository;
 use App\Jobs\CloudMarketConnectivityProducts;
-use App\Models\ApiConfiguration;
+use App\Models\Api;
 
 class CloudMarketService
 {
@@ -41,7 +41,7 @@ class CloudMarketService
         $createdAt = Carbon::parse($content['created_at']);
 
         $apis = array_map(fn($case) => $case->value, CloudMarketSuppliersEnum::cases());
-        if (!count(ApiConfiguration::whereIn('code', $apis)->get()) && !env("APP_DEBUG")) {
+        if (!count(Api::whereIn('code', $apis)->get()) && !env("APP_DEBUG")) {
             $file->write([], true, now(), now(), [], [[
                 "provider" => "CPQ",
                 "response" => "No provider is configured",

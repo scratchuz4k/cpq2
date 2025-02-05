@@ -3,7 +3,7 @@
 namespace App\Helpers\Api;
 
 use App\Enums\CloudMarketSuppliersEnum;
-use App\Models\ApiConfiguration;
+use App\Models\Api;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
 
@@ -17,11 +17,11 @@ class CloudMarketApi
 
         $url =  env('CLOUDMARKET_CONNECTION_SERVICE_URL', 'https://cpq-poc-uat-api.cloudmarket.com');
         $requestTimeout = 420;
-        $virtual1 = ApiConfiguration::where('code', CloudMarketSuppliersEnum::Virtual1->value)->first();
-        $gamma = ApiConfiguration::where('code', CloudMarketSuppliersEnum::Gamma->value)->first();
-        $giacom = ApiConfiguration::where('code', CloudMarketSuppliersEnum::Giacom->value)->first();
-        $its = ApiConfiguration::where('code', CloudMarketSuppliersEnum::ITS->value)->first();
-        $vorboss = ApiConfiguration::where('code', CloudMarketSuppliersEnum::Vorboss->value)->first();
+        $virtual1 = Api::where('code', CloudMarketSuppliersEnum::Virtual1->value)->first();
+        $gamma = Api::where('code', CloudMarketSuppliersEnum::Gamma->value)->first();
+        $giacom = Api::where('code', CloudMarketSuppliersEnum::Giacom->value)->first();
+        $its = Api::where('code', CloudMarketSuppliersEnum::ITS->value)->first();
+        $vorboss = Api::where('code', CloudMarketSuppliersEnum::Vorboss->value)->first();
 
         $quoteAddress = [
             'ConnectivityType' => $connectivityType,
