@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Requests\TenantUpdateRequest;
+use App\Http\Resources\TenantResource;
 use App\Models\Tenant;
 use Illuminate\Http\Request;
 use App\Services\TenantService;
@@ -48,7 +49,8 @@ class TenantController extends BaseController
     {
         try {
             $tenant = DB::transaction(function () use ($tenant, $request) {
-                return $this->tenantService->update($tenant, $request->all());
+                $tenant = $this->tenantService->update($tenant, $request->all());
+                return $tenant;
             });
         } catch (\Exception $e) {
             if (!env('APP_DEBUG')) {
@@ -56,7 +58,7 @@ class TenantController extends BaseController
             }
             throw new \Exception($e);
         }
-        return response()->json($tenant->load('file', 'logo'));
+        return response()->json(new TenantResource($tenant));
     }
 
     /**

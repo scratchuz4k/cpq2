@@ -57,5 +57,5 @@ Route::apiResources([
     'tokens' => TokenController::class,
     'shared-links' => SharedLinkController::class,
     'resources' => ResourceController::class,
-    'tenants' => TenantController::class,
+    'tenant' => TenantController::class,
 ]);

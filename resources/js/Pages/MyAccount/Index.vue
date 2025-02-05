@@ -160,10 +160,11 @@ const items = ref([
                         <div class="col" v-if="hasRole('Super Admin') || can('viewAny tenant')">
                             <div class="card bg-light border-0">
                                 <a :href="hasRole('Super Admin') ? route('tenant.index') : route('tenant.edit', { tenant: $page.props.auth.user.current_tenant.id })"
-                                    class="card-body text-center p-2 text-decoration-none">
+                                   id="link-tenant"
+                                   class="card-body text-center p-2 text-decoration-none">
                                     <font-awesome-icon class="py-3 opacity-25" :icon="['far', 'building']"
                                         size="2x"></font-awesome-icon>
-                                    <span class="d-block h5">Tenants</span>
+                                    <span class="d-block h5">Tenant</span>
                                 </a>
                             </div>
                         </div>
