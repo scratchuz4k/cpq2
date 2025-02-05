@@ -15,7 +15,7 @@ class CloudMarketRepository
 
     public function sendResponse(array $file, $filters)
     {
-        if (!is_array($file) && array_key_exists('data', $file)) {
+        if (!is_array($file) || !array_key_exists('data', $file)) {
             Log::error('Empty or invalid file content.', ['file' => $file]);
         }
 
