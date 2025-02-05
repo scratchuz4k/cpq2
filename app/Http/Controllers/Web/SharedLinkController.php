@@ -21,7 +21,7 @@ class SharedLinkController extends Controller
         $sharedLink = SharedLink::where('token', $token)->firstOrFail();
 
         if ($sharedLink->isExpired()) {
-            abort(410, 'This link has expired and is no longer avaible.');
+            abort(410, 'This link has expired and is no longer available.');
         }
 
         // Check if a password is required
