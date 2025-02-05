@@ -35,7 +35,7 @@ class CloudMarketService
         }
 
         $path = storage_path("/app/products/");
-        $filename = $address->toString() . '.json';
+        $filename = 'live_prices_' . $address->toString() . '.json';
         $file = new CloudMarketFile($path, $filename);
         $content = $file->getContent();
         $createdAt = Carbon::parse($content['created_at']);
