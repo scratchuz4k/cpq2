@@ -24,7 +24,7 @@ const submitFileForm = async () => {
         sso_id: tenant.sso_id
     }
     try {
-        let res = await axios.put(`/api/tenant/` + tenant.id, data)
+        let res = await axios.put(`/api/tenants/` + tenant.id, data)
 
         Object.assign(tenant, res.data);
         if (!tenant.file) tenant.sso_text = null
@@ -42,7 +42,7 @@ const submitLogoForm = async () => {
         logo_id: tenant.logo_id
     }
     try {
-        let res = await axios.put(`/api/tenant/` + tenant.id, data)
+        let res = await axios.put(`/api/tenants/` + tenant.id, data)
         Object.assign(tenant, res.data);
         notyf.success(success_message)
     } catch (err) {
@@ -58,7 +58,7 @@ const submitTextForm = async () => {
     }
 
     try {
-        let res = await axios.put(`/api/tenant/` + tenant.id, data)
+        let res = await axios.put(`/api/tenants/` + tenant.id, data)
         Object.assign(tenant, res.data);
         notyf.success("Content updated successfully")
     } catch (err) {
