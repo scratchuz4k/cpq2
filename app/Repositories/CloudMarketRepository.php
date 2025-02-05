@@ -6,14 +6,19 @@ use App\Models\Supplier;
 use App\Helpers\FilterProvider;
 use App\Helpers\Prices\PriceRules;
 use App\Models\Account;
+use Illuminate\Support\Facades\Log;
 
 class CloudMarketRepository
 {
 
     protected $providers = [];
 
-    public function sendResponse($file, $filters)
+    public function sendResponse(array $file, $filters)
     {
+        if (!is_array($file) && array_key_exists('data', $file)) {
+            Log::error($file);
+        }
+
         $items = FilterProvider::get($file['data'], $filters);
 
         foreach ($items as $key => $value) {
