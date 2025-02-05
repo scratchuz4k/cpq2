@@ -224,7 +224,7 @@ const items = ref([{ label: "Home", url: "/" }, { label: "My Account" }]);
                   :href="
                     hasRole('Super Admin')
                       ? route('tenants.index')
-                      : route('tenant.edit', {
+                      : route('tenants.edit', {
                           tenant: $page.props.auth.user.current_tenant.id,
                         })
                   "
