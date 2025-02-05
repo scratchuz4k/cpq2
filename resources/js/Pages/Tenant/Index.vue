@@ -1,8 +1,9 @@
 <script setup>
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
-import { Head, router } from "@inertiajs/vue3";
+import { Head } from "@inertiajs/vue3";
 import { reactive, ref } from "vue";
 import Button from "primevue/button";
+import axios from "axios";
 
 const props = defineProps({
   isSuperAdmin: Boolean,
@@ -14,79 +15,57 @@ const event = ref(null);
 const tenant = reactive(props.tenant);
 const item = ref(null);
 
-const submitFileForm = () => {
-  isLoading.value = true;
-  router.post(
-    `/tenants/${tenant.id}`,
-    {
-      _method: "PUT",
-      sso_id: tenant.sso_id,
-    },
-    {
-      onSuccess: (page) => {
-        notyf.success("File uploaded with Success");
-      },
-      onError: (errors) => {
-        let string = "";
-        Object.keys(errors).forEach((key) => {
-          string += errors[key] + "<br>";
-        });
-        notyf.error(string);
-      },
+const submitFileForm = async () => {
+    isLoading.value = true
+
+    let success_message = tenant.sso_id ? 'File uploaded with Success' : 'File deleted with Success'
+
+    let data = {
+        sso_id: tenant.sso_id
     }
-  );
+    try {
+        let res = await axios.put(`/api/tenant/` + tenant.id, data)
+
+        Object.assign(tenant, res.data);
+        if (!tenant.file) tenant.sso_text = null
+        notyf.success(success_message)
+    } catch (err) {
+        notyf.error(err?.response?.data?.message ?? 'Something went wrong')
+    }
 };
 
-const submitLogoForm = () => {
-  isLoading.value = true;
-  router.post(
-    `/tenants/${tenant.id}`,
-    {
-      _method: "PUT",
-      logo_id: tenant.logo_id,
-    },
-    {
-      onSuccess: (page) => {
-        notyf.success("Logo uploaded with Success");
-      },
-      onError: (errors) => {
-        let string = "";
-        Object.keys(errors).forEach((key) => {
-          string += errors[key] + "<br>";
-        });
-        notyf.error(string);
-      },
-      onFinish: () => {
-        // tenant.temp_file_name = null
-        isLoading.value = false;
-      },
+const submitLogoForm = async () => {
+    isLoading.value = true
+
+    let success_message = tenant.logo_id ? 'Logo uploaded with Success' : 'Logo deleted with Success'
+    let data = {
+        logo_id: tenant.logo_id
     }
-  );
+    try {
+        let res = await axios.put(`/api/tenant/` + tenant.id, data)
+        Object.assign(tenant, res.data);
+        notyf.success(success_message)
+    } catch (err) {
+        notyf.error(err?.response?.data?.message ?? 'Something went wrong')
+    }
+
+    isLoading.value = false
 };
 
-const submitTextForm = () => {
-  router.post(
-    `/tenants/${tenant.id}`,
-    {
-      _method: "PUT",
-      sso_text_area: tenant.file ? tenant.file?.file_content : tenant.sso_text,
-    },
-    {
-      onSuccess: () => {
-        notyf.success(`Content updated successfully`);
-        isLoading.value = false;
-      },
-      onError: (errors) => {
-        let string = "";
-        Object.keys(errors).forEach((key) => {
-          string += errors[key] + "<br>";
-        });
-        notyf.error(string);
-        isLoading.value = false;
-      },
+const submitTextForm = async () => {
+    let data = {
+        sso_text_area: tenant.file ? tenant.file?.file_content :tenant.sso_text
     }
-  );
-};
+
+    try {
+        let res = await axios.put(`/api/tenant/` + tenant.id, data)
+        Object.assign(tenant, res.data);
+        notyf.success("Content updated successfully")
+    } catch (err) {
+        notyf.error(err?.response?.data?.message ?? 'Something went wrong')
+    }
+    isLoading.value = false
+}
 
 const items = ref([
   { label: "Home", url: "/" },
@@ -170,7 +149,7 @@ const items = ref([
                         rows="10"
                       ></textarea>
                       <p class="small">* This will update the file content</p>
-                      <button type="submit" class="btn btn-primary mt-2">
+                      <button id="submit-sso-textarea" type="submit" class="btn btn-primary mt-2">
                         <font-awesome-icon class="me-2" :icon="['fas', 'save']" />
                         Save
                       </button>
@@ -185,10 +164,10 @@ const items = ref([
                 aria-labelledby="v-pills-logo-tab"
               >
                 <div class="col xml-in-tabs">
-                  <div class="d-flex mt-4">
+                  <div class="d-flex">
                     <div class="logo-form">
                       <h4>Import Logo for {{ tenant.name }}</h4>
-                      <p>The file to upload must be a .png</p>
+                      <p>The file to upload must be a .jpeg, .jpg, .png, .gif</p>
                       <form
                         @submit.prevent="submitLogoForm"
                         enctype="multipart/form-data"
@@ -197,7 +176,7 @@ const items = ref([
                           v-model="tenant.logo_id"
                           :resource="tenant.logo"
                           :showLikeLine="false"
-                          :acceptedFiles="['image/jpeg', 'image/png', 'image/gif']"
+                          :acceptedFiles="['image/jpeg', 'image/jpg', 'image/png', 'image/gif']"
                           @change="submitLogoForm"
                         ></InputResource>
                       </form>

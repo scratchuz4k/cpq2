@@ -8,7 +8,7 @@ use App\Http\Requests\TenantUpdateRequest;
 use App\Models\Tenant;
 use App\Services\TenantService;
 use Exception;
-use Illuminate\Http\Request;
+use Illuminate\Http\Client\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -16,12 +16,10 @@ use Illuminate\Support\Facades\Log;
 class TenantController extends BaseController
 {
     protected $model = Tenant::class;
-
     public function __construct(protected TenantService $tenantService)
     {
         parent::__construct();
     }
-
     /**
      * Display a listing of the resource.
      */
@@ -63,10 +61,11 @@ class TenantController extends BaseController
     {
         try {
             $tenant = DB::transaction(function () use ($tenant, $request) {
-                return $this->tenantService->update($tenant, $request->all());
+                $tenant = $this->tenantService->update($tenant, $request->all());
+                return $tenant;
             });
         } catch (\Exception $e) {
-            if (! env('APP_DEBUG')) {
+            if (!env('APP_DEBUG')) {
                 Log::error($e->getMessage());
             }
             throw new \Exception($e);

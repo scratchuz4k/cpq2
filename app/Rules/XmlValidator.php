@@ -17,17 +17,11 @@ class XmlValidator implements ValidationRule
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        // Find resource and get file content
-        if (is_int($value)) {
-            $res = Resource::findOrFail($value);
-            $xml_content = Storage::disk('public')->get($res->getRouteValue());
+        if (is_null($value)) {
+            return;
         }
 
-        if (is_string($value)) {
-            $xml_content = $value;
-        }
-
-        if (!simplexml_load_string($xml_content, null, LIBXML_NOERROR )) {
+        if (!simplexml_load_string($value, null, LIBXML_NOERROR)) {
             $fail('The :attribute must contain a valid XML.');
         }
     }
