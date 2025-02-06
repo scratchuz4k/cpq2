@@ -17,7 +17,6 @@ export default defineConfig({
                 },
             },
         }),
-        visualizer(),
     ],
     resolve: {
         alias: {
