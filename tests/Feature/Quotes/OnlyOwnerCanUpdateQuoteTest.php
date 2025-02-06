@@ -57,7 +57,7 @@ beforeEach(function () {
 
 it('Only owner can add an item to quote', function () {
     $response = $this->post('api/quotes', $this->quote_data);
-    $response->assertStatus(200);
+    $response->assertSuccessful();
     $quote = $response->json();
 
     $quote_item = [
@@ -100,7 +100,7 @@ it('Only owner can add an item to quote', function () {
 
     $response = $this->post('api/quote-items', $quote_item);
 
-    $response->assertStatus(200);
+    $response->assertSuccessful();
 
     Auth::guard('web')->logout();
     Auth::guard('web')->login($this->sales_user); // Log in as the sales user
@@ -113,7 +113,7 @@ it('Only owner can add an item to quote', function () {
 
 it('Only owner can update the quote', function () {
     $response = $this->post('api/quotes', $this->quote_data);
-    $response->assertStatus(200);
+    $response->assertSuccessful();
     $quote = $response->json();
 
     Auth::guard('web')->logout();

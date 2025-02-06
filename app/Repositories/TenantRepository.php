@@ -6,11 +6,14 @@ use App\Models\Resource;
 use App\Models\Tenant;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
+use Symfony\Component\Mime\MimeTypes;
 
 class TenantRepository
 {
     public function createSooFileForTenant($data, $tenant)
     {
+        //TODO on php upgrade to 8.4 implement LIBXML_NO_XXE verification to prevent xxe injextion
         $resource = Resource::find($tenant->sso_id);
 
         if ($resource) {
@@ -19,28 +22,17 @@ class TenantRepository
         }
 
         $xml_content = $data['sso_text_area'];
-        $path = storage_path('/app/temp/');
 
-        if (!is_dir($path)) {
-            mkdir($path, 0777, true);
-        }
-
-        file_put_contents($path . 'temp_file.xml', $xml_content);
-        $file = new UploadedFile($path . 'temp_file.xml', '');
-
-        $path = $file->store('files', 'public');
+        $fileName = 'files/' . Str::random(40) . '.xml';
+        Storage::disk('public')->put($fileName, $xml_content);
 
         $resource = Resource::create([
-            'title' => $file->getClientOriginalName() ?: $file->hashName(),
+            'title' => 'tenant_' . $tenant->id . '.xml',
             'mime_type' => 'text/xml',
-            'route' => $path,
-            'size' => $file->getSize(),
+            'route' => $fileName,
+            'size' => Storage::disk('public')->size($fileName),
             'tenant_id' => auth()->user()->tenant_id
         ]);
-
-        if (Storage::exists('temp/temp_file.xml')) {
-            Storage::delete('temp/temp_file.xml');
-        }
 
         return $resource->id;
     }

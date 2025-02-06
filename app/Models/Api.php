@@ -4,14 +4,18 @@ namespace App\Models;
 
 use App\Trait\SetTenantId;
 use App\Models\Scopes\TenantScope;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
-class ApiConfiguration extends Model
+class Api extends Model
 {
-    use SetTenantId;
+    use SetTenantId, HasFactory;
+
+    protected $table = 'api_configurations';
+
     protected $hidden = [
         'password',
     ];

@@ -53,8 +53,8 @@ COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 COPY php.ini /etc/php/8.3/cli/conf.d/99-sail.ini
 RUN chmod +x /usr/local/bin/start-container
 
-RUN npx puppeteer browsers install chrome \
-    && mkdir /home/sail/.cache \
+RUN npx puppeteer browsers install chrome
+RUN mkdir /home/sail/.cache \
     && mv /root/.cache/puppeteer /home/sail/.cache \
     && apt-get update \
     && apt-get install -y ca-certificates fonts-liberation libappindicator3-1 libasound2 libatk-bridge2.0-0 libatk1.0-0 \

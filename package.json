@@ -2,7 +2,7 @@
     "private": true,
     "type": "module",
     "scripts": {
-        "dev": "vite",
+        "dev": "vite build && vite",
         "build": "vite build",
         "watch": "vite build --watch",
         "cy:run": "cypress run"
@@ -33,7 +33,7 @@
         "@primevue/themes": "^4.0.5",
         "@sentry/vue": "^8.34.0",
         "bootstrap": "^5.3.3",
-    "dropzone": "^6.0.0-beta.2",
+        "dropzone": "^6.0.0-beta.2",
         "lodash": "^4.17.21",
         "luxon": "^3.5.0",
         "mitt": "^3.0.1",

@@ -1,19 +1,24 @@
 <template>
-    <div class="" @click="openResources()" style="cursor: pointer;">
-        <p>Upload file</p>
+    <div class="mt-2" @click="openResources()" style="cursor: pointer;">
         <div v-if="item">
             <img :src="coverImage(item)" style="object-fit: contain;height: 150px;">
             <h5 class="mt-2 text-start">
                 {{ item?.title }}
             </h5>
         </div>
-        <div v-else class="d-flex justify-center my-3"
-             style="height: 120px; width:120px; align-items: center;border:3px dotted grey;border-radius: 10px;">
+        <div v-else class="d-flex justify-center my-3 input-resource"
+             style="height: 120px; width:120px; align-items: center;border:3px dotted #a34796;border-radius: 10px;">
             <font-awesome-icon class="w-100" style="font-size: 4rem" :icon="['fas', 'plus']" />
         </div>
     </div>
     <div>
-        <button v-if="item" type="button" class="btn btn-outline-primary mt-2" @click="remove()">
+        <button
+            v-if="item"
+            type="button"
+            class="btn btn-outline-primary mt-2"
+            @click="remove()"
+            id="remove-file-button"
+        >
             <font-awesome-icon icon="fas fa-trash-alt" />
             Remove file
         </button>
@@ -21,7 +26,7 @@
 </template>
 <script setup>
 import { v4 as uuid } from "uuid"
-import { computed, ref } from 'vue';
+import {computed, ref, watch} from 'vue';
 import Button from "primevue/button";
 const props = defineProps({
     resource: Object,
@@ -44,7 +49,7 @@ const proxyValue = computed({
 });
 
 const coverImage = (item) => {
-    let image_types = ['image/jpeg', 'image/png', 'image/gif'];
+    let image_types = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
     if (image_types.includes(item.mime_type)) {
         return item.route
     } else {
@@ -66,7 +71,8 @@ emitter.on(eventFire, (res) => {
 
     emit('change', item.value)
 })
+
+watch(() => props.resource, (newValue, oldValue) => {
+    item.value = newValue
+});
 </script>
-
-
-

@@ -31,7 +31,7 @@ const meta = reactive({
 const getImages = async () => {
     images.value = []
     extensions.value = Object.fromEntries(
-        acceptedFiles.value.map(mimeType => [mimeType, mimeType.split('/')[1]])
+        acceptedFiles.value.map(mimeType => [mimeType, `.${mimeType.split('/')[1]}`])
     )
     let string = queryString.stringify({
         page: meta.page,
@@ -86,7 +86,13 @@ const remove = async (item) => {
 
 const saveItem = () => {
     showModal.value = !showModal.value
-emitter.emit(event.value, selectedItem.value);
+    emitter.emit(event.value, selectedItem.value);
+    selectedItem.value = null
+}
+
+const closeModal = () => {
+    showModal.value = !showModal.value
+    selectedItem.value = null
 }
 
 emitter.on("resources:open", (params) => {
@@ -107,13 +113,21 @@ onMounted(() => {
 </script>
 <template>
     <Dialog v-model:visible="showModal" modal :style="{ marginTop: '4rem', width: '80rem' }" :draggable="false"
-            position="top">
+            position="top" class="resources-modal">
         <template #header>
 
         </template>
-        <dropzone @resource:created="getImages"></dropzone>
+        <dropzone @resource:created="getImages" :acceptedFiles="Object.values(extensions).join(', ')">
+            <div class="dz-default dz-message m-0">
+                <div class="d-flex align-content-center flex-column">
+                    <font-awesome-icon :icon="['fa-solid', 'images']" class="color-purple p-3" style="font-size: 5rem"/>
+                    <p class="fw-bold fs-5 lh-sm m-auto" style="max-width: 150px">Drag & Drop or <span class="color-purple">browse</span></p>
+                    <p>Only {{ Object.values(extensions).join(', ')}} files can be selected</p>
+                </div>
+            </div>
+        </dropzone>
         <div class="justify-content-between d-flex">
-            <h5 class="mb-4">Only {{ Object.values(extensions).join(', ')}} files can be selected</h5>
+            <h5 class="mb-4">Resources Library</h5>
             <IconField>
                 <InputIcon id="resources_search_icon">
                     <font-awesome-icon :icon="['fas', 'search']" />
@@ -122,7 +136,7 @@ onMounted(() => {
             </IconField>
         </div>
         <p v-if="images.length === 0" class="h5 text-center">No files found</p>
-        <div v-else class="row row-cols-5 mb-3">
+        <div v-else class="row row-cols-5 mb-3" id="library-container">
             <div v-for="image in images" class="col mb-4">
                 <Card :class="[
                         image == selectedItem ? 'selected' : '',
@@ -144,12 +158,12 @@ onMounted(() => {
                                 </button>
                             </div>
                             <img alt="user header" :src="image.mime_type === 'text/xml' ? '/images/xml_icon.svg' : image.route"
-                                 style="height: 150px;max-width:100%; object-fit: contain;object-position: center;" />
+                                 style="height: 60px;max-width:100%; object-fit: contain;object-position: center;" />
                         </div>
                     </template>
                     <template #title>
                         <div class="d-flex justify-content-between">
-                            <p>
+                            <p class="w-100 overflow-hidden loaded-file-title">
                                 {{ image.title }}
                             </p>
                         </div>
@@ -160,8 +174,8 @@ onMounted(() => {
         <Paginator v-model:first="meta.first" :rows="meta.limit" :totalRecords="meta.total"
                    :rowsPerPageOptions="[10, 20, 50]" @page="handlePaginator">
         </Paginator>
-        <div class="d-flex justify-end">
-            <Button label="Close" class="btn btn-secondary close-modal me-2" @click="() => showModal = !showModal" />
+        <div class="d-flex justify-content-center action-button-wrapper">
+            <Button label="Close" class="btn btn-secondary close-modal me-2" @click="() => closeModal()" />
             <Button :disabled="!selectedItem" label="Save" class="btn btn-primary" severity="success" @click="() => saveItem()" />
         </div>
     </Dialog>
@@ -170,7 +184,9 @@ onMounted(() => {
 #resources_search_icon {
     --p-icon-size: 1.5rem;
 }
-
+.loaded-file-title{
+    text-overflow: ellipsis;
+}
 .file-card:hover {
     box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px, rgb(51, 51, 51) 0px 0px 0px 1px;
     cursor: pointer;
@@ -182,7 +198,7 @@ onMounted(() => {
 .delete-button-container {
     position: absolute;
     top: -10px;
-    right: -10px;
+    right: 10px;
 
     &:hover {
         .delete-button {
@@ -194,6 +210,10 @@ onMounted(() => {
         font-size: 20px;
         transition: 0.3s all ease-in-out;
     }
+}
+.action-button-wrapper button.p-button {
+    padding-left: 8rem;
+    padding-right: 8rem;
 }
 </style>
 

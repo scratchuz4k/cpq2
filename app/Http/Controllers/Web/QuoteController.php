@@ -154,8 +154,8 @@ class QuoteController extends BaseController
     {
         $solution_types = SolutionType::get();
         $user = request()->user();
-        $tenant = $user->currentTenant()->with('file','logo')->first();
-        $dir = 'pdf/' . $user->currentTenant->id;
+        $tenant = $quote->tenant;
+        $dir = 'pdf/' . $quote->tenant->id;
 
         if (!Storage::makeDirectory($dir)) {
             throw new \Exception("Could not create directory for PDFs");

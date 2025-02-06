@@ -2,28 +2,42 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Models\QuoteItem;
-use App\Services\QuoteItemService;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
+use App\Helpers\DataProvider;
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\QuoteItemCreateRequest;
 use App\Http\Requests\QuoteItemUpdateRequest;
 use App\Http\Resources\QuoteItemResource;
+use App\Models\QuoteItem;
+use App\Services\QuoteItemService;
+use Exception;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class QuoteItemController extends BaseController
 {
     protected $model = QuoteItem::class;
+
     public function __construct(protected QuoteItemService $quoteItemService)
     {
         parent::__construct();
     }
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        //
+
+        $dataProvider = new DataProvider(QuoteItem::class);
+        try {
+            $data = $dataProvider->get();
+        } catch (Exception $e) {
+            Log::debug($e->getMessage());
+
+            return $e->getMessage();
+        }
+
+        return QuoteItemResource::collection($data);
     }
 
     /**
@@ -36,12 +50,14 @@ class QuoteItemController extends BaseController
                 return $this->quoteItemService->store($request->all());
             });
         } catch (\Exception $e) {
-            if (!env("APP_DEBUG")) {
+            if (! env('APP_DEBUG')) {
                 Log::error($e->getMessage());
             }
+
             return response()->json($e->getMessage(), 500);
         }
-        return response()->json($quoteItem);
+
+        return new QuoteItemResource($quoteItem);
     }
 
     /**
@@ -62,12 +78,13 @@ class QuoteItemController extends BaseController
                 return $this->quoteItemService->update($quoteItem, $request->all());
             });
         } catch (\Exception $e) {
-            if (!env("APP_DEBUG")) {
+            if (! env('APP_DEBUG')) {
                 Log::error($e->getMessage());
             }
             throw new \Exception($e);
         }
-        return response()->json($quoteItem);
+
+        return new QuoteItemResource($quoteItem);
     }
 
     /**
@@ -78,6 +95,7 @@ class QuoteItemController extends BaseController
         $quote = $quoteItem->quote;
         $quoteItem->delete();
         $quote->computeTotals();
+
         return response(null, 200);
     }
 }
