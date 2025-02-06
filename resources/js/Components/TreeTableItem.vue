@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import queryString from "query-string";
 import axios from "axios";
 import { Link } from "@inertiajs/vue3";
-import { reactive, ref } from "vue";
+import { onUnmounted, reactive, ref } from "vue";
 
 const meta = reactive({ page: 0, total: 0 });
 
@@ -107,6 +107,7 @@ const deleteRecord = async (id) => {
       try {
         let res = await axios.delete("/api" + props.route + "/" + id);
         emitter.emit("treetable-refresh");
+        emitter.emit("reset-items");
         notyf.success("Removed with success");
         return;
       } catch (err) {
@@ -123,40 +124,44 @@ emitter.on("reset-items", () => {
   meta.page = 0;
   showChild.value = false;
 });
+
+onUnmounted(() => {
+  props.item.children = [];
+});
 </script>
 
 <template>
   <tr>
-    <td v-for="(column, columnKey) in columns" :key="columnKey">
+    <td>
       <div
-        class="d-flex"
-        :style="{ marginLeft: columnKey === 0 ? level * 15 + 'px' : 'auto' }"
+        class="d-flex me-3"
+        :style="{
+          marginLeft: level * 15 + 'px',
+        }"
       >
-        <div
-          v-if="columnKey === 0"
-          class="d-flex me-3 justify-content-end justify-content-start"
-          :style="{ width: '30px' }"
-        >
-          <template v-if="item?.has_children && columnKey === 0">
+        <div style="width: 15px">
+          <template v-if="item?.has_children">
             <button
-              class="btn m-0 p-0"
+              class="btn m-0 p-0 lh-1"
               v-if="showChild"
               @click="() => (showChild = !showChild)"
             >
               <font-awesome-icon :icon="['fas', 'chevron-down']" />
             </button>
             <button class="btn m-0 p-0" v-else @click="getChildren(index)">
-              <font-awesome-icon :icon="['fas', 'chevron-right']" />
-            </button>
-          </template>
-          <input
-            class="form-check-input ms-2"
-            v-if="columnKey === 0"
-            type="checkbox"
-            @click="selectItem(modelValue, item)"
-            :checked="isChecked(item)"
-          />
+              <font-awesome-icon :icon="['fas', 'chevron-right']" /></button
+          ></template>
         </div>
+        <input
+          class="form-check-input ms-2"
+          type="checkbox"
+          @click="selectItem(modelValue, item)"
+          :checked="isChecked(item)"
+        />
+      </div>
+    </td>
+    <td v-for="(column, columnKey) in columns" :key="columnKey">
+      <div class="d-flex">
         <slot :name="column.data" :value="getValue(column.data)" />
       </div>
     </td>
@@ -234,8 +239,8 @@ emitter.on("reset-items", () => {
       item?.has_children && showChild && meta.page != meta.total && item.children?.length
     "
   >
-    <td :colspan="columns.length + 1" class="text-center">
-      <button class="btn m-0 p-0" @click="getChildren(index)">Load More...</button>
+    <td :colspan="columns.length + 2" class="text-center">
+      <button class="btn m-0 p-0 w-100" @click="getChildren(index)">Load More...</button>
     </td>
   </tr>
 </template>

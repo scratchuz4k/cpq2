@@ -44,15 +44,19 @@ let showModal = ref(false);
 const global = ref(null);
 
 const getData = async () => {
+  let filters = !global.value
+    ? [
+        {
+          column: "parent_id",
+          operator: "is_null ",
+          value: "null",
+        },
+      ]
+    : [];
+
   let string = queryString.stringify({
     ...meta,
-    filters: JSON.stringify([
-      {
-        column: "parent_id",
-        operator: "is_null ",
-        value: "null",
-      },
-    ]),
+    filters: JSON.stringify(filters),
     search: global.value,
   });
 
@@ -85,7 +89,14 @@ const sortBy = (column) => {
 };
 
 watch(
-  () => [global.value, meta.order, meta.orderBy],
+  () => [meta.order, meta.orderBy],
+  function () {
+    emitter.emit("reset-items");
+    getData();
+  }
+);
+watch(
+  () => [global.value],
   _.debounce(function () {
     emitter.emit("reset-items");
     getData();
@@ -111,6 +122,7 @@ watch(
     <table :id="props.id" class="table w-100">
       <thead>
         <tr>
+          <th style="width: 5%"></th>
           <th v-for="(column, key) in columns" :key="key">
             <p
               @click="sortBy(column.data)"
@@ -120,6 +132,15 @@ watch(
               }"
             >
               {{ column.title }}
+              <span class="text-center" style="width: 20px">
+                <template v-if="column.data == meta.orderBy">
+                  <font-awesome-icon
+                    v-if="meta.order == 'desc'"
+                    :icon="['fas', 'sort-down']"
+                  />
+                  <font-awesome-icon v-else :icon="['fas', 'sort-up']" />
+                </template>
+              </span>
             </p>
           </th>
           <th></th>

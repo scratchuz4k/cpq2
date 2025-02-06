@@ -25,7 +25,7 @@ class User extends Authenticatable
     public static function boot()
     {
         parent::boot();
-        
+
         static::creating(function (Model $model) {
             // Check if tenant_id is not set and the user is authenticated
             if (auth()->check() && !$model->tenant_id) {
@@ -49,7 +49,7 @@ class User extends Authenticatable
             if ($child->parent_id) {
                 $parent = User::find($child->parent_id);
                 if ($parent) {
-                    $parent->has_children = $parent->children()->exists();
+                    $parent->has_children = $parent->children()->where("id", "!=", $child->id)->exists();
                     $parent->save();
                 }
             }
