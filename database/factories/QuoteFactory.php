@@ -3,9 +3,8 @@
 namespace Database\Factories;
 
 use App\Models\Account;
-use App\Models\Tenant;
-use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory
@@ -22,7 +21,7 @@ class QuoteFactory extends Factory
         return [
             'tenant_id' => 1,
             'account_id' => Account::factory()->create(),
-            'user_id' => 1,
+            'user_id' => Auth::id(),
             'name' => 'example order',
         ];
     }

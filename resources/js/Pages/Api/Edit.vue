@@ -28,7 +28,7 @@ const saveApi = () => {
     router.put(`/apis/${data.id}`, data,
         {
             onSuccess: (page) => {
-                notyf.success("Created with Success")
+                notyf.success("Updated with Success")
             },
             onError: (errors) => {
                 let string = ''

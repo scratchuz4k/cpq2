@@ -14,7 +14,7 @@ const saveCate = () => {
     router.put(`/categories/${category.id}`, category,
         {
             onSuccess: (page) => {
-                notyf.success("Created with Success")
+                notyf.success("Updated with Success")
             },
             onError: (errors) => {
                 let string = ''

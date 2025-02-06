@@ -6,20 +6,20 @@ use Exception;
 use Inertia\Inertia;
 use Illuminate\Http\Request;
 use App\Helpers\DataProvider;
-use App\Models\ApiConfiguration;
+use App\Models\Api;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\BaseController;
-use App\Http\Resources\ApiConfigurationResource;
+use App\Http\Resources\ApiResource;
 
-class ApiConfigurationController extends BaseController
+class ApiController extends BaseController
 {
-    protected $model = ApiConfiguration::class;
+    protected $model = Api::class;
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $dataProvider = new DataProvider(ApiConfiguration::class);
+        $dataProvider = new DataProvider(Api::class);
         try {
             $data = $dataProvider->get();
         } catch (Exception $e) {
@@ -27,7 +27,7 @@ class ApiConfigurationController extends BaseController
             return $e->getMessage();
         }
 
-        return ApiConfigurationResource::collection($data);
+        return ApiResource::collection($data);
     }
 
     /**
@@ -49,7 +49,7 @@ class ApiConfigurationController extends BaseController
     /**
      * Display the specified resource.
      */
-    public function show(ApiConfiguration $apiConfiguration)
+    public function show(Api $api)
     {
         //
     }
@@ -57,7 +57,7 @@ class ApiConfigurationController extends BaseController
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(ApiConfiguration $apiConfiguration)
+    public function edit(Api $api)
     {
         //
     }
@@ -65,7 +65,7 @@ class ApiConfigurationController extends BaseController
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, ApiConfiguration $apiConfiguration)
+    public function update(Request $request, Api $api)
     {
         //
     }
@@ -73,7 +73,7 @@ class ApiConfigurationController extends BaseController
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(ApiConfiguration $api)
+    public function destroy(Api $api)
     {
         $api->delete();
     }

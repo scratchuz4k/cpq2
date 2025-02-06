@@ -1,18 +1,14 @@
 <script setup>
 import _ from "lodash";
 import ApplicationLogo from "@/Components/ApplicationLogo.vue";
-import { Link } from "@inertiajs/vue3";
-import axios from "axios";
-import Dialog from "primevue/dialog";
-import { reactive, ref, watch } from "vue";
-import queryString from "query-string";
-import { usePage } from "@inertiajs/vue3";
-
-const page = usePage();
+import { Link, usePage } from "@inertiajs/vue3";
+import { ref } from "vue";
 import * as Sentry from "@sentry/vue";
 import TopBarSearchable from "@/Components/TopBarSearchable.vue";
 import Resources from "@/Components/Resources.vue";
 import { hasRole } from "@/Composables/useAuth.js";
+
+const page = usePage();
 Sentry.setUser({
   fullName: page.props.auth.user.name,
   email: page.props.auth.user.email,
@@ -23,48 +19,9 @@ defineProps({
   order: Object,
 });
 
-const visible = ref(false);
-const search = ref("");
-const results = reactive({
-  isLoading: false,
-  quotes: [],
-  accounts: [],
-});
 const activeTab = ref(window.location.pathname.replace(/^\/|\/$/g, ""));
 const tenants = ref(page.props.auth.user.tenants);
 const currentTenant = ref(page.props.tenant);
-
-const searchCloudMarket = _.debounce(async () => {
-  if (!visible.value || !search.value) {
-    return;
-  }
-  results.isLoading = true;
-  let queryQuote = queryString.stringify({
-    columns:
-      "id,items.data,items.name,account.name,account.contacts.email,solution_type.name,user.name,status,updated_at",
-    search: search.value,
-    limit: 5,
-    order: "desc",
-    orderBy: "updated_at",
-  });
-  let resQuote = await axios.get("/api/quotes?" + queryQuote);
-  results.quotes = resQuote.data.data;
-
-  let queryAcc = queryString.stringify({
-    columns: "id,name,reference,contacts.primary_contact_name,contacts.email,updated_at",
-    search: search.value,
-    limit: 5,
-    order: "desc",
-    orderBy: "updated_at",
-  });
-  let resAcc = await axios.get("/api/accounts?" + queryAcc);
-  results.accounts = resAcc.data.data;
-  results.isLoading = false;
-}, 500);
-
-watch(search, () => {
-  searchCloudMarket();
-});
 </script>
 
 <template>

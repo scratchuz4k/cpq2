@@ -16,8 +16,8 @@ class TenantService
             ];
         }
 
-        $tenant = $tenant->update($data);
+        $tenant->update($data);
 
-        return $tenant;
+        return $tenant->refresh();
     }
 }
