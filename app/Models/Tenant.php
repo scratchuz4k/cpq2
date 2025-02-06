@@ -26,4 +26,9 @@ class Tenant extends \Spatie\Multitenancy\Models\Tenant
     {
         return $this->belongsTo(Resource::class, 'logo_id', 'id');
     }
+
+    public function emails(): BelongsToMany
+    {
+        return $this->belongsToMany(EmailTemplate::class, 'email_templates_tenant', 'tenant_id');
+    }
 }

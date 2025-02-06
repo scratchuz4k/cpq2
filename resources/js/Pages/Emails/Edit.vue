@@ -13,7 +13,7 @@ const props = defineProps({
 const email = reactive(props.email);
 
 const saveEmail = () => {
-  router.put(`/email-templates/`, email, {
+  router.put(`/email-templates/${email.id}`, email, {
     onSuccess: (page) => {
       notyf.success("Updated with Success");
     },
