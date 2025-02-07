@@ -7,6 +7,7 @@ use App\Models\EmailTemplate;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use App\Enums\EmailTemplatesEnum;
+use App\Models\EmailHistory;
 use App\Models\Tenant;
 use App\Models\User;
 use Illuminate\Queue\SerializesModels;
@@ -22,13 +23,14 @@ use Illuminate\Queue\SerializesModels;
  * The isPreview flag is used to prevent the email from being sent, and to avoid logging it in the email_history table.
  * This is used on the templates editor page, where the user can preview the email before sending it.
  *
+ * @param  User  $user  (the user id of the user who sent the email)
  * @param  Tenant  $tenant  (the user id of the user who sent the email)
- * @param  EmailTemplatesEnum  $template  (the email template code)
+ * @param  EmailTemplatesEnum  $templateEnum  (the email template code)
+ * @param  EmailTemplate  $email  (the email template code)
  * @param  array  $parameters  (key-value pairs)
  * @param  array  $files  (array of files to attach to the email)
  * @param  array  $overrides  (array of recipient, cc, bcc and subject overrides)
  * @param  bool  $isPreview  (if true, the email is not sent and not logged in the email_history table)
- * @param  User  $user  (the user id of the user who sent the email)
  * @return Mailable
  */
 class DynamicEmail extends Mailable
@@ -37,18 +39,16 @@ class DynamicEmail extends Mailable
 
     private ?User $user;
     private Tenant $tenant;
+    private EmailTemplatesEnum $templateEnum;
+    private EmailTemplate $email;
+    private array $parameters;
     private array $files;
-    private string $body;
-    private string $logo;
     private bool $isPreview;
     private array $overrides;
-    private array $parameters;
-    private ?string $footer;
-    private ?EmailTemplate $template;
 
     public function __construct(
         Tenant $tenant,
-        EmailTemplatesEnum $template,
+        EmailTemplatesEnum $templateEnum,
         array $parameters = [],
         array $files = [],
         array $overrides = [],
@@ -59,39 +59,38 @@ class DynamicEmail extends Mailable
         $this->isPreview = $isPreview;
         $this->parameters = $parameters;
         $this->overrides = $overrides;
-        $this->template = EmailTemplate::where('code', $template->name)->first() ?? null;
+        $this->templateEnum = $templateEnum;
         $this->user = $user;
         $this->tenant = $tenant;
-
-        $this->onQueue('emails');
     }
 
     public function build()
     {
-        if (is_null($this->template) || $this->template == '') {
-            throw new \Exception('Dynamic Email must contain a valid template code (got ' . $this->template . ')');
-        }
+        $this->email = $this->getTemplate($this->templateEnum, $this->tenant);
 
-        $this->logo = url('/images/Cloud-Market-Logo-Black-32x32.svg');
-        $this->body = $this->template->body;
-        $this->footer = "";
+        $content = [
+            'from' => config('mail.from.address') ?? 'Cloudmarket',
+            'to' => $this->getRecipient('to'),
+            'cc' => $this->getRecipient('cc'),
+            'bcc' => $this->getRecipient('bcc'),
+            'subject' => $this->getSubject(),
+            'logo' => url('/images/Cloud-Market-Logo-Black-32x32.svg'),
+            'body' => $this->replaceBodyTags($this->email->body),
+            'footer' => '',
+            'tenant' => $this->tenant,
+            'email_template_id' => $this->email->id,
+            'tenant_id' => $this->tenant->id,
+        ];
 
-        if (!$this->isPreview) {
-            $this->setHeaders();
-
-            $this->replaceBodyTags($this->body);
-            $this->replaceSubjectTags($this->subject);
-        }
+        $this->to($content['to']);
+        $this->cc($content['cc']);
+        $this->bcc($content['bcc']);
+        $this->subject($content['subject']);
 
         $email = $this
-            ->from(config('mail.from.address'), 'Cloudmarket')
+            ->from($content['from'])
             ->markdown('emails.dynamic')
-            ->with([
-                'logo' => $this->logo,
-                'body' => $this->body,
-                'footer' => $this->footer,
-                'tenant' => $this->tenant,
-            ]);
+            ->with($content);
 
         // add attachments to the email
         foreach ($this->files as $file) {
@@ -103,46 +102,22 @@ class DynamicEmail extends Mailable
             );
         }
 
-        // all emails sent using this class will be logged in the email_history table
-        // unless the isPreview flag is set to true
-        if (!$this->isPreview && $this->user) {
-            // event(
-            //     new EmailSent(
-            //         data: [
-            //             'email_template_code' => $this->template->code,
-            //             'from' => config('mail.from.address'),
-            //             'to' => implode(',', $this->getRecipient('to')),
-            //             'cc' => implode(',', $this->getRecipient('cc')),
-            //             'bcc' => implode(',', $this->getRecipient('bcc')),
-            //             'subject' => $this->subject,
-            //             'body' => $this->body,
-            //         ],
-            //         userId: $this->userId,
-            //     ),
-            // );
-        }
-
+        EmailHistory::create($content);
         return $email;
     }
 
-    /**
-     * Set the email headers.
-     *
-     * @return void
-     */
-    private function setHeaders()
+    private function getTemplate($template, $tenant)
     {
-        $headers = [
-            'to' => $this->getRecipient('to'),
-            'cc' => $this->getRecipient('cc'),
-            'bcc' => $this->getRecipient('bcc'),
-            'subject' => $this->getSubject(),
-        ];
-
-        $this->to($headers['to']);
-        $this->cc($headers['cc']);
-        $this->bcc($headers['bcc']);
-        $this->subject($headers['subject']);
+        $mail =  EmailTemplate::where('code', $template->name)->first() ?? null;
+        $tenant_mail = $mail->tenants()->wherePivot('tenant_id', $tenant->id)->first();
+        if ($tenant_mail) {
+            $mail->setAttribute('to', $tenant_mail->pivot->to);
+            $mail->setAttribute('cc', $tenant_mail->pivot->cc);
+            $mail->setAttribute('bcc', $tenant_mail->pivot->bcc);
+            $mail->setAttribute('subject', $tenant_mail->pivot->subject);
+            $mail->setAttribute('body', $tenant_mail->pivot->body);
+        }
+        return $mail;
     }
 
     /**
@@ -152,13 +127,13 @@ class DynamicEmail extends Mailable
      */
     private function getRecipient(string $type)
     {
-        $recipient = $this->overrides[$type] ?? $this->template->$type;
+        $recipient = $this->overrides[$type] ?? $this->email->$type;
 
         if ($type == 'to' && is_null($recipient)) {
             $recipient =  ''; // Add tenant general email
         }
 
-        return array_filter(explode(',', $recipient));
+        return $recipient;
     }
 
     /**
@@ -168,7 +143,7 @@ class DynamicEmail extends Mailable
      */
     private function getSubject()
     {
-        $subject = $this->overrides['subject'] ?? $this->template->subject;
+        $subject =  $this->replaceSubjectTags($this->overrides['subject'] ?? $this->email->subject);
 
         return config('app.name') . ' - ' . $subject;
     }
@@ -176,7 +151,7 @@ class DynamicEmail extends Mailable
     /**
      * Replace the # tags # in the email body with the parameters values.
      */
-    private function replaceBodyTags(string $body): void
+    private function replaceBodyTags(string $body): string
     {
         $result = preg_match_all("/(?<!\d)#([^#]*)\#/", $body, $matches);
 
@@ -190,13 +165,13 @@ class DynamicEmail extends Mailable
             }
         }
 
-        $this->body = $body;
+        return $body;
     }
 
     /**
      * Replace the # tags # in the email subject with the parameters values.
      */
-    private function replaceSubjectTags(string $subject): void
+    private function replaceSubjectTags(string $subject): string
     {
         $result = preg_match_all("/(?<!\d)#([^#]*)\#/", $subject, $matches);
 
@@ -204,12 +179,12 @@ class DynamicEmail extends Mailable
             foreach ($matches[0] as $match) {
                 $subject = str_replace(
                     $match,
-                    $this->parameters[substr($match, 1, strlen($match) - 2)],
+                    $this->parameters[substr($match,  1, strlen($match) - 2)],
                     $subject,
                 );
             }
         }
 
-        $this->subject = $subject;
+        return $subject;
     }
 }

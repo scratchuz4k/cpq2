@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class EmailHistory extends Model
 {
-    
     use  SetTenantId;
     protected $fillable = [
         'from',
@@ -19,8 +18,9 @@ class EmailHistory extends Model
         'body',
         'user_id',
         'email_template_id',
+        'tenant_id'
     ];
-    
+
     protected static function booted(): void
     {
         static::addGlobalScope(new TenantScope);
@@ -32,6 +32,6 @@ class EmailHistory extends Model
     }
     public function email()
     {
-        return $this->belongsTo(EmailTemplate::class);
+        return $this->belongsTo(EmailTemplate::class, 'email_template_id', 'id');
     }
 }

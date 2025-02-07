@@ -5,7 +5,6 @@ namespace App\Models;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class EmailTemplate extends Model
@@ -23,6 +22,10 @@ class EmailTemplate extends Model
 
         static::retrieved(function ($model) {
             //TODO: switch to a account saved in the user model
+            if (!Auth::check()) {
+                return;
+            }
+
             $email = $model->tenants()->wherePivot('tenant_id', Auth::user()->tenant_id)->first();
 
             if ($email) {

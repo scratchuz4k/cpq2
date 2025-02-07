@@ -48,7 +48,7 @@ class PasswordResetLinkController extends Controller
         Mail::queue(
             new DynamicEmail(
                 tenant: $user->currentTenant,
-                template: EmailTemplatesEnum::USER_PASSWORD_RECOVERY,
+                templateEnum: EmailTemplatesEnum::USER_PASSWORD_RECOVERY,
                 parameters: [
                     'reset_link' => route('password.reset', ['token' => $token]),
                 ],

@@ -1,25 +1,26 @@
 <?php
 
-use App\Http\Controllers\Web\AccountController;
-use App\Http\Controllers\Web\ApiController;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Web\ApiController;
 use App\Http\Controllers\Web\SpaController;
 use App\Http\Controllers\Web\UserController;
 use App\Http\Controllers\Web\BrandController;
-use App\Http\Controllers\Web\CategoryController;
-use App\Http\Controllers\Web\DashboardController;
-use App\Http\Controllers\Web\MerchantController;
 use App\Http\Controllers\Web\OrderController;
+use App\Http\Controllers\Web\QuoteController;
+use App\Http\Controllers\Web\TokenController;
+use App\Http\Controllers\Web\RegionController;
+use App\Http\Controllers\Web\TenantController;
+use App\Http\Controllers\Web\AccountController;
 use App\Http\Controllers\Web\ProductController;
 use App\Http\Controllers\Web\ProfileController;
-use App\Http\Controllers\Web\QuoteController;
-use App\Http\Controllers\Web\RegionController;
-use App\Http\Controllers\Web\SharedLinkController;
-use App\Http\Controllers\Web\SolutionTypeController;
+use App\Http\Controllers\Web\CategoryController;
+use App\Http\Controllers\Web\MerchantController;
 use App\Http\Controllers\Web\SupplierController;
-use App\Http\Controllers\Web\TenantController;
-use App\Http\Controllers\Web\TokenController;
-use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Web\DashboardController;
+use App\Http\Controllers\Web\SharedLinkController;
+use App\Http\Controllers\Web\EmailHistoryController;
+use App\Http\Controllers\Web\SolutionTypeController;
 use App\Http\Controllers\Web\EmailTemplateController;
 
 Route::get('/health', function () {
@@ -71,6 +72,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::resources([
         'email-templates' => EmailTemplateController::class,
+        'email-history' => EmailHistoryController::class,
         'accounts' => AccountController::class,
         'categories' => CategoryController::class,
         'apis' => ApiController::class,

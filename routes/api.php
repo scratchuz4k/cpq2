@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\ApiController;
 use App\Http\Controllers\Api\BrandController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\ContactController;
+use App\Http\Controllers\Api\EmailHistoryController;
 use App\Http\Controllers\Api\ExternalController;
 use App\Http\Controllers\Api\MerchantController;
 use App\Http\Controllers\Api\OrderController;
@@ -60,4 +61,5 @@ Route::apiResources([
     'resources' => ResourceController::class,
     'tenants' => TenantController::class,
     'email-templates' => EmailTemplateController::class,
+    'email-history' => EmailHistoryController::class,
 ]);

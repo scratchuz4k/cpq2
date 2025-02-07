@@ -38,7 +38,7 @@ const copyToClipboard = async (msg) => {
 const items = ref([
   { label: "Home", url: "/" },
   { label: "My Account", url: "/myaccount" },
-  { label: "Email", url: "/email-templates" },
+  { label: "Email's", url: "/email-templates" },
   { label: "Edit Email" },
 ]);
 </script>
