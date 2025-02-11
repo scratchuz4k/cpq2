@@ -167,6 +167,11 @@ watch(
             <template v-else>{{ value }}</template>
           </template>
         </TreeTableItem>
+        <tr v-if="!data.length">
+          <td :colspan="columns.length + 2">
+            <div class="text-center my-1">No records found</div>
+          </td>
+        </tr>
       </tbody>
     </table>
     <Paginator

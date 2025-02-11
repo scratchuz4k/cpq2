@@ -148,7 +148,7 @@ onUnmounted(() => {
             >
               <font-awesome-icon :icon="['fas', 'chevron-down']" />
             </button>
-            <button class="btn m-0 p-0" v-else @click="getChildren(index)">
+            <button class="btn m-0 p-0 lh-1" v-else @click="getChildren(index)">
               <font-awesome-icon :icon="['fas', 'chevron-right']" /></button
           ></template>
         </div>
@@ -239,8 +239,8 @@ onUnmounted(() => {
       item?.has_children && showChild && meta.page != meta.total && item.children?.length
     "
   >
-    <td :colspan="columns.length + 2" class="text-center">
-      <button class="btn m-0 p-0 w-100" @click="getChildren(index)">Load More...</button>
+    <td :colspan="columns.length + 2" class="text-center p-0">
+      <button class="btn m-0 w-100 p-2" @click="getChildren(index)">Load More...</button>
     </td>
   </tr>
 </template>
