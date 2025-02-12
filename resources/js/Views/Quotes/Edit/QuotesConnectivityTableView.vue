@@ -119,7 +119,7 @@ const getArticles = async (clearCache = false, runTimeout = false) => {
     try {
         let res = await axios.post('/api/external/get-articles-from-cloud-market', query)
 
-        articles.value = res.data.data
+        articles.value = res.data.data ?? []
         const errorMessages = {
             "BadGateway": "A Bad Gateway error occurred, resulting in partial or no results.",
             "Request timed out": "The request timed out, resulting in partial or no results.",
@@ -202,8 +202,8 @@ const getArticles = async (clearCache = false, runTimeout = false) => {
         }
 
     } catch (error) {
-        console.log(error);
-        notyf.error(error)
+        console.error(error);
+        notyf.error(error.message)
         isLoading.value = false
         meta.isRequestCompleted = false
         showLoadingModal.value = false
