@@ -5,7 +5,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class ApiConfigurationResource extends JsonResource
+class TenantResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -15,7 +15,7 @@ class ApiConfigurationResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            ...$this->resource->toArray(),
+            ...$this->resource->load('file', 'logo')->toArray()
         ];
     }
 }

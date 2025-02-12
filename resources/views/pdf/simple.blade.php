@@ -189,7 +189,7 @@
                     <div class="col">
                         <p>
                             Quotation Date: {{ date('d/m/Y') }}<br>
-                            Valid Date: {{ date('d/m/Y', strtotime('+30 days')) }}
+                            Valid Until: {{ date('d/m/Y', strtotime('+30 days')) }}
                         </p>
                     </div>
                 </div>
@@ -463,11 +463,6 @@
                     </table>
                 </div>
             </div>
-        </div>
-    </div>
-    <div class="row mt-4" id="terms">
-        <div class="col">
-            <p class="small">Terms & Conditions:</p>
         </div>
     </div>
 

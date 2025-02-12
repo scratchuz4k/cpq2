@@ -57,7 +57,10 @@ class Quote extends Model
             }
         });
     }
-
+    public function tenant(): BelongsTo
+    {
+        return $this->belongsTo(Tenant::class);
+    }
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
@@ -101,7 +104,7 @@ class Quote extends Model
         $this->total_gross = 0;
 
         foreach ($this->itemsNoTree as $item) {
-            $raw_total += ($item->raw_price * $item->quantity * $item->contract_length );
+            $raw_total += ($item->raw_price * $item->quantity * $item->contract_length);
 
             $this->total += $item->total;
             $this->total_tax += $item->total_tax;
@@ -115,7 +118,8 @@ class Quote extends Model
         $this->commission_value = $margin_value * ($this->commission_rate / 100);
     }
 
-    public static function resolveStatus(Quote $quote): string {
+    public static function resolveStatus(Quote $quote): string
+    {
         $statuses_to_ignore = [
             QuoteStatusesEnum::REJECTED->name,
             QuoteStatusesEnum::REGISTRY->name,

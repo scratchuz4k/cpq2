@@ -51,7 +51,7 @@ class SolutionTypeController extends BaseController
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(SolutionType $solutionType)
     {
         //
     }
@@ -87,7 +87,7 @@ class SolutionTypeController extends BaseController
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(SolutionType $solutionType)
     {
         //
     }

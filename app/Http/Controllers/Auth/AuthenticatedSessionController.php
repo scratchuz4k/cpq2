@@ -42,10 +42,10 @@ class AuthenticatedSessionController extends Controller
         $request->session()->regenerate();
 
         if (auth()->user()->hasRole('Order Manager')) {
-            return Inertia::location('/orders');
+            return to_route('orders.index');
         }
 
-        return Inertia::location('/quotes');
+        return to_route('quotes.index');
     }
 
     /**
@@ -59,6 +59,6 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerateToken();
 
-        return Inertia::location('/');
+        return Inertia::location(route('index'));
     }
 }

@@ -3,11 +3,12 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
-use App\Models\Spa;
 use App\Trait\SetTenantId;
 use Laravel\Sanctum\HasApiTokens;
+use App\Models\Scopes\TenantScope;
 use Illuminate\Support\Facades\Auth;
 use Spatie\Permission\Traits\HasRoles;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -17,9 +18,43 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable, HasRoles, SetTenantId;
+    use HasApiTokens, HasFactory, HasRoles, Notifiable, SetTenantId;
 
     public static $default_role = 'sales rep';
+
+    public static function boot()
+    {
+        parent::boot();
+
+        static::creating(function (Model $model) {
+            // Check if tenant_id is not set and the user is authenticated
+            if (auth()->check() && !$model->tenant_id) {
+                $model->tenant_id = auth()->user()->tenant_id;
+            }
+        });
+
+        // Update parent when a child is created
+        static::created(function ($child) {
+            if ($child->parent_id) {
+                $parent = User::find($child->parent_id);
+                if ($parent) {
+                    $parent->has_children = true;
+                    $parent->save();
+                }
+            }
+        });
+
+        // Update parent when a child is deleted
+        static::deleting(function ($child) {
+            if ($child->parent_id) {
+                $parent = User::find($child->parent_id);
+                if ($parent) {
+                    $parent->has_children = $parent->children()->where("id", "!=", $child->id)->exists();
+                    $parent->save();
+                }
+            }
+        });
+    }
 
     /**
      * The attributes that are mass assignable.
@@ -33,7 +68,8 @@ class User extends Authenticatable
         'parent_id', // Add parent_id to fillable attributes
         'tenant_id',
         'sso', // Add sso to fillable attributes
-        'commission_rate'
+        'commission_rate',
+        'has_children',
     ];
 
     /**
@@ -55,7 +91,6 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'sso' => 'boolean',
     ];
-
 
     /**
      * Get the children users of this user.
@@ -80,6 +115,7 @@ class User extends Authenticatable
     {
         return $this->hasMany(User::class, 'parent_id', 'id');
     }
+
     public function currentTenant(): HasOne
     {
         return $this->hasOne(Tenant::class, 'id', 'tenant_id');
@@ -110,7 +146,7 @@ class User extends Authenticatable
         do {
             $current = $userAscendents->pop();
             $users->push($current);
-            if (!$current->parent) {
+            if (! $current->parent) {
                 break;
             }
             $userAscendents->push($current->parent);

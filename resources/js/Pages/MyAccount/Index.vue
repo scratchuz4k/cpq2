@@ -1,53 +1,57 @@
 <script setup>
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import Permissions from "@/Components/Permissions.vue";
 import { Head, Link } from "@inertiajs/vue3";
-import { can, hasRole } from '@composables/useAuth'
-import { ref } from 'vue';
+import { can, hasRole } from "@composables/useAuth";
+import { ref } from "vue";
 
 defineProps({
-    permissions: Array,
-    tenants: Array
-})
-const items = ref([
-    { label: 'Home', url: '/' },
-    { label: 'My Account' },
-]);
-
-
+  permissions: Array,
+  tenants: Array,
+});
+const items = ref([{ label: "Home", url: "/" }, { label: "My Account" }]);
 </script>
 
 <template>
+  <Head title="My Account" />
+  <AuthenticatedLayout>
+    <div class="panel">
+      <Header title="My Account" :breadcrumbs="items">
+        <template #buttons>
+          <form @submit.prevent="submit">
+            <Link
+              :href="route('logout')"
+              method="post"
+              as="button"
+              class="btn btn-primary px-4"
+              >Log Out
+            </Link>
+          </form>
+        </template>
+      </Header>
+      <div class="row">
+        <div class="col-4">
+          <div class="text-center">
+            <font-awesome-icon
+              class="bg-light p-5 rounded-circle text-secondary"
+              :icon="['fas', 'user']"
+              size="4x"
+            ></font-awesome-icon>
+          </div>
+          <div class="text-center mt-3">
+            <span
+              v-for="role in $page.props.auth.roles"
+              class="badge bg-secondary p-1 px-2 rounded text-white"
+              >{{ role }}</span
+            >
+            <h5 class="mt-2 mb-0">{{ $page.props.auth.user.name }}</h5>
+            <span>{{ $page.props.auth.user.email }}</span>
 
-    <Head title="My Account" />
-    <AuthenticatedLayout>
-
-        <div class="panel">
-            <Header title="My Account" :breadcrumbs="items">
-                <template #buttons>
-                    <form @submit.prevent="submit">
-                        <Link :href="route('logout')" method="post" as="button" class="btn btn-primary px-4">Log Out
-                        </Link>
-                    </form>
-                </template>
-            </Header>
-            <div class="row">
-                <div class="col-4">
-
-                    <div class="text-center">
-                        <font-awesome-icon class="bg-light p-5 rounded-circle text-secondary" :icon="['fas', 'user']"
-                            size="4x"></font-awesome-icon>
-                    </div>
-                    <div class="text-center mt-3">
-                        <span v-for="role in $page.props.auth.roles"
-                            class="badge bg-secondary p-1 px-2 rounded text-white">{{ role
-                            }}</span>
-                        <h5 class="mt-2 mb-0">{{ $page.props.auth.user.name }}</h5>
-                        <span>{{ $page.props.auth.user.email }}</span>
-
-                        <div v-if="true" class="buttons mt-3">
-                            <Link class="btn btn-outline-primary px-4" :href="route('profile.edit')">Edit Profile</Link>
-                        </div>
+            <div v-if="true" class="buttons mt-3">
+              <Link class="btn btn-outline-primary px-4" :href="route('profile.edit')"
+                >Edit Profile</Link
+              >
+            </div>
 
                         <hr class="login-seperator">
                         <h5 class="mt-4">Company Accounts</h5>
@@ -159,11 +163,12 @@ const items = ref([
                         </div>
                         <div class="col" v-if="hasRole('Super Admin') || can('viewAny tenant')">
                             <div class="card bg-light border-0">
-                                <a :href="hasRole('Super Admin') ? route('tenant.index') : route('tenant.edit', { tenant: $page.props.auth.user.current_tenant.id })"
-                                    class="card-body text-center p-2 text-decoration-none">
+                                <a :href="hasRole('Super Admin') ? route('tenants.index') : route('tenants.edit', { tenant: $page.props.auth.user.current_tenant.id })"
+                                   id="link-tenant"
+                                   class="card-body text-center p-2 text-decoration-none">
                                     <font-awesome-icon class="py-3 opacity-25" :icon="['far', 'building']"
                                         size="2x"></font-awesome-icon>
-                                    <span class="d-block h5">Tenants</span>
+                                    <span class="d-block h5">Tenant</span>
                                 </a>
                             </div>
                         </div>
@@ -207,13 +212,13 @@ const items = ref([
 
 <style scoped>
 .login-seperator {
-    content: '';
-    width: 80%;
-    margin-left: auto;
-    margin-right: auto;
-    height: 1px;
-    background-color: var(--light-grey);
-    position: relative;
-    overflow: hidden
+  content: "";
+  width: 80%;
+  margin-left: auto;
+  margin-right: auto;
+  height: 1px;
+  background-color: var(--light-grey);
+  position: relative;
+  overflow: hidden;
 }
 </style>

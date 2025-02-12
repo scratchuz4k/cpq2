@@ -74,6 +74,14 @@ body {
     .tooltip-small {
         font-size: 12px;
     }
+
+    .color-purple-dark {
+        color: var(--color-purple-dark);
+    }
+
+    .color-purple {
+        color: var(--color-purple);
+    }
 }
 
 
@@ -944,6 +952,13 @@ body {
         }
     }
 }
+.p-dialog {
+    &.resources-modal {
+        .p-dialog-header {
+            justify-content: end;
+        }
+    }
+}
 
 .p-dialog-content {
     .btn-primary {
@@ -1056,7 +1071,7 @@ body {
 
 .file-card {
     .p-card-header {
-        padding: 20px;
+        padding-top: 20px;
     }
 
     .input-file-save {
@@ -1131,4 +1146,36 @@ body {
     max-width: 300px;
     object-fit: contain;
     object-position: left;
+}
+
+.dropzone {
+    .dz-preview {
+        .dz-remove {
+            display: inline-block !important;
+            width: 1.2em;
+            height: 1.2em;
+
+            position: absolute;
+            top: 0;
+            right: 0;
+            z-index: 1000;
+
+            font-size: 1.8em !important;
+            line-height: 1.2em;
+
+            text-align: center;
+            text-decoration: none;
+            font-weight: bold;
+            color: black;
+            opacity: 0.8;
+            transition: scale 200ms ease-in-out;
+
+            &:hover {
+                text-decoration: none !important;
+                scale: 1.2;
+                color: black;
+                opacity: 1;
+            }
+        }
+    }
 }
