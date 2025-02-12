@@ -100,6 +100,6 @@ class TenantController extends BaseController
         $request->user()->update(['tenant_id' => $tenant->id]);
         $tenant->makeCurrent();
 
-        return Inertia::location('/');
+        return to_route('index');
     }
 }
