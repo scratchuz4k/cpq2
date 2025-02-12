@@ -5,7 +5,8 @@
         "dev": "vite build && vite",
         "build": "vite build",
         "watch": "vite build --watch",
-        "cy:run": "cypress run"
+        "cy:run": "cypress run",
+        "prepare": "husky install"
     },
     "devDependencies": {
         "@chromatic-com/storybook": "^1.9.0",
@@ -15,6 +16,7 @@
         "autoprefixer": "^10.4.12",
         "axios": "^1.7.4",
         "cypress": "^13.14.2",
+        "husky": "^8.0.0",
         "laravel-vite-plugin": "^1.0",
         "postcss": "^8.4.31",
         "sass": "1.77.6",
