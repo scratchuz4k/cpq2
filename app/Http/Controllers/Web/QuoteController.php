@@ -10,18 +10,18 @@ use App\Models\PricePlan;
 use App\Models\SolutionType;
 use App\Services\QuoteService;
 use App\Enums\QuoteStatusesEnum;
-use App\Events\QuoteStatusEvent;
+use Spatie\LaravelPdf\Enums\Unit;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Spatie\Browsershot\Browsershot;
+use Spatie\LaravelPdf\Enums\Format;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Resources\QuoteResource;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\QuoteCreateRequest;
-use App\Http\Requests\QuoteUpdateRequest;
-use Spatie\LaravelPdf\Enums\Format;
-use Spatie\LaravelPdf\Enums\Unit;
 
+use App\Http\Requests\QuoteUpdateRequest;
 use function Spatie\LaravelPdf\Support\pdf;
 
 class QuoteController extends BaseController
@@ -39,12 +39,11 @@ class QuoteController extends BaseController
     {
         $user = request()->user();
 
-        $users = User::descendants();
         if (!$user->hasRole('Sales Rep')) {
-            $users = User::all();
+            $users = User::whereHas('quotes')->get();
+        } else {
+            $users = $this->descendantsWithQuotes();
         }
-
-        $users = $users->filter(fn($user) => $user->quotes->count() > 0);
 
         return Inertia::render('Quotes/Index', [
             "users" => $users->values(),
@@ -174,5 +173,21 @@ class QuoteController extends BaseController
             })
             ->name('quote-' . $quote['id'] . '.pdf')
             ->download();
+    }
+
+    public function descendantsWithQuotes()
+    {
+        $users = collect([]);
+        if (is_null(Auth::user())) {
+            return $users;
+        }
+        $userDescedents = collect([Auth::user()]);
+        do {
+            $current = $userDescedents->pop();
+            $users->push($current);
+            $userDescedents->push(...$current->children->whereHas('quotes')->get());
+        } while (count($userDescedents));
+
+        return $users;
     }
 }
