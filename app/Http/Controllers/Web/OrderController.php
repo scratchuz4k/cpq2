@@ -168,7 +168,7 @@ class OrderController extends BaseController
     }
 
 
-    public function descendantsWithOrders()
+    private function descendantsWithOrders()
     {
         $users = collect([]);
         if (is_null(Auth::user())) {
@@ -178,7 +178,7 @@ class OrderController extends BaseController
         do {
             $current = $userDescedents->pop();
             $users->push($current);
-            $userDescedents->push(...$current->children->whereHas('quotes')->get());
+            $userDescedents->push(...$current->children()->whereHas('quotes')->get());
         } while (count($userDescedents));
 
         return $users;

@@ -175,7 +175,7 @@ class QuoteController extends BaseController
             ->download();
     }
 
-    public function descendantsWithQuotes()
+    private function descendantsWithQuotes()
     {
         $users = collect([]);
         if (is_null(Auth::user())) {
@@ -185,7 +185,7 @@ class QuoteController extends BaseController
         do {
             $current = $userDescedents->pop();
             $users->push($current);
-            $userDescedents->push(...$current->children->whereHas('quotes')->get());
+            $userDescedents->push(...$current->children()->whereHas('quotes')->get());
         } while (count($userDescedents));
 
         return $users;
