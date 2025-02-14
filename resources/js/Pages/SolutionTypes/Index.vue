@@ -23,7 +23,7 @@ const items = ref([
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <Datatable :allow="{
                     update: true,
-                    delete: false,
+                    delete: true,
                     link: false,
                 }" :columns="[
                     { data: 'id', title: '#', style: 'width:5%' },

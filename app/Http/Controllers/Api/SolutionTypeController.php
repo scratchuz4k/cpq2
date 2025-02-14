@@ -44,7 +44,7 @@ class SolutionTypeController extends BaseController
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(SolutionType $solutionType)
     {
         //
     }
@@ -52,7 +52,7 @@ class SolutionTypeController extends BaseController
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, SolutionType $solutionType)
     {
         //
     }
@@ -60,8 +60,9 @@ class SolutionTypeController extends BaseController
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(SolutionType $solutionType)
     {
-        //
+        $solutionType->tenants()->detach(Auth::user()->tenant_id);
+        return response()->json(null, 204);
     }
 }
