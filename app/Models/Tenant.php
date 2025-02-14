@@ -26,4 +26,8 @@ class Tenant extends \Spatie\Multitenancy\Models\Tenant
     {
         return $this->belongsTo(Resource::class, 'logo_id', 'id');
     }
+    public function solutionTypes(): BelongsToMany
+    {
+        return $this->belongsToMany(SolutionType::class, 'solution_type_tenant');
+    }
 }

@@ -14,6 +14,11 @@ const items = ref([
     <AuthenticatedLayout>
         <div class="panel">
             <Header title="Solution Types" :breadcrumbs="items">
+                <template #buttons>
+                    <Link href="/solution-types/create" id="api-create-btn" class="btn btn-primary me-2">
+                        <font-awesome-icon :icon="['fas', 'plus']"></font-awesome-icon> New Solution Type
+                    </Link>
+                </template>
             </Header>
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <Datatable :allow="{

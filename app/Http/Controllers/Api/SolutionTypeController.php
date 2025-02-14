@@ -5,8 +5,8 @@ namespace App\Http\Controllers\Api;
 use App\Models\SolutionType;
 use Illuminate\Http\Request;
 use App\Helpers\DataProvider;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
-use App\Http\Controllers\Controller;
 use App\Http\Controllers\BaseController;
 use App\Http\Resources\SolutionTypeResource;
 
@@ -19,6 +19,10 @@ class SolutionTypeController extends BaseController
     public function index()
     {
         $dataProvider = new DataProvider(SolutionType::class);
+        $dataProvider->builder = $dataProvider->builder->whereHas('tenants', function ($query) {
+            return $query->where('tenants.id', Auth::user()->tenant_id);
+        });
+
         try {
             $data = $dataProvider->get();
         } catch (\Exception $e) {

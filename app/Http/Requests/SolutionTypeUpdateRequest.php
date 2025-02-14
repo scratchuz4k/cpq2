@@ -16,7 +16,6 @@ class SolutionTypeUpdateRequest extends FormRequest
     {
         return true;
     }
-    private $requiredEntity2 = [SpaRulesEnum::AccountProduct->value, SpaRulesEnum::AccountSupplier->value, SpaRulesEnum::SupplierProduct->value,];
 
     /**
      * Get the validation rules that apply to the request.
@@ -26,7 +25,7 @@ class SolutionTypeUpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-
+            'configurations' => 'nullable|array'
         ];
     }
 }
