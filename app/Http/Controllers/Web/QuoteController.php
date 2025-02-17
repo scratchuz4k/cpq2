@@ -50,7 +50,7 @@ class QuoteController extends BaseController
 
         return Inertia::render('Quotes/Index', [
             "users" => $users->values(),
-            "solutions" => SolutionType::all(),
+            "solutions" => $user->currentTenant->solutionTypes,
             "status" => array_map(fn($status) => $status->name, QuoteStatusesEnum::cases())
         ]);
     }
@@ -104,7 +104,7 @@ class QuoteController extends BaseController
     {
         return Inertia::render('Quotes/Edit', [
             'accounts' => Account::all(),
-            'solution_types' => SolutionType::get(),
+            'solution_types' => Auth::user()->currentTenant->solutionTypes,
             'quote' => new QuoteResource($quote->load(['items']))
         ]);
     }
@@ -141,7 +141,7 @@ class QuoteController extends BaseController
     {
         return Inertia::render('Quotes/Configure', [
             'accounts' => Account::all(),
-            'solution_types' => SolutionType::get(),
+            'solution_types' => Auth::user()->currentTenant->solutionTypes,
             'quote' => new QuoteResource($quote->load(['items']))
         ]);
     }
@@ -156,7 +156,7 @@ class QuoteController extends BaseController
 
     public function download(Quote $quote)
     {
-        $solution_types = SolutionType::get();
+        $solution_types = Auth::user()->currentTenant->solutionTypes;
         $user = request()->user();
         $tenant = $quote->tenant;
         $dir = 'pdf/' . $quote->tenant->id;

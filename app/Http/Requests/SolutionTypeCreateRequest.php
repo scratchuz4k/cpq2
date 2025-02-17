@@ -2,10 +2,15 @@
 
 namespace App\Http\Requests;
 
+use App\Trait\ValidationMessages;
+use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class SolutionTypeCreateRequest extends BaseRequest
+class SolutionTypeCreateRequest extends FormRequest
 {
+
+    use ValidationMessages;
+
     /**
      * Determine if the user is authorized to make this request.
      */

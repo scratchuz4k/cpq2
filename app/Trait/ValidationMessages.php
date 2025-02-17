@@ -1,12 +1,15 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Trait;
 
-use Illuminate\Foundation\Http\FormRequest;
-
-class BaseRequest extends FormRequest
+trait ValidationMessages
 {
     public function messages(): array
+    {
+        return $this->getMessages();
+    }
+
+    public function getMessages(): array
     {
         return [
             'solution_type_id.unique' => 'This solution type is already assigned to this tenant.',

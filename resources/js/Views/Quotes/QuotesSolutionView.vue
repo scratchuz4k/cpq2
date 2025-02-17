@@ -114,14 +114,19 @@ watch(addressPostCode, () => {
                     <div class="col-8">
                         <h5 class="font-bold mb-3">Now, select an solution type</h5>
                         <div class="mb-3">
-                            <label class="form-label">Solution Type <span class="text-primary fw-bold">*</span></label>
-                            <select :disabled="is_updating_quote" id="solution_id" class="form-select" @change="solutionChange(modelValue)"
-                                v-model="modelValue.solution_type">
-                                <option :value="null">Select an option</option>
-                                <option v-for="(solution, key) in solution_types" :value="solution">
-                                    {{ solution.name }}
-                                </option>
-                            </select>
+                            <template v-if="solution_types.lengh">
+                                <label class="form-label">Solution Type <span class="text-primary fw-bold">*</span></label>
+                                <select :disabled="is_updating_quote" id="solution_id" class="form-select" @change="solutionChange(modelValue)"
+                                        v-model="modelValue.solution_type">
+                                    <option :value="null">Select an option</option>
+                                    <option v-for="(solution, key) in solution_types" :value="solution">
+                                        {{ solution.name }}
+                                    </option>
+                                </select>
+                            </template>
+                            <div v-else class="text-danger">
+                                No solution types available
+                            </div>
                         </div>
                         <template v-if="modelValue.solution_type?.code == 3">
                             <div class="mb-3" id="postcode" style="position: relative">

@@ -45,7 +45,7 @@ class OrderController extends BaseController
 
         return Inertia::render('Orders/Index', [
             "users" => $users->values(),
-            "solutions" => SolutionType::all(),
+            "solutions" => $user->currentTenant->solutionTypes,
             "status" => array_map(fn($status) => $status->name, OrderStatusesEnum::cases())
         ]);
     }
