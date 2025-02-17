@@ -8,20 +8,24 @@ use App\Models\Quote;
 use App\Models\Account;
 use App\Models\PricePlan;
 use App\Models\SolutionType;
+use App\Helpers\DynamicEmail;
 use App\Services\QuoteService;
 use App\Enums\QuoteStatusesEnum;
 use App\Events\QuoteStatusEvent;
+use App\Enums\EmailTemplatesEnum;
+use Spatie\LaravelPdf\Enums\Unit;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Spatie\Browsershot\Browsershot;
+use Spatie\LaravelPdf\Enums\Format;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 use App\Http\Resources\QuoteResource;
+
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\QuoteCreateRequest;
 use App\Http\Requests\QuoteUpdateRequest;
-use Spatie\LaravelPdf\Enums\Format;
-use Spatie\LaravelPdf\Enums\Unit;
-
 use function Spatie\LaravelPdf\Support\pdf;
 
 class QuoteController extends BaseController
@@ -152,6 +156,7 @@ class QuoteController extends BaseController
 
     public function download(Quote $quote)
     {
+
         $solution_types = SolutionType::get();
         $user = request()->user();
         $tenant = $quote->tenant;
@@ -165,14 +170,35 @@ class QuoteController extends BaseController
         $quote = QuoteResource::make($quote->load(['items']))->resolve();
 
 
-        // return view("pdf.$view", compact('quote', 'solution_types'));
-        return pdf()
+        $pdf = pdf()
             ->view("pdf.$view", compact('quote', 'solution_types', 'tenant'))
             ->format(Format::A4)
             ->withBrowsershot(function (Browsershot $browsershot) {
                 $browsershot->waitUntilNetworkIdle();
             })
-            ->name('quote-' . $quote['id'] . '.pdf')
-            ->download();
+            ->disk('temp')
+            ->save('quote-' . $quote['id'] . '.pdf');
+
+        Mail::queue(
+            new DynamicEmail(
+                tenant: Auth::user()->currentTenant,
+                templateEnum: EmailTemplatesEnum::QUOTE_ACCOUNT_SHARE,
+                parameters: [
+                    'account_name' => $quote->account->name,
+                    'quote_number' => $quote->id,
+                ],
+                overrides: [
+                    'to' => $quote->account->email ?? "example@teste.com",
+                ],
+                files: [
+                    [
+                        'disk' => 'orders',
+                        'path' => $pdf_document->title,
+                        'title' => $pdf_document->title,
+                        'mimetype' => 'application/pdf',
+                    ],
+                ],
+            )
+        );
     }
 }

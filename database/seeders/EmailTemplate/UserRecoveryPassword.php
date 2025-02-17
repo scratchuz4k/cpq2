@@ -23,7 +23,7 @@ class UserRecoveryPassword extends Seeder
             [
                 'description' => EmailTemplatesEnum::USER_PASSWORD_RECOVERY->value,
                 'subject' => 'Password  Recovery',
-                'body' => '<p>Dear Sir/Madam,<p/><p>You received this email because you were asked to reset your password for your account.<p/><p>Click the button below to set a new password:<p/><p><a href="#reset_link#" target="_blank" rel="noopener noreferrer">Set new password</a><p/><p>If this was not you, please ignore this email.<p/>',
+                'body' => '<p>Dear Sir/Madam,<p/><p>You received this email because you were asked to reset your password for your account.<p/><p>Click the button below to set a new password:<p/><p><a href="[reset_link]" target="_blank" rel="noopener noreferrer">Set new password</a><p/><p>If this was not you, please ignore this email.<p/>',
                 'notes' => "Sent to user's email.",
             ],
         );
