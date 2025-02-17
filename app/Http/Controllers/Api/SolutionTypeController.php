@@ -58,8 +58,8 @@ class SolutionTypeController extends BaseController
     }
 
     /**
-     * Remove the specified resource from storage.
-     */
+         * Remove the specified resource from storage.
+         */
     public function destroy(SolutionType $solutionType)
     {
         $solutionType->tenants()->detach(Auth::user()->tenant_id);

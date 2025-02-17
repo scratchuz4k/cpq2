@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers\Web;
 
+use App\Http\Resources\SolutionTypeResource;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use App\Models\Quote;
 use App\Models\Account;
@@ -57,9 +59,11 @@ class QuoteController extends BaseController
      */
     public function create()
     {
+        $tenant = Auth::user()->currentTenant;
+
         return Inertia::render('Quotes/Create', [
             'accounts' => Account::all(),
-            'solution_types' => SolutionType::get()
+            'solution_types' => $tenant->solutionTypes,
         ]);
     }
 

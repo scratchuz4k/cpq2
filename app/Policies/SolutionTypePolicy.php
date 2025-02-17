@@ -4,7 +4,6 @@ namespace App\Policies;
 
 use App\Models\SolutionType;
 use App\Models\User;
-use Illuminate\Auth\Access\Response;
 
 class SolutionTypePolicy
 {
@@ -48,6 +47,7 @@ class SolutionTypePolicy
      */
     public function update(User $user, SolutionType $solutionType): bool
     {
+        //TODO: tenant has solution type
         if ($user->can("update $this->model")) {
             return true;
         }
