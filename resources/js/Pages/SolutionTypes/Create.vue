@@ -54,7 +54,7 @@ const items = ref([
             </Header>
             <div class="mt-3">
                 <tabs>
-                    <tab title="General" :selected="true">
+                    <tab title="General" id="tab-general" :selected="true">
                         <div class="mt-3">
                             <div class="mb-5">
                                 <label for="solution_type-name" class="form-label">Name:</label>
@@ -71,7 +71,7 @@ const items = ref([
                             </div>
                         </div>
                     </tab>
-                    <tab title="Quote">
+                    <tab title="Quote" id="tab-quotes">
                         <p class="my-3">
                             This section contains all the customizations for the appearance of the
                             solution type to match specific preferences within the quote.

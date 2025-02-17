@@ -15,7 +15,7 @@ const items = ref([
         <div class="panel">
             <Header title="Solution Types" :breadcrumbs="items">
                 <template #buttons>
-                    <Link href="/solution-types/create" id="api-create-btn" class="btn btn-primary me-2">
+                    <Link href="/solution-types/create" id="solution-create-btn" class="btn btn-primary me-2">
                         <font-awesome-icon :icon="['fas', 'plus']"></font-awesome-icon> New Solution Type
                     </Link>
                 </template>
