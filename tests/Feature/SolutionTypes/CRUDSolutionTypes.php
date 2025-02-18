@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\SolutionType;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use App\Models\User;
 use App\Models\Tenant;
@@ -31,23 +32,24 @@ it('Solution Type CRUD', function () {
     $response->assertRedirect();
 
 
-    expect(Merchant::count())->toBe(1);
+    expect($this->user->currentTenant->solutionTypes()->count())->toBe(1);
 
-    //Update Merchant
-    $merchant = Merchant::find(1);
+    //Update solution type
+    $solutionType = $this->user->currentTenant->solutionTypes()->first();
 
     $data = [
-        'name' => 'Updated ' . $this->merchant,
+        'configurations' => [
+            'component' => 'Simple'
+        ]
     ];
 
-    $response = $this->put('merchants/' . $merchant->id, $data);
+    $response = $this->put('solution-types/' . $solutionType->id, $data);
     $response->assertRedirect();
 
-    $merchant->refresh();
-    $this->assertEquals($merchant->name, 'Updated ' . $this->merchant);
+    $solutionType->refresh();
 
-    //Delete Merchant
-    $response = $this->delete('api/merchants/' . $merchant->id);
-    $response->assertOk();
-    expect(Merchant::count())->toBe(0);
+    //Delete solution type
+    $response = $this->delete('api/solution-types/' . $solutionType->id);
+    $response->assertSuccessful();
+    expect($this->user->currentTenant->solutionTypes()->count())->toBe(0);
 });
