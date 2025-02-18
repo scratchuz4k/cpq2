@@ -15,6 +15,6 @@ class SolutionType extends Model
 
     public function tenants() : BelongsToMany
     {
-        return $this->belongsToMany(Tenant::class, 'solution_type_tenant');
+        return $this->belongsToMany(Tenant::class, 'solution_type_tenant', 'solution_type_id', 'tenant_id');
     }
 }

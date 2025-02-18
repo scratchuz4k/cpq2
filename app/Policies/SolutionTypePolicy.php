@@ -47,10 +47,10 @@ class SolutionTypePolicy
      */
     public function update(User $user, SolutionType $solutionType): bool
     {
-        //TODO: tenant has solution type
+        $tenant = $user->currentTenant->refresh();
         if (
             $user->can("update $this->model")
-            && $user->currentTenant->solutionTypes->contains($solutionType)
+            && $tenant->solutionTypes->contains($solutionType)
         ) {
             return true;
         }
@@ -62,9 +62,10 @@ class SolutionTypePolicy
      */
     public function delete(User $user, SolutionType $solutionType): bool
     {
+        $tenant = $user->currentTenant->refresh();
         if (
             $user->can("delete $this->model")
-            && $user->currentTenant->solutionTypes->contains($solutionType)
+            && $tenant->solutionTypes->contains($solutionType)
         ) {
             return true;
         }

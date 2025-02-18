@@ -18,6 +18,7 @@ use App\Models\Price;
 use App\Models\Product;
 use App\Models\Quote;
 use App\Models\QuoteItem;
+use App\Models\SolutionType;
 use App\Models\Spa;
 use App\Models\Supplier;
 use App\Models\Tenant;
@@ -99,7 +100,7 @@ function generateModelsData() {
         'users' => User::factory()->make()->toArray(),
         'tokens' => Token::factory()->make()->toArray(),
         'quotes' => Quote::factory()->make()->toArray(),
-        'solution-types' => [],
+        'solution-types' => SolutionType::factory()->make()->toArray(),
         'apis' => Api::factory()->make()->toArray(),
         'api/accounts' => Account::factory()->make()->toArray(),
         'api/prices' => Price::factory()->make()->toArray(),
