@@ -31,7 +31,7 @@ class PasswordResetLinkController extends Controller
      *
      * @throws \Illuminate\Validation\ValidationException
      */
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request)
     {
         $request->validate([
             'email' => 'required|email',
@@ -47,6 +47,7 @@ class PasswordResetLinkController extends Controller
 
         Mail::queue(
             new DynamicEmail(
+                user: $user,
                 tenant: $user->currentTenant,
                 templateEnum: EmailTemplatesEnum::USER_PASSWORD_RECOVERY,
                 parameters: [
@@ -58,6 +59,6 @@ class PasswordResetLinkController extends Controller
             )
         );
 
-        return back();
+        return Inertia::location("/");
     }
 }
