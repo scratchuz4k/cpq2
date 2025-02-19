@@ -68,7 +68,13 @@ describe("Solution Types CRUD", () => {
         cy.get("#link-solutions").click()
 
         cy.get("#datatable-search").type('Hardware')
-        cy.get("#datatable-btn-0-delete").click()
+        // cy.get("#datatable-btn-0-delete").click()
+
+        cy.get('.p-datatable-tbody tr')
+            .contains('td', 'Hardware')
+            .parent()
+            .find('button[id*="delete"]')
+            .click();
 
         cy.get('.swal2-confirm').eq(0).click()
         cy.get(".notyf").contains("Removed with success")

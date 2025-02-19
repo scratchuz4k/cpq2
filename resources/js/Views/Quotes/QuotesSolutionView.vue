@@ -114,7 +114,7 @@ watch(addressPostCode, () => {
                     <div class="col-8">
                         <h5 class="font-bold mb-3">Now, select an solution type</h5>
                         <div class="mb-3">
-                            <template v-if="solution_types.lengh">
+                            <template v-if="solution_types.length">
                                 <label class="form-label">Solution Type <span class="text-primary fw-bold">*</span></label>
                                 <select :disabled="is_updating_quote" id="solution_id" class="form-select" @change="solutionChange(modelValue)"
                                         v-model="modelValue.solution_type">
