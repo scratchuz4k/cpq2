@@ -19,6 +19,7 @@ const solution = reactive({
 })
 
 const saveSolution = () => {
+    solution.configurations.component ??= 'Dealmaker';
     router.post("/solution-types", solution, {
         onSuccess: (page) => {
             notyf.success("Created with Success")
