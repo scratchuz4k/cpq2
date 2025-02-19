@@ -4,18 +4,17 @@ namespace App\Helpers\Api;
 
 use App\Enums\CloudMarketSuppliersEnum;
 use App\Models\Api;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
-
+use Illuminate\Support\Facades\Log;
 
 class CloudMarketApi
 {
     public function __construct() {}
 
-    public static function getQuotes($connectivityType,  CloudMarketAddress $address)
+    public static function getQuotes($connectivityType, CloudMarketAddress $address)
     {
 
-        $url =  env('CLOUDMARKET_CONNECTION_SERVICE_URL', 'https://cpq-poc-uat-api.cloudmarket.com');
+        $url = env('CLOUDMARKET_CONNECTION_SERVICE_URL', 'https://cpq-poc-uat-api.cloudmarket.com');
         $requestTimeout = 420;
         $virtual1 = Api::where('code', CloudMarketSuppliersEnum::Virtual1->value)->first();
         $gamma = Api::where('code', CloudMarketSuppliersEnum::Gamma->value)->first();
@@ -29,15 +28,15 @@ class CloudMarketApi
             'Address1.Latitude' => $address->lat,
             'Address1.Longitude' => $address->lon,
 
-            "Address1.UPRN" =>  $address->uprn,
-            "Address1.AddressKey" =>  $address->addressKey,
-            "Address1.BuildingName" =>  $address->buildingName,
-            "Address1.BuildingNumber" =>  $address->buildingNumber,
-            "Address1.SubPremises" =>  $address->subPremises,
-            "Address1.Street" =>  $address->street,
-            "Address1.Town" =>  $address->town,
+            'Address1.UPRN' => $address->uprn,
+            'Address1.AddressKey' => $address->addressKey,
+            'Address1.BuildingName' => $address->buildingName,
+            'Address1.BuildingNumber' => $address->buildingNumber,
+            'Address1.SubPremises' => $address->subPremises,
+            'Address1.Street' => $address->street,
+            'Address1.Town' => $address->town,
 
-            "ManagedOption" => 0,
+            'ManagedOption' => 0,
         ];
 
         Log::debug('CloudMarketApi::getQuotes lookup:', $quoteAddress);
@@ -54,11 +53,15 @@ class CloudMarketApi
             'SupplierApiConnections.Vorboss_Connection.BearerToken' => env('VORBOSS_CONNECTION_ACCESSKEY', $vorboss?->token),
         ];
 
+        $quoteCredentials = array_filter($quoteCredentials, function ($value) {
+            return ! empty($value);
+        });
+
         $quoteRequestParams = array_merge($quoteAddress, $quoteCredentials);
 
         return Http::withOptions(['stream' => true])->timeout($requestTimeout)->withToken(env('ALPNET_API_TOKEN'))
             ->get(
-                $url . '/PartnerQuoteService/GetQuotes',
+                $url.'/PartnerQuoteService/GetQuotes',
                 $quoteRequestParams
             );
     }
