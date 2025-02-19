@@ -62,6 +62,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/tenant/{tenant}/make-current', [TenantController::class, 'switch'])->name('tenant.make-current');
     Route::get('/quotes/{quote}/preview', [QuoteController::class, 'preview'])->name('quotes.preview');
 
+    Route::get('/quotes/{quote}/email', [QuoteController::class, 'email'])->name('quotes.email');
     Route::get('/quotes/{quote}/download', [QuoteController::class, 'download'])->name('quotes.download');
     Route::get('/quotes/{quote}/configure', [QuoteController::class, 'configure'])->name('quotes.configure');
 

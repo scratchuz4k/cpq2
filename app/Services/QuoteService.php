@@ -2,9 +2,14 @@
 
 namespace App\Services;
 
-use App\Models\PricePlan;
 use App\Models\Quote;
-use App\Models\QuoteItem;
+use App\Models\PricePlan;
+use App\Models\SolutionType;
+use Spatie\Browsershot\Browsershot;
+use Spatie\LaravelPdf\Enums\Format;
+use App\Http\Resources\QuoteResource;
+use Illuminate\Support\Facades\Storage;
+use function Spatie\LaravelPdf\Support\pdf;
 
 class QuoteService
 {
@@ -45,5 +50,28 @@ class QuoteService
 
         $quote->update($array);
         return $quote->refresh();
+    }
+
+    public function generatePdf(Quote $quote, $disk = "temp")
+    {
+        $solution_types = SolutionType::get();
+        $user = request()->user();
+        $tenant = $quote->tenant;
+        $dir = 'pdf/' . $quote->tenant->id;
+
+        if (!Storage::makeDirectory($dir)) {
+            throw new \Exception("Could not create directory for PDFs");
+        }
+
+        $view  = array_key_exists("component", $quote->solutionType->configs) ? strtolower($quote->solutionType->configs["component"]) : "dealmaker";
+        $quote = QuoteResource::make($quote->load(['items']))->resolve();
+
+        return pdf()
+            ->view("pdf.$view", compact('quote', 'solution_types', 'tenant'))
+            ->format(Format::A4)
+            ->withBrowsershot(function (Browsershot $browsershot) {
+                $browsershot->waitUntilNetworkIdle();
+            })
+            ->disk($disk);
     }
 }

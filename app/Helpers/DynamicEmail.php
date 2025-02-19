@@ -80,7 +80,7 @@ class DynamicEmail extends Mailable
             'tenant' => $this->tenant,
             'email_template_id' => $this->email->id,
             'tenant_id' => $this->tenant->id,
-            'user_id' => $this->user->id,
+            'user_id' => $this->user?->id,
         ];
 
         $this->to($content['to']);

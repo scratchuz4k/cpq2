@@ -11,12 +11,9 @@ use App\Models\SolutionType;
 use App\Helpers\DynamicEmail;
 use App\Services\QuoteService;
 use App\Enums\QuoteStatusesEnum;
-use App\Events\QuoteStatusEvent;
 use App\Enums\EmailTemplatesEnum;
-use Spatie\LaravelPdf\Enums\Unit;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Spatie\Browsershot\Browsershot;
 use Spatie\LaravelPdf\Enums\Format;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
@@ -26,7 +23,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\QuoteCreateRequest;
 use App\Http\Requests\QuoteUpdateRequest;
-use function Spatie\LaravelPdf\Support\pdf;
+use Illuminate\Support\Facades\Request;
 
 class QuoteController extends BaseController
 {
@@ -156,31 +153,18 @@ class QuoteController extends BaseController
 
     public function download(Quote $quote)
     {
+        $pdf = $this->quoteService->generatePdf($quote);
+        return $pdf->name('quote-' . $quote['id'] . '.pdf')->download();
+    }
 
-        $solution_types = SolutionType::get();
-        $user = request()->user();
-        $tenant = $quote->tenant;
-        $dir = 'pdf/' . $quote->tenant->id;
-
-        if (!Storage::makeDirectory($dir)) {
-            throw new \Exception("Could not create directory for PDFs");
-        }
-
-        $view  = array_key_exists("component", $quote->solutionType->configs) ? strtolower($quote->solutionType->configs["component"]) : "dealmaker";
-        $quote = QuoteResource::make($quote->load(['items']))->resolve();
-
-
-        $pdf = pdf()
-            ->view("pdf.$view", compact('quote', 'solution_types', 'tenant'))
-            ->format(Format::A4)
-            ->withBrowsershot(function (Browsershot $browsershot) {
-                $browsershot->waitUntilNetworkIdle();
-            })
-            ->disk('temp')
-            ->save('quote-' . $quote['id'] . '.pdf');
+    public function email(Request $request, Quote $quote)
+    {
+        $pdf = $this->quoteService->generatePdf($quote);
+        $pdf->save('quote-' . $quote['id'] . '.pdf');
 
         Mail::queue(
             new DynamicEmail(
+                user: Auth::user(),
                 tenant: Auth::user()->currentTenant,
                 templateEnum: EmailTemplatesEnum::QUOTE_ACCOUNT_SHARE,
                 parameters: [
@@ -192,9 +176,9 @@ class QuoteController extends BaseController
                 ],
                 files: [
                     [
-                        'disk' => 'orders',
-                        'path' => $pdf_document->title,
-                        'title' => $pdf_document->title,
+                        'disk' => 'temp',
+                        'path' => 'quote-' . $quote['id'] . '.pdf',
+                        'title' => 'quote-' . $quote['id'] . '.pdf',
                         'mimetype' => 'application/pdf',
                     ],
                 ],
