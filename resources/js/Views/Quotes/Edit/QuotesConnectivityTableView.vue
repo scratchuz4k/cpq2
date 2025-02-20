@@ -119,7 +119,6 @@ const getArticles = async (clearCache = false, runTimeout = false) => {
     try {
         let res = await axios.post('/api/external/get-articles-from-cloud-market', query)
 
-        articles.value = res.data.data ?? []
         const errorMessages = {
             "BadGateway": "A Bad Gateway error occurred, resulting in partial or no results.",
             "Request timed out": "The request timed out, resulting in partial or no results.",
@@ -133,18 +132,19 @@ const getArticles = async (clearCache = false, runTimeout = false) => {
             "No provider is configured": "No provider is configured, please add at least one provider with the required credentials to obtain a quote.",
             "Request failed with status Unauthorized": "Request failed with status Unauthorized (Check login credentials for this provider)",
         };
-
-        errors.value = res.data.errors
-        .filter((error) => error.provider !== "gamma")
-        .map((error) => {
-            for (const [key, message] of Object.entries(errorMessages)) {
-                if (error.response.includes(key)) {
-                    return { provider: error.provider, response: message };
+        if(res.data.errors){
+            errors.value = res.data.errors
+            .filter((error) => error.provider !== "gamma")
+            .map((error) => {
+                for (const [key, message] of Object.entries(errorMessages)) {
+                    if (error.response.includes(key)) {
+                        return { provider: error.provider, response: message };
+                    }
                 }
-            }
-            return { provider: error.provider, response: 'An error occurred, resulting in partial or no results' }
-        });
-
+                return { provider: error.provider, response: 'An error occurred, resulting in partial or no results' }
+            });
+        }
+        articles.value = res.data.data ?? []
         articles.value = articles.value.map((article) => {
             if (article.productName.includes('with router:')) {
                 const productInfo = article.productName.split('with router:');
