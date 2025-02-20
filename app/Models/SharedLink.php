@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Scopes\TenantScope;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Database\Eloquent\Model;
@@ -33,7 +34,7 @@ class SharedLink extends Model
     // Polymorphic relationship
     public function shareable()
     {
-        return $this->morphTo();
+        return $this->morphTo()->withoutGlobalScope(TenantScope::class);
     }
 
     // Check if the link has expired

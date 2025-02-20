@@ -65,7 +65,7 @@ class SharedLinkController extends Controller
             case 'Quotes':
                 return [
                     'pricePlans' => PricePlan::all(),
-                    'model' => new QuoteResource($item->load(['items'])),
+                    'model' => new QuoteResource($item->load(['items', 'tenant.logo'])),
                 ];
             default:
                 return $item;
