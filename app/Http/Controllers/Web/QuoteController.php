@@ -158,8 +158,9 @@ class QuoteController extends BaseController
     public function download(Request $request)
     {
         $solution_types = SolutionType::get();
-        $user = request()->user();
-        $tenant = $quote->tenant;
+        $quote = Quote::withoutGlobalScope(TenantScope::class)->find($request->quote);
+        $tenant = $quote->tenant->makeCurrent();
+        $quote = $quote->refresh();
         $dir = 'pdf/' . $quote->tenant->id;
 
         if (!Storage::makeDirectory($dir)) {
