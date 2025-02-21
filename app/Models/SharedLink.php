@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Scopes\TenantScope;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Database\Eloquent\Model;
@@ -15,7 +16,8 @@ class SharedLink extends Model
         'shareable_id',
         'expires_at',
         'meta',
-        'password'
+        'password',
+        'tenant_id',
     ];
 
     protected $casts = [
@@ -57,5 +59,10 @@ class SharedLink extends Model
     public function verifyPassword($password): bool
     {
         return $this->password && Hash::check($password, $this->password);
+    }
+
+    public function tenant(): BelongsTo
+    {
+        return $this->belongsTo(Tenant::class);
     }
 }
