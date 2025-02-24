@@ -16,10 +16,10 @@ class DashboardController extends BaseController
     public function index()
     {
         if (auth()->user()->hasRole('Order Manager')) {
-            return Inertia::location('/orders');
+            return to_route('orders.index');
         }
 
-        return Inertia::location('/quotes');
+        return to_route('quotes.index');
 
         $user = request()->user();
 
