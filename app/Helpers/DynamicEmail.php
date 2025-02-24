@@ -80,7 +80,7 @@ class DynamicEmail extends Mailable
             'tenant' => $this->tenant,
             'email_template_id' => $this->email->id,
             'tenant_id' => $this->tenant->id,
-            'user_id' => $this->user->id,
+            'user_id' => $this->user?->id,
         ];
 
         $this->to($content['to']);
@@ -154,7 +154,7 @@ class DynamicEmail extends Mailable
      */
     private function replaceBodyTags(string $body): string
     {
-        $result = preg_match_all("/(?<!\d)#([^#]*)\#/", $body, $matches);
+        $result = preg_match_all("/(?<!\d)\[([^\]]*)\]/", $body, $matches);
 
         if ($result) {
             foreach ($matches[0] as $match) {
@@ -174,7 +174,7 @@ class DynamicEmail extends Mailable
      */
     private function replaceSubjectTags(string $subject): string
     {
-        $result = preg_match_all("/(?<!\d)#([^#]*)\#/", $subject, $matches);
+        $result = preg_match_all("/(?<!\d)\[([^\]]*)\]/", $subject, $matches);
 
         if ($result) {
             foreach ($matches[0] as $match) {

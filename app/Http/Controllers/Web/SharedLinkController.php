@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers\Web;
 
-use App\Http\Controllers\Controller;
-use App\Http\Resources\QuoteResource;
-use App\Models\PricePlan;
+use Inertia\Inertia;
 use App\Models\Quote;
+use App\Models\PricePlan;
 use App\Models\SharedLink;
 use Illuminate\Http\Request;
-use Inertia\Inertia;
+use App\Models\Scopes\TenantScope;
+use App\Http\Controllers\Controller;
+use App\Http\Resources\QuoteResource;
 
 class SharedLinkController extends Controller
 {
@@ -65,7 +66,13 @@ class SharedLinkController extends Controller
             case 'Quotes':
                 return [
                     'pricePlans' => PricePlan::all(),
-                    'model' => new QuoteResource($item->load(['items'])),
+                    'model' => new QuoteResource($item->load(
+                        [
+                            'items' => function ($query) {
+                                $query->withoutGlobalScope(TenantScope::class);
+                            }
+                        ]
+                    )),
                 ];
             default:
                 return $item;

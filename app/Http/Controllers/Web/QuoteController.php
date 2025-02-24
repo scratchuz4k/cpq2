@@ -8,21 +8,21 @@ use App\Models\Quote;
 use App\Models\Account;
 use App\Models\PricePlan;
 use App\Models\SolutionType;
+use App\Helpers\DynamicEmail;
 use App\Services\QuoteService;
 use App\Enums\QuoteStatusesEnum;
-use App\Events\QuoteStatusEvent;
+use App\Enums\EmailTemplatesEnum;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Spatie\Browsershot\Browsershot;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 use App\Http\Resources\QuoteResource;
+
+use App\Http\Requests\EmailSendRequest;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\QuoteCreateRequest;
 use App\Http\Requests\QuoteUpdateRequest;
-use Spatie\LaravelPdf\Enums\Format;
-use Spatie\LaravelPdf\Enums\Unit;
-
-use function Spatie\LaravelPdf\Support\pdf;
 
 class QuoteController extends BaseController
 {
@@ -89,7 +89,7 @@ class QuoteController extends BaseController
     {
         return Inertia::render('Quotes/Show', [
             'pricePlans' => PricePlan::all(),
-            'quote' => new QuoteResource($quote->load(['items', 'orders']))
+            'quote' => new QuoteResource($quote->load(['items', 'orders', 'account', 'account.contacts']))
         ]);
     }
 
@@ -101,7 +101,7 @@ class QuoteController extends BaseController
         return Inertia::render('Quotes/Edit', [
             'accounts' => Account::all(),
             'solution_types' => SolutionType::get(),
-            'quote' => new QuoteResource($quote->load(['items']))
+            'quote' => new QuoteResource($quote->load(['items', 'account', 'account.contacts']))
         ]);
     }
 
@@ -152,27 +152,40 @@ class QuoteController extends BaseController
 
     public function download(Quote $quote)
     {
-        $solution_types = SolutionType::get();
-        $user = request()->user();
-        $tenant = $quote->tenant;
-        $dir = 'pdf/' . $quote->tenant->id;
+        $pdf = $this->quoteService->generatePdf($quote);
+        return $pdf->name('quote-' . $quote['id'] . '.pdf')->download();
+    }
 
-        if (!Storage::makeDirectory($dir)) {
-            throw new \Exception("Could not create directory for PDFs");
-        }
+    public function email(EmailSendRequest $request, Quote $quote)
+    {
+        $pdf = $this->quoteService->generatePdf($quote);
+        $pdf->save('quote-' . $quote['id'] . '.pdf');
 
-        $view  = array_key_exists("component", $quote->solutionType->configs) ? strtolower($quote->solutionType->configs["component"]) : "dealmaker";
-        $quote = QuoteResource::make($quote->load(['items']))->resolve();
+        $contact = $quote->account->contacts->first();
 
-
-        // return view("pdf.$view", compact('quote', 'solution_types'));
-        return pdf()
-            ->view("pdf.$view", compact('quote', 'solution_types', 'tenant'))
-            ->format(Format::A4)
-            ->withBrowsershot(function (Browsershot $browsershot) {
-                $browsershot->waitUntilNetworkIdle();
-            })
-            ->name('quote-' . $quote['id'] . '.pdf')
-            ->download();
+        Mail::queue(
+            new DynamicEmail(
+                user: Auth::user(),
+                tenant: Auth::user()->currentTenant,
+                templateEnum: EmailTemplatesEnum::SEND_QUOTE_TO_ACCOUNT,
+                parameters: [
+                    'account_name' => $quote->account->name,
+                    'quote_number' => $quote->id,
+                ],
+                overrides: [
+                    'to' => $request->to,
+                    'cc' => $request->cc,
+                    'bcc' => $request->bcc
+                ],
+                files: [
+                    [
+                        'disk' => 'temp',
+                        'path' => 'quote-' . $quote['id'] . '.pdf',
+                        'title' => 'quote-' . $quote['id'] . '.pdf',
+                        'mimetype' => 'application/pdf',
+                    ],
+                ],
+            )
+        );
     }
 }

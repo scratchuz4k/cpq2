@@ -67,6 +67,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::get('/orders/{order}/preview', [OrderController::class, 'preview'])->name('orders.preview');
     Route::get('/orders/{order}/download', [OrderController::class, 'download'])->name('orders.download');
+    Route::post('/quotes/{quote}/email', [QuoteController::class, 'email'])->name('quotes.email');
 
     Route::post('/users/import', [UserController::class, 'importUsers'])->name('users.import');
 
