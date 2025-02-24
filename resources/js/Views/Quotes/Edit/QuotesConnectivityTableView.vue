@@ -19,7 +19,7 @@ const showLoadingModal = ref(true)
 const showLowestCost = ref(true)
 const showQuoted = ref(false)
 const showFilters = ref(true)
-const showContended = ref(true)
+const showContended = ref(false)
 const articles = ref([])
 const errors = ref([])
 const selectedFilters = ref([]);
@@ -479,7 +479,7 @@ getArticles(false, true)
                                         </label>
                                     </div>
                                     <div class="checkbox d-flex px-3">
-                                        <input class="form-check-input me-2" type="checkbox" value="filter-show-quoted"
+                                        <input class="form-check-input me-2" type="checkbox" value="filter-show-contended"
                                             id="filter-show-contended" v-model="showContended">
                                         <label class="form-check-label" for="filter-show-contended">
                                             Only show Contended products
