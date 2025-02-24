@@ -70,6 +70,8 @@ class FilterProvider
     private static function resolveQuery($operator,  $column, $value, $data)
     {
         switch ($operator) {
+            case "equals":
+                return $data->where($column, $value);
             case "contains":
                 return $data->filter(function ($item) use ($column, $value) {
                     return Str::contains($item[$column], $value);
