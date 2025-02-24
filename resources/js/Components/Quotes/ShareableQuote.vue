@@ -84,26 +84,32 @@
         </div>
       </tab>
       <tab title="Email">
-        <div class="mb-3">
-          <label for="email_to" class="form-label">TO:</label>
-          <InputText type="email" class="form-control" v-model="email.to" />
-        </div>
-        <div class="mb-3">
-          <label for="email_CC" class="form-label">CC:</label>
-          <InputText type="email" class="form-control" v-model="email.cc" />
-        </div>
-        <div class="mb-3">
-          <label for="email_BCC" class="form-label">BCC:</label>
-          <InputText type="email" class="form-control" v-model="email.bcc" />
-        </div>
-        <div class="mb-3">
-          <button id="btn-shareable-create" class="btn btn-primary" @click="sendEmail()">
-            Send
-          </button>
-          <button class="btn" @click="() => (showShareDialog = !showShareDialog)">
-            Cancel
-          </button>
-        </div>
+        <form @submit.prevent="sendEmail()">
+          <div class="mb-3">
+            <label for="email_to" class="form-label">TO:</label>
+            <InputText type="email" class="form-control" v-model="email.to" required />
+          </div>
+          <div class="mb-3">
+            <label for="email_CC" class="form-label">CC:</label>
+            <InputText type="email" class="form-control" v-model="email.cc" />
+          </div>
+          <div class="mb-3">
+            <label for="email_BCC" class="form-label">BCC:</label>
+            <InputText type="email" class="form-control" v-model="email.bcc" />
+          </div>
+          <div class="mb-3">
+            <button type="submit" id="btn-shareable-create" class="btn btn-primary">
+              Send
+            </button>
+            <button
+              type="button"
+              class="btn"
+              @click="() => (showShareDialog = !showShareDialog)"
+            >
+              Cancel
+            </button>
+          </div>
+        </form>
       </tab>
     </tabs>
   </Dialog>

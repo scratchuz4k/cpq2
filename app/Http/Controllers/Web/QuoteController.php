@@ -161,17 +161,19 @@ class QuoteController extends BaseController
         $pdf = $this->quoteService->generatePdf($quote);
         $pdf->save('quote-' . $quote['id'] . '.pdf');
 
+        $contact = $quote->account->contacts->first();
+
         Mail::queue(
             new DynamicEmail(
                 user: Auth::user(),
                 tenant: Auth::user()->currentTenant,
-                templateEnum: EmailTemplatesEnum::QUOTE_ACCOUNT_SHARE,
+                templateEnum: EmailTemplatesEnum::SEND_QUOTE_TO_ACCOUNT,
                 parameters: [
                     'account_name' => $quote->account->name,
                     'quote_number' => $quote->id,
                 ],
                 overrides: [
-                    'to' => $request->to ?? $quote->account->email,
+                    'to' => $request->to,
                     'cc' => $request->cc,
                     'bcc' => $request->bcc
                 ],

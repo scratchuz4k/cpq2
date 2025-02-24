@@ -19,9 +19,9 @@ class QuoteAccountUser extends Seeder
 
         // PASSWORD RESET - TOKEN
         $quoteAccountShare = EmailTemplate::updateOrCreate(
-            ['code' => EmailTemplatesEnum::QUOTE_ACCOUNT_SHARE->name],
+            ['code' => EmailTemplatesEnum::SEND_QUOTE_TO_ACCOUNT->name],
             [
-                'description' => EmailTemplatesEnum::QUOTE_ACCOUNT_SHARE->value,
+                'description' => EmailTemplatesEnum::SEND_QUOTE_TO_ACCOUNT->value,
                 'subject' => 'Quotation for [account_name]  - [quote_number]',
                 'body' => '<p>Dear [account_name],</p><p>Please find attached the quotation [quote_number] as requested. The attached PDF outlines the pricing, terms, and relevant details.</p><p>If any adjustments are needed, or if you have any questions, please feel free to reach out. We are happy to assist in any way.</p><p>Best regards.</p>',
                 'notes' => 'Sent to account email associated in the quote with pdf.',
@@ -37,6 +37,7 @@ class QuoteAccountUser extends Seeder
                 'description' => 'Account Name'
             ],
         );
+
         EmailToken::updateOrCreate(
             [
                 'field' => 'quote_number',

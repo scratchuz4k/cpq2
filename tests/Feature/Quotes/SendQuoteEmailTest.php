@@ -6,6 +6,8 @@ use App\Models\User;
 use App\Models\Tenant;
 use App\Models\Account;
 use Illuminate\Support\Facades\Auth;
+use App\Helpers\DynamicEmail;
+use Illuminate\Support\Facades\Mail;
 
 uses(RefreshDatabase::class);
 
@@ -56,11 +58,15 @@ beforeEach(function () {
 });
 
 it('Only owner can add an item to quote', function () {
+    Mail::fake();
+
     $response = $this->post('api/quotes', $this->quote_data);
     $response->assertSuccessful();
     $quote = $response->json();
     $id = $quote['id'];
     $response = $this->post("quotes/$id/email", []);
-
     $response->assertSuccessful();
+
+    // Assert the email was queued
+    Mail::assertQueued(DynamicEmail::class);
 });

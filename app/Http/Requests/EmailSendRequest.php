@@ -22,7 +22,7 @@ class EmailSendRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'to' => 'nullable',
+            'to' => 'required',
             'cc' => 'nullable',
             'bcc' => 'nullable',
         ];
