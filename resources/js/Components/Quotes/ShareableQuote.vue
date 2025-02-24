@@ -98,7 +98,7 @@
         </div>
         <div class="mb-3">
           <button id="btn-shareable-create" class="btn btn-primary" @click="sendEmail()">
-            Create
+            Send
           </button>
           <button class="btn" @click="() => (showShareDialog = !showShareDialog)">
             Cancel
@@ -109,6 +109,7 @@
   </Dialog>
 </template>
 <script setup>
+import { router } from "@inertiajs/vue3";
 import Dialog from "primevue/dialog";
 import DatePicker from "primevue/datepicker";
 import InputText from "primevue/inputtext";
@@ -167,6 +168,22 @@ const deleteShareLink = async () => {
     shareLink.link = null;
     shareLink.expires_at = null;
   } catch (ex) {
+    notyf.error(ex.response.data.message);
+  }
+};
+
+const sendEmail = async () => {
+  try {
+    router.post(`/quotes/${quote.id}/email`, email, {
+      onSuccess: (page) => {
+        notyf.success("Email sent with Success");
+      },
+      onError: (errors) => {
+        notyf.error("Something went wrong.");
+      },
+    });
+  } catch (ex) {
+    debugger;
     notyf.error(ex.response.data.message);
   }
 };

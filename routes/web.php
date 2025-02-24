@@ -62,12 +62,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/tenant/{tenant}/make-current', [TenantController::class, 'switch'])->name('tenant.make-current');
     Route::get('/quotes/{quote}/preview', [QuoteController::class, 'preview'])->name('quotes.preview');
 
-    Route::get('/quotes/{quote}/email', [QuoteController::class, 'email'])->name('quotes.email');
     Route::get('/quotes/{quote}/download', [QuoteController::class, 'download'])->name('quotes.download');
     Route::get('/quotes/{quote}/configure', [QuoteController::class, 'configure'])->name('quotes.configure');
 
     Route::get('/orders/{order}/preview', [OrderController::class, 'preview'])->name('orders.preview');
     Route::get('/orders/{order}/download', [OrderController::class, 'download'])->name('orders.download');
+    Route::post('/quotes/{quote}/email', [QuoteController::class, 'email'])->name('quotes.email');
 
     Route::post('/users/import', [UserController::class, 'importUsers'])->name('users.import');
 

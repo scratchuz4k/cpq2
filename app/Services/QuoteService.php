@@ -64,7 +64,7 @@ class QuoteService
         }
 
         $view  = array_key_exists("component", $quote->solutionType->configs) ? strtolower($quote->solutionType->configs["component"]) : "dealmaker";
-        $quote = QuoteResource::make($quote->load(['items']))->resolve();
+        $quote = QuoteResource::make($quote->load(['items', 'account', 'account.contacts']))->resolve();
 
         return pdf()
             ->view("pdf.$view", compact('quote', 'solution_types', 'tenant'))
