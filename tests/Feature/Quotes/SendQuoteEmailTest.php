@@ -64,7 +64,7 @@ it('Only owner can add an item to quote', function () {
     $response->assertSuccessful();
     $quote = $response->json();
     $id = $quote['id'];
-    $response = $this->post("quotes/$id/email", []);
+    $response = $this->post("quotes/$id/email", ["to" => "asd@email.com"]);
     $response->assertSuccessful();
 
     // Assert the email was queued
