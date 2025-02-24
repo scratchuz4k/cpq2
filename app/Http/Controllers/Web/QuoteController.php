@@ -14,16 +14,15 @@ use App\Enums\QuoteStatusesEnum;
 use App\Enums\EmailTemplatesEnum;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Spatie\LaravelPdf\Enums\Format;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use App\Http\Resources\QuoteResource;
 
+use App\Http\Requests\EmailSendRequest;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\QuoteCreateRequest;
 use App\Http\Requests\QuoteUpdateRequest;
-use Illuminate\Support\Facades\Request;
 
 class QuoteController extends BaseController
 {
@@ -90,7 +89,7 @@ class QuoteController extends BaseController
     {
         return Inertia::render('Quotes/Show', [
             'pricePlans' => PricePlan::all(),
-            'quote' => new QuoteResource($quote->load(['items', 'orders']))
+            'quote' => new QuoteResource($quote->load(['items', 'orders', 'account', 'account.contacts']))
         ]);
     }
 
@@ -102,7 +101,7 @@ class QuoteController extends BaseController
         return Inertia::render('Quotes/Edit', [
             'accounts' => Account::all(),
             'solution_types' => SolutionType::get(),
-            'quote' => new QuoteResource($quote->load(['items']))
+            'quote' => new QuoteResource($quote->load(['items', 'account', 'account.contacts']))
         ]);
     }
 
@@ -157,7 +156,7 @@ class QuoteController extends BaseController
         return $pdf->name('quote-' . $quote['id'] . '.pdf')->download();
     }
 
-    public function email(Request $request, Quote $quote)
+    public function email(EmailSendRequest $request, Quote $quote)
     {
         $pdf = $this->quoteService->generatePdf($quote);
         $pdf->save('quote-' . $quote['id'] . '.pdf');
@@ -172,7 +171,9 @@ class QuoteController extends BaseController
                     'quote_number' => $quote->id,
                 ],
                 overrides: [
-                    'to' => $quote->account->email ?? "example@teste.com",
+                    'to' => $request->to ?? $quote->account->email,
+                    'cc' => $request->cc,
+                    'bcc' => $request->bcc
                 ],
                 files: [
                     [

@@ -127,7 +127,7 @@ const shareLink = reactive({
 });
 
 const email = reactive({
-  to: quote.account?.email,
+  to: quote.account.contacts.find((x) => x.email)?.email,
   cc: null,
   bcc: null,
 });

@@ -58,7 +58,6 @@ return [
             'throw' => true,
         ],
 
-
         'temp' => [
             'driver' => 'local',
             'root' => storage_path('app/temp'),
