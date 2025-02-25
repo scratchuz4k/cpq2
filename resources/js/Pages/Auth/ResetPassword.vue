@@ -26,6 +26,10 @@ const form = useForm({
 
 const submit = () => {
   form.post(route("password.store"), {
+    onSuccess: () =>
+      notyf.success(
+        "Your password has been reset, you can now use your new password to login to your account!"
+      ),
     onFinish: () => form.reset("password", "password_confirmation"),
   });
 };
@@ -42,6 +46,16 @@ const submit = () => {
           <div class="card-body p-4">
             <form @submit.prevent="submit">
               <div>
+                <div
+                  v-for="key in Object.keys(form.errors)"
+                  class="info-box-primary d-flex p-2 mb-2"
+                >
+                  <font-awesome-icon :class="['p-1']" :icon="['fas', 'circle-info']" />
+                  <p class="my-0 ps-2 my-auto">
+                    {{ form.errors[key] }}
+                  </p>
+                </div>
+
                 <InputLabel for="email" value="Email" />
 
                 <TextInput
@@ -53,8 +67,6 @@ const submit = () => {
                   autofocus
                   autocomplete="username"
                 />
-
-                <InputError class="mt-2" :message="form.errors.email" />
               </div>
 
               <div class="mt-4">
@@ -68,8 +80,6 @@ const submit = () => {
                   required
                   autocomplete="new-password"
                 />
-
-                <InputError class="mt-2" :message="form.errors.password" />
               </div>
 
               <div class="mt-4">
@@ -83,8 +93,6 @@ const submit = () => {
                   required
                   autocomplete="new-password"
                 />
-
-                <InputError class="mt-2" :message="form.errors.password_confirmation" />
               </div>
 
               <div class="flex items-center justify-end mt-4">

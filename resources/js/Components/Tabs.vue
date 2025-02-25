@@ -1,11 +1,11 @@
 <template>
   <div :class="props.class">
-    <ul class="nav m-0 p-0">
+    <ul class="nav nav-tabs">
       <li
         class="nav-item fw-semibold"
         v-for="([identifier, tabData], index) in tabs"
         :key="identifier"
-        style="cursor: pointer; list-style: none"
+        style="cursor: pointer"
       >
         <a
           class="nav-link"
@@ -17,7 +17,7 @@
       </li>
     </ul>
   </div>
-  <div class="tab-body pt-3">
+  <div class="tab-body">
     <slot></slot>
   </div>
 </template>
@@ -48,13 +48,6 @@ export default defineComponent({
 </script>
 <style scoped>
 .nav-link {
-  color: var(--white) !important;
-  background-color: var(--color-purple);
-  border-radius: 20px;
-  margin-right: 10px;
-}
-.nav-link.active {
   color: var(--color-purple) !important;
-  background-color: var(--color-purple-light);
 }
 </style>
