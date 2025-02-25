@@ -62,6 +62,12 @@ const items = ref([
             </Header>
             <div class="row">
                 <div class="col-6">
+                    <div class="mb-3 d-flex flex-column">
+                        <label class="form-label" for="active-filter">
+                            Active:
+                        </label>
+                        <Checkbox id="active-filter" class="form-check-input" v-model="data.is_active" :checked=data.is_active />
+                    </div>
                     <div class="mb-3">
                         <label for="api-code" class="form-label">Code:</label>
                         <Select :inputId="'api-code'" v-model="data.code" editable :options="props.suppliers"

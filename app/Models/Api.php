@@ -29,7 +29,8 @@ class Api extends Model
         'password',
         'token',
         'extra_data',
-        'tenant_id'
+        'tenant_id',
+        'is_active'
     ];
 
     protected function casts(): array
