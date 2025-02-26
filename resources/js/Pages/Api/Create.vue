@@ -1,5 +1,6 @@
 <script setup>
 import Select from 'primevue/select';
+import ToggleSwitch from 'primevue/toggleswitch'
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, router, useForm } from "@inertiajs/vue3";
 import { ref } from 'vue';
@@ -74,7 +75,14 @@ const items = ref([
                         <label class="form-label" for="active-filter">
                             Active:
                         </label>
-                        <Checkbox id="active-filter" class="form-check-input" v-model="api.is_active" :checked="true"/>
+                        <ToggleSwitch id="active-filter" v-model="api.is_active">
+                            <template #handle>
+                                <font-awesome-icon
+                                    :icon="api.is_active ? ['fas', 'circle-check'] : ['far', 'circle-xmark']"
+                                    class="text-primary"
+                                />
+                            </template>
+                        </ToggleSwitch>
                     </div>
                     <div class="mb-3">
                         <label for="api-code" class="form-label">Code:</label>

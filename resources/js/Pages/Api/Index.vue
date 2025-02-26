@@ -47,17 +47,25 @@ const items = ref([
                     }"
                     :columns="[
                         { data: 'id', title: '#', style: 'width:5%' },
-                        { data: 'code', title: 'Code', },
-                        { data: 'name', title: 'Name', },
-                        { data: 'auth_type', title: 'Auth Type', },
-                        { data: 'username', title: 'Username', },
-                        { data: 'is_active', title: 'Active', },
+                        { data: 'is_active', title: 'Active', style: 'width:5%'},
+                        { data: 'code', title: 'Code', style: 'width:10%'},
+                        { data: 'name', title: 'Name', style: 'width:10%'},
+                        { data: 'auth_type', title: 'Auth Type', style: 'width:15%'},
+                        { data: 'username', title: 'Username', style: 'width:15%'},
+                        { data: 'created_at', title: 'Created At', style: 'width:15%' },
+                        { data: 'updated_at', title: 'Updated At', style: 'width:15%' },
                     ]"
                     :filters="{
                         'is_active': { type: 'checkbox' },
                     }"
                     route="/apis"
                 >
+                    <template #updated_at="{ value }">
+                        {{ format.date(value) }}
+                    </template>
+                    <template #created_at="{ value }">
+                        {{ format.date(value) }}
+                    </template>
                     <template #is_active="{ data, value }">
                         <div role="button" @click="toggle_is_active(data)">
                             <font-awesome-icon
