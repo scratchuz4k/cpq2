@@ -88,11 +88,13 @@ const saveItem = () => {
     showModal.value = !showModal.value
     emitter.emit(event.value, selectedItem.value);
     selectedItem.value = null
+    global.value = ''
 }
 
 const closeModal = () => {
     showModal.value = !showModal.value
     selectedItem.value = null
+    global.value = ''
 }
 
 emitter.on("resources:open", (params) => {
