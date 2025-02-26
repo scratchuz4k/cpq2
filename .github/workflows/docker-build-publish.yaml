@@ -61,6 +61,7 @@ jobs:
         run: |
           npm install
           npm run build
+          npx puppeteer browsers install chrome
 
       - name: Run Laravel Server
         run: php artisan serve --host=0.0.0.0 --port=8000 &

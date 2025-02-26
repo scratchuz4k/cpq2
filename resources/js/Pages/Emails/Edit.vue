@@ -86,9 +86,9 @@ const items = ref([
         <Editor v-model="email.body" editorStyle="height: 320px" />
       </div>
       <label for="email-tokens" class="form-label">Tokens:</label>
-      <div class="row-cols-5 mb-3">
+      <div class="row row-cols-5 mb-3">
         <div class="col" v-for="token in email.tokens">
-          <Card class="token-card" @click="copyToClipboard(`#${token.field}#`)">
+          <Card class="token-card" @click="copyToClipboard(`[${token.field}]`)">
             <template #title>
               <p>{{ token.description }}</p>
             </template>

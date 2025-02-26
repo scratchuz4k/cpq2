@@ -85,7 +85,7 @@
       </tab>
       <tab title="Email">
         <form @submit.prevent="sendEmail()">
-          <div class="mb-3">
+          <div class="my-3">
             <label for="email_to" class="form-label">TO:</label>
             <InputText type="email" class="form-control" v-model="email.to" required />
           </div>
@@ -98,8 +98,20 @@
             <InputText type="email" class="form-control" v-model="email.bcc" />
           </div>
           <div class="mb-3">
-            <button type="submit" id="btn-shareable-create" class="btn btn-primary">
+            <button
+              type="submit"
+              id="btn-shareable-create"
+              class="btn btn-primary"
+              :disabled="isLoading"
+            >
               Send
+              <div
+                v-if="isLoading"
+                class="spinner-border spinner-border-sm"
+                role="status"
+              >
+                <span class="visually-hidden">Loading...</span>
+              </div>
             </button>
             <button
               type="button"
@@ -123,6 +135,7 @@ import { DateTime } from "luxon";
 import { reactive, ref } from "vue";
 import { quote } from "@composables/useQuote";
 
+const isLoading = ref(false);
 const showShareDialog = ref(false);
 const dateNow = DateTime.now();
 
@@ -179,17 +192,20 @@ const deleteShareLink = async () => {
 };
 
 const sendEmail = async () => {
+  isLoading.value = true;
   try {
     router.post(`/quotes/${quote.id}/email`, email, {
       onSuccess: (page) => {
+        isLoading.value = false;
+        showShareDialog.value = false;
         notyf.success("Email sent with Success");
       },
       onError: (errors) => {
+        isLoading.value = false;
         notyf.error("Something went wrong.");
       },
     });
   } catch (ex) {
-    debugger;
     notyf.error(ex.response.data.message);
   }
 };

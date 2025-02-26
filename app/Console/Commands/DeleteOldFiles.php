@@ -20,7 +20,7 @@ class DeleteOldFiles extends Command
      *
      * @var string
      */
-    protected $description = 'Delete prices products older than 24 hours';
+    protected $description = 'Delete files older than 24 hours';
 
     /**
      * Execute the console command.

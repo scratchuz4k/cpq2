@@ -23,6 +23,7 @@ class PasswordResetLinkController extends Controller
     {
         return Inertia::render('Auth/ForgotPassword', [
             'status' => session('status'),
+            'canGoogleLogin' => (env('GOOGLE_OIDC_CLIENT_ID') && env('GOOGLE_OIDC_CLIENT_SECRET')),
         ]);
     }
 
@@ -40,7 +41,9 @@ class PasswordResetLinkController extends Controller
         $user = User::where('email', $request->email)->first();
 
         if (! $user) {
-            return back()->withErrors('Utilizador inválido!');
+            return  redirect()->route('login')->with([
+                'status' => 'If an account associated with this email exists, you will receive an email with further instructions on how to reset your password.',
+            ]);
         }
 
         $token = Password::getRepository()->create($user);
@@ -59,6 +62,8 @@ class PasswordResetLinkController extends Controller
             )
         );
 
-        return Inertia::location("/");
+        return redirect()->route('login')->with([
+            'status' => 'If an account associated with this email exists, you will receive an email with further instructions on how to reset your password.',
+        ]);
     }
 }

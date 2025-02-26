@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('email_histories', function (Blueprint $table) {
+        Schema::create('email_history', function (Blueprint $table) {
             $table->id();
 
             $table->string('from');
@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('cc')->nullable();
             $table->string('bcc')->nullable();
             $table->text('subject');
-            $table->text('body');
+            $table->longText('body');
 
             $table->foreignId('user_id')->nullable()->constrained('users')->nullOnDelete();
             $table->foreignId('tenant_id')->constrained()->cascadeOnDelete();
@@ -34,6 +34,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('email_histories');
+        Schema::dropIfExists('email_history');
     }
 };
