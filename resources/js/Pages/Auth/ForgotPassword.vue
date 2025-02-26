@@ -10,6 +10,9 @@ defineProps({
   status: {
     type: String,
   },
+  canGoogleLogin: {
+    type: Boolean,
+  },
 });
 
 const form = useForm({
