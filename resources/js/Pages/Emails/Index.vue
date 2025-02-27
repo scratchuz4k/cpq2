@@ -60,10 +60,10 @@ const items = ref([
               }"
               :columns="[
                 { data: 'id', title: '#', style: 'width:5%' },
-                { data: 'email.code', title: 'Code', style: 'width:20%' },
-                { data: 'user.name', title: 'User', style: 'width:20%' },
-                { data: 'from', title: 'From', style: 'width:20%' },
-                { data: 'to', title: 'To', style: 'width:20%' },
+                { data: 'email.code', title: 'Code', style: 'width:18%' },
+                { data: 'user.name', title: 'User', style: 'width:16%' },
+                { data: 'from', title: 'From', style: 'width:18%' },
+                { data: 'to', title: 'To', style: 'width:18%' },
                 { data: 'updated_at', title: 'Updated At', style: 'width:15%' },
               ]"
               route="/email-history"
