@@ -19,7 +19,7 @@
     <tabs>
       <tab title="Link" :selected="true">
         <div v-if="!shareLink.link">
-          <div class="mb-3">
+          <div class="my-3">
             <label for="expiration_data" class="form-label">Expiration Date</label>
             <DatePicker
               v-model="shareLink.expires_at"
@@ -55,7 +55,7 @@
           </div>
         </div>
         <div v-else>
-          <div class="mb-3">
+          <div class="my-3">
             <label for="expiration_data" class="form-label">
               Anyone with this link can view the quote.
             </label>

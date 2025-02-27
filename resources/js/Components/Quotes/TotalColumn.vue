@@ -8,7 +8,7 @@ const props = defineProps({
 });
 const item = defineModel();
 const render = () => {
-  return "Overall Cost: " + GBP.format(item.value[props.column.value]);
+  return "Overall Cost:<br>" + GBP.format(item.value[props.column.value]);
 };
 </script>
 <template>
@@ -28,7 +28,7 @@ const render = () => {
       class="column_total cpq-tooltip"
     >
       {{ GBP.format(item.quantity * item.price) }}
-      <span class="cpq-tooltip-text">{{ render() }}</span>
+      <span class="cpq-tooltip-text" v-html="render()"></span>
     </div>
   </template>
 </template>

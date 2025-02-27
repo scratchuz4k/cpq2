@@ -26,10 +26,6 @@ const form = useForm({
 
 const submit = () => {
   form.post(route("password.store"), {
-    onSuccess: () =>
-      notyf.success(
-        "Your password has been reset, you can now use your new password to login to your account!"
-      ),
     onFinish: () => form.reset("password", "password_confirmation"),
   });
 };
