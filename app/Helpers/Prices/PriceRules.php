@@ -10,24 +10,24 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use App\Helpers\Prices\PriceRulesObject;
 use App\Enums\SpaRulesEnum;
+use App\Models\PricePlan;
 
 class PriceRules
 {
     protected PriceRulesObject $object;
-
     protected static Collection $spas;
     public function __construct()
     {
         static::$spas = collect([]);
     }
 
-    public function find(Product $product = null, Supplier $supplier = null, Account $account = null)
+    public function find(Product $product = null, Supplier $supplier = null, Account $account = null, PricePlan $pricePlan = null)
     {
-        $this->object = new PriceRulesObject($product, Auth::user(), $supplier, $account);
+        $this->object = new PriceRulesObject($product, Auth::user(), $supplier, $account,);
         $cases = array_map(fn($case) => $case->value, SpaRulesEnum::cases());
 
         $this->object = app(Pipeline::class)->send($this->object)->through($cases)->thenReturn();
-        static::$spas = $this->object->spas;
+        static::$spas = $this->object->spas->where('price_plan_id', $pricePlan->id)->orWhereNull('price_plan_id');;
     }
 
     public function apply(float $price)
