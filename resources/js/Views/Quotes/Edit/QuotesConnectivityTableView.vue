@@ -482,7 +482,7 @@ getArticles(false, true)
                                         <input class="form-check-input me-2" type="checkbox" value="filter-show-contended"
                                             id="filter-show-contended" v-model="showContended">
                                         <label class="form-check-label" for="filter-show-contended">
-                                            Only show Contended products
+                                            Only show contended products
                                         </label>
                                     </div>
                                     <div class="checkbox d-flex px-3">
