@@ -6,10 +6,16 @@ import axios from "axios";
 
 const toggle_is_active = async (data) => {
 
-    let is_active = data.is_active
+    let result = await swal.fire({
+        title: 'Do you want to change the active status?'
+    })
+
+    if (['cancel', 'backdrop'].includes(result.dismiss)) {
+        return false
+    }
 
     try {
-        let res = await axios.put(`/api/apis/` + data.id, { is_active: !is_active})
+        let res = await axios.put(`/api/apis/` + data.id, { is_active: !data.is_active})
         if (res) {
             emitter.emit("datatable-refresh");
         }
