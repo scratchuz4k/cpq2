@@ -27,7 +27,15 @@ class PriceRules
         $cases = array_map(fn($case) => $case->value, SpaRulesEnum::cases());
 
         $this->object = app(Pipeline::class)->send($this->object)->through($cases)->thenReturn();
-        static::$spas = $this->object->spas->where('price_plan_id', $pricePlan->id)->orWhereNull('price_plan_id');;
+        if ($pricePlan) {
+            static::$spas = $this->object->spas->filter(function ($spa) use ($pricePlan) {
+                return is_null($spa->price_plan_id) || $spa->price_plan_id == $pricePlan->id;
+            });
+        } else {
+            static::$spas = $this->object->spas->filter(function ($spa) {
+                return is_null($spa->price_plan_id);
+            });
+        }
     }
 
     public function apply(float $price)
@@ -39,9 +47,9 @@ class PriceRules
         return $price;
     }
 
-    public function calculate(float $price, Product $product = null, Supplier $supplier = null, Account $account = null): float
+    public function calculate(float $price, Product $product = null, Supplier $supplier = null, Account $account = null, PricePlan $pricePlan = null): float
     {
-        $this->find($product,  $supplier,  $account);
+        $this->find($product,  $supplier,  $account, $pricePlan);
         return $this->apply($price);
     }
 

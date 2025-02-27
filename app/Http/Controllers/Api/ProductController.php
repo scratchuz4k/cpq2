@@ -39,11 +39,12 @@ class ProductController extends BaseController
         $account = Account::where('id', request()->input('account_id', null))->first();
 
         $data = $data->map(function ($product) use ($priceRules, $account, $suppliers) {
-            if (array_key_exists($product?->supplier?->id, $suppliers)) {
+
+            if (array_key_exists($product?->supplier?->id . $product->pricePlan->code, $suppliers)) {
                 $priceRules->setAppliedSpas($suppliers[$product?->supplier?->id]);
             } else {
-                $priceRules->find(supplier: $product?->supplier, account: $account);
-                $suppliers[$product?->supplier?->id] = $priceRules->getAppliedSpas();
+                $priceRules->find(supplier: $product?->supplier, account: $account, pricePlan: $product->pricePlan);
+                $suppliers[$product?->supplier?->id . $product->pricePlan->code] = $priceRules->getAppliedSpas();
             }
 
             $product->prices->map(function ($price) use ($priceRules) {
