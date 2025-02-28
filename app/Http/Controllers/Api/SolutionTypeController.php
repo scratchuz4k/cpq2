@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Http\Resources\SolutionTypeTenantResource;
 use App\Models\SolutionType;
+use App\Models\SolutionTypeTenant;
 use Illuminate\Http\Request;
 use App\Helpers\DataProvider;
 use Illuminate\Support\Facades\Auth;
@@ -18,10 +20,11 @@ class SolutionTypeController extends BaseController
      */
     public function index()
     {
-        $dataProvider = new DataProvider(SolutionType::class);
-        $dataProvider->builder = $dataProvider->builder->whereHas('tenants', function ($query) {
-            return $query->where('tenants.id', Auth::user()->tenant_id);
-        });
+        $tenant_id = Auth::user()->tenant_id;
+
+        $dataProvider = new DataProvider(SolutionTypeTenant::class);
+        $dataProvider->builder = $dataProvider->builder
+            ->where('tenant_id', $tenant_id);
 
         try {
             $data = $dataProvider->get();
@@ -30,7 +33,7 @@ class SolutionTypeController extends BaseController
             return $e->getMessage();
         }
 
-        return SolutionTypeResource::collection($data);
+        return SolutionTypeTenantResource::collection($data);
     }
 
     /**

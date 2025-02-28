@@ -30,6 +30,7 @@ class SolutionTypeService
         if (array_key_exists('configurations', $array) && is_array($array['configurations'])) {
             $solution_type->syncConfigurations($array['configurations']);
         }
+        $solution_type->tenants()->updateExistingPivot($solution_type->id, ['updated_at' => now()]);
 
         return $solution_type;
     }
