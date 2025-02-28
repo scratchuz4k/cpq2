@@ -19,6 +19,7 @@ class SolutionTypeService
                 $table = $solution_type->tables()->updateOrCreate([
                     'code' => $table['code']
                 ], [
+                    'group' => $table['group'],
                     'columns' => $table['columns']
                 ]);
                 $olderItems = $olderItems->reject(function ($temp) use ($table) {;

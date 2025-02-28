@@ -8,6 +8,7 @@ use App\Events\QuoteStatusEvent;
 use App\Models\Scopes\TenantScope;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -90,7 +91,7 @@ class Quote extends Model
     {
         return $this->hasMany(QuoteDiscount::class);
     }
-    public function sharedLink()
+    public function sharedLink(): MorphOne
     {
         return $this->morphOne(SharedLink::class, 'shareable');
     }

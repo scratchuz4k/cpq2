@@ -32,7 +32,7 @@ class SolutionTypeResource extends JsonResource
             $data = require $file;
             if (array_key_exists("component", $this->configs) && array_key_exists($this->configs["component"], $data)) {
                 $columns = $data[$this->configs["component"]];
-            }else{
+            } else {
                 $columns = $data["DealMaker"];
             }
         }
@@ -40,7 +40,8 @@ class SolutionTypeResource extends JsonResource
         return [
             ...$this->resource->toArray(),
             "configurations" => $this->configs,
-            "table" => ["columns" => $columns]
+            "table" => ["columns" => $columns],
+            "tables" => $this->tables,
         ];
     }
 }

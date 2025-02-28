@@ -61,9 +61,12 @@ class SolutionTypeController extends BaseController
      */
     public function edit(SolutionType $solutionType)
     {
+
+        $columns = require app_path("Helpers/Tables/Custom.php");
         return Inertia::render('SolutionTypes/Edit', [
             'solution_type' => (new SolutionTypeResource($solutionType))->resolve(),
             'available_tables' => TablesEnum::cases(),
+            'available_columns' =>  $columns
         ]);
     }
 
@@ -80,8 +83,7 @@ class SolutionTypeController extends BaseController
             throw new \Exception($e);
         }
 
-        return redirect()->route('solution-types.index');
-        // return redirect()->route('solution-types.edit', ['solution_type' => $solutionType->id]);
+        return redirect()->route('solution-types.edit', ['solution_type' => $solutionType->id]);
     }
 
     /**
