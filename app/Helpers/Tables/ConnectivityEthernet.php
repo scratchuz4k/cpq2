@@ -13,7 +13,6 @@ return [
         ["name" => "Quantity", "value" => "quantity", "is_group" => false],
         ["name" => "Price", "value" => "price", "is_group" => false],
         ["name" => "Total",  "value" => "total", "is_group" => false],
-
     ],
     "DealMaker" => [
         ["name" => "Provider",  "value" => "provider", "is_group" => false],
