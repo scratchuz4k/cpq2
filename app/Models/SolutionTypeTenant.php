@@ -13,6 +13,5 @@ class SolutionTypeTenant extends Model
     {
         return $this->belongsTo(SolutionType::class, 'solution_type_id');
     }
-
 }
 

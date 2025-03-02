@@ -124,7 +124,8 @@ watch(addressPostCode, () => {
                                     </option>
                                 </select>
                             </template>
-                            <div v-else class="text-danger">
+                            <div v-else class="text-primary fst-italic">
+                                <font-awesome-icon class="me-2" :icon="['fas', 'circle-exclamation']"></font-awesome-icon>
                                 No solution types available
                             </div>
                         </div>

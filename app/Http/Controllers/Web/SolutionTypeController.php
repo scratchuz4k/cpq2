@@ -92,7 +92,6 @@ class SolutionTypeController extends BaseController
         }
 
         return redirect()->route('solution-types.index');
-        // return redirect()->route('solution-types.edit', ['solution_type' => $solutionType->id]);
     }
 
     /**

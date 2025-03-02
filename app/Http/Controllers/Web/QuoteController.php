@@ -47,10 +47,13 @@ class QuoteController extends BaseController
         }
 
         $users = $users->filter(fn($user) => $user->quotes->count() > 0);
+        $solutionTypes = SolutionType::whereHas('quotes', function ($query) use ($users) {
+            return $query->whereIn('user_id', $users->pluck('id'));
+        })->get();
 
         return Inertia::render('Quotes/Index', [
             "users" => $users->values(),
-            "solutions" => $user->currentTenant->solutionTypes,
+            "solutions" => $solutionTypes,
             "status" => array_map(fn($status) => $status->name, QuoteStatusesEnum::cases())
         ]);
     }

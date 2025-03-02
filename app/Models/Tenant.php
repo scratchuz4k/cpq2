@@ -28,6 +28,8 @@ class Tenant extends \Spatie\Multitenancy\Models\Tenant
     }
     public function solutionTypes(): BelongsToMany
     {
-        return $this->belongsToMany(SolutionType::class, 'solution_type_tenant', 'tenant_id', 'solution_type_id');
+        return $this
+            ->belongsToMany(SolutionType::class, 'solution_type_tenant', 'tenant_id', 'solution_type_id')
+            ->withTimestamps();
     }
 }

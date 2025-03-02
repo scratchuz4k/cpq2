@@ -26,9 +26,9 @@ const items = ref([
                     delete: true,
                     link: false,
                 }" :columns="[
-                    { data: 'id', title: '#', style: 'width:5%' },
-                    { data: 'code', title: 'Code', style: 'width:10%' },
-                    { data: 'name', title: 'Name', style: 'width:24%' },
+                    { data: 'solution_type.id', title: '#', style: 'width:5%' },
+                    { data: 'solution_type.code', title: 'Code', style: 'width:10%' },
+                    { data: 'solution_type.name', title: 'Name', style: 'width:45%' },
                     { data: 'created_at', title: 'Created At', style: 'width:15%' },
                     { data: 'updated_at', title: 'Updated At', style: 'width:15%' },
                 ]" route="/solution-types">
