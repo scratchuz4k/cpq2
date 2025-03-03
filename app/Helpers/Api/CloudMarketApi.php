@@ -16,11 +16,7 @@ class CloudMarketApi
 
         $url = env('CLOUDMARKET_CONNECTION_SERVICE_URL', 'https://cpq-poc-uat-api.cloudmarket.com');
         $requestTimeout = 420;
-        $virtual1 = Api::where('code', CloudMarketSuppliersEnum::Virtual1->value)->first();
-        $gamma = Api::where('code', CloudMarketSuppliersEnum::Gamma->value)->first();
-        $giacom = Api::where('code', CloudMarketSuppliersEnum::Giacom->value)->first();
-        $its = Api::where('code', CloudMarketSuppliersEnum::ITS->value)->first();
-        $vorboss = Api::where('code', CloudMarketSuppliersEnum::Vorboss->value)->first();
+        $apis = Api::active()->whereIn('code', CloudMarketSuppliersEnum::values())->get();
 
         $quoteAddress = [
             'ConnectivityType' => $connectivityType,
@@ -41,17 +37,10 @@ class CloudMarketApi
 
         Log::debug('CloudMarketApi::getQuotes lookup:', $quoteAddress);
 
-        $quoteCredentials = [
-            'SupplierApiConnections.Its_Connection.Its_AccessKey' => $its?->token ?? env('ITS_CONNECTION_ACCESSKEY'),
-            'SupplierApiConnections.Virtual1_Connection.Username' => $virtual1?->username ?? env('VIRTUAL1_CONNECTION_USERNAME'),
-            'SupplierApiConnections.Virtual1_Connection.Password' => $virtual1?->password ?? env('VIRTUAL1_CONNECTION_PASSWORD'),
-            'SupplierApiConnections.Gamma_Connection.Username' => $gamma?->username ?? env('GAMMA_CONNECTION_USERNAME'),
-            'SupplierApiConnections.Gamma_Connection.Password' => $gamma?->password ?? env('GAMMA_CONNECTION_PASSWORD'),
-            'SupplierApiConnections.Gamma_Connection.ClientId' => $gamma?->client_id ?? env('GAMMA_CONNECTION_CLIENTID'),
-            'SupplierApiConnections.Giacom_Connection.Username' => $giacom?->username ?? env('GIACOM_CONNECTION_USERNAME'),
-            'SupplierApiConnections.Giacom_Connection.Password' => $giacom?->password ?? env('GIACOM_CONNECTION_PASSWORD'),
-            'SupplierApiConnections.Vorboss_Connection.BearerToken' => $vorboss?->token ?? env('VORBOSS_CONNECTION_ACCESSKEY'),
-        ];
+        $quoteCredentials = [];
+        foreach ($apis as $api) {
+            $quoteCredentials += self::resolveApiAuth($api);
+        }
 
         $quoteCredentials = array_filter($quoteCredentials, function ($value) {
             return ! empty($value);
@@ -64,5 +53,32 @@ class CloudMarketApi
                 $url.'/PartnerQuoteService/GetQuotes',
                 $quoteRequestParams
             );
+    }
+
+    private static function resolveApiAuth($api): array
+    {
+        $array = [
+            CloudMarketSuppliersEnum::ITS->value => [
+                'SupplierApiConnections.Its_Connection.Token' => $api?->token ?? env('ITS_CONNECTION_ACCESSKEY'),
+            ],
+            CloudMarketSuppliersEnum::Virtual1->value => [
+                'SupplierApiConnections.Virtual1_Connection.Username' => $api?->username ?? env('VIRTUAL1_CONNECTION_USERNAME'),
+                'SupplierApiConnections.Virtual1_Connection.Password' => $api?->password ?? env('VIRTUAL1_CONNECTION_PASSWORD'),
+            ],
+            CloudMarketSuppliersEnum::Gamma->value => [
+                'SupplierApiConnections.Gamma_Connection.Username' => $api?->username ?? env('GAMMA_CONNECTION_USERNAME'),
+                'SupplierApiConnections.Gamma_Connection.Password' => $api?->password ?? env('GAMMA_CONNECTION_PASSWORD'),
+                'SupplierApiConnections.Gamma_Connection.ClientId' => $api?->client_id ?? env('GAMMA_CONNECTION_CLIENTID'),
+            ],
+            CloudMarketSuppliersEnum::Giacom->value => [
+                'SupplierApiConnections.Giacom_Connection.Username' => $api?->username ?? env('GIACOM_CONNECTION_USERNAME'),
+                'SupplierApiConnections.Giacom_Connection.Password' => $api?->password ?? env('GIACOM_CONNECTION_PASSWORD'),
+            ],
+            CloudMarketSuppliersEnum::Vorboss->value => [
+                'SupplierApiConnections.Vorboss_Connection.Token' => $api?->token ?? env('VORBOSS_CONNECTION_ACCESSKEY'),
+            ],
+        ];
+
+        return $array[$api->code];
     }
 }
