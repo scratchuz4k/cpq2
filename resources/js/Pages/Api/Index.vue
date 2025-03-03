@@ -54,10 +54,9 @@ const items = ref([
                     :columns="[
                         { data: 'id', title: '#', style: 'width:5%' },
                         { data: 'is_active', title: 'Active', style: 'width:5%'},
-                        { data: 'code', title: 'Code', style: 'width:10%'},
-                        { data: 'name', title: 'Name', style: 'width:10%'},
+                        { data: 'code', title: 'Code', style: 'width:15%'},
+                        { data: 'name', title: 'Name', style: 'width:20%'},
                         { data: 'auth_type', title: 'Auth Type', style: 'width:15%'},
-                        { data: 'username', title: 'Username', style: 'width:15%'},
                         { data: 'created_at', title: 'Created At', style: 'width:15%' },
                         { data: 'updated_at', title: 'Updated At', style: 'width:15%' },
                     ]"

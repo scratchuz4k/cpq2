@@ -1,9 +1,9 @@
 <?php
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use App\Models\User;
-use App\Models\Tenant;
 use App\Models\Api;
+use App\Models\Tenant;
+use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Auth;
 
 uses(RefreshDatabase::class);
@@ -26,28 +26,28 @@ it('Apis CRUD', function () {
         'password' => 'Test',
         'client_id' => null,
         'token' => null,
-        'is_active' => false
+        'is_active' => false,
     ];
 
     $response = $this->post('apis', $data);
     $response->assertRedirect();
     expect(Api::count())->toBe(1)->and(Api::active()->count())->toBe(0);
 
-    //Update Merchant
+    //Update Api
     $api = Api::find(1);
 
     $data = [
-        'is_active' => true
+        'is_active' => true,
     ];
 
-    $response = $this->put('apis/' . $api->id, $data);
+    $response = $this->put('apis/'.$api->id, $data);
     $response->assertRedirect();
 
     $api->refresh();
     $this->assertTrue($api->is_active);
 
-    //Delete Merchant
-    $response = $this->delete('api/apis/' . $api->id);
+    //Delete Api
+    $response = $this->delete('api/apis/'.$api->id);
     $response->assertOk();
     expect(Api::count())->toBe(0);
 });
