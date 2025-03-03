@@ -88,11 +88,13 @@ const saveItem = () => {
     showModal.value = !showModal.value
     emitter.emit(event.value, selectedItem.value);
     selectedItem.value = null
+    global.value = ''
 }
 
 const closeModal = () => {
     showModal.value = !showModal.value
     selectedItem.value = null
+    global.value = ''
 }
 
 emitter.on("resources:open", (params) => {
@@ -112,7 +114,7 @@ onMounted(() => {
 })
 </script>
 <template>
-    <Dialog v-model:visible="showModal" modal :style="{ marginTop: '4rem', width: '80rem' }" :draggable="false"
+    <Dialog v-model:visible="showModal" modal :style="{ marginTop: '3rem', width: '80rem' }" :draggable="false"
             position="top" class="resources-modal">
         <template #header>
 
@@ -120,7 +122,7 @@ onMounted(() => {
         <dropzone @resource:created="getImages" :acceptedFiles="Object.values(extensions).join(', ')">
             <div class="dz-default dz-message m-0">
                 <div class="d-flex align-content-center flex-column">
-                    <font-awesome-icon :icon="['fa-solid', 'images']" class="color-purple p-3" style="font-size: 5rem"/>
+                    <font-awesome-icon :icon="['fa-solid', 'images']" class="color-purple p-2" style="font-size: 5rem"/>
                     <p class="fw-bold fs-5 lh-sm m-auto" style="max-width: 150px">Drag & Drop or <span class="color-purple">browse</span></p>
                     <p>Only {{ Object.values(extensions).join(', ')}} files can be selected</p>
                 </div>
@@ -136,7 +138,7 @@ onMounted(() => {
             </IconField>
         </div>
         <p v-if="images.length === 0" class="h5 text-center">No files found</p>
-        <div v-else class="row row-cols-5 mb-3" id="library-container">
+        <div v-else class="row row-cols-5" id="library-container">
             <div v-for="image in images" class="col mb-4">
                 <Card :class="[
                         image == selectedItem ? 'selected' : '',
@@ -158,7 +160,7 @@ onMounted(() => {
                                 </button>
                             </div>
                             <img alt="user header" :src="image.mime_type === 'text/xml' ? '/images/xml_icon.svg' : image.route"
-                                 style="height: 60px;max-width:100%; object-fit: contain;object-position: center;" />
+                                 style="height: 50px;max-width:100%; object-fit: scale-down;object-position: center;" />
                         </div>
                     </template>
                     <template #title>
@@ -216,4 +218,3 @@ onMounted(() => {
     padding-right: 8rem;
 }
 </style>
-

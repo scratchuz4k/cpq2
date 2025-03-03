@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers\Web;
 
+use App\Models\Scopes\TenantScope;
 use App\Models\User;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Models\Quote;
 use App\Models\Account;
@@ -149,11 +151,15 @@ class QuoteController extends BaseController
         ]);
     }
 
-    public function download(Quote $quote)
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function download(Request $request)
     {
         $solution_types = SolutionType::get();
-        $user = request()->user();
-        $tenant = $quote->tenant;
+        $quote = Quote::withoutGlobalScope(TenantScope::class)->find($request->quote);
+        $tenant = $quote->tenant->makeCurrent();
+        $quote = $quote->refresh();
         $dir = 'pdf/' . $quote->tenant->id;
 
         if (!Storage::makeDirectory($dir)) {
