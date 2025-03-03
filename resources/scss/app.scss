@@ -1144,7 +1144,7 @@ body {
 .preview-logo>img {
     max-height: 100px;
     max-width: 300px;
-    object-fit: contain;
+    object-fit: scale-down;
     object-position: left;
 }
 

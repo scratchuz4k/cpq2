@@ -19,6 +19,7 @@ const showLoadingModal = ref(true)
 const showLowestCost = ref(true)
 const showQuoted = ref(false)
 const showFilters = ref(true)
+const showContended = ref(false)
 const articles = ref([])
 const errors = ref([])
 const selectedFilters = ref([]);
@@ -90,6 +91,9 @@ const getArticles = async (clearCache = false, runTimeout = false) => {
     }
     if (showLowestCost.value) {
         temp.push({ column: '*', operator: 'lowest-cost', value: true })
+    }
+    if (showContended.value) {
+        temp.push({ column: 'isContended', operator: 'equals', value: true })
     }
     if (clearCache) {
         showLoadingModal.value = true
@@ -236,6 +240,7 @@ const resetFilters = () => {
 
     showLowestCost.value = true
     showQuoted.value = false
+    showContended.value = false
 }
 
 const checkProduct = (article) => {
@@ -312,7 +317,7 @@ const handlePaginator = (ev) => {
     getArticles()
 }
 
-watch([filters, showQuoted, showLowestCost], _.debounce(function () {
+watch([filters, showQuoted, showLowestCost, showContended], _.debounce(function () {
     meta.page = 1
     getArticles()
 }, 500))
@@ -471,6 +476,13 @@ getArticles(false, true)
                                             id="filter-lower-cost" v-model="showLowestCost">
                                         <label class="form-check-label" for="filter-lower-cost">
                                             Only show lowest cost router
+                                        </label>
+                                    </div>
+                                    <div class="checkbox d-flex px-3">
+                                        <input class="form-check-input me-2" type="checkbox" value="filter-show-contended"
+                                            id="filter-show-contended" v-model="showContended">
+                                        <label class="form-check-label" for="filter-show-contended">
+                                            Only show contended products
                                         </label>
                                     </div>
                                     <div class="checkbox d-flex px-3">

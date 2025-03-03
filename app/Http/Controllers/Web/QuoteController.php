@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers\Web;
 
+use App\Models\Scopes\TenantScope;
 use App\Models\User;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Models\Quote;
 use App\Models\Account;
@@ -10,18 +12,18 @@ use App\Models\PricePlan;
 use App\Models\SolutionType;
 use App\Services\QuoteService;
 use App\Enums\QuoteStatusesEnum;
-use App\Events\QuoteStatusEvent;
+use Spatie\LaravelPdf\Enums\Unit;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Spatie\Browsershot\Browsershot;
+use Spatie\LaravelPdf\Enums\Format;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Resources\QuoteResource;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\QuoteCreateRequest;
-use App\Http\Requests\QuoteUpdateRequest;
-use Spatie\LaravelPdf\Enums\Format;
-use Spatie\LaravelPdf\Enums\Unit;
 
+use App\Http\Requests\QuoteUpdateRequest;
 use function Spatie\LaravelPdf\Support\pdf;
 
 class QuoteController extends BaseController
@@ -39,12 +41,11 @@ class QuoteController extends BaseController
     {
         $user = request()->user();
 
-        $users = User::descendants();
         if (!$user->hasRole('Sales Rep')) {
-            $users = User::all();
+            $users = User::whereHas('quotes')->get();
+        } else {
+            $users = $this->descendantsWithQuotes();
         }
-
-        $users = $users->filter(fn($user) => $user->quotes->count() > 0);
 
         return Inertia::render('Quotes/Index', [
             "users" => $users->values(),
@@ -150,11 +151,15 @@ class QuoteController extends BaseController
         ]);
     }
 
-    public function download(Quote $quote)
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function download(Request $request)
     {
         $solution_types = SolutionType::get();
-        $user = request()->user();
-        $tenant = $quote->tenant;
+        $quote = Quote::withoutGlobalScope(TenantScope::class)->find($request->quote);
+        $tenant = $quote->tenant->makeCurrent();
+        $quote = $quote->refresh();
         $dir = 'pdf/' . $quote->tenant->id;
 
         if (!Storage::makeDirectory($dir)) {
@@ -174,5 +179,21 @@ class QuoteController extends BaseController
             })
             ->name('quote-' . $quote['id'] . '.pdf')
             ->download();
+    }
+
+    private function descendantsWithQuotes()
+    {
+        $users = collect([]);
+        if (is_null(Auth::user())) {
+            return $users;
+        }
+        $userDescedents = collect([Auth::user()]);
+        do {
+            $current = $userDescedents->pop();
+            $users->push($current);
+            $userDescedents->push(...$current->children()->whereHas('quotes')->get());
+        } while (count($userDescedents));
+
+        return $users;
     }
 }
