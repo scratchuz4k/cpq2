@@ -59,7 +59,7 @@ class CloudMarketApi
     {
         $array = [
             CloudMarketSuppliersEnum::ITS->value => [
-                'SupplierApiConnections.Its_Connection.Its_AccessKey' => $api?->token ?? env('ITS_CONNECTION_ACCESSKEY'),
+                'SupplierApiConnections.Its_Connection.Token' => $api?->token ?? env('ITS_CONNECTION_ACCESSKEY'),
             ],
             CloudMarketSuppliersEnum::Virtual1->value => [
                 'SupplierApiConnections.Virtual1_Connection.Username' => $api?->username ?? env('VIRTUAL1_CONNECTION_USERNAME'),
@@ -75,7 +75,7 @@ class CloudMarketApi
                 'SupplierApiConnections.Giacom_Connection.Password' => $api?->password ?? env('GIACOM_CONNECTION_PASSWORD'),
             ],
             CloudMarketSuppliersEnum::Vorboss->value => [
-                'SupplierApiConnections.Vorboss_Connection.BearerToken' => $api?->token ?? env('VORBOSS_CONNECTION_ACCESSKEY'),
+                'SupplierApiConnections.Vorboss_Connection.Token' => $api?->token ?? env('VORBOSS_CONNECTION_ACCESSKEY'),
             ],
         ];
 
