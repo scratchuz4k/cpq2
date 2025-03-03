@@ -42,15 +42,15 @@ class CloudMarketApi
         Log::debug('CloudMarketApi::getQuotes lookup:', $quoteAddress);
 
         $quoteCredentials = [
-            'SupplierApiConnections.Its_Connection.Its_AccessKey' => env('ITS_CONNECTION_ACCESSKEY', $its?->token),
-            'SupplierApiConnections.Virtual1_Connection.Username' => env('VIRTUAL1_CONNECTION_USERNAME', $virtual1?->username),
-            'SupplierApiConnections.Virtual1_Connection.Password' => env('VIRTUAL1_CONNECTION_PASSWORD', $virtual1?->password),
-            'SupplierApiConnections.Gamma_Connection.Username' => env('GAMMA_CONNECTION_USERNAME', $gamma?->username),
-            'SupplierApiConnections.Gamma_Connection.Password' => env('GAMMA_CONNECTION_PASSWORD', $gamma?->password),
-            'SupplierApiConnections.Gamma_Connection.ClientId' => env('GAMMA_CONNECTION_CLIENTID', $gamma?->client_id),
-            'SupplierApiConnections.Giacom_Connection.Username' => env('GIACOM_CONNECTION_USERNAME', $giacom?->username),
-            'SupplierApiConnections.Giacom_Connection.Password' => env('GIACOM_CONNECTION_PASSWORD', $giacom?->password),
-            'SupplierApiConnections.Vorboss_Connection.BearerToken' => env('VORBOSS_CONNECTION_ACCESSKEY', $vorboss?->token),
+            'SupplierApiConnections.Its_Connection.Its_AccessKey' => $its?->token ?? env('ITS_CONNECTION_ACCESSKEY'),
+            'SupplierApiConnections.Virtual1_Connection.Username' => $virtual1?->username ?? env('VIRTUAL1_CONNECTION_USERNAME'),
+            'SupplierApiConnections.Virtual1_Connection.Password' => $virtual1?->password ?? env('VIRTUAL1_CONNECTION_PASSWORD'),
+            'SupplierApiConnections.Gamma_Connection.Username' => $gamma?->username ?? env('GAMMA_CONNECTION_USERNAME'),
+            'SupplierApiConnections.Gamma_Connection.Password' => $gamma?->password ?? env('GAMMA_CONNECTION_PASSWORD'),
+            'SupplierApiConnections.Gamma_Connection.ClientId' => $gamma?->client_id ?? env('GAMMA_CONNECTION_CLIENTID'),
+            'SupplierApiConnections.Giacom_Connection.Username' => $giacom?->username ?? env('GIACOM_CONNECTION_USERNAME'),
+            'SupplierApiConnections.Giacom_Connection.Password' => $giacom?->password ?? env('GIACOM_CONNECTION_PASSWORD'),
+            'SupplierApiConnections.Vorboss_Connection.BearerToken' => $vorboss?->token ?? env('VORBOSS_CONNECTION_ACCESSKEY'),
         ];
 
         $quoteCredentials = array_filter($quoteCredentials, function ($value) {

@@ -2,21 +2,22 @@
 
 namespace App\Http\Controllers\Web;
 
-use App\Enums\OrderStatusesEnum;
-use App\Http\Requests\OrderCreateRequest;
-use App\Http\Resources\OrderResource;
-use App\Models\Order;
 use App\Models\User;
-use App\Services\OrderService;
-use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
+use App\Models\Order;
 use App\Models\Account;
 use App\Models\SolutionType;
+use App\Services\OrderService;
+use App\Enums\OrderStatusesEnum;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
+use App\Http\Resources\OrderResource;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\BaseController;
-use App\Http\Requests\OrderUpdateRequest;
+use App\Http\Requests\OrderCreateRequest;
 
+use App\Http\Requests\OrderUpdateRequest;
 use function Spatie\LaravelPdf\Support\pdf;
 
 class OrderController extends BaseController
@@ -35,13 +36,13 @@ class OrderController extends BaseController
     {
         $user = request()->user();
 
-
-        $users = User::descendants();
         if (!$user->hasRole('Sales Rep')) {
             $users = User::all();
+        } else {
+            $users = $this->descendantsWithOrders();
         }
 
-        $users = $users->filter(fn ($user) => $user->orders->count() > 0 || $user->id === request()->user()->id);
+        $users = $users->filter(fn($user) => $user->orders->count() > 0 || $user->id === request()->user()->id);
 
         return Inertia::render('Orders/Index', [
             "users" => $users->values(),
@@ -164,5 +165,22 @@ class OrderController extends BaseController
             ->view('pdf.invoice', compact('order', 'solution_types'))
             ->name('order-' . $order->id . '.pdf')
             ->download();
+    }
+
+
+    private function descendantsWithOrders()
+    {
+        $users = collect([]);
+        if (is_null(Auth::user())) {
+            return $users;
+        }
+        $userDescedents = collect([Auth::user()]);
+        do {
+            $current = $userDescedents->pop();
+            $users->push($current);
+            $userDescedents->push(...$current->children()->whereHas('quotes')->get());
+        } while (count($userDescedents));
+
+        return $users;
     }
 }
