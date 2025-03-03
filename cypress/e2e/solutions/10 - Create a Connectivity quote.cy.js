@@ -85,6 +85,25 @@ describe('Creates a Connectivity quote', () => {
             });
     })
 
+    it("I can filter products by contended", () => {
+        cy.visit("/")
+        cy.get("#create-tab").click()
+        cy.get("#account_id").select(account.name)
+        cy.get("#solution_id").select("Connectivity - Ethernet")
+        cy.get("#input_address").type('EH32 9NT')
+        cy.get("#select_address").should('be.visible').select(1)
+        cy.get("#btn-create-quote").should('not.be.disabled').click()
+
+        cy.scrollTo('top');
+
+        cy.get("#btn-more-filters").click()
+        cy.get("#filter-show-contended").click({ force: true })
+        cy.wait(3000)
+        cy.get('table tbody tr.connectivity-table-item').then(($rows) => {
+            cy.get('.is-contended').should('have.length', $rows.length);
+        });
+    })
+
     it.skip("I can Create an order from a quote", () => {
         cy.visit("/")
         cy.get("#datatable-btn-0-crete-order").click()
