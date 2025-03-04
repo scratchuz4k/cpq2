@@ -12,7 +12,8 @@ class DummySeeder extends Seeder
 {
     public function run()
     {
-        $tenants = Tenant::factory(3)->create([]);
+        $dummy_tenants = Tenant::factory(3)->create([]);
+
         $merchant = Merchant::factory(10)->create([]);
 
         $tenant = Tenant::updateOrCreate([
@@ -34,7 +35,7 @@ class DummySeeder extends Seeder
             'email' => 'companyadmin@example.com',
         ], [
             'name' => 'Company Admin User',
-            'tenant_id' => 2,
+            'tenant_id' => $tenant->id,
             'password' => Hash::make('werwerwer'),
         ]);
 
@@ -57,8 +58,8 @@ class DummySeeder extends Seeder
 
         $tenant->users()->attach([$support_user->id, $company_admin_user->id,  $sales_user->id, $order_manager_user->id]);
 
-        $super = User::where('email', 'super@example.com')->first();
-        $super->tenants()->attach($tenants->pluck('id'));
+        $super_user = User::where('email', 'super@example.com')->first();
+        $super_user->tenants()->attach($dummy_tenants->pluck('id'));
 
         $supp = User::where('email', 'support@example.com')->first();
         $supp->assignRole('Support Agent');

@@ -4,7 +4,6 @@ namespace App\Policies;
 
 use App\Models\SolutionType;
 use App\Models\User;
-use Illuminate\Auth\Access\Response;
 
 class SolutionTypePolicy
 {
@@ -48,7 +47,11 @@ class SolutionTypePolicy
      */
     public function update(User $user, SolutionType $solutionType): bool
     {
-        if ($user->can("update $this->model")) {
+        $tenant = $user->currentTenant->refresh();
+        if (
+            $user->can("update $this->model")
+            && $tenant->solutionTypes->contains($solutionType)
+        ) {
             return true;
         }
         return false;
@@ -59,7 +62,11 @@ class SolutionTypePolicy
      */
     public function delete(User $user, SolutionType $solutionType): bool
     {
-        if ($user->can("delete $this->model")) {
+        $tenant = $user->currentTenant->refresh();
+        if (
+            $user->can("delete $this->model")
+            && $tenant->solutionTypes->contains($solutionType)
+        ) {
             return true;
         }
         return false;

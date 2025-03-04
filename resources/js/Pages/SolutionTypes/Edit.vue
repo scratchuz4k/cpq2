@@ -26,7 +26,7 @@ const saveSolutionType = () => {
 
 let len = Object.keys(props.solution_type.configurations).length;
 const solutiontype = reactive({
-  configurations: len ? props.solution_type.configurations : { component: "DealMaker" },
+  configurations: len && props.solution_type.configurations.component ? props.solution_type.configurations : { component: "DealMaker" },
 });
 
 const items = ref([
