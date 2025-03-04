@@ -66,13 +66,13 @@ const items = ref([
                             <Link
                                 :id="'datatable-btn-' + index + '-edit'"
                                 :href="'/solution-types' + '/' + data.solution_type_id + '/edit'"
-                                class="btn p-2 mx-1 border-0"
+                                class="btn px-2 py-0 mx-1 border-0"
                             >
                                 <font-awesome-icon :icon="['fas', 'edit']" />
                             </Link>
                             <button
                                 :id="'datatable-btn-' + index + '-delete'"
-                                class="btn p-2 mx-1 border-0"
+                                class="btn px-2 py-0 mx-1 border-0"
                                 @click="deleteRecord(data.solution_type_id)"
                             >
                                 <font-awesome-icon icon="fas fa-trash-alt" />
