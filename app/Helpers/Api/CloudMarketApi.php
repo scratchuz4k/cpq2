@@ -57,32 +57,31 @@ class CloudMarketApi
 
     private static function resolveApiAuth($api): array
     {
-        $array = [
-            CloudMarketSuppliersEnum::ITS->value => [
-                'SupplierApiConnections.Its_Connection.Token' => $api?->token ?? env('ITS_CONNECTION_TOKEN'),
-            ],
-            CloudMarketSuppliersEnum::Virtual1->value => [
-                'SupplierApiConnections.Virtual1_Connection.Username' => $api?->username ?? env('VIRTUAL1_CONNECTION_USERNAME'),
-                'SupplierApiConnections.Virtual1_Connection.Password' => $api?->password ?? env('VIRTUAL1_CONNECTION_PASSWORD'),
-            ],
-            CloudMarketSuppliersEnum::Gamma->value => [
-                'SupplierApiConnections.Gamma_Connection.Username' => $api?->username ?? env('GAMMA_CONNECTION_USERNAME'),
-                'SupplierApiConnections.Gamma_Connection.Password' => $api?->password ?? env('GAMMA_CONNECTION_PASSWORD'),
-                'SupplierApiConnections.Gamma_Connection.ClientId' => $api?->client_id ?? env('GAMMA_CONNECTION_CLIENTID'),
-            ],
-            CloudMarketSuppliersEnum::Giacom->value => [
-                'SupplierApiConnections.Giacom_Connection.Username' => $api?->username ?? env('GIACOM_CONNECTION_USERNAME'),
-                'SupplierApiConnections.Giacom_Connection.Password' => $api?->password ?? env('GIACOM_CONNECTION_PASSWORD'),
-            ],
-            CloudMarketSuppliersEnum::Vorboss->value => [
-                'SupplierApiConnections.Vorboss_Connection.Token' => $api?->token ?? env('VORBOSS_CONNECTION_TOKEN'),
-            ],
-            CloudMarketSuppliersEnum::IPRiver->value => [
-                'SupplierApiConnections.IPRiver_Connection.Username' => $api?->username ?? env('IPRIVER_CONNECTION_USERNAME'),
-                'SupplierApiConnections.IPRiver_Connection.Password' => $api?->password ?? env('IPRIVER_CONNECTION_PASSWORD'),
-            ],
-        ];
+        $supplierKey = CloudMarketSuppliersEnum::tryFrom($api?->code)?->name;
+        if (! $supplierKey) {
+            return [];
+        }
 
-        return $array[$api->code];
+        $connectionBase = "SupplierApiConnections.{$supplierKey}_Connection";
+
+        switch ($api?->auth_type) {
+            case 'basic':
+                return [
+                    "{$connectionBase}.Username" => $api?->username ?? env(strtoupper("{$supplierKey}_CONNECTION_USERNAME")),
+                    "{$connectionBase}.Password" => $api?->password ?? env(strtoupper("{$supplierKey}_CONNECTION_PASSWORD")),
+                ];
+            case 'basic_client':
+                return [
+                    "{$connectionBase}.Username" => $api?->username ?? env(strtoupper("{$supplierKey}_CONNECTION_USERNAME")),
+                    "{$connectionBase}.Password" => $api?->password ?? env(strtoupper("{$supplierKey}_CONNECTION_PASSWORD")),
+                    "{$connectionBase}.ClientId" => $api?->client_id ?? env(strtoupper("{$supplierKey}_CONNECTION_CLIENTID")),
+                ];
+            case 'token':
+                return [
+                    "{$connectionBase}.Token" => $api?->token ?? env(strtoupper("{$supplierKey}_CONNECTION_TOKEN")),
+                ];
+            default:
+                return [];
+        }
     }
 }
