@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Web\AccountController;
 use App\Http\Controllers\Web\ApiController;
+use App\Http\Controllers\Web\BlacklistController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Web\SpaController;
 use App\Http\Controllers\Web\UserController;
@@ -84,6 +85,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         'users' => UserController::class,
         'tokens' => TokenController::class,
         'solution-types' => SolutionTypeController::class,
+        'blacklist' => BlacklistController::class,
     ]);
 
     Route::middleware('auth')->group(function () {
