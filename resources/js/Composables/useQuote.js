@@ -18,7 +18,6 @@ export const setQuote = (temp) => {
         return
     }
 
-    Object.assign(quote.items, getLeafNodesWithChildren(quote.items));
 }
 
 export const getLeafNodesWithChildren = (objects) => {

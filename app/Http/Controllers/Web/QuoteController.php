@@ -101,7 +101,7 @@ class QuoteController extends BaseController
         return Inertia::render('Quotes/Edit', [
             'accounts' => Account::all(),
             'solution_types' => SolutionType::get(),
-            'quote' => new QuoteResource($quote->load(['items']))
+            'quote' => (new QuoteResource($quote))->resolve()
         ]);
     }
 
