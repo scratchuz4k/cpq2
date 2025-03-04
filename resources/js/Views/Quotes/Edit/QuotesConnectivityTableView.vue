@@ -12,7 +12,6 @@ import Select from "primevue/select";
 const props = defineProps({
     modelValue: Object
 })
-
 let timeoutId = null
 const isLoading = ref(true)
 const showLoadingModal = ref(true)
@@ -294,7 +293,7 @@ const remove = (item) => {
     try {
         items.forEach(async (x) => {
             await axios.delete(`/api/quote-items/${x.id}`)
-            let index = props.modelValue.items.find((e) => e.id == x.id)
+            let index = props.modelValue.items.findIndex((e) => e.id == x.id)
             props.modelValue.items.splice(index, 1)
         })
     } catch (ex) {
