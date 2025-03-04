@@ -47,13 +47,13 @@ const items = ref([
             </Header>
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <Datatable :allow="{}" :columns="[
-                    { data: 'solution_type.id', hide: true },
                     { data: 'id', title: '#', style: 'width:5%' },
                     { data: 'solution_type.code', title: 'Code', style: 'width:10%' },
                     { data: 'solution_type.name', title: 'Name', style: 'width:45%' },
                     { data: 'created_at', title: 'Created At', style: 'width:15%' },
                     { data: 'updated_at', title: 'Updated At', style: 'width:15%' },
                     { data: 'actions', title: '', style: 'width:13%' },
+                    { data: 'solution_type.id', hide: true },
                 ]" route="/solution-types">
                     <template #updated_at="{ value }">
                         {{ format.date(value) }}
