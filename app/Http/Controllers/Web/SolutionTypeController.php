@@ -2,14 +2,11 @@
 
 namespace App\Http\Controllers\Web;
 
-use App\Models\Spa;
-use App\Models\User;
+use App\Http\Requests\SolutionTypeCreateRequest;
+use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
-use App\Enums\PricePlanEnum;
 use App\Models\SolutionType;
-use Illuminate\Http\Request;
 use App\Enums\TablesEnum;
-use App\Enums\SolutionTypesEnum;
 use Illuminate\Support\Facades\DB;
 use App\Services\SolutionTypeService;
 use App\Http\Controllers\BaseController;
@@ -37,15 +34,29 @@ class SolutionTypeController extends BaseController
      */
     public function create()
     {
-        //
+        return Inertia::render('SolutionTypes/Create', [
+            'solutions' => SolutionTypeResource::collection(SolutionType::all())->resolve(),
+            'available_tables' => TablesEnum::cases(),
+        ]);
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(SolutionTypeCreateRequest $request)
     {
-        //
+        try {
+            $solutionType = DB::transaction(function () use ($request) {
+                return $this->solutionTypeService->store($request->all());
+            });
+        } catch (\Exception $e) {
+            if (!env('APP_DEBUG')) {
+                Log::error($e->getMessage());
+            }
+            throw new \Exception($e);
+        }
+
+        return redirect()->route('solution-types.index');
     }
 
     /**
@@ -81,7 +92,6 @@ class SolutionTypeController extends BaseController
         }
 
         return redirect()->route('solution-types.index');
-        // return redirect()->route('solution-types.edit', ['solution_type' => $solutionType->id]);
     }
 
     /**

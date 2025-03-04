@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
+use Database\Seeders\InitTableSeeder;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -18,10 +19,12 @@ class DatabaseSeeder extends Seeder
         $this->call([
             InitTableSeeder::class,
             RolePermissionSeeder::class,
+            SolutionTenantSeeder::class,
         ]);
 
         if (config('app.env') === 'local') {
             $this->call([
+                DummySeeder::class,
                 ApiConfigurationSeeder::class,
             ]);
         }
