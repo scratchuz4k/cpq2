@@ -155,6 +155,8 @@ const items = ref([
                         </div>
                     </div>
 
+
+
                     <div class="mb-3">
                         <label class="form-label">Speed:</label>
                         <select class="form-select" v-model="blacklisted_item.speed">
