@@ -175,6 +175,7 @@ const items = ref([
 
                     </div>
 
+
                     <div class="mb-3">
                         <label class="form-label">Contract Term:</label>
                         <select class="form-select" v-model="blacklisted_item.contract_term">
