@@ -176,9 +176,10 @@ class ExternalController extends Controller
 
         $priceRules = new PriceRules();
         $account = Account::find($request->input('account_id', null));
+        $pricePlan = PricePlan::where('code', PricePlanEnum::SINGLE->name)->first();
 
-        $meta['data'] = $meta['data']->map(function ($item) use ($priceRules, $account) {
-            $net_spa = $priceRules->calculate($item['price']['net'], account: $account);
+        $meta['data'] = $meta['data']->map(function ($item) use ($priceRules, $account, $pricePlan) {
+            $net_spa = $priceRules->calculate($item['price']['net'], account: $account, pricePlan: $pricePlan);
             $item['price']['net_spa'] = $net_spa;
             $item['price']["tax"] = $net_spa * 0.2;
             $item['price']["gross"] = $net_spa * 1.2;

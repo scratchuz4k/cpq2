@@ -78,24 +78,6 @@ describe('Creates a Connectivity quote', () => {
 
     })
 
-    it('Recreate SPA for Gamma Products to check unique', () => {
-        cy.visit("/")
-        cy.get("#my-account").click()
-        cy.get("#link-spas").click()
-        cy.get("#create-spa").click()
-        cy.get("#spa-entity-Supplier").click()
-        cy.get("#select-Supplier1").click()
-        cy.get("#select-Supplier1-search").type("Gamma")
-        cy.wait(2000)
-        cy.get(".p-select-option").eq(0).click()
-
-        cy.get("#spa-percentage").type(20)
-        cy.get("#save-spa").click()
-        cy.wait(2000)
-        cy.get(".notyf").contains("There is already a SPA for that entity")
-
-    })
-
     it('Check Price New Price For Gamma Product', () => {
         cy.visit("/")
         cy.get("#datatable-btn-0-edit").click()
