@@ -21,7 +21,7 @@ const props = defineProps({
 const blacklisted_item = reactive({
     name: null,
     provider: null,
-    sub_provider: null,
+    subprovider: null,
     bearer: {
         operator: null,
         value: null,
@@ -35,19 +35,10 @@ const blacklisted_item = reactive({
     contract_term: null
 });
 
-const editingRows = ref([]);
-const showModal = ref(false);
-const categories = ref([]);
-
-const saveProduct = () => {
+const saveItem = () => {
     router.post(
-        `/products`,
-        {
-            ...product,
-            supplier_id: product.supplier?.id,
-            brand_id: product.brand?.id,
-            categories: categories.value.map((item) => item.id),
-        },
+        `/blacklist`,
+        blacklisted_item,
         {
             onSuccess: (page) => {
                 notyf.success("Created with Success");
@@ -63,56 +54,26 @@ const saveProduct = () => {
     );
 };
 
-const savePrice = async () => {
-    price.tax = parseFloat((price.net * (price.tax_rate / 100)).toFixed(2));
-    price.gross = parseFloat((price.net * (1 + price.tax_rate / 100)).toFixed(2));
-    let temp = {};
-    Object.assign(temp, price);
-    product.prices.push(temp);
-    Object.assign(price, {code: null, tax_rate: 0, net: 0, tax: 0, gross: 0});
-    showModal.value = !showModal.value;
-};
-
-const deletePrice = async (id) => {
-    let result = await swal.fire({
-        title: "Are you sure?",
-    });
-
-    if (["cancel", "backdrop"].includes(result.dismiss)) {
-        return;
-    }
-
-    product.prices.splice(0, 1);
-};
-
-const onRowEditSave = async (event) => {
-    let {newData, index} = event;
-
-    newData.tax = parseFloat((newData.net * (newData.tax_rate / 100)).toFixed(2));
-    newData.gross = parseFloat((newData.net * (1 + newData.tax_rate / 100)).toFixed(2));
-
-    product.prices[index] = newData;
-};
-
 const items = ref([
     {label: "Home", url: "/"},
     {label: "My Account", url: "/myaccount"},
     {label: "Products", url: "/products"},
-    {label: "New Product"},
+    {label: "New Item"},
 ]);
 </script>
 <template>
-    <Head title="New Product"/>
+    <Head title="New Item"/>
     <AuthenticatedLayout>
         <div class="panel">
-            <Header title="New Product" :breadcrumbs="items">
+            <Header title="New Item" :breadcrumbs="items">
                 <template #buttons>
-                    <PrimaryButton id="btn-save-product" @click="saveProduct()">
+                    <PrimaryButton id="btn-save-product" @click="saveItem()">
                         <font-awesome-icon class="me-2" :icon="['fas', 'save']"></font-awesome-icon>
                         Save
                     </PrimaryButton>
                 </template>
             </Header>
+            {{ blacklisted_item}}
             <div class="row">
                 <div class="col-6">
                     <div class="mb-3">
@@ -130,7 +91,7 @@ const items = ref([
 
                     <div class="mb-3">
                         <label class="form-label">Subprovider:</label>
-                        <select class="form-select" v-model="blacklisted_item.provider">
+                        <select class="form-select" v-model="blacklisted_item.subprovider">
                             <option v-for="provider in props.providers" :value="provider.value">
                                 {{ provider.name }}
                             </option>
@@ -146,30 +107,27 @@ const items = ref([
 
                         <div class="d-flex mt-2">
                             <input placeholder="Value" type="number" class="form-control text-center input-qty me-1" v-model="blacklisted_item.bearer.value">
-                            <select class="form-select" v-model="blacklisted_item.bearer.operator" :style="{ width: 'auto' }">
+                            <select class="form-select" v-model="blacklisted_item.bearer.unit" :style="{ width: 'auto' }">
                                 <option disabled :value="null">Units</option>
-                                <option v-for="unit in props.speed_units" :value="blacklisted_item.bearer.unit">
+                                <option v-for="unit in props.speed_units" :value="unit.value">
                                     {{ unit.value }}
                                 </option>
                             </select>
                         </div>
                     </div>
 
-
-
                     <div class="mb-3">
                         <label class="form-label">Speed:</label>
-                        <select class="form-select" v-model="blacklisted_item.speed">
+                        <select class="form-select" v-model="blacklisted_item.speed.operator">
                             <option v-for="operator in props.operators" :value="operator.value">
                                 {{ operator.description }}
                             </option>
                         </select>
-
                         <div class="d-flex mt-2">
                             <input placeholder="Value" type="number" class="form-control text-center input-qty me-1" v-model="blacklisted_item.speed.value">
-                            <select class="form-select" v-model="blacklisted_item.speed.operator" :style="{ width: 'auto' }">
+                            <select class="form-select" v-model="blacklisted_item.speed.unit" :style="{ width: 'auto' }">
                                 <option disabled :value="null">Units</option>
-                                <option v-for="unit in props.speed_units" :value="blacklisted_item.speed.unit">
+                                <option v-for="unit in props.speed_units" :value="unit.value">
                                     {{ unit.value }}
                                 </option>
                             </select>

@@ -6,6 +6,7 @@ use App\Enums\CloudMarketSuppliersEnum;
 use App\Enums\ComparisonOperatorsEnum;
 use App\Enums\ContractTermsEnum;
 use App\Enums\SpeedUnitsEnum;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Models\Brand;
 use Inertia\Response;
@@ -50,8 +51,9 @@ class BlacklistController extends BaseController
     /**
      * Store a newly created resource in storage.
      */
-    public function store(ProductCreateRequest $request)
+    public function store(Request $request)
     {
+
 //        try {
 //            $product = DB::transaction(function () use ($request) {
 //                return $this->productsService->store($request->all());
