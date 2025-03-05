@@ -3,6 +3,9 @@
 namespace App\Http\Controllers\Web;
 
 use App\Enums\CloudMarketSuppliersEnum;
+use App\Enums\ComparisonOperatorsEnum;
+use App\Enums\ContractTermsEnum;
+use App\Enums\SpeedUnitsEnum;
 use Inertia\Inertia;
 use App\Models\Brand;
 use Inertia\Response;
@@ -38,6 +41,9 @@ class BlacklistController extends BaseController
     {
         return Inertia::render('Blacklist/Create', [
             'providers' => CloudMarketSuppliersEnum::asArray(),
+            'operators' => ComparisonOperatorsEnum::asArray(),
+            'contract_terms' => ContractTermsEnum::asArray(),
+            'speed_units' => SpeedUnitsEnum::asArray(),
         ]);
     }
 
