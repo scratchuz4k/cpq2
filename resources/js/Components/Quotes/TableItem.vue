@@ -33,15 +33,14 @@ const save = async (p) => {
 };
 
 const remove = async (p) => {
-  let id = p.id;
+  let items = quote.items.filter((x) => x.group == p.group);
   let result = null;
-  if (p.parent_id) {
+  if (items.length > 1) {
     result = await swal.fire({
       title: "Are you sure?",
       text:
         "This line contains other associated lines, removing it deletes all associated lines",
     });
-    id = p.parent_id;
   } else {
     result = await swal.fire({
       title: "Are you sure?",
@@ -51,16 +50,17 @@ const remove = async (p) => {
   if (["cancel", "backdrop"].includes(result.dismiss)) {
     return;
   }
-  if (await removeQuoteItem(id)) {
-    getQuote(quote.id);
-  }
+  items.forEach(async (x) => {
+    await removeQuoteItem(x.id);
+  });
+  getQuote(quote.id);
 };
 
 const cancel = (p) => {
   p.is_editing = !p.is_editing;
 };
 
-emitter.on("quote-items:toggle:is-editing", () => item.value.is_editing = false);
+emitter.on("quote-items:toggle:is-editing", () => (item.value.is_editing = false));
 </script>
 <template>
   <tr
@@ -127,6 +127,6 @@ emitter.on("quote-items:toggle:is-editing", () => item.value.is_editing = false)
 </template>
 <style>
 .child-bg > td {
-  background-color: whitesmoke!important;
+  background-color: whitesmoke !important;
 }
 </style>
