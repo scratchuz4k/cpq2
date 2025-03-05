@@ -27,7 +27,6 @@ class QuoteItemController extends BaseController
      */
     public function index()
     {
-
         $dataProvider = new DataProvider(QuoteItem::class);
         try {
             $data = $dataProvider->get();

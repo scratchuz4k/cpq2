@@ -1,5 +1,5 @@
 
-const format = {
+export const format = {
     date: (date) => {
         if (!date) {
             return '';
@@ -68,9 +68,9 @@ const format = {
             return ''
         }
         return str
-        .replace(/([a-z])([A-Z])/g, '$1_$2') // Insert an underscore between lowercase and uppercase letters
-        .replace(/\s+/g, '_')               // Replace spaces with underscores
-        .toLowerCase();
+            .replace(/([a-z])([A-Z])/g, '$1_$2') // Insert an underscore between lowercase and uppercase letters
+            .replace(/\s+/g, '_')               // Replace spaces with underscores
+            .toLowerCase();
 
     },
     toLowerCase: (str) => {
@@ -78,9 +78,9 @@ const format = {
             return ''
         }
         return str
-        .replace(/([a-z])([A-Z])/g, '$1$2') // Insert an underscore between lowercase and uppercase letters
-        .replace(/\s+/g, '')               // Replace spaces with underscores
-        .toLowerCase();
+            .replace(/([a-z])([A-Z])/g, '$1$2') // Insert an underscore between lowercase and uppercase letters
+            .replace(/\s+/g, '')               // Replace spaces with underscores
+            .toLowerCase();
 
     }
 }

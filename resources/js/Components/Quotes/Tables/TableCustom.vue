@@ -17,7 +17,7 @@
       </tr>
     </thead>
     <tbody>
-      <template v-for="(item, index) in items">
+      <template v-for="(item, index) in quote.items">
         <!-- <TableGroup
           v-if="quote.solution_type.code == 3"
           :item="item"
@@ -57,7 +57,7 @@
           :item="item"
           :columns="columns"
           :index="index"
-          :showToggle="false"
+          :showToggle="true"
           :preview="preview"
           code="Simple"
         >
@@ -68,7 +68,8 @@
 </template>
 <script setup>
 import { quote } from "@composables/useQuote";
-import { ref } from "vue";
+import queryString from "query-string";
+import axios from "axios";
 
 defineProps({
   preview: Boolean,
@@ -76,5 +77,18 @@ defineProps({
 
 const columns = quote.solution_type?.table?.columns ?? [];
 const group = quote.solution_type?.table?.group ?? null;
-const items = ref(quote.items);
+
+const getItems = async () => {
+  let string = queryString.stringify({
+    filters: JSON.stringify([]),
+    order: "desc",
+    orderBy: group ?? "id",
+    limit: 200,
+  });
+
+  let res = await axios.get("/api/quote-items?" + string);
+  quote.items = res.data.data;
+};
+
+getItems();
 </script>

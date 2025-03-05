@@ -42,7 +42,6 @@ Route::apiResources([
     'products' => ProductController::class,
     'quotes' => QuoteController::class,
     'quote-items' => QuoteItemController::class,
-    'quoteitems' => QuoteItemController::class,
     'orders' => OrderController::class,
     'order-items' => OrderItemController::class,
     'solution-types' => SolutionTypeController::class,

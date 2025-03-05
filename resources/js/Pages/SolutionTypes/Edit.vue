@@ -137,7 +137,7 @@ const items = ref([
                 <label class="form-label">Choose the group field (optional):</label>
                 <Select
                   v-model="table.group"
-                  :options="available_columns"
+                  :options="available_columns.filter((x) => x.is_group)"
                   placeholder="Select a group"
                   class="w-100"
                   optionLabel="name"

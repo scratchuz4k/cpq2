@@ -1,6 +1,7 @@
 <script setup>
 import { updateQuoteItem, removeQuoteItem, temp } from "@composables/useQuoteItem";
 import { getQuote, quote } from "@/Composables/useQuote";
+import { format } from "@/Composables/format";
 
 const props = defineProps({
   code: String,
@@ -60,6 +61,10 @@ const cancel = (p) => {
   p.is_editing = !p.is_editing;
 };
 
+const getComponent = (column) => {
+  return format.toCamelCase(column.split(".")[0]) + "Column";
+};
+
 emitter.on("quote-items:toggle:is-editing", () => (item.value.is_editing = false));
 </script>
 <template>
@@ -71,7 +76,7 @@ emitter.on("quote-items:toggle:is-editing", () => (item.value.is_editing = false
     <template v-for="column in columns">
       <td :class="[`column-${column.value}-body`]">
         <component
-          :is="format.toCamelCase(column.value) + 'Column'"
+          :is="getComponent(column.value)"
           v-bind="{
             column: column,
             modelValue: item,
