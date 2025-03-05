@@ -19,7 +19,7 @@ class ApiFactory extends Factory
     {
 
         return [
-            'code' => CloudMarketSuppliersEnum::ITS,
+            'code' => CloudMarketSuppliersEnum::Its,
             'name' => fake()->name(),
             'auth_type' => 'basic',
             'username' => fake()->username(),

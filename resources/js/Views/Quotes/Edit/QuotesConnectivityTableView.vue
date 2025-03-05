@@ -134,7 +134,8 @@ const getArticles = async (clearCache = false, runTimeout = false) => {
             "Service Unavailable": "The service is temporarily unavailable.",
             "There is an error in XML document": "The request could not be processed due to a data format issue.",
             "No provider is configured": "No provider is configured, please add at least one provider with the required credentials to obtain a quote.",
-            "Request failed with status Unauthorized": "Request failed with status Unauthorized (Check login credentials for this provider)",
+            "Request failed with status Unauthorized": "Request failed with status Unauthorized (Please check login credentials for this provider).",
+            "Address not found in cache": "No results were found for this address.",
         };
         if(res.data.errors){
             errors.value = res.data.errors
