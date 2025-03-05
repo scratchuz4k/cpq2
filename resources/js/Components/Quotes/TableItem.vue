@@ -69,10 +69,7 @@ emitter.on("quote-items:toggle:is-editing", () => (item.value.is_editing = false
   >
     <td class="text-center" v-if="showToggle && !preview"></td>
     <template v-for="column in columns">
-      <td
-        v-if="!groupColumns.find((x) => x.value == column.value)"
-        :class="[`column-${column.value}-body`]"
-      >
+      <td :class="[`column-${column.value}-body`]">
         <component
           :is="format.toCamelCase(column.value) + 'Column'"
           v-bind="{

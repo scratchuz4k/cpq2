@@ -3,7 +3,7 @@ import _ from "lodash";
 import { reactive, ref } from "vue";
 import InputQuantity from "@/Components/InputQuantity.vue";
 import { createOrder } from "@/Composables/useOrders.js";
-import { setQuote, quote, getLeafNodesWithChildren } from "@composables/useQuote";
+import { setQuote, quote } from "@composables/useQuote";
 
 const props = defineProps({
   modelValue: Object,
@@ -13,7 +13,7 @@ const props = defineProps({
 
 setQuote(props.modelValue);
 
-let temp = getLeafNodesWithChildren(quote.items);
+let temp = quote.items;
 const warningProviders = ref([
   { its: temp.some((item) => item.data?.providerName === "ITS") },
   { pxc: temp.some((item) => item.data?.providerName === "PXC") },
@@ -103,7 +103,11 @@ const items = ref([
           </div>
         </div>
       </div>
-      <TableSimple :preview="preview"></TableSimple>
+      <TableSimple
+        v-if="!quote.solution_type.configurations?.has_custom_table"
+        :preview="preview"
+      ></TableSimple>
+      <TableCustom v-else></TableCustom>
 
       <div class="row justify-content-end">
         <div class="col-6">

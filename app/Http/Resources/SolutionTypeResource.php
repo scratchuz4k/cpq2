@@ -37,11 +37,15 @@ class SolutionTypeResource extends JsonResource
             }
         }
 
+        $table = ["columns" => $columns];
+        if (array_key_exists("has_custom_table", $this->configs) && !!$this->configs["has_custom_table"]) {
+            $table = $this->tables->first();
+        }
+
         return [
             ...$this->resource->toArray(),
             "configurations" => $this->configs,
-            "table" => ["columns" => $columns],
-            "tables" => $this->tables,
+            "table" => $table,
         ];
     }
 }

@@ -128,7 +128,9 @@ const items = ref([
                   <div class="mb-2 fw-bold">Important Information:</div>
                   <div v-for="provider in warningProviders" class="mb-2">
                     <div v-if="Object.values(provider)[0]">
-                      <span class="small fw-bold bg-light rounded-2 py-1 px-2 me-1 text-capitalize">
+                      <span
+                        class="small fw-bold bg-light rounded-2 py-1 px-2 me-1 text-capitalize"
+                      >
                         {{ Object.keys(provider)[0].toUpperCase() }}
                       </span>
                       <i>
@@ -146,7 +148,12 @@ const items = ref([
             </div>
           </div>
         </div>
-        <TableDealMaker :pricePlans="pricePlans" :preview="preview"></TableDealMaker>
+        <TableDealMaker
+          v-if="!quote.solution_type.configurations?.has_custom_table"
+          :pricePlans="pricePlans"
+          :preview="preview"
+        ></TableDealMaker>
+        <TableCustom v-else></TableCustom>
 
         <div class="mb-5">
           <div>
@@ -159,12 +166,23 @@ const items = ref([
             </p>
           </div>
           <div class="d-flex justify-content-between">
-            <a id="btn-previous" class="btn text-primary" :href="route('quotes.edit', { quote: quote.id }) + '?step=2'">
-              <font-awesome-icon class="me-2" :icon="['fas', 'arrow-left']"></font-awesome-icon>
-              Previous</a>
+            <a
+              id="btn-previous"
+              class="btn text-primary"
+              :href="route('quotes.edit', { quote: quote.id }) + '?step=2'"
+            >
+              <font-awesome-icon
+                class="me-2"
+                :icon="['fas', 'arrow-left']"
+              ></font-awesome-icon>
+              Previous</a
+            >
             <div>
               <ShareableQuote></ShareableQuote>
-              <a class="btn btn-outline-primary me-2" :href="route('quotes.preview', { quote: quote.id })">
+              <a
+                class="btn btn-outline-primary me-2"
+                :href="route('quotes.preview', { quote: quote.id })"
+              >
                 <font-awesome-icon :icon="['far', 'file-pdf']"></font-awesome-icon>
                 Preview
               </a>
@@ -173,10 +191,15 @@ const items = ref([
                 </font-awesome-icon>
                 Email this quote
               </button>
-              <button hidden :disabled="disableButtonSendToOrder" class="btn btn-primary"
-                @click="createOrderAndRedirect(quote.id)">
+              <button
+                hidden
+                :disabled="disableButtonSendToOrder"
+                class="btn btn-primary"
+                @click="createOrderAndRedirect(quote.id)"
+              >
                 <font-awesome-icon class="me-2" :icon="['fas', 'thumbtack']">
-                </font-awesome-icon>Send to Order
+                </font-awesome-icon
+                >Send to Order
               </button>
             </div>
           </div>
@@ -185,7 +208,9 @@ const items = ref([
       <div class="col-xl-4 ps-xl-5">
         <InfoBox>
           <div style="font-size: 14px">
-            <b style="font-size: 16px">Quote {{ quote.id }} for {{ quote.account.name }}</b>
+            <b style="font-size: 16px"
+              >Quote {{ quote.id }} for {{ quote.account.name }}</b
+            >
             <br />
             Contact Number: 0124567890<br />
             Email: firstname.lastname@gmail.com
@@ -206,20 +231,36 @@ const items = ref([
         </InfoBox>
         <div class="price-mobile-sidebar total-quote-discount px-4 pt-4 pb-2 mb-3">
           <h3 class="mb-3">Total Quote Discount</h3>
-          <div v-for="pricePlan in pricePlansDiscounts" class="d-flex justify-content-between align-items-center mb-3">
+          <div
+            v-for="pricePlan in pricePlansDiscounts"
+            class="d-flex justify-content-between align-items-center mb-3"
+          >
             <label class="form-label m-0">{{ pricePlan.name }}</label>
 
             <div class="input-group p-0 w-50">
-              <input :id="`input-global-${pricePlan.code}-discount`" type="number" class="form-control"
-                v-model="pricePlan.value" />
+              <input
+                :id="`input-global-${pricePlan.code}-discount`"
+                type="number"
+                class="form-control"
+                v-model="pricePlan.value"
+              />
               <span class="input-group-text">%</span>
             </div>
           </div>
-          <button id="btn-apply-global-discount" class="btn btn-secondary w-100 mb-2" @click="saveQuote()"
-            :disabled="isLoading">
+          <button
+            id="btn-apply-global-discount"
+            class="btn btn-secondary w-100 mb-2"
+            @click="saveQuote()"
+            :disabled="isLoading"
+          >
             Apply to quote
           </button>
-          <button id="btn-reset-quote" class="btn w-100" @click="resetQuote()" :disabled="isLoading">
+          <button
+            id="btn-reset-quote"
+            class="btn w-100"
+            @click="resetQuote()"
+            :disabled="isLoading"
+          >
             Reset quote
           </button>
         </div>
@@ -235,25 +276,47 @@ const items = ref([
             <div class="mb-3">
               <label class="form-label">Margin</label>
               <div class="input-group">
-                <input id="input-margin-order" class="form-control" :value="quote.margin.toFixed(2) + ' %'" disabled />
-                <span class="input-group-text"><font-awesome-icon :icon="['fas', 'lock']"></font-awesome-icon></span>
+                <input
+                  id="input-margin-order"
+                  class="form-control"
+                  :value="quote.margin.toFixed(2) + ' %'"
+                  disabled
+                />
+                <span class="input-group-text"
+                  ><font-awesome-icon :icon="['fas', 'lock']"></font-awesome-icon
+                ></span>
               </div>
             </div>
             <div class="mb-3">
-              <label class="form-label">Commission
-                <b>(<span id="order-tax-commission"> {{ quote.commission_rate }}</span>%)</b>
+              <label class="form-label"
+                >Commission
+                <b
+                  >(<span id="order-tax-commission"> {{ quote.commission_rate }}</span
+                  >%)</b
+                >
               </label>
               <div class="input-group">
-                <input id="input-commission_value-order" class="form-control"
-                  :value="GBP.format(quote.commission_value)" disabled />
-                <span class="input-group-text"><font-awesome-icon :icon="['fas', 'lock']"></font-awesome-icon></span>
+                <input
+                  id="input-commission_value-order"
+                  class="form-control"
+                  :value="GBP.format(quote.commission_value)"
+                  disabled
+                />
+                <span class="input-group-text"
+                  ><font-awesome-icon :icon="['fas', 'lock']"></font-awesome-icon
+                ></span>
               </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-    <Dialog v-model:visible="showModal" modal :style="{ width: '40rem' }" :draggable="false">
+    <Dialog
+      v-model:visible="showModal"
+      modal
+      :style="{ width: '40rem' }"
+      :draggable="false"
+    >
       <template #header>
         <h2>Rejected Reasons</h2>
       </template>

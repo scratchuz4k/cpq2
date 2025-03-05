@@ -1,5 +1,4 @@
 <script setup>
-import { getLeafNodesWithChildren } from "@composables/useQuote";
 const props = defineProps({
   quote: Object,
 });
@@ -7,7 +6,7 @@ const props = defineProps({
 const pricePlanskeys = { "One-Off": "SINGLE", Recurring: "MONTHLY" };
 const quoteTotal = (price_plan, column = "total") => {
   let total = 0;
-  let items = getLeafNodesWithChildren(props.quote.items);
+  let items = props.quote.items;
   items.forEach((e) => {
     if (e.children?.lenght) {
       total += e.children
@@ -22,7 +21,7 @@ const quoteTotal = (price_plan, column = "total") => {
 const quoteQuantityPrice = (price_plan, operation = "simple") => {
   let total = 0;
   let tax = 0;
-  let items = getLeafNodesWithChildren(props.quote.items);
+  let items = props.quote.items;
   items.forEach((e) => {
     if (e.price_plan && e.price_plan.code == pricePlanskeys[price_plan]) {
       total += e.price * e.quantity;
