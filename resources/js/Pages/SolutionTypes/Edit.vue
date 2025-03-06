@@ -15,7 +15,7 @@ const props = defineProps({
 });
 const table = reactive(
   props.solution_type.table
-    ? props.solution_type.table
+    ? { ...props.solution_type.table }
     : {
         code: "custom",
         group: null,
@@ -31,23 +31,26 @@ const dragOptions = {
 };
 
 const saveSolutionType = () => {
-  router.put(`/solution-types/${props.solution_type.id}`, solutiontype, {
-    onSuccess: (page) => {
-      notyf.success("Updated with Success");
-    },
-    onError: (errors) => {
-      let string = "";
-      Object.keys(errors).forEach((key) => {
-        string += errors[key] + "<br>";
-      });
-      notyf.error(string);
-    },
-  });
+  router.put(
+    `/solution-types/${props.solution_type.id}`,
+    { ...solutiontype, tables: [table] },
+    {
+      onSuccess: (page) => {
+        notyf.success("Updated with Success");
+      },
+      onError: (errors) => {
+        let string = "";
+        Object.keys(errors).forEach((key) => {
+          string += errors[key] + "<br>";
+        });
+        notyf.error(string);
+      },
+    }
+  );
 };
 let len = Object.keys(props.solution_type.configurations).length;
 const solutiontype = reactive({
   configurations: len ? props.solution_type.configurations : { component: "DealMaker" },
-  tables: [table],
 });
 
 const addColumn = (table) => {
@@ -57,8 +60,11 @@ const addColumn = (table) => {
   table.columns.push({ value: null, name: null });
 };
 
-const deleteColumn = (table, key) => {
-  table.columns.splice(key, 1);
+const deleteColumn = (element) => {
+  let index = table.columns.findIndex((x) => x.value == element.value);
+  if (index != -1) {
+    table.columns.splice(index, 1);
+  }
 };
 
 const items = ref([
@@ -195,7 +201,7 @@ const items = ref([
                         <td>
                           <button
                             class="btn p-2 mx-1 border-0"
-                            @click="deleteColumn(table, key)"
+                            @click="deleteColumn(element)"
                           >
                             <font-awesome-icon icon="fas fa-trash-alt" />
                           </button>

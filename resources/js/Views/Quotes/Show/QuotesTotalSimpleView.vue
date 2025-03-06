@@ -104,7 +104,7 @@ const items = ref([
         </div>
       </div>
       <TableSimple
-        v-if="!quote.solution_type.configurations?.has_custom_table"
+        v-if="quote.solution_type.configurations?.has_custom_table == 0"
         :preview="preview"
       ></TableSimple>
       <TableCustom v-else></TableCustom>

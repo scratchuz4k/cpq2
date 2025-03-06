@@ -10,7 +10,10 @@ const props = defineProps({
   isChild: Boolean,
   preview: Boolean,
   columns: Array,
-  groupColumns: Array,
+  groupColumns: {
+    type: Array,
+    default: [],
+  },
   item: Object,
 });
 const item = defineModel("item");
@@ -51,6 +54,7 @@ const remove = async (p) => {
   if (["cancel", "backdrop"].includes(result.dismiss)) {
     return;
   }
+  asd;
   items.forEach(async (x) => {
     await removeQuoteItem(x.id);
   });
@@ -74,7 +78,10 @@ emitter.on("quote-items:toggle:is-editing", () => (item.value.is_editing = false
   >
     <td class="text-center" v-if="showToggle && !preview"></td>
     <template v-for="column in columns">
-      <td :class="[`column-${column.value}-body`]">
+      <td
+        v-if="!groupColumns.find((x) => x.value == column.value)"
+        :class="[`column-${column.value}-body`]"
+      >
         <component
           :is="getComponent(column.value)"
           v-bind="{

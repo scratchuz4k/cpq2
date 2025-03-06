@@ -2,9 +2,10 @@
 
 namespace App\Helpers;
 
-use App\Models\Order;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Http\Resources\Json\JsonResource;
 
 class DataProvider
 {
@@ -26,38 +27,73 @@ class DataProvider
 
     public function getCollection()
     {
-        $this->init();
+        $this->processFilters();
         return $this->builder->get();
     }
-
     public function get()
     {
-        $this->init();
-        $page = request()->input("page", 1);
-        $limit = request()->input("limit", 10);
-        $order = request()->input("order", "asc");
-        $orderBy = request()->input("orderBy", "id");
-        $orderByArray = explode('.', $orderBy);
+        $this->processFilters();
+        $this->processRequest();
 
-        if (count($orderByArray) == 2) {
-            $table = $this->builder->getModel()->getTable();
+        $page = request()->input('page', 1);
+        $limit = request()->input('limit', 10);
 
-            $this->builder = $this->builder->select($table . '.*')->joinRelation(Str::camel($orderByArray[0]) . ' as ' . $orderByArray[0])
-                ->orderBy($orderByArray[0] . '.' . $orderByArray[1], $order);
-            return  $this->builder->paginate(perPage: $limit, page: $page);
-        }
-
-        return $this->builder->orderBy($orderBy, $order)->paginate(perPage: $limit, page: $page);
+        return $this->builder->paginate(perPage: $limit, page: $page);
     }
 
-    private function init()
+    public function group(string $resource)
+    {
+        $this->processFilters();
+        $this->processRequest();
+        $collection = [];
+
+        $page = request()->input('page', 1);
+        $limit = request()->input('limit', 10);
+        $group = request()->input('group', null);
+
+        $total = $this->builder->get()->count();
+        $items = $this->builder->paginate(perPage: $limit, page: $page);
+
+        if (!$group) {
+            return $resource::collection($items);
+        }
+
+        $group = explode('.', $group);
+        if (count($group) == 2) {
+            foreach ($group as $key => $item) {
+                $group[$key] = Str::camel($item);
+            }
+        }
+
+        foreach ($items as $item) {
+            $groupKey = array_reduce($group, function ($acc, $temp) use ($item) {
+                if ($acc == 'default') {
+                    $acc = $item;
+                }
+                return $acc[$temp];
+            }, 'default');
+
+            $index = array_search($groupKey, array_column($collection, 'name'));
+
+            if ($index === false) {
+                array_push($collection, ['name' => $groupKey, 'items' => [$resource::make($item)]]);
+            } else {
+                array_push($collection[$index]['items'], $resource::make($item));
+            }
+        }
+
+        // Combine the data and metadata in your response
+        return new LengthAwarePaginator($collection, $total, $limit, $page);
+    }
+
+    private function processFilters()
     {
         $search = request()->input('search', null);
         $filters = request()->input('filters', []);
         $filters = is_string($filters) ? json_decode($filters, true) : $filters;
 
         if ($search) {
-            $columns = request()->get('columns') ? explode(",", request()->get('columns')) : $this->builder->getModel()->getFillable();
+            $columns = request()->get('columns') ? explode(',', request()->get('columns')) : $this->builder->getModel()->getFillable();
             $hidden = $this->builder->getModel()->getHidden();
 
             $columns = array_filter($columns, function ($column) use ($hidden) {
@@ -80,6 +116,22 @@ class DataProvider
             $this->builder = $this->buildSearch($this->builder, $filter['column'], $queryParts['operator'], $queryParts['value'], $func);
         }
     }
+
+    private function processRequest()
+    {
+        $order = request()->input('order', 'asc');
+        $orderBy = request()->input('orderBy', 'id');
+        $orderByArray = explode('.', $orderBy);
+
+        if (count($orderByArray) == 2) {
+            $table = $this->builder->getModel()->getTable();
+            $this->builder = $this->builder->select($table . '.*')->joinRelation(Str::camel($orderByArray[0]) . ' as ' . $orderByArray[0])
+                ->orderBy($orderByArray[0] . '.' . $orderByArray[1], $order);
+        } else {
+            $this->builder = $this->builder->orderBy($orderBy, $order);
+        }
+    }
+
     public function buildSearch($builder, $column, $operator, $value, $func)
     {
         $relations = explode('.', $column);
@@ -182,19 +234,19 @@ class DataProvider
             ],
             'not_contains' => [
                 'operator' => 'NOT LIKE',
-                'value' => "%{$value}%",
+                'value' => '%{$value}%',
             ],
             'contains' => [
                 'operator' => 'LIKE',
-                'value' => "%{$value}%",
+                'value' => '%{$value}%',
             ],
             'starts_with' => [
                 'operator' => 'LIKE',
-                'value' => "{$value}%",
+                'value' => '{$value}%',
             ],
             'ends_with' => [
                 'operator' => 'LIKE',
-                'value' => "%{$value}",
+                'value' => '%{$value}',
             ],
             'greater_than' => [
                 'operator' => '>',

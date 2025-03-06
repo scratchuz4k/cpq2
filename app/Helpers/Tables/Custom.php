@@ -14,4 +14,5 @@ return [
     ["name" => "Discount", "value" => "discount", "is_group" => true],
     ["name" => "Price", "value" => "price", "is_group" => true],
     ["name" => "Total",  "value" => "total", "is_group" => true],
+    ["name" => "Group",  "value" => "group", "is_group" => true],
 ];

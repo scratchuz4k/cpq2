@@ -29,14 +29,12 @@ class QuoteItemController extends BaseController
     {
         $dataProvider = new DataProvider(QuoteItem::class);
         try {
-            $data = $dataProvider->get();
+            return $dataProvider->group(QuoteItemResource::class);
         } catch (Exception $e) {
             Log::debug($e->getMessage());
 
             return $e->getMessage();
         }
-
-        return QuoteItemResource::collection($data);
     }
 
     /**

@@ -149,7 +149,7 @@ const items = ref([
           </div>
         </div>
         <TableDealMaker
-          v-if="!quote.solution_type.configurations?.has_custom_table"
+          v-if="quote.solution_type.configurations?.has_custom_table == 0"
           :pricePlans="pricePlans"
           :preview="preview"
         ></TableDealMaker>

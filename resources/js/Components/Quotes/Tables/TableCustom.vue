@@ -17,47 +17,29 @@
       </tr>
     </thead>
     <tbody>
-      <template v-for="(item, index) in quote.items">
-        <!-- <TableGroup
-          v-if="quote.solution_type.code == 3"
-          :item="item"
-          :columns="columns"
-          :index="index"
-          :preview="preview"
-          :groupColumns="groupColumns"
-        >
-          <template v-if="item.children.length">
+      <template v-if="group">
+        <template v-for="group in quote.items">
+          <TableGroupSimple :columns="columns" :item="group.name">
             <TableItem
-              v-for="(child, childIndex) in item.children"
-              :item="child"
+              v-for="(item, index) in group.items"
+              :item="item"
               :columns="columns"
-              :index="childIndex"
+              :index="index"
               :isChild="true"
-              :groupColumns="groupColumns"
               :showToggle="true"
               :preview="preview"
               code="Simple"
             >
             </TableItem>
-          </template>
-          <template v-else>
-            <TableItem
-              :item="item"
-              :columns="columns"
-              :groupColumns="groupColumns"
-              :index="index"
-              :showToggle="true"
-              :preview="preview"
-              :isChild="true"
-              code="Simple"
-            ></TableItem>
-          </template>
-        </TableGroup> -->
+          </TableGroupSimple>
+        </template>
+      </template>
+      <template v-else v-for="(item, index) in quote.items">
         <TableItem
           :item="item"
           :columns="columns"
           :index="index"
-          :showToggle="true"
+          :showToggle="false"
           :preview="preview"
           code="Simple"
         >
@@ -84,6 +66,7 @@ const getItems = async () => {
     order: "desc",
     orderBy: group ?? "id",
     limit: 200,
+    group: group,
   });
 
   let res = await axios.get("/api/quote-items?" + string);
