@@ -172,11 +172,12 @@ const items = ref([
                     item-key="id"
                     tag="tbody"
                     v-bind="dragOptions"
+                    handle=".handle"
                   >
                     <template #item="{ element }">
                       <tr>
                         <td>
-                          <button class="btn p-1 border-0">
+                          <button class="btn p-1 border-0 handle">
                             <font-awesome-icon icon="fas fa-bars" />
                           </button>
                         </td>
