@@ -64,7 +64,7 @@ const getItems = async () => {
   let string = queryString.stringify({
     filters: JSON.stringify([]),
     order: "desc",
-    orderBy: group ?? "id",
+    orderBy: "id",
     limit: 200,
     group: group,
   });

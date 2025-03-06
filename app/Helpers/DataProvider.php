@@ -25,11 +25,6 @@ class DataProvider
         $this->builder = app($model);
     }
 
-    public function getCollection()
-    {
-        $this->processFilters();
-        return $this->builder->get();
-    }
     public function get()
     {
         $this->processFilters();
@@ -39,6 +34,12 @@ class DataProvider
         $limit = request()->input('limit', 10);
 
         return $this->builder->paginate(perPage: $limit, page: $page);
+    }
+
+    public function getCollection()
+    {
+        $this->processFilters();
+        return $this->builder->get();
     }
 
     public function group(string $resource)
@@ -119,6 +120,21 @@ class DataProvider
 
     private function processRequest()
     {
+
+        $group = request()->input('group', null);
+        if ($group) {
+            $groupOrder = request()->input('groupOrder', 'asc');
+            $groupBy = explode(".", $group);
+
+            if (count($groupBy) == 2) {
+                $table = $this->builder->getModel()->getTable();
+                $this->builder = $this->builder->select($table . '.*')->joinRelation(Str::camel($groupBy[0]) . ' as ' . $groupBy[0])
+                    ->orderBy($groupBy[0] . '.' . $groupBy[1], $groupOrder);
+            } else {
+                $this->builder = $this->builder->orderBy($groupBy[0], $groupOrder);
+            }
+        }
+
         $order = request()->input('order', 'asc');
         $orderBy = request()->input('orderBy', 'id');
         $orderByArray = explode('.', $orderBy);

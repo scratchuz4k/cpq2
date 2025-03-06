@@ -10,11 +10,11 @@ const props = defineProps({
   isChild: Boolean,
   preview: Boolean,
   columns: Array,
+  item: Object,
   groupColumns: {
     type: Array,
     default: [],
   },
-  item: Object,
 });
 const item = defineModel("item");
 
