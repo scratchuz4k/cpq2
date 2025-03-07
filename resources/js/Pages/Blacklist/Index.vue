@@ -2,6 +2,7 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link } from "@inertiajs/vue3";
 import { ref } from 'vue';
+
 const items = ref([
     { label: 'Home', url: '/' },
     { label: 'My Account', url: '/myaccount' },
@@ -28,12 +29,12 @@ const items = ref([
                     link: false,
                 }" :columns="[
                     { data: 'id', title: '#', style: 'width:5%' },
-                    { data: 'code', title: 'Code', style: 'width:20%' },
                     { data: 'name', title: 'Name', style: 'width:30%' },
-                    { data: 'supplier.name', title: 'Supplier', style: 'width:12%' },
-                    { data: 'brand.name', title: 'Brand', style: 'width:12%' },
-                    { data: 'updated_at', title: 'Updated At', style: 'width:15%' },
-                ]" route="/products">
+                    { data: 'provider', title: 'Provider', style: 'width:12%' },
+                    { data: 'subprovider', title: 'Subprovider', style: 'width:12%' },
+                    { data: 'created_at', title: 'created At', style: 'width:15%' },
+                    { data: 'updated_at', title: 'Updated At', style: 'width:15%' }
+                ]" route="/blacklist">
                     <template #updated_at="{ value }">
                         {{ format.date(value) }}
                     </template>

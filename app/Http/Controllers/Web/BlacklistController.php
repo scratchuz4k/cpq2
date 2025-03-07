@@ -6,6 +6,8 @@ use App\Enums\CloudMarketSuppliersEnum;
 use App\Enums\ComparisonOperatorsEnum;
 use App\Enums\ContractTermsEnum;
 use App\Enums\SpeedUnitsEnum;
+use App\Models\Tenant;
+use App\Services\BlacklistService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Models\Brand;
@@ -23,7 +25,7 @@ use App\Models\PricePlan;
 
 class BlacklistController extends BaseController
 {
-    public function __construct(protected ProductsService $productsService)
+    public function __construct(protected BlacklistService $blacklistService)
     {
         parent::__construct();
     }
@@ -32,7 +34,7 @@ class BlacklistController extends BaseController
      */
     public function index()
     {
-        return Inertia::render(component: 'Blacklist/Index');
+        return Inertia::render('Blacklist/Index');
     }
 
     /**
@@ -53,24 +55,21 @@ class BlacklistController extends BaseController
      */
     public function store(Request $request)
     {
-
-//        try {
-//            $product = DB::transaction(function () use ($request) {
-//                return $this->productsService->store($request->all());
-//            });
-//        } catch (\Exception $e) {
-//            if (!env('APP_DEBUG')) {
-//                Log::error($e->getMessage());
-//            }
-//            throw new \Exception($e);
-//        }
-//        return redirect()->route('products.index');
+        try {
+            $this->blacklistService->store($request->all());
+        } catch (\Exception $e) {
+            if (!env('APP_DEBUG')) {
+                Log::error($e->getMessage());
+            }
+            throw new \Exception($e);
+        }
+        return redirect()->route('blacklist.index');
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Product $product)
+    public function show()
     {
         //
     }
@@ -78,31 +77,43 @@ class BlacklistController extends BaseController
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Product $product): Response
-    {
-
-        return Inertia::render('Blacklist/Edit', [
-            'product' => ProductResource::make($product->load(['prices','categories']))->resolve(),
-            'price_plans' => PricePlan::all(),
-        ]);
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(ProductUpdateRequest $request, Product $product)
+    public function edit(Request $request): Response
     {
         try {
-            $product = DB::transaction(function () use ($product, $request) {
-                return $this->productsService->update($product, $request->all());
-            });
+            $item = $this->blacklistService->edit($request->route('blacklist'));
         } catch (\Exception $e) {
             if (!env('APP_DEBUG')) {
                 Log::error($e->getMessage());
             }
             throw new \Exception($e);
         }
-        return redirect()->route('products.index');
+
+        return Inertia::render('Blacklist/Edit', [
+            'blacklisted_item' => $item,
+            'providers' => CloudMarketSuppliersEnum::asArray(),
+            'operators' => ComparisonOperatorsEnum::asArray(),
+            'contract_terms' => ContractTermsEnum::asArray(),
+            'speed_units' => SpeedUnitsEnum::asArray(),
+        ]);
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request)
+    {
+        try {
+            $this->blacklistService->update(
+                $request->all()
+            );
+        } catch (\Exception $e) {
+            if (!env('APP_DEBUG')) {
+                Log::error($e->getMessage());
+            }
+            throw new \Exception($e);
+        }
+
+        return redirect()->route('blacklist.index');
     }
 
     /**

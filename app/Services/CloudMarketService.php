@@ -4,7 +4,7 @@ namespace App\Services;
 
 use App\Enums\CloudMarketSuppliersEnum;
 use App\Helpers\Api\CloudMarketAddress;
-use App\Helpers\Api\CloudMarketFile;
+use App\Helpers\Files\CloudMarketFile;
 use App\Jobs\CloudMarketConnectivityProducts;
 use App\Models\Api;
 use App\Repositories\CloudMarketRepository;

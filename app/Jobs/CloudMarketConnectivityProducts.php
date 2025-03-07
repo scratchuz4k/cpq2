@@ -2,21 +2,19 @@
 
 namespace App\Jobs;
 
-use App\Repositories\CloudMarketRepository;
-use Exception;
-use JsonMachine\Items;
-use Illuminate\Support\Str;
-use App\Helpers\FilterProvider;
-use GuzzleHttp\Psr7\StreamWrapper;
-use App\Helpers\Api\CloudMarketApi;
-use Illuminate\Support\Facades\Log;
-use App\Helpers\Api\CloudMarketFile;
-use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Cache;
 use App\Helpers\Api\CloudMarketAddress;
-use Spatie\Multitenancy\Jobs\TenantAware;
-use Illuminate\Foundation\Queue\Queueable;
+use App\Helpers\Api\CloudMarketApi;
+use App\Helpers\Files\CloudMarketFile;
+use App\Helpers\FilterProvider;
+use Exception;
+use GuzzleHttp\Psr7\StreamWrapper;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Foundation\Queue\Queueable;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
+use JsonMachine\Items;
+use Spatie\Multitenancy\Jobs\TenantAware;
 
 class CloudMarketConnectivityProducts implements ShouldQueue, TenantAware
 {
