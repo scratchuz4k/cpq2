@@ -16,6 +16,9 @@ quote.items.forEach((e) => {
     groups[index].children.push(e);
   }
 });
+emitter.on("quote-items:updated", () => {
+  getQuote(quote.id);
+});
 </script>
 <template>
   <table

@@ -32,7 +32,7 @@ const save = async (p) => {
   item.value.contract_length = temp.contract_length;
   if (await updateQuoteItem(item.value.id, item.value)) {
     item.value.is_editing = false;
-    getQuote(quote.id);
+    emitter.emit("quote-items:updated");
   }
 };
 
@@ -58,7 +58,7 @@ const remove = async (p) => {
   items.forEach(async (x) => {
     await removeQuoteItem(x.id);
   });
-  getQuote(quote.id);
+  emitter.emit("quote-items:updated");
 };
 
 const cancel = (p) => {

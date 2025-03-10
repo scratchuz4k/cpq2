@@ -12,7 +12,7 @@
           <th :class="[`column-${column.value}-header`]">
             <b
               v-if="column.has_order"
-              class="column-title sortable d-inline-flex align-items-center"
+              class="column-title sortable"
               @click="sortBy(column.value)"
               :style="{
                 textDecoration: column.value == form.orderBy ? 'underline' : 'none',
@@ -33,25 +33,27 @@
           </th>
         </template>
         <th style="width: 5%" v-if="!preview">
-          <button
-            id="btn-more-filters"
-            class="btn btn-secondary dropdown-toggle lh-1 w-100"
-            type="button"
-            data-bs-toggle="dropdown"
-            aria-expanded="false"
-            data-bs-auto-close="outside"
-          >
-            <font-awesome-icon :icon="['fas', 'gear']"></font-awesome-icon>
-          </button>
-          <ul class="dropdown-menu dropdown-menu-end p-1" style="width: 300px">
-            <li>
-              <div class="checkbox d-flex">
-                <button class="btn me-2" @click="changeGroupOrder">
-                  Change Group Order ({{ form.groupOrder }})
-                </button>
-              </div>
-            </li>
-          </ul>
+          <div class="d-flex justify-content-center">
+            <button
+              id="btn-more-filters"
+              class="btn dropdown-toggle p-0"
+              type="button"
+              data-bs-toggle="dropdown"
+              aria-expanded="false"
+              data-bs-auto-close="outside"
+            >
+              <font-awesome-icon :icon="['fas', 'gear']"></font-awesome-icon>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end p-1" style="width: 280px">
+              <li>
+                <div class="checkbox d-flex">
+                  <button class="btn" @click="changeGroupOrder">
+                    Change Group Order ({{ form.groupOrder }})
+                  </button>
+                </div>
+              </li>
+            </ul>
+          </div>
         </th>
       </tr>
     </thead>
@@ -93,7 +95,7 @@
   </table>
 </template>
 <script setup>
-import { quote } from "@composables/useQuote";
+import { quote, getQuote } from "@composables/useQuote";
 import { reactive, watch } from "vue";
 import queryString from "query-string";
 import axios from "axios";
@@ -134,6 +136,11 @@ const getItems = async () => {
 
 watch(form, function () {
   getItems();
+});
+
+emitter.on("quote-items:updated", async () => {
+  await getQuote(quote.id);
+  await getItems();
 });
 
 getItems();

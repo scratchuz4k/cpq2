@@ -36,7 +36,6 @@ const saveSolutionType = () => {
     let temp = props.available_columns.find((e) => e.value == x.value);
     x.has_order = !!temp.has_order;
   });
-  debugger;
   router.put(
     `/solution-types/${props.solution_type.id}`,
     { ...solutiontype, tables: [table] },
