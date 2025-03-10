@@ -61,6 +61,7 @@
       <template v-if="group">
         <template v-for="content in quote.items">
           <TableGroupSimple
+            :preview="preview"
             :columns="columns"
             :name="content.name"
             :group="group"

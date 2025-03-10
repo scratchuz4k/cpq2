@@ -1,9 +1,8 @@
 <script setup>
-import TableTotal from "@/Components/Quotes/Tables/TableTotal.vue";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import { Head, Link } from "@inertiajs/vue3";
-import {  ref } from "vue";
-import {  setQuote, quote } from "@composables/useQuote";
+import { ref } from "vue";
+import { setQuote, quote } from "@composables/useQuote";
 
 const props = defineProps({
   quote: Object,
@@ -22,14 +21,6 @@ let view =
   component && Object.keys(solutionsViews).includes(component)
     ? solutionsViews[component]
     : "TableDealMaker";
-
-const showDate = (days = 0) => {
-  const dateObj = new Date();
-  dateObj.setDate(dateObj.getDate() + days);
-  const currentDate =
-    dateObj.getDate() + "/" + (dateObj.getMonth() + 1) + "/" + dateObj.getFullYear();
-  return currentDate;
-};
 
 const items = ref([
   { label: "Home", url: "/dashboard" },
