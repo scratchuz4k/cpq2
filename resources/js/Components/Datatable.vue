@@ -371,16 +371,6 @@ getData();
   padding: 0.5rem 0.5rem !important;
 }
 
-.column-title {
-  padding: 0.5rem 0.5rem 0.5rem 0;
-}
-
-.column-title {
-  margin: 0;
-  width: 100%;
-  cursor: pointer;
-}
-
 .sortable:hover {
   text-decoration: underline;
 }

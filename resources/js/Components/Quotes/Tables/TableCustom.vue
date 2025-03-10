@@ -10,18 +10,62 @@
         <th style="width: 5%" v-if="!preview && group"></th>
         <template v-for="column in columns">
           <th :class="[`column-${column.value}-header`]">
-            {{ column.name }}
+            <b
+              v-if="column.has_order"
+              class="column-title sortable d-inline-flex align-items-center"
+              @click="sortBy(column.value)"
+              :style="{
+                textDecoration: column.value == form.orderBy ? 'underline' : 'none',
+              }"
+            >
+              {{ column.name }}
+              <span class="text-center" style="width: 20px">
+                <template v-if="column.value == form.orderBy">
+                  <font-awesome-icon
+                    v-if="form.order == 'desc'"
+                    :icon="['fas', 'sort-down']"
+                  />
+                  <font-awesome-icon v-else :icon="['fas', 'sort-up']" />
+                </template>
+              </span>
+            </b>
+            <p class="column-title" v-else>{{ column.name }}</p>
           </th>
         </template>
-        <th style="width: 5%" v-if="!preview"></th>
+        <th style="width: 5%" v-if="!preview">
+          <button
+            id="btn-more-filters"
+            class="btn btn-secondary dropdown-toggle lh-1 w-100"
+            type="button"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+            data-bs-auto-close="outside"
+          >
+            <font-awesome-icon :icon="['fas', 'gear']"></font-awesome-icon>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end p-1" style="width: 300px">
+            <li>
+              <div class="checkbox d-flex">
+                <button class="btn me-2" @click="changeGroupOrder">
+                  Change Group Order ({{ form.groupOrder }})
+                </button>
+              </div>
+            </li>
+          </ul>
+        </th>
       </tr>
     </thead>
     <tbody>
       <template v-if="group">
-        <template v-for="group in quote.items">
-          <TableGroupSimple :columns="columns" :item="group.name">
+        <template v-for="content in quote.items">
+          <TableGroupSimple
+            :columns="columns"
+            :name="content.name"
+            :group="group"
+            :item="content.items ? content.items[0] : {}"
+          >
             <TableItem
-              v-for="(item, index) in group.items"
+              v-for="(item, index) in content.items"
               :item="item"
               :columns="columns"
               :index="index"
@@ -50,6 +94,7 @@
 </template>
 <script setup>
 import { quote } from "@composables/useQuote";
+import { reactive, watch } from "vue";
 import queryString from "query-string";
 import axios from "axios";
 
@@ -60,18 +105,36 @@ defineProps({
 const columns = quote.solution_type?.table?.columns ?? [];
 const group = quote.solution_type?.table?.group ?? null;
 
+const form = reactive({
+  filters: [],
+  order: "asc",
+  orderBy: "id",
+  limit: 200,
+  group: group,
+  groupOrder: "asc",
+});
+const changeGroupOrder = () => {
+  form.groupOrder = form.groupOrder == "asc" ? "desc" : "asc";
+};
+const sortBy = (column) => {
+  let changeSort = form.order == "asc" ? "desc" : "asc";
+  form.order = form.orderBy === column ? changeSort : form.order;
+  form.orderBy = column;
+};
+
 const getItems = async () => {
   let string = queryString.stringify({
-    filters: JSON.stringify([]),
-    order: "desc",
-    orderBy: "id",
-    limit: 200,
-    group: group,
+    ...form,
+    filters: JSON.stringify([...form.filters]),
   });
 
   let res = await axios.get("/api/quote-items?" + string);
   quote.items = res.data.data;
 };
+
+watch(form, function () {
+  getItems();
+});
 
 getItems();
 </script>

@@ -37,7 +37,7 @@ class SolutionTypeResource extends JsonResource
             }
         }
 
-        $table = $this->tables->first()->toArray();
+        $table = $this->tables->first() ? $this->tables->first()->toArray() : [];
         if (array_key_exists("has_custom_table", $this->configs) && !$this->configs["has_custom_table"]) {
             $table["columns"] = $columns;
         }

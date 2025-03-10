@@ -4,7 +4,9 @@ import { ref } from "vue";
 const props = defineProps({
   preview: Boolean,
   columns: Array,
-  item: [String, Number],
+  name: [String, Number],
+  item: Object,
+  group: String,
 });
 const showChildren = ref(true);
 
@@ -27,7 +29,9 @@ const colspan = props.columns.length;
     </td>
     <td :colspan="colspan">
       <div class="d-flex">
-        <div class="me-3 py-2">{{ item }}</div>
+        <p class="m-0 me-3 py-2">
+          {{ name }} <span v-if="['group'].includes(group)">- {{ item?.name }}</span>
+        </p>
       </div>
     </td>
     <td class="text-center" v-if="!preview"></td>

@@ -13,6 +13,7 @@ const props = defineProps({
   available_tables: Array,
   available_columns: Array,
 });
+
 const table = reactive(
   props.solution_type.table
     ? { ...props.solution_type.table }
@@ -31,6 +32,11 @@ const dragOptions = {
 };
 
 const saveSolutionType = () => {
+  table.columns.forEach((x) => {
+    let temp = props.available_columns.find((e) => e.value == x.value);
+    x.has_order = !!temp.has_order;
+  });
+  debugger;
   router.put(
     `/solution-types/${props.solution_type.id}`,
     { ...solutiontype, tables: [table] },
@@ -66,6 +72,8 @@ const deleteColumn = (element) => {
     table.columns.splice(index, 1);
   }
 };
+
+const changeSelection = (option, element) => {};
 
 const items = ref([
   { label: "Home", url: "/" },
@@ -105,7 +113,7 @@ const items = ref([
             </div>
           </tab>
           <tab title="Quote">
-            <Panel class="mt-3" header="View" :toggleable="true">
+            <Panel class="mt-3" header="Summary Layout" :toggleable="true">
               <p class="mb-3">
                 This section contains all the customizations for the appearance of the
                 solution type to match specific preferences within the quote.
@@ -122,7 +130,7 @@ const items = ref([
               </div>
             </Panel>
 
-            <Panel class="mt-3" header="Table" :toggleable="true">
+            <Panel class="mt-3" header="Summary Table" :toggleable="true">
               <p class="mb-3">
                 In this section you can enable or disable a custom a table shown in the
                 solution type view.
@@ -148,6 +156,7 @@ const items = ref([
                   class="w-100"
                   optionLabel="name"
                   optionValue="value"
+                  showClear
                 />
               </div>
 
@@ -189,6 +198,7 @@ const items = ref([
                             optionValue="value"
                             placeholder="Select a Field"
                             class="w-100"
+                            @change="(ev) => changeSelection(ev, element)"
                           ></Select>
                         </td>
                         <td>

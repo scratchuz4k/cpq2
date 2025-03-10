@@ -120,7 +120,6 @@ class DataProvider
 
     private function processRequest()
     {
-
         $group = request()->input('group', null);
         if ($group) {
             $groupOrder = request()->input('groupOrder', 'asc');
