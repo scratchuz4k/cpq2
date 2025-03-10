@@ -103,11 +103,11 @@ const items = ref([
           </div>
         </div>
       </div>
-      <TableSimple
-        v-if="quote.solution_type.configurations?.has_custom_table == 0"
-        :preview="preview"
-      ></TableSimple>
-      <TableCustom v-else></TableCustom>
+
+      <TableCustom
+        v-if="quote.solution_type.configurations?.has_custom_table == 1"
+      ></TableCustom>
+      <TableSimple v-else :preview="preview"></TableSimple>
 
       <div class="row justify-content-end">
         <div class="col-6">

@@ -148,12 +148,14 @@ const items = ref([
             </div>
           </div>
         </div>
+        <TableCustom
+          v-if="quote.solution_type.configurations?.has_custom_table == 1"
+        ></TableCustom>
         <TableDealMaker
-          v-if="quote.solution_type.configurations?.has_custom_table == 0"
+          v-else
           :pricePlans="pricePlans"
           :preview="preview"
         ></TableDealMaker>
-        <TableCustom v-else></TableCustom>
 
         <div class="mb-5">
           <div>

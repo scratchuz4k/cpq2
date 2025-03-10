@@ -4,37 +4,39 @@ import { Head } from "@inertiajs/vue3";
 import { ref } from "vue";
 
 const props = defineProps({
-    quote: Object,
-    pricePlans: Object,
+  quote: Object,
+  pricePlans: Object,
 });
 
 const solutionsViews = {
-    Simple: "QuotesTotalSimpleView",
-    DealMaker: "QuotesTotalDealMakerView",
+  Simple: "QuotesTotalSimpleView",
+  DealMaker: "QuotesTotalDealMakerView",
 };
 
 let component = props.quote.solution_type.configurations?.component;
 let view =
-    component && Object.keys(solutionsViews).includes(component)
-        ? solutionsViews[component]
-        : "QuotesTotalDealMakerView";
+  component && Object.keys(solutionsViews).includes(component)
+    ? solutionsViews[component]
+    : "QuotesTotalDealMakerView";
 </script>
 
 <template>
-
-    <Head :title="'Quote #' + quote.id" />
-    <AuthenticatedLayout :quote="quote">
-        <component :is="view" v-bind="{
-            modelValue: quote,
-            pricePlans: props.pricePlans,
-            preview: false,
-        }"></component>
-    </AuthenticatedLayout>
+  <Head :title="'Quote #' + quote.id" />
+  <AuthenticatedLayout :quote="quote">
+    <component
+      :is="view"
+      v-bind="{
+        modelValue: quote,
+        pricePlans: props.pricePlans,
+        preview: false,
+      }"
+    ></component>
+  </AuthenticatedLayout>
 </template>
 
 <style>
 .form-control {
-    font-size: 0.9rem;
-    line-height: 1.5rem;
+  font-size: 0.9rem;
+  line-height: 1.5rem;
 }
 </style>
