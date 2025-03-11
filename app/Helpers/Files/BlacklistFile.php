@@ -2,9 +2,9 @@
 
 namespace App\Helpers\Files;
 
+use App\Helpers\FilterProvider;
 use App\Models\Tenant;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Collection;
 
 
 class BlacklistFile
@@ -61,42 +61,35 @@ class BlacklistFile
     public function getBlacklistFilters(): array
     {
         $blacklist_items = $this->getContent()['data'];
+        $blacklist_filters = [];
 
         foreach ($blacklist_items as &$blacklist_item) {
-            $blacklist_filters = [];
             foreach ($blacklist_item as $column => $value) {
                 if ($value && in_array($column, $this->filterable_columns)) {
                     if (is_array($value)) {
                         if (!is_null($value['value'])) {
                             $blacklist_filters[] = [
                                 'column' => $column,
-                                'operator' => $this->getInvertedOperator($value['operator']),
+                                'operator' => $value['operator'],
                                 'value' => $value['unit'] === 'Mb' ? $value['value'] : $value['value'] * 1000                            ];
                         }
                         break;
                     }
                     $blacklist_filters[] = [
                         'column' => $column,
-                        'operator' => 'not_in',
+                        'operator' => 'in',
                         'value' => $value
                     ];
                 }
             }
-            $blacklist_item['filters'] = $blacklist_filters ?? [];
         }
-        return $blacklist_items;
+        return $blacklist_filters;
     }
 
-    public function getInvertedOperator($operator): string
+    public function getBlacklistedData(Collection $data): Collection
     {
-        $array = [
-            'equals' => 'not_equals',
-            'greater_than' => 'less_than_or_equal_to',
-            'less_than' => 'greater_than_or_equal_to',
-            'greater_than_or_equal_to' => 'less_than',
-            'less_than_or_equal_to' => 'greater_than'
-        ];
-
-        return $array[$operator];
+        return FilterProvider::get(
+            $data->toArray(),
+            $this->getBlacklistFilters());
     }
 }

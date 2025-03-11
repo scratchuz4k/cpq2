@@ -24,17 +24,6 @@ const articles = ref([])
 const errors = ref([])
 const selectedFilters = ref([]);
 const filters = reactive({
-    productName: {
-        operator: "not_in",
-        value: [
-            'ADSL 2+ MPF',
-            'Software Defined SOGEA',
-            'Broadband FTTC MPF',
-            'Cellular Ethernet',
-            'Internet Access (Wires Only)'
-        ],
-        name: 'Product'
-    },
     providerName: {
         operator: "in",
         value: null,

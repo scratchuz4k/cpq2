@@ -22,12 +22,22 @@ class CloudMarketRepository
             Log::error('Empty or invalid file content.', ['file' => $file]);
         }
 
-        $items = FilterProvider::get($file['data'], $filters);
+        $items = FilterProvider::get($file['data'], []);
+
+        $blacklist_file = new BlacklistFile(Auth::user()->currentTenant);
+        $blacklist_items = $blacklist_file->getBlacklistedData($items);
+
+        $diff_codes = $items->pluck('code')->diff($blacklist_items->pluck('code'));
+
+        $items = $items->filter(function ($item) use ($diff_codes) {
+            return $diff_codes->contains($item['code']);
+        });
+
+        $items = FilterProvider::get($items->toArray(), $filters);
 
         foreach ($items as $key => $value) {
             $file['filters'] = FilterProvider::process($file['filters'], $value, true);
         }
-
 
         $priceRules = new PriceRules();
         $account = Account::where('id', request()->input('account_id', null))->first();

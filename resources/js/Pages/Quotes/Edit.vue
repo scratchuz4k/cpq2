@@ -29,7 +29,6 @@ const items = ref([
       :is="solutionsViews[quote.solution_type.code]"
       v-bind="{
         modelValue: quote,
-        ...(quote.solution_type.code == 3 ? { blacklist: props.blacklist } : {})
       }"
     ></component>
   </AuthenticatedLayout>
