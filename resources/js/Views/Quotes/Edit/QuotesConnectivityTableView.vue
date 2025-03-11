@@ -513,7 +513,7 @@ getArticles(false, true)
                                             </template>
                                         </TriStateToggle>
                                         <label class="form-check-label" for="filter-show-contended">
-                                            Show Contended products
+                                            Show contended products
                                         </label>
                                     </div>
                                 </li>
