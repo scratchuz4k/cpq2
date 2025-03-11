@@ -152,7 +152,6 @@ class QuoteController extends BaseController
 
     public function download(Quote $quote)
     {
-        $solution_types = SolutionType::get();
         $user = request()->user();
         $tenant = $quote->tenant;
         $dir = 'pdf/' . $quote->tenant->id;
@@ -161,11 +160,17 @@ class QuoteController extends BaseController
             throw new \Exception("Could not create directory for PDFs");
         }
 
+        $columns = [];
+        if (!array_key_exists("has_custom_table", $quote->solutionType->configs) || !$quote->solutionType["has_custom_table"]) {
+            $table["columns"] = $columns;
+        }
+
+
         $view  = array_key_exists("component", $quote->solutionType->configs) ? strtolower($quote->solutionType->configs["component"]) : "dealmaker";
         $quote = QuoteResource::make($quote->load(['items']))->resolve();
+        $items = [];
 
 
-        // return view("pdf.$view", compact('quote', 'solution_types'));
         return pdf()
             ->view("pdf.$view", compact('quote', 'solution_types', 'tenant'))
             ->format(Format::A4)
