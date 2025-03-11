@@ -2,15 +2,27 @@
 
 namespace App\Helpers\Files;
 
+use App\Models\Tenant;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 
 
 class BlacklistFile
 {
-    public function __construct(
-        public $path,
-        public $filename,
-    ) {}
+    private $path = '';
+    private $filename = '';
+    private $filterable_columns = [
+        'productName',
+        'providerName',
+        'connectivitySupplierGroup',
+        'bearer',
+        'speed',
+        'contractTermMonths'
+    ];
+    public function __construct(Tenant $tenant) {
+        $this->path = storage_path('/app/blacklists/');
+        $this->filename = 'blacklist_' . md5($tenant?->name) . '.json';
+    }
 
     public function write(array $data, $created_at, $updated_at)
     {
@@ -44,5 +56,47 @@ class BlacklistFile
             ];
         }
         return json_decode(file_get_contents($this->path . $this->filename), true);
+    }
+
+    public function getBlacklistFilters(): array
+    {
+        $blacklist_items = $this->getContent()['data'];
+
+        foreach ($blacklist_items as &$blacklist_item) {
+            $blacklist_filters = [];
+            foreach ($blacklist_item as $column => $value) {
+                if ($value && in_array($column, $this->filterable_columns)) {
+                    if (is_array($value)) {
+                        if (!is_null($value['value'])) {
+                            $blacklist_filters[] = [
+                                'column' => $column,
+                                'operator' => $this->getInvertedOperator($value['operator']),
+                                'value' => $value['unit'] === 'Mb' ? $value['value'] : $value['value'] * 1000                            ];
+                        }
+                        break;
+                    }
+                    $blacklist_filters[] = [
+                        'column' => $column,
+                        'operator' => 'not_in',
+                        'value' => $value
+                    ];
+                }
+            }
+            $blacklist_item['filters'] = $blacklist_filters ?? [];
+        }
+        return $blacklist_items;
+    }
+
+    public function getInvertedOperator($operator): string
+    {
+        $array = [
+            'equals' => 'not_equals',
+            'greater_than' => 'less_than_or_equal_to',
+            'less_than' => 'greater_than_or_equal_to',
+            'greater_than_or_equal_to' => 'less_than',
+            'less_than_or_equal_to' => 'greater_than'
+        ];
+
+        return $array[$operator];
     }
 }

@@ -19,9 +19,9 @@ const props = defineProps({
 });
 
 const blacklisted_item = reactive({
-    name: null,
-    provider: null,
-    subprovider: null,
+    productName: null,
+    providerName: null,
+    connectivitySupplierGroup: null,
     bearer: {
         operator: null,
         value: null,
@@ -32,7 +32,7 @@ const blacklisted_item = reactive({
         value: null,
         unit: null
     },
-    contract_term: null
+    contractTermMonths: null
 });
 
 const saveItem = () => {
@@ -58,6 +58,7 @@ const items = ref([
     {label: "Home", url: "/"},
     {label: "My Account", url: "/myaccount"},
     {label: "Products", url: "/products"},
+    {label: "BlackList", url: "/blacklist"},
     {label: "New Item"},
 ]);
 </script>
@@ -78,12 +79,12 @@ const items = ref([
                 <div class="col-6">
                     <div class="mb-3">
                         <label class="form-label">Product Name:</label>
-                        <input class="form-control" v-model="blacklisted_item.name"/>
+                        <input class="form-control" v-model="blacklisted_item.productName"/>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Provider:</label>
-                        <select class="form-select" v-model="blacklisted_item.provider">
-                            <option v-for="provider in props.providers" :value="provider.value">
+                        <select class="form-select" v-model="blacklisted_item.providerName">
+                            <option v-for="provider in props.providers" :value="provider.name">
                                 {{ provider.name }}
                             </option>
                         </select>
@@ -91,16 +92,18 @@ const items = ref([
 
                     <div class="mb-3">
                         <label class="form-label">Subprovider:</label>
-                        <select class="form-select" v-model="blacklisted_item.subprovider">
-                            <option v-for="provider in props.providers" :value="provider.value">
+                        <select class="form-select" v-model="blacklisted_item.connectivitySupplierGroup">
+                            <option v-for="provider in props.providers" :value="provider.name">
                                 {{ provider.name }}
                             </option>
                         </select>
                     </div>
                     <div class="mb-3">
+                        {{ props.operators }}
                         <label class="form-label">Bearer:</label>
                         <select class="form-select" v-model="blacklisted_item.bearer.operator">
-                            <option v-for="operator in props.operators" :value="operator.value">
+
+                            <option v-for="operator in props.operators" :value="operator.name">
                                 {{ operator.description }}
                             </option>
                         </select>
@@ -119,7 +122,7 @@ const items = ref([
                     <div class="mb-3">
                         <label class="form-label">Speed:</label>
                         <select class="form-select" v-model="blacklisted_item.speed.operator">
-                            <option v-for="operator in props.operators" :value="operator.value">
+                            <option v-for="operator in props.operators" :value="operator.name">
                                 {{ operator.description }}
                             </option>
                         </select>
@@ -137,7 +140,7 @@ const items = ref([
 
                     <div class="mb-3">
                         <label class="form-label">Contract Term:</label>
-                        <select class="form-select" v-model="blacklisted_item.contract_term">
+                        <select class="form-select" v-model="blacklisted_item.contractTermMonths">
                             <option v-for="term in props.contract_terms" :value="term.value">
                                 {{ term.value }} months
                             </option>

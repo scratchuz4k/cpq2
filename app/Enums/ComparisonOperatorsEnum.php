@@ -4,19 +4,19 @@ namespace App\Enums;
 
 enum ComparisonOperatorsEnum: string
 {
-    case EQUAL = '=';
-    case GREATER_THAN = '>';
-    case LESS_THAN = '<';
-    case GREATER_THAN_OR_EQUAL_TO = '>=';
-    case LESS_THAN_OR_EQUAL_TO = '<=';
+    case equals = '=';
+    case greater_than = '>';
+    case less_than = '<';
+    case greater_than_or_equal_to = '>=';
+    case less_than_or_equal_to = '<=';
 
     public function description(): string {
         return match($this) {
-            self::EQUAL => 'Equals',
-            self::GREATER_THAN => 'Greater than',
-            self::LESS_THAN => 'Lesser than',
-            self::GREATER_THAN_OR_EQUAL_TO => 'Greater than or equals to',
-            self::LESS_THAN_OR_EQUAL_TO => 'Lesser than or equals to',
+            self::equals => 'Equals',
+            self::greater_than => 'Greater than',
+            self::less_than => 'Lesser than',
+            self::greater_than_or_equal_to => 'Greater than or equals to',
+            self::less_than_or_equal_to => 'Lesser than or equals to',
         };
     }
     public static function asArray(): array

@@ -9,9 +9,10 @@ use App\Models\Tenant;
 
 class BlacklistService
 {
+
     public function index()
     {
-        $blacklist = self::getFile();
+        $blacklist = new BlacklistFile(Tenant::current());
         $data = $blacklist->getContent();
         $filters = request()->input('filters', []);
         $filters = is_string($filters) ? json_decode($filters, true) : $filters;
@@ -22,8 +23,7 @@ class BlacklistService
     }
     public function store(array $array)
     {
-        $blacklist = self::getFile();
-
+        $blacklist = new BlacklistFile(Tenant::current());
         $data = $blacklist->getContent();
         $id = count($data['data']) > 0 ? intval(max(array_keys($data['data']))) + 1 : 1;
 
@@ -43,14 +43,14 @@ class BlacklistService
 
     public function edit(string $id)
     {
-        $blacklist = self::getFile();
+        $blacklist = new BlacklistFile(Tenant::current());
         $data = $blacklist->getContent();
 
         return $data['data'][$id];
     }
     public function update(array $array)
     {
-        $blacklist = self::getFile();
+        $blacklist = new BlacklistFile(Tenant::current());
         $data = $blacklist->getContent();
         $item = $data['data'][$array['id']];
 
@@ -74,7 +74,7 @@ class BlacklistService
 
     public function destroy(string $id)
     {
-        $blacklist = self::getFile();
+        $blacklist = new BlacklistFile(Tenant::current());
         $data = $blacklist->getContent();
 
         unset($data['data'][$id]);
@@ -84,14 +84,5 @@ class BlacklistService
             $data['created_at'] ?? now(),
             now()
         );
-    }
-
-    private static function getFile()
-    {
-        $tenant = Tenant::current();
-        $path = storage_path('/app/blacklists/');
-        $filename = 'blacklist_' . md5($tenant->name) . '.json';
-
-        return new BlacklistFile($path, $filename);
     }
 }

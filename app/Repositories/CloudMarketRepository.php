@@ -2,10 +2,13 @@
 
 namespace App\Repositories;
 
+use App\Helpers\Files\BlacklistFile;
 use App\Models\Supplier;
 use App\Helpers\FilterProvider;
 use App\Helpers\Prices\PriceRules;
 use App\Models\Account;
+use App\Models\Tenant;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
 class CloudMarketRepository

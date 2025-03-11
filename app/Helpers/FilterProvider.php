@@ -86,6 +86,10 @@ class FilterProvider
                 return $data->filter(function ($item) use ($column, $value) {
                     return $item[$column] >= $value;
                 });
+            case "less_than_or_equal_to":
+                return $data->filter(function ($item) use ($column, $value) {
+                    return $item[$column] <= $value;
+                });
             case "lowest-cost":
                 // CONNECTIVITY SPECIFIC FILTER
                 $keys = [];
