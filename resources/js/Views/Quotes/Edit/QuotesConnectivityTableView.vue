@@ -487,20 +487,7 @@ getArticles(false, true)
                                             </template>
                                         </ToggleSwitch>
                                         <label class="form-check-label" for="filter-lower-cost">
-                                            Lowest cost router
-                                        </label>
-                                    </div>
-                                    <div class="checkbox d-flex py-1 px-2">
-                                        <TriStateToggle v-model="showContended" id="filter-show-contended">
-                                            <template #handle>
-                                                <font-awesome-icon
-                                                    :icon="showContended === true ? ['fas', 'circle-check'] : showContended === false ? ['far', 'circle-xmark'] : ['far', 'circle']"
-                                                    class="text-primary"
-                                                />
-                                            </template>
-                                        </TriStateToggle>
-                                        <label class="form-check-label" for="filter-show-contended">
-                                            Contended products
+                                            Show only lowest cost router
                                         </label>
                                     </div>
                                     <div class="checkbox d-flex py-1 px-2">
@@ -513,7 +500,20 @@ getArticles(false, true)
                                             </template>
                                         </ToggleSwitch>
                                         <label class="form-check-label" for="filter-show-quoted">
-                                            Only quoted items
+                                            Show only quoted items
+                                        </label>
+                                    </div>
+                                    <div class="checkbox d-flex py-1 px-2">
+                                        <TriStateToggle v-model="showContended" id="filter-show-contended">
+                                            <template #handle>
+                                                <font-awesome-icon
+                                                    :icon="showContended === true ? ['fas', 'circle-check'] : showContended === false ? ['far', 'circle-xmark'] : ['far', 'circle']"
+                                                    class="text-primary"
+                                                />
+                                            </template>
+                                        </TriStateToggle>
+                                        <label class="form-check-label" for="filter-show-contended">
+                                            Show Contended products
                                         </label>
                                     </div>
                                 </li>
