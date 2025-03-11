@@ -83,7 +83,6 @@ const meta = reactive({
 })
 
 const getArticles = async (clearCache = false, runTimeout = false) => {
-
     isLoading.value = true
     let temp = []
     Object.keys(filters).forEach((key) => {
@@ -128,8 +127,7 @@ const getArticles = async (clearCache = false, runTimeout = false) => {
 
     try {
         let res = await axios.post('/api/external/get-articles-from-cloud-market', query)
-        console.log(res.data);
-        debugger
+
         const errorMessages = {
             "BadGateway": "A Bad Gateway error occurred, resulting in partial or no results.",
             "Request timed out": "The request timed out, resulting in partial or no results.",
