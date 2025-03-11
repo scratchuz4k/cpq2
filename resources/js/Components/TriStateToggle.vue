@@ -48,7 +48,7 @@ const handleClasses = computed(() => ({
   align-items: center;
   justify-content: center;
   border-radius: 15px;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.2s ease;
   background: #cbd5e1;;
 }
 
