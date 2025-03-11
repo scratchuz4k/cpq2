@@ -29,7 +29,7 @@ class TenantController extends BaseController
 
         return Inertia::render('Tenant/Index', [
             'isSuperAdmin' => $user->hasRole('Super Admin'),
-            'tenants' => $user->currentTenant->load('file', 'logo')
+            'tenants' => $user->currentTenant->load('file', 'logo'),
         ]);
     }
 
@@ -100,6 +100,6 @@ class TenantController extends BaseController
         $request->user()->update(['tenant_id' => $tenant->id]);
         $tenant->makeCurrent();
 
-        return to_route('index');
+        return Inertia::location(route('index'));
     }
 }
