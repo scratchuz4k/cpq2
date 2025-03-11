@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers\Web;
 
+use App\Models\Scopes\TenantScope;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Models\Quote;
 use App\Models\Account;
@@ -10,18 +13,15 @@ use App\Models\PricePlan;
 use App\Models\SolutionType;
 use App\Services\QuoteService;
 use App\Enums\QuoteStatusesEnum;
-use App\Events\QuoteStatusEvent;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Spatie\Browsershot\Browsershot;
+use Spatie\LaravelPdf\Enums\Format;
 use App\Http\Resources\QuoteResource;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\QuoteCreateRequest;
 use App\Http\Requests\QuoteUpdateRequest;
-use Spatie\LaravelPdf\Enums\Format;
-use Spatie\LaravelPdf\Enums\Unit;
-
 use function Spatie\LaravelPdf\Support\pdf;
 
 class QuoteController extends BaseController
@@ -39,16 +39,20 @@ class QuoteController extends BaseController
     {
         $user = request()->user();
 
-        $users = User::descendants();
         if (!$user->hasRole('Sales Rep')) {
-            $users = User::all();
+            $users = User::whereHas('quotes')->get();
+        } else {
+            $users = $this->descendantsWithQuotes();
         }
 
         $users = $users->filter(fn($user) => $user->quotes->count() > 0);
+        $solutionTypes = SolutionType::whereHas('quotes', function ($query) use ($users) {
+            return $query->whereIn('user_id', $users->pluck('id'));
+        })->get();
 
         return Inertia::render('Quotes/Index', [
             "users" => $users->values(),
-            "solutions" => SolutionType::all(),
+            "solutions" => $solutionTypes,
             "status" => array_map(fn($status) => $status->name, QuoteStatusesEnum::cases())
         ]);
     }
@@ -57,9 +61,11 @@ class QuoteController extends BaseController
      */
     public function create()
     {
+        $tenant = Auth::user()->currentTenant;
+
         return Inertia::render('Quotes/Create', [
             'accounts' => Account::all(),
-            'solution_types' => SolutionType::get()
+            'solution_types' => $tenant->solutionTypes,
         ]);
     }
 
@@ -100,8 +106,8 @@ class QuoteController extends BaseController
     {
         return Inertia::render('Quotes/Edit', [
             'accounts' => Account::all(),
-            'solution_types' => SolutionType::get(),
-            'quote' => (new QuoteResource($quote))->resolve()
+            'solution_types' => Auth::user()->currentTenant->solutionTypes,
+            'quote' => new QuoteResource($quote->load(['items']))
         ]);
     }
 
@@ -137,7 +143,7 @@ class QuoteController extends BaseController
     {
         return Inertia::render('Quotes/Configure', [
             'accounts' => Account::all(),
-            'solution_types' => SolutionType::get(),
+            'solution_types' => Auth::user()->currentTenant->solutionTypes,
             'quote' => new QuoteResource($quote->load(['items']))
         ]);
     }
@@ -150,10 +156,15 @@ class QuoteController extends BaseController
         ]);
     }
 
-    public function download(Quote $quote)
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function download(Request $request)
     {
-        $user = request()->user();
-        $tenant = $quote->tenant;
+        $solution_types = Auth::user()->currentTenant->solutionTypes;
+        $quote = Quote::withoutGlobalScope(TenantScope::class)->find($request->quote);
+        $tenant = $quote->tenant->makeCurrent();
+        $quote = $quote->refresh();
         $dir = 'pdf/' . $quote->tenant->id;
 
         if (!Storage::makeDirectory($dir)) {
@@ -179,5 +190,21 @@ class QuoteController extends BaseController
             })
             ->name('quote-' . $quote['id'] . '.pdf')
             ->download();
+    }
+
+    private function descendantsWithQuotes()
+    {
+        $users = collect([]);
+        if (is_null(Auth::user())) {
+            return $users;
+        }
+        $userDescedents = collect([Auth::user()]);
+        do {
+            $current = $userDescedents->pop();
+            $users->push($current);
+            $userDescedents->push(...$current->children()->whereHas('quotes')->get());
+        } while (count($userDescedents));
+
+        return $users;
     }
 }

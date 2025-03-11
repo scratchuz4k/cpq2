@@ -50,7 +50,7 @@ class Price extends Model
             //TODO: switch to a account saved in the user model
             static::$priceRules = new PriceRules;
             $account = Account::find(request() ? request()->input('account_id', null) : null);
-            static::$priceRules->find($model->product, $model->product->supplier, $account);
+            static::$priceRules->find($model->product, $model->product->supplier, $account, $model->product->pricePlan);
             $model->setAttribute('net_spa', static::$priceRules->apply((float) $model->net));
             $model->setAttribute('active_spas', static::$priceRules->getAppliedSpas());
             $model->calculate();

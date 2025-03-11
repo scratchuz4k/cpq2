@@ -224,24 +224,21 @@ getData();
               <font-awesome-icon :icon="['fas', 'filter']" />
             </button>
             <div class="filter-content" :class="{ last: key + 1 == columns.length }">
-              <!-- <div class="mb-3">
-                                <label class="form-label" :for="`filter-operator-${key}`">Operator</label>
-                                <select :id="`filter-operator-${key}`" class="form-select w-100"
-                                    v-model="form.filters[key].operator">
-                                    <option value="contains">Contains</option>
-                                    <option value="not_contains">Not Contains</option>
-                                    <option value="starts_with">Starts With</option>
-                                    <option value="ends_with">Ends With</option>
-                                    <option value="equals" v-html="'='"></option>
-                                    <option value="not_equals" v-html="'!='"></option>
-                                    <option value="greater_than" v-html="'>'"></option>
-                                    <option value="less_than" v-html="'<'"></option>
-                                    <option value="greater_than_or_equal_to" v-html="'>='"></option>
-                                    <option value="less_than_or_equal_to" v-html="'<='"></option>
-                                </select>
-                            </div> -->
               <template v-if="Object.keys(props.filters).includes(column.data)">
-                <div class="mb-3">
+                  <div class="my-1" v-if="props.filters[column.data].type === 'checkbox'">
+                      <div class="form-check p-0">
+                          <Checkbox
+                              id="active-filter"
+                              class="form-check-input"
+                              v-model="form.filters[key].value"
+                              :checked="!!form.filters[key].value"
+                          />
+                          <label class="form-check-label ms-2" for="active-filter">
+                              Active
+                          </label>
+                      </div>
+                  </div>
+                <div v-if="props.filters[column.data].type === 'options'" class="mb-3">
                   <label class="form-label" :for="`filter-value-${key}`">Options</label>
                   <select
                     :id="`filter-value-${key}`"

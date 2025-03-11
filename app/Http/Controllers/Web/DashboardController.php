@@ -19,22 +19,7 @@ class DashboardController extends BaseController
             return to_route('orders.index');
         }
 
-        return to_route('quotes.index');
-
-        $user = request()->user();
-
-        $users = User::descendants();
-        if (!$user->hasRole('Sales Rep')) {
-            $users = User::all();
-        }
-
-        $users = $users->filter(fn ($user) => $user->quotes->count() > 0);
-
-        return Inertia::render('Dashboard', [
-            "users" => $users->values(),
-            "solutions" => SolutionType::all(),
-            "status" => ["PRICE", "QUOTE", "CONFIGURE"]
-        ]);
+        return Inertia::location('/quotes');
     }
 
     /**

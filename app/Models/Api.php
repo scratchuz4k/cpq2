@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Trait\IsActive;
 use App\Trait\SetTenantId;
 use App\Models\Scopes\TenantScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -12,7 +13,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Api extends Model
 {
-    use SetTenantId, HasFactory;
+    use SetTenantId, HasFactory, IsActive;
 
     protected $table = 'api_configurations';
 
@@ -29,7 +30,8 @@ class Api extends Model
         'password',
         'token',
         'extra_data',
-        'tenant_id'
+        'tenant_id',
+        'is_active'
     ];
 
     protected function casts(): array

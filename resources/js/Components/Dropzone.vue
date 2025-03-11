@@ -1,5 +1,5 @@
 <template>
-    <form action="/api/resources" class="dropzone mb-5" id="dropzone">
+    <form action="/api/resources" class="dropzone mb-3" id="dropzone">
         <slot></slot>
     </form>
 </template>

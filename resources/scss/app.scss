@@ -1144,7 +1144,7 @@ body {
 .preview-logo>img {
     max-height: 100px;
     max-width: 300px;
-    object-fit: contain;
+    object-fit: scale-down;
     object-position: left;
 }
 
@@ -1176,6 +1176,14 @@ body {
                 color: black;
                 opacity: 1;
             }
+        }
+    }
+}
+
+.p-toggleswitch {
+    &.p-toggleswitch-checked {
+        .p-toggleswitch-slider {
+            background: var(--color-purple-light)!important;
         }
     }
 }

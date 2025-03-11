@@ -18,6 +18,7 @@ const showLoadingModal = ref(true)
 const showLowestCost = ref(true)
 const showQuoted = ref(false)
 const showFilters = ref(true)
+const showContended = ref(false)
 const articles = ref([])
 const errors = ref([])
 const selectedFilters = ref([]);
@@ -90,6 +91,9 @@ const getArticles = async (clearCache = false, runTimeout = false) => {
     if (showLowestCost.value) {
         temp.push({ column: '*', operator: 'lowest-cost', value: true })
     }
+    if (showContended.value) {
+        temp.push({ column: 'isContended', operator: 'equals', value: true })
+    }
     if (clearCache) {
         showLoadingModal.value = true
     }
@@ -118,7 +122,6 @@ const getArticles = async (clearCache = false, runTimeout = false) => {
     try {
         let res = await axios.post('/api/external/get-articles-from-cloud-market', query)
 
-        articles.value = res.data.data ?? []
         const errorMessages = {
             "BadGateway": "A Bad Gateway error occurred, resulting in partial or no results.",
             "Request timed out": "The request timed out, resulting in partial or no results.",
@@ -130,10 +133,11 @@ const getArticles = async (clearCache = false, runTimeout = false) => {
             "Service Unavailable": "The service is temporarily unavailable.",
             "There is an error in XML document": "The request could not be processed due to a data format issue.",
             "No provider is configured": "No provider is configured, please add at least one provider with the required credentials to obtain a quote.",
-            "Request failed with status Unauthorized": "Request failed with status Unauthorized (Check login credentials for this provider)",
+            "Request failed with status Unauthorized": "Request failed with status Unauthorized (Please check login credentials for this provider).",
+            "Address not found in cache": "No results were found for this address.",
         };
-
-        errors.value = res.data.errors
+        if(res.data.errors){
+            errors.value = res.data.errors
             .filter((error) => error.provider !== "gamma")
             .map((error) => {
                 for (const [key, message] of Object.entries(errorMessages)) {
@@ -143,7 +147,8 @@ const getArticles = async (clearCache = false, runTimeout = false) => {
                 }
                 return { provider: error.provider, response: 'An error occurred, resulting in partial or no results' }
             });
-
+        }
+        articles.value = res.data.data ?? []
         articles.value = articles.value.map((article) => {
             if (article.productName.includes('with router:')) {
                 const productInfo = article.productName.split('with router:');
@@ -235,6 +240,7 @@ const resetFilters = () => {
 
     showLowestCost.value = true
     showQuoted.value = false
+    showContended.value = false
 }
 
 const checkProduct = (article) => {
@@ -317,7 +323,7 @@ const handlePaginator = (ev) => {
     getArticles()
 }
 
-watch([filters, showQuoted, showLowestCost], _.debounce(function () {
+watch([filters, showQuoted, showLowestCost, showContended], _.debounce(function () {
     meta.page = 1
     getArticles()
 }, 500))
@@ -476,6 +482,13 @@ getArticles(false, true)
                                             id="filter-lower-cost" v-model="showLowestCost">
                                         <label class="form-check-label" for="filter-lower-cost">
                                             Only show lowest cost router
+                                        </label>
+                                    </div>
+                                    <div class="checkbox d-flex px-3">
+                                        <input class="form-check-input me-2" type="checkbox" value="filter-show-contended"
+                                            id="filter-show-contended" v-model="showContended">
+                                        <label class="form-check-label" for="filter-show-contended">
+                                            Only show contended products
                                         </label>
                                     </div>
                                     <div class="checkbox d-flex px-3">
