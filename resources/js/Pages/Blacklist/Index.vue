@@ -9,7 +9,13 @@ const items = ref([
     { label: "Products", url: "/products" },
     { label: 'BlackList' },
 ]);
-
+const operators = {
+    equals: '=',
+    greater_than: '>',
+    less_than: '<',
+    greater_than_or_equal_to: '>=',
+    less_than_or_equal_to: '<=',
+}
 </script>
 <template>
     <Head title="BlackList" />
@@ -28,13 +34,25 @@ const items = ref([
                     delete: true,
                     link: false,
                 }" :columns="[
-                    { data: 'id', title: '#', style: 'width:5%' },
-                    { data: 'name', title: 'Name', style: 'width:30%' },
-                    { data: 'provider', title: 'Provider', style: 'width:12%' },
-                    { data: 'subprovider', title: 'Subprovider', style: 'width:12%' },
+                    { data: 'id', title: '#', style: 'width:3%' },
+                    { data: 'productName', title: 'Name', style: 'width:15%' },
+                    { data: 'providerName', title: 'Provider', style: 'width:8%' },
+                    { data: 'connectivitySupplierGroup', title: 'Subprovider', style: 'width:8%' },
+                    { data: 'bearer', title: 'Bearer', style: 'width:10%' },
+                    { data: 'speed', title: 'Speed', style: 'width:10%' },
+                    { data: 'contractTermMonths', title: 'Contract Term', style: 'width:17%' },
                     { data: 'created_at', title: 'created At', style: 'width:15%' },
                     { data: 'updated_at', title: 'Updated At', style: 'width:15%' }
                 ]" route="/blacklist">
+                    <template #bearer="{ value }">
+                        {{ operators[value.operator ]}} {{ value.value }} {{ value.unit }}
+                    </template>
+                    <template #speed="{ value }">
+                        {{ operators[value.operator ]}} {{ value.value }} {{ value.unit }}
+                    </template>
+                    <template #contractTermMonths="{ value }">
+                        {{ value ? value + ' months' : '' }}
+                    </template>
                     <template #updated_at="{ value }">
                         {{ format.date(value) }}
                     </template>
