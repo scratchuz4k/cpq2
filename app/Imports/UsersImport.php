@@ -128,7 +128,9 @@ class UsersImport implements ToCollection, WithBatchInserts, WithHeadingRow
     public function collection(Collection $rows): void
     {
         foreach ($rows as $row) {
-            $row = $row->toArray();
+            $row = array_map(function ($value) {
+                return trim($value);
+            }, $row->toArray());
             $this->results['processed']++;
             if (empty($row['managername'])) {
                 $this->insertUser($row);
