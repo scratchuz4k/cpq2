@@ -63,19 +63,19 @@ class BlacklistFile
         $blacklist_items = $this->getContent()['data'];
         $blacklist_filters = [];
 
-        foreach ($blacklist_items as &$blacklist_item) {
+        foreach ($blacklist_items as $blacklist_item) {
             foreach ($blacklist_item as $column => $value) {
                 if ($value && in_array($column, $this->filterable_columns)) {
                     if (is_array($value)) {
                         if (!is_null($value['value'])) {
-                            $blacklist_filters[] = [
+                            $blacklist_filters[$blacklist_item['id']][] = [
                                 'column' => $column,
                                 'operator' => $value['operator'],
                                 'value' => $value['unit'] === 'Mb' ? $value['value'] : $value['value'] * 1000                            ];
                         }
-                        break;
+                        continue;
                     }
-                    $blacklist_filters[] = [
+                    $blacklist_filters[$blacklist_item['id']][] = [
                         'column' => $column,
                         'operator' => 'in',
                         'value' => $value
@@ -88,8 +88,10 @@ class BlacklistFile
 
     public function getBlacklistedData(Collection $data): Collection
     {
-        return FilterProvider::get(
-            $data->toArray(),
-            $this->getBlacklistFilters());
+        $blacklisted_items = collect();
+        foreach ($this->getBlacklistFilters() as $item_filter) {
+            $blacklisted_items = $blacklisted_items->merge(FilterProvider::get($data->toArray(), $item_filter));
+        }
+        return $blacklisted_items;
     }
 }
