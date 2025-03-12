@@ -8,10 +8,13 @@ import Dialog from "primevue/dialog";
 import format from "@/Composables/format.js";
 import Spinner from "@/Components/Spinner.vue";
 import Select from "primevue/select";
+import ToggleSwitch from 'primevue/toggleswitch';
+import TriStateToggle from "@/Components/TriStateToggle.vue";
 
 const props = defineProps({
     modelValue: Object
 })
+
 
 let timeoutId = null
 const isLoading = ref(true)
@@ -19,7 +22,7 @@ const showLoadingModal = ref(true)
 const showLowestCost = ref(true)
 const showQuoted = ref(false)
 const showFilters = ref(true)
-const showContended = ref(false)
+const showContended = ref(null)
 const articles = ref([])
 const errors = ref([])
 const selectedFilters = ref([]);
@@ -92,9 +95,11 @@ const getArticles = async (clearCache = false, runTimeout = false) => {
     if (showLowestCost.value) {
         temp.push({ column: '*', operator: 'lowest-cost', value: true })
     }
-    if (showContended.value) {
-        temp.push({ column: 'isContended', operator: 'equals', value: true })
+
+    if (showContended.value !== null) {
+        temp.push({ column: 'isContended', operator: 'equals', value: showContended.value })
     }
+
     if (clearCache) {
         showLoadingModal.value = true
     }
@@ -470,27 +475,45 @@ getArticles(false, true)
                                 data-bs-auto-close="outside">
                                 <font-awesome-icon :icon="['fas', 'gear']"></font-awesome-icon>
                             </button>
-                            <ul class="dropdown-menu dropdown-menu-end p-1">
+                            <ul class="dropdown-menu dropdown-menu-end mt-1 p-1">
                                 <li>
-                                    <div class="checkbox d-flex px-3">
-                                        <input class="form-check-input me-2" type="checkbox" value="filter-lower-cost"
-                                            id="filter-lower-cost" v-model="showLowestCost">
+                                    <div class="checkbox d-flex py-1 px-2">
+                                        <ToggleSwitch class="me-2" id="filter-lower-cost" v-model="showLowestCost">
+                                            <template #handle>
+                                                <font-awesome-icon
+                                                    :icon="showLowestCost ? ['fas', 'circle-check'] : ['far', 'circle-xmark']"
+                                                    class="text-primary"
+                                                />
+                                            </template>
+                                        </ToggleSwitch>
                                         <label class="form-check-label" for="filter-lower-cost">
-                                            Only show lowest cost router
+                                            Show only lowest cost router
                                         </label>
                                     </div>
-                                    <div class="checkbox d-flex px-3">
-                                        <input class="form-check-input me-2" type="checkbox" value="filter-show-contended"
-                                            id="filter-show-contended" v-model="showContended">
-                                        <label class="form-check-label" for="filter-show-contended">
-                                            Only show contended products
-                                        </label>
-                                    </div>
-                                    <div class="checkbox d-flex px-3">
-                                        <input class="form-check-input me-2" type="checkbox" value="filter-show-quoted"
-                                            id="filter-show-quoted" v-model="showQuoted">
+                                    <div class="checkbox d-flex py-1 px-2">
+                                        <ToggleSwitch class="me-2" id="filter-show-quoted" v-model="showQuoted">
+                                            <template #handle>
+                                                <font-awesome-icon
+                                                    :icon="showQuoted ? ['fas', 'circle-check'] : ['far', 'circle-xmark']"
+                                                    class="text-primary"
+                                                />
+                                            </template>
+                                        </ToggleSwitch>
                                         <label class="form-check-label" for="filter-show-quoted">
-                                            Show quoted items
+                                            Show only quoted items
+                                        </label>
+                                    </div>
+                                    <div class="checkbox d-flex py-1 px-2">
+                                        <TriStateToggle v-model="showContended" id="filter-show-contended">
+                                            <template #handle>
+                                                <font-awesome-icon
+                                                    :icon="showContended === true ? ['fas', 'circle-check'] : showContended === false ? ['far', 'circle-xmark'] : ['far', 'circle']"
+                                                    class="text-primary"
+                                                />
+                                            </template>
+                                        </TriStateToggle>
+                                        <label class="form-check-label" for="filter-show-contended">
+                                            Show contended products
                                         </label>
                                     </div>
                                 </li>
