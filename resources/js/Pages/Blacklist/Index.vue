@@ -3,19 +3,16 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link } from "@inertiajs/vue3";
 import { ref } from 'vue';
 
+const props = defineProps({
+    operators: Array
+})
 const items = ref([
     { label: 'Home', url: '/' },
     { label: 'My Account', url: '/myaccount' },
     { label: "Products", url: "/products" },
     { label: 'BlackList' },
 ]);
-const operators = {
-    equals: '=',
-    greater_than: '>',
-    less_than: '<',
-    greater_than_or_equal_to: '>=',
-    less_than_or_equal_to: '<=',
-}
+
 </script>
 <template>
     <Head title="BlackList" />
@@ -29,26 +26,45 @@ const operators = {
                 </template>
             </Header>
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+                {{ props.operators}}
                 <Datatable :allow="{
                     update: true,
                     delete: true,
                     link: false,
                 }" :columns="[
-                    { data: 'id', title: '#', style: 'width:3%' },
-                    { data: 'productName', title: 'Name', style: 'width:15%' },
-                    { data: 'providerName', title: 'Provider', style: 'width:8%' },
-                    { data: 'connectivitySupplierGroup', title: 'Subprovider', style: 'width:8%' },
-                    { data: 'bearer', title: 'Bearer', style: 'width:10%' },
-                    { data: 'speed', title: 'Speed', style: 'width:10%' },
-                    { data: 'contractTermMonths', title: 'Contract Term', style: 'width:17%' },
+                    { data: 'id', title: '#', style: 'width:1%' },
+                    { data: 'productName', title: 'Name', style: 'width:10%' },
+                    { data: 'providerName', title: 'Provider', style: 'width:5%' },
+                    { data: 'connectivitySupplierGroup', title: 'Subprovider', style: 'width:5%' },
+                    { data: 'bearer', title: 'Bearer', style: 'width:5%' },
+                    { data: 'speed', title: 'Speed', style: 'width:5%' },
+                    { data: 'contractTermMonths', title: 'Contract Term', style: 'width:29%' },
                     { data: 'created_at', title: 'created At', style: 'width:15%' },
                     { data: 'updated_at', title: 'Updated At', style: 'width:15%' }
                 ]" route="/blacklist">
                     <template #bearer="{ value }">
-                        {{ operators[value.operator ]}} {{ value.value }} {{ value.unit }}
+                        <span
+                            v-tooltip
+                            data-bs-toggle="tooltip"
+                            data-bs-placement="top"
+                            :title="operators.find(op => op.name === value.operator)
+                                ?.description + ' ' + value.value + ' ' + value.unit
+                            "
+                        >
+                            {{ value.value }} {{ value.unit }}
+                        </span>
                     </template>
                     <template #speed="{ value }">
-                        {{ operators[value.operator ]}} {{ value.value }} {{ value.unit }}
+                        <span
+                            v-tooltip
+                            data-bs-toggle="tooltip"
+                            data-bs-placement="top"
+                            :title="operators.find(op => op.name === value.operator)
+                                ?.description + ' ' + value.value + ' ' + value.unit
+                            "
+                        >
+                            {{ value.value }} {{ value.unit }}
+                        </span>
                     </template>
                     <template #contractTermMonths="{ value }">
                         {{ value ? value + ' months' : '' }}

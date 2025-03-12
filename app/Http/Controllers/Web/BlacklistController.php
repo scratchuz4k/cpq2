@@ -34,7 +34,9 @@ class BlacklistController extends BaseController
      */
     public function index()
     {
-        return Inertia::render('Blacklist/Index');
+        return Inertia::render('Blacklist/Index', [
+            'operators' => ComparisonOperatorsEnum::asArray()
+        ]);
     }
 
     /**
