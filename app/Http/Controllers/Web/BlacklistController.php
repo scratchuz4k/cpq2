@@ -2,26 +2,18 @@
 
 namespace App\Http\Controllers\Web;
 
+use App\Enums\CloudMarketSubprovidersEnum;
 use App\Enums\CloudMarketSuppliersEnum;
 use App\Enums\ComparisonOperatorsEnum;
 use App\Enums\ContractTermsEnum;
 use App\Enums\SpeedUnitsEnum;
-use App\Models\Tenant;
 use App\Services\BlacklistService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
-use App\Models\Brand;
 use Inertia\Response;
 use App\Models\Product;
-use App\Models\Supplier;
-use App\Services\ProductsService;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use App\Http\Resources\ProductResource;
 use App\Http\Controllers\BaseController;
-use App\Http\Requests\ProductCreateRequest;
-use App\Http\Requests\ProductUpdateRequest;
-use App\Models\PricePlan;
 
 class BlacklistController extends BaseController
 {
@@ -46,6 +38,7 @@ class BlacklistController extends BaseController
     {
         return Inertia::render('Blacklist/Create', [
             'providers' => CloudMarketSuppliersEnum::asArray(),
+            'subproviders' => CloudMarketSubprovidersEnum::cases(),
             'operators' => ComparisonOperatorsEnum::asArray(),
             'contract_terms' => ContractTermsEnum::asArray(),
             'speed_units' => SpeedUnitsEnum::asArray(),
@@ -93,6 +86,7 @@ class BlacklistController extends BaseController
         return Inertia::render('Blacklist/Edit', [
             'blacklisted_item' => $item,
             'providers' => CloudMarketSuppliersEnum::asArray(),
+            'subproviders' => CloudMarketSubprovidersEnum::cases(),
             'operators' => ComparisonOperatorsEnum::asArray(),
             'contract_terms' => ContractTermsEnum::asArray(),
             'speed_units' => SpeedUnitsEnum::asArray(),

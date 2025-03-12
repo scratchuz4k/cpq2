@@ -44,16 +44,16 @@ const items = ref([
     { label: 'Home', url: '/' },
     { label: 'My Account', url: '/myaccount' },
     { label: 'Apis', url: '/apis' },
-    { label: 'New Api' },
+    { label: 'Edit Api' },
 ]);
 
 </script>
 <template>
 
-    <Head title="Api" />
+    <Head :title="'Edit Item #' + data.id"/>
     <AuthenticatedLayout>
         <div class="panel">
-            <Header title="New Api" :breadcrumbs="items">
+            <Header :title="'Edit Item #' + data.id" :breadcrumbs="items">
                 <template #buttons>
                     <PrimaryButton id="btn-save-api" @click="saveApi()">
                         <font-awesome-icon class="me-2" :icon="['fas', 'save']"></font-awesome-icon> Save

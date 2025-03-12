@@ -57,7 +57,7 @@ const items = ref([
 </script>
 <template>
 
-    <Head title="Api" />
+    <Head title="New Api" />
     <AuthenticatedLayout>
         <div class="panel">
             <Header title="New Api" :breadcrumbs="items">

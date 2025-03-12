@@ -14,6 +14,7 @@ import Select from "primevue/select";
 const props = defineProps({
     blacklisted_item: Array,
     providers: Array,
+    subproviders: Array,
     operators: Array,
     contract_terms: Array,
     speed_units: Array
@@ -45,14 +46,14 @@ const items = ref([
     {label: "My Account", url: "/myaccount"},
     {label: "Products", url: "/products"},
     {label: "BlackList", url: "/blacklist"},
-    {label: "New Item"},
+    {label: "Edit Item"},
 ]);
 </script>
 <template>
-    <Head title="New Item"/>
+    <Head :title="'Edit Item #' + blacklisted_item.id"/>
     <AuthenticatedLayout>
         <div class="panel">
-            <Header title="New Item" :breadcrumbs="items">
+            <Header :title="'Edit Item #' + blacklisted_item.id" :breadcrumbs="items">
                 <template #buttons>
                     <PrimaryButton id="btn-save-product" @click="saveItem()">
                         <font-awesome-icon class="me-2" :icon="['fas', 'save']"></font-awesome-icon>
@@ -60,7 +61,6 @@ const items = ref([
                     </PrimaryButton>
                 </template>
             </Header>
-            {{ blacklisted_item}}
             <div class="row">
                 <div class="col-6">
                     <div class="mb-3">
@@ -77,12 +77,11 @@ const items = ref([
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label">Subprovider:</label>
-                        <select class="form-select" v-model="blacklisted_item.connectivitySupplierGroup">
-                            <option v-for="provider in props.providers" :value="provider.name">
-                                {{ provider.name }}
-                            </option>
-                        </select>
+                        <div class="mb-3">
+                            <label for="subprovider" class="form-label">Subprovider:</label>
+                            <Select :inputId="'subprovider'" v-model="blacklisted_item.connectivitySupplierGroup" editable :options="props.subproviders"
+                                    placeholder="Enter a Subprovider" class="w-100" />
+                        </div>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Bearer:</label>

@@ -13,6 +13,7 @@ import Select from "primevue/select";
 
 const props = defineProps({
     providers: Array,
+    subproviders: Array,
     operators: Array,
     contract_terms: Array,
     speed_units: Array
@@ -74,7 +75,6 @@ const items = ref([
                     </PrimaryButton>
                 </template>
             </Header>
-            {{ blacklisted_item}}
             <div class="row">
                 <div class="col-6">
                     <div class="mb-3">
@@ -91,15 +91,13 @@ const items = ref([
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label">Subprovider:</label>
-                        <select class="form-select" v-model="blacklisted_item.connectivitySupplierGroup">
-                            <option v-for="provider in props.providers" :value="provider.name">
-                                {{ provider.name }}
-                            </option>
-                        </select>
+                        <div class="mb-3">
+                            <label for="subprovider" class="form-label">Subprovider:</label>
+                            <Select :inputId="'subprovider'" v-model="blacklisted_item.connectivitySupplierGroup" editable :options="props.subproviders"
+                                    placeholder="Enter a Subprovider" class="w-100" />
+                        </div>
                     </div>
                     <div class="mb-3">
-                        {{ props.operators }}
                         <label class="form-label">Bearer:</label>
                         <select class="form-select" v-model="blacklisted_item.bearer.operator">
 
