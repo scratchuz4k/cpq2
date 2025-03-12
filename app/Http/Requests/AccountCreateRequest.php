@@ -3,6 +3,8 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 
 class AccountCreateRequest extends FormRequest
 {
@@ -21,9 +23,17 @@ class AccountCreateRequest extends FormRequest
      */
     public function rules(): array
     {
+        $user = Auth::user();
         return [
             'name' => 'required',
-            'reference' => 'required|unique:accounts',
+            'reference' => [
+                'required',
+                Rule::unique('accounts')
+                    ->where(
+                        'tenant_id',
+                        $user->tenant_id
+                    )
+            ],
             'contacts.*.name' => 'nullable',
             'contacts.*.email' => 'nullable|email'
         ];

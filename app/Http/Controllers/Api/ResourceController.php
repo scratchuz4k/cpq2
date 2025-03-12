@@ -19,6 +19,7 @@ class ResourceController extends Controller
     public function index()
     {
         $dataProvider = new DataProvider(Resource::class);
+        $dataProvider->builder = $dataProvider->builder->where('tenant_id', request()->user()->tenant_id);
         try {
             $data = $dataProvider->get();
         } catch (Exception $e) {

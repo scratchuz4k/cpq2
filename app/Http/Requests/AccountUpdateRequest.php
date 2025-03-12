@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 
 class AccountUpdateRequest extends FormRequest
@@ -22,7 +23,7 @@ class AccountUpdateRequest extends FormRequest
      */
     public function rules(): array
     {
-
+        $user = Auth::user();
         $account_id = null;
         if (array_key_exists('account', $this->route()->parameters())) {
             $account_id = $this->route()->parameters()['account']->id;
@@ -31,7 +32,13 @@ class AccountUpdateRequest extends FormRequest
         return [
             'name' => 'string',
             'reference' => [
-                'string', Rule::unique('accounts')->ignore($account_id),
+                'string',
+                Rule::unique('accounts')
+                    ->where(
+                        'tenant_id',
+                        $user->tenant_id
+                    )
+                    ->ignore($account_id),
             ],
             'contacts.*.name' => 'nullable',
             'contacts.*.email' => 'nullable|email',

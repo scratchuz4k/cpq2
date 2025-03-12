@@ -16,11 +16,7 @@ class CloudMarketApi
 
         $url = env('CLOUDMARKET_CONNECTION_SERVICE_URL', 'https://cpq-poc-uat-api.cloudmarket.com');
         $requestTimeout = 420;
-        $virtual1 = Api::where('code', CloudMarketSuppliersEnum::Virtual1->value)->first();
-        $gamma = Api::where('code', CloudMarketSuppliersEnum::Gamma->value)->first();
-        $giacom = Api::where('code', CloudMarketSuppliersEnum::Giacom->value)->first();
-        $its = Api::where('code', CloudMarketSuppliersEnum::ITS->value)->first();
-        $vorboss = Api::where('code', CloudMarketSuppliersEnum::Vorboss->value)->first();
+        $apis = Api::active()->whereIn('code', CloudMarketSuppliersEnum::values())->get();
 
         $quoteAddress = [
             'ConnectivityType' => $connectivityType,
@@ -41,17 +37,10 @@ class CloudMarketApi
 
         Log::debug('CloudMarketApi::getQuotes lookup:', $quoteAddress);
 
-        $quoteCredentials = [
-            'SupplierApiConnections.Its_Connection.Its_AccessKey' => env('ITS_CONNECTION_ACCESSKEY', $its?->token),
-            'SupplierApiConnections.Virtual1_Connection.Username' => env('VIRTUAL1_CONNECTION_USERNAME', $virtual1?->username),
-            'SupplierApiConnections.Virtual1_Connection.Password' => env('VIRTUAL1_CONNECTION_PASSWORD', $virtual1?->password),
-            'SupplierApiConnections.Gamma_Connection.Username' => env('GAMMA_CONNECTION_USERNAME', $gamma?->username),
-            'SupplierApiConnections.Gamma_Connection.Password' => env('GAMMA_CONNECTION_PASSWORD', $gamma?->password),
-            'SupplierApiConnections.Gamma_Connection.ClientId' => env('GAMMA_CONNECTION_CLIENTID', $gamma?->client_id),
-            'SupplierApiConnections.Giacom_Connection.Username' => env('GIACOM_CONNECTION_USERNAME', $giacom?->username),
-            'SupplierApiConnections.Giacom_Connection.Password' => env('GIACOM_CONNECTION_PASSWORD', $giacom?->password),
-            'SupplierApiConnections.Vorboss_Connection.BearerToken' => env('VORBOSS_CONNECTION_ACCESSKEY', $vorboss?->token),
-        ];
+        $quoteCredentials = [];
+        foreach ($apis as $api) {
+            $quoteCredentials += self::resolveApiAuth($api);
+        }
 
         $quoteCredentials = array_filter($quoteCredentials, function ($value) {
             return ! empty($value);
@@ -64,5 +53,35 @@ class CloudMarketApi
                 $url.'/PartnerQuoteService/GetQuotes',
                 $quoteRequestParams
             );
+    }
+
+    private static function resolveApiAuth($api): array
+    {
+        $supplierKey = CloudMarketSuppliersEnum::tryFrom($api?->code)?->name;
+        if (! $supplierKey) {
+            return [];
+        }
+
+        $connectionBase = "SupplierApiConnections.{$supplierKey}_Connection";
+
+        switch ($api?->auth_type) {
+            case 'basic':
+                return [
+                    "{$connectionBase}.Username" => $api?->username ?? env(strtoupper("{$supplierKey}_CONNECTION_USERNAME")),
+                    "{$connectionBase}.Password" => $api?->password ?? env(strtoupper("{$supplierKey}_CONNECTION_PASSWORD")),
+                ];
+            case 'basic_client':
+                return [
+                    "{$connectionBase}.Username" => $api?->username ?? env(strtoupper("{$supplierKey}_CONNECTION_USERNAME")),
+                    "{$connectionBase}.Password" => $api?->password ?? env(strtoupper("{$supplierKey}_CONNECTION_PASSWORD")),
+                    "{$connectionBase}.ClientId" => $api?->client_id ?? env(strtoupper("{$supplierKey}_CONNECTION_CLIENTID")),
+                ];
+            case 'token':
+                return [
+                    "{$connectionBase}.Token" => $api?->token ?? env(strtoupper("{$supplierKey}_CONNECTION_TOKEN")),
+                ];
+            default:
+                return [];
+        }
     }
 }
