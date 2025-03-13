@@ -17,7 +17,8 @@ class GoogleController extends Controller
         try {
             return Inertia::location(Socialite::driver('google')->redirect());
         } catch (\Exception $e) {
-            Log::debug("Error on socialite google redirect: " . $e->getMessage());
+            Log::debug('Error on socialite google redirect: '.$e->getMessage());
+
             return redirect('/login')->with([
                 'status' => __('An error occurred while redirecting to Google, please contact your administrator'),
             ]);
@@ -29,20 +30,22 @@ class GoogleController extends Controller
     {
         try {
             $ssoUser = Socialite::driver('google')->stateless()->user();
-            Log::debug("Socialite Callback Google user: " . json_encode($ssoUser));
-            if (!isset($ssoUser['email'])) {
-                throw new \Exception("SSO ERROR: Email not provided in user data");
+            Log::debug('Socialite Callback Google user: '.json_encode($ssoUser));
+            if (! isset($ssoUser['email'])) {
+                throw new \Exception('SSO ERROR: Email not provided in user data');
             }
             $user = User::where('email', $ssoUser['email'])->first();
-            if (!$user->currentTenant) {
+            if (! $user) {
                 throw new \Exception("User ($user->id) Not Assigned to Any Tenant");
             }
 
             $user->currentTenant->makeCurrent();
             Auth::login($user);
+
             return redirect('/');
         } catch (\Exception $e) {
-            Log::debug("Error on socialite google callback: " . $e->getMessage());
+            Log::debug('Error on socialite google callback: '.$e->getMessage());
+
             return redirect('/login')->with([
                 'status' => __('We were unable to log into your account using Google, please contact your administrator'),
             ]);
