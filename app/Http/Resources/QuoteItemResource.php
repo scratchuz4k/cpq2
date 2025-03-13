@@ -16,7 +16,6 @@ class QuoteItemResource extends JsonResource
     {
         return [
             ...$this->resource->toArray(),
-            "asd" => "asd",
             'quantity' => $this->quantity,
             'margin' => round((float)$this->margin, 4),
             'discount' => round((float)$this->discount, 4),

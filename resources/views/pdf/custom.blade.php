@@ -112,6 +112,10 @@
             false,
         ),
     ];
+    $blockedColumns = ['margin'];
+    $columns = array_filter($columns, function ($item) use ($blockedColumns) {
+        return !in_array($item['value'], $blockedColumns);
+    });
 
 @endphp
 
@@ -216,21 +220,41 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach ($items as $key => $group)
-                                    <tr class="group-row">
-                                        <td colspan="{{ count($columns) }}">{{ $group['name'] }}</td>
-                                    </tr>
-                                    @foreach ($group['items'] as $item)
+                                @if ($group)
+                                    @foreach ($items as $key => $content)
                                         <tr class="group-row">
+                                            <td colspan="{{ count($columns) }}">
+                                                <p class="m-0 me-3 py-2">
+                                                    {{ $content['name'] }}
+                                                    @if (in_array($group, ['group']))
+                                                        <span> - {{ $content['items'][0]->name }}</span>
+                                                    @endif
+                                                </p>
+                                            </td>
+                                        </tr>
+                                        @foreach ($content['items'] as $item)
+                                            <tr class="child-bg">
+                                                @foreach ($columns as $column)
+                                                    <td class="column-{{ $column['value'] }}-body ">
+                                                        @component('components.table-item-custom', ['component' => $column['value'], 'item' => $item])
+                                                        @endcomponent
+                                                    </td>
+                                                @endforeach
+                                            </tr>
+                                        @endforeach
+                                    @endforeach
+                                @else
+                                    @foreach ($items as $item)
+                                        <tr>
                                             @foreach ($columns as $column)
-                                                <td class="column-{{ $column['value'] }}-body">
+                                                <td class="column-{{ $column['value'] }}-body ">
                                                     @component('components.table-item-custom', ['component' => $column['value'], 'item' => $item])
                                                     @endcomponent
                                                 </td>
                                             @endforeach
                                         </tr>
                                     @endforeach
-                                @endforeach
+                                @endif
                             </tbody>
                         </table>
 

@@ -100,7 +100,11 @@ let view =
                 preview: true,
               }"
             ></component>
-            <TableCustom v-else :preview="true"></TableCustom>
+            <TableCustom
+              v-else
+              :preview="true"
+              :blockedColumns="['margin']"
+            ></TableCustom>
             <TableTotal :quote="quote"></TableTotal>
           </div>
         </div>

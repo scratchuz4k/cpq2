@@ -101,11 +101,16 @@ import { reactive, watch } from "vue";
 import queryString from "query-string";
 import axios from "axios";
 
-defineProps({
+const props = defineProps({
   preview: Boolean,
+  blockedColumns: {
+    type: Array,
+    default: [],
+  },
 });
 
-const columns = quote.solution_type?.table?.columns ?? [];
+const temp = quote.solution_type?.table?.columns ?? [];
+const columns = temp.filter((item) => !props.blockedColumns.includes(item.value));
 const group = quote.solution_type?.table?.group ?? null;
 
 const form = reactive({

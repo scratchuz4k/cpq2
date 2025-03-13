@@ -54,12 +54,11 @@
         @break
 
         @case('contract_length')
-            {{ json_encode($item) }}
-            {{-- {{ $item['price_plan']['code'] == 'MONTHLY' ? $item['contract_length'] : '' }} --}}
+            {{ $item->pricePlan['code'] == 'MONTHLY' ? $item['contract_length'] : '' }}
         @break
 
         @case('price_plan.name')
-            {{ $item['price_plan']?->name }}
+            {{ $item->pricePlan?->name }}
         @break
 
         @case('quantity')

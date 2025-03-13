@@ -174,22 +174,25 @@ class QuoteController extends BaseController
             throw new \Exception("Could not create directory for PDFs");
         }
 
-        $request->merge(['group' => 'group']);
+        $group =  $quote->solution_type->table?->group ?? null;
+        if ($group) {
+            $request->merge(['group' => $group]);
+        }
+
         $solutionType = SolutionTypeResource::make($quote->solutionType)->resolve();
         $quote = QuoteResource::make($quote->load(['items']))->resolve();
-
 
         $dataProvider = new DataProvider(QuoteItem::class);
         $items = $dataProvider->group(QuoteItemResource::class);
 
-        $columns = $solutionType["table"]["columns"];
+        $columns = json_decode(json_encode($solutionType["table"]["columns"]), true);
         $view  = array_key_exists("component", $solutionType["configurations"]) ? strtolower($solutionType["configurations"]["component"]) : "dealmaker";
-        if (!array_key_exists("has_custom_table", $solutionType["configurations"]) || !$solutionType["configurations"]["has_custom_table"]) {
+        if (array_key_exists("has_custom_table", $solutionType["configurations"]) && $solutionType["configurations"]["has_custom_table"] == "1") {
             $view = "custom";
         }
 
         return pdf()
-            ->view("pdf.$view", compact('quote', 'items', 'tenant', 'columns'))
+            ->view("pdf.$view", compact('quote', 'tenant', 'columns', 'items', 'group'))
             ->format(Format::A4)
             ->withBrowsershot(function (Browsershot $browsershot) {
                 $browsershot->waitUntilNetworkIdle();
