@@ -2,8 +2,7 @@
 
     function quoteTotal($price_plan, $column, $items)
     {
-        $temp = getLeafNodesWithChildren($items);
-        $filteredItems = array_filter($temp, function ($item) use ($price_plan) {
+        $filteredItems = array_filter($items, function ($item) use ($price_plan) {
             return isset($item['price_plan']) && $item['price_plan']['code'] == $price_plan;
         });
 
@@ -20,8 +19,7 @@
 
     function quoteQuantityPrice($price_plan, $items, $operation = 'simple')
     {
-        $temp = getLeafNodesWithChildren($items);
-        $filteredItems = array_filter($temp, function ($item) use ($price_plan) {
+        $filteredItems = array_filter($items, function ($item) use ($price_plan) {
             return isset($item['price_plan']) && $item['price_plan']['code'] == $price_plan;
         });
 
@@ -97,8 +95,6 @@
 
         return $result;
     }
-
-    $isConnectivity = !is_null($quote['solution_type']) && $quote['solution_type']['code'] == 3 ? true : false;
 
     $warningProviders = [
         'its' => array_reduce(
@@ -212,179 +208,32 @@
                             <!-- Headers -->
                             <thead>
                                 <tr>
-                                    @if ($isConnectivity)
-                                        <th class="column-quote_ref-header w-20">Quote Reference</th>
-                                        <th class="column-speed-header w-20">Speed</th>
-                                        <th class="column-bearer-header w-20">Bearer</th>
-                                    @else
-                                        <th class="column-name-header w-20">Name</th>
-                                    @endif
-                                    <th class="column-contract_lenght-header w-5">Months</th>
-                                    <th class="column-price_plan-header w-20">Price Plan</th>
-                                    <th class="column-quantity-header w-5">Quantity</th>
-                                    <th class="column-price-header w-10">Price</th>
-                                    <th class="column-total-header">Total </th>
+                                    @foreach ($columns as $column)
+                                        <th class="column-{{ $column['value'] }}-header">
+                                            {{ $column['name'] }}
+                                        </th>
+                                    @endforeach
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach ($quote['items'] as $key => $group)
-                                    @if ($isConnectivity)
-                                        <tr class="group-row" style="vertical-align: middle;">
-                                            <td class="group-body" colspan="8">
-                                                <div class="d-flex py-2">
-                                                    <div class="me-3">
-                                                        @if ($group['data']?->providerKey)
-                                                            <img class="img-provider"
-                                                                style="max-width: 60px; max-height: 20px; width: auto; height: auto;"
-                                                                src="{{ $group['image'] ?? public_path() . '/images/providers/' . $group['data']?->providerKey . '.png' }}" />
-                                                        @endif
-                                                    </div>
-                                                    <div class="me-3">
-                                                        @if ($group['data']?->connectivitySupplierGroup)
-                                                            <img class="img-provider"
-                                                                style="max-width: 60px; max-height: 20px; width: auto; height: auto;"
-                                                                src="{{ $group['image'] ?? public_path() . '/images/providers/' . str_replace(' ', '', strtolower($group['data']?->connectivitySupplierGroup)) . '.png' }}" />
-                                                        @endif
-                                                    </div>
-                                                    <div class="me-3 d-flex">
-                                                        <p class="m-0">{{ $group['name'] }}
-                                                            @if (isset($group['data']->additionalInfo->{'Primary Router Model'}))
-                                                                <span
-                                                                    class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm router-model">
-                                                                    <i class="fa-solid fa-plug"></i>
-                                                                    {{ $group['data']->additionalInfo->{'Primary Router Model'} }}
-                                                                </span>
-                                                            @endif
-                                                            @if (isset($group['data']->isContended) and $group['data']->isContended)
-                                                                <span
-                                                                    class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm is-contended"
-                                                                    data-bs-toggle="tooltip" data-bs-placement="top"
-                                                                    title="Contended, wires only full fibre service with symmetrical upload and download speeds"
-                                                                    v-tooltip>
-                                                                    Contended Service
-                                                                </span>
-                                                            @endif
-                                                            @if (isset($group['data']->additionalInfo->{'Type'}) && $group['data']->additionalInfo->{'Type'} == 'Fibre Flex 200+')
-                                                                <span
-                                                                    class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm is-contended"
-                                                                    data-bs-toggle="tooltip" data-bs-placement="top"
-                                                                    title="This service offers guaranteed upload and download speeds of 200Mbps and can burst up to a peak of 1Gbps"
-                                                                    v-tooltip>
-                                                                    Burstable Service
-                                                                </span>
-                                                            @endif
-                                                        <p>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        @if (count($group['children']))
-                                            @foreach ($group['children'] as $key => $item)
-                                                <tr class="item-row child-bg" style="vertical-align: middle;">
-                                                    <td class="column-quote_ref-body" style="">
-                                                        {{ $item['data']?->productCode }}
-                                                    </td>
-                                                    <td class="column-speed-body">
-                                                        {{ formatBytes($item['data']?->speed) }}
-                                                    </td>
-                                                    <td class="column-bearer-body">
-                                                        {{ formatBytes($item['data']?->bearer) }}
-                                                    </td>
-                                                    <td class="column-price_plan-body">
-                                                        {{ $item['price_plan']?->name }}
-                                                    </td>
-                                                    <td class="column-contract_length-body">
-                                                        {{ $item['price_plan']['code'] == 'MONTHLY' ? $item['contract_length'] : '' }}
-                                                    </td>
-                                                    <td class="column-quantity-body">
-                                                        {{ $item['quantity'] }}
-                                                    </td>
-                                                    <td class="column-price-body">
-                                                        £{{ number_format($item['price'], 2) }}
-                                                    </td>
-                                                    <td class="column-total-body">
-                                                        £{{ number_format($item['total'], 2) }}
-                                                    </td>
-                                                </tr>
+                                @foreach ($items as $key => $group)
+                                    <tr class="group-row">
+                                        <td colspan="{{ count($columns) }}">{{ $group['name'] }}</td>
+                                    </tr>
+                                    @foreach ($group['items'] as $item)
+                                        <tr class="group-row">
+                                            @foreach ($columns as $column)
+                                                <td class="column-{{ $column['value'] }}-body">
+                                                    @component('components.table-item-custom', ['component' => $column['value'], 'item' => $item])
+                                                    @endcomponent
+                                                </td>
                                             @endforeach
-                                        @else
-                                            <tr class="item-row child-bg" style="vertical-align: middle;">
-                                                <td class="column-quote_ref-body">
-                                                    {{ $group['data']?->productCode }}
-                                                </td>
-                                                <td class="column-speed-body">
-                                                    {{ formatBytes($group['data']?->speed) }}
-                                                </td>
-                                                <td class="column-bearer-body">
-                                                    {{ formatBytes($group['data']?->bearer) }}
-                                                </td>
-                                                <td class="column-price_plan-body">
-                                                    {{ $group['price_plan']?->name }}
-                                                </td>
-                                                <td class="column-contract_length-body">
-                                                    {{ $group['contract_length'] > 1 ? $group['contract_length'] : '' }}
-                                                </td>
-                                                <td class="column-quantity-body">
-                                                    {{ $group['quantity'] }}
-                                                </td>
-                                                <td class="column-price-body">
-                                                    £{{ number_format($group['price'], 2) }}
-                                                </td>
-                                                <td class="column-total-body">
-                                                    £{{ number_format($group['total'], 2) }}
-                                                </td>
-                                            </tr>
-                                        @endif
-                                    @else
-                                        <tr class="item-row" style="vertical-align: middle;">
-                                            <td class="column-quote_ref-body">
-                                                {{ $group['name'] }}
-                                                @if (isset($group['data']->additionalInfo->{'Primary Router Model'}))
-                                                    <span
-                                                        class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm router-model">
-                                                        <i class="fa-solid fa-plug"></i>
-                                                        {{ $group['data']->additionalInfo->{'Primary Router Model'} }}
-                                                    </span>
-                                                @endif
-                                                @if (isset($group['data']->isContended) and $group['data']->isContended)
-                                                    <span
-                                                        class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm is-contended"
-                                                        data-bs-toggle="tooltip" data-bs-placement="top"
-                                                        title="Contended, wires only full fibre service with symmetrical upload and download speeds"
-                                                        v-tooltip>
-                                                        Contended Service
-                                                    </span>
-                                                @endif
-                                                @if (isset($group['data']->additionalInfo->{'Type'}) && $group['data']->additionalInfo->{'Type'} == 'Fibre Flex 200+')
-                                                    <span
-                                                        class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm is-contended"
-                                                        data-bs-toggle="tooltip" data-bs-placement="top"
-                                                        title="This service offers guaranteed upload and download speeds of 200Mbps and can burst up to a peak of 1Gbps"
-                                                        v-tooltip>
-                                                        Burstable Service
-                                                    </span>
-                                                @endif
-                                            </td>
-                                            <td class="column-price_plan-body">
-                                                {{ $group['price_plan']?->name }}
-                                            </td>
-                                            <td class="column-contract_length-body">
-                                                {{ $group['contract_length'] > 1 ? $group['contract_length'] : '' }}
-                                            </td>
-                                            <td class="column-quantity-body">
-                                                {{ $group['quantity'] }}
-                                            </td>
-                                            <td class="column-price-body">
-                                                £{{ number_format($group['price'], 2) }}
-                                            </td>
-                                            <td class="column-total-body">
-                                                £{{ number_format($group['total'], 2) }}
-                                            </td>
                                         </tr>
-                                    @endif
+                                    @endforeach
                                 @endforeach
                             </tbody>
                         </table>
+
                     </div>
                     <div class="mobile-price-group-heading mt-3 d-flex justify-content-between align-items-center">
                         <h3>Totals</h3>

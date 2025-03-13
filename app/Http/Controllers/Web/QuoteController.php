@@ -2,27 +2,31 @@
 
 namespace App\Http\Controllers\Web;
 
-use App\Models\Scopes\TenantScope;
 use App\Models\User;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Models\Quote;
 use App\Models\Account;
 use App\Models\PricePlan;
+use App\Models\QuoteItem;
 use App\Models\SolutionType;
+use Illuminate\Http\Request;
+use App\Helpers\DataProvider;
 use App\Services\QuoteService;
 use App\Enums\QuoteStatusesEnum;
+use App\Models\Scopes\TenantScope;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Spatie\Browsershot\Browsershot;
 use Spatie\LaravelPdf\Enums\Format;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Resources\QuoteResource;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\QuoteCreateRequest;
 use App\Http\Requests\QuoteUpdateRequest;
+use App\Http\Resources\QuoteItemResource;
 use function Spatie\LaravelPdf\Support\pdf;
+use App\Http\Resources\SolutionTypeResource;
 
 class QuoteController extends BaseController
 {
@@ -161,7 +165,6 @@ class QuoteController extends BaseController
      */
     public function download(Request $request)
     {
-        $solution_types = Auth::user()->currentTenant->solutionTypes;
         $quote = Quote::withoutGlobalScope(TenantScope::class)->find($request->quote);
         $tenant = $quote->tenant->makeCurrent();
         $quote = $quote->refresh();
@@ -171,19 +174,22 @@ class QuoteController extends BaseController
             throw new \Exception("Could not create directory for PDFs");
         }
 
-        $columns = [];
-        if (!array_key_exists("has_custom_table", $quote->solutionType->configs) || !$quote->solutionType["has_custom_table"]) {
-            $table["columns"] = $columns;
+        $request->merge(['group' => 'group']);
+        $solutionType = SolutionTypeResource::make($quote->solutionType)->resolve();
+        $quote = QuoteResource::make($quote->load(['items']))->resolve();
+
+
+        $dataProvider = new DataProvider(QuoteItem::class);
+        $items = $dataProvider->group(QuoteItemResource::class);
+
+        $columns = $solutionType["table"]["columns"];
+        $view  = array_key_exists("component", $solutionType["configurations"]) ? strtolower($solutionType["configurations"]["component"]) : "dealmaker";
+        if (!array_key_exists("has_custom_table", $solutionType["configurations"]) || !$solutionType["configurations"]["has_custom_table"]) {
+            $view = "custom";
         }
 
-
-        $view  = array_key_exists("component", $quote->solutionType->configs) ? strtolower($quote->solutionType->configs["component"]) : "dealmaker";
-        $quote = QuoteResource::make($quote->load(['items']))->resolve();
-        $items = [];
-
-
         return pdf()
-            ->view("pdf.$view", compact('quote', 'solution_types', 'tenant'))
+            ->view("pdf.$view", compact('quote', 'items', 'tenant', 'columns'))
             ->format(Format::A4)
             ->withBrowsershot(function (Browsershot $browsershot) {
                 $browsershot->waitUntilNetworkIdle();
