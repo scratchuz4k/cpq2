@@ -79,10 +79,15 @@ class BlacklistService
 
         unset($data['data'][$id]);
 
-        $blacklist->write(
-            $data['data'],
-            $data['created_at'] ?? now(),
-            now()
-        );
+        if (count($data['data']) > 0) {
+            $blacklist->write(
+                $data['data'],
+                $data['created_at'] ?? now(),
+                now()
+            );
+            return;
+        }
+
+        $blacklist->delete();
     }
 }

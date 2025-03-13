@@ -11,6 +11,7 @@ class BlacklistFile
 {
     private $path = '';
     private $filename = '';
+    private $file = '';
     private $filterable_columns = [
         'productName',
         'providerName',
@@ -22,6 +23,7 @@ class BlacklistFile
     public function __construct(Tenant $tenant) {
         $this->path = storage_path('/app/blacklists/');
         $this->filename = 'blacklist_' . md5($tenant?->name) . '.json';
+        $this->file = $this->path . $this->filename;
     }
 
     public function write(array $data, $created_at, $updated_at)
@@ -37,12 +39,19 @@ class BlacklistFile
             'updated_at' => $updated_at
         ]);
 
-        file_put_contents($this->path . $this->filename, $dataString);
+        file_put_contents($this->file, $dataString);
     }
 
     public function exists(): bool
     {
-        return file_exists($this->path . $this->filename);
+        return file_exists($this->file);
+    }
+
+    public function delete()
+    {
+        if (file_exists($this->file)) {
+            unlink($this->file);
+        }
     }
 
     public function getContent()
@@ -55,7 +64,7 @@ class BlacklistFile
                 'finished_at' => null
             ];
         }
-        return json_decode(file_get_contents($this->path . $this->filename), true);
+        return json_decode(file_get_contents($this->file), true);
     }
 
     public function getBlacklistFilters(): array

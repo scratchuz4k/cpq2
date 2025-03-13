@@ -69,7 +69,7 @@ const items = ref([
         <div class="panel">
             <Header title="New Item" :breadcrumbs="items">
                 <template #buttons>
-                    <PrimaryButton id="btn-save-product" @click="saveItem()">
+                    <PrimaryButton id="btn-save-item" @click="saveItem()">
                         <font-awesome-icon class="me-2" :icon="['fas', 'save']"></font-awesome-icon>
                         Save
                     </PrimaryButton>
@@ -79,11 +79,11 @@ const items = ref([
                 <div class="col-6">
                     <div class="mb-3">
                         <label class="form-label">Product Name:</label>
-                        <input class="form-control" v-model="blacklisted_item.productName"/>
+                        <input id="item-name" class="form-control" v-model="blacklisted_item.productName"/>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Provider:</label>
-                        <select class="form-select" v-model="blacklisted_item.providerName">
+                        <select id="item-provider" class="form-select" v-model="blacklisted_item.providerName">
                             <option v-for="provider in props.providers" :value="provider.name">
                                 {{ provider.name }}
                             </option>
@@ -92,23 +92,22 @@ const items = ref([
 
                     <div class="mb-3">
                         <div class="mb-3">
-                            <label for="subprovider" class="form-label">Subprovider:</label>
-                            <Select :inputId="'subprovider'" v-model="blacklisted_item.connectivitySupplierGroup" editable :options="props.subproviders"
+                            <label for="item-subprovider" class="form-label">Subprovider:</label>
+                            <Select :inputId="'item-subprovider'" v-model="blacklisted_item.connectivitySupplierGroup" editable :options="props.subproviders"
                                     placeholder="Enter a Subprovider" class="w-100" />
                         </div>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Bearer:</label>
-                        <select class="form-select" v-model="blacklisted_item.bearer.operator">
-
+                        <select id="item-bearer-operator" class="form-select" v-model="blacklisted_item.bearer.operator">
                             <option v-for="operator in props.operators" :value="operator.name">
                                 {{ operator.description }}
                             </option>
                         </select>
 
                         <div class="d-flex mt-2">
-                            <input placeholder="Value" type="number" class="form-control text-center input-qty me-1" v-model="blacklisted_item.bearer.value">
-                            <select class="form-select" v-model="blacklisted_item.bearer.unit" :style="{ width: 'auto' }">
+                            <input id="item-bearer-value" placeholder="Value" type="number" class="form-control text-center input-qty me-1" v-model="blacklisted_item.bearer.value">
+                            <select id="item-bearer-unit" class="form-select" v-model="blacklisted_item.bearer.unit" :style="{ width: 'auto' }">
                                 <option disabled :value="null">Units</option>
                                 <option v-for="unit in props.speed_units" :value="unit.value">
                                     {{ unit.value }}
@@ -119,14 +118,14 @@ const items = ref([
 
                     <div class="mb-3">
                         <label class="form-label">Speed:</label>
-                        <select class="form-select" v-model="blacklisted_item.speed.operator">
+                        <select id="item-speed-operator" class="form-select" v-model="blacklisted_item.speed.operator">
                             <option v-for="operator in props.operators" :value="operator.name">
                                 {{ operator.description }}
                             </option>
                         </select>
                         <div class="d-flex mt-2">
-                            <input placeholder="Value" type="number" class="form-control text-center input-qty me-1" v-model="blacklisted_item.speed.value">
-                            <select class="form-select" v-model="blacklisted_item.speed.unit" :style="{ width: 'auto' }">
+                            <input id="item-speed-value" placeholder="Value" type="number" class="form-control text-center input-qty me-1" v-model="blacklisted_item.speed.value">
+                            <select id="item-speed-unit" class="form-select" v-model="blacklisted_item.speed.unit" :style="{ width: 'auto' }">
                                 <option disabled :value="null">Units</option>
                                 <option v-for="unit in props.speed_units" :value="unit.value">
                                     {{ unit.value }}
@@ -138,7 +137,7 @@ const items = ref([
 
                     <div class="mb-3">
                         <label class="form-label">Contract Term:</label>
-                        <select class="form-select" v-model="blacklisted_item.contractTermMonths">
+                        <select id="item-contract_terms" class="form-select" v-model="blacklisted_item.contractTermMonths">
                             <option v-for="term in props.contract_terms" :value="term.value">
                                 {{ term.value }} months
                             </option>
