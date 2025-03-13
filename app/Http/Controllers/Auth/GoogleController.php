@@ -36,7 +36,7 @@ class GoogleController extends Controller
             }
             $user = User::where('email', $ssoUser['email'])->first();
             if (! $user) {
-                throw new \Exception("User ($user->id) Not Assigned to Any Tenant");
+                throw new \Exception('User ('.$ssoUser['email'].') not assigned to any tenant');
             }
 
             $user->currentTenant->makeCurrent();
