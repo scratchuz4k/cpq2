@@ -26,7 +26,7 @@ describe("Blacklist Crud", () => {
         cy.get("#my-account").click()
         cy.get("#link-products").click()
         cy.get("#blacklist-index-btn").click()
-        cy.wait(500)
+        cy.wait(5000)
         cy.get("#datatable-btn-0-edit").click()
 
         cy.get("#item-name").clear().type(updated_product_name)

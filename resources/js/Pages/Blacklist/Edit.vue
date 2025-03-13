@@ -55,7 +55,7 @@ const items = ref([
         <div class="panel">
             <Header :title="'Edit Item #' + blacklisted_item.id" :breadcrumbs="items">
                 <template #buttons>
-                    <PrimaryButton id="btn-save-product" @click="saveItem()">
+                    <PrimaryButton id="btn-save-item" @click="saveItem()">
                         <font-awesome-icon class="me-2" :icon="['fas', 'save']"></font-awesome-icon>
                         Save
                     </PrimaryButton>
