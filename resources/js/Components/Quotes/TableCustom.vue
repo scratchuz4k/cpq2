@@ -33,7 +33,7 @@
           </th>
         </template>
         <th style="width: 5%" v-if="!preview">
-          <div class="d-flex justify-content-center">
+          <div v-if="group" class="d-flex justify-content-center">
             <button
               id="btn-more-filters"
               class="btn dropdown-toggle p-0"
@@ -114,7 +114,7 @@ const columns = temp.filter((item) => !props.blockedColumns.includes(item.value)
 const group = quote.solution_type?.table?.group ?? null;
 
 const form = reactive({
-  filters: [],
+  filters: [{ column: "quote_id", operator: "equals", value: quote.id }],
   order: "asc",
   orderBy: "id",
   limit: 200,

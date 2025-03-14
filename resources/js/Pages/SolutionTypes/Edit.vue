@@ -78,6 +78,19 @@ const deleteColumn = (element) => {
 
 const changeSelection = (option, element) => {};
 
+const clearAllColumns = async (table) => {
+  let result = await swal.fire({
+    title: "Are you sure?",
+    text: "This action removes all columns",
+  });
+
+  if (["cancel", "backdrop"].includes(result.dismiss)) {
+    return;
+  }
+
+  table.columns = [];
+};
+
 const items = ref([
   { label: "Home", url: "/" },
   { label: "My Account", url: "/myaccount" },
@@ -155,6 +168,7 @@ const items = ref([
                 <Select
                   v-model="table.group"
                   :options="available_columns.filter((x) => x.is_group)"
+                  id="solution-type-table-group"
                   placeholder="Select a group"
                   class="w-100"
                   optionLabel="name"
@@ -168,12 +182,26 @@ const items = ref([
                 <table class="table">
                   <thead>
                     <tr>
-                      <th></th>
+                      <th>
+                        <button
+                          id="solution-type-table-add-column"
+                          class="btn btn-sm"
+                          @click="addColumn(table)"
+                        >
+                          <font-awesome-icon :icon="['fas', 'plus']"></font-awesome-icon>
+                        </button>
+                      </th>
                       <th style="width: 50%">Field</th>
                       <th style="width: 50%">Name</th>
                       <th>
-                        <button class="btn btn-sm" @click="addColumn(table)">
-                          <font-awesome-icon :icon="['fas', 'plus']"></font-awesome-icon>
+                        <button
+                          id="solution-type-table-remove-columns"
+                          class="btn p-2 mx-1 border-0"
+                          @click="clearAllColumns(table)"
+                        >
+                          <font-awesome-icon
+                            :icon="['fas', 'trash-alt']"
+                          ></font-awesome-icon>
                         </button>
                       </th>
                     </tr>
@@ -186,7 +214,7 @@ const items = ref([
                     v-bind="dragOptions"
                     handle=".handle"
                   >
-                    <template #item="{ element }">
+                    <template #item="{ element, index }">
                       <tr>
                         <td>
                           <button class="btn p-1 border-0 handle">
@@ -197,6 +225,7 @@ const items = ref([
                           <Select
                             v-model="element.value"
                             :options="available_columns"
+                            :id="`table-column-` + index + `-value`"
                             optionLabel="name"
                             optionValue="value"
                             placeholder="Select a Field"
@@ -206,6 +235,7 @@ const items = ref([
                         </td>
                         <td>
                           <InputText
+                            :id="`table-column-` + index + `-name`"
                             type="text"
                             v-model="element.name"
                             class="w-100"
