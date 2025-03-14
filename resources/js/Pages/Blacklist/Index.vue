@@ -43,10 +43,11 @@ const items = ref([
                 ]" route="/blacklist">
                     <template #bearer="{ value }">
                         <span
+                            v-if="value"
                             v-tooltip
                             data-bs-toggle="tooltip"
                             data-bs-placement="top"
-                            :title="operators.find(op => op.name === value.operator)
+                            :title="operators.find(op => op.name === value?.operator)
                                 ?.description + ' ' + value.value + ' ' + value.unit
                             "
                         >
@@ -55,10 +56,11 @@ const items = ref([
                     </template>
                     <template #speed="{ value }">
                         <span
+                            v-if="value"
                             v-tooltip
                             data-bs-toggle="tooltip"
                             data-bs-placement="top"
-                            :title="operators.find(op => op.name === value.operator)
+                            :title="operators.find(op => op.name === value?.operator)
                                 ?.description + ' ' + value.value + ' ' + value.unit
                             "
                         >

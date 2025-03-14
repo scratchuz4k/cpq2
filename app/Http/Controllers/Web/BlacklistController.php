@@ -7,6 +7,8 @@ use App\Enums\CloudMarketSuppliersEnum;
 use App\Enums\ComparisonOperatorsEnum;
 use App\Enums\ContractTermsEnum;
 use App\Enums\SpeedUnitsEnum;
+use App\Http\Requests\BlacklistItemCreateRequest;
+use App\Http\Requests\BlacklistItemUpdateRequest;
 use App\Services\BlacklistService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -48,7 +50,7 @@ class BlacklistController extends BaseController
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(BlacklistItemCreateRequest $request)
     {
         try {
             $this->blacklistService->store($request->all());
@@ -72,7 +74,7 @@ class BlacklistController extends BaseController
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Request $request): Response
+    public function edit(BlacklistItemUpdateRequest $request): Response
     {
         try {
             $item = $this->blacklistService->edit($request->route('blacklist'));
