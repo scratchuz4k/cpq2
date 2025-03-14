@@ -99,6 +99,7 @@ const items = ref([{ label: "Home", url: "/" }, { label: "Quotes" }]);
               class="d-flex justify-content-end"
             >
               <button
+                hidden
                 type="button"
                 title="Send to Order"
                 :id="'datatable-btn-' + index + '-crete-order'"
