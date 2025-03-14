@@ -15,15 +15,12 @@ class QuoteItem extends Model
 
     protected $fillable = [
         'quote_id',
-        'product_id',
         'price_plan_id',
-        'parent_id',
-        'group',
+        'product_id',
         'product_code',
         'quantity',
         'name',
         'data',
-        'margin',
         'discount',
         'raw_price',
         'original_price',
@@ -34,6 +31,7 @@ class QuoteItem extends Model
         'total_gross',
         'contract_length',
         'tenant_id',
+        'group',
     ];
 
     protected function casts(): array

@@ -2,22 +2,22 @@
 
 namespace App\Http\Controllers\Web;
 
-use App\Models\User;
-use Inertia\Inertia;
-use App\Models\Order;
-use App\Models\Account;
-use App\Models\SolutionType;
-use App\Services\OrderService;
 use App\Enums\OrderStatusesEnum;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Auth;
-use App\Http\Resources\OrderResource;
-use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\OrderCreateRequest;
-
 use App\Http\Requests\OrderUpdateRequest;
+use App\Http\Resources\OrderResource;
+use App\Models\Account;
+use App\Models\Order;
+use App\Models\SolutionType;
+use App\Models\User;
+use App\Services\OrderService;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
+use Inertia\Inertia;
+
 use function Spatie\LaravelPdf\Support\pdf;
 
 class OrderController extends BaseController
@@ -36,18 +36,18 @@ class OrderController extends BaseController
     {
         $user = request()->user();
 
-        if (!$user->hasRole('Sales Rep')) {
+        if (! $user->hasRole('Sales Rep')) {
             $users = User::all();
         } else {
             $users = $this->descendantsWithOrders();
         }
 
-        $users = $users->filter(fn($user) => $user->orders->count() > 0 || $user->id === request()->user()->id);
+        $users = $users->filter(fn ($user) => $user->orders->count() > 0 || $user->id === request()->user()->id);
 
         return Inertia::render('Orders/Index', [
-            "users" => $users->values(),
-            "solutions" => $user->currentTenant->solutionTypes,
-            "status" => array_map(fn($status) => $status->name, OrderStatusesEnum::cases())
+            'users' => $users->values(),
+            'solutions' => $user->currentTenant->solutionTypes,
+            'status' => array_map(fn ($status) => $status->name, OrderStatusesEnum::cases()),
         ]);
     }
 
@@ -58,7 +58,7 @@ class OrderController extends BaseController
     {
         return Inertia::render('Orders/Create', [
             'accounts' => Account::all(),
-            'solution_types' => SolutionType::get()
+            'solution_types' => SolutionType::get(),
         ]);
     }
 
@@ -72,11 +72,12 @@ class OrderController extends BaseController
                 return $this->orderService->store($request->all());
             });
         } catch (\Exception $e) {
-            if (!env('APP_DEBUG')) {
+            if (! env('APP_DEBUG')) {
                 Log::error($e->getMessage());
             }
             throw new \Exception($e);
         }
+
         return redirect()->route('orders.edit', ['order' => $order->id]);
     }
 
@@ -86,8 +87,9 @@ class OrderController extends BaseController
     public function show(Order $order)
     {
         $test = new OrderResource($order->load(['items']));
+
         return Inertia::render('Orders/Show', [
-            'order' => new OrderResource($order->load(['items']))
+            'order' => new OrderResource($order->load(['items'])),
         ]);
     }
 
@@ -99,7 +101,7 @@ class OrderController extends BaseController
         return Inertia::render('Orders/Edit', [
             'accounts' => Account::all(),
             'solution_types' => SolutionType::get(),
-            'order' => new OrderResource($order->load(['items']))
+            'order' => new OrderResource($order->load(['items'])),
         ]);
     }
 
@@ -113,11 +115,12 @@ class OrderController extends BaseController
                 return $this->orderService->update($order, $request->all());
             });
         } catch (\Exception $e) {
-            if (!env('APP_DEBUG')) {
+            if (! env('APP_DEBUG')) {
                 Log::error($e->getMessage());
             }
             throw new \Exception($e);
         }
+
         return to_route('orders.edit', ['order' => $order->id]);
     }
 
@@ -128,6 +131,7 @@ class OrderController extends BaseController
     {
         //
     }
+
     /**
      * TODO: maybe one day remove this method and allow editing the order in the edit method
      */
@@ -136,7 +140,7 @@ class OrderController extends BaseController
         return Inertia::render('Orders/Configure', [
             'accounts' => Account::all(),
             'solution_types' => SolutionType::get(),
-            'order' => new OrderResource($order->load(['items']))
+            'order' => new OrderResource($order->load(['items'])),
         ]);
     }
 
@@ -145,7 +149,7 @@ class OrderController extends BaseController
         return Inertia::render('Orders/Preview', [
             'accounts' => Account::all(),
             'solution_types' => SolutionType::get(),
-            'order' => new OrderResource($order->load(['items']))
+            'order' => new OrderResource($order->load(['items'])),
         ]);
     }
 
@@ -153,20 +157,19 @@ class OrderController extends BaseController
     {
         $solution_types = SolutionType::get();
         $user = request()->user();
-        $dir = 'pdf/' . $user->currentTenant->id;
+        $dir = 'pdf/'.$user->currentTenant->id;
 
-        if (!Storage::makeDirectory($dir)) {
-            throw new \Exception("Could not create directory for PDFs");
+        if (! Storage::makeDirectory($dir)) {
+            throw new \Exception('Could not create directory for PDFs');
         }
 
         // return view('pdf.invoice', compact('order', 'totals', 'solution_types'));
 
         return pdf()
             ->view('pdf.invoice', compact('order', 'solution_types'))
-            ->name('order-' . $order->id . '.pdf')
+            ->name('order-'.$order->id.'.pdf')
             ->download();
     }
-
 
     private function descendantsWithOrders()
     {

@@ -1,8 +1,7 @@
 <script setup>
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
-import {Head, Link, usePage} from "@inertiajs/vue3";
+import { Head, Link, usePage } from "@inertiajs/vue3";
 import { ref } from "vue";
-import Button from "primevue/button";
 import { createOrder } from "@/Composables/useOrders.js";
 
 const props = defineProps({
@@ -24,7 +23,7 @@ const props = defineProps({
   },
 });
 
-const page = usePage()
+const page = usePage();
 const auth_user = page.props.auth.user.id;
 const createOrderAndRefresh = async (id) => {
   const res = await createOrder(id);
@@ -100,7 +99,6 @@ const items = ref([{ label: "Home", url: "/" }, { label: "Quotes" }]);
               class="d-flex justify-content-end"
             >
               <button
-                hidden
                 type="button"
                 title="Send to Order"
                 :id="'datatable-btn-' + index + '-crete-order'"

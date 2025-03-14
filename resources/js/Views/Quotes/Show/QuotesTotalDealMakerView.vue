@@ -123,7 +123,7 @@ const items = ref([
         <div v-if="warningProviders.some((obj) => Object.values(obj).includes(true))">
           <div class="row">
             <div class="col">
-              <InfoBox class="mb-4 py-0" severity="info">
+              <InfoBox severity="info">
                 <div class="small">
                   <div class="mb-2 fw-bold">Important Information:</div>
                   <div v-for="provider in warningProviders" class="mb-2">
@@ -219,17 +219,13 @@ const items = ref([
           </div>
         </InfoBox>
         <InfoBox v-if="quote.orders.length > 0">
-          <div style="font-size: 14px">
-            <div class="mb-3">
-              <h6>
-                An Order related to this Quote was
-                <span class="badge text-bg-secondary">{{ quote.status }}</span>
-              </h6>
-              <button class="btn btn-sm btn-primary" @click="showModal = true">
-                See Rejection Notes
-              </button>
-            </div>
-          </div>
+          <h6>
+            An Order related to this Quote was
+            <span class="badge text-bg-secondary">{{ quote.status }}</span>
+          </h6>
+          <button class="btn btn-sm btn-primary" @click="showModal = true">
+            See Rejection Notes
+          </button>
         </InfoBox>
         <div class="price-mobile-sidebar total-quote-discount px-4 pt-4 pb-2 mb-3">
           <h3 class="mb-3">Total Quote Discount</h3>
@@ -324,7 +320,7 @@ const items = ref([
       </template>
       <div class="panel px-3">
         <div class="row">
-          <table class="table reject-reasons-table my-4">
+          <table class="table reject-reasons-table">
             <thead>
               <tr>
                 <th style="width: 5%">Order</th>
@@ -385,5 +381,6 @@ input[type="number"] {
   font-family: inherit;
   white-space: pre-wrap;
   word-wrap: break-word;
+  margin: 0;
 }
 </style>
