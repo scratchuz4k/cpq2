@@ -38,7 +38,7 @@ it('Run Permissions for Company Admin', function () {
         'users' => ['index' => true,  'create' => true, 'store' => true, 'show' => true, 'edit' => true, 'update' => true, 'destroy' => true],
         'tokens' => ['index' => false,  'create' => false, 'store' => false, 'show' => false, 'edit' => false, 'update' => false, 'destroy' => false],
         'quotes' => ['index' => true,  'create' => true, 'store' => true, 'show' => true, 'edit' => true, 'update' => true, 'destroy' => true],
-        'solution-types' => ['index' => true,  'create' => false, 'store' => false, 'show' => true, 'edit' => true, 'update' => true, 'destroy' => false],
+        'solution-types' => ['index' => true,  'create' => true, 'store' => true, 'show' => true, 'edit' => true, 'update' => true, 'destroy' => true],
         'apis' => ['index' => true,  'create' => true, 'store' => true, 'show' => true, 'edit' => true, 'update' => true, 'destroy' => true],
         'api/accounts' => ['index' => true,  'create' => true, 'store' => true, 'show' => true, 'edit' => true, 'update' => true, 'destroy' => true],
         'api/prices' => ['index' => true,  'create' => true, 'store' => true, 'show' => true, 'edit' => true, 'update' => true, 'destroy' => true],

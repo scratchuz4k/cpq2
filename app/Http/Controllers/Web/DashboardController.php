@@ -2,11 +2,8 @@
 
 namespace App\Http\Controllers\Web;
 
-use App\Models\User;
-use Inertia\Inertia;
-use App\Models\Tenant;
-use App\Models\SolutionType;
 use App\Http\Controllers\BaseController;
+use Inertia\Inertia;
 
 class DashboardController extends BaseController
 {
@@ -16,10 +13,10 @@ class DashboardController extends BaseController
     public function index()
     {
         if (auth()->user()->hasRole('Order Manager')) {
-            return to_route('orders.index');
+            return Inertia::location(route('orders.index'));
         }
 
-        return Inertia::location('/quotes');
+        return Inertia::location(route('quotes.index'));
     }
 
     /**
@@ -28,8 +25,9 @@ class DashboardController extends BaseController
     public function myAccount()
     {
         $user = request()->user();
-        $tenants =  $user->tenants;
+        $tenants = $user->tenants;
         $permissions = $user->getAllPermissions();
+
         return Inertia::render('MyAccount/Index', [
             'permissions' => $permissions,
             'tenants' => $tenants,

@@ -27,7 +27,7 @@ class CloudMarketService
         }
 
         $apis = array_map(fn ($case) => $case->value, CloudMarketSuppliersEnum::cases());
-        $apiRecords = Api::whereIn('code', $apis)->get();
+        $apiRecords = Api::active()->whereIn('code', $apis)->get();
         $apiCodes = $apiRecords->pluck('code')->sort()->implode('');
 
         $filename = 'live_prices_'.$address->toString().'_'.md5($apiCodes).'.json';

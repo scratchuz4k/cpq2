@@ -12,6 +12,7 @@ use App\Http\Resources\SpaResource;
 use App\Http\Requests\SpaCreateRequest;
 use App\Http\Requests\SpaUpdateRequest;
 use App\Http\Controllers\BaseController;
+use App\Models\PricePlan;
 use App\Models\SpaOperation;
 use App\Models\SpaRule;
 
@@ -40,6 +41,7 @@ class SpaController extends BaseController
             'rules' => SpaRule::all(),
             'operations' => SpaOperation::all(),
             'suppliers' => Supplier::all(),
+            'price_plans' => PricePlan::all(),
         ]);
     }
 
@@ -78,6 +80,7 @@ class SpaController extends BaseController
             'rules' => SpaRule::all(),
             'operations' => SpaOperation::all(),
             'suppliers' => Supplier::all(),
+            'price_plans' => PricePlan::all(),
         ]);
     }
 

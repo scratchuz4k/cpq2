@@ -26,30 +26,13 @@ class SpaUpdateRequest extends FormRequest
      */
     public function rules(): array
     {
-        $spa_id = null;
-        if (array_key_exists('spa', $this->route()->parameters()))
-            $spa_id = $this->route()->parameters()['spa']->id;
-
-        $rules =  ["numeric"];
-        $rule = SpaRule::find($this->input('rule_id'));
-        if (isset($rule) && in_array($rule->class, $this->requiredEntity2))
-            $rules[] = "required";
-
 
         return [
             "rule_id" => "exists:spa_rules,id",
-            "field_1" => [
-                "required",
-                "numeric",
-                Rule::unique('spas')
-                    ->where(function ($query) {
-                        return $query->where('rule_id', $this->input('rule_id'))
-                            ->where('field_2', $this->input('field_2', 0));
-                    })
-                    ->ignore($spa_id), // Dynamically get the ID from the route
-            ],
-            "field_2" => $rules,
+            "field_1" => ["required", "numeric"],
+            "field_2" => "numeric",
             "operation_id" => "exists:spa_operations,id",
+            'price_plan_id' => 'nullable|exists:price_plans,id',
             "value" => "numeric",
             "percentage" => "numeric|min:0|max:100",
         ];

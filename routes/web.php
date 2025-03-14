@@ -22,6 +22,7 @@ use App\Http\Controllers\Web\TenantController;
 use App\Http\Controllers\Web\TokenController;
 use Illuminate\Support\Facades\DB;
 
+
 Route::get('/health', function () {
     try {
         // Check database connection
@@ -67,6 +68,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/orders/{order}/preview', [OrderController::class, 'preview'])->name('orders.preview');
     Route::get('/orders/{order}/download', [OrderController::class, 'download'])->name('orders.download');
 
+    Route::get('/users/import', [UserController::class, 'index'])->name('users.index');
     Route::post('/users/import', [UserController::class, 'importUsers'])->name('users.import');
 
     Route::resources([
