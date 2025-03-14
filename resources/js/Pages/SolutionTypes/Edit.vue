@@ -34,7 +34,7 @@ const dragOptions = {
 const saveSolutionType = () => {
   table.columns.forEach((x) => {
     let temp = props.available_columns.find((e) => e.value == x.value);
-    x.has_order = !!temp.has_order;
+    x.has_order = !!temp?.has_order;
   });
   table.code = !table.code ? "custom" : table.code;
   router.put(

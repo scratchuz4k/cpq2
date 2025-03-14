@@ -2,10 +2,9 @@
 
 namespace App\Helpers;
 
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
-use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Http\Resources\Json\JsonResource;
 
 class DataProvider
 {
@@ -39,6 +38,7 @@ class DataProvider
     public function getCollection()
     {
         $this->processFilters();
+
         return $this->builder->get();
     }
 
@@ -55,7 +55,7 @@ class DataProvider
         $total = $this->builder->get()->count();
         $items = $this->builder->paginate(perPage: $limit, page: $page);
 
-        if (!$group) {
+        if (! $group) {
             return $resource::collection($items);
         }
 
@@ -71,6 +71,7 @@ class DataProvider
                 if ($acc == 'default') {
                     $acc = $item;
                 }
+
                 return $acc[$temp];
             }, 'default');
 
@@ -99,7 +100,8 @@ class DataProvider
 
             $columns = array_filter($columns, function ($column) use ($hidden) {
                 $firstPart = explode('.', $column)[0];
-                return !in_array($firstPart, $hidden);
+
+                return ! in_array($firstPart, $hidden);
             });
 
             $this->builder = $this->builder->where(function ($query) use ($columns, $search) {
@@ -123,12 +125,12 @@ class DataProvider
         $group = request()->input('group', null);
         if ($group) {
             $groupOrder = request()->input('groupOrder', 'asc');
-            $groupBy = explode(".", $group);
+            $groupBy = explode('.', $group);
 
             if (count($groupBy) == 2) {
                 $table = $this->builder->getModel()->getTable();
-                $this->builder = $this->builder->select($table . '.*')->joinRelation(Str::camel($groupBy[0]) . ' as ' . $groupBy[0])
-                    ->orderBy($groupBy[0] . '.' . $groupBy[1], $groupOrder);
+                $this->builder = $this->builder->select($table.'.*')->joinRelation(Str::camel($groupBy[0]).' as '.$groupBy[0])
+                    ->orderBy($groupBy[0].'.'.$groupBy[1], $groupOrder);
             } else {
                 $this->builder = $this->builder->orderBy($groupBy[0], $groupOrder);
             }
@@ -140,8 +142,8 @@ class DataProvider
 
         if (count($orderByArray) == 2) {
             $table = $this->builder->getModel()->getTable();
-            $this->builder = $this->builder->select($table . '.*')->joinRelation(Str::camel($orderByArray[0]) . ' as ' . $orderByArray[0])
-                ->orderBy($orderByArray[0] . '.' . $orderByArray[1], $order);
+            $this->builder = $this->builder->select($table.'.*')->joinRelation(Str::camel($orderByArray[0]).' as '.$orderByArray[0])
+                ->orderBy($orderByArray[0].'.'.$orderByArray[1], $order);
         } else {
             $this->builder = $this->builder->orderBy($orderBy, $order);
         }
@@ -168,10 +170,10 @@ class DataProvider
 
     protected function basicQuery($query, $column, $operator, $value, $func)
     {
-        $column = $query->getModel()->getTable() . '.' . $column;
+        $column = $query->getModel()->getTable().'.'.$column;
 
         if ($this->model->translatable && in_array($column, $this->model->translatable)) {
-            $column = $column . '->' . app()->getLocale();
+            $column = $column.'->'.app()->getLocale();
         }
 
         switch ($operator) {
@@ -189,32 +191,34 @@ class DataProvider
     protected function relatedQuery($query, $relation, $column, $operator, $value, $func)
     {
         $temp = $func == 'orWhere' ? 'orWhereHas' : 'whereHas';
+
         return $query->{$temp}($relation, function ($query) use ($column, $operator, $value) {
             $relatedTableName = $query->getModel()->getTable();
 
             if ($query->getModel()->translatable && in_array($column, $query->getModel()->translatable)) {
-                $column = $column . '->' . app()->getLocale();
+                $column = $column.'->'.app()->getLocale();
             }
 
             switch ($operator) {
                 case 'in':
-                    return $query->whereIn($relatedTableName . '.' . $column, $value);
+                    return $query->whereIn($relatedTableName.'.'.$column, $value);
                 case 'not_in':
-                    return $query->whereNotIn($relatedTableName . '.' . $column, $value);
+                    return $query->whereNotIn($relatedTableName.'.'.$column, $value);
                 case 'is_null':
-                    return $query->whereNull($relatedTableName . '.' . $column);
+                    return $query->whereNull($relatedTableName.'.'.$column);
                 default:
-                    return $query->where($relatedTableName . '.' . $column, $operator, $value);
+                    return $query->where($relatedTableName.'.'.$column, $operator, $value);
             }
         });
     }
 
-    protected function searchModel($query, $columns = [], $searchTerm)
+    protected function searchModel($query, $columns, $searchTerm)
     {
         foreach ($columns as $key => $column) {
             $queryParts = $this->resolveQueryParts('contains', $searchTerm);
-            $query = $this->buildSearch($query, $column, $queryParts['operator'], $queryParts['value'], !$key ? 'where' :  'orWhere');
+            $query = $this->buildSearch($query, $column, $queryParts['operator'], $queryParts['value'], ! $key ? 'where' : 'orWhere');
         }
+
         return $query;
     }
 
@@ -249,19 +253,19 @@ class DataProvider
             ],
             'not_contains' => [
                 'operator' => 'NOT LIKE',
-                'value' => '%{$value}%',
+                'value' => "%{$value}%",
             ],
             'contains' => [
                 'operator' => 'LIKE',
-                'value' => '%{$value}%',
+                'value' => "%{$value}%",
             ],
             'starts_with' => [
                 'operator' => 'LIKE',
-                'value' => '{$value}%',
+                'value' => "{$value}%",
             ],
             'ends_with' => [
                 'operator' => 'LIKE',
-                'value' => '%{$value}',
+                'value' => "%{$value}",
             ],
             'greater_than' => [
                 'operator' => '>',

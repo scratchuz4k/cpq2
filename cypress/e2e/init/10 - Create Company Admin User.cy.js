@@ -1,10 +1,8 @@
 const crypto = require("crypto");
 
-const user = {
-    name: 'Company Admin User',
-    email: 'companyadmin@example.com',
-    password: 'werwerwer'
-}
+const { getCurrentDate, generateHash, slugify } = require("../../support/utils.js");
+const temp = getCurrentDate()
+const user = { name: slugify(temp), email: slugify(temp) + "@email.com", password: generateHash(temp) }
 
 describe("Create Order Manager User.cy", () => {
     it("Creates Order Manager User", () => {

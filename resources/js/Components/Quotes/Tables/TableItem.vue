@@ -54,7 +54,7 @@ const remove = async (p) => {
   if (["cancel", "backdrop"].includes(result.dismiss)) {
     return;
   }
-  asd;
+
   items.forEach(async (x) => {
     await removeQuoteItem(x.id);
   });
