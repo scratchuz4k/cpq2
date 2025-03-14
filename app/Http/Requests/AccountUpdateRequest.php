@@ -25,7 +25,7 @@ class AccountUpdateRequest extends FormRequest
     {
         $user = Auth::user();
         $account_id = null;
-        if (array_key_exists('account', $this->route()->parameters())) {
+        if ($this->route() && array_key_exists('account', $this->route()->parameters())) {
             $account_id = $this->route()->parameters()['account']->id;
         }
 
