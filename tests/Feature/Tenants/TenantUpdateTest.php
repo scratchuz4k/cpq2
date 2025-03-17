@@ -102,3 +102,22 @@ it('Upload a tenant SSO File with invalid XML', function () {
     $response->assertStatus(422)
         ->assertJsonPath('message', 'The file must contain a valid XML.');
 });
+
+it('Update Order flow setting', function () {
+    //Activate setting
+    $data = [
+        'orders_flow_is_active' => true
+    ];
+    $response = $this->put('api/tenants/' . $this->user->currentTenant->id, $data);
+    $tenant = $response->json();
+
+    $response->assertStatus(200);
+    expect($tenant['orders_flow_is_active'])->toBe($data['orders_flow_is_active']);
+
+    //Deactivate setting
+    $data['orders_flow_is_active'] = false;
+    $response = $this->put('api/tenants/' . $this->user->currentTenant->id, $data);
+    $tenant = $response->json();
+    $response->assertStatus(200);
+    expect($tenant['orders_flow_is_active'])->toBe($data['orders_flow_is_active']);
+});
