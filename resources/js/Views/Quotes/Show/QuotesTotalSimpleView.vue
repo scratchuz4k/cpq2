@@ -24,7 +24,7 @@ const items = ref([
   {
     label: `Quote #${quote?.id}`,
     url: quote
-      ? ["REGISTRY", "ORDERED"].includes(quote.status)
+      ? ["REGISTRY", "SUBMITTED"].includes(quote.status)
         ? "#"
         : `/quotes/${quote.id}/edit`
       : "#",

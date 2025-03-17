@@ -110,4 +110,4 @@ it('Assert Quote status equals registry on Order create', function () {
     $order = Order::where('quote_id', $quote['id'])->firstOrFail();
     expect($order->quote_id)->toBe($quote['id']);
     expect($order->status)->toBe($quote['status']);
-})->skip();
+});

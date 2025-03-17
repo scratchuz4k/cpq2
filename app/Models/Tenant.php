@@ -11,7 +11,14 @@ use Laravel\Sanctum\HasApiTokens;
 class Tenant extends \Spatie\Multitenancy\Models\Tenant
 {
     use HasFactory, HasApiTokens;
-    protected $fillable = ['name', 'domain', 'database', 'sso_id', 'logo_id'];
+    protected $fillable = ['name', 'domain', 'database', 'sso_id', 'logo_id', 'orders_flow_is_active'];
+
+    protected function casts(): array
+    {
+        return [
+            'orders_flow_is_active' => 'boolean'
+        ];
+    }
 
     public function users(): BelongsToMany
     {

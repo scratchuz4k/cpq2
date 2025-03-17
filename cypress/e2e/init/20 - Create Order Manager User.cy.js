@@ -1,6 +1,3 @@
-const crypto = require("crypto");
-
-
 const { getCurrentDate, generateHash, slugify } = require("../../support/utils.js");
 const temp = getCurrentDate()
 const user = { name: slugify(temp), email: slugify(temp) + "@email.com", password: generateHash(temp) }

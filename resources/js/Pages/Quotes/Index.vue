@@ -26,6 +26,7 @@ const props = defineProps({
 
 const page = usePage()
 const auth_user = page.props.auth.user.id;
+const tenant = page.props.tenant;
 const createOrderAndRefresh = async (id) => {
   const res = await createOrder(id);
   if (res) {
@@ -96,11 +97,11 @@ const items = ref([{ label: "Home", url: "/" }, { label: "Quotes" }]);
           </template>
           <template #actions="{ data, value, index }">
             <div
-              v-if="!['REGISTRY', 'ORDERED'].includes(data.status)"
+              v-if="!['REGISTRY', 'SUBMITTED'].includes(data.status)"
               class="d-flex justify-content-end"
             >
               <button
-                hidden
+                :hidden="!tenant.orders_flow_is_active"
                 type="button"
                 title="Send to Order"
                 :id="'datatable-btn-' + index + '-crete-order'"
