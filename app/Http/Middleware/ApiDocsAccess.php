@@ -10,7 +10,7 @@ class ApiDocsAccess extends Middleware
 {
     public function handle(Request $request, Closure $next)
     {
-        if (auth()->user()->hasRole('Super Admin') || auth()->user()->hasRole('Support Agent')) {
+        if (auth()->check() && (auth()->user()->hasRole('Super Admin') || auth()->user()->hasRole('Support Agent'))) {
             return $next($request);
         }
 
