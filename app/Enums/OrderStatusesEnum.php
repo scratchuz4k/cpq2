@@ -14,4 +14,9 @@ enum OrderStatusesEnum:string
     case CANCELLED = 'cancelled';
     case FAILED = 'failed';
     case ON_HOLD = 'on hold';
+
+    public static function names(): array
+    {
+        return array_column(self::cases(), 'name');
+    }
 }

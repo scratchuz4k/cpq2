@@ -54,7 +54,7 @@ const items = ref([
   <AuthenticatedLayout :order="order">
     <div class="row mb-3">
       <div class="col">
-        <Header title="Create a order" :breadcrumbs="items"></Header>
+        <Header title="Preview Order" :breadcrumbs="items"></Header>
       </div>
       <div class="col" style="text-align: right">
         <template v-if="order.status !== 'REGISTRY'">
