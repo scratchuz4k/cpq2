@@ -222,31 +222,32 @@ const items = ref([
                                     <div class="d-flex">
                                         <div class="orders-form w-100">
                                             <h4>Settings</h4>
-                                            <div class="settings-block mt-4">
-                                                <h6>Orders:</h6>
-                                                <div class="my-3 d-flex justify-content-between">
-                                                    <label
-                                                        for="active-filter"
-                                                        class="form-label"
-                                                        v-tooltip
-                                                        data-bs-toggle="tooltip"
-                                                        data-bs-placement="top"
-                                                        :title="'If this setting is active, the order management will be activated.'"
-                                                    >
-                                                        Active orders flow:
-                                                    </label>
-                                                    <ToggleSwitch
-                                                        id="active-orders-flow"
-                                                        v-model="tenant.orders_flow_is_active"
-                                                        @click="submitTenantOrdersSettings(tenant.orders_flow_is_active)"
-                                                    >
-                                                        <template #handle>
-                                                            <font-awesome-icon
-                                                                :icon="tenant.orders_flow_is_active ? ['fas', 'circle-check'] : ['far', 'circle-xmark']"
-                                                                class="text-primary"
-                                                            />
-                                                        </template>
-                                                    </ToggleSwitch>
+                                            <div class="card bg-light border-0 col-3 settings-block mt-4">
+
+                                                <div class="card-body">
+                                                    <h6 class="fw-bold">Orders Flow</h6>
+                                                    <div>
+                                                        <label
+                                                            for="active-orders-flow"
+                                                            class="form-label lh-sm small pb-2"
+                                                        >
+                                                        <i>If this setting is active, the order management will be activated.</i>
+                                                        </label>
+                                                    </div>
+                                                    <div>
+                                                        <ToggleSwitch
+                                                            id="active-orders-flow"
+                                                            v-model="tenant.orders_flow_is_active"
+                                                            @click="submitTenantOrdersSettings(tenant.orders_flow_is_active)"
+                                                        >
+                                                            <template #handle>
+                                                                <font-awesome-icon
+                                                                    :icon="tenant.orders_flow_is_active ? ['fas', 'circle-check'] : ['far', 'circle-xmark']"
+                                                                    class="text-primary"
+                                                                />
+                                                            </template>
+                                                        </ToggleSwitch>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
