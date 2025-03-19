@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('tenants', function (Blueprint $table) {
-            $table->boolean('orders_flow_is_active')->default(false);
+            $table->boolean('orders_flow_is_active')->default(true);
         });
     }
 
