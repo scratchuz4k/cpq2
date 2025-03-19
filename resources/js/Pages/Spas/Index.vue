@@ -28,13 +28,13 @@ const items = ref([
           }"
           :columns="[
             { data: 'id', title: '#', style: 'width:5%' },
-            { data: 'rule.code', title: 'Rule', style: 'width:15%' },
-            { data: 'field_1.name', title: 'Field 1', style: 'width:15%' },
-            { data: 'field_2.name', title: 'Field 2', style: 'width:15%' },
-            { data: 'price_plan.name', title: 'Price Plan', style: 'width:15%' },
-            { data: 'operation.code', title: 'Operation', style: 'width:15%' },
-            { data: 'value', title: 'Value', style: 'width:15%' },
-            { data: 'percentage', title: 'Percentage', style: 'width:15%' },
+            { data: 'rule.name', title: 'Rule Name' },
+            { data: 'field_1.name', title: 'Field 1' },
+            { data: 'field_2.name', title: 'Field 2' },
+            { data: 'price_plan.name', title: 'Price Plan' },
+            { data: 'operation.code', title: 'Operation' },
+            { data: 'value', title: 'Value' },
+            { data: 'percentage', title: 'Percentage' },
           ]"
           route="/spas"
         >
