@@ -240,12 +240,15 @@ const items = ref([
                                                     <div>
                                                         <ToggleSwitch
                                                             id="active-orders-flow"
-                                                            v-model="tenant.orders_flow_is_active"
-                                                            @click="submitTenantOrdersSettings(tenant.orders_flow_is_active)"
+                                                            v-model="tenant.configurations.orders_flow_is_active"
+                                                            @change="submitTenantOrdersSettings"
+                                                            trueValue="1"
+                                                            falseValue="0"
+                                                            binary
                                                         >
                                                             <template #handle>
                                                                 <font-awesome-icon
-                                                                    :icon="tenant.orders_flow_is_active ? ['fas', 'circle-check'] : ['far', 'circle-xmark']"
+                                                                    :icon="tenant.configurations.orders_flow_is_active === '1' ? ['fas', 'circle-check'] : ['far', 'circle-xmark']"
                                                                     class="text-primary"
                                                                 />
                                                             </template>
