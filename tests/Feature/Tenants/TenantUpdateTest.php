@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Resources\TenantResource;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use App\Models\User;
 use App\Models\Tenant;
@@ -105,19 +106,19 @@ it('Upload a tenant SSO File with invalid XML', function () {
 
 it('Update Order flow setting', function () {
     //Activate setting
-    $data = [
-        'orders_flow_is_active' => true
-    ];
-    $response = $this->put('api/tenants/' . $this->user->currentTenant->id, $data);
+    $tenant = (new TenantResource($this->user->currentTenant))->resolve();
+    $tenant['configurations']['orders_flow_is_active'] = '1';
+
+    $response = $this->put('api/tenants/' . $this->user->currentTenant->id, $tenant);
     $tenant = $response->json();
 
     $response->assertStatus(200);
-    expect($tenant['orders_flow_is_active'])->toBe($data['orders_flow_is_active']);
+    expect($tenant['configurations']['orders_flow_is_active'])->toBe('1');
 
     //Deactivate setting
-    $data['orders_flow_is_active'] = false;
-    $response = $this->put('api/tenants/' . $this->user->currentTenant->id, $data);
+    $tenant['configurations']['orders_flow_is_active'] = '0';
+    $response = $this->put('api/tenants/' . $this->user->currentTenant->id, $tenant);
     $tenant = $response->json();
     $response->assertStatus(200);
-    expect($tenant['orders_flow_is_active'])->toBe($data['orders_flow_is_active']);
+    expect($tenant['configurations']['orders_flow_is_active'])->toBe('0');
 });
