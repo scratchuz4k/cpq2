@@ -32,7 +32,7 @@ const icons = {
 <template>
   <div class="col-6">
     <div class="panel">
-      <h5>Choose the first Entity</h5>
+      <h5>Choose the first Level</h5>
       <ul class="d-flex flex-wrap p-0 m-0 mb-3" style="list-style: none">
         <li v-for="(rule, index) in rules">
           <div
@@ -83,7 +83,7 @@ const icons = {
         >
         </InputSelect>
       </div>
-      <h5 class="mt-5">Choose the second Entity (if needed)</h5>
+      <h5 class="mt-5">Choose the second Level (if needed)</h5>
       <ul class="d-flex flex-wrap p-0 mb-3" style="list-style: none">
         <li v-for="rule in rules[modelValue.entity_1]">
           <div
