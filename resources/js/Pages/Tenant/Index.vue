@@ -20,7 +20,7 @@ const tenant = reactive({
             }
         }
     );
-debugger
+
 const item = ref(null);
 
 const submitFileForm = async () => {
@@ -229,30 +229,32 @@ const items = ref([
 
                                                 <div class="card-body">
                                                     <h6 class="fw-bold">Orders Flow</h6>
-                                                    <div>
-                                                        <label
-                                                            for="active-orders-flow"
-                                                            class="form-label lh-sm small pb-2"
-                                                        >
-                                                        <i>If this setting is active, the order management will be activated.</i>
-                                                        </label>
-                                                    </div>
-                                                    <div>
-                                                        <ToggleSwitch
-                                                            id="active-orders-flow"
-                                                            v-model="tenant.configurations.orders_flow_is_active"
-                                                            @change="submitTenantOrdersSettings"
-                                                            trueValue="1"
-                                                            falseValue="0"
-                                                            binary
-                                                        >
-                                                            <template #handle>
-                                                                <font-awesome-icon
-                                                                    :icon="tenant.configurations.orders_flow_is_active === '1' ? ['fas', 'circle-check'] : ['far', 'circle-xmark']"
-                                                                    class="text-primary"
-                                                                />
-                                                            </template>
-                                                        </ToggleSwitch>
+                                                    <div class="orders_flow_is_active">
+                                                        <div>
+                                                            <label
+                                                                for="active-orders-flow"
+                                                                class="form-label lh-sm small pb-2"
+                                                            >
+                                                                <i>If this setting is active, the order management will be activated.</i>
+                                                            </label>
+                                                        </div>
+                                                        <div>
+                                                            <ToggleSwitch
+                                                                id="active-orders-flow"
+                                                                v-model="tenant.configurations.orders_flow_is_active"
+                                                                @change="submitTenantOrdersSettings"
+                                                                trueValue="1"
+                                                                falseValue="0"
+                                                                binary
+                                                            >
+                                                                <template #handle>
+                                                                    <font-awesome-icon
+                                                                        :icon="tenant.configurations.orders_flow_is_active === '1' ? ['fas', 'circle-check'] : ['far', 'circle-xmark']"
+                                                                        class="text-primary"
+                                                                    />
+                                                                </template>
+                                                            </ToggleSwitch>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
