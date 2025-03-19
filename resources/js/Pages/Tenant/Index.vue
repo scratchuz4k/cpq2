@@ -5,6 +5,9 @@ import {reactive, ref} from "vue";
 import Button from "primevue/button";
 import axios from "axios";
 import ToggleSwitch from "primevue/toggleswitch";
+import {Checkbox} from "primevue";
+// import Checkbox from "primevue/checkbox";
+
 
 const props = defineProps({
     isSuperAdmin: Boolean,
@@ -13,7 +16,14 @@ const props = defineProps({
 
 const isLoading = ref(false);
 const event = ref(null);
-const tenant = reactive(props.tenant);
+const tenant = reactive({
+        ...props.tenant,
+        configurations: {
+                orders_flow_is_active: props.tenant.configurations.orders_flow_is_active ?? '0'
+            }
+        }
+    );
+debugger
 const item = ref(null);
 
 const submitFileForm = async () => {
@@ -69,12 +79,8 @@ const submitTextForm = async () => {
 }
 
 const submitTenantOrdersSettings = async () => {
-    let data = {
-        orders_flow_is_active: !tenant.orders_flow_is_active
-    }
-
     try {
-        let res = await axios.put(`/api/tenants/` + tenant.id, data)
+        let res = await axios.put(`/api/tenants/` + tenant.id, tenant)
         Object.assign(tenant, res.data);
         notyf.success("Content updated successfully")
     } catch (err) {
@@ -164,12 +170,12 @@ const items = ref([
                                         <h4>Input SSO configuration for {{ tenant.name }}</h4>
                                         <p>Please provide a valid xml syntax</p>
                                         <form @submit.prevent="submitTextForm" enctype="multipart/form-data">
-                      <textarea
-                          v-if="tenant.file"
-                          v-model="tenant.file.file_content"
-                          class="w-100 p-4"
-                          rows="10"
-                      ></textarea>
+                                            <textarea
+                                                v-if="tenant.file"
+                                                v-model="tenant.file.file_content"
+                                                class="w-100 p-4"
+                                                rows="10"
+                                            ></textarea>
                                             <textarea
                                                 v-else
                                                 v-model="tenant.sso_text"
@@ -237,12 +243,15 @@ const items = ref([
                                                     </label>
                                                     <ToggleSwitch
                                                         id="active-orders-flow"
-                                                        v-model="tenant.orders_flow_is_active"
-                                                        @click="submitTenantOrdersSettings(tenant.orders_flow_is_active)"
+                                                        v-model="tenant.configurations.orders_flow_is_active"
+                                                        @change="submitTenantOrdersSettings"
+                                                        trueValue="1"
+                                                        falseValue="0"
+                                                        binary
                                                     >
                                                         <template #handle>
                                                             <font-awesome-icon
-                                                                :icon="tenant.orders_flow_is_active ? ['fas', 'circle-check'] : ['far', 'circle-xmark']"
+                                                                :icon="tenant.configurations.orders_flow_is_active === '1' ? ['fas', 'circle-check'] : ['far', 'circle-xmark']"
                                                                 class="text-primary"
                                                             />
                                                         </template>

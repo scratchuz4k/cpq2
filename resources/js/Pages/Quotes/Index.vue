@@ -101,7 +101,7 @@ const items = ref([{ label: "Home", url: "/" }, { label: "Quotes" }]);
               class="d-flex justify-content-end"
             >
               <button
-                :hidden="!tenant.orders_flow_is_active"
+                :hidden="tenant.configurations.orders_flow_is_active === '0'"
                 type="button"
                 title="Send to Order"
                 :id="'datatable-btn-' + index + '-crete-order'"

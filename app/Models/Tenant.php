@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Trait\HasConfigurations;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -10,7 +11,7 @@ use Laravel\Sanctum\HasApiTokens;
 
 class Tenant extends \Spatie\Multitenancy\Models\Tenant
 {
-    use HasFactory, HasApiTokens;
+    use HasFactory, HasApiTokens, HasConfigurations;
     protected $fillable = ['name', 'domain', 'database', 'sso_id', 'logo_id', 'orders_flow_is_active'];
 
     protected function casts(): array

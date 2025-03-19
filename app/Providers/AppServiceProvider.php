@@ -39,14 +39,14 @@ class AppServiceProvider extends ServiceProvider
         Event::listen(function (\SocialiteProviders\Manager\SocialiteWasCalled $event) {
             $event->extendSocialite('saml2', \SocialiteProviders\Saml2\Provider::class);
         });
-        /*
+
         Scramble::routes(function (Route $route) {
+            $t = request()->user();
             $available = [
                 'api/account',
                 'api/contact',
             ];
             return Str::startsWith($route->uri, $available);
         });
-        */
     }
 }

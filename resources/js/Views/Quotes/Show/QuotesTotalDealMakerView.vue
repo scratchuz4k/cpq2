@@ -191,7 +191,7 @@ const items = ref([
                 Email this quote
               </button>
               <button
-                :hidden="!tenant.orders_flow_is_active"
+                :hidden="tenant.configurations.orders_flow_is_active === '0'"
                 :disabled="disableButtonSendToOrder"
                 class="btn btn-primary"
                 @click="createOrderAndRedirect(quote.id)"
