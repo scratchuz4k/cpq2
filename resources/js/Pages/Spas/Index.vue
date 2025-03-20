@@ -76,6 +76,26 @@ const getData = async () => {
   meta.first = (meta.page - 1) * meta.limit;
 };
 
+const deleteRecord = async (id) => {
+  swal
+    .fire({
+      title: "Are you sure?",
+    })
+    .then(async (result) => {
+      if (["cancel", "backdrop"].includes(result.dismiss)) {
+        return;
+      }
+      try {
+        let res = await axios.delete("/api/spas/" + id);
+        getData();
+        notyf.success("Removed with success");
+        return;
+      } catch (err) {
+        notyf.error(err?.response?.data?.message ?? "Something went wrong");
+      }
+    });
+};
+
 const handlePaginator = (ev) => {
   meta.limit = ev.rows;
   meta.page = ev.page + 1;
@@ -247,10 +267,11 @@ getData();
                 <th>Operation</th>
                 <th>Value</th>
                 <th>Percentage</th>
+                <th></th>
               </tr>
             </thead>
             <tbody>
-              <tr v-for="item in data">
+              <tr v-for="(item, index) in data">
                 <td>{{ item.rule.name }}</td>
                 <td>{{ item.field_1?.name }}</td>
                 <td>{{ item.field_2?.name }}</td>
@@ -258,9 +279,28 @@ getData();
                 <td>{{ item.operation.code }}</td>
                 <td>{{ item.value }}</td>
                 <td>{{ item.percentage }}</td>
+                <td>
+                  <div class="d-flex justify-content-center">
+                    <Link
+                      :id="'datatable-btn-' + index + '-edit'"
+                      :href="'/spas/' + item.id + '/edit'"
+                      class="btn p-2 mx-1 border-0"
+                    >
+                      <font-awesome-icon :icon="['fas', 'edit']" />
+                    </Link>
+
+                    <button
+                      :id="'datatable-btn-' + index + '-delete'"
+                      class="btn p-2 mx-1 border-0"
+                      @click="deleteRecord(item.id)"
+                    >
+                      <font-awesome-icon icon="fas fa-trash-alt" />
+                    </button>
+                  </div>
+                </td>
               </tr>
               <tr v-if="!data.length" class="text-center">
-                <td colspan="7">No Results Found</td>
+                <td colspan="8">No Results Found</td>
               </tr>
             </tbody>
           </table>
