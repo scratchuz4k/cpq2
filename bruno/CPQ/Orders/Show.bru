@@ -1,0 +1,19 @@
+meta {
+  name: Show
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{base_url}}/api/orders/1
+  body: json
+  auth: bearer
+}
+
+headers {
+  : 
+}
+
+auth:bearer {
+  token: {{token}}
+}

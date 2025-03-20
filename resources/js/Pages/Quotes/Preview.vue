@@ -36,7 +36,7 @@ const items = ref([
   {
     label: `Quote #${props.quote?.id}`,
     url: props.quote
-      ? ["REGISTRY", "ORDERED"].includes(props.quote.status)
+      ? ["REGISTRY", "SUBMITTED"].includes(props.quote.status)
         ? "#"
         : `/quotes/${props.quote.id}/edit`
       : "#",
@@ -44,7 +44,7 @@ const items = ref([
   {
     label: `Summary`,
     url: props.quote
-      ? ["REGISTRY", "ORDERED"].includes(props.quote.status)
+      ? ["REGISTRY", "SUBMITTED"].includes(props.quote.status)
         ? "#"
         : `/quotes/${props.quote.id}`
       : "#",
