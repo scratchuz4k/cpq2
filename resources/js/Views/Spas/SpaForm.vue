@@ -185,7 +185,7 @@ const icons = {
     </div>
   </div>
 </template>
-<style scoped>
+<style>
 .rule {
   cursor: pointer;
   margin-right: 5px;
