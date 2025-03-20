@@ -300,7 +300,7 @@
                                             @foreach ($group['children'] as $key => $item)
                                                 <tr class="item-row child-bg" style="vertical-align: middle;">
                                                     <td class="column-quote_ref-body" style="">
-                                                        {{ $item['data']?->productCode }}
+                                                        {{ $item['data']?->quoteId }}
                                                     </td>
                                                     <td class="column-speed-body">
                                                         {{ formatBytes($item['data']?->speed) }}
@@ -328,7 +328,7 @@
                                         @else
                                             <tr class="item-row child-bg" style="vertical-align: middle;">
                                                 <td class="column-quote_ref-body">
-                                                    {{ $group['data']?->productCode }}
+                                                    {{ $group['data']?->quoteId }}
                                                 </td>
                                                 <td class="column-speed-body">
                                                     {{ formatBytes($group['data']?->speed) }}

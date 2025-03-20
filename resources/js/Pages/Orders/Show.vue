@@ -241,7 +241,7 @@ const items = ref([
                           v-if="order.solution_type_id === 1"
                           class="d-none d-xl-table-cell text-center"
                         >
-                          {{ item.data?.productCode }}
+                          {{ item.data?.quoteId }}
                         </td>
                         <td class="text-center">Monthly</td>
                         <td class="text-center">
@@ -351,7 +351,7 @@ const items = ref([
                           v-if="order.solution_type_id === 1"
                           class="d-none d-xl-table-cell text-center"
                         >
-                          {{ item.data?.productCode }}
+                          {{ item.data?.quoteId }}
                         </td>
                         <td class="text-center">Single</td>
                         <td class="text-center">
