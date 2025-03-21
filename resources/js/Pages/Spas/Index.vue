@@ -101,16 +101,28 @@ const deleteRecord = async (id) => {
 };
 
 const cloneSpa = async (item) => {
-  let res = await axios.post("/api/spas", {
-    rule_id: item.rule_id,
-    field_1: item.field_1.id,
-    field_2: item.field_2.id,
-    operation_id: item.operation_id,
-    price_plan_id: item.price_plan_id,
-    value: item.value,
-    percentage: item.percentage,
+  let result = await swal.fire({
+    title: "Are you sure?",
+    text: "This action will clone the selected SPA",
   });
-  getData();
+  if (["cancel", "backdrop"].includes(result.dismiss)) {
+    return;
+  }
+  try {
+    let res = await axios.post("/api/spas", {
+      rule_id: item.rule_id,
+      field_1: item.field_1.id,
+      field_2: item.field_2.id,
+      operation_id: item.operation_id,
+      price_plan_id: item.price_plan_id,
+      value: item.value,
+      percentage: item.percentage,
+    });
+    notyf.success("Clone with success");
+    getData();
+  } catch (err) {
+    notyf.error(err?.response?.data?.message ?? "Something went wrong");
+  }
 };
 
 const handlePaginator = (ev) => {
