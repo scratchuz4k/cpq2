@@ -4,19 +4,18 @@ namespace App\Imports;
 
 use App\Models\User;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use Maatwebsite\Excel\Concerns\SkipsErrors;
+use Maatwebsite\Excel\Concerns\ToCollection;
 use Maatwebsite\Excel\Concerns\WithBatchInserts;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
-use Maatwebsite\Excel\Concerns\ToCollection;
 
-class UsersImport implements ToCollection, WithHeadingRow, WithBatchInserts
+class UsersImport implements ToCollection, WithBatchInserts, WithHeadingRow
 {
-
     use SkipsErrors;
 
     public $results = [
@@ -25,12 +24,13 @@ class UsersImport implements ToCollection, WithHeadingRow, WithBatchInserts
         'skipped' => 0,
         'errors' => [],
     ];
+
     private $usersWithManagers = [];
 
     /**
      * Recursively processes and inserts users with missing managers.
      *
-     * @param array $usersWithManagers
+     * @param  array  $usersWithManagers
      * @return void
      */
     private function processUsersWithManagers(?int $managerIndex = null)
@@ -57,11 +57,15 @@ class UsersImport implements ToCollection, WithHeadingRow, WithBatchInserts
                 $this->processUsersWithManagers($managerKey);
 
                 $newManager = User::where('name', $currentUser['managername'])->first();
-                if (!empty($newManager)) {
+                if (! empty($newManager)) {
                     $this->insertUser($currentUser, $newManager->id);
+                } else {
+                    $this->results['skipped']++;
+                    $this->results['errors'][] = ['row' => $currentUser, 'error' => 'Manager "'.$currentUser['managername'].'" not found!'];
                 }
             } else {
-                throw new \Exception('Manager "' . $currentUser['managername'] . '" not found, associated to "' . $currentUser['name'] . '" (' . $currentUser['email'] . ')');
+                $this->results['skipped']++;
+                $this->results['errors'][] = ['row' => $currentUser, 'error' => 'Manager "'.$currentUser['managername'].'" not found!'];
             }
         }
 
@@ -73,8 +77,6 @@ class UsersImport implements ToCollection, WithHeadingRow, WithBatchInserts
     /**
      * Insert a new user with a specific manager.
      *
-     * @param array $user
-     * @param int|null $managerId
      * @return void
      */
     private function insertUser(array $user, ?int $managerId = null)
@@ -87,20 +89,22 @@ class UsersImport implements ToCollection, WithHeadingRow, WithBatchInserts
 
             if ($validator->fails()) {
                 $this->results['skipped']++;
+                $this->results['errors'][] = ['row' => $user, 'error' => 'User has already been added!'];
+
                 return null;
             }
 
             $newUser = User::create([
                 'parent_id' => $managerId,
-                'name'     => $user['name'] ?? '',
-                'email'    => $user['email'] ?? '',
-                'password' => !empty($user['password']) ? Hash::make($user['password']) : Hash::make(Str::random(12)),
-                'sso'      => isset($user['sso']) && (int)$user['sso'] === 1 ? 1 : 0,
+                'name' => $user['name'] ?? '',
+                'email' => $user['email'] ?? '',
+                'password' => ! empty($user['password']) ? Hash::make($user['password']) : Hash::make(Str::random(12)),
+                'sso' => isset($user['sso']) && (int) $user['sso'] === 1 ? 1 : 0,
             ]);
 
             $newUser->save();
 
-            if (!empty($newUser->id)) {
+            if (! empty($newUser->id)) {
 
                 $user = request()->user();
                 DB::table('tenant_user')->insert([
@@ -121,14 +125,12 @@ class UsersImport implements ToCollection, WithHeadingRow, WithBatchInserts
         return null;
     }
 
-    /**
-     * @param Collection $rows
-     * @return void
-     */
     public function collection(Collection $rows): void
     {
         foreach ($rows as $row) {
-            $row = $row->toArray();
+            $row = array_map(function ($value) {
+                return trim($value);
+            }, $row->toArray());
             $this->results['processed']++;
             if (empty($row['managername'])) {
                 $this->insertUser($row);
@@ -144,18 +146,11 @@ class UsersImport implements ToCollection, WithHeadingRow, WithBatchInserts
         return 500;
     }
 
-
-    /**
-     * @return int
-     */
     public function chunkSize(): int
     {
         return 500;
     }
 
-    /**
-     * @return int
-     */
     public function headingRow(): int
     {
         return 1;

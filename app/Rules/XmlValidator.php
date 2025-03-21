@@ -2,9 +2,11 @@
 
 namespace App\Rules;
 
+use App\Models\Resource;
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 
 class XmlValidator implements ValidationRule
 {
@@ -15,16 +17,11 @@ class XmlValidator implements ValidationRule
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-
-        if ($value instanceof UploadedFile) {
-            $xml_content = file_get_contents($value);
+        if (is_null($value)) {
+            return;
         }
 
-        if (is_string($value)) {
-            $xml_content = $value;
-        }
-
-        if (!simplexml_load_string($xml_content, null, LIBXML_NOERROR )) {
+        if (!simplexml_load_string($value, null, LIBXML_NOERROR)) {
             $fail('The :attribute must contain a valid XML.');
         }
     }

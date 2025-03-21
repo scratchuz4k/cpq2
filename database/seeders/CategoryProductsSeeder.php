@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
+use App\Enums\PricePlanEnum;
 use App\Models\Category;
 use App\Models\PricePlan;
 use App\Models\Product;
@@ -59,7 +60,7 @@ class CategoryProductsSeeder extends Seeder
 
         foreach (Tenant::all() as $tenant) {
             $categories = [];
-            $pricePlan = PricePlan::where("code", "monthly")->first();
+            $pricePlan = PricePlan::where("code", PricePlanEnum::MONTHLY->name)->first();
             $categories["plan"]  = Category::updateOrCreate(["code" => "plan", "tenant_id" => $tenant->id], ["name" => "Plans"]);
 
             foreach ($products as $temp) {
@@ -69,6 +70,7 @@ class CategoryProductsSeeder extends Seeder
                 ], [
                     "name" => $temp["name"],
                     "description" => $temp["description"],
+                    "price_plan_id" => $pricePlan->id
                 ]);
 
                 $price = $product->prices()->updateOrCreate(
@@ -79,7 +81,6 @@ class CategoryProductsSeeder extends Seeder
                     [
                         "tax_rate" => 20,
                         "net" => $temp["price"] ?? 0,
-                        "price_plan_id" => $pricePlan->id
                     ]
                 );
 

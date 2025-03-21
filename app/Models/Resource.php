@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Models\Scopes\TenantScope;
+use App\Trait\SetTenantId;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
@@ -9,21 +11,47 @@ use Illuminate\Support\Facades\Storage;
 
 class Resource extends Model
 {
+    use SetTenantId;
+
     protected $fillable = [
         'title',
         'route',
         'mime_type',
         'alt_text',
         'size',
-        'tenant_id',
-        'resource_type_id'
+        'tenant_id'
     ];
 
-    protected $appends = ['full_route', 'file_content'];
+    protected $appends = ['full_route'];
 
+    public function toArray()
+    {
+        $array = parent::toArray();
+
+        if ($this->isXmlFile()) {
+            $array['file_content'] = $this->file_content;
+        }
+
+        return $array;
+    }
+
+    public function isXmlFile(): bool
+    {
+        return $this->mime_type === 'application/xml' || $this->mime_type === 'text/xml';
+    }
     public function getFileContentAttribute()
     {
         return $this->getContent();
+    }
+
+    public function setFileContentAttribute()
+    {
+        return $this->getContent();
+    }
+
+    public function getRouteAttribute(): string
+    {
+        return 'storage/' . $this->attributes['route'];
     }
 
     public function getFullRouteAttribute(): string
@@ -43,7 +71,7 @@ class Resource extends Model
 
     public function getContent(): string
     {
-        return Storage::get($this->route) ?? '';
+        return Storage::disk('public')->get($this->getRouteValue()) ?? '';
     }
 
 

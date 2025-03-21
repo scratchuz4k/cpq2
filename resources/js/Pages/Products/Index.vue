@@ -21,16 +21,16 @@ const items = ref([
                 </template>
             </Header>
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                <Datatable :allow="{
+                <Datatable :table-props="{ id: 'products-table' }" :allow="{
                     update: true,
                     delete: true,
                     link: false,
                 }" :columns="[
                     { data: 'id', title: '#', style: 'width:5%' },
+                    { data: 'code', title: 'Code', style: 'width:20%' },
+                    { data: 'name', title: 'Name', style: 'width:30%' },
                     { data: 'supplier.name', title: 'Supplier', style: 'width:12%' },
                     { data: 'brand.name', title: 'Brand', style: 'width:12%' },
-                    { data: 'name', title: 'Name', style: 'width:30%' },
-                    { data: 'created_at', title: 'Created At', style: 'width:15%' },
                     { data: 'updated_at', title: 'Updated At', style: 'width:15%' },
                 ]" route="/products">
                     <template #updated_at="{ value }">

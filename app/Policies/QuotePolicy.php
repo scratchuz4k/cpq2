@@ -14,7 +14,7 @@ class QuotePolicy
     private string $model = "quote";
     private array $statusToBlockQuotes = [
         QuoteStatusesEnum::REGISTRY->name,
-        QuoteStatusesEnum::ORDERED->name
+        QuoteStatusesEnum::SUBMITTED->name
     ];
     public function viewAny(User $user): bool
     {
@@ -54,6 +54,10 @@ class QuotePolicy
      */
     public function update(User $user, Quote $quote): bool
     {
+        if ($user->id !== $quote->user_id) {
+            return false;
+        }
+
         if (!$user->can("update $this->model")) {
             return false;
         }
@@ -69,6 +73,10 @@ class QuotePolicy
      */
     public function delete(User $user, Quote $quote): bool
     {
+        if ($user->id !== $quote->user_id) {
+            return false;
+        }
+
         if (!$user->can("delete $this->model")) {
             return false;
         }

@@ -31,10 +31,10 @@ const items = ref([
             </Header>
             <div v-if="props.results" class="bg-light p-4 mt-3">
                 <h4>Import Results</h4>
-                <p>Rows Processed: {{ results.processed }}</p>
-                <p>Rows successfully imported: {{ results.success }}</p>
-                <p>Rows Skipped: {{ results.skipped }}</p>
-
+                <p><b>Rows Processed:</b> {{ results.processed }}</p>
+                <p><b>Rows successfully imported:</b> {{ results.success }}</p>
+                <p><b>Rows Skipped:</b> {{ results.skipped }}</p>
+                <br/>
                 <h4>Errors</h4>
                 <ul v-if="results?.errors?.length > 0">
                     <li v-for="(row, index) in results.errors" :key="index">
@@ -47,3 +47,25 @@ const items = ref([
         </div>
     </AuthenticatedLayout>
 </template>
+
+<style scoped>
+
+ li {
+   counter-increment: item;
+   margin-bottom: 5px;
+ }
+ li:before {
+   margin-right: 10px;
+   content: counter(item);
+   background: var(--color-purple-light);
+   border-radius: 100%;
+   color: var(--dark-purple);
+   width: 25px;
+   height: 25px;
+   line-height: 24px;
+   font-size: 14px;
+   font-weight: bold;
+   text-align: center;
+   display: inline-block;
+ }
+</style>

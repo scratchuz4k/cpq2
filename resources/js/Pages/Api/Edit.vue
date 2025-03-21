@@ -3,6 +3,7 @@ import Select from 'primevue/select';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, router, useForm } from "@inertiajs/vue3";
 import { ref } from 'vue';
+import ToggleSwitch from "primevue/toggleswitch";
 
 
 const props = defineProps({
@@ -28,7 +29,7 @@ const saveApi = () => {
     router.put(`/apis/${data.id}`, data,
         {
             onSuccess: (page) => {
-                notyf.success("Created with Success")
+                notyf.success("Updated with Success")
             },
             onError: (errors) => {
                 let string = ''
@@ -62,6 +63,20 @@ const items = ref([
             </Header>
             <div class="row">
                 <div class="col-6">
+                    <div class="mb-3 d-flex flex-column">
+                        <label class="form-label" for="active-filter">
+                            Active:
+                        </label>
+                        <ToggleSwitch id="active-filter" v-model="data.is_active">
+                            <template #handle>
+                                <font-awesome-icon
+                                    :icon="data.is_active ? ['fas', 'circle-check'] : ['far', 'circle-xmark']"
+                                    class="text-primary"
+                                />
+                            </template>
+                        </ToggleSwitch>
+
+                    </div>
                     <div class="mb-3">
                         <label for="api-code" class="form-label">Code:</label>
                         <Select :inputId="'api-code'" v-model="data.code" editable :options="props.suppliers"

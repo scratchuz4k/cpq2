@@ -15,6 +15,10 @@ class SharedLinkResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        if (is_null($this->resource)) {
+            return [];
+        }
+
         $date = Carbon::parse($this->expires_at);
         return [
             'id' => $this->id,

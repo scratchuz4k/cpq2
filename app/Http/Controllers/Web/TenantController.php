@@ -2,22 +2,25 @@
 
 namespace App\Http\Controllers\Web;
 
-use Inertia\Inertia;
-use App\Models\Tenant;
-use Illuminate\Http\Request;
-use App\Services\TenantService;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\TenantUpdateRequest;
+use App\Http\Resources\TenantResource;
+use App\Models\Tenant;
+use App\Services\TenantService;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Inertia\Inertia;
 
 class TenantController extends BaseController
 {
     protected $model = Tenant::class;
+
     public function __construct(protected TenantService $tenantService)
     {
         parent::__construct();
     }
+
     /**
      * Display a listing of the resource.
      */
@@ -25,13 +28,9 @@ class TenantController extends BaseController
     {
         $user = request()->user();
 
-        $tenants = $user->hasRole('Super Admin')
-            ? Tenant::with('file')->get()
-            : [$user->currentTenant->load('file')];
-
         return Inertia::render('Tenant/Index', [
             'isSuperAdmin' => $user->hasRole('Super Admin'),
-            'tenants' => $tenants,
+            'tenant' => (new TenantResource($user->currentTenant))->resolve()
         ]);
     }
 
@@ -64,7 +63,7 @@ class TenantController extends BaseController
      */
     public function edit(Tenant $tenant)
     {
-        return redirect()->route('tenant.index');
+        return redirect()->route('tenants.index');
     }
 
     /**
@@ -74,15 +73,16 @@ class TenantController extends BaseController
     {
         try {
             $tenant = DB::transaction(function () use ($tenant, $request) {
-                return  $this->tenantService->update($tenant, $request->all());
+                return $this->tenantService->update($tenant, $request->all());
             });
         } catch (\Exception $e) {
-            if (!env('APP_DEBUG')) {
+            if (! env('APP_DEBUG')) {
                 Log::error($e->getMessage());
             }
             throw new \Exception($e);
         }
-        return to_route('tenant.index');
+
+        return Inertia::location('tenants');
     }
 
     /**
@@ -100,6 +100,7 @@ class TenantController extends BaseController
     {
         $request->user()->update(['tenant_id' => $tenant->id]);
         $tenant->makeCurrent();
-        return Inertia::location("/");
+
+        return Inertia::location(route('index'));
     }
 }

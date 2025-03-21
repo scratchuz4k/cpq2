@@ -2,13 +2,17 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Helpers\DataProvider;
+use App\Http\Controllers\BaseController;
+use App\Http\Requests\TenantUpdateRequest;
+use App\Http\Resources\TenantResource;
 use App\Models\Tenant;
-use Illuminate\Http\Request;
 use App\Services\TenantService;
+use Exception;
+use Illuminate\Http\Client\Request;
+use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use App\Http\Controllers\Controller;
-use App\Http\Controllers\BaseController;
 
 class TenantController extends BaseController
 {
@@ -22,7 +26,17 @@ class TenantController extends BaseController
      */
     public function index()
     {
-        //
+
+        $dataProvider = new DataProvider(Tenant::class);
+        try {
+            $data = $dataProvider->get();
+        } catch (Exception $e) {
+            Log::debug($e->getMessage());
+
+            return $e->getMessage();
+        }
+
+        return JsonResource::collection($data);
     }
 
     /**
@@ -44,11 +58,12 @@ class TenantController extends BaseController
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Tenant $tenant)
+    public function update(TenantUpdateRequest $request, Tenant $tenant)
     {
         try {
             $tenant = DB::transaction(function () use ($tenant, $request) {
-                return $this->tenantService->update($tenant, $request->all());
+                $tenant = $this->tenantService->update($tenant, $request->all());
+                return $tenant;
             });
         } catch (\Exception $e) {
             if (!env('APP_DEBUG')) {
@@ -56,7 +71,8 @@ class TenantController extends BaseController
             }
             throw new \Exception($e);
         }
-        return $tenant->load('file');
+
+        return response()->json((new TenantResource($tenant))->resolve());
     }
 
     /**

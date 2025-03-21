@@ -12,6 +12,7 @@ use App\Http\Resources\SpaResource;
 use App\Http\Requests\SpaCreateRequest;
 use App\Http\Requests\SpaUpdateRequest;
 use App\Http\Controllers\BaseController;
+use App\Models\PricePlan;
 use App\Models\SpaOperation;
 use App\Models\SpaRule;
 
@@ -40,6 +41,7 @@ class SpaController extends BaseController
             'rules' => SpaRule::all(),
             'operations' => SpaOperation::all(),
             'suppliers' => Supplier::all(),
+            'price_plans' => PricePlan::all(),
         ]);
     }
 
@@ -62,7 +64,7 @@ class SpaController extends BaseController
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Spa $spa)
     {
         //
     }
@@ -78,6 +80,7 @@ class SpaController extends BaseController
             'rules' => SpaRule::all(),
             'operations' => SpaOperation::all(),
             'suppliers' => Supplier::all(),
+            'price_plans' => PricePlan::all(),
         ]);
     }
 
@@ -100,7 +103,7 @@ class SpaController extends BaseController
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Spa $spa)
     {
         //
     }

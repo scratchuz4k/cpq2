@@ -20,8 +20,9 @@ class SpaResource extends JsonResource
             ...$this->resource->toArray(),
             'field_1' => $entity1,
             'field_2' => $entity2,
-            'value' => (float)$this->value,
-            'percentage' => (float) $this->percentage,
+            'value' => round((float)$this->value, 2),
+            'percentage' => round((float) $this->percentage, 2),
+            'price_plan' => $this->pricePlan,
             'rule' => $this->rule,
             'operation' => $this->operation,
             'user' => $this->user

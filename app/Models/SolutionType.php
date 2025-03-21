@@ -2,18 +2,27 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Trait\HasConfigurations;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class SolutionType extends Model
 {
-    use HasFactory;
+    use HasFactory, HasConfigurations;
 
-    private static $solution_types = [
-        "3" => 'Connectivity - Ethernet & Fibre',
-        "4" => 'Mobile',
-        // "1" => 'Connectivity - Ethernet Point to Point',
-        // "2" => 'Connectivity - Fibre',
-    ];
+    protected $fillable = ["code", "name"];
 
+    public function tenants() : BelongsToMany
+    {
+        return $this
+            ->belongsToMany(Tenant::class, 'solution_type_tenant', 'solution_type_id', 'tenant_id')
+            ->withTimestamps();
+    }
+
+    public function quotes() : HasMany
+    {
+        return $this->hasMany(Quote::class);
+    }
 }

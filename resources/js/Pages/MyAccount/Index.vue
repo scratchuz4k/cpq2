@@ -1,53 +1,57 @@
 <script setup>
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import Permissions from "@/Components/Permissions.vue";
 import { Head, Link } from "@inertiajs/vue3";
-import { can, hasRole } from '@composables/useAuth'
-import { ref } from 'vue';
+import { can, hasRole } from "@composables/useAuth";
+import { ref } from "vue";
 
 defineProps({
-    permissions: Array,
-    tenants: Array
-})
-const items = ref([
-    { label: 'Home', url: '/' },
-    { label: 'My Account' },
-]);
-
-
+  permissions: Array,
+  tenants: Array,
+});
+const items = ref([{ label: "Home", url: "/" }, { label: "My Account" }]);
 </script>
 
 <template>
+  <Head title="My Account" />
+  <AuthenticatedLayout>
+    <div class="panel">
+      <Header title="My Account" :breadcrumbs="items">
+        <template #buttons>
+          <form @submit.prevent="submit">
+            <Link
+              :href="route('logout')"
+              method="post"
+              as="button"
+              class="btn btn-primary px-4"
+              >Log Out
+            </Link>
+          </form>
+        </template>
+      </Header>
+      <div class="row">
+        <div class="col-4">
+          <div class="text-center">
+            <font-awesome-icon
+              class="bg-light p-5 rounded-circle text-secondary"
+              :icon="['fas', 'user']"
+              size="4x"
+            ></font-awesome-icon>
+          </div>
+          <div class="text-center mt-3">
+            <span
+              v-for="role in $page.props.auth.roles"
+              class="badge bg-secondary p-1 px-2 rounded text-white"
+              >{{ role }}</span
+            >
+            <h5 class="mt-2 mb-0">{{ $page.props.auth.user.name }}</h5>
+            <span>{{ $page.props.auth.user.email }}</span>
 
-    <Head title="My Account" />
-    <AuthenticatedLayout>
-
-        <div class="panel">
-            <Header title="My Account" :breadcrumbs="items">
-                <template #buttons>
-                    <form @submit.prevent="submit">
-                        <Link :href="route('logout')" method="post" as="button" class="btn btn-primary px-4">Log Out
-                        </Link>
-                    </form>
-                </template>
-            </Header>
-            <div class="row">
-                <div class="col-4">
-
-                    <div class="text-center">
-                        <font-awesome-icon class="bg-light p-5 rounded-circle text-secondary" :icon="['fas', 'user']"
-                            size="4x"></font-awesome-icon>
-                    </div>
-                    <div class="text-center mt-3">
-                        <span v-for="role in $page.props.auth.roles"
-                            class="badge bg-secondary p-1 px-2 rounded text-white">{{ role
-                            }}</span>
-                        <h5 class="mt-2 mb-0">{{ $page.props.auth.user.name }}</h5>
-                        <span>{{ $page.props.auth.user.email }}</span>
-
-                        <div v-if="true" class="buttons mt-3">
-                            <Link class="btn btn-outline-primary px-4" :href="route('profile.edit')">Edit Profile</Link>
-                        </div>
+            <div v-if="true" class="buttons mt-3">
+              <Link class="btn btn-outline-primary px-4" :href="route('profile.edit')"
+                >Edit Profile</Link
+              >
+            </div>
 
                         <hr class="login-seperator">
                         <h5 class="mt-4">Company Accounts</h5>
@@ -88,13 +92,13 @@ const items = ref([
                                 </a>
                             </div>
                         </div>
-                        <div class="col" v-if="hasRole('Super Admin') || can('viewAny price')">
+                        <div class="col" v-if="hasRole('Super Admin') || can('viewAny category')">
                             <div class="card bg-light border-0">
-                                <a id="link-prices" :href="route('prices.index')"
+                                <a id="link-categories" :href="route('categories.index')"
                                     class="card-body text-center p-2 text-decoration-none">
-                                    <font-awesome-icon class="py-3 opacity-25" :icon="['far', 'money-bill-1']"
+                                    <font-awesome-icon class="py-3 opacity-25" :icon="['far', 'folder']"
                                         size="2x"></font-awesome-icon>
-                                    <span class="d-block h5">Prices</span>
+                                    <span class="d-block h5">Categories</span>
                                 </a>
                             </div>
                         </div>
@@ -118,6 +122,16 @@ const items = ref([
                                 </a>
                             </div>
                         </div>
+                        <div class="col" v-if="hasRole('Super Admin') || can('viewAny solution_type')">
+                            <div class="card bg-light border-0">
+                                <a id="link-solutions" :href="route('solution-types.index')"
+                                    class="card-body text-center p-2 text-decoration-none">
+                                    <font-awesome-icon class="py-3 opacity-25" :icon="['fas', 'circle-nodes']"
+                                        size="2x"></font-awesome-icon>
+                                    <span class="d-block h5">Solutions</span>
+                                </a>
+                            </div>
+                        </div>
                         <div class="col" v-if="hasRole('Super Admin') || can('viewAny spa')">
                             <div class="card bg-light border-0">
                                 <a id="link-spas" :href="route('spas.index')"
@@ -138,13 +152,23 @@ const items = ref([
                                 </a>
                             </div>
                         </div>
+                        <div class="col" v-if="hasRole('Super Admin') || can('viewAny merchant')">
+                            <div class="card bg-light border-0">
+                                <a id="link-merchants" :href="route('merchants.index')"
+                                    class="card-body text-center p-2 text-decoration-none">
+                                    <font-awesome-icon class="py-3 opacity-25" :icon="['fas', 'shop']" size="2x"/>
+                                    <span class="d-block h5">Merchants</span>
+                                </a>
+                            </div>
+                        </div>
                         <div class="col" v-if="hasRole('Super Admin') || can('viewAny tenant')">
                             <div class="card bg-light border-0">
-                                <a :href="hasRole('Super Admin') ? route('tenant.index') : route('tenant.edit', { tenant: $page.props.auth.user.current_tenant.id })"
-                                    class="card-body text-center p-2 text-decoration-none">
+                                <a :href="hasRole('Super Admin') ? route('tenants.index') : route('tenants.edit', { tenant: $page.props.auth.user.current_tenant.id })"
+                                   id="link-tenant"
+                                   class="card-body text-center p-2 text-decoration-none">
                                     <font-awesome-icon class="py-3 opacity-25" :icon="['far', 'building']"
                                         size="2x"></font-awesome-icon>
-                                    <span class="d-block h5">Tenants</span>
+                                    <span class="d-block h5">Tenant</span>
                                 </a>
                             </div>
                         </div>
@@ -188,13 +212,13 @@ const items = ref([
 
 <style scoped>
 .login-seperator {
-    content: '';
-    width: 80%;
-    margin-left: auto;
-    margin-right: auto;
-    height: 1px;
-    background-color: var(--light-grey);
-    position: relative;
-    overflow: hidden
+  content: "";
+  width: 80%;
+  margin-left: auto;
+  margin-right: auto;
+  height: 1px;
+  background-color: var(--light-grey);
+  position: relative;
+  overflow: hidden;
 }
 </style>

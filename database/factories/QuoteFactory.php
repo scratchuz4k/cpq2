@@ -2,9 +2,9 @@
 
 namespace Database\Factories;
 
-use App\Models\Tenant;
-use Illuminate\Support\Str;
+use App\Models\Account;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory
@@ -19,9 +19,9 @@ class QuoteFactory extends Factory
     public function definition()
     {
         return [
-            'tenant_id' => Tenant::where("name", "CloudMarket")->value('id'),
-            'account_id' => 1,
-            'user_id' => rand(2,4),
+            'tenant_id' => 1,
+            'account_id' => Account::factory()->create(),
+            'user_id' => Auth::id(),
             'name' => 'example order',
         ];
     }
