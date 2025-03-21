@@ -31,6 +31,8 @@ const meta = reactive({
   total: 0,
   first: 1,
   limit: 20,
+  orderBy: "id",
+  order: "asc",
 });
 
 const rules = {};
@@ -64,6 +66,8 @@ const getData = async () => {
   }
 
   let string = queryString.stringify({
+    orderBy: meta.orderBy,
+    order: meta.order,
     page: meta.page,
     filters: JSON.stringify(temp),
     limit: meta.limit,
@@ -96,13 +100,34 @@ const deleteRecord = async (id) => {
     });
 };
 
+const cloneSpa = async (item) => {
+  let res = await axios.post("/api/spas", {
+    rule_id: item.rule_id,
+    field_1: item.field_1.id,
+    field_2: item.field_2.id,
+    operation_id: item.operation_id,
+    price_plan_id: item.price_plan_id,
+    value: item.value,
+    percentage: item.percentage,
+  });
+  getData();
+};
+
 const handlePaginator = (ev) => {
   meta.limit = ev.rows;
   meta.page = ev.page + 1;
   getData();
 };
+
 const clearFilters = () => {
   Object.keys(form).forEach((x) => (form[x] = null));
+};
+
+const sortBy = (column) => {
+  let changeSort = meta.order == "asc" ? "desc" : "asc";
+  meta.order = meta.orderBy === column ? changeSort : meta.order;
+  meta.orderBy = column;
+  getData();
 };
 
 const items = ref([
@@ -110,6 +135,17 @@ const items = ref([
   { label: "My Account", url: "/myaccount" },
   { label: "SPAs" },
 ]);
+
+const columns = [
+  { name: "#", data: "id" },
+  { name: "Rule", data: "rule_id" },
+  { name: "Level 1", data: "field_1" },
+  { name: "Level 2", data: "field_2" },
+  { name: "Price Plan", data: "price_plan_id" },
+  { name: "Operation", data: "operation_id" },
+  { name: "Value", data: "value" },
+  { name: "Percentage", data: "percentage" },
+];
 
 watch(
   form,
@@ -260,18 +296,32 @@ getData();
           <table class="table">
             <thead>
               <tr>
-                <th>Rule Name</th>
-                <th>Level 1</th>
-                <th>Level 2</th>
-                <th>Price Plan</th>
-                <th>Operation</th>
-                <th>Value</th>
-                <th>Percentage</th>
+                <th v-for="column in columns">
+                  <b
+                    class="column-title sortable d-inline-flex align-items-center"
+                    @click="sortBy(column.data)"
+                    :style="{
+                      textDecoration: column.data == meta.orderBy ? 'underline' : 'none',
+                    }"
+                  >
+                    {{ column.name }}
+                    <span class="text-center" style="width: 20px">
+                      <template v-if="column.data == meta.orderBy">
+                        <font-awesome-icon
+                          v-if="meta.order == 'desc'"
+                          :icon="['fas', 'sort-down']"
+                        />
+                        <font-awesome-icon v-else :icon="['fas', 'sort-up']" />
+                      </template>
+                    </span>
+                  </b>
+                </th>
                 <th></th>
               </tr>
             </thead>
             <tbody>
               <tr v-for="(item, index) in data">
+                <td>{{ item.id }}</td>
                 <td>{{ item.rule.name }}</td>
                 <td>{{ item.field_1?.name }}</td>
                 <td>{{ item.field_2?.name }}</td>
@@ -281,17 +331,24 @@ getData();
                 <td>{{ item.percentage }}</td>
                 <td>
                   <div class="d-flex justify-content-center">
+                    <button
+                      :id="'datatable-btn-' + index + '-clone'"
+                      class="btn p-2 py-0 mx-1 border-0"
+                      @click="cloneSpa(item)"
+                    >
+                      <font-awesome-icon :icon="['fas', 'copy']" />
+                    </button>
                     <Link
                       :id="'datatable-btn-' + index + '-edit'"
                       :href="'/spas/' + item.id + '/edit'"
-                      class="btn p-2 mx-1 border-0"
+                      class="btn p-2 py-0 mx-1 border-0"
                     >
                       <font-awesome-icon :icon="['fas', 'edit']" />
                     </Link>
 
                     <button
                       :id="'datatable-btn-' + index + '-delete'"
-                      class="btn p-2 mx-1 border-0"
+                      class="btn p-2 py-0 mx-1 border-0"
                       @click="deleteRecord(item.id)"
                     >
                       <font-awesome-icon icon="fas fa-trash-alt" />
@@ -300,7 +357,7 @@ getData();
                 </td>
               </tr>
               <tr v-if="!data.length" class="text-center">
-                <td colspan="8">No Results Found</td>
+                <td colspan="9">No Results Found</td>
               </tr>
             </tbody>
           </table>
