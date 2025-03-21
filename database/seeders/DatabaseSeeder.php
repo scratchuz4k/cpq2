@@ -24,11 +24,9 @@ class DatabaseSeeder extends Seeder
             $this->call([
                 DummySeeder::class,
                 ApiConfigurationSeeder::class,
+                SolutionTenantSeeder::class,
+                CategoryProductsSeeder::class,
             ]);
         }
-
-        $this->call([
-            SolutionTenantSeeder::class,
-        ]);
     }
 }
