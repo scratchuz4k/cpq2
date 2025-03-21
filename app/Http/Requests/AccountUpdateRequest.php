@@ -30,18 +30,23 @@ class AccountUpdateRequest extends FormRequest
         }
 
         return [
-            'name' => 'string',
+            'name' => [
+                'required',
+                Rule::unique('accounts')->where(function ($query) use ($user) {
+                    return $query->where('tenant_id', $user->tenant_id)
+                        ->where('reference', request('reference'));
+                }),
+            ],
             'reference' => [
-                'string',
-                Rule::unique('accounts')
-                    ->where(
-                        'tenant_id',
-                        $user->tenant_id
-                    )
-                    ->ignore($account_id),
+                'required',
+                Rule::unique('accounts')->where(function ($query) use ($user) {
+                    return $query->where('tenant_id', $user->tenant_id)
+                        ->where('name', request('name'));
+                }),
             ],
             'contacts.*.name' => 'nullable',
             'contacts.*.email' => 'nullable|email',
         ];
+
     }
 }
