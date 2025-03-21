@@ -193,114 +193,118 @@ getData();
             <font-awesome-icon :icon="['fas', 'eraser']" />
           </Button>
           <div v-if="visible" class="d-flex mt-3">
-            <div class="me-2">
-              <label class="form-label">Selec Rule</label>
-              <select
-                class="form-select"
-                id="product-supplier"
-                v-model="form.rule"
-                @change="changeRule(form.rule)"
-              >
-                <option :value="null">Select Rule</option>
-                <option v-for="(rule, index) in props.rules" :value="rule">
-                  <p>{{ rule.name }}</p>
-                </option>
-              </select>
+            <div class="d-flex border rounded p-2 me-2">
+              <div class="me-2">
+                <label class="form-label">Selec Rule</label>
+                <select
+                  class="form-select"
+                  id="product-supplier"
+                  v-model="form.rule"
+                  @change="changeRule(form.rule)"
+                >
+                  <option :value="null">Select Rule</option>
+                  <option v-for="(rule, index) in props.rules" :value="rule">
+                    <p>{{ rule.name }}</p>
+                  </option>
+                </select>
+              </div>
+              <div class="me-2">
+                <template
+                  v-if="form.rule?.code && rules[form.rule?.code]?.entity_1 == 'Account'"
+                >
+                  <label class="form-label">Account</label>
+                  <InputSelect
+                    id="Account1"
+                    url="/accounts"
+                    field="name"
+                    v-model="form.field_1"
+                    :is-multiple="false"
+                  >
+                  </InputSelect>
+                </template>
+                <template
+                  v-if="form.rule?.code && rules[form.rule?.code]?.entity_1 == 'Supplier'"
+                >
+                  <label class="form-label">Supplier</label>
+                  <InputSelect
+                    id="Supplier1"
+                    url="/suppliers"
+                    field="name"
+                    v-model="form.field_1"
+                    :is-multiple="false"
+                  >
+                  </InputSelect>
+                </template>
+                <template
+                  v-if="form.rule?.code && rules[form.rule?.code]?.entity_1 == 'Product'"
+                >
+                  <label class="form-label">Product</label>
+                  <InputSelect
+                    id="Product1"
+                    url="/products"
+                    field="name"
+                    v-model="form.field_1"
+                    :is-multiple="false"
+                  >
+                  </InputSelect>
+                </template>
+              </div>
+              <div class="me-2" v-if="form.rule?.code">
+                <template
+                  v-if="form.rule?.code && rules[form.rule?.code]?.entity_2 == 'Account'"
+                >
+                  <label class="form-label">Account</label>
+                  <InputSelect
+                    id="Account2"
+                    url="/accounts"
+                    field="name"
+                    v-model="form.field_2"
+                    :is-multiple="false"
+                  >
+                  </InputSelect>
+                </template>
+                <template
+                  v-if="form.rule?.code && rules[form.rule?.code]?.entity_2 == 'Supplier'"
+                >
+                  <label class="form-label">Supplier</label>
+                  <InputSelect
+                    id="Supplier2"
+                    url="/suppliers"
+                    field="name"
+                    v-model="form.field_2"
+                    :is-multiple="false"
+                  >
+                  </InputSelect>
+                </template>
+                <template
+                  v-if="form.rule?.code && rules[form.rule?.code]?.entity_2 == 'Product'"
+                >
+                  <label class="form-label">Product</label>
+                  <InputSelect
+                    id="Product2"
+                    url="/products"
+                    field="name"
+                    v-model="form.field_2"
+                    :is-multiple="false"
+                  >
+                  </InputSelect>
+                </template>
+              </div>
             </div>
-            <div class="me-2">
-              <template
-                v-if="form.rule?.code && rules[form.rule?.code]?.entity_1 == 'Account'"
-              >
-                <label class="form-label">Account</label>
-                <InputSelect
-                  id="Account1"
-                  url="/accounts"
-                  field="name"
-                  v-model="form.field_1"
+            <div class="d-flex border rounded p-2 me-2">
+              <div>
+                <label class="form-label">Select a Price Plan</label>
+                <select
+                  class="form-select"
+                  v-model="form.price_plan_id"
                   :is-multiple="false"
                 >
-                </InputSelect>
-              </template>
-              <template
-                v-if="form.rule?.code && rules[form.rule?.code]?.entity_1 == 'Supplier'"
-              >
-                <label class="form-label">Supplier</label>
-                <InputSelect
-                  id="Supplier1"
-                  url="/suppliers"
-                  field="name"
-                  v-model="form.field_1"
-                  :is-multiple="false"
-                >
-                </InputSelect>
-              </template>
-              <template
-                v-if="form.rule?.code && rules[form.rule?.code]?.entity_1 == 'Product'"
-              >
-                <label class="form-label">Product</label>
-                <InputSelect
-                  id="Product1"
-                  url="/products"
-                  field="name"
-                  v-model="form.field_1"
-                  :is-multiple="false"
-                >
-                </InputSelect>
-              </template>
-            </div>
-            <div class="me-2" v-if="form.rule?.code">
-              <template
-                v-if="form.rule?.code && rules[form.rule?.code]?.entity_2 == 'Account'"
-              >
-                <label class="form-label">Account</label>
-                <InputSelect
-                  id="Account2"
-                  url="/accounts"
-                  field="name"
-                  v-model="form.field_2"
-                  :is-multiple="false"
-                >
-                </InputSelect>
-              </template>
-              <template
-                v-if="form.rule?.code && rules[form.rule?.code]?.entity_2 == 'Supplier'"
-              >
-                <label class="form-label">Supplier</label>
-                <InputSelect
-                  id="Supplier2"
-                  url="/suppliers"
-                  field="name"
-                  v-model="form.field_2"
-                  :is-multiple="false"
-                >
-                </InputSelect>
-              </template>
-              <template
-                v-if="form.rule?.code && rules[form.rule?.code]?.entity_2 == 'Product'"
-              >
-                <label class="form-label">Product</label>
-                <InputSelect
-                  id="Product2"
-                  url="/products"
-                  field="name"
-                  v-model="form.field_2"
-                  :is-multiple="false"
-                >
-                </InputSelect>
-              </template>
-            </div>
-            <div>
-              <label class="form-label">Select a Price Plan</label>
-              <select
-                class="form-select"
-                v-model="form.price_plan_id"
-                :is-multiple="false"
-              >
-                <option :value="null">Select an option</option>
-                <option v-for="price_plan in props.price_plans" :value="price_plan.id">
-                  {{ price_plan.name }}
-                </option>
-              </select>
+                  <option :value="null">Select an option</option>
+                  <option v-for="price_plan in props.price_plans" :value="price_plan.id">
+                    {{ price_plan.name }}
+                  </option>
+                </select>
+              </div>
             </div>
           </div>
         </div>
