@@ -2,16 +2,16 @@
 
 namespace App\Http\Controllers\Web;
 
-use App\Models\User;
-use Inertia\Inertia;
-use App\Models\Token;
-use Illuminate\Http\Request;
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\TokenCreateRequest;
+use App\Models\Role;
+use App\Models\Token;
+use App\Models\User;
+use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class TokenController extends BaseController
 {
-
     protected $model = Token::class;
 
     /**
@@ -28,7 +28,9 @@ class TokenController extends BaseController
     public function create()
     {
         return Inertia::render('Tokens/Create', [
-            'users'  => User::with('roles')->get()
+            'users' => User::with('roles')->whereHas('roles', function ($query) {
+                $query->whereIn('id', Role::descendants()->pluck('id'));
+            })->get(),
         ]);
     }
 
@@ -40,11 +42,12 @@ class TokenController extends BaseController
     public function store(TokenCreateRequest $request)
     {
         try {
-            $user  = User::find($request->user_id);
+            $user = User::find($request->user_id);
             $token = $user->createToken($request->name);
         } catch (\Exception $e) {
             throw new \Exception($e);
         }
+
         return redirect()->route('tokens.show', ['token' => $token->accessToken->id, 'plain-text-token' => $token->plainTextToken]);
     }
 
@@ -55,8 +58,8 @@ class TokenController extends BaseController
     {
         return Inertia::render('Tokens/Show', [
             'plainTextToken' => $request->input('plain-text-token', null),
-            'users'  => User::with('roles')->get(),
-            'token'  => $token
+            'users' => User::with('roles')->get(),
+            'token' => $token,
         ]);
     }
 }

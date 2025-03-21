@@ -101,7 +101,7 @@ export const proceedOrder = async (order) => {
     let message = 'I want to proceed with this Order?'
 
     const data = {
-        status: 'ORDERED',
+        status: 'SUBMITTED',
         user_id: order.user_id ?? page.props.auth.user.id
     };
 

@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Http\Resources\TenantResource;
 use App\Models\Tenant;
 use Inertia\Middleware;
 use Illuminate\Http\Request;
@@ -37,7 +38,7 @@ class HandleInertiaRequests extends Middleware
                 'permissions' => $request->user() ? $request->user()->getAllPermissions() : [],
                 'roles' =>  $request->user() ? $request->user()->getRoleNames() : [],
             ],
-            'tenant' =>  $request->user() ? $request->user()->currentTenant->load('file', 'logo') : [],
+            'tenant' =>  $request->user() ? (new TenantResource($request->user()->currentTenant))->resolve() : [],
         ];
     }
 }

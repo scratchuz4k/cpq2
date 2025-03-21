@@ -17,7 +17,6 @@ describe("Creates a Connectivity quote", () => {
         cy.get("#btn-save-account").click();
         cy.get(".notyf").contains("Created with Success");
     });
-
     it("Create a Connectivity Quote", () => {
         cy.visit("/");
         cy.get("#create-tab").click();
@@ -115,9 +114,17 @@ describe("Creates a Connectivity quote", () => {
         cy.get("table tbody tr.connectivity-table-item").then(($rows) => {
             cy.get(".is-contended").should("have.length", $rows.length);
         });
+
+        cy.get("#btn-more-filters").click();
+
+        let keys = [0, 1, 2, 3, 4];
+        keys.forEach((key) => {
+            cy.get("tbody tr button").eq(key).click();
+            cy.get("tbody tr button").eq(key).contains("Added");
+        });
     });
 
-    it.skip("I can Create an order from a quote", () => {
+    it("I can Create an order from a quote", () => {
         cy.visit("/");
         cy.get("#datatable-btn-0-crete-order").click();
         cy.get(".swal2-confirm").eq(0).click();

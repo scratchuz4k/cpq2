@@ -54,7 +54,7 @@ const items = ref([
   <AuthenticatedLayout :order="order">
     <div class="row mb-3">
       <div class="col">
-        <Header title="Create a order" :breadcrumbs="items"></Header>
+        <Header title="Preview Order" :breadcrumbs="items"></Header>
       </div>
       <div class="col" style="text-align: right">
         <template v-if="order.status !== 'REGISTRY'">
@@ -241,7 +241,7 @@ const items = ref([
                           v-if="order.solution_type_id === 1"
                           class="d-none d-xl-table-cell text-center"
                         >
-                          {{ item.data?.productCode }}
+                          {{ item.data?.quoteId }}
                         </td>
                         <td class="text-center">Monthly</td>
                         <td class="text-center">
@@ -351,7 +351,7 @@ const items = ref([
                           v-if="order.solution_type_id === 1"
                           class="d-none d-xl-table-cell text-center"
                         >
-                          {{ item.data?.productCode }}
+                          {{ item.data?.quoteId }}
                         </td>
                         <td class="text-center">Single</td>
                         <td class="text-center">
