@@ -35,14 +35,14 @@ class AccountUpdateRequest extends FormRequest
                 Rule::unique('accounts')->where(function ($query) use ($user) {
                     return $query->where('tenant_id', $user->tenant_id)
                         ->where('reference', request('reference'));
-                }),
+                })->ignore($account_id),
             ],
             'reference' => [
                 'required',
                 Rule::unique('accounts')->where(function ($query) use ($user) {
                     return $query->where('tenant_id', $user->tenant_id)
                         ->where('name', request('name'));
-                }),
+                })->ignore($account_id),
             ],
             'contacts.*.name' => 'nullable',
             'contacts.*.email' => 'nullable|email',
