@@ -65,7 +65,7 @@ class RolePermissionSeeder extends Seeder
             ],
             'Support Agent' => [
                 'parent' => 'Super Admin',
-                'permissions' => ['merchant', 'account', 'contact', 'token', 'quote', 'quote_item'],
+                'permissions' => ['merchant', 'account', 'contact', 'token', 'quote', 'quote_item', 'order', 'order_item'],
                 'simple_permission' => ['viewAny product', 'view product', 'viewAny category', 'view category']
             ],
             'Company Admin' => [

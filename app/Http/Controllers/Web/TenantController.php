@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\TenantUpdateRequest;
+use App\Http\Resources\TenantResource;
 use App\Models\Tenant;
 use App\Services\TenantService;
 use Illuminate\Http\Request;
@@ -29,7 +30,7 @@ class TenantController extends BaseController
 
         return Inertia::render('Tenant/Index', [
             'isSuperAdmin' => $user->hasRole('Super Admin'),
-            'tenants' => $user->currentTenant->load('file', 'logo'),
+            'tenant' => (new TenantResource($user->currentTenant))->resolve()
         ]);
     }
 

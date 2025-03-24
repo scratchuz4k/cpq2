@@ -14,7 +14,7 @@ class QuotePolicy
     private string $model = "quote";
     private array $statusToBlockQuotes = [
         QuoteStatusesEnum::REGISTRY->name,
-        QuoteStatusesEnum::ORDERED->name
+        QuoteStatusesEnum::SUBMITTED->name
     ];
     public function viewAny(User $user): bool
     {
