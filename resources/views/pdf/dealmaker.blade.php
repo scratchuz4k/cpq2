@@ -90,28 +90,17 @@
         $temp = $value ?? 0;
         $number = $temp;
         $suffix = 'Mb';
-        $rounding = 10;
 
-        if ($temp < 1000) {
-            $number = $temp;
-        } elseif ($temp < 10000) {
-            $number = $temp / 1000;
-            $suffix = 'Gb';
-            $rounding = 1;
+        if ($temp < 100) {
+            $number = ceil($temp / 10) * 10;
+        } elseif ($temp < 1000) {
+            $number = ceil($temp / 100) * 100;
         } else {
-            $number = $temp / 1000;
+            $number = round($temp / 1000, 1);
             $suffix = 'Gb';
-            $rounding = 1;
         }
 
-        // Remove rounding if value < 1000
-        if ($temp < 1000) {
-            $result = $number . ' ' . $suffix;
-        } else {
-            $result = ceil($number / $rounding) * $rounding . ' ' . $suffix;
-        }
-
-        return $result;
+        return $number . ' ' . $suffix;
     }
 
     $isConnectivity = !is_null($quote['solution_type']) && $quote['solution_type']['code'] == 3 ? true : false;
