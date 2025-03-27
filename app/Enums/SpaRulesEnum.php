@@ -40,9 +40,9 @@ enum SpaRulesEnum: string
     public function getName(): string
     {
         return match ($this) {
-            SpaRulesEnum::AccountProduct => 'Account -> Product' ,
-            SpaRulesEnum::AccountSupplier => 'Account -> Supplier' ,
-            SpaRulesEnum::SupplierProduct => 'Supplier -> Product' ,
+            SpaRulesEnum::AccountProduct => 'Account ➔ Product' ,
+            SpaRulesEnum::AccountSupplier => 'Account ➔ Supplier' ,
+            SpaRulesEnum::SupplierProduct => 'Supplier ➔ Product' ,
             SpaRulesEnum::Account => 'Account' ,
             SpaRulesEnum::Supplier => 'Supplier' ,
             SpaRulesEnum::Product => 'Product' ,

@@ -110,13 +110,13 @@ const cloneSpa = async (item) => {
   }
   try {
     let res = await axios.post("/api/spas", {
-      rule_id: item.rule_id,
-      field_1: item.field_1.id,
-      field_2: item.field_2.id,
-      operation_id: item.operation_id,
-      price_plan_id: item.price_plan_id,
-      value: item.value,
-      percentage: item.percentage,
+      rule_id: item.rule_id ?? 0,
+      field_1: item.field_1?.id ?? 0,
+      field_2: item.field_2?.id ?? 0,
+      operation_id: item.operation_id ?? 0,
+      price_plan_id: item.price_plan_id ?? null,
+      value: item.value ?? 0,
+      percentage: item.percentage ?? 0,
     });
     notyf.success("Clone with success");
     getData();
@@ -178,9 +178,12 @@ getData();
           </Link>
         </template>
       </Header>
-      <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-        <div class="my-3">
-          <Button @click="visible = !visible" class="me-2"
+      <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 pt-2">
+        <div class="mb-2 mt-1">
+          <Button
+            :class="{'p-button-secondary': !visible, 'p-button-primary': visible}"
+            @click="visible = !visible"
+            class="p-button p-component me-2"
             ><font-awesome-icon :icon="['fas', 'filter']"
           /></Button>
 
@@ -204,7 +207,7 @@ getData();
                 >
                   <option :value="null">Select Rule</option>
                   <option v-for="(rule, index) in props.rules" :value="rule">
-                    <p>{{ rule.name }}</p>
+                    {{ rule.name }}
                   </option>
                 </select>
               </div>
@@ -313,7 +316,7 @@ getData();
             <thead>
               <tr>
                 <th v-for="column in columns">
-                  <b
+                  <span
                     class="column-title sortable d-inline-flex align-items-center"
                     @click="sortBy(column.data)"
                     :style="{
@@ -330,7 +333,7 @@ getData();
                         <font-awesome-icon v-else :icon="['fas', 'sort-up']" />
                       </template>
                     </span>
-                  </b>
+                  </span>
                 </th>
                 <th></th>
               </tr>
@@ -390,3 +393,8 @@ getData();
     </div>
   </AuthenticatedLayout>
 </template>
+<style scoped>
+.table thead th, .table tbody td {
+    color:#334155;
+}
+</style>
