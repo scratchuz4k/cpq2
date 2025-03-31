@@ -1,5 +1,6 @@
 <script setup>
 import { ref } from "vue";
+import { format } from "@/Composables/format";
 
 const props = defineProps({
   preview: Boolean,
@@ -7,10 +8,21 @@ const props = defineProps({
   name: [String, Number],
   item: Object,
   group: String,
+  groupName: String,
 });
 const showChildren = ref(true);
 
 const colspan = props.columns.length;
+
+const getFormat = (name, group) => {
+  if (["discount", "margin", "total", "price"].includes(group)) {
+    return GBP.format(name);
+  }
+  if (["speed", "bearer"].includes(group)) {
+    return format.speed(name);
+  }
+  return name;
+};
 </script>
 <template>
   <tr
@@ -30,7 +42,7 @@ const colspan = props.columns.length;
     <td :colspan="colspan">
       <div class="d-flex">
         <p class="m-0 me-3 py-2">
-          {{ name }} <span v-if="['group'].includes(group)">- {{ item?.name }}</span>
+          <span v-if="groupName">{{ groupName }} - </span> {{ getFormat(name, group) }}
         </p>
       </div>
     </td>

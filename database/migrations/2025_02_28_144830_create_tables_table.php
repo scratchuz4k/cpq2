@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->text('code');
             $table->text('group')->nullable();
+            $table->text('group_name')->nullable();
             $table->json('columns')->nullable();
             $table->foreignId('tenant_id')->constrained()->cascadeOnDelete();
             $table->morphs('tableable');

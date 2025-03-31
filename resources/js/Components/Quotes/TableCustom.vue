@@ -13,6 +13,7 @@
             <b
               v-if="column.has_order"
               class="column-title sortable"
+              style="white-space: nowrap"
               @click="sortBy(column.value)"
               :style="{
                 textDecoration: column.value == form.orderBy ? 'underline' : 'none',
@@ -65,6 +66,7 @@
             :columns="columns"
             :name="content.name"
             :group="group"
+            :groupName="groupName"
             :item="content.items ? content.items[0] : {}"
           >
             <TableItem
@@ -112,6 +114,7 @@ const props = defineProps({
 const temp = quote.solution_type?.table?.columns ?? [];
 const columns = temp.filter((item) => !props.blockedColumns.includes(item.value));
 const group = quote.solution_type?.table?.group ?? null;
+const groupName = quote.solution_type?.table?.group_name ?? null;
 
 const form = reactive({
   filters: [{ column: "quote_id", operator: "equals", value: quote.id }],

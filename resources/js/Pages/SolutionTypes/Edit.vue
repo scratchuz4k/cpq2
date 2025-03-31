@@ -20,6 +20,7 @@ const table = reactive(
     : {
         code: "custom",
         group: null,
+        group_name: null,
         columns: [],
       }
 );
@@ -163,98 +164,120 @@ const items = ref([
                   <label for="has_custom_table"> Enable Custom Table </label>
                 </div>
               </div>
-              <div class="mb-3">
-                <label class="form-label">Choose the group field (optional):</label>
-                <Select
-                  v-model="table.group"
-                  :options="available_columns.filter((x) => x.is_group)"
-                  id="solution-type-table-group"
-                  placeholder="Select a group"
-                  class="w-100"
-                  optionLabel="name"
-                  optionValue="value"
-                  showClear
-                />
-              </div>
+              <template v-if="solutiontype.configurations.has_custom_table == '1'">
+                <div class="mb-3">
+                  <label class="form-label">Choose the group field (optional):</label>
+                  <Select
+                    v-model="table.group"
+                    :options="available_columns.filter((x) => x.is_group)"
+                    id="solution-type-table-group"
+                    placeholder="Select a group"
+                    class="w-100"
+                    optionLabel="name"
+                    optionValue="value"
+                    showClear
+                  />
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Pick a name (optional):</label>
 
-              <div class="mb-3">
-                <label class="form-label">Choose and order the table columns:</label>
-                <table class="table">
-                  <thead>
-                    <tr>
-                      <th>
-                        <button
-                          id="solution-type-table-add-column"
-                          class="btn btn-sm"
-                          @click="addColumn(table)"
-                        >
-                          <font-awesome-icon :icon="['fas', 'plus']"></font-awesome-icon>
-                        </button>
-                      </th>
-                      <th style="width: 50%">Field</th>
-                      <th style="width: 50%">Name</th>
-                      <th>
-                        <button
-                          id="solution-type-table-remove-columns"
-                          class="btn p-2 mx-1 border-0"
-                          @click="clearAllColumns(table)"
-                        >
-                          <font-awesome-icon
-                            :icon="['fas', 'trash-alt']"
-                          ></font-awesome-icon>
-                        </button>
-                      </th>
-                    </tr>
-                  </thead>
-                  <draggable
-                    v-model="table.columns"
-                    group="columns"
-                    item-key="id"
-                    tag="tbody"
-                    v-bind="dragOptions"
-                    handle=".handle"
-                  >
-                    <template #item="{ element, index }">
+                  <InputText
+                    :id="`table-column-` + index + `-name`"
+                    type="text"
+                    v-model="table.group_name"
+                    class="w-100"
+                    size="small"
+                  />
+                </div>
+                <hr />
+
+                <div class="mb-3">
+                  <label class="form-label">Choose and order the table columns:</label>
+                  <table class="table">
+                    <thead>
                       <tr>
-                        <td>
-                          <button class="btn p-1 border-0 handle">
-                            <font-awesome-icon icon="fas fa-bars" />
-                          </button>
-                        </td>
-                        <td>
-                          <Select
-                            v-model="element.value"
-                            :options="available_columns"
-                            :id="`table-column-` + index + `-value`"
-                            optionLabel="name"
-                            optionValue="value"
-                            placeholder="Select a Field"
-                            class="w-100"
-                            @change="(ev) => changeSelection(ev, element)"
-                          ></Select>
-                        </td>
-                        <td>
-                          <InputText
-                            :id="`table-column-` + index + `-name`"
-                            type="text"
-                            v-model="element.name"
-                            class="w-100"
-                            size="small"
-                          />
-                        </td>
-                        <td>
+                        <th></th>
+                        <th style="width: 50%">Field</th>
+                        <th style="width: 50%">Name</th>
+                        <th>
                           <button
+                            id="solution-type-table-remove-columns"
                             class="btn p-2 mx-1 border-0"
-                            @click="deleteColumn(element)"
+                            @click="clearAllColumns(table)"
                           >
-                            <font-awesome-icon icon="fas fa-trash-alt" />
+                            <font-awesome-icon
+                              :icon="['fas', 'trash-alt']"
+                            ></font-awesome-icon>
                           </button>
-                        </td>
+                        </th>
                       </tr>
-                    </template>
-                  </draggable>
-                </table>
-              </div>
+                    </thead>
+                    <draggable
+                      v-model="table.columns"
+                      group="columns"
+                      item-key="id"
+                      tag="tbody"
+                      v-bind="dragOptions"
+                      handle=".handle"
+                    >
+                      <template #item="{ element, index }">
+                        <tr>
+                          <td>
+                            <button class="btn p-1 border-0 handle">
+                              <font-awesome-icon icon="fas fa-bars" />
+                            </button>
+                          </td>
+                          <td>
+                            <Select
+                              v-model="element.value"
+                              :options="available_columns"
+                              :id="`table-column-` + index + `-value`"
+                              optionLabel="name"
+                              optionValue="value"
+                              placeholder="Select a Field"
+                              class="w-100"
+                              @change="(ev) => changeSelection(ev, element)"
+                            ></Select>
+                          </td>
+                          <td>
+                            <InputText
+                              :id="`table-column-` + index + `-name`"
+                              type="text"
+                              v-model="element.name"
+                              class="w-100"
+                              size="small"
+                            />
+                          </td>
+                          <td>
+                            <button
+                              class="btn p-2 mx-1 border-0"
+                              @click="deleteColumn(element)"
+                            >
+                              <font-awesome-icon icon="fas fa-trash-alt" />
+                            </button>
+                          </td>
+                        </tr>
+                      </template>
+                    </draggable>
+                    <tfoot>
+                      <tr>
+                        <th colspan="4">
+                          <div class="d-flex justify-content-end">
+                            <button
+                              id="solution-type-table-add-column"
+                              class="btn btn-sm"
+                              @click="addColumn(table)"
+                            >
+                              <font-awesome-icon
+                                :icon="['fas', 'plus']"
+                              ></font-awesome-icon>
+                            </button>
+                          </div>
+                        </th>
+                      </tr>
+                    </tfoot>
+                  </table></div
+              ></template>
             </Panel>
           </tab>
         </tabs>

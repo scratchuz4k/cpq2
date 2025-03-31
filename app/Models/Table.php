@@ -2,21 +2,24 @@
 
 namespace App\Models;
 
-use App\Trait\SetTenantId;
 use App\Models\Scopes\TenantScope;
+use App\Trait\SetTenantId;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 class Table extends Model
 {
     use SetTenantId;
+
     protected $fillable = [
         'code',
+        'group_name',
         'group',
         'columns',
         'tableable_type',
         'tableable_id',
     ];
+
     protected function casts(): array
     {
         return [
@@ -28,6 +31,7 @@ class Table extends Model
     {
         static::addGlobalScope(new TenantScope);
     }
+
     public function tableable(): MorphTo
     {
         return $this->morphTo();
