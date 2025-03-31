@@ -22,7 +22,7 @@ class BlacklistFile
     ];
     public function __construct(Tenant $tenant) {
         $this->path = storage_path('/app/blacklists/');
-        $this->filename = 'blacklist_' . md5($tenant?->name) . '.json';
+        $this->filename = 'blacklist_' . md5($tenant?->id.$tenant?->name) . '.json';
         $this->file = $this->path . $this->filename;
     }
 

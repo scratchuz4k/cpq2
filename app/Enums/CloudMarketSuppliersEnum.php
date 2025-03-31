@@ -4,7 +4,7 @@ namespace App\Enums;
 
 enum CloudMarketSuppliersEnum: string
 {
-    case Its = 'its';
+    case ITS = 'its';
     case Virtual1 = 'virtual1';
     case Gamma = 'gamma';
     case Giacom = 'giacom';

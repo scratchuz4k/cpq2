@@ -101,8 +101,11 @@ const items = ref([
                     <div class="mb-3">
                         <div class="mb-3">
                             <label for="item-subprovider" class="form-label">Subprovider:</label>
-                            <Select :inputId="'item-subprovider'" v-model="blacklisted_item.connectivitySupplierGroup" editable :options="props.subproviders"
-                                    placeholder="Enter a Subprovider" class="w-100" />
+                            <select id="item-subprovider" class="form-select" v-model="blacklisted_item.connectivitySupplierGroup">
+                                <option v-for="subprovider in props.subproviders" :value="subprovider">
+                                    {{ subprovider }}
+                                </option>
+                            </select>
                         </div>
                     </div>
                     <div class="mb-3">
