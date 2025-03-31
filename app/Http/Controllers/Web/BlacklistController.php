@@ -39,7 +39,13 @@ class BlacklistController extends BaseController
     public function create()
     {
         return Inertia::render('Blacklist/Create', [
-            'providers' => CloudMarketSuppliersEnum::asArray(),
+            'providers' => array_map(function($item) {
+                if ($item["name"] === "Virtual1") {
+                    $item["name"] = "PXC";
+                    $item["value"] = "pxc";
+                }
+                return $item;
+            }, CloudMarketSuppliersEnum::asArray()),
             'subproviders' => CloudMarketSubprovidersEnum::cases(),
             'operators' => ComparisonOperatorsEnum::asArray(),
             'contract_terms' => ContractTermsEnum::asArray(),
@@ -74,7 +80,7 @@ class BlacklistController extends BaseController
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(BlacklistItemUpdateRequest $request): Response
+    public function edit(Request $request): Response
     {
         try {
             $item = $this->blacklistService->edit($request->route('blacklist'));
@@ -87,7 +93,13 @@ class BlacklistController extends BaseController
 
         return Inertia::render('Blacklist/Edit', [
             'blacklisted_item' => $item,
-            'providers' => CloudMarketSuppliersEnum::asArray(),
+            'providers' => array_map(function($item) {
+                if ($item["name"] === "Virtual1") {
+                    $item["name"] = "PXC";
+                    $item["value"] = "pxc";
+                }
+                return $item;
+            }, CloudMarketSuppliersEnum::asArray()),
             'subproviders' => CloudMarketSubprovidersEnum::cases(),
             'operators' => ComparisonOperatorsEnum::asArray(),
             'contract_terms' => ContractTermsEnum::asArray(),
@@ -98,7 +110,7 @@ class BlacklistController extends BaseController
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request)
+    public function update(BlacklistItemUpdateRequest $request)
     {
         try {
             $this->blacklistService->update(

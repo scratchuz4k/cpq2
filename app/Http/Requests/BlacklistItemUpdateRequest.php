@@ -21,6 +21,16 @@ class BlacklistItemUpdateRequest extends FormRequest
      */
     public function rules(): array
     {
+        $flattenedData = collect(request()->all())
+            ->map(fn($value) => is_array($value) && array_filter($value) == [] ? null : $value) // Remove empty array values
+            ->all();
+
+        if (empty(array_filter($flattenedData))) {
+            return [
+                'no_field_filled' => 'required',
+            ];
+        }
+
         return [
             'productName' => 'nullable',
             'providerName' => 'nullable',
@@ -35,6 +45,13 @@ class BlacklistItemUpdateRequest extends FormRequest
             'speed.unit' => 'nullable|required_with:speed.operator,speed.value',
 
             'contractTermMonths' => 'nullable'
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'no_field_filled.required' => 'You must fill at least one field.',
         ];
     }
 }
