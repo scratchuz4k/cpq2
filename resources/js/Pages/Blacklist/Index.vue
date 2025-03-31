@@ -43,7 +43,7 @@ const items = ref([
                 ]" route="/blacklist">
                     <template #bearer="{ value }">
                         <span
-                            v-if="value"
+                            v-if="!Array.isArray(value.value)"
                             v-tooltip
                             data-bs-toggle="tooltip"
                             data-bs-placement="top"
@@ -53,10 +53,23 @@ const items = ref([
                         >
                             {{ value.value }} {{ value.unit }}
                         </span>
+
+                        <span
+                            v-else
+                            v-tooltip
+                            data-bs-toggle="tooltip"
+                            data-bs-placement="top"
+                            :title="operators.find(op => op.name === value?.operator)
+                                ?.description + ' ' + value.value[0] + ' and ' + value.value[1] + ' ' + value.unit
+                            "
+                        >
+                            {{ value.value[0] }} to {{ value.value[1] }} {{ value.unit }}
+                        </span>
+
                     </template>
                     <template #speed="{ value }">
                         <span
-                            v-if="value"
+                            v-if="!Array.isArray(value.value)"
                             v-tooltip
                             data-bs-toggle="tooltip"
                             data-bs-placement="top"
@@ -66,6 +79,19 @@ const items = ref([
                         >
                             {{ value.value }} {{ value.unit }}
                         </span>
+
+                        <span
+                            v-else
+                            v-tooltip
+                            data-bs-toggle="tooltip"
+                            data-bs-placement="top"
+                            :title="operators.find(op => op.name === value?.operator)
+                                ?.description + ' ' + value.value[0] + ' and ' + value.value[1] + ' ' + value.unit
+                            "
+                        >
+                            {{ value.value[0] }} to {{ value.value[1] }} {{ value.unit }}
+                        </span>
+
                     </template>
                     <template #contractTermMonths="{ value }">
                         {{ value ? value + ' months' : '' }}

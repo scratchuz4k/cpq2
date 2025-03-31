@@ -10,6 +10,8 @@ enum ComparisonOperatorsEnum: string
     case greater_than_or_equal_to = '>=';
     case less_than_or_equal_to = '<=';
 
+    case between = '>=|<=';
+
     public function description(): string {
         return match($this) {
             self::equals => 'Equals',
@@ -17,6 +19,7 @@ enum ComparisonOperatorsEnum: string
             self::less_than => 'Lesser than',
             self::greater_than_or_equal_to => 'Greater than or equals to',
             self::less_than_or_equal_to => 'Lesser than or equals to',
+            self::between => 'Between',
         };
     }
     public static function asArray(): array
