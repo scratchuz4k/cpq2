@@ -95,11 +95,18 @@
         </TableItem>
       </template>
     </tbody>
+    <tfoot>
+      <tr>
+        <th :colspan="columns.length + 2">
+          <QuoteItemAddNewModal></QuoteItemAddNewModal>
+        </th>
+      </tr>
+    </tfoot>
   </table>
 </template>
 <script setup>
 import { quote, getQuote } from "@composables/useQuote";
-import { reactive, watch } from "vue";
+import { reactive, watch, ref } from "vue";
 import queryString from "query-string";
 import axios from "axios";
 

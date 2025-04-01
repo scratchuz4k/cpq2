@@ -22,12 +22,11 @@ class QuoteItemCreateRequest extends FormRequest
             $this->merge(['price_plan_id' => PricePlan::where('code', strtoupper('single'))->value('id')]);
         }
 
-        if (! $this->has('group')  && $this->has('quote_id')) {
+        if ($this->has('quote_id') && (! $this->has('group') || is_null($this->group))) {
             $item = QuoteItem::where('quote_id', $this->quote_id)->orderBy('group', 'desc')->first();
-            $this->merge(['group' =>  $item ? $item->group + 1 : 0]);
+            $this->merge(['group' => $item ? $item->group + 1 : 0]);
         }
     }
-
 
     /**
      * Get the validation rules that apply to the request.
