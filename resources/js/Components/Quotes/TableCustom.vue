@@ -1,108 +1,110 @@
 <template>
-  <table
-    id="table-simple"
-    :class="{ 'table-hover': !preview }"
-    class="table table-dealmaker table-bordered"
-  >
-    <!-- Headers -->
-    <thead>
-      <tr>
-        <th style="width: 5%" v-if="!preview && group"></th>
-        <template v-for="column in columns">
-          <th :class="[`column-${column.value}-header`]">
-            <b
-              v-if="column.has_order"
-              class="column-title sortable"
-              style="white-space: nowrap"
-              @click="sortBy(column.value)"
-              :style="{
-                textDecoration: column.value == form.orderBy ? 'underline' : 'none',
-              }"
-            >
-              {{ column.name }}
-              <span class="text-center" style="width: 20px">
-                <template v-if="column.value == form.orderBy">
-                  <font-awesome-icon
-                    v-if="form.order == 'desc'"
-                    :icon="['fas', 'sort-down']"
-                  />
-                  <font-awesome-icon v-else :icon="['fas', 'sort-up']" />
-                </template>
-              </span>
-            </b>
-            <p class="column-title" v-else>{{ column.name }}</p>
+  <div style="overflow-x: auto">
+    <table
+      id="table-simple"
+      :class="{ 'table-hover': !preview }"
+      class="table table-dealmaker table-bordered"
+    >
+      <!-- Headers -->
+      <thead>
+        <tr>
+          <th style="width: 5%" v-if="!preview && group"></th>
+          <template v-for="column in columns">
+            <th :class="[`column-${column.value}-header`]">
+              <b
+                v-if="column.has_order"
+                class="column-title sortable"
+                style="white-space: nowrap"
+                @click="sortBy(column.value)"
+                :style="{
+                  textDecoration: column.value == form.orderBy ? 'underline' : 'none',
+                }"
+              >
+                {{ column.name }}
+                <span class="text-center" style="width: 20px">
+                  <template v-if="column.value == form.orderBy">
+                    <font-awesome-icon
+                      v-if="form.order == 'desc'"
+                      :icon="['fas', 'sort-down']"
+                    />
+                    <font-awesome-icon v-else :icon="['fas', 'sort-up']" />
+                  </template>
+                </span>
+              </b>
+              <p class="column-title" v-else>{{ column.name }}</p>
+            </th>
+          </template>
+          <th style="width: 5%" v-if="!preview">
+            <div v-if="group" class="d-flex justify-content-center">
+              <button
+                id="btn-more-filters"
+                class="btn dropdown-toggle p-0"
+                type="button"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+                data-bs-auto-close="outside"
+              >
+                <font-awesome-icon :icon="['fas', 'gear']"></font-awesome-icon>
+              </button>
+              <ul class="dropdown-menu dropdown-menu-end p-1" style="width: 280px">
+                <li>
+                  <div class="checkbox d-flex">
+                    <button class="btn" @click="changeGroupOrder">
+                      Change Group Order ({{ form.groupOrder }})
+                    </button>
+                  </div>
+                </li>
+              </ul>
+            </div>
           </th>
-        </template>
-        <th style="width: 5%" v-if="!preview">
-          <div v-if="group" class="d-flex justify-content-center">
-            <button
-              id="btn-more-filters"
-              class="btn dropdown-toggle p-0"
-              type="button"
-              data-bs-toggle="dropdown"
-              aria-expanded="false"
-              data-bs-auto-close="outside"
-            >
-              <font-awesome-icon :icon="['fas', 'gear']"></font-awesome-icon>
-            </button>
-            <ul class="dropdown-menu dropdown-menu-end p-1" style="width: 280px">
-              <li>
-                <div class="checkbox d-flex">
-                  <button class="btn" @click="changeGroupOrder">
-                    Change Group Order ({{ form.groupOrder }})
-                  </button>
-                </div>
-              </li>
-            </ul>
-          </div>
-        </th>
-      </tr>
-    </thead>
-    <tbody>
-      <template v-if="group">
-        <template v-for="content in quote.items">
-          <TableGroupSimple
-            :preview="preview"
-            :columns="columns"
-            :name="content.name"
-            :group="group"
-            :groupName="groupName"
-            :item="content.items ? content.items[0] : {}"
-          >
-            <TableItem
-              v-for="(item, index) in content.items"
-              :item="item"
-              :columns="columns"
-              :index="index"
-              :isChild="true"
-              :showToggle="true"
+        </tr>
+      </thead>
+      <tbody>
+        <template v-if="group">
+          <template v-for="content in quote.items">
+            <TableGroupSimple
               :preview="preview"
-              code="Simple"
+              :columns="columns"
+              :name="content.name"
+              :group="group"
+              :groupName="groupName"
+              :item="content.items ? content.items[0] : {}"
             >
-            </TableItem>
-          </TableGroupSimple>
+              <TableItem
+                v-for="(item, index) in content.items"
+                :item="item"
+                :columns="columns"
+                :index="index"
+                :isChild="true"
+                :showToggle="true"
+                :preview="preview"
+                code="Simple"
+              >
+              </TableItem>
+            </TableGroupSimple>
+          </template>
         </template>
-      </template>
-      <template v-else v-for="(item, index) in quote.items">
-        <TableItem
-          :item="item"
-          :columns="columns"
-          :index="index"
-          :showToggle="false"
-          :preview="preview"
-          code="Simple"
-        >
-        </TableItem>
-      </template>
-    </tbody>
-    <tfoot>
-      <tr>
-        <th :colspan="columns.length + 2">
-          <QuoteItemAddNewModal></QuoteItemAddNewModal>
-        </th>
-      </tr>
-    </tfoot>
-  </table>
+        <template v-else v-for="(item, index) in quote.items">
+          <TableItem
+            :item="item"
+            :columns="columns"
+            :index="index"
+            :showToggle="false"
+            :preview="preview"
+            code="Simple"
+          >
+          </TableItem>
+        </template>
+      </tbody>
+      <tfoot v-if="!preview">
+        <tr>
+          <th :colspan="columns.length + 2">
+            <QuoteItemAddNewModal></QuoteItemAddNewModal>
+          </th>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
 </template>
 <script setup>
 import { quote, getQuote } from "@composables/useQuote";

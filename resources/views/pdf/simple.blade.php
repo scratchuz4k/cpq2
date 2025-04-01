@@ -135,6 +135,35 @@
         ),
     ];
 
+    $items = [];
+
+    foreach ($quote['items'] as $key => $item) {
+        $nr_groups = array_reduce(
+            $quote['items'],
+            function ($acc, $temp) use ($item) {
+                if ($temp['group'] == $item['group']) {
+                    $acc = $acc + 1;
+                    return $acc;
+                }
+                return $acc;
+            },
+            0,
+        );
+
+        if ($nr_groups == 1) {
+            array_push($items, [...$item, 'children' => []]);
+            continue;
+        }
+
+        $index = array_search($item['group'], array_column($items, 'group'));
+
+        if ($index === false) {
+            array_push($items, [...$item, 'children' => [$item]]);
+        } else {
+            array_push($items[$index]['children'], $item);
+        }
+    }
+
 @endphp
 
 <!doctype html>
@@ -245,7 +274,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach ($quote['items'] as $key => $group)
+                                @foreach ($items as $key => $group)
                                     @if ($isConnectivity)
                                         <tr class="group-row" style="vertical-align: middle;">
                                             <td class="group-body" colspan="8">

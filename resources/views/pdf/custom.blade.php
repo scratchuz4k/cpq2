@@ -225,10 +225,10 @@
                                         <tr class="group-row">
                                             <td colspan="{{ count($columns) }}">
                                                 <p class="m-0 me-3 py-2">
-                                                    {{ $content['name'] }}
-                                                    @if (in_array($group, ['group']))
-                                                        <span> - {{ $content['items'][0]->name }}</span>
+                                                    @if ($groupName)
+                                                        <span>{{ $groupName }} - </span>
                                                     @endif
+                                                    {{ $content['name'] }}
                                                 </p>
                                             </td>
                                         </tr>
