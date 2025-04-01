@@ -235,7 +235,6 @@ const resetFilters = () => {
 
     showLowestCost.value = true
     showQuoted.value = false
-    showContended.value = false
     showContended.value = null
 }
 
