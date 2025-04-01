@@ -38,7 +38,7 @@ class BlacklistItemCreateRequest extends FormRequest
 
             'bearer.operator' => 'nullable|required_with:bearer.value,bearer.unit',
             'bearer.value' => ['nullable', 'required_with:bearer.operator,bearer.unit', function ($attribute, $value, $fail) {
-                if (is_array($value) && collect($value)->contains(fn($item) => empty($item))) {
+                if (is_array($value) && collect($value)->contains(fn($item) => (empty($item) && !($item >= 0)))) {
                     $fail('All items in the Bearer must be filled.');
                 }
             }],
@@ -46,7 +46,7 @@ class BlacklistItemCreateRequest extends FormRequest
 
             'speed.operator' => 'nullable|required_with:speed.value,speed.unit',
             'speed.value' => ['nullable', 'required_with:speed.operator,speed.unit', function ($attribute, $value, $fail) {
-                if (is_array($value) && collect($value)->contains(fn($item) => empty($item))) {
+                if (is_array($value) && collect($value)->contains(fn($item) => (empty($item) && !($item >= 0)))) {
                     $fail('All items in the Bearer must be filled.');
                 }
             }],

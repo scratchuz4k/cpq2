@@ -81,6 +81,7 @@ class FilterProvider
             case "not_in":
                 return $data->whereNotIn($column, $value);
             case "between":
+                sort($value);
                 return $data->whereBetween($column, $value);
             case "greater_than":
                 return $data->filter(function ($item) use ($column, $value) {

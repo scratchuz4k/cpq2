@@ -1,7 +1,7 @@
 import { generateHash, getCurrentDate } from "../../support/utils.js";
 
 const product_name = 'Software Defined FTTP';
-const provider = 'Virtual1'
+const provider = 'ITS'
 const temp = getCurrentDate()
 const account = { ref: generateHash(temp), name: temp }
 

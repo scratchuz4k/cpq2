@@ -57,7 +57,7 @@ const saveItem = () => {
 
 const changeValueFormat = (item) => {
     if (item.operator === 'between') {
-        item.value = item.value ?? [null, null]
+        item.value = []
     } else {
         item.value = null
     }
@@ -118,7 +118,7 @@ const items = ref([
 
                         <div class="d-flex mt-2">
                             <div class="d-flex">
-                                <div v-if="blacklisted_item.bearer.operator === 'between'" class="d-flex">
+                                <div v-if="blacklisted_item.bearer.operator === 'between' && Array.isArray(blacklisted_item.bearer.value)" class="d-flex">
                                     <input id="item-bearer-value-0" placeholder="Value" type="number" class="form-control text-center input-qty me-1" v-model="blacklisted_item.bearer.value[0]">
                                     <p class="mx-2 pt-1">to</p>
                                     <input id="item-bearer-value-1" placeholder="Value" type="number" class="form-control text-center input-qty me-1" v-model="blacklisted_item.bearer.value[1]">
@@ -145,7 +145,7 @@ const items = ref([
                         </select>
                         <div class="d-flex mt-2">
                             <div class="d-flex">
-                                <div v-if="blacklisted_item.speed.operator === 'between'" class="d-flex">
+                                <div v-if="blacklisted_item.speed.operator === 'between' && Array.isArray(blacklisted_item.speed.value)" class="d-flex">
                                     <input id="item-speed-value-0" placeholder="Value" type="number" class="form-control text-center input-qty me-1" v-model="blacklisted_item.speed.value[0]">
                                     <p class="mx-2 pt-1">to</p>
                                     <input id="item-speed-value-1" placeholder="Value" type="number" class="form-control text-center input-qty me-1" v-model="blacklisted_item.speed.value[1]">
