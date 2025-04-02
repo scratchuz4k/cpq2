@@ -181,7 +181,6 @@ class QuoteController extends BaseController
             throw new \Exception('Could not create directory for PDFs');
         }
 
-        $request->merge(['limit' => 300]);
         $group = $quote->solutionType->tables->first()?->group ?? null;
         $groupName = $quote->solutionType->tables->first()?->group_name ?? null;
         if ($group) {
@@ -191,6 +190,8 @@ class QuoteController extends BaseController
         $solutionType = SolutionTypeResource::make($quote->solutionType)->resolve();
         $quote = QuoteResource::make($quote->load(['items']))->resolve();
 
+        $request->merge(['limit' => 300]);
+        $request->merge(['filters' => json_encode([['column' => 'quote_id', 'operator' => 'equals', 'value' => $quote['id']]])]);
         $dataProvider = new DataProvider(QuoteItem::class);
         $items = $dataProvider->group(QuoteItemResource::class);
 
