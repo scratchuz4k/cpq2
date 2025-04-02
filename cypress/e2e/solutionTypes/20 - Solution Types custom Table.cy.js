@@ -20,7 +20,6 @@ describe("Solution Types CRUD", () => {
                 .click();
         })
 
-        cy.get("#has_custom_table").click()
         cy.get("#solution-type-table-remove-columns").click()
         cy.get(".swal2-confirm").eq(0).click();
         cy.get("#solution-type-table-add-column").click()
