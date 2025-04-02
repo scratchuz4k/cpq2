@@ -4,6 +4,7 @@ import { reactive, ref } from "vue";
 import InputQuantity from "@/Components/InputQuantity.vue";
 import { createOrder } from "@/Composables/useOrders.js";
 import { setQuote, quote, getLeafNodesWithChildren } from "@composables/useQuote";
+import {checkWarnings} from "@composables/warning.js";
 
 const props = defineProps({
   modelValue: Object,
@@ -60,7 +61,7 @@ const items = ref([
         v-else
         class="btn btn-outline-primary me-2"
         type="submit"
-        :href="route('quotes.preview', { quote: quote.id })"
+        @click="checkWarnings(warningProviders, route('quotes.preview', { quote: quote.id }))"
       >
         <font-awesome-icon :icon="['far', 'file-pdf']"></font-awesome-icon>
         Preview PDF
@@ -78,7 +79,7 @@ const items = ref([
       <div v-if="warningProviders.some((obj) => Object.values(obj).includes(true))">
         <div class="row">
           <div class="col">
-            <InfoBox class="mb-4 py-0" severity="info">
+            <InfoBox class="mb-4 py-0" severity="danger">
               <div class="small">
                 <div class="mb-2 fw-bold">Important Information</div>
                 <div v-for="provider in warningProviders" class="mb-2">
@@ -133,7 +134,7 @@ const items = ref([
         v-else
         class="btn btn-outline-primary me-2"
         type="submit"
-        :href="route('quotes.preview', { quote: quote.id })"
+        @click="checkWarnings(warningProviders, route('quotes.preview', { quote: quote.id }))"
       >
         <font-awesome-icon :icon="['far', 'file-pdf']"></font-awesome-icon>
         Preview PDF

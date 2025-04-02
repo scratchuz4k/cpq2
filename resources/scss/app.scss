@@ -1170,3 +1170,13 @@ body {
 .custom-range-container:has(.handle-checked) {
     background: var(--color-purple-light) !important;
 }
+
+.provider-warning {
+    #warning-note-container {
+        text-align: left!important;
+
+        .small > div:first-of-type {
+            font-size: 1.5rem;
+        }
+    }
+}

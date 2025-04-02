@@ -8,7 +8,8 @@ const props = defineProps({
 const options = {
     default: { first: "#67236A", second: '#E1D3E1' },
     info: { first: "#356E8E", second: '#DEF1FB' },
-    error: { first: "transparent", second: 'transparent' }
+    error: { first: "transparent", second: 'transparent' },
+    danger: { first: "#dc3545", second: '#f5cccc' }
 }
 
 

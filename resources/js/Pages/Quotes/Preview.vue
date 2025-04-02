@@ -4,6 +4,7 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import { Head, Link } from "@inertiajs/vue3";
 import {  ref } from "vue";
 import {  setQuote, quote } from "@composables/useQuote";
+import { checkWarnings } from "@composables/warning.js";
 
 const props = defineProps({
   quote: Object,
@@ -30,6 +31,11 @@ const showDate = (days = 0) => {
     dateObj.getDate() + "/" + (dateObj.getMonth() + 1) + "/" + dateObj.getFullYear();
   return currentDate;
 };
+
+const warningProviders = ref([
+    { its: quote.items.some((item) => item.data?.providerName === "ITS") },
+    { pxc: quote.items.some((item) => item.data?.providerName === "PXC") },
+  ]);
 
 const items = ref([
   { label: "Home", url: "/dashboard" },
@@ -62,7 +68,7 @@ const items = ref([
       </div>
       <div class="col" style="text-align: right">
         <a
-          :href="route('quotes.download', { quote: quote.id })"
+          @click="checkWarnings(warningProviders, route('quotes.download', { quote: quote.id }))"
           class="btn btn-secondary mx-2"
         >
           <font-awesome-icon :icon="['fas', 'file-pdf']"></font-awesome-icon>
