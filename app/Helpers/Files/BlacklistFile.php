@@ -20,9 +20,10 @@ class BlacklistFile
         'speed',
         'contractTermMonths'
     ];
-    public function __construct(Tenant $tenant) {
+    public function __construct(Tenant $tenant)
+    {
         $this->path = storage_path('/app/blacklists/');
-        $this->filename = 'blacklist_' . md5($tenant?->id.$tenant?->name) . '.json';
+        $this->filename = 'blacklist_' . md5($tenant?->id . $tenant?->name) . '.json';
         $this->file = $this->path . $this->filename;
     }
 
@@ -80,7 +81,14 @@ class BlacklistFile
                             $blacklist_filters[$blacklist_item['id']][] = [
                                 'column' => $column,
                                 'operator' => $value['operator'],
-                                'value' => $value['unit'] === 'Mb' ? $value['value'] : $value['value'] * 1000                            ];
+                                'value' => $value['unit'] === 'Mb'
+                                    ? $value['value']
+                                    : (
+                                        is_array($value['value'])
+                                        ? array_map(fn($item) => $item * 1000, $value['value'])
+                                        : $value['value'] * 1000
+                                    )
+                            ];
                         }
                         continue;
                     }

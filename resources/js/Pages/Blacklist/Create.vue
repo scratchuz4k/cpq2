@@ -87,11 +87,12 @@ const items = ref([
                 <div class="col-6">
                     <div class="mb-3">
                         <label class="form-label">Product Name:</label>
-                        <input id="item-name" class="form-control" v-model="blacklisted_item.productName"/>
+                        <input id="item-name" placeholder="Product Name" class="form-control" v-model="blacklisted_item.productName"/>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Provider:</label>
                         <select id="item-provider" class="form-select" v-model="blacklisted_item.providerName">
+                            <option :value="null">Select a Provider</option>
                             <option v-for="provider in props.providers" :value="provider.name">
                                 {{ provider.name }}
                             </option>
@@ -102,6 +103,7 @@ const items = ref([
                         <div class="mb-3">
                             <label for="item-subprovider" class="form-label">Subprovider:</label>
                             <select id="item-subprovider" class="form-select" v-model="blacklisted_item.connectivitySupplierGroup">
+                                <option :value="null">Select a Subprovider</option>                                
                                 <option v-for="subprovider in props.subproviders" :value="subprovider">
                                     {{ subprovider }}
                                 </option>
@@ -111,6 +113,7 @@ const items = ref([
                     <div class="mb-3">
                         <label class="form-label">Bearer:</label>
                         <select id="item-bearer-operator" class="form-select" v-model="blacklisted_item.bearer.operator" @change="changeValueFormat(blacklisted_item.bearer)">
+                            <option :value="null">Select an Operator</option>
                             <option v-for="operator in props.operators" :value="operator.name">
                                 {{ operator.description }}
                             </option>
@@ -127,7 +130,7 @@ const items = ref([
                                     <input id="item-bearer-value" placeholder="Value" type="number" class="form-control text-center input-qty me-1" v-model="blacklisted_item.bearer.value">
                                 </div>
                                 <select id="item-bearer-unit" class="form-select" v-model="blacklisted_item.bearer.unit" :style="{ width: 'auto' }">
-                                    <option disabled :value="null">Units</option>
+                                    <option :value="null">Units</option>
                                     <option v-for="unit in props.speed_units" :value="unit.value">
                                         {{ unit.value }}
                                     </option>
@@ -139,6 +142,7 @@ const items = ref([
                     <div class="mb-3">
                         <label class="form-label">Speed:</label>
                         <select id="item-speed-operator" class="form-select" v-model="blacklisted_item.speed.operator" @change="changeValueFormat(blacklisted_item.speed)">
+                            <option :value="null">Select an Operator</option>
                             <option v-for="operator in props.operators" :value="operator.name">
                                 {{ operator.description }}
                             </option>
@@ -154,7 +158,7 @@ const items = ref([
                                     <input id="item-speed-value" placeholder="Value" type="number" class="form-control text-center input-qty me-1" v-model="blacklisted_item.speed.value">
                                 </div>
                                 <select id="item-speed-unit" class="form-select" v-model="blacklisted_item.speed.unit" :style="{ width: 'auto' }">
-                                    <option disabled :value="null">Units</option>
+                                    <option :value="null">Units</option>
                                     <option v-for="unit in props.speed_units" :value="unit.value">
                                         {{ unit.value }}
                                     </option>
@@ -167,6 +171,7 @@ const items = ref([
                     <div class="mb-3">
                         <label class="form-label">Contract Term:</label>
                         <select id="item-contract_terms" class="form-select" v-model="blacklisted_item.contractTermMonths">
+                            <option :value="null">Select a Contract Term</option>
                             <option v-for="term in props.contract_terms" :value="term.value">
                                 {{ term.value }} months
                             </option>
