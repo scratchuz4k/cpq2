@@ -4,6 +4,7 @@ const { getCurrentDate, generateHash, slugify } = require("../../support/utils.j
 const temp = getCurrentDate()
 const user = { name: slugify(temp), email: slugify(temp) + "@email.com", password: generateHash(temp) }
 
+
 describe("Create Order Manager User.cy", () => {
     it("Creates Order Manager User", () => {
         cy.login("super@example.com", "werwerwer")

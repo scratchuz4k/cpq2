@@ -9,7 +9,7 @@ use App\Services\QuoteService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
-class OrderStatusOrderedListener
+class OrderStatusSubmittedListener
 {
     protected QuoteService $quoteService;
 

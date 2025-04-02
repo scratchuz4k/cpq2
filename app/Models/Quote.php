@@ -119,7 +119,7 @@ class Quote extends Model
         $statuses_to_ignore = [
             QuoteStatusesEnum::REJECTED->name,
             QuoteStatusesEnum::REGISTRY->name,
-            QuoteStatusesEnum::ORDERED->name,
+            QuoteStatusesEnum::SUBMITTED->name,
         ];
 
         if (in_array($quote->status, $statuses_to_ignore)) {

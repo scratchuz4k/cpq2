@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\QuoteStatusesEnum;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -38,6 +39,7 @@ class QuoteUpdateRequest extends FormRequest
             "items.*.discount" => "numeric|min:0|max:100",
             "items.*.price_plan_id" => "numeric|exists:price_plans,id",
             "items.*.contract_length" => "numeric|min:1",
+            'status' => 'in:' . implode(',', QuoteStatusesEnum::names()),
         ];
     }
 }

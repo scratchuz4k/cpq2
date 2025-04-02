@@ -110,7 +110,7 @@ it('Assign Order', function () {
     $updated_order = $response->json();
 
     $this->assertEquals($updated_order['user_id'], $this->order_manager->id);
-})->skip();
+});
 
 it('Assert Order and Quote status equals rejected on Order reject', function () {
     $this->actingAs($this->order_manager);
@@ -130,22 +130,22 @@ it('Assert Order and Quote status equals rejected on Order reject', function () 
 
     $quote = Quote::find($order->quote_id);
     $this->assertEquals($quote['status'], QuoteStatusesEnum::REJECTED->name);
-})->skip();
+});
 
 it('Assert Order and Quote status equals ordered on Order Approval', function () {
     $this->actingAs($this->order_manager);
     $order = Order::first();
 
     $data = [
-        'status' => OrderStatusesEnum::ORDERED->name,
+        'status' => OrderStatusesEnum::SUBMITTED->name,
         'user_id' => $this->order_manager->id,
     ];
     $response = $this->put('api/orders/'. $order->id, $data);
     $updated_order = $response->json();
 
     $this->assertEquals($updated_order['user_id'], $this->order_manager->id);
-    $this->assertEquals($updated_order['status'], OrderStatusesEnum::ORDERED->name);
+    $this->assertEquals($updated_order['status'], OrderStatusesEnum::SUBMITTED->name);
 
     $quote = Quote::find($order->quote_id);
-    $this->assertEquals($quote['status'], QuoteStatusesEnum::ORDERED->name);
-})->skip();
+    $this->assertEquals($quote['status'], QuoteStatusesEnum::SUBMITTED->name);
+});

@@ -2,12 +2,15 @@
 
 namespace App\Http\Requests;
 
-use App\Models\PricePlan;
+use App\Enums\QuoteStatusesEnum;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Foundation\Http\FormRequest;
 
 class QuoteCreateRequest extends FormRequest
 {
+    protected $authorized_statues = [
+        QuoteStatusesEnum::CONFIGURE->name
+    ];
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -42,6 +45,7 @@ class QuoteCreateRequest extends FormRequest
             "items.*.discount" => "numeric|min:0|max:100",
             "items.*.price_plan_id" => "nullable|numeric|exists:price_plans,id",
             "items.*.contract_length" => "numeric|min:1",
+            'status' => 'in:' . implode(',', $this->authorized_statues),
         ];
     }
 }

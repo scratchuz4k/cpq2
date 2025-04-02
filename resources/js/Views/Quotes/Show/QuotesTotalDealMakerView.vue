@@ -3,12 +3,16 @@ import { ref } from "vue";
 import Dialog from "primevue/dialog";
 import { createOrder } from "@/Composables/useOrders.js";
 import { setQuote, quote } from "@composables/useQuote";
+import {usePage} from "@inertiajs/vue3";
 
 const props = defineProps({
   modelValue: Object,
   pricePlans: Array,
   preview: Boolean,
 });
+
+const page = usePage()
+const tenant = page.props.tenant
 
 let showModal = ref(false);
 const isLoading = ref(false);
@@ -107,7 +111,7 @@ const items = ref([
   {
     label: `Quote #${quote?.id}`,
     url: quote
-      ? ["REGISTRY", "ORDERED"].includes(quote.status)
+      ? ["REGISTRY", "SUBMITTED"].includes(quote.status)
         ? "#"
         : `/quotes/${quote.id}/edit`
       : "#",
@@ -194,7 +198,7 @@ const items = ref([
                 Email this quote
               </button>
               <button
-                hidden
+                :hidden="!(tenant.configurations.orders_flow_is_active === '1')"
                 :disabled="disableButtonSendToOrder"
                 class="btn btn-primary"
                 @click="createOrderAndRedirect(quote.id)"

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Resources\TenantResource;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use App\Models\User;
 use App\Models\Tenant;
@@ -101,4 +102,23 @@ it('Upload a tenant SSO File with invalid XML', function () {
 
     $response->assertStatus(422)
         ->assertJsonPath('message', 'The file must contain a valid XML.');
+});
+
+it('Update Order flow setting', function () {
+    //Activate setting
+    $tenant = (new TenantResource($this->user->currentTenant))->resolve();
+    $tenant['configurations']['orders_flow_is_active'] = '1';
+
+    $response = $this->put('api/tenants/' . $this->user->currentTenant->id, $tenant);
+    $tenant = $response->json();
+
+    $response->assertStatus(200);
+    expect($tenant['configurations']['orders_flow_is_active'])->toBe('1');
+
+    //Deactivate setting
+    $tenant['configurations']['orders_flow_is_active'] = '0';
+    $response = $this->put('api/tenants/' . $this->user->currentTenant->id, $tenant);
+    $tenant = $response->json();
+    $response->assertStatus(200);
+    expect($tenant['configurations']['orders_flow_is_active'])->toBe('0');
 });
