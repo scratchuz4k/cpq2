@@ -21,7 +21,16 @@ class BlacklistItemUpdateRequest extends FormRequest
      */
     public function rules(): array
     {
-        $flattenedData = collect(request()->all())
+        $data = request()->only([
+            'productName',
+            'providerName',
+            'connectivitySupplierGroup',
+            'bearer',
+            'speed',
+            'contractTermMonths',
+        ]);
+
+        $flattenedData = collect($data)
             ->map(fn($value) => is_array($value) && array_filter($value) == [] ? null : $value) // Remove empty array values
             ->all();
 

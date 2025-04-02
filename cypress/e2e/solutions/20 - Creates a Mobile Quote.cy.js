@@ -62,14 +62,14 @@ describe("Creates a Mobile Quote", () => {
             })
             current_page += 1
             cy.get('.p-paginator-page').contains(current_page).click()
-        } while (hardwareCount != 0 && current_page <= max_pages)
+            cy.wait(500)
+        } while (hardwareCount == 0 && current_page <= max_pages)
 
 
         cy.get("#btn-step-2-next").click()
 
         cy.get(".recurring-item").should("have.length", 2)
         cy.get(".one_off-item").then(($items) => {
-            console.log($items)
             cy.then(() => {
                 expect(hardwareCount).to.equal($items.length);
             });
