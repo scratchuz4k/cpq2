@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\AccountController;
 use App\Http\Controllers\Api\ApiController;
+use App\Http\Controllers\Api\BlacklistController;
 use App\Http\Controllers\Api\BrandController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\ContactController;
@@ -58,4 +59,5 @@ Route::apiResources([
     'shared-links' => SharedLinkController::class,
     'resources' => ResourceController::class,
     'tenants' => TenantController::class,
+    'blacklist' => BlacklistController::class,
 ]);

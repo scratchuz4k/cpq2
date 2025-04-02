@@ -1,9 +1,7 @@
 <?php
 
-namespace App\Helpers\Api;
+namespace App\Helpers\Files;
 
-use Exception;
-use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Cache;
 
 
