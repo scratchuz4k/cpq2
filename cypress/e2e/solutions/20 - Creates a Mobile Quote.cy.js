@@ -42,20 +42,28 @@ describe("Creates a Mobile Quote", () => {
         cy.get("#btn-step-1-next").click()
         let hardwareCount = 0
         let keys = [0, 1, 2, 3, 4]
-        keys.forEach((key) => {
-            cy.get(`#hardware-${key}-stock`).then(($input) => {
-                const spanText = parseInt($input.text().trim()); // Get the text content from the <span> and trim any extra whitespace
+        let max_pages = 5
+        let current_page = 1
 
-                // Perform conditional logic based on the span text and length of product name field test
-                if (spanText > 0) {
-                    hardwareCount += 1
-                    cy.log(`Click count: ${hardwareCount}`);
-                    cy.get(`#input-hardware-${key}-quantity`).type(1)
-                    cy.wait(500)
-                }
-            });
+        do {
+            keys.forEach((key) => {
+                cy.get(`#hardware-${key}-stock`).then(($input) => {
+                    const spanText = parseInt($input.text().trim()); // Get the text content from the <span> and trim any extra whitespace
+                    const nameText = $input.closest('.panel').find('p.small').text().trim(); // Get the name of the product
+
+                    // Perform conditional logic based on the span text and length of product name field test
+                    if (spanText > 0 && nameText.length <= 100) {
+                        hardwareCount += 1
+                        cy.log(`Click count: ${hardwareCount}`);
+                        cy.get(`#input-hardware-${key}-quantity`).type(1)
+                        cy.wait(500)
+                    }
+                });
+            })
+            current_page += 1
+            cy.get('.p-paginator-page').contains(current_page).click()
             cy.wait(500)
-        })
+        } while (hardwareCount == 0 && current_page <= max_pages)
 
         cy.get("#btn-step-2-next").click()
 

@@ -44,6 +44,9 @@ const deleteRecord = (id) => {
       }
       try {
         let res = await axios.delete("/api/quotes/" + id);
+        if (res) {
+          emitter.emit("datatable-refresh");
+        }
         notyf.success("Removed with success");
         return;
       } catch (err) {
