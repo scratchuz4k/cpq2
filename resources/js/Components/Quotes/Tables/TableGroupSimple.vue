@@ -1,6 +1,6 @@
 <script setup>
 import { ref } from "vue";
-import { format } from "@/Composables/format";
+import format from "@/Composables/format";
 
 const props = defineProps({
   preview: Boolean,
