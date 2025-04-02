@@ -29,7 +29,6 @@ emitter.on("quote-items:updated", () => {
     <!-- Headers -->
     <thead>
       <tr>
-        <th style="width: 5%" v-if="!preview && quote.solution_type.code == 3"></th>
         <template v-for="column in columns">
           <th
             :class="[`column-${column.value}-header`]"

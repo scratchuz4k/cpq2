@@ -1,3 +1,61 @@
+<script setup>
+import { quote, getQuote } from "@composables/useQuote";
+import { reactive, watch, ref } from "vue";
+import queryString from "query-string";
+import axios from "axios";
+
+const props = defineProps({
+  preview: Boolean,
+  blockedColumns: {
+    type: Array,
+    default: [],
+  },
+});
+
+const temp = quote.solution_type?.table?.columns ?? [];
+const columns = temp.filter((item) => !props.blockedColumns.includes(item.value));
+const group = quote.solution_type?.table?.group ?? null;
+const groupName = quote.solution_type?.table?.group_name ?? null;
+
+const form = reactive({
+  filters: [{ column: "quote_id", operator: "equals", value: quote.id }],
+  order: "asc",
+  orderBy: "id",
+  limit: 200,
+  group: group,
+  groupOrder: "asc",
+});
+const changeGroupOrder = () => {
+  form.groupOrder = form.groupOrder == "asc" ? "desc" : "asc";
+};
+const sortBy = (column) => {
+  let changeSort = form.order == "asc" ? "desc" : "asc";
+  form.order = form.orderBy === column ? changeSort : form.order;
+  form.orderBy = column;
+};
+
+const getItems = async () => {
+  let string = queryString.stringify({
+    ...form,
+    filters: JSON.stringify([...form.filters]),
+  });
+
+  let res = await axios.get("/api/quote-items?" + string);
+  quote.items = res.data.data;
+};
+
+watch(form, function () {
+  getItems();
+});
+
+emitter.on("quote-items:updated", async () => {
+  await getQuote(quote.id);
+  await getItems();
+});
+
+getItems();
+</script>
+
 <template>
   <div style="overflow-x: auto">
     <table
@@ -8,10 +66,9 @@
       <!-- Headers -->
       <thead>
         <tr>
-          <th style="width: 5%" v-if="!preview && group"></th>
           <template v-for="column in columns">
             <th :class="[`column-${column.value}-header`]">
-              <b
+              <p
                 v-if="column.has_order"
                 class="column-title sortable"
                 style="white-space: nowrap"
@@ -30,7 +87,7 @@
                     <font-awesome-icon v-else :icon="['fas', 'sort-up']" />
                   </template>
                 </span>
-              </b>
+              </p>
               <p class="column-title" v-else>{{ column.name }}</p>
             </th>
           </template>
@@ -106,60 +163,3 @@
     </table>
   </div>
 </template>
-<script setup>
-import { quote, getQuote } from "@composables/useQuote";
-import { reactive, watch, ref } from "vue";
-import queryString from "query-string";
-import axios from "axios";
-
-const props = defineProps({
-  preview: Boolean,
-  blockedColumns: {
-    type: Array,
-    default: [],
-  },
-});
-
-const temp = quote.solution_type?.table?.columns ?? [];
-const columns = temp.filter((item) => !props.blockedColumns.includes(item.value));
-const group = quote.solution_type?.table?.group ?? null;
-const groupName = quote.solution_type?.table?.group_name ?? null;
-
-const form = reactive({
-  filters: [{ column: "quote_id", operator: "equals", value: quote.id }],
-  order: "asc",
-  orderBy: "id",
-  limit: 200,
-  group: group,
-  groupOrder: "asc",
-});
-const changeGroupOrder = () => {
-  form.groupOrder = form.groupOrder == "asc" ? "desc" : "asc";
-};
-const sortBy = (column) => {
-  let changeSort = form.order == "asc" ? "desc" : "asc";
-  form.order = form.orderBy === column ? changeSort : form.order;
-  form.orderBy = column;
-};
-
-const getItems = async () => {
-  let string = queryString.stringify({
-    ...form,
-    filters: JSON.stringify([...form.filters]),
-  });
-
-  let res = await axios.get("/api/quote-items?" + string);
-  quote.items = res.data.data;
-};
-
-watch(form, function () {
-  getItems();
-});
-
-emitter.on("quote-items:updated", async () => {
-  await getQuote(quote.id);
-  await getItems();
-});
-
-getItems();
-</script>

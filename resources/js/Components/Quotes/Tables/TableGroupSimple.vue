@@ -28,20 +28,19 @@ const getFormat = (name, group) => {
   <tr
     class="item-row"
     :class="['custom-item-group']"
-    :style="{ 'vertical-align': 'middle' }"
+    :style="{ 'vertical-align': 'middle', cursor: 'pointer' }"
+    @click="() => (showChildren = !showChildren)"
   >
-    <td class="text-center" v-if="!preview">
-      <button class="btn p-0 border-0" @click="() => (showChildren = !showChildren)">
-        <font-awesome-icon
-          v-if="!showChildren"
-          :icon="['fas', 'plus']"
-        ></font-awesome-icon>
-        <font-awesome-icon v-else :icon="['fas', 'minus']"></font-awesome-icon>
-      </button>
-    </td>
     <td :colspan="colspan">
       <div class="d-flex">
-        <p class="m-0 me-3 py-2">
+        <button class="btn p-0 border-0 me-2">
+          <font-awesome-icon
+            v-if="!showChildren"
+            :icon="['fas', 'plus']"
+          ></font-awesome-icon>
+          <font-awesome-icon v-else :icon="['fas', 'minus']"></font-awesome-icon>
+        </button>
+        <p class="fw-bold py-0" style="font-size: 14px">
           <span v-if="groupName">{{ groupName }} - </span> {{ getFormat(name, group) }}
         </p>
       </div>

@@ -76,7 +76,6 @@ emitter.on("quote-items:toggle:is-editing", () => (item.value.is_editing = false
     :class="['item-row', props.code + '-item', isChild ? 'child-bg' : '']"
     :style="{ 'vertical-align': 'middle' }"
   >
-    <td class="text-center" v-if="showToggle && !preview"></td>
     <template v-for="column in columns">
       <td
         v-if="!groupColumns.find((x) => x.value == column.value)"
