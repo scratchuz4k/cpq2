@@ -1,3 +1,4 @@
+<!-- This component also exists as a blade component, any changes made here should also be made in the blade compoenent as wel (resources/views/components/warning-note.blade.php) -->
 <script setup>
 import { ref } from "vue";
 
