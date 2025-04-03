@@ -62,7 +62,7 @@ class CloudMarketConnectivityProducts implements ShouldQueue, TenantAware
                 }
             }
 
-            if (empty($value->providerKey) || ! $value->quoteId) {
+            if (empty($value->providerKey) || ! $value->quoteId || $value->priceMonthly == 0) {
                 continue;
             }
 
