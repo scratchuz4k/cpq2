@@ -92,19 +92,19 @@ let view =
             </div>
           </div>
           <div>
+            <TableCustom
+              v-if="quote.solution_type.configurations?.has_custom_table == 1"
+              :preview="true"
+              :blockedColumns="['margin']"
+            ></TableCustom>
             <component
+              v-else
               :is="view"
-              v-if="quote.solution_type.configurations?.has_custom_table == 0"
               v-bind="{
                 pricePlans: props.pricePlans,
                 preview: true,
               }"
             ></component>
-            <TableCustom
-              v-else
-              :preview="true"
-              :blockedColumns="['margin']"
-            ></TableCustom>
             <TableTotal :quote="quote"></TableTotal>
           </div>
         </div>

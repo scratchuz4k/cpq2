@@ -33,10 +33,12 @@ const dragOptions = {
 };
 
 const saveSolutionType = () => {
+  table.columns = table.columns.filter((x) => !!x.value);
   table.columns.forEach((x) => {
     let temp = props.available_columns.find((e) => e.value == x.value);
     x.has_order = !!temp?.has_order;
   });
+
   table.code = !table.code ? "custom" : table.code;
   router.put(
     `/solution-types/${props.solution_type.id}`,
@@ -76,8 +78,6 @@ const deleteColumn = (element) => {
     table.columns.splice(index, 1);
   }
 };
-
-const changeSelection = (option, element) => {};
 
 const clearAllColumns = async (table) => {
   let result = await swal.fire({
@@ -236,7 +236,6 @@ const items = ref([
                               optionValue="value"
                               placeholder="Select a Field"
                               class="w-100"
-                              @change="(ev) => changeSelection(ev, element)"
                             ></Select>
                           </td>
                           <td>
