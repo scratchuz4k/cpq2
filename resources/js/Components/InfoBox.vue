@@ -34,7 +34,4 @@ const current = Object.keys(options).includes(props.severity)
       <slot></slot>
     </div>
   </div>
-  <div class="w-100">
-    <slot></slot>
-  </div>
 </template>
