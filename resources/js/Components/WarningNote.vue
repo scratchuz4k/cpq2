@@ -1,6 +1,5 @@
 <script setup>
 import { ref } from "vue";
-import InfoBox from "@/Components/InfoBox.vue";
 
 const props = defineProps({
     warnings: Array,
