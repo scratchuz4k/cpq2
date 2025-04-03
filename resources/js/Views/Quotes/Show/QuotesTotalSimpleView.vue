@@ -1,10 +1,9 @@
 <script setup>
 import _ from "lodash";
-import { reactive, ref } from "vue";
-import InputQuantity from "@/Components/InputQuantity.vue";
+import { ref } from "vue";
 import { createOrder } from "@/Composables/useOrders.js";
-import { setQuote, quote, getLeafNodesWithChildren } from "@composables/useQuote";
-import {checkWarnings} from "@composables/warning.js";
+import { setQuote, quote } from "@composables/useQuote";
+import { checkWarnings } from "@composables/warning.js";
 import WarningNote from "@/Components/WarningNote.vue";
 
 const props = defineProps({
@@ -62,7 +61,9 @@ const items = ref([
         v-else
         class="btn btn-outline-primary me-2"
         type="submit"
-        @click="checkWarnings(warningProviders, route('quotes.preview', { quote: quote.id }))"
+        @click="
+          checkWarnings(warningProviders, route('quotes.preview', { quote: quote.id }))
+        "
       >
         <font-awesome-icon :icon="['far', 'file-pdf']"></font-awesome-icon>
         Preview PDF
@@ -120,7 +121,9 @@ const items = ref([
         v-else
         class="btn btn-outline-primary me-2"
         type="submit"
-        @click="checkWarnings(warningProviders, route('quotes.preview', { quote: quote.id }))"
+        @click="
+          checkWarnings(warningProviders, route('quotes.preview', { quote: quote.id }))
+        "
       >
         <font-awesome-icon :icon="['far', 'file-pdf']"></font-awesome-icon>
         Preview PDF
