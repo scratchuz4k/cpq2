@@ -1173,11 +1173,11 @@ body {
 
 .provider-warning {
     #warning-note-container {
-        text-align: left!important;
+        text-align: left !important;
 
         .small > div:first-of-type {
             font-size: 1.5rem;
-            margin-bottom: 1.5rem;
+            margin-bottom: 1.5rem !important;
         }
     }
 }

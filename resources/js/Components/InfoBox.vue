@@ -22,7 +22,7 @@ const current = Object.keys(options).includes(props.severity) ? options[props.se
         <div v-if="props.severity !== 'error'" class="px-3 pt-1">
             <font-awesome-icon :icon="['fas', 'circle-info']" :style="{ color: current.first, fontSize: '20px' }" />
         </div>
-        <div class="w-100">
+        <div class="w-100" :style="props.severity === 'error' ? 'color: #dc3545; line-height: 1.2;' : ''">
             <slot></slot>
         </div>
     </div>
