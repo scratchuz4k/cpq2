@@ -214,7 +214,7 @@
                                 <tr>
                                     @foreach ($columns as $column)
                                         <th class="column-{{ $column['value'] }}-header">
-                                            {{ $column['name'] }}
+                                            {{ $column['name'] }} -- {{ $column['value'] }}
                                         </th>
                                     @endforeach
                                 </tr>

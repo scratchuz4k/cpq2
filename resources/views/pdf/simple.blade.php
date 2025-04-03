@@ -255,8 +255,8 @@
                                     @else
                                         <th class="column-name-header w-20">Name</th>
                                     @endif
-                                    <th class="column-contract_lenght-header w-5">Months</th>
                                     <th class="column-price_plan-header w-20">Price Plan</th>
+                                    <th class="column-contract_lenght-header w-5">Months</th>
                                     <th class="column-quantity-header w-5">Quantity</th>
                                     <th class="column-price-header w-10">Price</th>
                                     <th class="column-total-header">Total </th>
