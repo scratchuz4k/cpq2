@@ -1,9 +1,9 @@
 <?php
 
-use App\Models\QuoteItem;
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
@@ -15,25 +15,37 @@ return new class extends Migration
         Schema::table('quote_items', function (Blueprint $table) {
             $table->integer('group')->default(0);
             $table->dropForeign(['parent_id']);
-            $table->unsignedBigInteger('parent_id')->nullable()->change();
-            $table->foreign('parent_id')->references('id')->on('quote_items')->nullOnDelete();
         });
 
-        $items = QuoteItem::whereNull('parent_id')->get();
-
+        $items = DB::table('quote_items')->get();
         foreach ($items as $item) {
-            if (count($item->children)) {
-                foreach ($item->children as $child) {
-                    $child->update(['group' => $item->id]);
-                }
-                $item->delete();
-            } else {
-                $item->update(['group' => $item->id]);
+            $item = DB::table('quote_items')->where('id', $item->id)->first();
+            $childs = DB::table('quote_items')->where('parent_id', $item->id)->get();
+
+            if (! count($childs) && $item->group == 0) {
+                DB::table('quote_items')
+                    ->where('id', $item->id)
+                    ->update(['group' => $item->id]);
+
+                continue;
             }
+
+            if (count($childs)) {
+                foreach ($childs as $child) {
+                    DB::table('quote_items')
+                        ->where('id', $child->id)
+                        ->update(['group' => $item->id]);
+                }
+
+                DB::table('quote_items')
+                    ->where('id', $item->id)
+                    ->delete();
+
+            }
+
         }
 
         Schema::table('quote_items', function (Blueprint $table) {
-            $table->dropForeign(['parent_id']);
             $table->dropColumn('parent_id');
         });
     }

@@ -1,8 +1,8 @@
 <?php
 
-use App\Models\OrderItem;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
@@ -16,20 +16,35 @@ return new class extends Migration
             $table->integer('group')->default(0);
             $table->dropForeign(['parent_id']);
             $table->unsignedBigInteger('parent_id')->nullable()->change();
-            $table->foreign('parent_id')->references('id')->on('order_items')->nullOnDelete();
+            $table->foreign('parent_id')->references('id')->on('order_items')->nullOnDelete()->change();
         });
 
-        $items = OrderItem::whereNull('parent_id')->get();
-
+        $items = DB::table('order_items')->get();
         foreach ($items as $item) {
-            if (count($item->children)) {
-                foreach ($item->children as $child) {
-                    $child->update(['group' => $item->id]);
-                }
-                $item->delete();
-            } else {
-                $item->update(['group' => $item->id]);
+            $item = DB::table('quote_items')->where('id', $item->id)->first();
+            $childs = DB::table('order_items')->where('parent_id', $item->id)->get();
+
+            if (! count($childs) && $item->group == 0) {
+                DB::table('order_items')
+                    ->where('id', $item->id)
+                    ->update(['group' => $item->id]);
+
+                continue;
             }
+
+            if (count($childs)) {
+                foreach ($childs as $child) {
+                    DB::table('order_items')
+                        ->where('id', $child->id)
+                        ->update(['group' => $item->id]);
+                }
+
+                DB::table('order_items')
+                    ->where('id', $item->id)
+                    ->delete();
+
+            }
+
         }
 
         Schema::table('order_items', function (Blueprint $table) {
