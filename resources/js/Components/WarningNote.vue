@@ -11,7 +11,7 @@ const warnings = ref(props.warnings)
 
 <template>
     <div class="small">
-        <div class="mb-2 fw-bold">Important Information:</div>
+        <div class="mb-2 fw-bold">Important Information</div>
         <div v-for="provider in warnings" class="mb-2">
             <div v-if="Object.values(provider)[0]">
                 <span class="small fw-bold bg-light rounded-2 py-1 px-2 me-1 text-capitalize">
