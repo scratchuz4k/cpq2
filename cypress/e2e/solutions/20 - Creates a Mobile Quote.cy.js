@@ -52,7 +52,7 @@ describe("Creates a Mobile Quote", () => {
                     const nameText = $input.closest('.panel').find('p.small').text().trim(); // Get the name of the product
 
                     // Perform conditional logic based on the span text and length of product name field test
-                    if (spanText > 0 && nameText.length <= 100) {
+                    if (spanText > 0) {
                         hardwareCount += 1
                         cy.log(`Click count: ${hardwareCount}`);
                         cy.get(`#input-hardware-${key}-quantity`).type(1)
