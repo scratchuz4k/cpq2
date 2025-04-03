@@ -1,6 +1,7 @@
 <script setup>
 import { updateQuoteItem, removeQuoteItem, temp } from "@composables/useQuoteItem";
 import { getQuote, quote } from "@/Composables/useQuote";
+import format from "@/Composables/format";
 
 const props = defineProps({
   code: String,
@@ -9,8 +10,11 @@ const props = defineProps({
   isChild: Boolean,
   preview: Boolean,
   columns: Array,
-  groupColumns: Array,
   item: Object,
+  groupColumns: {
+    type: Array,
+    default: [],
+  },
 });
 const item = defineModel("item");
 
@@ -28,20 +32,19 @@ const save = async (p) => {
   item.value.contract_length = temp.contract_length;
   if (await updateQuoteItem(item.value.id, item.value)) {
     item.value.is_editing = false;
-    getQuote(quote.id);
+    emitter.emit("quote-items:updated");
   }
 };
 
 const remove = async (p) => {
-  let id = p.id;
+  let items = quote.items.filter((x) => x.group == p.group);
   let result = null;
-  if (p.parent_id) {
+  if (items.length > 1) {
     result = await swal.fire({
       title: "Are you sure?",
       text:
         "This line contains other associated lines, removing it deletes all associated lines",
     });
-    id = p.parent_id;
   } else {
     result = await swal.fire({
       title: "Are you sure?",
@@ -51,30 +54,35 @@ const remove = async (p) => {
   if (["cancel", "backdrop"].includes(result.dismiss)) {
     return;
   }
-  if (await removeQuoteItem(id)) {
-    getQuote(quote.id);
-  }
+
+  items.forEach(async (x) => {
+    await removeQuoteItem(x.id);
+  });
+  emitter.emit("quote-items:updated");
 };
 
 const cancel = (p) => {
   p.is_editing = !p.is_editing;
 };
 
-emitter.on("quote-items:toggle:is-editing", () => item.value.is_editing = false);
+const getComponent = (column) => {
+  return format.toCamelCase(column.split(".")[0]) + "Column";
+};
+
+emitter.on("quote-items:toggle:is-editing", () => (item.value.is_editing = false));
 </script>
 <template>
   <tr
     :class="['item-row', props.code + '-item', isChild ? 'child-bg' : '']"
     :style="{ 'vertical-align': 'middle' }"
   >
-    <td class="text-center" v-if="showToggle && !preview"></td>
     <template v-for="column in columns">
       <td
         v-if="!groupColumns.find((x) => x.value == column.value)"
         :class="[`column-${column.value}-body`]"
       >
         <component
-          :is="format.toCamelCase(column.value) + 'Column'"
+          :is="getComponent(column.value)"
           v-bind="{
             column: column,
             modelValue: item,
@@ -127,6 +135,6 @@ emitter.on("quote-items:toggle:is-editing", () => item.value.is_editing = false)
 </template>
 <style>
 .child-bg > td {
-  background-color: whitesmoke!important;
+  background-color: whitesmoke !important;
 }
 </style>

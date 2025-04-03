@@ -55,7 +55,6 @@ describe("Solution Types CRUD", () => {
         })
 
         cy.get("#btn-save-solution-type").click()
-
         cy.get(".notyf").contains("Updated with Success")
 
         cy.get("#datatable-search").type('Hardware')

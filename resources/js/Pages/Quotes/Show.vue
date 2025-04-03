@@ -34,7 +34,7 @@ let view =
   </AuthenticatedLayout>
 </template>
 
-<style >
+<style>
 .form-control {
   font-size: 0.9rem;
   line-height: 1.5rem;

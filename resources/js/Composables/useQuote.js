@@ -18,21 +18,4 @@ export const setQuote = (temp) => {
         return
     }
 
-    Object.assign(quote.items, getLeafNodesWithChildren(quote.items));
 }
-
-export const getLeafNodesWithChildren = (objects) => {
-    let leaves = [];
-    const findLeaves = (items) => {
-        for (const item of items) {
-            if (item.children && item.children.length > 0) {
-                findLeaves(item.children);
-            } else {
-                leaves.push(item);
-            }
-        }
-    };
-
-    findLeaves(objects);
-    return leaves;
-};

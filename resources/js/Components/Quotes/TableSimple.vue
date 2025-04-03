@@ -6,6 +6,19 @@ defineProps({
 });
 const columns = quote.solution_type?.table?.columns ?? [];
 const groupColumns = columns.filter((x) => x.is_group);
+
+let groups = [];
+quote.items.forEach((e) => {
+  let index = groups.findIndex((x) => x.group == e.group);
+  if (index == -1) {
+    groups.push({ ...e, children: [e] });
+  } else {
+    groups[index].children.push(e);
+  }
+});
+emitter.on("quote-items:updated", () => {
+  getQuote(quote.id);
+});
 </script>
 <template>
   <table
@@ -16,7 +29,6 @@ const groupColumns = columns.filter((x) => x.is_group);
     <!-- Headers -->
     <thead>
       <tr>
-        <th style="width: 5%" v-if="!preview && quote.solution_type.code == 3"></th>
         <template v-for="column in columns">
           <th
             :class="[`column-${column.value}-header`]"
@@ -29,7 +41,7 @@ const groupColumns = columns.filter((x) => x.is_group);
       </tr>
     </thead>
     <tbody>
-      <template v-for="(item, index) in quote.items">
+      <template v-for="(item, index) in groups">
         <TableGroup
           v-if="quote.solution_type.code == 3"
           :item="item"

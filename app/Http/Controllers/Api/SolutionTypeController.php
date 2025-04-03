@@ -2,19 +2,19 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Helpers\DataProvider;
+use App\Http\Controllers\BaseController;
 use App\Http\Resources\SolutionTypeTenantResource;
 use App\Models\SolutionType;
 use App\Models\SolutionTypeTenant;
 use Illuminate\Http\Request;
-use App\Helpers\DataProvider;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
-use App\Http\Controllers\BaseController;
-use App\Http\Resources\SolutionTypeResource;
 
 class SolutionTypeController extends BaseController
 {
     protected $model = SolutionType::class;
+
     /**
      * Display a listing of the resource.
      */
@@ -30,6 +30,7 @@ class SolutionTypeController extends BaseController
             $data = $dataProvider->get();
         } catch (\Exception $e) {
             Log::debug($e->getMessage());
+
             return $e->getMessage();
         }
 
@@ -61,11 +62,16 @@ class SolutionTypeController extends BaseController
     }
 
     /**
-         * Remove the specified resource from storage.
-         */
+     * Remove the specified resource from storage.
+     */
     public function destroy(SolutionType $solutionType)
     {
         $solutionType->tenants()->detach(Auth::user()->tenant_id);
+
+        foreach ($solutionType->configurations as $config) {
+            $config->delete();
+        }
+
         return response()->json(null, 204);
     }
 }

@@ -70,7 +70,13 @@ let view =
             </div>
           </div>
           <div>
+            <TableCustom
+              v-if="quote.solution_type.configurations?.has_custom_table == 1"
+              :preview="true"
+              :blockedColumns="['margin']"
+            ></TableCustom>
             <component
+              v-else
               :is="view"
               v-bind="{
                 pricePlans: props.pricePlans,

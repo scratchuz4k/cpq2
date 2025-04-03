@@ -124,6 +124,35 @@
         ),
     ];
 
+    $items = [];
+
+    foreach ($quote['items'] as $key => $item) {
+        $nr_groups = array_reduce(
+            $quote['items'],
+            function ($acc, $temp) use ($item) {
+                if ($temp['group'] == $item['group']) {
+                    $acc = $acc + 1;
+                    return $acc;
+                }
+                return $acc;
+            },
+            0,
+        );
+
+        if ($nr_groups == 1) {
+            array_push($items, [...$item, 'children' => []]);
+            continue;
+        }
+
+        $index = array_search($item['group'], array_column($items, 'group'));
+
+        if ($index === false) {
+            array_push($items, [...$item, 'children' => [$item]]);
+        } else {
+            array_push($items[$index]['children'], $item);
+        }
+    }
+
 @endphp
 
 <!doctype html>
@@ -191,39 +220,59 @@
                             </InfoBox>
                         </div>
                     </div>
-                @endif
-                <div class="row mb-4">
-                    <div class="col">
-                        <div class="mb-5">
-                            <table id="table-recurrring" class="table table-dealmaker table-bordered  ">
-                                <!-- Headers -->
-                                <thead>
-                                    <tr>
-                                        @if ($isConnectivity)
-                                            <th class="column-quote_ref-header w-20">Quote Reference</th>
-                                            <th class="column-speed-header w-20">Speed</th>
-                                            <th class="column-bearer-header w-20">Bearer</th>
-                                        @else
-                                            <th class="column-name-header w-20">Name</th>
-                                        @endif
-                                        <th class="column-contract_lenght-header w-5">Months</th>
-                                        <th class="column-price_plan-header w-20">Price Plan</th>
-                                        <th class="column-quantity-header w-5">Quantity</th>
-                                        <th class="column-price-header w-10">Price</th>
-                                        <th class="column-total-header">Total </th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach ($quote['items'] as $key => $group)
-                                        @if ($isConnectivity)
-                                            <tr class="group-row" style="vertical-align: middle;">
-                                                <td class="group-body" colspan="8">
-                                                    <div class="d-flex py-2">
-                                                        <div class="me-3">
-                                                            @if ($group['data']?->providerKey)
-                                                                <img class="img-provider"
-                                                                    style="max-width: 60px; max-height: 20px; width: auto; height: auto;"
-                                                                    src="{{ $group['image'] ?? public_path() . '/images/providers/' . $group['data']?->providerKey . '.png' }}" />
+            </div>
+            @endif
+            <div class="row mb-4">
+                <div class="col">
+                    <div class="mb-5">
+                        <table id="table-recurrring" class="table table-dealmaker table-bordered  ">
+                            <!-- Headers -->
+                            <thead>
+                                <tr>
+                                    @if ($isConnectivity)
+                                        <th class="column-quote_ref-header w-20">Quote Reference</th>
+                                        <th class="column-speed-header w-20">Speed</th>
+                                        <th class="column-bearer-header w-20">Bearer</th>
+                                    @else
+                                        <th class="column-name-header w-20">Name</th>
+                                    @endif
+                                    <th class="column-price_plan-header w-20">Price Plan</th>
+                                    <th class="column-contract_lenght-header w-5">Months</th>
+                                    <th class="column-quantity-header w-5">Quantity</th>
+                                    <th class="column-price-header w-10">Price</th>
+                                    <th class="column-total-header">Total </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($items as $key => $group)
+                                    @if ($isConnectivity)
+                                        <tr class="group-row" style="vertical-align: middle;">
+                                            <td class="group-body" colspan="8">
+                                                <div class="d-flex py-2">
+                                                    <div class="me-3">
+                                                        @if ($group['data']?->providerKey)
+                                                            <img class="img-provider"
+                                                                style="max-width: 60px; max-height: 20px; width: auto; height: auto;"
+                                                                src="{{ $group['image'] ?? public_path() . '/images/providers/' . $group['data']?->providerKey . '.png' }}"
+                                                                onerror="this.src='/images/no_image.png'" />
+                                                        @endif
+                                                    </div>
+                                                    <div class="me-3">
+                                                        @if ($group['data']?->connectivitySupplierGroup)
+                                                            <img class="img-provider"
+                                                                style="max-width: 60px; max-height: 20px; width: auto; height: auto;"
+                                                                src="{{ $group['image'] ?? public_path() . '/images/providers/' . str_replace(' ', '', strtolower($group['data']?->connectivitySupplierGroup)) . '.png' }}"
+                                                                onerror="this.src='/images/no_image.png'" />
+                                                        @endif
+                                                    </div>
+                                                    <div class="me-3 d-flex">
+                                                        <p class="m-0">{{ $group['name'] }}
+                                                            @if (isset($group['data']->additionalInfo->{'Primary Router Model'}))
+                                                                <span
+                                                                    class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm router-model">
+                                                                    <i class="fa-solid fa-plug"></i>
+                                                                    {{ $group['data']->additionalInfo->{'Primary Router Model'} }}
+                                                                </span>
                                                             @endif
                                                         </div>
                                                         <div class="me-3">

@@ -1,10 +1,9 @@
 <script setup>
 import _ from "lodash";
-import { reactive, ref } from "vue";
-import InputQuantity from "@/Components/InputQuantity.vue";
+import { ref } from "vue";
 import { createOrder } from "@/Composables/useOrders.js";
-import { setQuote, quote, getLeafNodesWithChildren } from "@composables/useQuote";
-import {checkWarnings} from "@composables/warning.js";
+import { setQuote, quote } from "@composables/useQuote";
+import { checkWarnings } from "@composables/warning.js";
 import WarningNote from "@/Components/WarningNote.vue";
 
 const props = defineProps({
@@ -15,7 +14,7 @@ const props = defineProps({
 
 setQuote(props.modelValue);
 
-let temp = getLeafNodesWithChildren(quote.items);
+let temp = quote.items;
 const warningProviders = ref([
   { its: temp.some((item) => item.data?.providerName === "ITS") },
   { pxc: temp.some((item) => item.data?.providerName === "PXC") },
@@ -62,7 +61,9 @@ const items = ref([
         v-else
         class="btn btn-outline-primary me-2"
         type="submit"
-        @click="checkWarnings(warningProviders, route('quotes.preview', { quote: quote.id }))"
+        @click="
+          checkWarnings(warningProviders, route('quotes.preview', { quote: quote.id }))
+        "
       >
         <font-awesome-icon :icon="['far', 'file-pdf']"></font-awesome-icon>
         Preview PDF
@@ -86,7 +87,11 @@ const items = ref([
           </div>
         </div>
       </div>
-      <TableSimple :preview="preview"></TableSimple>
+
+      <TableCustom
+        v-if="quote.solution_type.configurations?.has_custom_table == 1"
+      ></TableCustom>
+      <TableSimple v-else :preview="preview"></TableSimple>
 
       <div class="row justify-content-end">
         <div class="col-6">
@@ -116,7 +121,9 @@ const items = ref([
         v-else
         class="btn btn-outline-primary me-2"
         type="submit"
-        @click="checkWarnings(warningProviders, route('quotes.preview', { quote: quote.id }))"
+        @click="
+          checkWarnings(warningProviders, route('quotes.preview', { quote: quote.id }))
+        "
       >
         <font-awesome-icon :icon="['far', 'file-pdf']"></font-awesome-icon>
         Preview PDF

@@ -135,7 +135,14 @@ const items = ref([
             </div>
           </div>
         </div>
-        <TableDealMaker :pricePlans="pricePlans" :preview="preview"></TableDealMaker>
+        <TableCustom
+          v-if="quote.solution_type.configurations?.has_custom_table == 1"
+        ></TableCustom>
+        <TableDealMaker
+          v-else
+          :pricePlans="pricePlans"
+          :preview="preview"
+        ></TableDealMaker>
 
         <div class="mb-5">
           <div>
@@ -181,17 +188,13 @@ const items = ref([
           </div>
         </InfoBox>
         <InfoBox v-if="quote.orders.length > 0">
-          <div style="font-size: 14px">
-            <div class="mb-3">
-              <h6>
-                An Order related to this Quote was
-                <span class="badge text-bg-secondary">{{ quote.status }}</span>
-              </h6>
-              <button class="btn btn-sm btn-primary" @click="showModal = true">
-                See Rejection Notes
-              </button>
-            </div>
-          </div>
+          <h6>
+            An Order related to this Quote was
+            <span class="badge text-bg-secondary">{{ quote.status }}</span>
+          </h6>
+          <button class="btn btn-sm btn-primary" @click="showModal = true">
+            See Rejection Notes
+          </button>
         </InfoBox>
         <div class="price-mobile-sidebar total-quote-discount px-4 pt-4 pb-2 mb-3">
           <h3 class="mb-3">Total Quote Discount</h3>
@@ -248,7 +251,7 @@ const items = ref([
       </template>
       <div class="panel px-3">
         <div class="row">
-          <table class="table reject-reasons-table my-4">
+          <table class="table reject-reasons-table">
             <thead>
               <tr>
                 <th style="width: 5%">Order</th>
@@ -309,5 +312,6 @@ input[type="number"] {
   font-family: inherit;
   white-space: pre-wrap;
   word-wrap: break-word;
+  margin: 0;
 }
 </style>
