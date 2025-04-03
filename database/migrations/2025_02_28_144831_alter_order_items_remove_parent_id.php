@@ -15,13 +15,11 @@ return new class extends Migration
         Schema::table('order_items', function (Blueprint $table) {
             $table->integer('group')->default(0);
             $table->dropForeign(['parent_id']);
-            $table->unsignedBigInteger('parent_id')->nullable()->change();
-            $table->foreign('parent_id')->references('id')->on('order_items')->nullOnDelete()->change();
         });
 
         $items = DB::table('order_items')->get();
         foreach ($items as $item) {
-            $item = DB::table('quote_items')->where('id', $item->id)->first();
+            $item = DB::table('order_items')->where('id', $item->id)->first();
             $childs = DB::table('order_items')->where('parent_id', $item->id)->get();
 
             if (! count($childs) && $item->group == 0) {
@@ -48,7 +46,6 @@ return new class extends Migration
         }
 
         Schema::table('order_items', function (Blueprint $table) {
-            $table->dropForeign(['parent_id']);
             $table->dropColumn('parent_id');
         });
     }
