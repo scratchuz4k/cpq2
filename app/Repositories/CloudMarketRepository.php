@@ -2,11 +2,13 @@
 
 namespace App\Repositories;
 
+use App\Helpers\Files\BlacklistFile;
 use App\Enums\PricePlanEnum;
 use App\Models\Supplier;
 use App\Helpers\FilterProvider;
 use App\Helpers\Prices\PriceRules;
 use App\Models\Account;
+use Illuminate\Support\Facades\Auth;
 use App\Models\PricePlan;
 use Illuminate\Support\Facades\Log;
 
@@ -21,12 +23,22 @@ class CloudMarketRepository
             Log::error('Empty or invalid file content.', ['file' => $file]);
         }
 
-        $items = FilterProvider::get($file['data'], $filters);
+        $items = FilterProvider::get($file['data'], []);
+
+        $blacklist_file = new BlacklistFile(Auth::user()->currentTenant);
+        $blacklist_items = $blacklist_file->getBlacklistedData($items);
+
+        $diff_codes = $items->pluck('code')->diff($blacklist_items->pluck('code'));
+
+        $items = $items->filter(function ($item) use ($diff_codes) {
+            return $diff_codes->contains($item['code']);
+        });
+
+        $items = FilterProvider::get($items->toArray(), $filters);
 
         foreach ($items as $key => $value) {
             $file['filters'] = FilterProvider::process($file['filters'], $value, true);
         }
-
 
         $priceRules = new PriceRules();
         $account = Account::where('id', request()->input('account_id', null))->first();
