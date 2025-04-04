@@ -251,9 +251,9 @@ getData();
           >
             <font-awesome-icon :icon="['fas', 'eraser']" />
           </Button>
-          <div v-if="visible" class="d-flex mt-3">
+          <div v-if="visible" class="d-flex mt-3 mb-3">
             <div class="d-flex border rounded p-2 me-3">
-              <div class="row row-cols-4 mb-3">
+              <div class="row row-cols-4">
                 <div class="col">
                   <label class="form-label">Global</label>
                   <Button
