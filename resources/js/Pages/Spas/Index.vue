@@ -1,28 +1,34 @@
 <script setup>
+import format from "@composables/format";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import { Head, Link } from "@inertiajs/vue3";
 import { Button } from "primevue";
-import { reactive, ref, watch } from "vue";
+import { computed, reactive, ref, watch } from "vue";
 import queryString from "query-string";
 import { usePage } from "@inertiajs/vue3";
 import Paginator from "primevue/paginator";
 import _ from "lodash";
 
 const page = usePage();
-
 const props = defineProps({
   rules: Array,
   price_plans: Array,
 });
 
-const visible = ref(false);
+const visible = ref(true);
 
 const form = reactive({
   rule: null,
-  rule_id: null,
+  rule_id: [],
   field_1: null,
   field_2: null,
   price_plan_id: null,
+});
+
+const fields = reactive({
+  account: null,
+  supplier: null,
+  product: null,
 });
 
 const data = ref([]);
@@ -39,26 +45,41 @@ const rules = {};
 props.rules.forEach((element) => {
   let str = element.code;
   const splitResult = str.split(/(?=[A-Z])/);
+  if (!Object.keys(rules).includes(splitResult[0])) {
+    rules[splitResult[0]] = [];
+  }
 
-  rules[element.code] = { entity_1: splitResult[0], entity_2: splitResult[1] };
+  if (!rules[splitResult[0]].find((x) => x === splitResult[1])) {
+    rules[splitResult[0]].push(splitResult[1] ?? null);
+  }
 });
 
-const changeRule = (rule) => {
-  form.rule_id = rule?.id;
-  form.field_1 = rule?.name == "Global" ? page.props.tenant : null;
-  form.field_2 = null;
+const handleFields = () => {
+  let keys = Object.keys(fields).filter((x) => fields[x] != null);
+
+  let rules = props.rules;
+  keys.forEach((e) => {
+    rules = rules.filter((x) => x.code.includes(format.capitalizeFirstLetter(e)));
+  });
+
+  form.rule_id = rules.map((x) => x.id);
+  form.field_1 = keys.length <= 2 ? fields[keys[0]]?.id : null;
+  form.field_2 = keys.length <= 2 ? fields[keys[1]]?.id : null;
 };
 
 const getData = async () => {
   let temp = [];
-  if (form.rule_id) {
-    temp.push({ column: "rule_id", operator: "equals", value: form.rule_id });
+
+  if (form.rule_id.length) {
+    temp.push({ column: "rule_id", operator: "in", value: form.rule_id.join(",") });
   }
+
   if (form.field_1) {
-    temp.push({ column: "field_1", operator: "equals", value: form.field_1.id });
+    temp.push({ column: "field_1", operator: "equals", value: form.field_1 });
   }
+
   if (form.field_2) {
-    temp.push({ column: "field_2", operator: "equals", value: form.field_2.id });
+    temp.push({ column: "field_2", operator: "equals", value: form.field_2 });
   }
 
   if (form.price_plan_id) {
@@ -163,8 +184,13 @@ watch(
   form,
   _.debounce(() => {
     getData();
-  })
+  }, 300)
 );
+
+watch(fields, () => {
+  handleFields();
+});
+
 getData();
 </script>
 <template>
@@ -181,7 +207,7 @@ getData();
       <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 pt-2">
         <div class="mb-2 mt-1">
           <Button
-            :class="{'p-button-secondary': !visible, 'p-button-primary': visible}"
+            :class="{ 'p-button-secondary': !visible, 'p-button-primary': visible }"
             @click="visible = !visible"
             class="p-button p-component me-2"
             ><font-awesome-icon :icon="['fas', 'filter']"
@@ -197,101 +223,37 @@ getData();
           </Button>
           <div v-if="visible" class="d-flex mt-3">
             <div class="d-flex border rounded p-2 me-2">
-              <div class="me-2">
-                <label class="form-label">Selec Rule</label>
-                <select
-                  class="form-select"
-                  id="product-supplier"
-                  v-model="form.rule"
-                  @change="changeRule(form.rule)"
-                >
-                  <option :value="null">Select Rule</option>
-                  <option v-for="(rule, index) in props.rules" :value="rule">
-                    {{ rule.name }}
-                  </option>
-                </select>
-              </div>
-              <div class="me-2">
-                <template
-                  v-if="form.rule?.code && rules[form.rule?.code]?.entity_1 == 'Account'"
-                >
+              <div class="grid grid-col-3 me-2">
+                <div class="mb-3">
                   <label class="form-label">Account</label>
                   <InputSelect
                     id="Account1"
                     url="/accounts"
                     field="name"
-                    v-model="form.field_1"
-                    :is-multiple="false"
+                    v-model="fields.account"
                   >
                   </InputSelect>
-                </template>
-                <template
-                  v-if="form.rule?.code && rules[form.rule?.code]?.entity_1 == 'Supplier'"
-                >
+                </div>
+                <div class="mb-3">
                   <label class="form-label">Supplier</label>
                   <InputSelect
                     id="Supplier1"
                     url="/suppliers"
                     field="name"
-                    v-model="form.field_1"
-                    :is-multiple="false"
+                    v-model="fields.supplier"
                   >
                   </InputSelect>
-                </template>
-                <template
-                  v-if="form.rule?.code && rules[form.rule?.code]?.entity_1 == 'Product'"
-                >
+                </div>
+                <div class="mb-3">
                   <label class="form-label">Product</label>
                   <InputSelect
                     id="Product1"
                     url="/products"
                     field="name"
-                    v-model="form.field_1"
-                    :is-multiple="false"
+                    v-model="fields.product"
                   >
                   </InputSelect>
-                </template>
-              </div>
-              <div class="me-2" v-if="form.rule?.code">
-                <template
-                  v-if="form.rule?.code && rules[form.rule?.code]?.entity_2 == 'Account'"
-                >
-                  <label class="form-label">Account</label>
-                  <InputSelect
-                    id="Account2"
-                    url="/accounts"
-                    field="name"
-                    v-model="form.field_2"
-                    :is-multiple="false"
-                  >
-                  </InputSelect>
-                </template>
-                <template
-                  v-if="form.rule?.code && rules[form.rule?.code]?.entity_2 == 'Supplier'"
-                >
-                  <label class="form-label">Supplier</label>
-                  <InputSelect
-                    id="Supplier2"
-                    url="/suppliers"
-                    field="name"
-                    v-model="form.field_2"
-                    :is-multiple="false"
-                  >
-                  </InputSelect>
-                </template>
-                <template
-                  v-if="form.rule?.code && rules[form.rule?.code]?.entity_2 == 'Product'"
-                >
-                  <label class="form-label">Product</label>
-                  <InputSelect
-                    id="Product2"
-                    url="/products"
-                    field="name"
-                    v-model="form.field_2"
-                    :is-multiple="false"
-                  >
-                  </InputSelect>
-                </template>
+                </div>
               </div>
             </div>
             <div class="d-flex border rounded p-2 me-2">
@@ -394,7 +356,8 @@ getData();
   </AuthenticatedLayout>
 </template>
 <style scoped>
-.table thead th, .table tbody td {
-    color:#334155;
+.table thead th,
+.table tbody td {
+  color: #334155;
 }
 </style>

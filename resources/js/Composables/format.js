@@ -68,9 +68,9 @@ const format = {
             return ''
         }
         return str
-        .replace(/([a-z])([A-Z])/g, '$1_$2') // Insert an underscore between lowercase and uppercase letters
-        .replace(/\s+/g, '_')               // Replace spaces with underscores
-        .toLowerCase();
+            .replace(/([a-z])([A-Z])/g, '$1_$2') // Insert an underscore between lowercase and uppercase letters
+            .replace(/\s+/g, '_')               // Replace spaces with underscores
+            .toLowerCase();
 
     },
     toLowerCase: (str) => {
@@ -78,11 +78,21 @@ const format = {
             return ''
         }
         return str
-        .replace(/([a-z])([A-Z])/g, '$1$2') // Insert an underscore between lowercase and uppercase letters
-        .replace(/\s+/g, '')               // Replace spaces with underscores
-        .toLowerCase();
+            .replace(/([a-z])([A-Z])/g, '$1$2') // Insert an underscore between lowercase and uppercase letters
+            .replace(/\s+/g, '')               // Replace spaces with underscores
+            .toLowerCase();
 
+    },
+    capitalizeFirstLetter: (str) => {
+        if (!str) {
+            return '';
+        }
+
+        return str
+            .toLowerCase() // Convert the whole string to lowercase
+            .replace(/\b\w/g, (char) => char.toUpperCase()); // Capitalize first letter of each word
     }
+
 }
 
 
