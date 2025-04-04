@@ -2,11 +2,10 @@
 import format from "@composables/format";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import { Head, Link } from "@inertiajs/vue3";
-import { Button } from "primevue";
+import { Button, Paginator } from "primevue";
 import { computed, reactive, ref, watch } from "vue";
 import queryString from "query-string";
 import { usePage } from "@inertiajs/vue3";
-import Paginator from "primevue/paginator";
 import _ from "lodash";
 
 const page = usePage();
@@ -16,6 +15,7 @@ const props = defineProps({
 });
 
 const visible = ref(true);
+const showGlobal = ref(false);
 
 const form = reactive({
   rule: null,
@@ -54,6 +54,28 @@ props.rules.forEach((element) => {
   }
 });
 
+const handleGlobal = () => {
+  showGlobal.value = !showGlobal.value;
+
+  form.rule_id = [];
+  form.field_1 = null;
+  form.field_2 = null;
+  Object.keys(fields).forEach((x) => (fields[x] = null));
+
+  if (!showGlobal.value) {
+    getData();
+    return;
+  }
+
+  let rules = props.rules;
+  rules = rules.filter((x) => x.code.includes("Global"));
+
+  form.rule_id = rules.map((x) => x.id);
+  form.field_1 = page.props.tenant.id;
+  form.field_2 = null;
+  getData();
+};
+
 const handleFields = () => {
   let keys = Object.keys(fields).filter((x) => fields[x] != null);
 
@@ -62,9 +84,17 @@ const handleFields = () => {
     rules = rules.filter((x) => x.code.includes(format.capitalizeFirstLetter(e)));
   });
 
+  if (keys.length > 2) {
+    notyf.error("Only two entities may be selected at a time");
+    Object.keys(fields).forEach((x) => (fields[x] = null));
+    data.value = [];
+    return;
+  }
+
   form.rule_id = rules.map((x) => x.id);
   form.field_1 = keys.length <= 2 ? fields[keys[0]]?.id : null;
   form.field_2 = keys.length <= 2 ? fields[keys[1]]?.id : null;
+  getData();
 };
 
 const getData = async () => {
@@ -181,7 +211,7 @@ const columns = [
 ];
 
 watch(
-  form,
+  () => [form.price_plan_id],
   _.debounce(() => {
     getData();
   }, 300)
@@ -222,32 +252,43 @@ getData();
             <font-awesome-icon :icon="['fas', 'eraser']" />
           </Button>
           <div v-if="visible" class="d-flex mt-3">
-            <div class="d-flex border rounded p-2 me-2">
-              <div class="grid grid-col-3 me-2">
-                <div class="mb-3">
+            <div class="d-flex border rounded p-2 me-3">
+              <div class="row row-cols-4 mb-3">
+                <div class="col">
+                  <label class="form-label">Global</label>
+                  <Button
+                    id="Global"
+                    class="w-100"
+                    :severity="showGlobal ? 'primary' : 'secondary'"
+                    @click="handleGlobal()"
+                  >
+                    Show
+                  </Button>
+                </div>
+                <div class="col">
                   <label class="form-label">Account</label>
                   <InputSelect
-                    id="Account1"
+                    id="filter-account"
                     url="/accounts"
                     field="name"
                     v-model="fields.account"
                   >
                   </InputSelect>
                 </div>
-                <div class="mb-3">
+                <div class="col">
                   <label class="form-label">Supplier</label>
                   <InputSelect
-                    id="Supplier1"
+                    id="filter-supplier"
                     url="/suppliers"
                     field="name"
                     v-model="fields.supplier"
                   >
                   </InputSelect>
                 </div>
-                <div class="mb-3">
+                <div class="col">
                   <label class="form-label">Product</label>
                   <InputSelect
-                    id="Product1"
+                    id="filter-product"
                     url="/products"
                     field="name"
                     v-model="fields.product"
