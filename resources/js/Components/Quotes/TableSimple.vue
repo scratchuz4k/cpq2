@@ -11,7 +11,10 @@ let groups = [];
 quote.items.forEach((e) => {
   let index = groups.findIndex((x) => x.group == e.group);
   if (index == -1) {
-    groups.push({ ...e, children: [e] });
+    let temp = quote.items.find(
+      (x) => x.group == e.group && e.price_plan.code == "MONTHLY"
+    );
+    groups.push({ ...e, name: temp.name, children: [e] });
   } else {
     groups[index].children.push(e);
   }
