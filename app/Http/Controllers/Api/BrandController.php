@@ -16,7 +16,7 @@ class BrandController extends BaseController
 {
     protected $model = Brand::class;
     /**
-     * Display a listing of the resource.
+     * List Brands
      * @response AnonymousResourceCollection<LengthAwarePaginator<BrandResource>>
      */
     public function index()
@@ -33,7 +33,7 @@ class BrandController extends BaseController
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Create a new Brand
      */
     public function store(Request $request)
     {
@@ -41,7 +41,7 @@ class BrandController extends BaseController
     }
 
     /**
-     * Display the specified resource.
+     * Show Brand
      */
     public function show(Brand $brand)
     {
@@ -49,7 +49,7 @@ class BrandController extends BaseController
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update Brand
      */
     public function update(Request $request, Brand $brand)
     {
@@ -57,7 +57,7 @@ class BrandController extends BaseController
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove Brand
      */
     public function destroy(Brand $brand)
     {

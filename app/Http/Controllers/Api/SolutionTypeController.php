@@ -16,7 +16,7 @@ class SolutionTypeController extends BaseController
 {
     protected $model = SolutionType::class;
     /**
-     * Display a listing of the resource.
+     * List of Solution Types
      */
     public function index()
     {
@@ -37,7 +37,7 @@ class SolutionTypeController extends BaseController
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Store a new Solution Type
      */
     public function store(Request $request)
     {
@@ -45,7 +45,7 @@ class SolutionTypeController extends BaseController
     }
 
     /**
-     * Display the specified resource.
+     * Show Solution Type
      */
     public function show(SolutionType $solutionType)
     {
@@ -53,7 +53,7 @@ class SolutionTypeController extends BaseController
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update Solution Type
      */
     public function update(Request $request, SolutionType $solutionType)
     {
@@ -61,8 +61,8 @@ class SolutionTypeController extends BaseController
     }
 
     /**
-         * Remove the specified resource from storage.
-         */
+     * Remove Solution Type
+     */
     public function destroy(SolutionType $solutionType)
     {
         $solutionType->tenants()->detach(Auth::user()->tenant_id);

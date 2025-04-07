@@ -15,7 +15,7 @@ class SpaController extends BaseController
 {
     protected $model = Spa::class;
     /**
-     * Display a listing of the resource.
+     * List of Spas
      * @response AnonymousResourceCollection<LengthAwarePaginator<SpaResource>>
      */
     public function index()
@@ -32,15 +32,7 @@ class SpaController extends BaseController
     }
 
     /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
+     * Store a new Spa
      */
     public function store(Request $request)
     {
@@ -48,7 +40,7 @@ class SpaController extends BaseController
     }
 
     /**
-     * Display the specified resource.
+     * Show Spa
      */
     public function show(Spa $spa)
     {
@@ -56,15 +48,7 @@ class SpaController extends BaseController
     }
 
     /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Spa $spa)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
+     * Update Spa
      */
     public function update(Request $request, Spa $spa)
     {
@@ -72,7 +56,7 @@ class SpaController extends BaseController
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove Spa
      */
     public function destroy(Spa $spa)
     {

@@ -14,7 +14,7 @@ class MerchantController extends BaseController
 {
     protected $model = Merchant::class;
     /**
-     * Display a listing of the resource.
+     * List Merchants
      * @response AnonymousResourceCollection<LengthAwarePaginator<MerchantResource>>
      */
     public function index()
@@ -31,7 +31,7 @@ class MerchantController extends BaseController
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Store a new Merchant
      */
     public function store(Request $request)
     {
@@ -39,7 +39,7 @@ class MerchantController extends BaseController
     }
 
     /**
-     * Display the specified resource.
+     * Show Merchant
      */
     public function show(Merchant $merchant)
     {
@@ -47,7 +47,7 @@ class MerchantController extends BaseController
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update Merchant
      */
     public function update(Request $request, Merchant $merchant)
     {
@@ -55,7 +55,7 @@ class MerchantController extends BaseController
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove Merchant
      */
     public function destroy(Merchant $merchant)
     {

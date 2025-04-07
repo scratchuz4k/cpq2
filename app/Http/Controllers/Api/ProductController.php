@@ -20,7 +20,7 @@ class ProductController extends BaseController
 {
     protected $model = Product::class;
     /**
-     * Display a listing of the resource.
+     * List of Products
      * @response AnonymousResourceCollection<LengthAwarePaginator<ProductResource>>
      */
     public function index()
@@ -59,7 +59,7 @@ class ProductController extends BaseController
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Store a new Product
      */
     public function store(Request $request)
     {
@@ -67,7 +67,7 @@ class ProductController extends BaseController
     }
 
     /**
-     * Display the specified resource.
+     * Show Product
      */
     public function show(Product $product)
     {
@@ -75,7 +75,7 @@ class ProductController extends BaseController
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update Product
      */
     public function update(Request $request, Product $product)
     {
@@ -83,7 +83,7 @@ class ProductController extends BaseController
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove Product
      */
     public function destroy(Product $product)
     {

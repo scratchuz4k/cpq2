@@ -20,7 +20,7 @@ class OrderItemController extends BaseController
         parent::__construct();
     }
     /**
-     * Display a listing of the resource.
+     * List OrderItems from a specific Order
      */
     public function index()
     {
@@ -28,7 +28,7 @@ class OrderItemController extends BaseController
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Store a new OrderItem
      */
     public function store(OrderItemCreateRequest $request)
     {
@@ -46,7 +46,7 @@ class OrderItemController extends BaseController
     }
 
     /**
-     * Display the specified resource.
+     * Show OrderItem
      */
     public function show(OrderItem $orderItem)
     {
@@ -54,7 +54,7 @@ class OrderItemController extends BaseController
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update OrderItem
      */
     public function update(OrderItemUpdateRequest $request, OrderItem $orderItem)
     {
@@ -72,7 +72,7 @@ class OrderItemController extends BaseController
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove OrderItem
      */
     public function destroy(OrderItem $orderItem)
     {

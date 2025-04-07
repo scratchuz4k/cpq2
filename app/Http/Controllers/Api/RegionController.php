@@ -15,8 +15,7 @@ class RegionController extends BaseController
 {
     protected $model = Region::class;
 
-    /**
-     * Display a listing of the resource.
+    /**List of Regions
      * @response AnonymousResourceCollection<LengthAwarePaginator<RegionResource>>
      */
     public function index()
@@ -33,7 +32,7 @@ class RegionController extends BaseController
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Store a new Region
      */
     public function store(Request $request)
     {
@@ -41,7 +40,7 @@ class RegionController extends BaseController
     }
 
     /**
-     * Display the specified resource.
+     * Show Region
      */
     public function show(Region $region)
     {
@@ -49,7 +48,7 @@ class RegionController extends BaseController
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update Region
      */
     public function update(Request $request, Region $region)
     {
@@ -57,7 +56,7 @@ class RegionController extends BaseController
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove Region
      */
     public function destroy(Region $region)
     {

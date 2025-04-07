@@ -25,7 +25,7 @@ class QuoteController extends BaseController
         parent::__construct();
     }
     /**
-     * Display a listing of the resource.
+     * List of Quotes
      * @response AnonymousResourceCollection<LengthAwarePaginator<QuoteResource>>
      */
     public function index()
@@ -51,7 +51,7 @@ class QuoteController extends BaseController
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Store Quote
      */
     public function store(QuoteCreateRequest $request)
     {
@@ -66,7 +66,7 @@ class QuoteController extends BaseController
     }
 
     /**
-     * Display the specified resource.
+     * Show Quote
      */
     public function show(Quote $quote)
     {
@@ -74,7 +74,7 @@ class QuoteController extends BaseController
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update Quote
      */
     public function update(QuoteUpdateRequest $request, Quote $quote)
     {
@@ -94,7 +94,7 @@ class QuoteController extends BaseController
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove Quote
      */
     public function destroy(Quote $quote)
     {

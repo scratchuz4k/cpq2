@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 class PermissionController extends BaseController
 {
     /**
-     * Display a listing of the resource.
+     * List of Permissions
      */
     public function index()
     {
@@ -17,7 +17,7 @@ class PermissionController extends BaseController
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Store a new Permission
      */
     public function store(Request $request)
     {
@@ -25,7 +25,7 @@ class PermissionController extends BaseController
     }
 
     /**
-     * Display the specified resource.
+     * Show Permission
      */
     public function show(string $id)
     {
@@ -33,7 +33,7 @@ class PermissionController extends BaseController
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update Permission
      */
     public function update(Request $request, string $id)
     {
@@ -41,7 +41,7 @@ class PermissionController extends BaseController
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove Permission
      */
     public function destroy(string $id)
     {

@@ -20,7 +20,7 @@ class CategoryController extends BaseController
 {
     protected $model = Category::class;
     /**
-     * Index
+     * List Categories
      * @response AnonymousResourceCollection<LengthAwarePaginator<AccountResource>>
      */
     public function index(IndexRequest $request)
@@ -37,22 +37,22 @@ class CategoryController extends BaseController
     }
 
     /**
-     * Store
+     * Create a new Category
      */
     public function store(Request $request) {}
 
     /**
-     * Show.
+     * Show Category
      */
     public function show(Category $category) {}
 
     /**
-     * Update
+     * Update Category
      */
     public function update(Request $request, Category $category) {}
 
     /**
-     * Remove
+     * Remove Category
      */
     public function destroy(Category $category) {
         $category->delete();

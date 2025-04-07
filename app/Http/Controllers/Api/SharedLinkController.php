@@ -15,6 +15,9 @@ class SharedLinkController extends Controller
         'quotes' => Quote::class
     ];
 
+    /**
+     * List of Shared Links
+     */
     public function store(ShareLinkCreateRequest $request)
     {
         $sharedLink = SharedLink::create([
@@ -28,6 +31,9 @@ class SharedLinkController extends Controller
         return new SharedLinkResource($sharedLink);
     }
 
+    /**
+     * Remove Shared Link
+     */
     public function destroy(SharedLink $sharedLink)
     {
         $sharedLink->delete();

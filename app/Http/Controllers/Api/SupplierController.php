@@ -17,7 +17,7 @@ class SupplierController extends BaseController
     protected $model = Supplier::class;
 
     /**
-     * Display a listing of the resource.
+     * List of Suppliers
      * @response AnonymousResourceCollection<LengthAwarePaginator<SupplierResource>>
      */
     public function index()
@@ -34,7 +34,7 @@ class SupplierController extends BaseController
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Store a new Supplier
      */
     public function store(Request $request)
     {
@@ -42,7 +42,7 @@ class SupplierController extends BaseController
     }
 
     /**
-     * Display the specified resource.
+     * Show Supplier
      */
     public function show(Supplier $supplier)
     {
@@ -50,7 +50,7 @@ class SupplierController extends BaseController
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update Supplier
      */
     public function update(Request $request, Supplier $supplier)
     {
@@ -58,7 +58,7 @@ class SupplierController extends BaseController
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove Supplier
      */
     public function destroy(Supplier $supplier)
     {

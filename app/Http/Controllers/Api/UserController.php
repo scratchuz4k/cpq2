@@ -21,7 +21,7 @@ class UserController extends BaseController
         parent::__construct();
     }
     /**
-     * Display a listing of the resource.
+     * List of Users
      */
     public function index()
     {
@@ -39,15 +39,7 @@ class UserController extends BaseController
     }
 
     /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
+     * Store a new User
      */
     public function store(Request $request)
     {
@@ -55,7 +47,7 @@ class UserController extends BaseController
     }
 
     /**
-     * Display the specified resource.
+     * Show User
      */
     public function show(User $user)
     {
@@ -63,15 +55,7 @@ class UserController extends BaseController
     }
 
     /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(User $user)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
+     * Update User
      */
     public function update(UserUpdateRequest $request, User $user)
     {
@@ -87,7 +71,7 @@ class UserController extends BaseController
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove User
      */
     public function destroy(User $user)
     {

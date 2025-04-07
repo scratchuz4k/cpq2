@@ -24,7 +24,7 @@ class PriceController extends BaseController
         parent::__construct();
     }
     /**
-     * Display a listing of the resource.
+     * List of Prices
      * @response AnonymousResourceCollection<LengthAwarePaginator<PriceResource>>
      */
     public function index()
@@ -41,7 +41,7 @@ class PriceController extends BaseController
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Store a new Price
      */
     public function store(PriceCreateRequest $request)
     {
@@ -59,7 +59,7 @@ class PriceController extends BaseController
     }
 
     /**
-     * Display the specified resource.
+     * Show Price
      */
     public function show(Price $price)
     {
@@ -67,7 +67,7 @@ class PriceController extends BaseController
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update Price
      */
     public function update(PriceUpdateRequest $request, Price $price)
     {
@@ -85,7 +85,7 @@ class PriceController extends BaseController
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove Price
      */
     public function destroy(Price $price)
     {

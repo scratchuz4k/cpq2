@@ -16,7 +16,7 @@ class TokenController extends BaseController
     protected $model = Token::class;
 
     /**
-     * Display a listing of the resource.
+     * List of Tokens
      * @response AnonymousResourceCollection<LengthAwarePaginator<TokenResource>>
      */
     public function index()
@@ -31,8 +31,9 @@ class TokenController extends BaseController
 
         return TokenResource::collection($data);
     }
+
     /**
-     * Remove the specified resource from storage.
+     * Remove Token
      */
     public function destroy(Token $token)
     {

@@ -21,7 +21,7 @@ class TenantController extends BaseController
         parent::__construct();
     }
     /**
-     * Display a listing of the resource.
+     * List of Tenants
      */
     public function index()
     {
@@ -39,7 +39,7 @@ class TenantController extends BaseController
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Store a new Tenant
      */
     public function store(Request $request)
     {
@@ -47,7 +47,7 @@ class TenantController extends BaseController
     }
 
     /**
-     * Display the specified resource.
+     * Show Tenant
      */
     public function show(string $id)
     {
@@ -55,7 +55,7 @@ class TenantController extends BaseController
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update Tenant
      */
     public function update(TenantUpdateRequest $request, Tenant $tenant)
     {
@@ -75,7 +75,7 @@ class TenantController extends BaseController
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove Tenant
      */
     public function destroy(string $id)
     {

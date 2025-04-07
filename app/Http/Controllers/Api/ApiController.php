@@ -22,7 +22,7 @@ class ApiController extends BaseController
     }
 
     /**
-     * Display a listing of the resource.
+     * List APIs
      */
     public function index()
     {
@@ -46,7 +46,7 @@ class ApiController extends BaseController
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Create API
      */
     public function store(Request $request)
     {
@@ -54,7 +54,7 @@ class ApiController extends BaseController
     }
 
     /**
-     * Display the specified resource.
+     * Show API
      */
     public function show(Api $api)
     {
@@ -70,7 +70,7 @@ class ApiController extends BaseController
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update API
      */
     public function update(Request $request, Api $api)
     {
@@ -85,7 +85,7 @@ class ApiController extends BaseController
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove API
      */
     public function destroy(Api $api)
     {

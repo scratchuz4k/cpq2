@@ -23,7 +23,7 @@ class QuoteItemController extends BaseController
     }
 
     /**
-     * Display a listing of the resource.
+     * List of Quote Items from a Specific Quote
      */
     public function index()
     {
@@ -41,7 +41,7 @@ class QuoteItemController extends BaseController
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Store a new Quote Item
      */
     public function store(QuoteItemCreateRequest $request)
     {
@@ -61,7 +61,7 @@ class QuoteItemController extends BaseController
     }
 
     /**
-     * Display the specified resource.
+     * Show Quote Item
      */
     public function show(QuoteItem $quoteItem)
     {
@@ -69,7 +69,7 @@ class QuoteItemController extends BaseController
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update Quote Item
      */
     public function update(QuoteItemUpdateRequest $request, QuoteItem $quoteItem)
     {
@@ -88,7 +88,7 @@ class QuoteItemController extends BaseController
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove Quote Item
      */
     public function destroy(QuoteItem $quoteItem)
     {

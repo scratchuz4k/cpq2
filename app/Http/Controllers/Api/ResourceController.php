@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Storage;
 class ResourceController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * List of Resources
      */
     public function index()
     {
@@ -32,7 +32,7 @@ class ResourceController extends Controller
 
 
     /**
-     * Store a newly created resource in storage.
+     * Store a new Resource
      */
     public function store(Request $request)
     {
@@ -80,7 +80,7 @@ class ResourceController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * Show Resource
      */
     public function show(Resource $resource)
     {
@@ -88,7 +88,7 @@ class ResourceController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update Resource
      */
     public function update(Request $request, Resource $resource)
     {
@@ -103,7 +103,7 @@ class ResourceController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove Resource
      */
     public function destroy(Resource $resource)
     {
