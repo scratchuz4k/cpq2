@@ -14,7 +14,7 @@ quote.items.forEach((e) => {
     let temp = quote.items.find(
       (x) => x.group == e.group && e.price_plan.code == "MONTHLY"
     );
-    groups.push({ ...e, name: temp.name, children: [e] });
+    groups.push({ ...e, name: temp.name ?? e.name, children: [e] });
   } else {
     groups[index].children.push(e);
   }
