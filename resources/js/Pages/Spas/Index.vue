@@ -14,7 +14,7 @@ const props = defineProps({
   price_plans: Array,
 });
 
-const visible = ref(true);
+const visible = ref(false);
 const showGlobal = ref(false);
 
 const form = reactive({
