@@ -2,26 +2,31 @@
 
 namespace App\Http\Controllers\Web;
 
-use App\Models\Scopes\TenantScope;
-use App\Models\User;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Http\Request;
-use Inertia\Inertia;
-use App\Models\Quote;
-use App\Models\Account;
-use App\Models\PricePlan;
-use App\Models\SolutionType;
-use App\Services\QuoteService;
 use App\Enums\QuoteStatusesEnum;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
-use Spatie\Browsershot\Browsershot;
-use Spatie\LaravelPdf\Enums\Format;
-use App\Http\Resources\QuoteResource;
-use Illuminate\Support\Facades\Storage;
+use App\Helpers\DataProvider;
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\QuoteCreateRequest;
 use App\Http\Requests\QuoteUpdateRequest;
+use App\Http\Resources\QuoteItemResource;
+use App\Http\Resources\QuoteResource;
+use App\Http\Resources\SolutionTypeResource;
+use App\Models\Account;
+use App\Models\PricePlan;
+use App\Models\Quote;
+use App\Models\QuoteItem;
+use App\Models\Scopes\TenantScope;
+use App\Models\SolutionType;
+use App\Models\User;
+use App\Services\QuoteService;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
+use Inertia\Inertia;
+use Spatie\Browsershot\Browsershot;
+use Spatie\LaravelPdf\Enums\Format;
+
 use function Spatie\LaravelPdf\Support\pdf;
 
 class QuoteController extends BaseController
@@ -32,6 +37,7 @@ class QuoteController extends BaseController
     {
         parent::__construct();
     }
+
     /**
      * Display a listing of the resource.
      */
@@ -39,23 +45,24 @@ class QuoteController extends BaseController
     {
         $user = request()->user();
 
-        if (!$user->hasRole('Sales Rep')) {
+        if (! $user->hasRole('Sales Rep')) {
             $users = User::whereHas('quotes')->get();
         } else {
             $users = $this->descendantsWithQuotes();
         }
 
-        $users = $users->filter(fn($user) => $user->quotes->count() > 0);
+        $users = $users->filter(fn ($user) => $user->quotes->count() > 0);
         $solutionTypes = SolutionType::whereHas('quotes', function ($query) use ($users) {
             return $query->whereIn('user_id', $users->pluck('id'));
         })->get();
 
         return Inertia::render('Quotes/Index', [
-            "users" => $users->values(),
-            "solutions" => $solutionTypes,
-            "status" => array_map(fn($status) => $status->name, QuoteStatusesEnum::cases())
+            'users' => $users->values(),
+            'solutions' => $solutionTypes,
+            'status' => array_map(fn ($status) => $status->name, QuoteStatusesEnum::cases()),
         ]);
     }
+
     /**
      * Show the form for creating a new resource.
      */
@@ -77,14 +84,16 @@ class QuoteController extends BaseController
         try {
             $quote = DB::transaction(function () use ($request) {
                 $quote = $this->quoteService->store($request->all());
+
                 return $quote;
             });
         } catch (\Exception $e) {
-            if (!env('APP_DEBUG')) {
+            if (! env('APP_DEBUG')) {
                 Log::error($e->getMessage());
             }
             throw new \Exception($e);
         }
+
         return redirect()->route('quotes.edit', ['quote' => $quote->id]);
     }
 
@@ -95,7 +104,7 @@ class QuoteController extends BaseController
     {
         return Inertia::render('Quotes/Show', [
             'pricePlans' => PricePlan::all(),
-            'quote' => new QuoteResource($quote->load(['items', 'orders']))
+            'quote' => new QuoteResource($quote->load(['items', 'orders'])),
         ]);
     }
 
@@ -107,7 +116,7 @@ class QuoteController extends BaseController
         return Inertia::render('Quotes/Edit', [
             'accounts' => Account::all(),
             'solution_types' => Auth::user()->currentTenant->solutionTypes,
-            'quote' => new QuoteResource($quote->load(['items']))
+            'quote' => new QuoteResource($quote->load(['items'])),
         ]);
     }
 
@@ -118,14 +127,15 @@ class QuoteController extends BaseController
     {
         try {
             $quote = DB::transaction(function () use ($request, $quote) {
-                return  $this->quoteService->update($quote, $request->all());
+                return $this->quoteService->update($quote, $request->all());
             });
         } catch (\Exception $e) {
-            if (!env('APP_DEBUG')) {
+            if (! env('APP_DEBUG')) {
                 Log::error($e->getMessage());
             }
             throw new \Exception($e);
         }
+
         return to_route('quotes.edit', ['quote' => $quote->id]);
     }
 
@@ -136,6 +146,7 @@ class QuoteController extends BaseController
     {
         //
     }
+
     /**
      * TODO: maybe one day remove this method and allow editing the quote in the edit method
      */
@@ -144,7 +155,7 @@ class QuoteController extends BaseController
         return Inertia::render('Quotes/Configure', [
             'accounts' => Account::all(),
             'solution_types' => Auth::user()->currentTenant->solutionTypes,
-            'quote' => new QuoteResource($quote->load(['items']))
+            'quote' => new QuoteResource($quote->load(['items'])),
         ]);
     }
 
@@ -152,7 +163,7 @@ class QuoteController extends BaseController
     {
         return Inertia::render('Quotes/Preview', [
             'pricePlans' => PricePlan::all(),
-            'quote' => new QuoteResource($quote->load(['items', 'orders']))
+            'quote' => new QuoteResource($quote->load(['items', 'orders'])),
         ]);
     }
 
@@ -161,28 +172,42 @@ class QuoteController extends BaseController
      */
     public function download(Request $request)
     {
-        $solution_types = Auth::user()->currentTenant->solutionTypes;
         $quote = Quote::withoutGlobalScope(TenantScope::class)->find($request->quote);
         $tenant = $quote->tenant->makeCurrent();
         $quote = $quote->refresh();
-        $dir = 'pdf/' . $quote->tenant->id;
+        $dir = 'pdf/'.$quote->tenant->id;
 
-        if (!Storage::makeDirectory($dir)) {
-            throw new \Exception("Could not create directory for PDFs");
+        if (! Storage::makeDirectory($dir)) {
+            throw new \Exception('Could not create directory for PDFs');
         }
 
-        $view  = array_key_exists("component", $quote->solutionType->configs) ? strtolower($quote->solutionType->configs["component"]) : "dealmaker";
+        $group = $quote->solutionType->tables->first()?->group ?? null;
+        $groupName = $quote->solutionType->tables->first()?->group_name ?? null;
+        if ($group) {
+            $request->merge(['group' => $group]);
+        }
+
+        $solutionType = SolutionTypeResource::make($quote->solutionType)->resolve();
         $quote = QuoteResource::make($quote->load(['items']))->resolve();
 
+        $request->merge(['limit' => 300]);
+        $request->merge(['filters' => json_encode([['column' => 'quote_id', 'operator' => 'equals', 'value' => $quote['id']]])]);
+        $dataProvider = new DataProvider(QuoteItem::class);
+        $items = $dataProvider->group(QuoteItemResource::class);
 
-        // return view("pdf.$view", compact('quote', 'solution_types'));
+        $columns = json_decode(json_encode($solutionType['table']['columns']), true);
+        $view = array_key_exists('component', $solutionType['configurations']) ? strtolower($solutionType['configurations']['component']) : 'dealmaker';
+        if (array_key_exists('has_custom_table', $solutionType['configurations']) && $solutionType['configurations']['has_custom_table'] == '1') {
+            $view = 'custom';
+        }
+
         return pdf()
-            ->view("pdf.$view", compact('quote', 'solution_types', 'tenant'))
+            ->view("pdf.$view", compact('quote', 'tenant', 'columns', 'items', 'group', 'groupName'))
             ->format(Format::A4)
             ->withBrowsershot(function (Browsershot $browsershot) {
                 $browsershot->waitUntilNetworkIdle();
             })
-            ->name('quote-' . $quote['id'] . '.pdf')
+            ->name('quote-'.$quote['id'].'.pdf')
             ->download();
     }
 

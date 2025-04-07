@@ -81,10 +81,23 @@ class FilterProvider
             case "not_in":
                 return $data->whereNotIn($column, $value);
             case "between":
+                sort($value);
                 return $data->whereBetween($column, $value);
+            case "greater_than":
+                return $data->filter(function ($item) use ($column, $value) {
+                    return $item[$column] > $value;
+                });
             case "greater_than_or_equal_to":
                 return $data->filter(function ($item) use ($column, $value) {
                     return $item[$column] >= $value;
+                });
+            case "less_than":
+                return $data->filter(function ($item) use ($column, $value) {
+                    return $item[$column] < $value;
+                });
+            case "less_than_or_equal_to":
+                return $data->filter(function ($item) use ($column, $value) {
+                    return $item[$column] <= $value;
                 });
             case "lowest-cost":
                 // CONNECTIVITY SPECIFIC FILTER

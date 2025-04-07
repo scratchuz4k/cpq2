@@ -25,6 +25,7 @@ class QuoteItemUpdateRequest extends FormRequest
         return [
             "name" => "nullable",
             "quantity" => "required|numeric",
+            'group' => 'numeric',
             "raw_price" => "numeric",
             "price" => "numeric",
             "discount" => "numeric|min:0|max:100",

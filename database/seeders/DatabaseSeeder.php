@@ -28,5 +28,6 @@ class DatabaseSeeder extends Seeder
                 CategoryProductsSeeder::class,
             ]);
         }
+
     }
 }

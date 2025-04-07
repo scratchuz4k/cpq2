@@ -2,21 +2,15 @@
 
 namespace App\Providers;
 
-use App\Events\QuoteStatusEvent;
-use App\Listeners\QuoteStatusRegistryListener;
-use Illuminate\Support\Str;
 use Dedoc\Scramble\Scramble;
-use Illuminate\Support\Facades\Gate;
 use Illuminate\Routing\Route;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
-use App\Providers\CustomResourceRegistrar;
-use SocialiteProviders\Manager\SocialiteWasCalled;
-use SocialiteProviders\Saml2\Saml2ExtendSocialite;
+use Illuminate\Support\Str;
 
 class AppServiceProvider extends ServiceProvider
 {
-
     /**
      * Register any application services.
      */

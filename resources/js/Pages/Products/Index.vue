@@ -15,8 +15,11 @@ const items = ref([
         <div class="panel">
             <Header title="Products" :breadcrumbs="items">
                 <template #buttons>
+                    <Link href="/blacklist" id="blacklist-index-btn" class="btn btn-primary me-2">
+                        <font-awesome-icon :icon="['fas', 'shop-lock']" /> BlackListed Items
+                    </Link>
                     <Link href="/products/create" id="product-create-btn" class="btn btn-primary me-2">
-                    <font-awesome-icon :icon="['fas', 'plus']"></font-awesome-icon> New Product
+                        <font-awesome-icon :icon="['fas', 'plus']"></font-awesome-icon> New Product
                     </Link>
                 </template>
             </Header>

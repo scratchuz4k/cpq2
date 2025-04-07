@@ -4,20 +4,40 @@ namespace App\Services;
 
 use App\Models\Account;
 use App\Repositories\AccountRepository;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class AccountService
 {
     public function __construct(protected AccountRepository $accountRepository) {}
+
     public function store(array $array): Account
     {
-        $account = Account::create($array);
+        return DB::transaction(function () use ($array) {
+            $tenantId = Auth::user()->tenant_id;
 
-        if (isset($array['contacts']) && is_array($array['contacts'])) {
-            $this->accountRepository->syncContacts($account, $array['contacts']);
-        }
+            $account = Account::withTrashed()
+                ->where('tenant_id', $tenantId)
+                ->where('name', $array['name'])
+                ->where('reference', $array['reference'])
+                ->first();
 
-        return $account;
+            if ($account) {
+                if ($account->trashed()) {
+                    $account->restore();
+                }
+
+                $account->update($array);
+            } else {
+                $account = Account::create($array);
+            }
+
+            if (isset($array['contacts']) && is_array($array['contacts'])) {
+                $this->accountRepository->syncContacts($account, $array['contacts']);
+            }
+
+            return $account;
+        });
     }
 
     public function update(Account $account, array $array): Account
