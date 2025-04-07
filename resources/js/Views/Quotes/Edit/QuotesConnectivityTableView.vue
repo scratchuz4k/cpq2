@@ -8,10 +8,13 @@ import Dialog from "primevue/dialog";
 import format from "@/Composables/format.js";
 import Spinner from "@/Components/Spinner.vue";
 import Select from "primevue/select";
+import ToggleSwitch from 'primevue/toggleswitch';
+import TriStateToggle from "@/Components/TriStateToggle.vue";
 
 const props = defineProps({
     modelValue: Object
 })
+
 
 let timeoutId = null
 const isLoading = ref(true)
@@ -19,21 +22,11 @@ const showLoadingModal = ref(true)
 const showLowestCost = ref(true)
 const showQuoted = ref(false)
 const showFilters = ref(true)
+const showContended = ref(null)
 const articles = ref([])
 const errors = ref([])
 const selectedFilters = ref([]);
 const filters = reactive({
-    productName: {
-        operator: "not_in",
-        value: [
-            'ADSL 2+ MPF',
-            'Software Defined SOGEA',
-            'Broadband FTTC MPF',
-            'Cellular Ethernet',
-            'Internet Access (Wires Only)'
-        ],
-        name: 'Product'
-    },
     providerName: {
         operator: "in",
         value: null,
@@ -91,6 +84,11 @@ const getArticles = async (clearCache = false, runTimeout = false) => {
     if (showLowestCost.value) {
         temp.push({ column: '*', operator: 'lowest-cost', value: true })
     }
+
+    if (showContended.value !== null) {
+        temp.push({ column: 'isContended', operator: 'equals', value: showContended.value })
+    }
+
     if (clearCache) {
         showLoadingModal.value = true
     }
@@ -130,7 +128,8 @@ const getArticles = async (clearCache = false, runTimeout = false) => {
             "Service Unavailable": "The service is temporarily unavailable.",
             "There is an error in XML document": "The request could not be processed due to a data format issue.",
             "No provider is configured": "No provider is configured, please add at least one provider with the required credentials to obtain a quote.",
-            "Request failed with status Unauthorized": "Request failed with status Unauthorized (Check login credentials for this provider)",
+            "Request failed with status Unauthorized": "Request failed with status Unauthorized (Please check login credentials for this provider).",
+            "Address not found in cache": "No results were found for this address.",
         };
         if(res.data.errors){
             errors.value = res.data.errors
@@ -236,19 +235,33 @@ const resetFilters = () => {
 
     showLowestCost.value = true
     showQuoted.value = false
+    showContended.value = null
 }
 
 const checkProduct = (article) => {
     let item = props.modelValue.items.find((item) => item.product_code == article.code)
     let index = props.modelValue.items.findIndex((item) => item.product_code == article.code)
-    return index == -1 ? add(article) : remove(item, index)
+    return index == -1 ? add(article) : remove(item)
 }
 
-const add = async (article) => {
+const add = (article) => {
     try {
-        let childs = []
+        let items = []
+
+        let group = props.modelValue.items.reduce((max, item) => item.group > max ? item.group : max, 0);
+
+        let item = {
+            group: group + 1,
+            quote_id: props.modelValue.id,
+            product_id: null,
+            quantity: 1,
+            product_code: article.code,
+            data: article,
+        }
+
         if (article.priceMonthly_spa) {
-            childs.push({
+            items.push({
+                ...item,
                 name: article.productName,
                 price_plan_code: 'monthly',
                 contract_length: article.contractTermMonths,
@@ -257,7 +270,8 @@ const add = async (article) => {
             })
         }
         if (article.priceInstall_spa) {
-            childs.push({
+            items.push({
+                ...item,
                 name: article.productName + ' (service install)',
                 price_plan_code: 'single',
                 raw_price: article.priceInstall,
@@ -265,32 +279,24 @@ const add = async (article) => {
             })
         }
 
-        let item = {
-            quote_id: props.modelValue.id,
-            product_id: null,
-            quantity: 1,
-            product_code: article.code,
-            name: article.productName,
-            data: article,
-        }
+        items.forEach(async (x) => {
+            let res = await axios.post('/api/quote-items', x)
+            props.modelValue.items.push(res.data)
+        })
 
-        if (childs.length == 1) {
-            item = { ...item, ...childs[0] }
-        } else {
-            item.children = childs
-        }
-
-        let res = await axios.post('/api/quote-items', item)
-        props.modelValue.items.push(res.data)
     } catch (ex) {
         alert(ex.response.data.message)
     }
 }
 
-const remove = async (item, index) => {
+const remove = (item) => {
+    let items = props.modelValue.items.filter(x => x.group == item.group)
     try {
-        await axios.delete(`/api/quote-items/${item.id}`)
-        props.modelValue.items.splice(index, 1)
+        items.forEach(async (x) => {
+            await axios.delete(`/api/quote-items/${x.id}`)
+            let index = props.modelValue.items.findIndex((e) => e.id == x.id)
+            props.modelValue.items.splice(index, 1)
+        })
     } catch (ex) {
         alert(ex.response.data.message)
     }
@@ -312,7 +318,7 @@ const handlePaginator = (ev) => {
     getArticles()
 }
 
-watch([filters, showQuoted, showLowestCost], _.debounce(function () {
+watch([filters, showQuoted, showLowestCost, showContended], _.debounce(function () {
     meta.page = 1
     getArticles()
 }, 500))
@@ -464,20 +470,45 @@ getArticles(false, true)
                                 data-bs-auto-close="outside">
                                 <font-awesome-icon :icon="['fas', 'gear']"></font-awesome-icon>
                             </button>
-                            <ul class="dropdown-menu dropdown-menu-end p-1">
+                            <ul class="dropdown-menu dropdown-menu-end mt-1 p-1">
                                 <li>
-                                    <div class="checkbox d-flex px-3">
-                                        <input class="form-check-input me-2" type="checkbox" value="filter-lower-cost"
-                                            id="filter-lower-cost" v-model="showLowestCost">
+                                    <div class="checkbox d-flex py-1 px-2">
+                                        <ToggleSwitch class="me-2" id="filter-lower-cost" v-model="showLowestCost">
+                                            <template #handle>
+                                                <font-awesome-icon
+                                                    :icon="showLowestCost ? ['fas', 'circle-check'] : ['far', 'circle-xmark']"
+                                                    class="text-primary"
+                                                />
+                                            </template>
+                                        </ToggleSwitch>
                                         <label class="form-check-label" for="filter-lower-cost">
-                                            Only show lowest cost router
+                                            Show only lowest cost router
                                         </label>
                                     </div>
-                                    <div class="checkbox d-flex px-3">
-                                        <input class="form-check-input me-2" type="checkbox" value="filter-show-quoted"
-                                            id="filter-show-quoted" v-model="showQuoted">
+                                    <div class="checkbox d-flex py-1 px-2">
+                                        <ToggleSwitch class="me-2" id="filter-show-quoted" v-model="showQuoted">
+                                            <template #handle>
+                                                <font-awesome-icon
+                                                    :icon="showQuoted ? ['fas', 'circle-check'] : ['far', 'circle-xmark']"
+                                                    class="text-primary"
+                                                />
+                                            </template>
+                                        </ToggleSwitch>
                                         <label class="form-check-label" for="filter-show-quoted">
-                                            Show quoted items
+                                            Show only quoted items
+                                        </label>
+                                    </div>
+                                    <div class="checkbox d-flex py-1 px-2">
+                                        <TriStateToggle v-model="showContended" id="filter-show-contended">
+                                            <template #handle>
+                                                <font-awesome-icon
+                                                    :icon="showContended === true ? ['fas', 'circle-check'] : showContended === false ? ['far', 'circle-xmark'] : ['far', 'circle']"
+                                                    class="text-primary"
+                                                />
+                                            </template>
+                                        </TriStateToggle>
+                                        <label class="form-check-label" for="filter-show-contended">
+                                            Show contended products
                                         </label>
                                     </div>
                                 </li>
@@ -650,11 +681,14 @@ getArticles(false, true)
                                     </span>
                                     <span v-if="article?.isContended"
                                         class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm is-contended"
-                                        data-bs-toggle="tooltip" data-bs-placement="top" title="Contended, wires only full fibre service with symmetrical upload and download speeds" v-tooltip>
+                                        data-bs-toggle="tooltip" data-bs-placement="top"
+                                        title="Contended, wires only full fibre service with symmetrical upload and download speeds"
+                                        v-tooltip>
                                         Contended Service
                                     </span>
-                                    <span v-if="article?.additionalInfo?.['Type']=='Fibre Flex 200+'" v-tooltip
-                                        data-bs-toggle="tooltip" data-bs-placement="top" title="This service offers guaranteed upload and download speeds of 200Mbps and can burst up to a peak of 1Gbps"
+                                    <span v-if="article?.additionalInfo?.['Type'] == 'Fibre Flex 200+'" v-tooltip
+                                        data-bs-toggle="tooltip" data-bs-placement="top"
+                                        title="This service offers guaranteed upload and download speeds of 200Mbps and can burst up to a peak of 1Gbps"
                                         class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm router-model">
                                         Burstable Service
                                     </span>
@@ -662,7 +696,7 @@ getArticles(false, true)
                                 <td><img class="img-provider" @error="setAltImg"
                                         :src="`/images/providers/${format.toLowerCase(article.providerKey)}.png`"
                                         :alt="article.providerName" :title="article.providerName"
-                                        :data-bs-original-title="article.providerName" v-tooltip/> </td>
+                                        :data-bs-original-title="article.providerName" v-tooltip /> </td>
                                 <td>
                                     <img class="img-subprovider" @error="setAltImg"
                                         :src="`/images/providers/${format.toLowerCase(article.connectivitySupplierGroup)}.png`"

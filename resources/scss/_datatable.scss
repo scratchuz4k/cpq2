@@ -1,4 +1,5 @@
 #print {
+
     .table-connectivity thead,
     .table-dealmaker thead {
         th {
@@ -84,8 +85,10 @@
     }
 
 }
-.table-connectivity ,
+
+.table-connectivity,
 .table-dealmaker {
+
     th,
     td {
         position: relative;
@@ -96,6 +99,7 @@
 }
 
 .table-dealmaker {
+
     th,
     td {
         padding: 0.2rem 0.2rem !important;
@@ -206,4 +210,11 @@
 .column-speed-body,
 .column-bearer-body {
     white-space: nowrap;
+}
+
+.column-title {
+    padding: 0.2rem 0 0.2rem 0;
+    font-size: 14px !important;
+    margin: 0;
+    width: 100%;
 }

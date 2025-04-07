@@ -15,14 +15,12 @@ class QuoteItem extends Model
 
     protected $fillable = [
         'quote_id',
-        'product_id',
         'price_plan_id',
-        'parent_id',
+        'product_id',
         'product_code',
         'quantity',
         'name',
         'data',
-        'margin',
         'discount',
         'raw_price',
         'original_price',
@@ -33,6 +31,7 @@ class QuoteItem extends Model
         'total_gross',
         'contract_length',
         'tenant_id',
+        'group',
     ];
 
     protected function casts(): array
@@ -65,14 +64,6 @@ class QuoteItem extends Model
     public function parent()
     {
         return $this->hasOne(QuoteItem::class, 'id', 'parent_id');
-    }
-
-    /**
-     * Get the children users of this user.
-     */
-    public function children()
-    {
-        return $this->hasMany(QuoteItem::class, 'parent_id', 'id');
     }
 
     public function product(): HasOne

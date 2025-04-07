@@ -3,6 +3,8 @@
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Web\ApiController;
+use App\Http\Controllers\Web\BlacklistController;
+use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Web\SpaController;
 use App\Http\Controllers\Web\UserController;
 use App\Http\Controllers\Web\BrandController;
@@ -22,6 +24,7 @@ use App\Http\Controllers\Web\SharedLinkController;
 use App\Http\Controllers\Web\EmailHistoryController;
 use App\Http\Controllers\Web\SolutionTypeController;
 use App\Http\Controllers\Web\EmailTemplateController;
+
 
 Route::get('/health', function () {
     try {
@@ -69,6 +72,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/orders/{order}/download', [OrderController::class, 'download'])->name('orders.download');
     Route::post('/quotes/{quote}/email', [QuoteController::class, 'email'])->name('quotes.email');
 
+    Route::get('/users/import', [UserController::class, 'index'])->name('users.index');
     Route::post('/users/import', [UserController::class, 'importUsers'])->name('users.import');
 
     Route::resources([
@@ -89,6 +93,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         'users' => UserController::class,
         'tokens' => TokenController::class,
         'solution-types' => SolutionTypeController::class,
+        'blacklist' => BlacklistController::class,
     ]);
 
     Route::middleware('auth')->group(function () {

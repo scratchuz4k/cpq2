@@ -16,7 +16,7 @@ class OrderService
         $order = Order::create($array);
         if (array_key_exists('items', $array)) {
             foreach ($array['items'] as $order_item) {
-                    $this->orderItemService->store([...$order_item, 'order_id' =>  $order->id]);
+                $this->orderItemService->store([...$order_item, 'order_id' =>  $order->id]);
             }
         }
 

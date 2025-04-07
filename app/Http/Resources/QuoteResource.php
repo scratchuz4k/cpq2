@@ -25,8 +25,8 @@ class QuoteResource extends JsonResource
             'shared_link' => (new SharedLinkResource($this->sharedLink))->resolve(),
             'discounts' => QuoteDiscountResource::collection($this->discounts)->resolve(),
             'items' => QuoteItemResource::collection($this->items)->resolve(),
+            'orders' => $this->whenLoaded('orders'),
             'updated_at' => $this->updated_at,
-            'orders' => $this->whenLoaded('orders')
         ];
     }
 }

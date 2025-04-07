@@ -1,10 +1,10 @@
 <template>
     <div class="mt-2" @click="openResources()" style="cursor: pointer;">
         <div v-if="item">
-            <img :src="coverImage(item)" style="object-fit: contain;height: 150px;">
-            <h5 class="mt-2 text-start">
+            <img :src="coverImage(item)" style="max-height: 100px; max-width: 300px; object-fit: scale-down; object-position: left;">
+            <small class="d-block mt-2 text-muted">
                 {{ item?.title }}
-            </h5>
+            </small>
         </div>
         <div v-else class="d-flex justify-center my-3 input-resource"
              style="height: 120px; width:120px; align-items: center;border:3px dotted #a34796;border-radius: 10px;">

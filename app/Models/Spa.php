@@ -16,6 +16,7 @@ class Spa extends Model
         'rule_id',
         'field_1',
         'field_2',
+        'price_plan_id',
         'operation_id',
         'value',
         'percentage',
@@ -44,5 +45,10 @@ class Spa extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function pricePlan(): BelongsTo
+    {
+        return $this->belongsTo(PricePlan::class);
     }
 }

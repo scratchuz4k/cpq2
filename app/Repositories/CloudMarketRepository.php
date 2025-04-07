@@ -2,10 +2,14 @@
 
 namespace App\Repositories;
 
+use App\Helpers\Files\BlacklistFile;
+use App\Enums\PricePlanEnum;
 use App\Models\Supplier;
 use App\Helpers\FilterProvider;
 use App\Helpers\Prices\PriceRules;
 use App\Models\Account;
+use Illuminate\Support\Facades\Auth;
+use App\Models\PricePlan;
 use Illuminate\Support\Facades\Log;
 
 class CloudMarketRepository
@@ -19,27 +23,43 @@ class CloudMarketRepository
             Log::error('Empty or invalid file content.', ['file' => $file]);
         }
 
-        $items = FilterProvider::get($file['data'], $filters);
+        $items = FilterProvider::get($file['data'], []);
+
+        $blacklist_file = new BlacklistFile(Auth::user()->currentTenant);
+        $blacklist_items = $blacklist_file->getBlacklistedData($items);
+
+        $diff_codes = $items->pluck('code')->diff($blacklist_items->pluck('code'));
+
+        $items = $items->filter(function ($item) use ($diff_codes) {
+            return $diff_codes->contains($item['code']);
+        });
+
+        $items = FilterProvider::get($items->toArray(), $filters);
 
         foreach ($items as $key => $value) {
             $file['filters'] = FilterProvider::process($file['filters'], $value, true);
         }
 
-
         $priceRules = new PriceRules();
         $account = Account::where('id', request()->input('account_id', null))->first();
-        $items = $items->map(function ($product) use ($priceRules, $account) {
+        $priceplans  = [
+            'priceMonthly' => PricePlan::where('code', PricePlanEnum::MONTHLY->name)->first(),
+            'priceAnnual' => PricePlan::where('code', PricePlanEnum::MONTHLY->name)->first(),
+            'priceInstall' => PricePlan::where('code', PricePlanEnum::SINGLE->name)->first()
+        ];
+
+        $items = $items->map(function ($product) use ($priceRules, $account, $priceplans) {
             $supplier = null;
 
-            if (array_key_exists($product['providerKey'], $this->providers)) {
-                $priceRules->setAppliedSpas($this->providers[$product['providerKey']]);
-            } else {
-                $supplier = Supplier::where('reference', $product['providerKey'])->first();
-                $priceRules->find(supplier: $supplier, account: $account);
-                $this->providers[$product['providerKey']] = $priceRules->getAppliedSpas();
-            }
+            foreach ($priceplans as $key => $priceplan) {
+                if (array_key_exists($product['providerKey'] . $priceplan->code, $this->providers)) {
+                    $priceRules->setAppliedSpas($this->providers[$product['providerKey'] . $priceplan->code]);
+                } else {
+                    $supplier = Supplier::where('reference', $product['providerKey'])->first();
+                    $priceRules->find(supplier: $supplier, account: $account, pricePlan: $priceplan);
+                    $this->providers[$product['providerKey'] . $priceplan->code] = $priceRules->getAppliedSpas();
+                }
 
-            foreach (['priceMonthly', 'priceAnnual', 'priceInstall'] as $key) {
                 if (!array_key_exists($key, $product)) {
                     continue;
                 }
@@ -64,6 +84,4 @@ class CloudMarketRepository
             ]
         );
     }
-
-
 }

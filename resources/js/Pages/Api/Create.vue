@@ -1,5 +1,6 @@
 <script setup>
 import Select from 'primevue/select';
+import ToggleSwitch from 'primevue/toggleswitch'
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, router, useForm } from "@inertiajs/vue3";
 import { ref } from 'vue';
@@ -22,6 +23,7 @@ const api = useForm({
     password: null,
     client_id: null,
     token: null,
+    is_active: true
 })
 
 const clearAuth = () => {
@@ -57,7 +59,7 @@ const items = ref([
 </script>
 <template>
 
-    <Head title="Api" />
+    <Head title="New Api" />
     <AuthenticatedLayout>
         <div class="panel">
             <Header title="New Api" :breadcrumbs="items">
@@ -69,6 +71,19 @@ const items = ref([
             </Header>
             <div class="row">
                 <div class="col-6">
+                    <div class="mb-3 d-flex flex-column">
+                        <label class="form-label" for="active-filter">
+                            Active:
+                        </label>
+                        <ToggleSwitch id="active-filter" v-model="api.is_active">
+                            <template #handle>
+                                <font-awesome-icon
+                                    :icon="api.is_active ? ['fas', 'circle-check'] : ['far', 'circle-xmark']"
+                                    class="text-primary"
+                                />
+                            </template>
+                        </ToggleSwitch>
+                    </div>
                     <div class="mb-3">
                         <label for="api-code" class="form-label">Code:</label>
                         <Select :inputId="'api-code'" v-model="api.code" editable :options="props.suppliers"

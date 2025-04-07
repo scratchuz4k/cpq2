@@ -4,7 +4,7 @@ namespace App\Services;
 
 use App\Enums\CloudMarketSuppliersEnum;
 use App\Helpers\Api\CloudMarketAddress;
-use App\Helpers\Api\CloudMarketFile;
+use App\Helpers\Files\CloudMarketFile;
 use App\Jobs\CloudMarketConnectivityProducts;
 use App\Models\Api;
 use App\Repositories\CloudMarketRepository;
@@ -27,7 +27,7 @@ class CloudMarketService
         }
 
         $apis = array_map(fn ($case) => $case->value, CloudMarketSuppliersEnum::cases());
-        $apiRecords = Api::whereIn('code', $apis)->get();
+        $apiRecords = Api::active()->whereIn('code', $apis)->get();
         $apiCodes = $apiRecords->pluck('code')->sort()->implode('');
 
         $filename = 'live_prices_'.$address->toString().'_'.md5($apiCodes).'.json';

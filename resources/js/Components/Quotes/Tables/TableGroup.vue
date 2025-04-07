@@ -21,17 +21,18 @@ const colspan = props.columns.length - props.groupColumns.length;
     :class="[props.code + '-item-parent']"
     :style="{ 'vertical-align': 'middle' }"
   >
-    <td class="text-center" v-if="!preview">
-      <button class="btn p-0 border-0" @click="() => (showChildren = !showChildren)">
-        <font-awesome-icon
-          v-if="!showChildren"
-          :icon="['fas', 'plus']"
-        ></font-awesome-icon>
-        <font-awesome-icon v-else :icon="['fas', 'minus']"></font-awesome-icon>
-      </button>
-    </td>
     <td :colspan="colspan">
       <div class="d-flex">
+        <button
+          class="btn p-0 border-0 me-2"
+          @click="() => (showChildren = !showChildren)"
+        >
+          <font-awesome-icon
+            v-if="!showChildren"
+            :icon="['fas', 'plus']"
+          ></font-awesome-icon>
+          <font-awesome-icon v-else :icon="['fas', 'minus']"></font-awesome-icon>
+        </button>
         <template v-for="(column, index) in groupColumns">
           <div class="me-3 py-2">
             <component

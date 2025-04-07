@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Services\ApiService;
 use Exception;
-use Inertia\Inertia;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use App\Helpers\DataProvider;
 use App\Models\Api;
@@ -14,6 +15,12 @@ use App\Http\Resources\ApiResource;
 class ApiController extends BaseController
 {
     protected $model = Api::class;
+
+    public function __construct(protected ApiService $apiService)
+    {
+        parent::__construct();
+    }
+
     /**
      * Display a listing of the resource.
      */
@@ -67,7 +74,14 @@ class ApiController extends BaseController
      */
     public function update(Request $request, Api $api)
     {
-        //
+        try {
+            $api = DB::transaction(function () use ($api, $request) {
+                return $this->apiService->update($api, $request->all());
+            });
+        } catch (\Exception $e) {
+            throw new \Exception($e);
+        }
+        return new ApiResource($api);
     }
 
     /**

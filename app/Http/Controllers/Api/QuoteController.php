@@ -37,6 +37,7 @@ class QuoteController extends BaseController
         if (!$user->hasRole('Sales Rep')) {
             $users = User::all();
         }
+
         $dataProvider->builder = $dataProvider->builder->whereIn('quotes.user_id', $users->pluck('id'));
 
         try {

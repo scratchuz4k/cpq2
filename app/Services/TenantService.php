@@ -16,6 +16,13 @@ class TenantService
             ];
         }
 
+        if (
+            array_key_exists('configurations', $data)
+            && is_array($data['configurations'])
+        ) {
+            $tenant->syncConfigurations($data['configurations']);
+        }
+
         $tenant->update($data);
 
         return $tenant->refresh();

@@ -1141,7 +1141,7 @@ body {
 .preview-logo > img {
     max-height: 100px;
     max-width: 300px;
-    object-fit: contain;
+    object-fit: scale-down;
     object-position: left;
 }
 
@@ -1173,6 +1173,28 @@ body {
                 color: black;
                 opacity: 1;
             }
+        }
+    }
+}
+
+.p-toggleswitch {
+    &.p-toggleswitch-checked {
+        .p-toggleswitch-slider {
+            background: var(--color-purple-light) !important;
+        }
+    }
+}
+.custom-range-container:has(.handle-checked) {
+    background: var(--color-purple-light) !important;
+}
+
+.provider-warning {
+    #warning-note-container {
+        text-align: left !important;
+
+        .small > div:first-of-type {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem !important;
         }
     }
 }

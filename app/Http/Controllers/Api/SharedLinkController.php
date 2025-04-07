@@ -7,6 +7,7 @@ use App\Models\SharedLink;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ShareLinkCreateRequest;
 use App\Http\Resources\SharedLinkResource;
+use Illuminate\Support\Facades\Auth;
 
 class SharedLinkController extends Controller
 {
@@ -18,6 +19,7 @@ class SharedLinkController extends Controller
     {
         $sharedLink = SharedLink::create([
             ...$request->all(),
+            'tenant_id' => Auth::user()->tenant_id,
             'shareable_type' => $this->sharedModels[$request->input('shareable_type')],
             'expires_at' => $request->input('expires_at', null), // Expire after 7 days
         ]);

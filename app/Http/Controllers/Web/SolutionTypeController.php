@@ -2,19 +2,16 @@
 
 namespace App\Http\Controllers\Web;
 
-use App\Models\Spa;
-use App\Models\User;
-use Inertia\Inertia;
-use App\Enums\PricePlanEnum;
-use App\Models\SolutionType;
-use Illuminate\Http\Request;
 use App\Enums\TablesEnum;
-use App\Enums\SolutionTypesEnum;
-use Illuminate\Support\Facades\DB;
-use App\Services\SolutionTypeService;
 use App\Http\Controllers\BaseController;
-use App\Http\Resources\SolutionTypeResource;
+use App\Http\Requests\SolutionTypeCreateRequest;
 use App\Http\Requests\SolutionTypeUpdateRequest;
+use App\Http\Resources\SolutionTypeResource;
+use App\Models\SolutionType;
+use App\Services\SolutionTypeService;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Inertia\Inertia;
 
 class SolutionTypeController extends BaseController
 {
@@ -24,6 +21,7 @@ class SolutionTypeController extends BaseController
     {
         parent::__construct();
     }
+
     /**
      * Display a listing of the resource.
      */
@@ -37,15 +35,29 @@ class SolutionTypeController extends BaseController
      */
     public function create()
     {
-        //
+        return Inertia::render('SolutionTypes/Create', [
+            'solutions' => SolutionTypeResource::collection(SolutionType::all())->resolve(),
+            'available_tables' => TablesEnum::cases(),
+        ]);
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(SolutionTypeCreateRequest $request)
     {
-        //
+        try {
+            $solutionType = DB::transaction(function () use ($request) {
+                return $this->solutionTypeService->store($request->all());
+            });
+        } catch (\Exception $e) {
+            if (! env('APP_DEBUG')) {
+                Log::error($e->getMessage());
+            }
+            throw new \Exception($e);
+        }
+
+        return redirect()->route('solution-types.index');
     }
 
     /**
@@ -61,9 +73,13 @@ class SolutionTypeController extends BaseController
      */
     public function edit(SolutionType $solutionType)
     {
+
+        $columns = require app_path('Helpers/Tables/Custom.php');
+
         return Inertia::render('SolutionTypes/Edit', [
             'solution_type' => (new SolutionTypeResource($solutionType))->resolve(),
             'available_tables' => TablesEnum::cases(),
+            'available_columns' => $columns,
         ]);
     }
 
@@ -81,7 +97,6 @@ class SolutionTypeController extends BaseController
         }
 
         return redirect()->route('solution-types.index');
-        // return redirect()->route('solution-types.edit', ['solution_type' => $solutionType->id]);
     }
 
     /**

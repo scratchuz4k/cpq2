@@ -24,10 +24,6 @@ class Resource extends Model
 
     protected $appends = ['full_route'];
 
-    protected static function booted(): void
-    {
-        static::addGlobalScope(new TenantScope());
-    }
     public function toArray()
     {
         $array = parent::toArray();
@@ -77,7 +73,6 @@ class Resource extends Model
     {
         return Storage::disk('public')->get($this->getRouteValue()) ?? '';
     }
-
 
     public function resourceable(): MorphTo
     {

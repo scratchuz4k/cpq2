@@ -34,17 +34,10 @@ class SpaCreateRequest extends FormRequest
 
         return [
             'rule_id' => 'required|exists:spa_rules,id',
-            'field_1' => [
-                'required',
-                'numeric',
-                Rule::unique('spas')
-                    ->where(function ($query) {
-                        return $query->where('rule_id', $this->input('rule_id'))
-                            ->where('field_2', $this->input('field_2', 0));
-                    }),
-            ],
-            'field_2' => $rules,
+            'field_1' => ['required', 'numeric'],
+            'field_2' => 'numeric',
             'operation_id' => 'required|exists:spa_operations,id',
+            'price_plan_id' => 'nullable|exists:price_plans,id',
             'value' => 'numeric',
             'percentage' => 'numeric|min:0|max:100',
         ];

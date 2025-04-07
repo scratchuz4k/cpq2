@@ -1,11 +1,8 @@
 <?php
 
-namespace App\Helpers\Api;
+namespace App\Helpers\Files;
 
-use Exception;
-use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Cache;
-
 
 class CloudMarketFile
 {
@@ -16,7 +13,7 @@ class CloudMarketFile
 
     public function write(array $data, bool $wating_task, $finished_at, $created_at, $filters = [], $errors = [])
     {
-        if (!is_dir($this->path)) {
+        if (! is_dir($this->path)) {
             mkdir($this->path, 0777, true);
         }
 
@@ -31,17 +28,17 @@ class CloudMarketFile
         ]);
 
         Cache::put($this->filename, json_encode(['updated_at' => now()]), 86400);
-        file_put_contents($this->path . $this->filename, $dataString);
+        file_put_contents($this->path.$this->filename, $dataString);
     }
 
     public function exists(): bool
     {
-        return file_exists($this->path . $this->filename);
+        return file_exists($this->path.$this->filename);
     }
 
     public function getContent()
     {
-        if (!$this->exists()) {
+        if (! $this->exists() || empty(file_get_contents($this->path.$this->filename))) {
             return [
                 'data' => [],
                 'total' => null,
@@ -52,6 +49,7 @@ class CloudMarketFile
                 'errors' => [],
             ];
         }
-        return json_decode(file_get_contents($this->path . $this->filename), true);
+
+        return json_decode(file_get_contents($this->path.$this->filename), true);
     }
 }

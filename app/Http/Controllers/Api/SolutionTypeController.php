@@ -2,31 +2,39 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Models\SolutionType;
-use Illuminate\Http\Request;
 use App\Helpers\DataProvider;
-use Illuminate\Support\Facades\Log;
-use App\Http\Controllers\Controller;
 use App\Http\Controllers\BaseController;
-use App\Http\Resources\SolutionTypeResource;
+use App\Http\Resources\SolutionTypeTenantResource;
+use App\Models\SolutionType;
+use App\Models\SolutionTypeTenant;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class SolutionTypeController extends BaseController
 {
     protected $model = SolutionType::class;
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $dataProvider = new DataProvider(SolutionType::class);
+        $tenant_id = Auth::user()->tenant_id;
+
+        $dataProvider = new DataProvider(SolutionTypeTenant::class);
+        $dataProvider->builder = $dataProvider->builder
+            ->where('tenant_id', $tenant_id);
+
         try {
             $data = $dataProvider->get();
         } catch (\Exception $e) {
             Log::debug($e->getMessage());
+
             return $e->getMessage();
         }
 
-        return SolutionTypeResource::collection($data);
+        return SolutionTypeTenantResource::collection($data);
     }
 
     /**
@@ -40,7 +48,7 @@ class SolutionTypeController extends BaseController
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(SolutionType $solutionType)
     {
         //
     }
@@ -48,7 +56,7 @@ class SolutionTypeController extends BaseController
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, SolutionType $solutionType)
     {
         //
     }
@@ -56,8 +64,14 @@ class SolutionTypeController extends BaseController
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(SolutionType $solutionType)
     {
-        //
+        $solutionType->tenants()->detach(Auth::user()->tenant_id);
+
+        foreach ($solutionType->configurations as $config) {
+            $config->delete();
+        }
+
+        return response()->json(null, 204);
     }
 }

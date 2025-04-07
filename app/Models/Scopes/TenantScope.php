@@ -16,7 +16,7 @@ class TenantScope implements Scope
     {
         $user = request()->user();
         $currTenant = Tenant::current();
-        $tenant = $user ? $user->currentTenant : $currTenant;
+        $tenant = $currTenant ?? $user?->currentTenant;
         if (! $tenant) {
             return;
         }

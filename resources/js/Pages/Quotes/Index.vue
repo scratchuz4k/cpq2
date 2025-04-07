@@ -1,8 +1,7 @@
 <script setup>
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
-import {Head, Link, usePage} from "@inertiajs/vue3";
+import { Head, Link, usePage } from "@inertiajs/vue3";
 import { ref } from "vue";
-import Button from "primevue/button";
 import { createOrder } from "@/Composables/useOrders.js";
 
 const props = defineProps({
@@ -24,8 +23,9 @@ const props = defineProps({
   },
 });
 
-const page = usePage()
+const page = usePage();
 const auth_user = page.props.auth.user.id;
+const tenant = page.props.tenant;
 const createOrderAndRefresh = async (id) => {
   const res = await createOrder(id);
   if (res) {
@@ -44,6 +44,9 @@ const deleteRecord = (id) => {
       }
       try {
         let res = await axios.delete("/api/quotes/" + id);
+        if (res) {
+          emitter.emit("datatable-refresh");
+        }
         notyf.success("Removed with success");
         return;
       } catch (err) {
@@ -96,11 +99,11 @@ const items = ref([{ label: "Home", url: "/" }, { label: "Quotes" }]);
           </template>
           <template #actions="{ data, value, index }">
             <div
-              v-if="!['REGISTRY', 'ORDERED'].includes(data.status)"
+              v-if="!['REGISTRY', 'SUBMITTED'].includes(data.status)"
               class="d-flex justify-content-end"
             >
               <button
-                hidden
+                :hidden="!(tenant.configurations.orders_flow_is_active === '1')"
                 type="button"
                 title="Send to Order"
                 :id="'datatable-btn-' + index + '-crete-order'"
