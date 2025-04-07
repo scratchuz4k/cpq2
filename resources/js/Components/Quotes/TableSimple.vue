@@ -12,7 +12,7 @@ quote.items.forEach((e) => {
   let index = groups.findIndex((x) => x.group == e.group);
   if (index == -1) {
     let temp = quote.items.find(
-      (x) => x.group == e.group && e.price_plan.code == "MONTHLY"
+      (x) => x.group == e.group && x.price_plan.code == "MONTHLY"
     );
     groups.push({ ...e, name: temp.name ?? e.name, children: [e] });
   } else {
