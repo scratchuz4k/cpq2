@@ -15,7 +15,8 @@ class TenantResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            ...$this->resource->load('file', 'logo')->toArray()
+            ...$this->resource->load('file', 'logo')->toArray(),
+            "configurations" => $this->configs,
         ];
     }
 }

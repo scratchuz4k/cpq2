@@ -27,17 +27,14 @@ class QuoteItemController extends BaseController
      */
     public function index()
     {
-
         $dataProvider = new DataProvider(QuoteItem::class);
         try {
-            $data = $dataProvider->get();
+            return $dataProvider->group(QuoteItemResource::class);
         } catch (Exception $e) {
             Log::debug($e->getMessage());
 
             return $e->getMessage();
         }
-
-        return QuoteItemResource::collection($data);
     }
 
     /**
@@ -48,7 +45,7 @@ class QuoteItemController extends BaseController
         try {
             $quoteItem = DB::transaction(function () use ($request) {
                 return $this->quoteItemService->store($request->all());
-            });
+            }, 2);
         } catch (\Exception $e) {
             if (! env('APP_DEBUG')) {
                 Log::error($e->getMessage());

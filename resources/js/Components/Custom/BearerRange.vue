@@ -24,27 +24,21 @@ watch(range, () => {
 
 
 const bearerSpeedFormatter = (value) => {
-    let number = value;
+    let temp = value ?? 0;
+    let number = temp;
     let suffix = "Mb";
-    let rounding = 10;
 
-    if (value < 1000) {
-        number = value;
-    } else if (value < 10000) {
-        number = value / 1000;
-        suffix = "Gb";
-        rounding = 1;
+    if (temp < 100) {
+        number = Math.ceil(temp / 10) * 10;
+    } else if (temp < 1000) {
+        number = Math.ceil(temp / 100) * 100;
     } else {
-        number = value / 1000;
+        number = temp / 1000;
         suffix = "Gb";
-        rounding = 1;
+        number = Math.round(number * 10) / 10;
     }
 
-    let result =
-        parseInt(Math.ceil(number / rounding) * rounding) +
-        " " +
-        suffix;
-    return result;
+    return number + " " + suffix;
 }
 const bearerSliderConfig = {
     snap: true,

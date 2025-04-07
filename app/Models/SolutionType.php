@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Trait\HasConfigurations;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -24,5 +25,9 @@ class SolutionType extends Model
     public function quotes() : HasMany
     {
         return $this->hasMany(Quote::class);
+    }
+    public function tables(): MorphMany
+    {
+        return $this->morphMany(Table::class, 'tableable');
     }
 }

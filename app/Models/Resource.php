@@ -74,7 +74,6 @@ class Resource extends Model
         return Storage::disk('public')->get($this->getRouteValue()) ?? '';
     }
 
-
     public function resourceable(): MorphTo
     {
         return $this->morphTo();

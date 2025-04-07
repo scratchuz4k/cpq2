@@ -68,6 +68,10 @@ const editableColumns = (columns, code) => {
   });
   return temp;
 };
+
+emitter.on("quote-items:updated", () => {
+  getQuote(quote.id);
+});
 </script>
 <template>
   <div class="mb-5" v-for="pricePlan in pricePlans">

@@ -32,15 +32,20 @@ class SolutionTypeResource extends JsonResource
             $data = require $file;
             if (array_key_exists("component", $this->configs) && array_key_exists($this->configs["component"], $data)) {
                 $columns = $data[$this->configs["component"]];
-            }else{
+            } else {
                 $columns = $data["DealMaker"];
             }
+        }
+
+        $table = $this->tables->first() ? $this->tables->first()->toArray() : [];
+        if (!array_key_exists("has_custom_table", $this->configs) || !$this->configs["has_custom_table"]) {
+            $table["columns"] =  (array)$columns;
         }
 
         return [
             ...$this->resource->toArray(),
             "configurations" => $this->configs,
-            "table" => ["columns" => $columns]
+            "table" => $table,
         ];
     }
 }

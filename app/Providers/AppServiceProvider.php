@@ -2,17 +2,12 @@
 
 namespace App\Providers;
 
-use App\Events\QuoteStatusEvent;
-use App\Listeners\QuoteStatusRegistryListener;
-use Illuminate\Support\Str;
 use Dedoc\Scramble\Scramble;
-use Illuminate\Support\Facades\Gate;
 use Illuminate\Routing\Route;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
-use App\Providers\CustomResourceRegistrar;
-use SocialiteProviders\Manager\SocialiteWasCalled;
-use SocialiteProviders\Saml2\Saml2ExtendSocialite;
+use Illuminate\Support\Str;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -52,7 +47,7 @@ class AppServiceProvider extends ServiceProvider
         Scramble::routes(function (Route $route) {
             if (!isset($route->action['as']))
                 return false;
-            
+
             $action = explode( '.', $route->action['as']);
 
             if (!Str::startsWith($route->uri, 'api/') || count($action) < 3)

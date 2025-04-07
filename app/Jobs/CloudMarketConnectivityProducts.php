@@ -4,7 +4,7 @@ namespace App\Jobs;
 
 use App\Helpers\Api\CloudMarketAddress;
 use App\Helpers\Api\CloudMarketApi;
-use App\Helpers\Api\CloudMarketFile;
+use App\Helpers\Files\CloudMarketFile;
 use App\Helpers\FilterProvider;
 use Exception;
 use GuzzleHttp\Psr7\StreamWrapper;
@@ -62,7 +62,7 @@ class CloudMarketConnectivityProducts implements ShouldQueue, TenantAware
                 }
             }
 
-            if (empty($value->providerKey) || ! $value->quoteId) {
+            if (empty($value->providerKey) || ! $value->quoteId || $value->priceMonthly == 0) {
                 continue;
             }
 

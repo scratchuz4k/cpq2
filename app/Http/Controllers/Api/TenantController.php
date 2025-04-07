@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Helpers\DataProvider;
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\TenantUpdateRequest;
+use App\Http\Resources\TenantResource;
 use App\Models\Tenant;
 use App\Services\TenantService;
 use Exception;
@@ -71,7 +72,7 @@ class TenantController extends BaseController
             throw new \Exception($e);
         }
 
-        return response()->json($tenant->load('file', 'logo'));
+        return response()->json((new TenantResource($tenant))->resolve());
     }
 
     /**

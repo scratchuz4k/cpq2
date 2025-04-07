@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Http\Requests\IndexRequest;
 use Exception;
 use App\Models\Order;
 use Illuminate\Http\Request;
@@ -27,7 +28,7 @@ class OrderController extends BaseController
      * List Orders
      * @response AnonymousResourceCollection<LengthAwarePaginator<OrderResource>>
      */
-    public function index()
+    public function index(IndexRequest $request)
     {
         $dataProvider = new DataProvider(Order::class);
         try {
