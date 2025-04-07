@@ -3,11 +3,10 @@
 namespace App\Models;
 
 use App\Models\Scopes\TenantScope;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Str;
-use App\Models\Scopes\TenantScope;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class SharedLink extends Model
 {
@@ -43,19 +42,21 @@ class SharedLink extends Model
     // Check if the link has expired
     public function isExpired(): bool
     {
-        return $this->expires_at && $this->expires_at->isPast() && !$this->expires_at->isToday();
+        return $this->expires_at && $this->expires_at->isPast() && ! $this->expires_at->isToday();
     }
 
     // Generate a URL for the shared link
     public function getUrlAttribute(): string
     {
-        return url('/s/' . $this->token);
+        return url('/s/'.$this->token);
     }
+
     // Set password (hash it)
     public function setPasswordAttribute($value)
     {
         $this->attributes['password'] = $value ? Hash::make($value) : null;
     }
+
     // Verify password
     public function verifyPassword($password): bool
     {
