@@ -10,15 +10,15 @@ const items = ref([
     { label: 'Home', url: '/' },
     { label: 'My Account', url: '/myaccount' },
     { label: "Products", url: "/products" },
-    { label: 'BlackList' },
+    { label: 'Blacklist' },
 ]);
 
 </script>
 <template>
-    <Head title="BlackList" />
+    <Head title="Blacklist" />
     <AuthenticatedLayout>
         <div class="panel">
-            <Header title="BlackList" :breadcrumbs="items">
+            <Header title="Blacklist" :breadcrumbs="items">
                 <template #buttons>
                     <Link href="/blacklist/create" id="blacklist-create-btn" class="btn btn-primary me-2">
                         <font-awesome-icon :icon="['fas', 'plus']"></font-awesome-icon> New Item
