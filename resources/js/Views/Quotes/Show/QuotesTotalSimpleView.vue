@@ -20,6 +20,8 @@ const warningProviders = ref([
   { pxc: temp.some((item) => item.data?.providerName === "PXC") },
 ]);
 
+checkWarnings(warningProviders.value, null)
+
 const items = ref([
   { label: "Home", url: "/dashboard" },
   {
@@ -61,9 +63,7 @@ const items = ref([
         v-else
         class="btn btn-outline-primary me-2"
         type="submit"
-        @click="
-          checkWarnings(warningProviders, route('quotes.preview', { quote: quote.id }))
-        "
+        :href="route('quotes.preview', { quote: quote.id })"
       >
         <font-awesome-icon :icon="['far', 'file-pdf']"></font-awesome-icon>
         Preview PDF
@@ -121,9 +121,7 @@ const items = ref([
         v-else
         class="btn btn-outline-primary me-2"
         type="submit"
-        @click="
-          checkWarnings(warningProviders, route('quotes.preview', { quote: quote.id }))
-        "
+        :href="route('quotes.preview', { quote: quote.id })"
       >
         <font-awesome-icon :icon="['far', 'file-pdf']"></font-awesome-icon>
         Preview PDF
