@@ -16,13 +16,13 @@ class OrderResource extends JsonResource
     {
         return [
             ...$this->resource->toArray(),
-            'margin' => (float)$this->margin,
-            'discount' => (float)$this->discount,
-            'commission_rate' => (float)$this->commission_rate,
-            'contract_length' => (float)$this->contract_length,
+            'margin' => (float) $this->margin,
+            'discount' => (float) $this->discount,
+            'commission_rate' => (float) $this->commission_rate,
+            'contract_length' => (float) $this->contract_length,
             'user' => $this->user,
             'account' => $this->account,
-            'solution_type' => $this->solutionType,
+            'solution_type' => (new SolutionTypeResource($this->solutionType))->resolve(),
             'items' => OrderItemResource::collection($this->whenLoaded('items', default: collect([])))->resolve(),
             'updated_at' => $this->updated_at,
         ];

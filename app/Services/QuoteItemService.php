@@ -18,7 +18,6 @@ class QuoteItemService
 
         $quoteItem = QuoteItem::create([
             ...$array,
-            'tax_order_item' => 20,
             'original_price' => isset($array['price']) ? $array['price'] : 0,
         ]);
 
