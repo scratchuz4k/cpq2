@@ -20,7 +20,7 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::table('quote_items', function (Blueprint $table) {
+        Schema::table('order_items', function (Blueprint $table) {
             $table->renameColumn('tax', 'tax_order_item');
         });
     }
