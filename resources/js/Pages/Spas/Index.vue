@@ -16,13 +16,13 @@ const props = defineProps({
 
 const visible = ref(false);
 const showGlobal = ref(false);
+const selectedRules = ref([]);
 
 const form = reactive({
   rule: null,
   rule_id: [],
   field_1: null,
   field_2: null,
-  price_plan_id: null,
 });
 
 const fields = reactive({
@@ -41,86 +41,119 @@ const meta = reactive({
   order: "asc",
 });
 
-const rules = {};
+const globalRules = {};
 props.rules.forEach((element) => {
   let str = element.code;
   const splitResult = str.split(/(?=[A-Z])/);
-  if (!Object.keys(rules).includes(splitResult[0])) {
-    rules[splitResult[0]] = [];
+  if (!Object.keys(globalRules).includes(splitResult[0])) {
+    globalRules[splitResult[0]] = [];
   }
 
-  if (!rules[splitResult[0]].find((x) => x === splitResult[1])) {
-    rules[splitResult[0]].push(splitResult[1] ?? null);
+  if (!globalRules[splitResult[0]].find((x) => x === splitResult[1])) {
+    globalRules[splitResult[0]].push(splitResult[1] ?? null);
   }
 });
 
 const handleGlobal = () => {
-  showGlobal.value = !showGlobal.value;
+  let keys = Object.keys(fields).filter((x) => fields[x] != null);
+  showGlobal.value = keys.length ? true : !showGlobal.value;
 
   form.rule_id = [];
   form.field_1 = null;
   form.field_2 = null;
-  Object.keys(fields).forEach((x) => (fields[x] = null));
-
   if (!showGlobal.value) {
+    selectedRules.value = [];
     getData();
     return;
   }
 
-  let rules = props.rules;
-  rules = rules.filter((x) => x.code.includes("Global"));
+  selectedRules.value = props.rules;
+  selectedRules.value = selectedRules.value.filter((x) => x.code.includes("Global"));
 
-  form.rule_id = rules.map((x) => x.id);
-  form.field_1 = page.props.tenant.id;
-  form.field_2 = null;
-  getData();
+  let temp = [];
+  temp.push({
+    column: "rule_id",
+    operator: "equals",
+    value: selectedRules.value[0].id,
+  });
+
+  temp.push({
+    column: "field_1",
+    operator: "equals",
+    value: page.props.tenant.id,
+  });
+  getData(temp);
 };
 
 const handleFields = () => {
+  showGlobal.value = false;
   let keys = Object.keys(fields).filter((x) => fields[x] != null);
 
-  let rules = props.rules;
-  keys.forEach((e) => {
-    rules = rules.filter((x) => x.code.includes(format.capitalizeFirstLetter(e)));
-  });
-
   if (keys.length > 2) {
-    notyf.error("Only two entities may be selected at a time");
-    Object.keys(fields).forEach((x) => (fields[x] = null));
     data.value = [];
+    selectedRules.value = [];
+    notyf.error("Only two entities may be selected at a time");
     return;
   }
 
-  form.rule_id = rules.map((x) => x.id);
-  form.field_1 = keys.length <= 2 ? fields[keys[0]]?.id : null;
-  form.field_2 = keys.length <= 2 ? fields[keys[1]]?.id : null;
-  getData();
-};
+  selectedRules.value = props.rules;
 
-const getData = async () => {
+  keys.forEach((e, index) => {
+    selectedRules.value = selectedRules.value.filter((x) => {
+      return x.code.includes(format.capitalizeFirstLetter(e));
+    });
+  });
+
   let temp = [];
 
-  if (form.rule_id.length) {
-    temp.push({ column: "rule_id", operator: "in", value: form.rule_id.join(",") });
-  }
+  selectedRules.value.forEach((x, ruleIndex) => {
+    const splitResult = x.code.split(/(?=[A-Z])/);
+    splitResult.forEach((e, index) => {
+      if (!keys.includes(e.toLowerCase())) {
+        return;
+      }
 
-  if (form.field_1) {
-    temp.push({ column: "field_1", operator: "equals", value: form.field_1 });
-  }
+      temp.push({
+        column: "rule_id",
+        operator: "equals",
+        value: x.id,
+        function: ruleIndex != 0 ? "orWhere" : "where",
+      });
 
-  if (form.field_2) {
-    temp.push({ column: "field_2", operator: "equals", value: form.field_2 });
-  }
+      if (index == 0) {
+        temp.push({
+          column: "field_1",
+          operator: "equals",
+          value: fields[e.toLowerCase()]?.id,
+        });
+      }
 
-  if (form.price_plan_id) {
-    temp.push({ column: "price_plan_id", operator: "equals", value: form.price_plan_id });
-  }
+      if (index == 1) {
+        temp.push({
+          column: "field_2",
+          operator: "equals",
+          value: fields[e.toLowerCase()]?.id,
+        });
+      }
+      //   if (form.price_plan_id) {
+      //     temp.push({
+      //       column: "price_plan_id",
+      //       operator: "equals",
+      //       value: form.price_plan_id,
+      //     });
+      //   }
+    });
+  });
 
+  getData(temp);
+};
+
+const getData = async (array = []) => {
   let string = queryString.stringify({
     orderBy: meta.orderBy,
     order: meta.order,
     page: meta.page,
-    filters: JSON.stringify(temp),
+    filters: JSON.stringify(array),
     limit: meta.limit,
     page: meta.page,
   });
@@ -210,13 +243,6 @@ const columns = [
   { name: "Percentage", data: "percentage" },
 ];
 
-watch(
-  () => [form.price_plan_id],
-  _.debounce(() => {
-    getData();
-  }, 300)
-);
-
 watch(fields, () => {
   handleFields();
 });
@@ -251,65 +277,65 @@ getData();
           >
             <font-awesome-icon :icon="['fas', 'eraser']" />
           </Button>
-          <div v-if="visible" class="d-flex mt-3 mb-3">
-            <div class="d-flex border rounded p-2 me-3">
-              <div class="row row-cols-4">
-                <div class="col">
-                  <label class="form-label">Global</label>
-                  <Button
-                    id="Global"
-                    class="w-100"
-                    :severity="showGlobal ? 'primary' : 'secondary'"
-                    @click="handleGlobal()"
-                  >
-                    Show
-                  </Button>
-                </div>
-                <div class="col">
-                  <label class="form-label">Account</label>
-                  <InputSelect
-                    id="filter-account"
-                    url="/accounts"
-                    field="name"
-                    v-model="fields.account"
-                  >
-                  </InputSelect>
-                </div>
-                <div class="col">
-                  <label class="form-label">Supplier</label>
-                  <InputSelect
-                    id="filter-supplier"
-                    url="/suppliers"
-                    field="name"
-                    v-model="fields.supplier"
-                  >
-                  </InputSelect>
-                </div>
-                <div class="col">
-                  <label class="form-label">Product</label>
-                  <InputSelect
-                    id="filter-product"
-                    url="/products"
-                    field="name"
-                    v-model="fields.product"
-                  >
-                  </InputSelect>
-                </div>
+          <div v-if="visible" class="mt-3 mb-3">
+            <div v-if="selectedRules.length" class="row mb-3">
+              <div class="col">
+                <p>
+                  Selected Rules:
+                  <template v-for="(rule, index) in selectedRules">
+                    <template v-if="index != 0">; </template>
+                    <b>
+                      {{ rule.name }}
+                    </b>
+                  </template>
+                </p>
               </div>
             </div>
-            <div class="d-flex border rounded p-2 me-2">
-              <div>
-                <label class="form-label">Select a Price Plan</label>
-                <select
-                  class="form-select"
-                  v-model="form.price_plan_id"
-                  :is-multiple="false"
-                >
-                  <option :value="null">Select an option</option>
-                  <option v-for="price_plan in props.price_plans" :value="price_plan.id">
-                    {{ price_plan.name }}
-                  </option>
-                </select>
+            <div class="d-flex">
+              <div class="border rounded p-2 me-3">
+                <div class="row row-cols-4">
+                  <div class="col">
+                    <label class="form-label">Global</label>
+                    <Button
+                      id="Global"
+                      class="w-100"
+                      :severity="showGlobal ? 'primary' : 'secondary'"
+                      @click="handleGlobal()"
+                    >
+                      Show
+                    </Button>
+                  </div>
+                  <div class="col">
+                    <label class="form-label">Account</label>
+                    <InputSelect
+                      id="filter-account"
+                      url="/accounts"
+                      field="name"
+                      v-model="fields.account"
+                    >
+                    </InputSelect>
+                  </div>
+                  <div class="col">
+                    <label class="form-label">Supplier</label>
+                    <InputSelect
+                      id="filter-supplier"
+                      url="/suppliers"
+                      field="name"
+                      v-model="fields.supplier"
+                    >
+                    </InputSelect>
+                  </div>
+                  <div class="col">
+                    <label class="form-label">Product</label>
+                    <InputSelect
+                      id="filter-product"
+                      url="/products"
+                      field="name"
+                      v-model="fields.product"
+                    >
+                    </InputSelect>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
