@@ -374,9 +374,6 @@
                                                 <span
                                                     class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm is-contended"
                                                     data-bs-toggle="tooltip" data-bs-placement="top"
-                                                    title="Contended" v-tooltip>
-                                                    <i class="fa-solid fa-network-wired"></i>
-                                                    data-bs-toggle="tooltip" data-bs-placement="top"
                                                     title="Contended, wires only full fibre service with symmetrical upload and download speeds"
                                                     v-tooltip>
                                                     Contended Service

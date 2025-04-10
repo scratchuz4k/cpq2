@@ -1,26 +1,33 @@
-import {ref, createApp} from "vue"
+import { ref, createApp } from "vue";
 import WarningNote from "@/Components/WarningNote.vue";
-  
+
 export const checkWarnings = (warningProviders, link) => {
     if (!warningProviders.some((obj) => Object.values(obj).includes(true))) {
-        window.location.href = link
-        return
+        if (link) {
+            window.location.href = link;
+        }
+        return;
     }
 
     const wrapper = document.createElement("div");
-    let result = swal.fire({
-        html: '<div id="warning-note-container"></div>',
-        showCancelButton: false,
-        confirmButtonText: "Continue",
-        showCloseButton: true,
-        width: 640,
-        customClass: {
-            htmlContainer: 'provider-warning'
-        }
-    })
+    let result = swal
+        .fire({
+            html: '<div id="warning-note-container"></div>',
+            showCancelButton: false,
+            confirmButtonText: "Continue",
+            showCloseButton: true,
+            width: 640,
+            customClass: {
+                htmlContainer: "provider-warning",
+            },
+        })
         .then((result) => {
             if (result.isConfirmed) {
-                window.location.href = link;
+                if (link) {
+                    window.location.href = link;
+                } else {
+                    return;
+                }
             } else if (result.dismiss === swal.DismissReason.cancel) {
                 isLoading.value = false;
                 return;
@@ -36,4 +43,4 @@ export const checkWarnings = (warningProviders, link) => {
         const app = createApp(WarningNote, { warnings: warningProviders });
         app.mount(container);
     }
-}
+};
