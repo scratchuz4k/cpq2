@@ -2,6 +2,8 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link } from "@inertiajs/vue3";
 import { ref } from 'vue';
+import { toggle_is_active } from '@/Composables/handleActive';
+
 const items = ref([
     { label: 'Home', url: '/' },
     { label: 'My Account', url: '/myaccount' },
@@ -27,6 +29,8 @@ const items = ref([
                     link: false,
                 }" :columns="[
                     { data: 'id', title: '#', style: 'width:5%' },
+                    { data: 'order', title: 'Order', style: 'width:5%'},
+                    { data: 'is_active', title: 'Active', style: 'width:5%'},
                     { data: 'code', title: 'Code', style: 'width:20%' },
                     { data: 'name', title: 'Name' },
                     { data: 'created_at', title: 'Created At', style: 'width:15%' },
@@ -37,6 +41,22 @@ const items = ref([
                     </template>
                     <template #created_at="{ value }">
                         {{ format.date(value) }}
+                    </template>
+                    <template #is_active="{ data, value }">
+                        <div role="button" @click="toggle_is_active('categories', data)">
+                            <font-awesome-icon
+                                v-if="value"
+                                :icon="['fas', 'circle-check']"
+                                style="font-size: 1.125rem"
+                                class="text-primary"
+                            />
+                            <font-awesome-icon
+                                v-else
+                                :icon="['far', 'circle-xmark']"
+                                style="font-size: 1.125rem"
+                                class="text-secondary"
+                            />
+                        </div>
                     </template>
                 </Datatable>
             </div>

@@ -12,7 +12,7 @@ class Category extends Model
 {
     use HasFactory, SetTenantId;
 
-    protected $fillable = ['code', 'name', 'tenant_id'];
+    protected $fillable = ['code', 'name', 'tenant_id', 'is_active'];
     protected static function booted(): void
     {
         static::addGlobalScope(new TenantScope);

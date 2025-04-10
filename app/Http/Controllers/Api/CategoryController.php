@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Services\CategoryService;
 use Exception;
 use App\Models\Account;
 use App\Models\Category;
@@ -19,6 +20,12 @@ use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 class CategoryController extends BaseController
 {
     protected $model = Category::class;
+
+    public function __construct(protected CategoryService $categoryService)
+    {
+        parent::__construct();
+    }
+
     /**
      * Index
      * @response AnonymousResourceCollection<LengthAwarePaginator<AccountResource>>
@@ -39,22 +46,37 @@ class CategoryController extends BaseController
     /**
      * Store
      */
-    public function store(Request $request) {}
+    public function store(Request $request)
+    {
+    }
 
     /**
      * Show.
      */
-    public function show(Category $category) {}
+    public function show(Category $category)
+    {
+    }
 
     /**
      * Update
      */
-    public function update(Request $request, Category $category) {}
+    public function update(Request $request, Category $category)
+    {
+        try {
+            $api = DB::transaction(function () use ($category, $request) {
+                return $this->categoryService->update($category, $request->all());
+            });
+        } catch (\Exception $e) {
+            throw new \Exception($e);
+        }
+        return new CategoryResource($category);
+    }
 
     /**
      * Remove
      */
-    public function destroy(Category $category) {
+    public function destroy(Category $category)
+    {
         $category->delete();
     }
 }
