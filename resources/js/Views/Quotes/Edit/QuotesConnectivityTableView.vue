@@ -150,7 +150,7 @@ const getArticles = async (clearCache = false, runTimeout = false) => {
                 article.productName = productInfo[0].trim();
                 if (productInfo.length > 1) {
                     article.additionalInfo = article.additionalInfo || {};
-                    article.additionalInfo['Primary Router Model'] = productInfo[1].trim();
+                    article.additionalInfo['router'] = productInfo[1].trim();
                 }
             }
 
@@ -673,11 +673,11 @@ getArticles(false, true)
                                 style="text-align: center;">
                                 <td class="lh-sm text-left ps-3">
                                     {{ article.productName }}
-                                    <span v-if="article?.additionalInfo?.['Primary Router Model']" v-tooltip
+                                    <span v-if="article?.additionalInfo?.['router']" v-tooltip
                                         data-bs-toggle="tooltip" data-bs-placement="top" title="Primary Router Model"
                                         class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm router-model">
                                         <font-awesome-icon :icon="['fas', 'plug']"></font-awesome-icon>
-                                        {{ article.additionalInfo['Primary Router Model'] }}
+                                        {{ article.additionalInfo['router'] }}
                                     </span>
                                     <span v-if="article?.isContended"
                                         class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm is-contended"
