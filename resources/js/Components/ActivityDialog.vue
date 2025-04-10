@@ -1,5 +1,6 @@
 <template>
   <button
+    :hidden="!(tenant.configurations.log_system_is_active === '1')"
     id="btn-shareable-open"
     class="btn btn-outline-primary me-2"
     @click="() => (visible = !visible)"
@@ -103,6 +104,7 @@
 </template>
 <script setup>
 import { ref, onMounted, watch, reactive } from "vue";
+import { usePage } from "@inertiajs/vue3";
 import queryString from "query-string";
 import Dialog from "primevue/dialog";
 import MultiSelect from "primevue/multiselect";
@@ -112,6 +114,8 @@ const props = defineProps({
   filters: Array,
 });
 
+const page = usePage();
+const tenant = page.props.tenant;
 const options = props.filters.map((x) => x.entity);
 const entities = ref(props.filters.map((x) => x.entity));
 const meta = reactive({
