@@ -1,7 +1,7 @@
 <template>
   <button
     :hidden="!(tenant.configurations.log_system_is_active === '1')"
-    id="btn-shareable-open"
+    id="btn-activity-open"
     class="btn btn-outline-primary me-2"
     @click="() => (visible = !visible)"
   >
