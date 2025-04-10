@@ -291,51 +291,47 @@ getData();
                 </p>
               </div>
             </div>
-            <div class="d-flex">
-              <div class="border rounded p-2 me-3">
-                <div class="row row-cols-4">
-                  <div class="col">
-                    <label class="form-label">Global</label>
-                    <Button
-                      id="Global"
-                      class="w-100"
-                      :severity="showGlobal ? 'primary' : 'secondary'"
-                      @click="handleGlobal()"
-                    >
-                      Show
-                    </Button>
-                  </div>
-                  <div class="col">
-                    <label class="form-label">Account</label>
-                    <InputSelect
-                      id="filter-account"
-                      url="/accounts"
-                      field="name"
-                      v-model="fields.account"
-                    >
-                    </InputSelect>
-                  </div>
-                  <div class="col">
-                    <label class="form-label">Supplier</label>
-                    <InputSelect
-                      id="filter-supplier"
-                      url="/suppliers"
-                      field="name"
-                      v-model="fields.supplier"
-                    >
-                    </InputSelect>
-                  </div>
-                  <div class="col">
-                    <label class="form-label">Product</label>
-                    <InputSelect
-                      id="filter-product"
-                      url="/products"
-                      field="name"
-                      v-model="fields.product"
-                    >
-                    </InputSelect>
-                  </div>
-                </div>
+            <div class="row row-cols-4 border rounded p-2">
+              <div class="col">
+                <label class="form-label">Global</label>
+                <Button
+                  id="Global"
+                  class="w-100"
+                  :severity="showGlobal ? 'primary' : 'secondary'"
+                  @click="handleGlobal()"
+                >
+                  Show
+                </Button>
+              </div>
+              <div class="col">
+                <label class="form-label">Account</label>
+                <InputSelect
+                  id="filter-account"
+                  url="/accounts"
+                  field="name"
+                  v-model="fields.account"
+                >
+                </InputSelect>
+              </div>
+              <div class="col">
+                <label class="form-label">Supplier</label>
+                <InputSelect
+                  id="filter-supplier"
+                  url="/suppliers"
+                  field="name"
+                  v-model="fields.supplier"
+                >
+                </InputSelect>
+              </div>
+              <div class="col">
+                <label class="form-label">Product</label>
+                <InputSelect
+                  id="filter-product"
+                  url="/products"
+                  field="name"
+                  v-model="fields.product"
+                >
+                </InputSelect>
               </div>
             </div>
           </div>
