@@ -4,10 +4,12 @@ namespace App\Http\Controllers\Api;
 
 use App\Helpers\DataProvider;
 use App\Http\Controllers\BaseController;
+use App\Http\Requests\IndexRequest;
 use App\Http\Requests\TenantUpdateRequest;
 use App\Http\Resources\TenantResource;
 use App\Models\Tenant;
 use App\Services\TenantService;
+use Dedoc\Scramble\Attributes\ExcludeRouteFromDocs;
 use Exception;
 use Illuminate\Http\Client\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -24,7 +26,7 @@ class TenantController extends BaseController
     /**
      * List of Tenants
      */
-    public function index()
+    public function index(IndexRequest $request)
     {
 
         $dataProvider = new DataProvider(Tenant::class);
@@ -42,6 +44,7 @@ class TenantController extends BaseController
     /**
      * Store a new Tenant
      */
+    #[ExcludeRouteFromDocs]
     public function store(Request $request)
     {
         //
@@ -50,6 +53,7 @@ class TenantController extends BaseController
     /**
      * Show Tenant
      */
+    #[ExcludeRouteFromDocs]
     public function show(string $id)
     {
         //
@@ -78,6 +82,7 @@ class TenantController extends BaseController
     /**
      * Remove Tenant
      */
+    #[ExcludeRouteFromDocs]
     public function destroy(string $id)
     {
         //

@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\BaseController;
+use App\Http\Requests\IndexRequest;
 use App\Http\Resources\SupplierResource;
 use App\Models\Supplier;
+use Dedoc\Scramble\Attributes\ExcludeRouteFromDocs;
 use Exception;
 use Illuminate\Http\Request;
 use App\Helpers\DataProvider;
@@ -20,7 +22,7 @@ class SupplierController extends BaseController
      * List of Suppliers
      * @response AnonymousResourceCollection<LengthAwarePaginator<SupplierResource>>
      */
-    public function index()
+    public function index(IndexRequest $request)
     {
         $dataProvider = new DataProvider(Supplier::class);
         try {
@@ -36,6 +38,7 @@ class SupplierController extends BaseController
     /**
      * Store a new Supplier
      */
+    #[ExcludeRouteFromDocs]
     public function store(Request $request)
     {
         //
@@ -44,6 +47,7 @@ class SupplierController extends BaseController
     /**
      * Show Supplier
      */
+    #[ExcludeRouteFromDocs]
     public function show(Supplier $supplier)
     {
         //
@@ -52,6 +56,7 @@ class SupplierController extends BaseController
     /**
      * Update Supplier
      */
+    #[ExcludeRouteFromDocs]
     public function update(Request $request, Supplier $supplier)
     {
         //

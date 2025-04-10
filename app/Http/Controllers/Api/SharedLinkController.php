@@ -7,6 +7,8 @@ use App\Models\SharedLink;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ShareLinkCreateRequest;
 use App\Http\Resources\SharedLinkResource;
+use Dedoc\Scramble\Attributes\ExcludeRouteFromDocs;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class SharedLinkController extends Controller
@@ -14,6 +16,15 @@ class SharedLinkController extends Controller
     private $sharedModels = [
         'quotes' => Quote::class
     ];
+
+    /**List of SharedLinks
+     * @response AnonymousResourceCollection<LengthAwarePaginator<RegionResource>>
+     */
+    #[ExcludeRouteFromDocs]
+    public function index()
+    {
+        //
+    }
 
     /**
      * List of Shared Links
@@ -29,6 +40,24 @@ class SharedLinkController extends Controller
 
         // Optionally redirect or return the shareable resource
         return new SharedLinkResource($sharedLink);
+    }
+
+    /**
+     * Show SharedLink
+     */
+    #[ExcludeRouteFromDocs]
+    public function show(SharedLink $sharedLink)
+    {
+        //
+    }
+
+    /**
+     * Update SharedLink
+     */
+    #[ExcludeRouteFromDocs]
+    public function update(Request $request, SharedLink $sharedLink)
+    {
+        //
     }
 
     /**

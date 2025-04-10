@@ -10,6 +10,7 @@ use App\Http\Requests\OrderItemUpdateRequest;
 use App\Http\Resources\OrderItemResource;
 use App\Models\OrderItem;
 use App\Services\OrderItemService;
+use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -49,7 +50,7 @@ class OrderItemController extends BaseController
                 return $this->orderItemService->store($request->all());
             });
         } catch (\Exception $e) {
-            if (! env('APP_DEBUG')) {
+            if (!env('APP_DEBUG')) {
                 Log::error($e->getMessage());
             }
             throw new \Exception($e);
@@ -76,7 +77,7 @@ class OrderItemController extends BaseController
                 return $this->orderItemService->update($orderItem, $request->all());
             });
         } catch (\Exception $e) {
-            if (! env('APP_DEBUG')) {
+            if (!env('APP_DEBUG')) {
                 Log::error($e->getMessage());
             }
             throw new \Exception($e);

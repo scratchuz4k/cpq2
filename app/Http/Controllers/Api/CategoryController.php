@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Services\CategoryService;
+use Dedoc\Scramble\Attributes\ExcludeRouteFromDocs;
 use Exception;
 use App\Models\Account;
 use App\Models\Category;
@@ -19,6 +21,12 @@ use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 class CategoryController extends BaseController
 {
     protected $model = Category::class;
+
+    public function __construct(protected CategoryService $categoryService)
+    {
+        parent::__construct();
+    }
+
     /**
      * List Categories
      * @response AnonymousResourceCollection<LengthAwarePaginator<AccountResource>>
@@ -37,24 +45,41 @@ class CategoryController extends BaseController
     }
 
     /**
-     * Create a new Category
+     * Store a new Category
      */
-    public function store(Request $request) {}
+    #[ExcludeRouteFromDocs]
+    public function store(Request $request)
+    {
+    }
 
     /**
      * Show Category
      */
-    public function show(Category $category) {}
+    #[ExcludeRouteFromDocs]
+    public function show(Category $category)
+    {
+    }
 
     /**
      * Update Category
      */
-    public function update(Request $request, Category $category) {}
+    public function update(Request $request, Category $category)
+    {
+        try {
+            $api = DB::transaction(function () use ($category, $request) {
+                return $this->categoryService->update($category, $request->all());
+            });
+        } catch (\Exception $e) {
+            throw new \Exception($e);
+        }
+        return new CategoryResource($category);
+    }
 
     /**
      * Remove Category
      */
-    public function destroy(Category $category) {
+    public function destroy(Category $category)
+    {
         $category->delete();
     }
 }

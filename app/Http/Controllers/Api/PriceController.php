@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Http\Requests\IndexRequest;
 use Exception;
 use App\Models\Price;
 use Illuminate\Http\Request;
@@ -27,7 +28,7 @@ class PriceController extends BaseController
      * List of Prices
      * @response AnonymousResourceCollection<LengthAwarePaginator<PriceResource>>
      */
-    public function index()
+    public function index(IndexRequest $request)
     {
         $dataProvider = new DataProvider(Price::class);
         try {

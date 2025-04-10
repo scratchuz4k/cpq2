@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Http\Requests\IndexRequest;
 use Exception;
 use App\Models\User;
 use App\Models\Quote;
@@ -28,7 +29,7 @@ class QuoteController extends BaseController
      * List of Quotes
      * @response AnonymousResourceCollection<LengthAwarePaginator<QuoteResource>>
      */
-    public function index()
+    public function index(IndexRequest $request)
     {
         $dataProvider = new DataProvider(Quote::class);
 

@@ -6,6 +6,7 @@ use App\Helpers\DataProvider;
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\IndexRequest;
 use App\Models\PricePlan;
+use Dedoc\Scramble\Attributes\ExcludeRouteFromDocs;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -18,7 +19,7 @@ class PricePlanController extends BaseController
     protected $model = PricePlan::class;
 
     /**
-     * Index
+     * List Price Plans
      *
      * @response AnonymousResourceCollection<LengthAwarePaginator<PricePlanResource>>
      */
@@ -37,22 +38,34 @@ class PricePlanController extends BaseController
     }
 
     /**
-     * Store
+     * Create a new Price Plan
      */
-    public function store(Request $request) {}
+    #[ExcludeRouteFromDocs]
+    public function store(Request $request)
+    {
+    }
 
     /**
-     * Show.
+     * Show Price Plan
      */
-    public function show(PricePlan $pricePlan) {}
+    #[ExcludeRouteFromDocs]
+    public function show(PricePlan $pricePlan)
+    {
+    }
 
     /**
-     * Update
+     * Update Price Plan
      */
-    public function update(Request $request, PricePlan $pricePlan) {}
+    #[ExcludeRouteFromDocs]
+    public function update(Request $request, PricePlan $pricePlan)
+    {
+    }
 
     /**
-     * Remove
+     * Remove Price Plan
      */
-    public function destroy(PricePlan $pricePlan) {}
+    #[ExcludeRouteFromDocs]
+    public function destroy(PricePlan $pricePlan)
+    {
+    }
 }

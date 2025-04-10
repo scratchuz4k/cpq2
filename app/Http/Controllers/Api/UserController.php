@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Http\Requests\IndexRequest;
 use App\Models\User;
+use Dedoc\Scramble\Attributes\ExcludeRouteFromDocs;
 use Illuminate\Http\Request;
 use App\Helpers\DataProvider;
 use App\Services\UsersService;
@@ -23,7 +25,7 @@ class UserController extends BaseController
     /**
      * List of Users
      */
-    public function index()
+    public function index(IndexRequest $request)
     {
         $dataProvider = new DataProvider(User::class);
         $dataProvider->builder = $this->usersService->getChildAndOrphansUser();
@@ -41,6 +43,7 @@ class UserController extends BaseController
     /**
      * Store a new User
      */
+    #[ExcludeRouteFromDocs]
     public function store(Request $request)
     {
         //
@@ -49,6 +52,7 @@ class UserController extends BaseController
     /**
      * Show User
      */
+    #[ExcludeRouteFromDocs]
     public function show(User $user)
     {
         //
@@ -60,8 +64,8 @@ class UserController extends BaseController
     public function update(UserUpdateRequest $request, User $user)
     {
         try {
-            $user =  DB::transaction(function () use ($request, $user) {
-                return  $this->usersService->update($user, $request->all());
+            $user = DB::transaction(function () use ($request, $user) {
+                return $this->usersService->update($user, $request->all());
             });
         } catch (\Exception $e) {
             throw new \Exception($e);

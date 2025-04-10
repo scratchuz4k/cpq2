@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Http\Requests\IndexRequest;
+use Dedoc\Scramble\Attributes\ExcludeRouteFromDocs;
 use Exception;
 use App\Models\Account;
 use App\Models\Product;
@@ -23,7 +25,7 @@ class ProductController extends BaseController
      * List of Products
      * @response AnonymousResourceCollection<LengthAwarePaginator<ProductResource>>
      */
-    public function index()
+    public function index(IndexRequest $request)
     {
         $dataProvider = new DataProvider(Product::class);
 
@@ -61,6 +63,7 @@ class ProductController extends BaseController
     /**
      * Store a new Product
      */
+    #[ExcludeRouteFromDocs]
     public function store(Request $request)
     {
         //
@@ -69,6 +72,7 @@ class ProductController extends BaseController
     /**
      * Show Product
      */
+    #[ExcludeRouteFromDocs]
     public function show(Product $product)
     {
         //
@@ -77,6 +81,7 @@ class ProductController extends BaseController
     /**
      * Update Product
      */
+    #[ExcludeRouteFromDocs]
     public function update(Request $request, Product $product)
     {
         //

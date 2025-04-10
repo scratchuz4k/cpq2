@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Http\Requests\IndexRequest;
+use Dedoc\Scramble\Attributes\ExcludeRouteFromDocs;
 use Exception;
 use App\Models\Resource;
 use Illuminate\Http\Request;
@@ -16,7 +18,7 @@ class ResourceController extends Controller
     /**
      * List of Resources
      */
-    public function index()
+    public function index(IndexRequest $request)
     {
         $dataProvider = new DataProvider(Resource::class);
         $dataProvider->builder = $dataProvider->builder->where('tenant_id', request()->user()->tenant_id);
@@ -48,13 +50,16 @@ class ResourceController extends Controller
 
         try {
             foreach ($files as $key) {
-				$folder = in_array($key->getClientMimeType(), ['image/jpeg', 'image/jpg', 'image/png', 'image/gif']) ? 'images' : 'files';
+                $folder = in_array($key->getClientMimeType(), ['image/jpeg', 'image/jpg', 'image/png', 'image/gif']) ? 'images' : 'files';
 
                 [$mimeType, $originalName, $fileContent, $size] = [
-                    $key->getClientMimeType(), $key->getClientOriginalName(), $key->get(), $key->getSize()
+                    $key->getClientMimeType(),
+                    $key->getClientOriginalName(),
+                    $key->get(),
+                    $key->getSize()
                 ];
 
-                if (in_array($mimeType, ['text/xml', 'application/xml'])  && !simplexml_load_string($key->get(), null, LIBXML_NOERROR)) {
+                if (in_array($mimeType, ['text/xml', 'application/xml']) && !simplexml_load_string($key->get(), null, LIBXML_NOERROR)) {
                     return response()->json([
                         'message' => 'The file must contain a valid XML.',
                         'error' => true,
@@ -82,6 +87,7 @@ class ResourceController extends Controller
     /**
      * Show Resource
      */
+    #[ExcludeRouteFromDocs]
     public function show(Resource $resource)
     {
         //

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Helpers\DataProvider;
 use App\Http\Controllers\BaseController;
+use App\Http\Requests\IndexRequest;
 use App\Http\Requests\QuoteItemCreateRequest;
 use App\Http\Requests\QuoteItemUpdateRequest;
 use App\Http\Resources\QuoteItemResource;
@@ -25,7 +26,7 @@ class QuoteItemController extends BaseController
     /**
      * List of Quote Items from a Specific Quote
      */
-    public function index()
+    public function index(IndexRequest $request)
     {
         $dataProvider = new DataProvider(QuoteItem::class);
         try {
@@ -47,7 +48,7 @@ class QuoteItemController extends BaseController
                 return $this->quoteItemService->store($request->all());
             }, 2);
         } catch (\Exception $e) {
-            if (! env('APP_DEBUG')) {
+            if (!env('APP_DEBUG')) {
                 Log::error($e->getMessage());
             }
 
@@ -75,7 +76,7 @@ class QuoteItemController extends BaseController
                 return $this->quoteItemService->update($quoteItem, $request->all());
             });
         } catch (\Exception $e) {
-            if (! env('APP_DEBUG')) {
+            if (!env('APP_DEBUG')) {
                 Log::error($e->getMessage());
             }
             throw new \Exception($e);
