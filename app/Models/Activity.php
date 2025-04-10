@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Activity extends Model
 {
     use SetTenantId;
+
     protected $fillable = [
         'operation',
         'data',
@@ -15,10 +16,11 @@ class Activity extends Model
         'activitable_type',
         'user_id',
     ];
+
     protected function casts(): array
     {
         return [
-            "data" => "object",
+            'data' => 'object',
         ];
     }
 
