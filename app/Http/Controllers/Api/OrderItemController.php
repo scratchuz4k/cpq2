@@ -2,29 +2,41 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Models\OrderItem;
-use Illuminate\Http\Request;
-use App\Services\OrderItemService;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
+use App\Helpers\DataProvider;
 use App\Http\Controllers\BaseController;
+use App\Http\Requests\IndexRequest;
 use App\Http\Requests\OrderItemCreateRequest;
 use App\Http\Requests\OrderItemUpdateRequest;
 use App\Http\Resources\OrderItemResource;
+use App\Models\OrderItem;
+use App\Services\OrderItemService;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class OrderItemController extends BaseController
 {
     protected $model = OrderItem::class;
+
     public function __construct(protected OrderItemService $orderItemService)
     {
         parent::__construct();
     }
+
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(IndexRequest $request)
     {
-        //
+        $dataProvider = new DataProvider(OrderItem::class);
+        try {
+            $data = $dataProvider->get();
+        } catch (Exception $e) {
+            Log::debug($e->getMessage());
+
+            return $e->getMessage();
+        }
+
+        return OrderItemResource::collection($data);
     }
 
     /**
@@ -37,11 +49,12 @@ class OrderItemController extends BaseController
                 return $this->orderItemService->store($request->all());
             });
         } catch (\Exception $e) {
-            if (!env("APP_DEBUG")) {
+            if (! env('APP_DEBUG')) {
                 Log::error($e->getMessage());
             }
             throw new \Exception($e);
         }
+
         return response()->json($orderItem);
     }
 
@@ -63,11 +76,12 @@ class OrderItemController extends BaseController
                 return $this->orderItemService->update($orderItem, $request->all());
             });
         } catch (\Exception $e) {
-            if (!env("APP_DEBUG")) {
+            if (! env('APP_DEBUG')) {
                 Log::error($e->getMessage());
             }
             throw new \Exception($e);
         }
+
         return response()->json($orderItem);
     }
 

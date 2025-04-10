@@ -1,8 +1,7 @@
 <script setup>
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
-import {Head, Link, usePage} from "@inertiajs/vue3";
+import { Head, Link, usePage } from "@inertiajs/vue3";
 import { ref } from "vue";
-import Button from "primevue/button";
 import { createOrder } from "@/Composables/useOrders.js";
 
 const props = defineProps({
@@ -24,7 +23,7 @@ const props = defineProps({
   },
 });
 
-const page = usePage()
+const page = usePage();
 const auth_user = page.props.auth.user.id;
 const tenant = page.props.tenant;
 const createOrderAndRefresh = async (id) => {
@@ -45,6 +44,9 @@ const deleteRecord = (id) => {
       }
       try {
         let res = await axios.delete("/api/quotes/" + id);
+        if (res) {
+          emitter.emit("datatable-refresh");
+        }
         notyf.success("Removed with success");
         return;
       } catch (err) {

@@ -2,19 +2,18 @@
 
 namespace App\Http\Controllers\Web;
 
+use App\Http\Controllers\BaseController;
+use App\Http\Requests\SpaCreateRequest;
+use App\Http\Requests\SpaUpdateRequest;
+use App\Http\Resources\SpaResource;
+use App\Models\PricePlan;
 use App\Models\Spa;
-use App\Models\User;
-use Inertia\Inertia;
+use App\Models\SpaOperation;
+use App\Models\SpaRule;
 use App\Models\Supplier;
 use App\Services\SpasService;
 use Illuminate\Support\Facades\DB;
-use App\Http\Resources\SpaResource;
-use App\Http\Requests\SpaCreateRequest;
-use App\Http\Requests\SpaUpdateRequest;
-use App\Http\Controllers\BaseController;
-use App\Models\PricePlan;
-use App\Models\SpaOperation;
-use App\Models\SpaRule;
+use Inertia\Inertia;
 
 class SpaController extends BaseController
 {
@@ -24,6 +23,7 @@ class SpaController extends BaseController
     {
         parent::__construct();
     }
+
     /**
      * Display a listing of the resource.
      */
@@ -75,6 +75,7 @@ class SpaController extends BaseController
     public function edit(Spa $spa)
     {
         $temp = new SpaResource($spa);
+
         return Inertia::render('Spas/Edit', [
             'spa' => $temp->toArray(request()),
             'rules' => SpaRule::all(),

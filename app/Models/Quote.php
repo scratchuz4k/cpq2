@@ -9,6 +9,7 @@ use App\Models\Scopes\TenantScope;
 use App\Trait\RegisterActivity;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -77,13 +78,8 @@ class Quote extends Model
     }
     public function items(): HasMany
     {
-        return $this->hasMany(QuoteItem::class)->whereNull('parent_id');
-    }
-    public function itemsNoTree(): HasMany
-    {
         return $this->hasMany(QuoteItem::class);
     }
-
     public function orders(): HasMany
     {
         return $this->hasMany(Order::class);
@@ -92,7 +88,7 @@ class Quote extends Model
     {
         return $this->hasMany(QuoteDiscount::class);
     }
-    public function sharedLink()
+    public function sharedLink(): MorphOne
     {
         return $this->morphOne(SharedLink::class, 'shareable');
     }
@@ -105,7 +101,7 @@ class Quote extends Model
         $this->total_tax = 0;
         $this->total_gross = 0;
 
-        foreach ($this->itemsNoTree as $item) {
+        foreach ($this->items as $item) {
             $raw_total += ($item->raw_price * $item->quantity * $item->contract_length);
 
             $this->total += $item->total;

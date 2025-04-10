@@ -90,28 +90,17 @@
         $temp = $value ?? 0;
         $number = $temp;
         $suffix = 'Mb';
-        $rounding = 10;
 
-        if ($temp < 1000) {
-            $number = $temp;
-        } elseif ($temp < 10000) {
-            $number = $temp / 1000;
-            $suffix = 'Gb';
-            $rounding = 1;
+        if ($temp < 100) {
+            $number = ceil($temp / 10) * 10;
+        } elseif ($temp < 1000) {
+            $number = ceil($temp / 100) * 100;
         } else {
-            $number = $temp / 1000;
+            $number = round($temp / 1000, 1);
             $suffix = 'Gb';
-            $rounding = 1;
         }
 
-        // Remove rounding if value < 1000
-        if ($temp < 1000) {
-            $result = $number . ' ' . $suffix;
-        } else {
-            $result = ceil($number / $rounding) * $rounding . ' ' . $suffix;
-        }
-
-        return $result;
+        return $number . ' ' . $suffix;
     }
 
     $isConnectivity = !is_null($quote['solution_type']) && $quote['solution_type']['code'] == 3 ? true : false;
@@ -134,6 +123,35 @@
             false,
         ),
     ];
+
+    $items = [];
+
+    foreach ($quote['items'] as $key => $item) {
+        $nr_groups = array_reduce(
+            $quote['items'],
+            function ($acc, $temp) use ($item) {
+                if ($temp['group'] == $item['group']) {
+                    $acc = $acc + 1;
+                    return $acc;
+                }
+                return $acc;
+            },
+            0,
+        );
+
+        if ($nr_groups == 1) {
+            array_push($items, [...$item, 'children' => []]);
+            continue;
+        }
+
+        $index = array_search($item['group'], array_column($items, 'group'));
+
+        if ($index === false) {
+            array_push($items, [...$item, 'children' => [$item]]);
+        } else {
+            array_push($items[$index]['children'], $item);
+        }
+    }
 
 @endphp
 
@@ -197,29 +215,10 @@
                     <div class="row">
                         <div class="col">
                             <InfoBox class="m-4 p-0" severity="error">
-                                <div class="small">
-                                    <div class="mb-2 fw-bold" style="color:#dc3545">Important Information:</div>
-                                    @foreach ($warningProviders as $providerName => $hasWarning)
-                                        @if ($hasWarning)
-                                            <div class="mb-2" style="color:#dc3545; line-height: 1.2">
-                                                <span
-                                                    class="small fw-bold bg-light rounded-2 py-1 px-2 me-1 text-capitalize">
-                                                    {{ strtoupper($providerName) }}
-                                                </span>
-                                                <i>
-                                                    Please note, quote references for
-                                                    {{ strtoupper($providerName) }} quotes cannot currently
-                                                    be used to place an order. To obtain a valid quote for ordering
-                                                    please generate the quote directly on the
-                                                    {{ strtoupper($providerName) }}
-                                                    portal.
-                                                </i>
-                                            </div>
-                                        @endif
-                                    @endforeach
-                                </div>
+                                @component('components.warning-note', ['warnings' => $warningProviders])
+                                @endcomponent
+                            </InfoBox>
                         </div>
-                        </InfoBox>
                     </div>
             </div>
             @endif
@@ -237,15 +236,15 @@
                                     @else
                                         <th class="column-name-header w-20">Name</th>
                                     @endif
-                                    <th class="column-contract_lenght-header w-5">Months</th>
                                     <th class="column-price_plan-header w-20">Price Plan</th>
+                                    <th class="column-contract_lenght-header w-5">Months</th>
                                     <th class="column-quantity-header w-5">Quantity</th>
                                     <th class="column-price-header w-10">Price</th>
                                     <th class="column-total-header">Total </th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach ($quote['items'] as $key => $group)
+                                @foreach ($items as $key => $group)
                                     @if ($isConnectivity)
                                         <tr class="group-row" style="vertical-align: middle;">
                                             <td class="group-body" colspan="8">
@@ -254,17 +253,21 @@
                                                         @if ($group['data']?->providerKey)
                                                             <img class="img-provider"
                                                                 style="max-width: 60px; max-height: 20px; width: auto; height: auto;"
-                                                                src="{{ $group['image'] ?? public_path() . '/images/providers/' . $group['data']?->providerKey . '.png' }}" />
+                                                                src="{{ $group['image'] ?? public_path() . '/images/providers/' . $group['data']?->providerKey . '.png' }}"
+                                                                onerror="this.src='/images/no_image.png'" />
                                                         @endif
                                                     </div>
                                                     <div class="me-3">
                                                         @if ($group['data']?->connectivitySupplierGroup)
                                                             <img class="img-provider"
                                                                 style="max-width: 60px; max-height: 20px; width: auto; height: auto;"
-                                                                src="{{ $group['image'] ?? public_path() . '/images/providers/' . str_replace(' ', '', strtolower($group['data']?->connectivitySupplierGroup)) . '.png' }}" />
+                                                                src="{{ $group['image'] ?? public_path() . '/images/providers/' . str_replace(' ', '', strtolower($group['data']?->connectivitySupplierGroup)) . '.png' }}"
+                                                                onerror="this.src='/images/no_image.png'" />
                                                         @endif
                                                     </div>
                                                     <div class="me-3 d-flex">
+
+
                                                         <p class="m-0">{{ $group['name'] }}
                                                             @if (isset($group['data']->additionalInfo->{'Primary Router Model'}))
                                                                 <span

@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\AccountController;
 use App\Http\Controllers\Api\ApiController;
 use App\Http\Controllers\Api\ActivityController;
+use App\Http\Controllers\Api\BlacklistController;
 use App\Http\Controllers\Api\BrandController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\ContactController;
@@ -12,6 +13,7 @@ use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\OrderItemController;
 use App\Http\Controllers\Api\PermissionController;
 use App\Http\Controllers\Api\PriceController;
+use App\Http\Controllers\Api\PricePlanController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\QuoteController;
 use App\Http\Controllers\Api\QuoteItemController;
@@ -38,13 +40,13 @@ Route::get('/quotes/{quote}/create_order', [QuoteController::class, 'createOrder
 Route::apiResources([
     'apis' => ApiController::class,
     'activity' => ActivityController::class,
+    'price-plans' => PricePlanController::class,
     'accounts' => AccountController::class,
     'contacts' => ContactController::class,
     'categories' => CategoryController::class,
     'products' => ProductController::class,
     'quotes' => QuoteController::class,
     'quote-items' => QuoteItemController::class,
-    'quoteitems' => QuoteItemController::class,
     'orders' => OrderController::class,
     'order-items' => OrderItemController::class,
     'solution-types' => SolutionTypeController::class,
@@ -60,4 +62,5 @@ Route::apiResources([
     'shared-links' => SharedLinkController::class,
     'resources' => ResourceController::class,
     'tenants' => TenantController::class,
+    'blacklist' => BlacklistController::class,
 ]);

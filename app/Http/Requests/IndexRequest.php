@@ -34,6 +34,8 @@ class IndexRequest extends FormRequest
         return [
             'order' => 'nullable|in:asc,desc',
             'orderBy' => 'nullable',
+            'group' => 'nullable',
+            'groupOrder' => 'nullable',
             'page' => 'nullable|numeric',
             'limit' => 'nullable|numeric',
             'search' => 'nullable|string',
