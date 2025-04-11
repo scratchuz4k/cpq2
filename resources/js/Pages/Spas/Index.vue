@@ -272,29 +272,17 @@ getData();
             <font-awesome-icon :icon="['fas', 'eraser']" />
           </Button>
           <div v-if="visible" class="mt-3 mb-3">
-            <div v-if="selectedRules.length" class="row mb-3">
-              <div class="col">
-                <p>
-                  Selected Rules:
-                  <template v-for="(rule, index) in selectedRules">
-                    <template v-if="index != 0">; </template>
-                    <b>
-                      {{ rule.name }}
-                    </b>
-                  </template>
-                </p>
-              </div>
-            </div>
+
             <div class="row row-cols-4 border rounded p-2">
               <div class="col">
                 <label class="form-label">Global</label>
                 <Button
                   id="Global"
-                  class="w-100"
+                  class="w-100 py-2 border-2 lh-1"
                   :severity="showGlobal ? 'primary' : 'secondary'"
                   @click="handleGlobal()"
                 >
-                  Show
+                  {{ showGlobal ? 'Hide' : 'Show' }}
                 </Button>
               </div>
               <div class="col">
@@ -329,6 +317,18 @@ getData();
                   @change="handleFields()"
                 >
                 </InputSelect>
+              </div>
+            </div>
+            <div v-if="selectedRules.length" class="row mt-3">
+              <div class="col">
+                <p>
+                  <b class="me-2">Selected Rules:</b>
+                  <template v-for="(rule, index) in selectedRules">
+                    <span class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm">
+                      {{ rule.name }}
+                    </span>
+                  </template>
+                </p>
               </div>
             </div>
           </div>
