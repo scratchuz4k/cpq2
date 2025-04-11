@@ -5,9 +5,11 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\BaseController;
 use App\Models\Tenant;
 use App\Services\BlacklistService;
+use Dedoc\Scramble\Attributes\ExcludeAllRoutesFromDocs;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
+#[ExcludeAllRoutesFromDocs]
 class BlacklistController extends BaseController
 {
 
@@ -17,7 +19,7 @@ class BlacklistController extends BaseController
     }
 
     /**
-     * Display a listing of the resource.
+     * List of blacklist items
      */
     public function index()
     {
@@ -33,15 +35,7 @@ class BlacklistController extends BaseController
     }
 
     /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
+     * Create a new blacklist item
      */
     public function store(Request $request)
     {
@@ -49,7 +43,7 @@ class BlacklistController extends BaseController
     }
 
     /**
-     * Display the specified resource.
+     * Show blacklist item
      */
     public function show(string $id)
     {
@@ -57,15 +51,7 @@ class BlacklistController extends BaseController
     }
 
     /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
+     * Update blacklist item
      */
     public function update(Request $request, string $id)
     {
@@ -73,7 +59,7 @@ class BlacklistController extends BaseController
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove blacklist item
      */
     public function destroy(string $id)
     {

@@ -25,7 +25,7 @@ class OrderController extends BaseController
         parent::__construct();
     }
     /**
-     * Display a listing of the resource.
+     * List Orders
      * @response AnonymousResourceCollection<LengthAwarePaginator<OrderResource>>
      */
     public function index(IndexRequest $request)
@@ -42,7 +42,7 @@ class OrderController extends BaseController
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Store a new Order
      */
     public function store(OrderCreateRequest $request)
     {
@@ -57,7 +57,7 @@ class OrderController extends BaseController
     }
 
     /**
-     * Display the specified resource.
+     * Show Order
      */
     public function show(Order $order)
     {
@@ -65,7 +65,7 @@ class OrderController extends BaseController
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update Order
      */
     public function update(OrderUpdateRequest $request, Order $order)
     {
@@ -84,7 +84,7 @@ class OrderController extends BaseController
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove Order
      */
     public function destroy(Order $order)
     {

@@ -67,7 +67,7 @@ const items = ref([
     {label: "Home", url: "/"},
     {label: "My Account", url: "/myaccount"},
     {label: "Products", url: "/products"},
-    {label: "BlackList", url: "/blacklist"},
+    {label: "Blacklist", url: "/blacklist"},
     {label: "New Item"},
 ]);
 </script>
@@ -103,7 +103,7 @@ const items = ref([
                         <div class="mb-3">
                             <label for="item-subprovider" class="form-label">Subprovider:</label>
                             <select id="item-subprovider" class="form-select" v-model="blacklisted_item.connectivitySupplierGroup">
-                                <option :value="null">Select a Subprovider</option>                                
+                                <option :value="null">Select a Subprovider</option>
                                 <option v-for="subprovider in props.subproviders" :value="subprovider">
                                     {{ subprovider }}
                                 </option>

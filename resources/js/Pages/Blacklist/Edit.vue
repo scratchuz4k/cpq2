@@ -53,7 +53,7 @@ const items = ref([
     {label: "Home", url: "/"},
     {label: "My Account", url: "/myaccount"},
     {label: "Products", url: "/products"},
-    {label: "BlackList", url: "/blacklist"},
+    {label: "Blacklist", url: "/blacklist"},
     {label: "Edit Item"},
 ]);
 </script>

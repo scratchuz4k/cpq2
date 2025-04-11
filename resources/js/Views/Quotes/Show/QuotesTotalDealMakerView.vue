@@ -25,6 +25,8 @@ const warningProviders = ref([
   { pxc: quote.items.some((item) => item.data?.providerName === "PXC") },
 ]);
 
+checkWarnings(warningProviders.value, null)
+
 const pricePlansDiscounts = ref([]);
 props.pricePlans.forEach((e) => {
   let discount = props.modelValue.discounts.find((x) => x.entity?.code == e.code);
@@ -160,7 +162,7 @@ const items = ref([
               Previous</a>
             <div>
               <ShareableQuote></ShareableQuote>
-              <a class="btn btn-outline-primary me-2" @click="checkWarnings(warningProviders, route('quotes.preview', { quote: quote.id }))">
+              <a class="btn btn-outline-primary me-2" :href="route('quotes.preview', { quote: quote.id })">
                 <font-awesome-icon :icon="['far', 'file-pdf']"></font-awesome-icon>
                 Preview
               </a>
