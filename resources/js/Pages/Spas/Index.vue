@@ -3,7 +3,7 @@ import format from "@composables/format";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import { Head, Link } from "@inertiajs/vue3";
 import { Button, Paginator } from "primevue";
-import { computed, reactive, ref, watch } from "vue";
+import { reactive, ref, watch } from "vue";
 import queryString from "query-string";
 import { usePage } from "@inertiajs/vue3";
 import _ from "lodash";
@@ -57,6 +57,7 @@ props.rules.forEach((element) => {
 const handleGlobal = () => {
   let keys = Object.keys(fields).filter((x) => fields[x] != null);
   showGlobal.value = keys.length ? true : !showGlobal.value;
+  Object.keys(fields).forEach((x) => (fields[x] = null));
 
   form.rule_id = [];
   form.field_1 = null;
@@ -70,19 +71,7 @@ const handleGlobal = () => {
   selectedRules.value = props.rules;
   selectedRules.value = selectedRules.value.filter((x) => x.code.includes("Global"));
 
-  let temp = [];
-  temp.push({
-    column: "rule_id",
-    operator: "equals",
-    value: selectedRules.value[0].id,
-  });
-
-  temp.push({
-    column: "field_1",
-    operator: "equals",
-    value: page.props.tenant.id,
-  });
-  getData(temp);
+  getData();
 };
 
 const handleFields = () => {
@@ -98,62 +87,69 @@ const handleFields = () => {
 
   selectedRules.value = props.rules;
 
-  keys.forEach((e, index) => {
+  keys.forEach((e) => {
     selectedRules.value = selectedRules.value.filter((x) => {
       return x.code.includes(format.capitalizeFirstLetter(e));
     });
   });
 
-  let temp = [];
-
-  selectedRules.value.forEach((x, ruleIndex) => {
-    const splitResult = x.code.split(/(?=[A-Z])/);
-    splitResult.forEach((e, index) => {
-      if (!keys.includes(e.toLowerCase())) {
-        return;
-      }
-
-      temp.push({
-        column: "rule_id",
-        operator: "equals",
-        value: x.id,
-        function: ruleIndex != 0 ? "orWhere" : "where",
-      });
-
-      if (index == 0) {
-        temp.push({
-          column: "field_1",
-          operator: "equals",
-          value: fields[e.toLowerCase()]?.id,
-        });
-      }
-
-      if (index == 1) {
-        temp.push({
-          column: "field_2",
-          operator: "equals",
-          value: fields[e.toLowerCase()]?.id,
-        });
-      }
-      //   if (form.price_plan_id) {
-      //     temp.push({
-      //       column: "price_plan_id",
-      //       operator: "equals",
-      //       value: form.price_plan_id,
-      //     });
-      //   }
-    });
-  });
-
-  getData(temp);
+  getData();
 };
 
-const getData = async (array = []) => {
+const getData = async () => {
+  let temp = [];
+  if (!showGlobal.value) {
+    let keys = Object.keys(fields).filter((x) => fields[x] != null);
+    selectedRules.value.forEach((x, ruleIndex) => {
+      const splitResult = x.code.split(/(?=[A-Z])/);
+      splitResult.forEach((e, index) => {
+        if (!keys.includes(e.toLowerCase())) {
+          return;
+        }
+
+        temp.push({
+          column: "rule_id",
+          operator: "equals",
+          value: x.id,
+          function: ruleIndex != 0 ? "orWhere" : "where",
+        });
+
+        if (index == 0) {
+          temp.push({
+            column: "field_1",
+            operator: "equals",
+            value: fields[e.toLowerCase()]?.id,
+          });
+        }
+
+        if (index == 1) {
+          temp.push({
+            column: "field_2",
+            operator: "equals",
+            value: fields[e.toLowerCase()]?.id,
+          });
+        }
+      });
+    });
+  } else {
+    temp.push({
+      column: "rule_id",
+      operator: "equals",
+      value: selectedRules.value[0].id,
+    });
+
+    temp.push({
+      column: "field_1",
+      operator: "equals",
+      value: page.props.tenant.id,
+    });
+  }
+
   let string = queryString.stringify({
     orderBy: meta.orderBy,
     order: meta.order,
     page: meta.page,
-    filters: JSON.stringify(array),
+    filters: JSON.stringify(temp),
     limit: meta.limit,
     page: meta.page,
   });
@@ -216,7 +212,9 @@ const handlePaginator = (ev) => {
 };
 
 const clearFilters = () => {
-  Object.keys(form).forEach((x) => (form[x] = null));
+  showGlobal.value = false;
+  Object.keys(fields).forEach((x) => (fields[x] = null));
+  getData();
 };
 
 const sortBy = (column) => {
@@ -242,10 +240,6 @@ const columns = [
   { name: "Value", data: "value" },
   { name: "Percentage", data: "percentage" },
 ];
-
-watch(fields, () => {
-  handleFields();
-});
 
 getData();
 </script>
@@ -310,6 +304,7 @@ getData();
                   url="/accounts"
                   field="name"
                   v-model="fields.account"
+                  @change="handleFields()"
                 >
                 </InputSelect>
               </div>
@@ -320,6 +315,7 @@ getData();
                   url="/suppliers"
                   field="name"
                   v-model="fields.supplier"
+                  @change="handleFields()"
                 >
                 </InputSelect>
               </div>
@@ -330,6 +326,7 @@ getData();
                   url="/products"
                   field="name"
                   v-model="fields.product"
+                  @change="handleFields()"
                 >
                 </InputSelect>
               </div>

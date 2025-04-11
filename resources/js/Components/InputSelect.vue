@@ -57,6 +57,7 @@ const proxyValue = computed({
   get: () => props.modelValue,
   set: (value) => {
     emit("update:modelValue", value);
+    emit("change", value);
   },
 });
 
