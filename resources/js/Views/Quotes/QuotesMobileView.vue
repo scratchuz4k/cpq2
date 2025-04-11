@@ -177,7 +177,7 @@ const checkQuantity = _.debounce(async (product, temp) => {
     }
 
     await getQuote(quote.id);
-}, 800);
+}, 500);
 
 const saveQuote = async () => {
     if (step.value == 2) {
