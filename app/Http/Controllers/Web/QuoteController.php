@@ -2,19 +2,17 @@
 
 namespace App\Http\Controllers\Web;
 
+use App\Enums\EmailTemplatesEnum;
 use App\Enums\QuoteStatusesEnum;
-use App\Helpers\DataProvider;
+use App\Helpers\DynamicEmail;
 use App\Http\Controllers\BaseController;
+use App\Http\Requests\EmailSendRequest;
 use App\Http\Requests\QuoteCreateRequest;
 use App\Http\Requests\QuoteUpdateRequest;
-use App\Http\Resources\QuoteItemResource;
 use App\Http\Resources\QuoteResource;
-use App\Http\Resources\SolutionTypeResource;
 use App\Models\Account;
 use App\Models\PricePlan;
 use App\Models\Quote;
-use App\Models\QuoteItem;
-use App\Models\Scopes\TenantScope;
 use App\Models\SolutionType;
 use App\Models\User;
 use App\Services\QuoteService;
@@ -22,12 +20,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Mail;
 use Inertia\Inertia;
-use Spatie\Browsershot\Browsershot;
-use Spatie\LaravelPdf\Enums\Format;
-
-use function Spatie\LaravelPdf\Support\pdf;
 
 class QuoteController extends BaseController
 {
@@ -170,45 +164,45 @@ class QuoteController extends BaseController
     /**
      * Remove the specified resource from storage.
      */
-    public function download(Request $request)
+    public function download(Request $request, Quote $quote)
     {
-        $quote = Quote::withoutGlobalScope(TenantScope::class)->find($request->quote);
-        $tenant = $quote->tenant->makeCurrent();
-        $quote = $quote->refresh();
-        $dir = 'pdf/'.$quote->tenant->id;
+        $pdf = $this->quoteService->generatePdf($request, $quote);
 
-        if (! Storage::makeDirectory($dir)) {
-            throw new \Exception('Could not create directory for PDFs');
-        }
-
-        $group = $quote->solutionType->tables->first()?->group ?? null;
-        $groupName = $quote->solutionType->tables->first()?->group_name ?? null;
-        if ($group) {
-            $request->merge(['group' => $group]);
-        }
-
-        $solutionType = SolutionTypeResource::make($quote->solutionType)->resolve();
-        $quote = QuoteResource::make($quote->load(['items']))->resolve();
-
-        $request->merge(['limit' => 300]);
-        $request->merge(['filters' => json_encode([['column' => 'quote_id', 'operator' => 'equals', 'value' => $quote['id']]])]);
-        $dataProvider = new DataProvider(QuoteItem::class);
-        $items = $dataProvider->group(QuoteItemResource::class);
-
-        $columns = json_decode(json_encode($solutionType['table']['columns']), true);
-        $view = array_key_exists('component', $solutionType['configurations']) ? strtolower($solutionType['configurations']['component']) : 'dealmaker';
-        if (array_key_exists('has_custom_table', $solutionType['configurations']) && $solutionType['configurations']['has_custom_table'] == '1') {
-            $view = 'custom';
-        }
-
-        return pdf()
-            ->view("pdf.$view", compact('quote', 'tenant', 'columns', 'items', 'group', 'groupName'))
-            ->format(Format::A4)
-            ->withBrowsershot(function (Browsershot $browsershot) {
-                $browsershot->waitUntilNetworkIdle();
-            })
+        return $pdf
             ->name('quote-'.$quote['id'].'.pdf')
             ->download();
+
+    }
+
+    public function email(EmailSendRequest $request, Quote $quote)
+    {
+        $pdf = $this->quoteService->generatePdf($request, $quote);
+        $pdf->save(storage_path('app/temp/quote-'.$quote['id'].'.pdf'));
+
+        Mail::queue(
+            new DynamicEmail(
+                user: Auth::user(),
+                tenant: Auth::user()->currentTenant,
+                templateEnum: EmailTemplatesEnum::SEND_QUOTE_TO_ACCOUNT,
+                parameters: [
+                    'account_name' => $quote->account->name,
+                    'quote_number' => $quote->id,
+                ],
+                overrides: [
+                    'to' => $request->to,
+                    'cc' => $request->cc,
+                    'bcc' => $request->bcc,
+                ],
+                files: [
+                    [
+                        'disk' => 'temp',
+                        'path' => 'quote-'.$quote['id'].'.pdf',
+                        'title' => 'quote-'.$quote['id'].'.pdf',
+                        'mimetype' => 'application/pdf',
+                    ],
+                ],
+            )
+        );
     }
 
     private function descendantsWithQuotes()

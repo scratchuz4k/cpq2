@@ -39,7 +39,7 @@ return [
         'public' => [
             'driver' => 'local',
             'root' => storage_path('app/public'),
-            'url' => env('APP_URL').'/storage',
+            'url' => env('APP_URL') . '/storage',
             'visibility' => 'public',
             'throw' => false,
         ],
@@ -50,10 +50,18 @@ return [
             'visibility' => 'private',
             'throw' => true,
         ],
+
         'products' => [
             'driver' => 'local',
             'root' => storage_path('app/products'),
             'visibility' => 'public',
+            'throw' => true,
+        ],
+
+        'temp' => [
+            'driver' => 'local',
+            'root' => storage_path('app/temp'),
+            'visibility' => 'private',
             'throw' => true,
         ],
 
