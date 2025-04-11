@@ -2,15 +2,15 @@
 
 namespace App\Helpers;
 
-use Illuminate\Support\Str;
-use App\Models\EmailTemplate;
-use Illuminate\Bus\Queueable;
-use Illuminate\Mail\Mailable;
 use App\Enums\EmailTemplatesEnum;
 use App\Models\EmailHistory;
+use App\Models\EmailTemplate;
 use App\Models\Tenant;
 use App\Models\User;
+use Illuminate\Bus\Queueable;
+use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Str;
 
 /**
  * Generate a dynamic email message, based on a template and parameters.
@@ -38,12 +38,19 @@ class DynamicEmail extends Mailable
     use Queueable, SerializesModels;
 
     private ?User $user;
+
     private Tenant $tenant;
+
     private EmailTemplatesEnum $templateEnum;
+
     private EmailTemplate $email;
+
     private array $parameters;
+
     private array $files;
+
     private bool $isPreview;
+
     private array $overrides;
 
     public function __construct(
@@ -55,6 +62,8 @@ class DynamicEmail extends Mailable
         bool $isPreview = false,
         ?User $user = null,
     ) {
+        //TODO EMAILS: remove the return once we get the credentials for email functionality
+        return;
         $this->files = $files;
         $this->isPreview = $isPreview;
         $this->parameters = $parameters;
@@ -66,6 +75,7 @@ class DynamicEmail extends Mailable
 
     public function build()
     {
+
         $this->email = $this->getTemplate($this->templateEnum, $this->tenant);
 
         $content = [
@@ -104,12 +114,13 @@ class DynamicEmail extends Mailable
         }
 
         EmailHistory::create($content);
+
         return $email;
     }
 
     private function getTemplate($template, $tenant)
     {
-        $mail =  EmailTemplate::where('code', $template->name)->first() ?? null;
+        $mail = EmailTemplate::where('code', $template->name)->first() ?? null;
         $tenant_mail = $mail->tenants()->wherePivot('tenant_id', $tenant->id)->first();
         if ($tenant_mail) {
             $mail->setAttribute('to', $tenant_mail->pivot->to);
@@ -118,6 +129,7 @@ class DynamicEmail extends Mailable
             $mail->setAttribute('subject', $tenant_mail->pivot->subject);
             $mail->setAttribute('body', $tenant_mail->pivot->body);
         }
+
         return $mail;
     }
 
@@ -131,7 +143,7 @@ class DynamicEmail extends Mailable
         $recipient = $this->overrides[$type] ?? $this->email->$type;
 
         if ($type == 'to' && is_null($recipient)) {
-            $recipient =  ''; // Add tenant general email
+            $recipient = ''; // Add tenant general email
         }
 
         return $recipient;
@@ -144,9 +156,9 @@ class DynamicEmail extends Mailable
      */
     private function getSubject()
     {
-        $subject =  $this->replaceSubjectTags($this->overrides['subject'] ?? $this->email->subject);
+        $subject = $this->replaceSubjectTags($this->overrides['subject'] ?? $this->email->subject);
 
-        return config('app.name') . ' - ' . $subject;
+        return config('app.name').' - '.$subject;
     }
 
     /**
@@ -180,7 +192,7 @@ class DynamicEmail extends Mailable
             foreach ($matches[0] as $match) {
                 $subject = str_replace(
                     $match,
-                    $this->parameters[substr($match,  1, strlen($match) - 2)],
+                    $this->parameters[substr($match, 1, strlen($match) - 2)],
                     $subject,
                 );
             }

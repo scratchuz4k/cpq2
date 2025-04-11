@@ -16,8 +16,10 @@
     <template #header>
       <h2>Share quote</h2>
     </template>
-    <tabs>
-      <tab title="Link" :selected="true">
+    <!-- TODO EMAILS: add the tabs once we get the credentials for email functionality
+      <tabs>
+        <tab title="Link" :selected="true">
+    -->
         <div v-if="!shareLink.link">
           <div class="my-3">
             <label for="expiration_data" class="form-label">Expiration Date</label>
@@ -82,7 +84,7 @@
             </button>
           </div>
         </div>
-      </tab>
+      <!-- TODO EMAILS: add the tabs once we get the credentials for email functionality
       <tab title="Email">
         <form @submit.prevent="sendEmail()">
           <div class="my-3">
@@ -124,6 +126,7 @@
         </form>
       </tab>
     </tabs>
+      -->
   </Dialog>
 </template>
 <script setup>
