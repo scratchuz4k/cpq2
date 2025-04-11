@@ -110,7 +110,13 @@ const items = ref([
       </Header>
       <tabs class="mt-3">
         <tab title="General" :selected="true">
-          <div class="col-6">
+          <div class="my-3">
+            <p>
+              This section provides an overview of the product, including general
+              information, associated brands, and suppliers.
+            </p>
+          </div>
+          <div class="my-3 col-6">
             <div class="row mb-3">
               <label for="product-code" class="form-label">Code:</label>
               <input id="product-code" class="form-control" v-model="product.code" />

@@ -1,11 +1,11 @@
 <script setup>
-import { usePage } from '@inertiajs/vue3';
-import queryString from 'query-string';
-import Button from 'primevue/button';
-import Card from 'primevue/card';
+import { usePage } from "@inertiajs/vue3";
+import queryString from "query-string";
+import Button from "primevue/button";
+import Card from "primevue/card";
 import Dialog from "primevue/dialog";
-import {onMounted, reactive, ref, watch} from 'vue';
-import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
+import { onMounted, reactive, ref, watch } from "vue";
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import axios from "axios";
 import Paginator from "primevue/paginator";
 import _ from "lodash";
@@ -13,21 +13,21 @@ import InputText from "primevue/inputtext";
 import InputIcon from "primevue/inputicon";
 import IconField from "primevue/iconfield";
 
-const page = usePage()
+const page = usePage();
 
-let event = ref(null)
-let showModal = ref(false)
-let selectedItem = ref(null)
-const images = ref([])
-const global = ref('')
-const acceptedFiles = ref([])
-const extensions = ref('')
+let event = ref(null);
+let showModal = ref(false);
+let selectedItem = ref(null);
+const images = ref([]);
+const global = ref("");
+const acceptedFiles = ref([]);
+const extensions = ref("");
 const meta = reactive({
-    page: 1,
-    total: 0,
-    first: 1,
-    limit: 10
-})
+  page: 1,
+  total: 0,
+  first: 1,
+  limit: 10,
+});
 const getImages = async () => {
     images.value = []
     extensions.value = Object.fromEntries(
@@ -52,37 +52,38 @@ const getImages = async () => {
 }
 
 const handlePaginator = (ev) => {
-    meta.limit = ev.rows
-    meta.page = ev.page + 1
-    getImages()
-}
+  meta.limit = ev.rows;
+  meta.page = ev.page + 1;
+  getImages();
+};
 
 const selectItem = (item) => {
-    selectedItem.value = item
-}
+  selectedItem.value = item;
+};
 
 const remove = async (item) => {
-    swal.fire({
-        title: 'Are you sure?',
-        customClass: {
-            container: 'deleteFileConfirm'
-        }
-    }).then(async (result) => {
-        if (['cancel', 'backdrop'].includes(result.dismiss)) {
-            return
-        }
-        try {
-            let res = await axios.delete('/api/resources/' +  item.id)
-            selectedItem.value = null
-            getImages()
-            notyf.success('Removed with success');
-            return
-        } catch (err) {
-            notyf.error(err?.response?.data?.message ?? 'Something went wrong')
-        }
-
+  swal
+    .fire({
+      title: "Are you sure?",
+      customClass: {
+        container: "deleteFileConfirm",
+      },
     })
-}
+    .then(async (result) => {
+      if (["cancel", "backdrop"].includes(result.dismiss)) {
+        return;
+      }
+      try {
+        let res = await axios.delete("/api/resources/" + item.id);
+        selectedItem.value = null;
+        getImages();
+        notyf.success("Removed with success");
+        return;
+      } catch (err) {
+        notyf.error(err?.response?.data?.message ?? "Something went wrong");
+      }
+    });
+};
 
 const saveItem = () => {
     showModal.value = !showModal.value
@@ -98,20 +99,23 @@ const closeModal = () => {
 }
 
 emitter.on("resources:open", (params) => {
-    acceptedFiles.value = params.acceptedFiles
-    event.value = params.event
-    showModal.value = true
-    getImages()
+  acceptedFiles.value = params.acceptedFiles;
+  event.value = params.event;
+  showModal.value = true;
+  getImages();
 });
 
-watch([global], _.debounce(function () {
-    meta.page = 1
-    getImages()
-}, 500))
+watch(
+  [global],
+  _.debounce(function () {
+    meta.page = 1;
+    getImages();
+  }, 500)
+);
 
 onMounted(() => {
-    getImages()
-})
+  getImages();
+});
 </script>
 <template>
     <Dialog v-model:visible="showModal" modal :style="{ marginTop: '3rem', width: '80rem' }" :draggable="false"
@@ -184,34 +188,34 @@ onMounted(() => {
 </template>
 <style scoped>
 #resources_search_icon {
-    --p-icon-size: 1.5rem;
+  --p-icon-size: 1.5rem;
 }
 .loaded-file-title{
     text-overflow: ellipsis;
 }
 .file-card:hover {
-    box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px, rgb(51, 51, 51) 0px 0px 0px 1px;
-    cursor: pointer;
+  box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px, rgb(51, 51, 51) 0px 0px 0px 1px;
+  cursor: pointer;
 }
 .selected {
-    box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px, rgb(51, 51, 51) 0px 0px 0px 1px;
-    background-color: whitesmoke;
+  box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px, rgb(51, 51, 51) 0px 0px 0px 1px;
+  background-color: whitesmoke;
 }
 .delete-button-container {
     position: absolute;
     top: -10px;
     right: 10px;
 
-    &:hover {
-        .delete-button {
-            transform: scale(1.2);
-        }
-    }
-
+  &:hover {
     .delete-button {
-        font-size: 20px;
-        transition: 0.3s all ease-in-out;
+      transform: scale(1.2);
     }
+  }
+
+  .delete-button {
+    font-size: 20px;
+    transition: 0.3s all ease-in-out;
+  }
 }
 .action-button-wrapper button.p-button {
     padding-left: 8rem;

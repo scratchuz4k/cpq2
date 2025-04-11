@@ -5,19 +5,29 @@ namespace App\Http\Controllers\Api;
 use App\Helpers\DataProvider;
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\IndexRequest;
+use App\Http\Requests\SpaCreateRequest;
+use App\Http\Requests\SpaUpdateRequest;
 use App\Http\Resources\SpaResource;
 use App\Models\Spa;
+use App\Services\SpasService;
 use Dedoc\Scramble\Attributes\ExcludeRouteFromDocs;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class SpaController extends BaseController
 {
     protected $model = Spa::class;
+
+    public function __construct(protected SpasService $spasService)
+    {
+        parent::__construct();
+    }
+
     /**
      * List of Spas
+     *
      * @response AnonymousResourceCollection<LengthAwarePaginator<SpaResource>>
      */
     public function index(IndexRequest $request)
@@ -27,6 +37,7 @@ class SpaController extends BaseController
             $data = $dataProvider->get();
         } catch (\Exception $e) {
             Log::debug($e->getMessage());
+
             return $e->getMessage();
         }
 
@@ -37,9 +48,17 @@ class SpaController extends BaseController
      * Store a new Spa
      */
     #[ExcludeRouteFromDocs]
-    public function store(Request $request)
+    public function store(SpaCreateRequest $request)
     {
-        //
+        try {
+            $spa = DB::transaction(function () use ($request) {
+                return $this->spasService->store($request->all());
+            });
+        } catch (\Exception $e) {
+            throw new \Exception($e);
+        }
+
+        return new SpaResource($spa->refresh());
     }
 
     /**
@@ -48,16 +67,24 @@ class SpaController extends BaseController
     #[ExcludeRouteFromDocs]
     public function show(Spa $spa)
     {
-        //
+        return new SpaResource($spa);
     }
 
     /**
      * Update Spa
      */
     #[ExcludeRouteFromDocs]
-    public function update(Request $request, Spa $spa)
+    public function update(SpaUpdateRequest $request, Spa $spa)
     {
-        //
+        try {
+            $spa = DB::transaction(function () use ($spa, $request) {
+                return $this->spasService->update($spa, $request->all());
+            });
+        } catch (\Exception $e) {
+            throw new \Exception($e);
+        }
+
+        return new SpaResource($spa->refresh());
     }
 
     /**

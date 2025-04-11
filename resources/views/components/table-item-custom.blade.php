@@ -17,10 +17,11 @@
 
     @case('name')
         <p class="m-0">{{ $item['name'] }}
-            @if (isset($item['data']->additionalInfo->{'Primary Router Model'}))
-                <span class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm router-model">
+            @if (isset($item['data']->additionalInfo->{'router'}))
+                <span class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm router-model"
+                    data-bs-toggle="tooltip" data-bs-placement="top" title="Primary Router Model" v-tooltip>
                     <i class="fa-solid fa-plug"></i>
-                    {{ $item['data']->additionalInfo->{'Primary Router Model'} }}
+                    {{ $item['data']->additionalInfo->{'router'} }}
                 </span>
             @endif
             @if (isset($item['data']->isContended) and $item['data']->isContended)

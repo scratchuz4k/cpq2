@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from "vue";
+import { defineEmits, computed } from "vue";
 
 const props = defineProps({
   modelValue: [Boolean, null]
