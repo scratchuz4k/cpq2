@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Helpers\DataProvider;
 use App\Http\Controllers\BaseController;
+use App\Http\Requests\IndexRequest;
 use App\Http\Requests\QuoteItemCreateRequest;
 use App\Http\Requests\QuoteItemUpdateRequest;
 use App\Http\Resources\QuoteItemResource;
@@ -23,9 +24,9 @@ class QuoteItemController extends BaseController
     }
 
     /**
-     * Display a listing of the resource.
+     * List of Quote Items from a Specific Quote
      */
-    public function index()
+    public function index(IndexRequest $request)
     {
         $dataProvider = new DataProvider(QuoteItem::class);
         try {
@@ -38,7 +39,7 @@ class QuoteItemController extends BaseController
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Store a new Quote Item
      */
     public function store(QuoteItemCreateRequest $request)
     {
@@ -47,7 +48,7 @@ class QuoteItemController extends BaseController
                 return $this->quoteItemService->store($request->all());
             }, 2);
         } catch (\Exception $e) {
-            if (! env('APP_DEBUG')) {
+            if (!env('APP_DEBUG')) {
                 Log::error($e->getMessage());
             }
 
@@ -58,7 +59,7 @@ class QuoteItemController extends BaseController
     }
 
     /**
-     * Display the specified resource.
+     * Show Quote Item
      */
     public function show(QuoteItem $quoteItem)
     {
@@ -66,7 +67,7 @@ class QuoteItemController extends BaseController
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update Quote Item
      */
     public function update(QuoteItemUpdateRequest $request, QuoteItem $quoteItem)
     {
@@ -75,7 +76,7 @@ class QuoteItemController extends BaseController
                 return $this->quoteItemService->update($quoteItem, $request->all());
             });
         } catch (\Exception $e) {
-            if (! env('APP_DEBUG')) {
+            if (!env('APP_DEBUG')) {
                 Log::error($e->getMessage());
             }
             throw new \Exception($e);
@@ -85,7 +86,7 @@ class QuoteItemController extends BaseController
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove Quote Item
      */
     public function destroy(QuoteItem $quoteItem)
     {

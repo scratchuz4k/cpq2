@@ -36,7 +36,6 @@ Route::prefix('external')->group(function () {
     Route::post('get-articles-from-shop-blocks', [ExternalController::class, 'getArticlesFromShopBlocks']);
 });
 
-Route::get('/quotes/{quote}/create_order', [QuoteController::class, 'createOrder'])->name('quotes.order');
 
 Route::apiResources([
     'apis' => ApiController::class,
