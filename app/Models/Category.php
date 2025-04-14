@@ -21,4 +21,9 @@ class Category extends Model
     {
         return $this->belongsToMany(Product::class, 'product_category', 'category_id');
     }
+
+    public function solutionTypes(): BelongsToMany
+    {
+        return $this->belongsToMany(SolutionType::class, 'categories_solution_type');
+    }
 }

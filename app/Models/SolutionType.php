@@ -15,14 +15,19 @@ class SolutionType extends Model
 
     protected $fillable = ["code", "name"];
 
-    public function tenants() : BelongsToMany
+    public function tenants(): BelongsToMany
     {
         return $this
             ->belongsToMany(Tenant::class, 'solution_type_tenant', 'solution_type_id', 'tenant_id')
             ->withTimestamps();
     }
 
-    public function quotes() : HasMany
+    public function categories(): BelongsToMany
+    {
+        return $this->belongsToMany(Category::class, 'categories_solution_type');
+    }
+
+    public function quotes(): HasMany
     {
         return $this->hasMany(Quote::class);
     }

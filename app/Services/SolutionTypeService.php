@@ -27,6 +27,10 @@ class SolutionTypeService
             'updated_at' => now(),
         ]);
 
+        if (array_key_exists('categories', $array)) {
+            $solution_type->categories()->sync($array['categories']);
+        }
+
         if (array_key_exists('tables', $array)) {
             $olderItems = collect($solution_type->tables);
             foreach ($array['tables'] as $table) {
