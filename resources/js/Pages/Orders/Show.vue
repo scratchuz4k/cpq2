@@ -193,7 +193,7 @@ const items = ref([
                 <td>
                   {{ item.name }}
                   <span
-                    v-if="item.data?.additionalInfo['Primary Router Model']"
+                    v-if="item.data?.additionalInfo['router']"
                     v-tooltip
                     data-bs-toggle="tooltip"
                     data-bs-placement="top"
@@ -201,7 +201,7 @@ const items = ref([
                     class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm router-model"
                   >
                     <font-awesome-icon :icon="['fas', 'plug']"></font-awesome-icon>
-                    {{ item.data.additionalInfo["Primary Router Model"] }}
+                    {{ item.data.additionalInfo["router"] }}
                   </span>
                   <span
                     v-if="item.data?.isContended"
@@ -300,7 +300,7 @@ const items = ref([
                 <td>
                   {{ item.name }}
                   <span
-                    v-if="item.data?.additionalInfo['Primary Router Model']"
+                    v-if="item.data?.additionalInfo['router']"
                     v-tooltip
                     data-bs-toggle="tooltip"
                     data-bs-placement="top"
@@ -308,7 +308,7 @@ const items = ref([
                     class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm router-model"
                   >
                     <font-awesome-icon :icon="['fas', 'plug']"></font-awesome-icon>
-                    {{ item.data.additionalInfo["Primary Router Model"] }}
+                    {{ item.data.additionalInfo["router"] }}
                   </span>
                   <span
                     v-if="item.data?.isContended"
@@ -498,7 +498,7 @@ const items = ref([
                           <td>
                             {{ item.name }}
                             <span
-                              v-if="item.data?.additionalInfo['Primary Router Model']"
+                              v-if="item.data?.additionalInfo['router']"
                               v-tooltip
                               data-bs-toggle="tooltip"
                               data-bs-placement="top"
@@ -508,7 +508,7 @@ const items = ref([
                               <font-awesome-icon
                                 :icon="['fas', 'plug']"
                               ></font-awesome-icon>
-                              {{ item.data.additionalInfo["Primary Router Model"] }}
+                              {{ item.data.additionalInfo["router"] }}
                             </span>
                             <span
                               v-if="item.data?.isContended"
@@ -611,7 +611,7 @@ const items = ref([
                           <td>
                             {{ item.name }}
                             <span
-                              v-if="item.data?.additionalInfo['Primary Router Model']"
+                              v-if="item.data?.additionalInfo['router']"
                               v-tooltip
                               data-bs-toggle="tooltip"
                               data-bs-placement="top"
@@ -621,7 +621,7 @@ const items = ref([
                               <font-awesome-icon
                                 :icon="['fas', 'plug']"
                               ></font-awesome-icon>
-                              {{ item.data.additionalInfo["Primary Router Model"] }}
+                              {{ item.data.additionalInfo["router"] }}
                             </span>
                             <span
                               v-if="item.data?.isContended"

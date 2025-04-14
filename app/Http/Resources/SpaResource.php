@@ -16,16 +16,17 @@ class SpaResource extends JsonResource
     {
         $entity1 = app($this->rule->entity_1)::where('id', $this->field_1)->first();
         $entity2 = $this->rule->entity_2 ? app($this->rule->entity_2)::where('id', $this->field_2)->first() : null;
+
         return [
             ...$this->resource->toArray(),
             'field_1' => $entity1,
             'field_2' => $entity2,
-            'value' => round((float)$this->value, 2),
+            'value' => round((float) $this->value, 2),
             'percentage' => round((float) $this->percentage, 2),
             'price_plan' => $this->pricePlan,
             'rule' => $this->rule,
             'operation' => $this->operation,
-            'user' => $this->user
+            'user' => $this->user,
         ];
     }
 }

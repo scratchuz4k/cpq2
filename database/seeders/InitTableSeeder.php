@@ -4,19 +4,19 @@ namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
-use App\Models\User;
-use App\Models\Tenant;
-use App\Models\SpaRule;
-use App\Models\PricePlan;
-use App\Enums\SpaRulesEnum;
-use App\Models\OrderStatus;
-use App\Enums\PricePlanEnum;
-use App\Models\SolutionType;
-use App\Models\SpaOperation;
-use Illuminate\Database\Seeder;
 use App\Enums\OrderStatusesEnum;
+use App\Enums\PricePlanEnum;
 use App\Enums\SolutionTypesEnum;
 use App\Enums\SpaOperationsEnum;
+use App\Enums\SpaRulesEnum;
+use App\Models\OrderStatus;
+use App\Models\PricePlan;
+use App\Models\SolutionType;
+use App\Models\SpaOperation;
+use App\Models\SpaRule;
+use App\Models\Tenant;
+use App\Models\User;
+use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
 class InitTableSeeder extends Seeder
@@ -29,10 +29,10 @@ class InitTableSeeder extends Seeder
     public function run()
     {
         $tenant = Tenant::updateOrCreate([
-            "name" => "CloudMarket"
+            'name' => 'CloudMarket',
         ], [
-            "domain" => "localhost",
-            "database" => "cloudmarket"
+            'domain' => 'localhost',
+            'database' => 'cloudmarket',
         ]);
 
         $super_user = User::updateOrCreate([
@@ -50,7 +50,7 @@ class InitTableSeeder extends Seeder
         }
 
         foreach (SpaRulesEnum::cases() as $case) {
-            SpaRule::updateOrCreate(['code' => $case->name], ['class' => $case->value, ...$case->getTasks()]);
+            SpaRule::updateOrCreate(['code' => $case->name], ['name' => $case->getName(), 'class' => $case->value, ...$case->getTasks()]);
         }
 
         foreach (SpaOperationsEnum::cases() as $case) {
@@ -62,7 +62,7 @@ class InitTableSeeder extends Seeder
         }
 
         foreach (OrderStatusesEnum::cases() as $status) {
-            OrderStatus::updateOrCreate(["code" => $status->name,], ["name" => $status->value,]);
+            OrderStatus::updateOrCreate(['code' => $status->name], ['name' => $status->value]);
         }
     }
 }

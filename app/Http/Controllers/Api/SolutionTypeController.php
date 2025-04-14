@@ -4,9 +4,11 @@ namespace App\Http\Controllers\Api;
 
 use App\Helpers\DataProvider;
 use App\Http\Controllers\BaseController;
+use App\Http\Requests\IndexRequest;
 use App\Http\Resources\SolutionTypeTenantResource;
 use App\Models\SolutionType;
 use App\Models\SolutionTypeTenant;
+use Dedoc\Scramble\Attributes\ExcludeRouteFromDocs;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -16,9 +18,9 @@ class SolutionTypeController extends BaseController
     protected $model = SolutionType::class;
 
     /**
-     * Display a listing of the resource.
+     * List of Solution Types
      */
-    public function index()
+    public function index(IndexRequest $request)
     {
         $tenant_id = Auth::user()->tenant_id;
 
@@ -38,31 +40,34 @@ class SolutionTypeController extends BaseController
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Store a new Solution Type
      */
+    #[ExcludeRouteFromDocs]
     public function store(Request $request)
     {
         //
     }
 
     /**
-     * Display the specified resource.
+     * Show Solution Type
      */
+    #[ExcludeRouteFromDocs]
     public function show(SolutionType $solutionType)
     {
         //
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update Solution Type
      */
+    #[ExcludeRouteFromDocs]
     public function update(Request $request, SolutionType $solutionType)
     {
         //
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove Solution Type
      */
     public function destroy(SolutionType $solutionType)
     {

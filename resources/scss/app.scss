@@ -936,6 +936,7 @@ body {
         }
     }
 }
+
 .p-dialog {
     &.resources-modal {
         .p-dialog-header {
@@ -1095,7 +1096,9 @@ body {
 /* Tooltip text */
 .cpq-tooltip .cpq-tooltip-text {
     visibility: hidden;
-    width: 120px;
+    max-width: 360px;
+    width: max-content;
+    padding: 2px 5px;
     background-color: #555;
     color: #fff;
     text-align: center;
@@ -1107,6 +1110,20 @@ body {
     transform: translateX(-50%);
     opacity: 0;
     transition: opacity 0.3s;
+}
+
+.cpq-tooltip .cpq-tooltip-text:after {
+    content: "";
+    width: 0;
+    height: 0;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-top: 6px solid #555;
+    margin: auto;
+    bottom: -6px;
+    left: 0;
+    right: 0;
+    position: absolute;
 }
 
 .cpq-tooltip:hover .cpq-tooltip-text {

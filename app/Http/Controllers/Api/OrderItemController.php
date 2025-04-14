@@ -10,6 +10,7 @@ use App\Http\Requests\OrderItemUpdateRequest;
 use App\Http\Resources\OrderItemResource;
 use App\Models\OrderItem;
 use App\Services\OrderItemService;
+use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -23,7 +24,7 @@ class OrderItemController extends BaseController
     }
 
     /**
-     * Display a listing of the resource.
+     * List OrderItems from a specific Order
      */
     public function index(IndexRequest $request)
     {
@@ -40,7 +41,7 @@ class OrderItemController extends BaseController
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Store a new OrderItem
      */
     public function store(OrderItemCreateRequest $request)
     {
@@ -49,7 +50,7 @@ class OrderItemController extends BaseController
                 return $this->orderItemService->store($request->all());
             });
         } catch (\Exception $e) {
-            if (! env('APP_DEBUG')) {
+            if (!env('APP_DEBUG')) {
                 Log::error($e->getMessage());
             }
             throw new \Exception($e);
@@ -59,7 +60,7 @@ class OrderItemController extends BaseController
     }
 
     /**
-     * Display the specified resource.
+     * Show OrderItem
      */
     public function show(OrderItem $orderItem)
     {
@@ -67,7 +68,7 @@ class OrderItemController extends BaseController
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update OrderItem
      */
     public function update(OrderItemUpdateRequest $request, OrderItem $orderItem)
     {
@@ -76,7 +77,7 @@ class OrderItemController extends BaseController
                 return $this->orderItemService->update($orderItem, $request->all());
             });
         } catch (\Exception $e) {
-            if (! env('APP_DEBUG')) {
+            if (!env('APP_DEBUG')) {
                 Log::error($e->getMessage());
             }
             throw new \Exception($e);
@@ -86,7 +87,7 @@ class OrderItemController extends BaseController
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove OrderItem
      */
     public function destroy(OrderItem $orderItem)
     {

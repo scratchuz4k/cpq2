@@ -29,7 +29,10 @@ class SpaController extends BaseController
      */
     public function index()
     {
-        return Inertia::render(component: 'Spas/Index');
+        return Inertia::render('Spas/Index', [
+            'rules' => SpaRule::all(),
+            'price_plans' => PricePlan::all(),
+        ]);
     }
 
     /**

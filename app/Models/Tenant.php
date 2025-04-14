@@ -35,4 +35,9 @@ class Tenant extends \Spatie\Multitenancy\Models\Tenant
             ->belongsToMany(SolutionType::class, 'solution_type_tenant', 'tenant_id', 'solution_type_id')
             ->withTimestamps();
     }
+
+    public function emails(): BelongsToMany
+    {
+        return $this->belongsToMany(EmailTemplate::class, 'email_templates_tenant', 'tenant_id');
+    }
 }

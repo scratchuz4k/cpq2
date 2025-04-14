@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\BaseController;
+use App\Http\Requests\IndexRequest;
+use Dedoc\Scramble\Attributes\ExcludeRouteFromDocs;
 use Exception;
 use App\Models\Merchant;
 use Illuminate\Http\Request;
@@ -14,10 +16,10 @@ class MerchantController extends BaseController
 {
     protected $model = Merchant::class;
     /**
-     * Display a listing of the resource.
+     * List Merchants
      * @response AnonymousResourceCollection<LengthAwarePaginator<MerchantResource>>
      */
-    public function index()
+    public function index(IndexRequest $request)
     {
         $dataProvider = new DataProvider(Merchant::class);
         try {
@@ -31,31 +33,34 @@ class MerchantController extends BaseController
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Store a new Merchant
      */
+    #[ExcludeRouteFromDocs]
     public function store(Request $request)
     {
         //
     }
 
     /**
-     * Display the specified resource.
+     * Show Merchant
      */
+    #[ExcludeRouteFromDocs]
     public function show(Merchant $merchant)
     {
         //
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update Merchant
      */
+    #[ExcludeRouteFromDocs]
     public function update(Request $request, Merchant $merchant)
     {
         //
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove Merchant
      */
     public function destroy(Merchant $merchant)
     {

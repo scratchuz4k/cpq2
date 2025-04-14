@@ -25,7 +25,7 @@ class AccountController extends BaseController
         parent::__construct();
     }
     /**
-     * Index
+     * List Accounts
      * @response AnonymousResourceCollection<LengthAwarePaginator<AccountResource>>
      */
     public function index(IndexRequest $request)
@@ -42,7 +42,7 @@ class AccountController extends BaseController
     }
 
     /**
-     * Store
+     * Store a new Account
      */
     public function store(AccountCreateRequest $request)
     {
@@ -58,7 +58,7 @@ class AccountController extends BaseController
     }
 
     /**
-     * Show.
+     * Show Account
      */
     public function show(Account $account)
     {
@@ -66,7 +66,7 @@ class AccountController extends BaseController
     }
 
     /**
-     * Update
+     * Update Account
      */
     public function update(AccountUpdateRequest $request, Account $account)
     {
@@ -82,7 +82,7 @@ class AccountController extends BaseController
     }
 
     /**
-     * Remove
+     * Remove Account
      */
     public function destroy(Account $account)
     {

@@ -11,6 +11,16 @@ use Illuminate\Support\Str;
 
 class AppServiceProvider extends ServiceProvider
 {
+    protected $abilities = [
+        'index' => 'viewAny',
+        'show' => 'view',
+        'create' => 'create',
+        'store' => 'create',
+        'edit' => 'update',
+        'update' => 'update',
+        'destroy' => 'delete',
+    ];
+
     /**
      * Register any application services.
      */
@@ -33,14 +43,20 @@ class AppServiceProvider extends ServiceProvider
         Event::listen(function (\SocialiteProviders\Manager\SocialiteWasCalled $event) {
             $event->extendSocialite('saml2', \SocialiteProviders\Saml2\Provider::class);
         });
-        /*
+
         Scramble::routes(function (Route $route) {
-            $available = [
-                'api/account',
-                'api/contact',
-            ];
-            return Str::startsWith($route->uri, $available);
+            if (!isset($route->action['as']))
+                return false;
+
+            $action = explode( '.', $route->action['as']);
+
+            if (!Str::startsWith($route->uri, 'api/') || count($action) < 3)
+                return false;
+
+            $model = str_replace('-', '_', Str::singular($action[1]));
+
+            $ability = $this->abilities[$action[2]];
+            return auth()->user()->can("$ability $model");
         });
-        */
     }
 }

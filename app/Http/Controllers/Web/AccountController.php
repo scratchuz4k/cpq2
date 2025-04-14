@@ -67,9 +67,8 @@ class AccountController extends BaseController
      */
     public function edit(Account $account)
     {
-        $temp = new AccountResource($account);
         return Inertia::render('Accounts/Edit', [
-            "account" => $temp->toArray(request())
+            "account" => (new AccountResource($account))->resolve()
         ]);
     }
 

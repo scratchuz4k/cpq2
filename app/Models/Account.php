@@ -16,7 +16,7 @@ class Account extends Model
 
     protected $dateFormat = 'Y-m-d H:i:s.u';
 
-    protected $fillable = ['name', 'reference', 'tenant_id'];
+    protected $fillable = ['name',  'reference', 'tenant_id'];
 
     protected static function booted(): void
     {
