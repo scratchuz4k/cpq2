@@ -45,13 +45,13 @@ class QuoteController extends BaseController
     {
         $user = request()->user();
 
-        if (! $user->hasRole('Sales Rep')) {
+        if (!$user->hasRole('Sales Rep')) {
             $users = User::whereHas('quotes')->get();
         } else {
             $users = $this->descendantsWithQuotes();
         }
 
-        $users = $users->filter(fn ($user) => $user->quotes->count() > 0);
+        $users = $users->filter(fn($user) => $user->quotes->count() > 0);
         $solutionTypes = SolutionType::whereHas('quotes', function ($query) use ($users) {
             return $query->whereIn('user_id', $users->pluck('id'));
         })->get();
@@ -59,7 +59,7 @@ class QuoteController extends BaseController
         return Inertia::render('Quotes/Index', [
             'users' => $users->values(),
             'solutions' => $solutionTypes,
-            'status' => array_map(fn ($status) => $status->name, QuoteStatusesEnum::cases()),
+            'status' => array_map(fn($status) => $status->name, QuoteStatusesEnum::cases()),
         ]);
     }
 
@@ -88,7 +88,7 @@ class QuoteController extends BaseController
                 return $quote;
             });
         } catch (\Exception $e) {
-            if (! env('APP_DEBUG')) {
+            if (!env('APP_DEBUG')) {
                 Log::error($e->getMessage());
             }
             throw new \Exception($e);
@@ -114,8 +114,6 @@ class QuoteController extends BaseController
     public function edit(Quote $quote)
     {
         return Inertia::render('Quotes/Edit', [
-            'accounts' => Account::all(),
-            'solution_types' => Auth::user()->currentTenant->solutionTypes,
             'quote' => new QuoteResource($quote->load(['items'])),
         ]);
     }
@@ -130,7 +128,7 @@ class QuoteController extends BaseController
                 return $this->quoteService->update($quote, $request->all());
             });
         } catch (\Exception $e) {
-            if (! env('APP_DEBUG')) {
+            if (!env('APP_DEBUG')) {
                 Log::error($e->getMessage());
             }
             throw new \Exception($e);
@@ -175,9 +173,9 @@ class QuoteController extends BaseController
         $quote = Quote::withoutGlobalScope(TenantScope::class)->find($request->quote);
         $tenant = $quote->tenant->makeCurrent();
         $quote = $quote->refresh();
-        $dir = 'pdf/'.$quote->tenant->id;
+        $dir = 'pdf/' . $quote->tenant->id;
 
-        if (! Storage::makeDirectory($dir)) {
+        if (!Storage::makeDirectory($dir)) {
             throw new \Exception('Could not create directory for PDFs');
         }
 
@@ -207,7 +205,7 @@ class QuoteController extends BaseController
             ->withBrowsershot(function (Browsershot $browsershot) {
                 $browsershot->waitUntilNetworkIdle();
             })
-            ->name('quote-'.$quote['id'].'.pdf')
+            ->name('quote-' . $quote['id'] . '.pdf')
             ->download();
     }
 

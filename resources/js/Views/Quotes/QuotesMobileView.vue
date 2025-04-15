@@ -11,7 +11,7 @@ import {
 } from "@composables/useQuoteItem";
 import axios from "axios";
 import { router } from "@inertiajs/vue3";
-import { onMounted, reactive, ref, watch } from "vue";
+import { onMounted, popScopeId, reactive, ref, watch } from "vue";
 import queryString from "query-string";
 import InputQuantity from "@/Components/InputQuantity.vue";
 const props = defineProps({
@@ -27,11 +27,35 @@ const meta = reactive({
     isLoading: false,
 });
 
+const solution_type = props.modelValue.solution_type
+const active_categories = ref([]);
+const category_total_products = ref(0);
+
+const getCategoriesWithProducts = async () => {
+    let query = queryString.stringify({
+        limit: 200,
+        filters: JSON.stringify([
+            {
+                column: "id",
+                operator: "in",
+                value: solution_type.categories.map((x) => x.id).join(",")
+            },
+            {
+                column: "products.id",
+                operator: "not_equals",
+                value: "",
+            },
+        ]),
+    });
+    let res = await axios.get("/api/categories" + "?" + query);
+    active_categories.value = res.data.data;
+};
+
 const urlParams = new URLSearchParams(window.location.search);
 const params = new Proxy(urlParams, {
     get: (searchParams, prop) => searchParams.get(prop),
 });
-const step = ref(params["step"] ?? 1);
+const step = ref(params["step"] ?? 0);
 
 const search = ref(null);
 
@@ -77,27 +101,6 @@ const sorts = [
 ];
 
 const sort = ref(sorts[1]);
-
-const getProducts = async () => {
-    let query = queryString.stringify({
-        limit: 100,
-        filters: JSON.stringify([
-            {
-                column: "categories.code",
-                operator: "equals",
-                value: "plan",
-            },
-        ]),
-        account_id: props.modelValue.account_id,
-    });
-    let res = await axios.get("/api/products" + "?" + query);
-    res.data.data.forEach((e) => {
-        let temp = props.modelValue.items.find((x) => x.product_code == e.code);
-        e.quantity = temp ? temp.quantity : 0;
-        e.contract_length = 12;
-    });
-    products.value = res.data.data;
-};
 
 const getProductsShopBlocks = async () => {
     meta.isLoading = true;
@@ -188,15 +191,16 @@ const saveQuote = async () => {
 };
 
 const getHardwareProductsCount = () => {
-    let codes = products.value.map((x) => x.code);
+    // let codes = products.value.map((x) => x.code);
     let items = [...quote.items];
     return items
-        .filter((x) => !(codes.includes(x.product_code) || codes.includes(x.code)))
+        .filter((x) => !x.product_id)
         .reduce((acc, i) => (acc += i.quantity), 0);
 };
 
+getCategoriesWithProducts();
+
 onMounted(async () => {
-    await getProducts();
     await getProductsShopBlocks();
 });
 
@@ -215,60 +219,41 @@ watch(
     <div class="panel panel-mobile">
         <div class="row justify-content-between">
             <div class="col-lg-7">
-                <div v-if="step == 1" id="mobile_step1" class="step">
-                    <div class="d-flex justify-content-between mb-3">
-                        <h2>Select some products to get started</h2>
-                        <p class="bigger bold text-primary">STEP 1/2</p>
-                    </div>
-
-                    <div v-for="(product, index) in products" class="mobile-item mobile-product mb-3">
-                        <div class="d-flex justify-content-between">
-                            <div class="d-flex align-items-center mb-2">
-                                <h4 class="m-0">{{ product.name }}</h4>
-                                <p class="m-0 ms-2">
-                                    {{ product.description }} /
-                                    {{ GBP.format(product.price.net_spa) }}
-                                </p>
-                            </div>
-                            <font-awesome-icon :icon="['fa', 'circle-info']" />
+                <div v-for="(category, index) in active_categories">
+                    <div v-if="step == index" :id="'step-' + (index + 1)" class="step">
+                        <div class="d-flex justify-content-between mb-3">
+                            <h2>Select some products</h2>
+                            <p class="bigger bold text-primary">
+                                STEP {{ index + 1 }}/{{ active_categories.length + 1 }}</p>
                         </div>
-                        <div class="mobile-product-quantity">
-                            <label>Quantity</label>
-                            <div class="d-flex align-items-center pb-3">
-                                <InputQuantity :id="'bolt-' + index" v-model="product.quantity"
-                                    @change="(ev) => checkQuantity(product, ev)" />
-                                <button :id="'btn-plan-' + index + '-add-25'" type=" button"
-                                    class="btn btn-sm ms-4 btn-add-custom-quantity"
-                                    @click="checkQuantity(product, product.quantity + 25)">
-                                    +25
+
+                        <CategoryProductsView :category="category" :account="props.modelValue.account"
+                            @category-total-products="category_total_products = $event">
+                        </CategoryProductsView>
+
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <button v-if="index > 0" :id="'btn-step-{{ index + 1}}-previous'"
+                                    class="btn text-primary step-nav btn-sm me-3" type="button" @click="() => step--">
+                                    <font-awesome-icon :icon="['fas', 'arrow-left']" /> Previous
                                 </button>
-                                <button :id="'btn-plan-' + index + '-add-50'" type=" button"
-                                    class="btn btn-sm mx-2 btn-add-custom-quantity"
-                                    @click="checkQuantity(product, product.quantity + 50)">
-                                    +50
-                                </button>
-                                <button :id="'btn-plan-' + index + '-add-100'" type=" button"
-                                    class="btn btn-sm btn-add-custom-quantity"
-                                    @click="checkQuantity(product, product.quantity + 100)">
-                                    +100
+                            </div>
+                            <div>
+                                <span id="total_mobile_users">
+                                    Add {{ category_total_products }}
+                                    {{ category.name }}
+                                </span>
+                                <button :id="'btn-step-1-next'" class="ms-3 btn btn-primary step-nav" type="button"
+                                    @click="() => step++">
+                                    Next
+                                    <font-awesome-icon :icon="['fas', 'arrow-right']" />
                                 </button>
                             </div>
                         </div>
-                    </div>
-
-                    <div class="d-flex justify-content-end align-items-center">
-                        <span id="total_mobile_users">
-                            Add {{products.reduce((acc, item) => (acc += item.quantity), 0)}}
-                            mobile users
-                        </span>
-                        <button :id="'btn-step-1-next'" class="ms-3 btn btn-primary step-nav" type="button"
-                            @click="() => step++">
-                            Next
-                            <font-awesome-icon :icon="['fas', 'arrow-right']" />
-                        </button>
                     </div>
                 </div>
-                <div v-if="step == 2" id="mobile_step3" class="step">
+
+                <div v-if="step == active_categories.length" id="mobile_step_shopblocks" class="step">
                     <div class="d-flex justify-content-between mb-4">
                         <h2 class="m-0">Finally, choose your add-ons</h2>
                         <p class="bigger text-primary bold">STEP 2/2</p>
@@ -399,9 +384,6 @@ watch(
                                 @click="() => step--">
                                 <font-awesome-icon :icon="['fas', 'arrow-left']" /> Previous
                             </button>
-                            <button class="btn btn-outline-primary text-primary" @click="saveQuote()">
-                                Next
-                            </button>
                         </div>
                         <div>
                             <span id="total_add_ons">
@@ -435,13 +417,15 @@ watch(
                         </div>
                     </InfoBox>
                     <div class="configure-mobile-sidebar px-4 py-4">
-                        <h4 id="sidebar_products" data-total="0">1. Plans</h4>
-                        <div class="sidebar_items mb-3">
-                            <div v-for="product in products" class="item mb-2">
-                                <span>{{ product.name }}</span>
-                                <span class="badge bg-light-grey dark">
-                                    {{ product.quantity }}
-                                </span>
+                        <div v-for="(category, index) in active_categories">
+                            <h4 id="sidebar_products" data-total="0">{{ index + 1 }}. {{ category.name }}</h4>
+                            <div class="sidebar_items mb-3">
+                                <div v-for="product in category.products" class="item mb-2">
+                                    <span>{{ product.name }}</span>
+                                    <span class="badge bg-light-grey dark">
+                                        {{quote.items.find((x) => x.product_id == product.id)?.quantity ?? 0}}
+                                    </span>
+                                </div>
                             </div>
                         </div>
                         <h4>2. Add-ons</h4>
@@ -460,22 +444,4 @@ watch(
     </div>
 </template>
 
-<style scoped>
-.btn-add-custom-quantity {
-    font-size: 12px;
-    font-weight: 600;
-    border-radius: 20px;
-    text-decoration: none;
-    background: #f5e5f3;
-    color: #a34996;
-    padding-left: 15px;
-    padding-right: 15px;
-}
-
-.bullet {
-    padding: 0px 12px 0px 12px;
-    border-radius: 20px;
-    opacity: 0px;
-    background: #f5f5f5;
-}
-</style>
+<style></style>

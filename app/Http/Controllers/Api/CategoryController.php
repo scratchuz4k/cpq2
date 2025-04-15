@@ -40,7 +40,7 @@ class CategoryController extends BaseController
             return $e->getMessage();
         }
 
-        return CategoryResource::collection($data);
+        return CategoryResource::collection($data->load('products'));
     }
 
     /**
