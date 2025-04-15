@@ -24,6 +24,8 @@ class Category extends Model
 
     public function solutionTypes(): BelongsToMany
     {
-        return $this->belongsToMany(SolutionType::class, 'categories_solution_type');
+        return $this->belongsToMany(SolutionType::class, 'categories_solution_type')
+            ->withPivot('order')
+            ->orderBy('pivot_order');
     }
 }

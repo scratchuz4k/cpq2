@@ -25,14 +25,6 @@ const table = reactive(
         }
 );
 
-const categoriesTable = reactive(
-    props.solution_type.categories
-        ? { ...props.solution_type.categories }
-        : {
-            category: null,
-            order: null,
-        }
-);
 
 const dragOptions = {
     animation: 200,
@@ -41,11 +33,8 @@ const dragOptions = {
     ghostClass: "ghost",
 };
 
-const categories = ref(
-    props.solution_type.categories.map((e) => {
-        return { id: e.id, name: e.name };
-    })
-);
+const categories = ref(props.solution_type.categories);
+
 const saveSolutionType = () => {
     table.columns = table.columns.filter((x) => !!x.value);
     table.columns.forEach((x) => {
@@ -54,9 +43,15 @@ const saveSolutionType = () => {
     });
 
     table.code = !table.code ? "custom" : table.code;
+
+    let temp = {};
+    categories.value.forEach((item, index) => temp[item.id] = {
+        order: index
+    });
+
     router.put(
         `/solution-types/${props.solution_type.id}`,
-        { ...solutiontype, tables: [table], categories: categories.value.map((item) => item.id), },
+        { ...solutiontype, tables: [table], categories: temp },
         {
             onSuccess: (page) => {
                 notyf.success("Updated with Success");
@@ -176,8 +171,8 @@ const items = ref([
                                 <div class="mb-3">
                                     <label class="form-label">Pick a name (optional):</label>
 
-                                    <InputText :id="`table-column-` + index + `-name`" type="text"
-                                        v-model="table.group_name" class="w-100" size="small" />
+                                    <InputText :id="`table-column-name`" type="text" v-model="table.group_name"
+                                        class="w-100" size="small" />
                                 </div>
                                 <hr />
 
@@ -250,9 +245,10 @@ const items = ref([
                                 <p class="mb-3">
                                     In this section you can define the categories that will be shown in the Price Step
                                     and
-                                    the order:
+                                    the order.
                                 </p>
                                 <div>
+                                    <label class="form-label">Select Categories:</label>
                                     <InputSelectMultiple id="product-categories" url="/categories" field="name"
                                         v-model="categories">
                                     </InputSelectMultiple>
