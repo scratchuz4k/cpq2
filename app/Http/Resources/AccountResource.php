@@ -16,7 +16,7 @@ class AccountResource extends JsonResource
     {
         return [
             ...$this->resource->toArray(),
-            "contacts" => $this->contacts,
+            'contacts' => (ContactResource::collection($this->contacts))->resolve(),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];

@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Http\Requests\IndexRequest;
 use App\Services\ApiService;
+use Dedoc\Scramble\Attributes\ExcludeRouteFromDocs;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
@@ -22,9 +24,9 @@ class ApiController extends BaseController
     }
 
     /**
-     * Display a listing of the resource.
+     * List APIs
      */
-    public function index()
+    public function index(IndexRequest $request)
     {
         $dataProvider = new DataProvider(Api::class);
         try {
@@ -38,39 +40,25 @@ class ApiController extends BaseController
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Create API
      */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
+    #[ExcludeRouteFromDocs]
     public function store(Request $request)
     {
         //
     }
 
     /**
-     * Display the specified resource.
+     * Show API
      */
+    #[ExcludeRouteFromDocs]
     public function show(Api $api)
     {
         //
     }
 
     /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Api $api)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
+     * Update API
      */
     public function update(Request $request, Api $api)
     {
@@ -85,7 +73,7 @@ class ApiController extends BaseController
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove API
      */
     public function destroy(Api $api)
     {

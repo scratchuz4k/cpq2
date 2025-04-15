@@ -4,8 +4,10 @@ namespace App\Http\Controllers\Api;
 
 use App\Helpers\DataProvider;
 use App\Http\Controllers\BaseController;
+use App\Http\Requests\IndexRequest;
 use App\Http\Resources\RegionResource;
 use App\Models\Region;
+use Dedoc\Scramble\Attributes\ExcludeRouteFromDocs;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -16,10 +18,10 @@ class RegionController extends BaseController
     protected $model = Region::class;
 
     /**
-     * Display a listing of the resource.
+     * List of Regions
      * @response AnonymousResourceCollection<LengthAwarePaginator<RegionResource>>
      */
-    public function index()
+    public function index(IndexRequest $request)
     {
         $dataProvider = new DataProvider(Region::class);
         try {
@@ -33,31 +35,34 @@ class RegionController extends BaseController
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Store a new Region
      */
+    #[ExcludeRouteFromDocs]
     public function store(Request $request)
     {
         //
     }
 
     /**
-     * Display the specified resource.
+     * Show Region
      */
+    #[ExcludeRouteFromDocs]
     public function show(Region $region)
     {
         //
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update Region
      */
+    #[ExcludeRouteFromDocs]
     public function update(Request $request, Region $region)
     {
         //
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove Region
      */
     public function destroy(Region $region)
     {

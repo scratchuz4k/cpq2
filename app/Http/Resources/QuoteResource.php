@@ -20,7 +20,7 @@ class QuoteResource extends JsonResource
             'discount' => round((float)$this->discount, 4),
             'commission_rate' => round((float)$this->commission_rate, 2),
             'user' => $this->user,
-            'account' => $this->account,
+            'account' => (new AccountResource($this->account))->resolve(),
             'solution_type' => (new SolutionTypeResource($this->solutionType))->resolve(),
             'shared_link' => (new SharedLinkResource($this->sharedLink))->resolve(),
             'discounts' => QuoteDiscountResource::collection($this->discounts)->resolve(),

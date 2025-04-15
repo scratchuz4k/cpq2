@@ -157,7 +157,7 @@ const checkQuantity = _.debounce(async (product, temp) => {
 
     let item = quote.items.find((x) => x.product_code == product.code);
     if (!item) {
-        createQuoteItem({
+        await createQuoteItem({
             quote_id: props.modelValue.id,
             product_code: product.code,
             product_id: product.id,
@@ -170,14 +170,14 @@ const checkQuantity = _.debounce(async (product, temp) => {
         });
     } else {
         if (product.quantity == 0) {
-            removeQuoteItem(item.id);
+            await removeQuoteItem(item.id);
         } else {
-            updateQuoteItem(item.id, { quantity: product.quantity });
+            await updateQuoteItem(item.id, { quantity: product.quantity });
         }
     }
 
-    getQuote(quote.id);
-}, 200);
+    await getQuote(quote.id);
+}, 500);
 
 const saveQuote = async () => {
     if (step.value == 2) {

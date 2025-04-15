@@ -176,8 +176,7 @@ class ExternalController extends Controller
         $items = FilterProvider::get($res['items'], request()->input('filters', []));
 
         $priceRules = new PriceRules;
-        $id = $request->input('account_id', null);
-        $account = $id ? Account::find($id) : null;
+        $account = Account::find($request->input('account_id', null));
         $pricePlan = PricePlan::where('code', PricePlanEnum::SINGLE->name)->first();
         $priceRules->find(account: $account, pricePlan: $pricePlan);
 
