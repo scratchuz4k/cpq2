@@ -111,7 +111,7 @@ const getProductsShopBlocks = async () => {
     });
     let query = {
         page: meta.page,
-        perPage: meta.limit,
+        limit: meta.limit,
         filters: temp,
         order: sort.value.order,
         orderBy: sort.value.orderBy,
