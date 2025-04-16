@@ -81,7 +81,7 @@ class SolutionTypeController extends BaseController
             'solution_type' => (new SolutionTypeResource($solutionType))->resolve(),
             'available_tables' => TablesEnum::cases(),
             'available_columns' => $columns,
-            'categories' => Category::all(),
+            'available_categories' => Category::all(),
         ]);
     }
 

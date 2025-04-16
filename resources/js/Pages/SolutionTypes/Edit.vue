@@ -7,11 +7,13 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import { Head, router } from "@inertiajs/vue3";
 import { reactive, ref } from "vue";
 import Checkbox from "primevue/checkbox";
+import InputSelect from "@/Components/InputSelect.vue";
 
 const props = defineProps({
     solution_type: Object,
     available_tables: Array,
-    available_columns: Array
+    available_columns: Array,
+    available_categories: Array
 });
 
 const table = reactive(
@@ -34,6 +36,7 @@ const dragOptions = {
 };
 
 const categories = ref(props.solution_type.categories);
+const available_categories = ref(props.available_categories);
 
 const saveSolutionType = () => {
     table.columns = table.columns.filter((x) => !!x.value);
@@ -45,8 +48,11 @@ const saveSolutionType = () => {
     table.code = !table.code ? "custom" : table.code;
 
     let temp = {};
-    categories.value.forEach((item, index) => temp[item.id] = {
-        order: index
+    categories.value.forEach((item, index) => {
+        if (item.id == null) {
+            return
+        }
+        temp[item.id] = { order: index }
     });
 
     router.put(
@@ -103,6 +109,9 @@ const clearAllColumns = async (table) => {
     table.columns = [];
 };
 
+const addCategory = () => {
+    categories.value.push({ name: null, id: null });
+};
 
 const deleteCategory = (element) => {
     let index = categories.value.findIndex((x) => x.value == element.value);
@@ -120,8 +129,20 @@ const clearAllCategories = async () => {
     if (["cancel", "backdrop"].includes(result.dismiss)) {
         return;
     }
-    debugger
     categories.value = [];
+};
+
+const checkCategories = (index) => {
+    let selected_category = categories.value[index];
+
+    let duplicated_category = categories.value.findIndex((x, i) => {
+        return i !== index && x?.id === selected_category.id;
+    });
+
+    if (duplicated_category != -1) {
+        notyf.error("Category already selected");
+        categories.value[index] = {}
+    }
 };
 
 const items = ref([
@@ -263,26 +284,13 @@ const items = ref([
                     <tab title="Price" v-if="solution_type.code != 3">
                         <Panel class="mt-3" header="Categories" :toggleable="true">
                             <div class="mb-3">
-                                <p class="mb-3">
-                                    In this section you can define the categories that will be shown in the Price Step
-                                    and
-                                    the order.
-                                </p>
-                                <div>
-                                    <label class="form-label">Select Categories:</label>
-                                    <InputSelectMultiple id="product-categories" url="/categories" field="name"
-                                        v-model="categories">
-                                    </InputSelectMultiple>
-                                </div>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Choose Categories order:</label>
+                                <label class="form-label">Choose Categories:</label>
                                 <table class="table">
                                     <thead>
                                         <tr>
-                                            <th></th>
-                                            <th>Category</th>
-                                            <th>
+                                            <th style="width: 5%;"></th>
+                                            <th style="text-align: left;">Category</th>
+                                            <th style="text-align: right;width: 5%;">
                                                 <button id="solution-type-categories-remove-columns"
                                                     class="btn p-2 mx-1 border-0" @click="clearAllCategories()">
                                                     <font-awesome-icon :icon="['fas', 'trash-alt']"></font-awesome-icon>
@@ -294,17 +302,19 @@ const items = ref([
                                         handle=".handle">
                                         <template #item="{ element, index }">
                                             <tr>
-                                                <td>
+                                                <td style="width: 5%;">
                                                     <button class="btn p-1 border-0 handle">
                                                         <font-awesome-icon icon="fas fa-bars" />
                                                     </button>
                                                 </td>
-                                                <td>
-                                                    <p>
-                                                        {{ element.name }}
-                                                    </p>
+                                                <td style="text-align: left;">
+                                                    <InputSelect v-model="categories[index]" url="/categories"
+                                                        :id="`solution-type-categories-` + index + `-value`"
+                                                        field="name" placeholder="Select a Category"
+                                                        @change="checkCategories(index)">
+                                                    </InputSelect>
                                                 </td>
-                                                <td>
+                                                <td style="text-align: right; width: 5%;">
                                                     <button class="btn p-2 mx-1 border-0"
                                                         @click="deleteCategory(element)">
                                                         <font-awesome-icon icon="fas fa-trash-alt" />
@@ -313,6 +323,18 @@ const items = ref([
                                             </tr>
                                         </template>
                                     </draggable>
+                                    <tfoot>
+                                        <tr>
+                                            <th colspan="4">
+                                                <div class="d-flex justify-content-end">
+                                                    <button id="solution-type-table-add-category" class="btn btn-sm"
+                                                        @click="addCategory()">
+                                                        <font-awesome-icon :icon="['fas', 'plus']"></font-awesome-icon>
+                                                    </button>
+                                                </div>
+                                            </th>
+                                        </tr>
+                                    </tfoot>
                                 </table>
                             </div>
                         </Panel>
