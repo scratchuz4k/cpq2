@@ -48,7 +48,12 @@ const getCategoriesWithProducts = async () => {
         ]),
     });
     let res = await axios.get("/api/categories" + "?" + query);
-    active_categories.value = res.data.data;
+
+    const categories_order = solution_type.categories.map((x) => x.id);
+
+    active_categories.value = res.data.data.sort((a, b) => {
+        return categories_order.indexOf(a.id) - categories_order.indexOf(b.id);
+    });
 };
 
 const urlParams = new URLSearchParams(window.location.search);
@@ -191,7 +196,6 @@ const saveQuote = async () => {
 };
 
 const getHardwareProductsCount = () => {
-    // let codes = products.value.map((x) => x.code);
     let items = [...quote.items];
     return items
         .filter((x) => !x.product_id)

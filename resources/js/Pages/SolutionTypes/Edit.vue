@@ -12,8 +12,7 @@ import InputSelect from "@/Components/InputSelect.vue";
 const props = defineProps({
     solution_type: Object,
     available_tables: Array,
-    available_columns: Array,
-    available_categories: Array
+    available_columns: Array
 });
 
 const table = reactive(
@@ -36,7 +35,6 @@ const dragOptions = {
 };
 
 const categories = ref(props.solution_type.categories);
-const available_categories = ref(props.available_categories);
 
 const saveSolutionType = () => {
     table.columns = table.columns.filter((x) => !!x.value);

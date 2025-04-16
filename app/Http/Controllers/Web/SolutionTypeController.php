@@ -80,8 +80,7 @@ class SolutionTypeController extends BaseController
         return Inertia::render('SolutionTypes/Edit', [
             'solution_type' => (new SolutionTypeResource($solutionType))->resolve(),
             'available_tables' => TablesEnum::cases(),
-            'available_columns' => $columns,
-            'available_categories' => Category::all(),
+            'available_columns' => $columns
         ]);
     }
 
