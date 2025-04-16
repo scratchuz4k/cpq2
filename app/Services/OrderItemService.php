@@ -13,7 +13,6 @@ class OrderItemService
         return DB::transaction(function () use ($array) {
             $orderItem = OrderItem::create([
                 ...$array,
-                'tax_order_item' => 20,
                 'original_price' => $array['price']
             ]);
 
@@ -23,7 +22,6 @@ class OrderItemService
                         ...$array,
                         ...$child,
                         'parent_id' => $orderItem->id,
-                        'tax_order_item' => 20,
                         'original_price' => isset($child['price']) ? $child['price'] : 0,
                     ]);
 
