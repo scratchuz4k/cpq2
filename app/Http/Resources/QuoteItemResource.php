@@ -4,6 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Number;
 
 class QuoteItemResource extends JsonResource
 {
@@ -17,17 +18,17 @@ class QuoteItemResource extends JsonResource
         return [
             ...$this->resource->toArray(),
             'quantity' => $this->quantity,
-            'margin' => round((float)$this->margin, 4),
-            'discount' => round((float)$this->discount, 4),
-            'raw_price' => round((float)$this->raw_price, 4),
-            'original_price' => round((float)$this->original_price, 4),
-            'price' => round((float)$this->price, 4),
-            'total' => round((float)$this->total, 4),
-            'total_tax' => round((float)$this->total_tax, 4),
-            'total_gross' => round((float)$this->total_gross, 4),
-            'tax_order_item' => round((float)$this->tax_order_item, 4),
+            'margin' => Number::currency($this->margin),
+            'discount' => $this->discount,
+            'raw_price' => Number::currency($this->raw_price),
+            'original_price' => Number::currency($this->original_price),
+            'price' => Number::currency($this->price),
+            'total' => Number::currency($this->total),
+            'total_tax' => Number::currency($this->total_tax),
+            'total_gross' => Number::currency($this->total_gross),
+            'tax_order_item' => Number::currency($this->tax_order_item),
             'price_plan' => $this->pricePlan,
-            'contract_length' => (float)$this->contract_length,
+            'contract_length' => (float) $this->contract_length,
         ];
     }
 }
