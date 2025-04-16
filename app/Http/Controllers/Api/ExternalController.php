@@ -20,7 +20,9 @@ use Illuminate\Support\Str;
 
 class ExternalController extends Controller
 {
-    public function __construct(protected CloudMarketService $cloudMarketService) {}
+    public function __construct(protected CloudMarketService $cloudMarketService)
+    {
+    }
     /**
      * Request Openreach Api to get all address with a Postal Code.
      */
@@ -64,11 +66,11 @@ class ExternalController extends Controller
         }
 
         $cache_key = 'address_lookup_' . Str::slug($address);
-        return  Cache::remember($cache_key, 43200, function () use ($address) {
+        return Cache::remember($cache_key, 43200, function () use ($address) {
             $res = Http::get('https://api.tomtom.com/search/2/geocode/' . $address . '.json?key=' . env('TOMTOM_API_KEY') . '&countryCode=GB');
             $res = json_decode($res->body(), true);
             $position = [];
-            if (is_null($res) ||  !array_key_exists('results', $res) || !count($res['results'])) {
+            if (is_null($res) || !array_key_exists('results', $res) || !count($res['results'])) {
                 return $position;
             }
 
@@ -160,11 +162,10 @@ class ExternalController extends Controller
                 $products[$key]['price'] = [
                     "code" => 1,
                     "tax_rate" => 20,
-                    "net" => (float)$product['price'],
-                    "tax" => (float)$product['price'] * 0.2,
-                    "gross" => (float)$product['price'] * 1.2
+                    "net" => (float) $product['price'],
+                    "tax" => (float) $product['price'] * 0.2,
+                    "gross" => (float) $product['price'] * 1.2
                 ];
-                $products[$key]['url'] = 'https://hardware.cloud.market/smartphones/' . $product['slug'];
                 $tempFilters = FilterProvider::process($tempFilters, $products[$key], true);
             }
 

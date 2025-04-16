@@ -1,6 +1,6 @@
 <script setup>
 import queryString from 'query-string';
-import { ref, watch } from 'vue';
+import { computed, reactive, ref, watch } from 'vue';
 import { quote, getQuote } from "@composables/useQuote";
 import _ from 'lodash';
 import {
@@ -8,10 +8,28 @@ import {
     removeQuoteItem,
     createQuoteItem,
 } from "@composables/useQuoteItem";
+import Paginator from "primevue/paginator";
+
+const meta = reactive({
+    page: 1,
+    total: 0,
+    overallTotal: 0,
+    first: 1,
+    limit: 5,
+    isLoading: false,
+});
 
 const props = defineProps({
     category: Object,
     account: Object,
+    modelValue: Number,
+    index: Number,
+    total_categories: Number
+});
+
+const proxyValue = computed({
+    get() { return props.modelValue },
+    set(val) { emit('update:modelValue', val) }
 });
 
 const products = ref([])
@@ -19,7 +37,8 @@ const emit = defineEmits(['category_total_products']);
 
 const getProducts = async () => {
     let query = queryString.stringify({
-        limit: 5,
+        page: meta.page,
+        perPage: meta.limit,
         filters: JSON.stringify([
             {
                 column: "categories.id",
@@ -36,6 +55,17 @@ const getProducts = async () => {
         e.contract_length = 12;
     });
     products.value = res.data.data;
+
+    meta.first = (meta.page - 1) * meta.limit;
+    meta.total = res.data.total;
+    meta.overallTotal = res.data.overall_total;
+    meta.isLoading = false;
+};
+
+const handlePaginator = (ev) => {
+    meta.limit = ev.rows;
+    meta.page = ev.page + 1;
+    getProducts();
 };
 
 const checkQuantity = _.debounce(async (product, temp) => {
@@ -79,37 +109,66 @@ watch(products, (products) => {
 </script>
 
 <template>
-    <div v-for="(product, index) in products" class="mobile-item mobile-product mb-3">
-        <div class="d-flex justify-content-between">
-            <div class="d-flex align-items-center mb-2">
-                <h4 class="m-0">{{ product.name }}</h4>
-                <p class="m-0 ms-2">
-                    {{ product.description }}
-                    <span v-if="product.price && Object.keys(product.price).length > 0">
-                        / {{ GBP.format(product.price.net_spa) }}
-                    </span>
-                </p>
-            </div>
-            <font-awesome-icon :icon="['fa', 'circle-info']" />
+    <div v-if="proxyValue == props.index" :id="'step-' + (props.index + 1)" class="step">
+        <div class="d-flex justify-content-between mb-3">
+            <h2>Select some products</h2>
+            <p class="bigger bold text-primary">
+                STEP {{ props.index + 1 }}/{{ total_categories }}</p>
         </div>
-        <div class="mobile-product-quantity">
-            <label>Quantity</label>
-            <div class="d-flex align-items-center pb-3">
-                <InputQuantity :id="'bolt-' + index" v-model="product.quantity"
-                    @change="(ev) => checkQuantity(product, ev)" />
-                <button :id="'btn-plan-' + index + '-add-25'" type=" button"
-                    class="btn btn-sm ms-4 btn-add-custom-quantity"
-                    @click="checkQuantity(product, product.quantity + 25)">
-                    +25
+
+        <div v-for="(product, index) in products" class="mobile-item mobile-product mb-3">
+            <div class="d-flex justify-content-between">
+                <div class="d-flex align-items-center mb-2">
+                    <h4 class="m-0">{{ product.name }}</h4>
+                    <p class="m-0 ms-2">
+                        {{ product.description }} /
+                        {{ GBP.format(product.price?.net_spa || 0) }}
+                    </p>
+                </div>
+                <font-awesome-icon :icon="['fa', 'circle-info']" />
+            </div>
+            <div class="mobile-product-quantity">
+                <label>Quantity</label>
+                <div class="d-flex align-items-center pb-3">
+                    <InputQuantity :id="'bolt-' + index" v-model="product.quantity"
+                        @change="(ev) => checkQuantity(product, ev)" />
+                    <button :id="'btn-plan-' + index + '-add-25'" type=" button"
+                        class="btn btn-sm ms-4 btn-add-custom-quantity"
+                        @click="checkQuantity(product, product.quantity + 25)">
+                        +25
+                    </button>
+                    <button :id="'btn-plan-' + index + '-add-50'" type=" button"
+                        class="btn btn-sm mx-2 btn-add-custom-quantity"
+                        @click="checkQuantity(product, product.quantity + 50)">
+                        +50
+                    </button>
+                    <button :id="'btn-plan-' + index + '-add-100'" type=" button"
+                        class="btn btn-sm btn-add-custom-quantity"
+                        @click="checkQuantity(product, product.quantity + 100)">
+                        +100
+                    </button>
+                </div>
+            </div>
+        </div>
+        <Paginator v-model:first="meta.first" :rows="meta.limit" :totalRecords="meta.total"
+            :rowsPerPageOptions="[5, 10, 20]" @page="handlePaginator">
+        </Paginator>
+        <div class="d-flex justify-content-between align-items-center mt-3">
+            <div>
+                <button v-if="props.index > 0" :id="'btn-step-{{ props.index + 1}}-previous'"
+                    class="btn text-primary step-nav btn-sm me-3" type="button" @click="() => proxyValue--">
+                    <font-awesome-icon :icon="['fas', 'arrow-left']" /> Previous
                 </button>
-                <button :id="'btn-plan-' + index + '-add-50'" type=" button"
-                    class="btn btn-sm mx-2 btn-add-custom-quantity"
-                    @click="checkQuantity(product, product.quantity + 50)">
-                    +50
-                </button>
-                <button :id="'btn-plan-' + index + '-add-100'" type=" button" class="btn btn-sm btn-add-custom-quantity"
-                    @click="checkQuantity(product, product.quantity + 100)">
-                    +100
+            </div>
+            <div>
+                <span id="total_mobile_users">
+                    Add {{products.reduce((acc, x) => acc = acc + x.quantity, 0)}}
+                    {{ category.name }}
+                </span>
+                <button :id="'btn-step-1-next'" class="ms-3 btn btn-primary step-nav" type="button"
+                    @click="() => proxyValue++">
+                    Next
+                    <font-awesome-icon :icon="['fas', 'arrow-right']" />
                 </button>
             </div>
         </div>

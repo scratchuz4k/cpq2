@@ -220,37 +220,9 @@ watch(
         <div class="row justify-content-between">
             <div class="col-lg-7">
                 <div v-for="(category, index) in active_categories">
-                    <div v-if="step == index" :id="'step-' + (index + 1)" class="step">
-                        <div class="d-flex justify-content-between mb-3">
-                            <h2>Select some products</h2>
-                            <p class="bigger bold text-primary">
-                                STEP {{ index + 1 }}/{{ active_categories.length + 1 }}</p>
-                        </div>
-
-                        <CategoryProductsView :category="category" :account="props.modelValue.account"
-                            @category-total-products="category_total_products = $event">
-                        </CategoryProductsView>
-
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <button v-if="index > 0" :id="'btn-step-{{ index + 1}}-previous'"
-                                    class="btn text-primary step-nav btn-sm me-3" type="button" @click="() => step--">
-                                    <font-awesome-icon :icon="['fas', 'arrow-left']" /> Previous
-                                </button>
-                            </div>
-                            <div>
-                                <span id="total_mobile_users">
-                                    Add {{ category_total_products }}
-                                    {{ category.name }}
-                                </span>
-                                <button :id="'btn-step-1-next'" class="ms-3 btn btn-primary step-nav" type="button"
-                                    @click="() => step++">
-                                    Next
-                                    <font-awesome-icon :icon="['fas', 'arrow-right']" />
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+                    <CategoryProductsView :category="category" :account="props.modelValue.account" v-model="step"
+                        :index="index" :total_categories="active_categories.length + 1">
+                    </CategoryProductsView>
                 </div>
 
                 <div v-if="step == active_categories.length" id="mobile_step_shopblocks" class="step">
@@ -344,7 +316,7 @@ watch(
                                             </p>
                                         </div>
                                         <div>
-                                            <p class="bold big">{{ GBP.format(product.price.net_spa) }}</p>
+                                            <p class="bold big">{{ GBP.format(product.price?.net_spa || 0) }}</p>
                                         </div>
                                     </div>
                                 </div>

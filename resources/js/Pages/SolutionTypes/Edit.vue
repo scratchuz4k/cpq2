@@ -103,6 +103,27 @@ const clearAllColumns = async (table) => {
     table.columns = [];
 };
 
+
+const deleteCategory = (element) => {
+    let index = categories.value.findIndex((x) => x.value == element.value);
+    if (index != -1) {
+        categories.value.splice(index, 1);
+    }
+};
+
+const clearAllCategories = async () => {
+    let result = await swal.fire({
+        title: "Are you sure?",
+        text: "This action removes all categories",
+    });
+
+    if (["cancel", "backdrop"].includes(result.dismiss)) {
+        return;
+    }
+    debugger
+    categories.value = [];
+};
+
 const items = ref([
     { label: "Home", url: "/" },
     { label: "My Account", url: "/myaccount" },
@@ -239,7 +260,7 @@ const items = ref([
                             </template>
                         </Panel>
                     </tab>
-                    <tab title="Price">
+                    <tab title="Price" v-if="solution_type.code != 3">
                         <Panel class="mt-3" header="Categories" :toggleable="true">
                             <div class="mb-3">
                                 <p class="mb-3">
@@ -254,7 +275,6 @@ const items = ref([
                                     </InputSelectMultiple>
                                 </div>
                             </div>
-
                             <div class="mb-3">
                                 <label class="form-label">Choose Categories order:</label>
                                 <table class="table">
@@ -264,8 +284,7 @@ const items = ref([
                                             <th>Category</th>
                                             <th>
                                                 <button id="solution-type-categories-remove-columns"
-                                                    class="btn p-2 mx-1 border-0"
-                                                    @click="clearAllCategories(categories)">
+                                                    class="btn p-2 mx-1 border-0" @click="clearAllCategories()">
                                                     <font-awesome-icon :icon="['fas', 'trash-alt']"></font-awesome-icon>
                                                 </button>
                                             </th>
@@ -287,7 +306,7 @@ const items = ref([
                                                 </td>
                                                 <td>
                                                     <button class="btn p-2 mx-1 border-0"
-                                                        @click="deleteCategoryColumn(element)">
+                                                        @click="deleteCategory(element)">
                                                         <font-awesome-icon icon="fas fa-trash-alt" />
                                                     </button>
                                                 </td>
