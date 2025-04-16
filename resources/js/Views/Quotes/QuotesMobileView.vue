@@ -108,22 +108,23 @@ const getProductsShopBlocks = async () => {
       operator: filters[key].operator,
       value: filters[key].value ?? null,
     });
-    let query = {
-        page: meta.page,
-        limit: meta.limit,
-        filters: temp,
-        order: sort.value.order,
-        orderBy: sort.value.orderBy,
-        search: search.value,
-        account_id: props.modelValue.account_id,
-    };
-    let res = await axios.post("/api/external/get-articles-from-shop-blocks", query);
-    productsHardware.value = res.data.data;
-    productsHardware.value.forEach((e) => {
-        let temp = props.modelValue.items.find((x) => x.product_code == e.code);
-        e.quantity = temp ? temp.quantity : 0;
-        e.contract_length = 1;
-    });
+  });
+  let query = {
+    page: meta.page,
+    limit: meta.limit,
+    filters: temp,
+    order: sort.value.order,
+    orderBy: sort.value.orderBy,
+    search: search.value,
+    account_id: props.modelValue.account_id,
+  };
+  let res = await axios.post("/api/external/get-articles-from-shop-blocks", query);
+  productsHardware.value = res.data.data;
+  productsHardware.value.forEach((e) => {
+    let temp = props.modelValue.items.find((x) => x.product_code == e.code);
+    e.quantity = temp ? temp.quantity : 0;
+    e.contract_length = 1;
+  });
 
   meta.first = (meta.page - 1) * meta.limit;
   meta.total = res.data.total;
