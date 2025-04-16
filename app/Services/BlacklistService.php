@@ -2,14 +2,12 @@
 
 namespace App\Services;
 
-
 use App\Helpers\Files\BlacklistFile;
 use App\Helpers\FilterProvider;
 use App\Models\Tenant;
 
 class BlacklistService
 {
-
     public function index()
     {
         $blacklist = new BlacklistFile(Tenant::current());
@@ -17,10 +15,10 @@ class BlacklistService
         $filters = request()->input('filters', []);
         $filters = is_string($filters) ? json_decode($filters, true) : $filters;
         $items = FilterProvider::get($data['data'], $filters);
-        $meta = FilterProvider::paginate($items);
 
-        return $meta;
+        return FilterProvider::paginate($items);
     }
+
     public function store(array $array)
     {
         $blacklist = new BlacklistFile(Tenant::current());
@@ -31,7 +29,7 @@ class BlacklistService
             'id' => $id,
             ...$array,
             'created_at' => now(),
-            'updated_at' => now()
+            'updated_at' => now(),
         ];
 
         $blacklist->write(
@@ -48,6 +46,7 @@ class BlacklistService
 
         return $data['data'][$id];
     }
+
     public function update(array $array)
     {
         $blacklist = new BlacklistFile(Tenant::current());
@@ -58,7 +57,7 @@ class BlacklistService
             [
                 'id' => $array['id'],
                 ...$array,
-                'updated_at' => now()
+                'updated_at' => now(),
             ],
             $item
         ));
@@ -85,6 +84,7 @@ class BlacklistService
                 $data['created_at'] ?? now(),
                 now()
             );
+
             return;
         }
 

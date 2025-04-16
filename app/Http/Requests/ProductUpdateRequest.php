@@ -29,6 +29,8 @@ class ProductUpdateRequest extends FormRequest
             $product_id = $this->route()->parameters()['product']->id;
         }
 
+        $user = Auth::user();
+
         return [
             'code' => ['required', 'string', 'max:255',
                 Rule::unique('products')->where(function ($query) use ($user) {

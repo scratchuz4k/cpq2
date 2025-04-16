@@ -2,6 +2,7 @@
 
 namespace App\Helpers;
 
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 
@@ -37,16 +38,11 @@ class FilterProvider
         $orderBy = request()->input('orderBy', $orderBy);
 
         $items = $order == 'asc' ? $items->sortBy($orderBy) : $items->sortByDesc($orderBy);
-        $perPage = request()->input('perPage', 10);
+        $limit = request()->input('limit', 10);
         $currentPage = request()->input('page', 1);
-        $temp = $items->slice(($currentPage - 1) * $perPage, $perPage)->values();
+        $temp = $items->slice(($currentPage - 1) * $limit, $limit)->values();
 
-        return [
-            'data' => $temp,
-            'current_page' => $currentPage,
-            'per_page' => $perPage,
-            'total' => $items->count(),
-        ];
+        return new LengthAwarePaginator($temp, $items->count(), $limit, $currentPage);
     }
 
     public static function process($filters, $value, $addCount = false)

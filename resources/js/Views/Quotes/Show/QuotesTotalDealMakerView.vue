@@ -1,5 +1,5 @@
 <script setup>
-import { ref, createApp } from "vue";
+import { ref } from "vue";
 import Dialog from "primevue/dialog";
 import { createOrder } from "@/Composables/useOrders.js";
 import { setQuote, quote } from "@composables/useQuote";
@@ -179,6 +179,16 @@ const items = ref([
               Previous</a
             >
             <div>
+              <ActivityDialog
+                :filters="[
+                  { entity: 'Quote', values: quote.id },
+                  { entity: 'QuoteItem', values: quote.items.map((x) => x.id).join(',') },
+                  {
+                    entity: 'QuoteDiscount',
+                    values: quote.discounts.map((x) => x.id).join(','),
+                  },
+                ]"
+              ></ActivityDialog>
               <ShareableQuote></ShareableQuote>
               <a
                 class="btn btn-outline-primary me-2"

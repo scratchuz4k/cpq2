@@ -6,6 +6,7 @@ use App\Trait\SetTenantId;
 use App\Enums\QuoteStatusesEnum;
 use App\Events\QuoteStatusEvent;
 use App\Models\Scopes\TenantScope;
+use App\Trait\RegisterActivity;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
@@ -14,7 +15,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Quote extends Model
 {
-    use HasFactory, SetTenantId;
+    use HasFactory, SetTenantId, RegisterActivity;
+
     protected $fillable = [
         "account_id",
         "solution_type_id",
