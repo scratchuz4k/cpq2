@@ -4,7 +4,6 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-use Illuminate\Support\Number;
 
 class QuoteResource extends JsonResource
 {
@@ -17,8 +16,12 @@ class QuoteResource extends JsonResource
     {
         return [
             ...$this->resource->toArray(),
-            'commission_value' => round((float) $this->commission_value, 2),
             'user' => $this->user,
+            'commission_value' => format_currency($this->commission_value),
+            'margin' => format_currency($this->margin),
+            'total' => format_currency($this->total),
+            'total_tax' => format_currency($this->total_tax),
+            'total_gross' => format_currency($this->total_gross),
             'account' => (new AccountResource($this->account))->resolve(),
             'solution_type' => (new SolutionTypeResource($this->solutionType))->resolve(),
             'shared_link' => (new SharedLinkResource($this->sharedLink))->resolve(),
@@ -26,10 +29,6 @@ class QuoteResource extends JsonResource
             'items' => QuoteItemResource::collection($this->items)->resolve(),
             'orders' => $this->whenLoaded('orders'),
             'updated_at' => $this->updated_at,
-            'margin' => Number::currency($this->margin),
-            'total' => Number::currency($this->total),
-            'total_tax' => Number::currency($this->total_tax),
-            'total_gross' => Number::currency($this->total_gross),
         ];
     }
 }

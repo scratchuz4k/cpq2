@@ -16,10 +16,10 @@ class OrderResource extends JsonResource
     {
         return [
             ...$this->resource->toArray(),
-            'margin' => (float)$this->margin,
-            'discount' => (float)$this->discount,
-            'commission_rate' => (float)$this->commission_rate,
-            'contract_length' => (float)$this->contract_length,
+            'margin' => format_currency($this->margin),
+            'discount' => format_currency($this->discount),
+            'commission_rate' => format_currency($this->commission_rate),
+            'contract_length' => format_currency($this->contract_length),
             'user' => $this->user,
             'account' => $this->account,
             'solution_type' => $this->solutionType,

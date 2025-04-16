@@ -4,7 +4,6 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-use Illuminate\Support\Number;
 
 class QuoteItemResource extends JsonResource
 {
@@ -18,15 +17,14 @@ class QuoteItemResource extends JsonResource
         return [
             ...$this->resource->toArray(),
             'quantity' => $this->quantity,
-            'margin' => Number::currency($this->margin),
-            'discount' => $this->discount,
-            'raw_price' => Number::currency($this->raw_price),
-            'original_price' => Number::currency($this->original_price),
-            'price' => Number::currency($this->price),
-            'total' => Number::currency($this->total),
-            'total_tax' => Number::currency($this->total_tax),
-            'total_gross' => Number::currency($this->total_gross),
-            'tax_order_item' => Number::currency($this->tax_order_item),
+            'discount' => (float) $this->discount,
+            'margin' => format_currency($this->margin),
+            'raw_price' => format_currency($this->raw_price),
+            'original_price' => format_currency($this->original_price),
+            'price' => format_currency($this->price),
+            'total' => format_currency($this->total),
+            'total_tax' => format_currency($this->total_tax),
+            'total_gross' => format_currency($this->total_gross),
             'price_plan' => $this->pricePlan,
             'contract_length' => (float) $this->contract_length,
         ];

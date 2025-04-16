@@ -1,8 +1,6 @@
 <?php
 
-use App\Models\Quote;
 use App\Models\Order;
-use App\Enums\OrderStatusesEnum;
 
 if (! function_exists('format_date')) {
     /**
@@ -13,15 +11,15 @@ if (! function_exists('format_date')) {
      */
     function format_date($date): string
     {
-        if (!$date) {
+        if (! $date) {
             return '';
         }
 
         if (strtotime($date) >= strtotime('-1 minutes')) {
-            return  __('just now');
+            return __('just now');
         }
         if (strtotime($date) >= strtotime('-1 day')) {
-            return  \Carbon\Carbon::parse($date)->diffForHumans();
+            return \Carbon\Carbon::parse($date)->diffForHumans();
         }
         $dt = \Carbon\Carbon::create($date);
 
@@ -39,10 +37,17 @@ if (! function_exists('get_order_status')) {
         if ($order->items->count()) {
             return 'QUOTE';
         }
-        if (!empty($order->address_data)) {
+        if (! empty($order->address_data)) {
             return 'PRICE';
         }
 
         return 'CONFIGURE';
+    }
+}
+
+if (! function_exists('format_currency')) {
+    function format_currency($value)
+    {
+        return round((float) $value, config('currency.precision'));
     }
 }
