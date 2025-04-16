@@ -67,11 +67,7 @@ describe("Blacklist Crud", () => {
     });
 
     it("Edit a Blacklist Item", () => {
-        cy.visit("/");
-        cy.get("#my-account").click();
-        cy.get("#link-products").click();
-        cy.get("#blacklist-index-btn").click();
-        cy.wait(500);
+        cy.visit("/blacklist");
         cy.get("#datatable-btn-0-edit").click();
 
         cy.get("#item-name").clear().type(product_name);
@@ -82,11 +78,7 @@ describe("Blacklist Crud", () => {
     });
 
     it("Delete a Blacklist Item", () => {
-        cy.visit("/");
-        cy.get("#my-account").click();
-        cy.get("#link-products").click();
-        cy.get("#blacklist-index-btn").click();
-        cy.wait(500);
+        cy.visit("/blacklist");
         cy.get("#datatable-search").type(product_name);
         cy.wait(500);
         cy.get("#datatable-btn-0-delete").click();

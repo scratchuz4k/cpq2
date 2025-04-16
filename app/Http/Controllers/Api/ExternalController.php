@@ -174,14 +174,14 @@ class ExternalController extends Controller
         });
 
         $items = FilterProvider::get($res['items'], request()->input('filters', []));
-        $meta = FilterProvider::paginate($items);
 
         $priceRules = new PriceRules;
         $account = Account::find($request->input('account_id', null));
         $pricePlan = PricePlan::where('code', PricePlanEnum::SINGLE->name)->first();
+        $priceRules->find(account: $account, pricePlan: $pricePlan);
 
-        $meta['data'] = $meta['data']->map(function ($item) use ($priceRules, $account, $pricePlan) {
-            $net_spa = $priceRules->calculate($item['price']['net'], account: $account, pricePlan: $pricePlan);
+        $items = $items->map(function ($item) use ($priceRules) {
+            $net_spa = $priceRules->apply($item['price']['net']);
             $item['price']['net_spa'] = $net_spa;
             $item['price']['tax'] = $net_spa * 0.2;
             $item['price']['gross'] = $net_spa * 1.2;
@@ -190,6 +190,10 @@ class ExternalController extends Controller
             return $item;
         });
 
-        return [...$meta, 'filters' => $res['filters']];
+        $paginator = FilterProvider::paginate($items);
+        $response = $paginator->toArray();
+        $response['filters'] = $res['filters'];
+
+        return $response;
     }
 }
