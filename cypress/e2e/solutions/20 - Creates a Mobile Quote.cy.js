@@ -27,6 +27,25 @@ describe("Creates a Mobile Quote", () => {
         cy.get(".notyf").contains("Created with Success");
     });
 
+    it("Associate Category with Mobile Solution", () => {
+        cy.visit("/");
+        cy.get("#my-account").click();
+        cy.get("#link-solutions").click();
+        cy.get("#datatable-btn-1-edit").click()
+        cy.get("#2-2").click()
+        cy.get("#solution-type-table-add-category").click()
+
+        cy.get("#select-solution-type-categories-0-value").click()
+        cy.wait(500)
+        cy.get(".p-select-list-container").eq(0).within(() => {
+            cy.get('li').first()
+                .should('exist')
+                .click();
+        })
+        cy.get("#btn-save-solution-type").click()
+    });
+
+
     it("Creates Mobile Quote", () => {
         cy.visit("/");
         cy.get("#create-tab").click();

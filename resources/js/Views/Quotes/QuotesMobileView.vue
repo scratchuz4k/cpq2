@@ -188,7 +188,7 @@ const checkQuantity = _.debounce(async (product, temp) => {
 }, 200);
 
 const saveQuote = async () => {
-    if (step.value == 2) {
+    if (step.value == active_categories.value.length) {
         router.get(`/quotes/${props.modelValue.id}`);
         return;
     }
@@ -223,6 +223,7 @@ watch(
     <div class="panel panel-mobile">
         <div class="row justify-content-between">
             <div class="col-lg-7">
+                STEP {{ step }}
                 <div v-for="(category, index) in active_categories">
                     <CategoryProductsView :category="category" :account="props.modelValue.account" v-model="step"
                         :index="index" :total_categories="active_categories.length + 1">
@@ -232,7 +233,8 @@ watch(
                 <div v-if="step == active_categories.length" id="mobile_step_shopblocks" class="step">
                     <div class="d-flex justify-content-between mb-4">
                         <h2 class="m-0">Finally, choose your add-ons</h2>
-                        <p class="bigger text-primary bold">STEP 2/2</p>
+                        <p class="bigger text-primary bold">STEP {{ active_categories.length + 1 }}/{{
+                            active_categories.length + 1 }}</p>
                     </div>
                     <div class="d-flex justify-content-between mb-3">
                         <h3>Handsets</h3>
@@ -356,8 +358,8 @@ watch(
                     </Paginator>
                     <div class="d-flex justify-content-between align-items-center mt-3">
                         <div>
-                            <button id="btn-step-2-previous" class="btn text-primary step-nav btn-sm me-3" type="button"
-                                @click="() => step--">
+                            <button v-if="active_categories.length > 0" id="btn-step-2-previous"
+                                class="btn text-primary step-nav btn-sm me-3" type="button" @click="() => step--">
                                 <font-awesome-icon :icon="['fas', 'arrow-left']" /> Previous
                             </button>
                         </div>
@@ -404,7 +406,7 @@ watch(
                                 </div>
                             </div>
                         </div>
-                        <h4>2. Add-ons</h4>
+                        <h4>{{ active_categories.length + 1 }}. Add-ons</h4>
                         <div class="sidebar_add_ons mb-3">
                             <div class="item mb-2">
                                 <span>Hardware</span><span class="badge bg-light-grey dark">
