@@ -19,6 +19,7 @@ const tenant = page.props.tenant;
 let showModal = ref(false);
 const isLoading = ref(false);
 setQuote(props.modelValue);
+const group = quote.solution_type?.table?.group ?? null;
 
 const warningProviders = ref([
   { its: quote.items.some((item) => item.data?.providerName === "ITS") },
@@ -83,7 +84,11 @@ const resetQuote = async () => {
 };
 
 const quoteTotal = (key) => {
-  return quote.items
+  let items = quote.items;
+  if (group) {
+    items = quote.items.flatMap((obj) => obj.items ?? obj);
+  }
+  return items
     .filter((x) => x.price_plan && x.price_plan.code == key)
     .reduce((acc, item) => (acc += item.total), 0);
 };
@@ -91,7 +96,12 @@ const quoteTotal = (key) => {
 const quoteQuantityPrice = (price_plan) => {
   let total = 0;
   let tax = 0;
-  quote.items.forEach((e) => {
+  let items = quote.items;
+  if (group) {
+    items = quote.items.flatMap((obj) => obj.items ?? obj);
+  }
+
+  items.forEach((e) => {
     if (e.price_plan && e.price_plan.code == price_plan) {
       total += e.price * e.quantity;
       tax += e.price * e.quantity * e.tax;
