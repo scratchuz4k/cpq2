@@ -195,7 +195,7 @@
                 @endif
             </div>
             <div class="col text-end" id="header_right">
-                <p>{{ $quote['account']->name }}<br>{{ $quote['address_data']?->label }}</p>
+                <p>{{ $quote['account']['name'] }}<br>{{ $quote['address_data']?->label }}</p>
                 <p>Tel: +44 (0) 191 300 700</p>
                 <p>Email: sales@example.com</p>
             </div>
@@ -269,11 +269,13 @@
 
 
                                                         <p class="m-0">{{ $group['name'] }}
-                                                            @if (isset($group['data']->additionalInfo->{'Primary Router Model'}))
+                                                            @if (isset($group['data']->additionalInfo->{'router'}))
                                                                 <span
-                                                                    class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm router-model">
+                                                                    class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm router-model"
+                                                                    data-bs-toggle="tooltip" data-bs-placement="top"
+                                                                    title="Primary Router Model" v-tooltip>
                                                                     <i class="fa-solid fa-plug"></i>
-                                                                    {{ $group['data']->additionalInfo->{'Primary Router Model'} }}
+                                                                    {{ $group['data']->additionalInfo->{'router'} }}
                                                                 </span>
                                                             @endif
                                                             @if (isset($group['data']->isContended) and $group['data']->isContended)
@@ -360,11 +362,13 @@
                                         <tr class="item-row" style="vertical-align: middle;">
                                             <td class="column-quote_ref-body">
                                                 {{ $group['name'] }}
-                                                @if (isset($group['data']->additionalInfo->{'Primary Router Model'}))
+                                                @if (isset($group['data']->additionalInfo->{'router'}))
                                                     <span
-                                                        class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm router-model">
+                                                        class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm router-model"
+                                                        data-bs-toggle="tooltip" data-bs-placement="top"
+                                                        title="Primary Router Model" v-tooltip>
                                                         <i class="fa-solid fa-plug"></i>
-                                                        {{ $group['data']->additionalInfo->{'Primary Router Model'} }}
+                                                        {{ $group['data']->additionalInfo->{'router'} }}
                                                     </span>
                                                 @endif
                                                 @if (isset($group['data']->isContended) and $group['data']->isContended)

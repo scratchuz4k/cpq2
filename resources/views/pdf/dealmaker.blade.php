@@ -183,7 +183,7 @@
                 @endif
             </div>
             <div class="col text-end" id="header_right">
-                <p>{{ $quote['account']->name }}<br>{{ $quote['address_data']?->label }}</p>
+                <p>{{ $quote['account']['name'] }}<br>{{ $quote['address_data']?->label }}</p>
                 <p>Tel: +44 (0) 191 300 700</p>
                 <p>Email: sales@example.com</p>
             </div>
@@ -261,11 +261,13 @@
                                         @endif
                                         <td class="column-name-body">
                                             {{ $item['name'] }}
-                                            @if (isset($item['data']->additionalInfo->{'Primary Router Model'}))
+                                            @if (isset($item['data']->additionalInfo->{'router'}))
                                                 <span
-                                                    class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm router-model">
+                                                    class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm router-model"
+                                                    data-bs-toggle="tooltip" data-bs-placement="top"
+                                                    title="Primary Router Model" v-tooltip>
                                                     <i class="fa-solid fa-plug"></i>
-                                                    {{ $item['data']->additionalInfo->{'Primary Router Model'} }}
+                                                    {{ $item['data']->additionalInfo->{'router'} }}
                                                 </span>
                                             @endif
                                             @if (isset($item['data']->isContended) and $item['data']->isContended)
@@ -363,11 +365,13 @@
                                         @endif
                                         <td class="column-name-body">
                                             {{ $item['name'] }}
-                                            @if (isset($item['data']->additionalInfo->{'Primary Router Model'}))
+                                            @if (isset($item['data']->additionalInfo->{'router'}))
                                                 <span
-                                                    class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm router-model">
+                                                    class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm router-model"
+                                                    data-bs-toggle="tooltip" data-bs-placement="top"
+                                                    title="Primary Router Model" v-tooltip>
                                                     <i class="fa-solid fa-plug"></i>
-                                                    {{ $item['data']->additionalInfo->{'Primary Router Model'} }}
+                                                    {{ $item['data']->additionalInfo->{'router'} }}
                                                 </span>
                                             @endif
                                             @if (isset($item['data']->isContended) and $item['data']->isContended)
@@ -422,7 +426,7 @@
                             <tr>
                                 <th></th>
                                 <th>NET</th>
-                                <th>VAT (20%)</th>
+                                {{-- <th>VAT (20%)</th> --}}
                                 <th>GROSS</th>
                             </tr>
                         </thead>
@@ -434,9 +438,9 @@
                                 <td id="total_monthly_net">
                                     £{{ number_format(quoteQuantityPrice('MONTHLY', $quote['items']), 2) }}
                                 </td>
-                                <td id="total_monthly_vat">
+                                {{-- <td id="total_monthly_vat">
                                     £{{ number_format(quoteQuantityPrice('MONTHLY', $quote['items'], 'tax'), 2) }}
-                                </td>
+                                </td> --}}
                                 <td id="total_monthly_gross">
                                     £{{ number_format(quoteQuantityPrice('MONTHLY', $quote['items'], 'total'), 2) }}
                                 </td>
@@ -448,9 +452,9 @@
                                 <td id="total_single_net">
                                     £{{ number_format(quoteTotal('SINGLE', 'total', $quote['items']), 2) }}
                                 </td>
-                                <td id="total_single_vat">
+                                {{-- <td id="total_single_vat">
                                     £{{ number_format(quoteTotal('SINGLE', 'total_tax', $quote['items']), 2) }}
-                                </td>
+                                </td> --}}
                                 <td id="total_single_gross">
                                     £{{ number_format(quoteTotal('SINGLE', 'total_gross', $quote['items']), 2) }}
                                 </td>
@@ -462,9 +466,9 @@
                                 <td id="total_net">
                                     £{{ number_format($quote['total'], 2) }}
                                 </td>
-                                <td id="total_vat">
+                                {{-- <td id="total_vat">
                                     £{{ number_format($quote['total_tax'] ?? 0, 2) }}
-                                </td>
+                                </td> --}}
                                 <td id="total_gross">
                                     £{{ number_format($quote['total_gross'], 2) }}
                                 </td>

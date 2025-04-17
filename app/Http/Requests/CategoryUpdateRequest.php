@@ -2,8 +2,9 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Validation\Rule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 
 class CategoryUpdateRequest extends FormRequest
 {
@@ -23,14 +24,19 @@ class CategoryUpdateRequest extends FormRequest
     public function rules(): array
     {
         $category_id = null;
-        if (array_key_exists('category', $this->route()->parameters()))
+        if (array_key_exists('category', $this->route()->parameters())) {
             $category_id = $this->route()->parameters()['category']->id;
+        }
+
+        $user = Auth::user();
 
         return [
-            'name' => 'required|string|max:255',
-            'code' => [
-                'required',
-                Rule::unique('categories')->ignore($category_id),
+            'name' => 'string|max:255',
+            'code' => ['string', 'max:255',
+                Rule::unique('categories')->where(function ($query) use ($user) {
+                    return $query->where('tenant_id', $user->tenant_id)
+                        ->where('code', request('code'));
+                })->ignore($category_id),
             ],
         ];
     }

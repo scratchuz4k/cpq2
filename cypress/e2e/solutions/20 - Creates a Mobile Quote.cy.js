@@ -53,9 +53,9 @@ describe("Creates a Mobile Quote", () => {
         cy.get("#solution_id").select("Mobile");
         cy.get("#btn-create-quote").click();
         cy.get("#btn-plan-0-add-25").click();
-        cy.wait(500);
+        cy.wait(1000);
         cy.get("#btn-plan-1-add-25").click();
-        cy.wait(500);
+        cy.wait(1000);
         cy.get("#btn-step-1-next").click();
         cy.wait(1000);
         let hardwareCount = 0;
@@ -78,7 +78,7 @@ describe("Creates a Mobile Quote", () => {
                         hardwareCount += 1;
                         cy.log(`Click count: ${hardwareCount}`);
                         cy.get(`#input-hardware-${key}-quantity`).type(1);
-                        cy.wait(500);
+                        cy.wait(1000);
                     }
                 });
             });
@@ -96,6 +96,7 @@ describe("Creates a Mobile Quote", () => {
             });
         });
     });
+
     it("I can change Margin and Discount", () => {
         cy.visit("/");
         cy.get("#datatable-btn-0-show").click();

@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\BaseController;
+use App\Http\Requests\IndexRequest;
+use Dedoc\Scramble\Attributes\ExcludeRouteFromDocs;
 use Exception;
 use App\Models\Brand;
 use Illuminate\Http\Request;
@@ -16,10 +18,10 @@ class BrandController extends BaseController
 {
     protected $model = Brand::class;
     /**
-     * Display a listing of the resource.
+     * List Brands
      * @response AnonymousResourceCollection<LengthAwarePaginator<BrandResource>>
      */
-    public function index()
+    public function index(IndexRequest $request)
     {
         $dataProvider = new DataProvider(Brand::class);
         try {
@@ -33,31 +35,36 @@ class BrandController extends BaseController
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Create a new Brand
      */
+    #[ExcludeRouteFromDocs]
     public function store(Request $request)
     {
         //
     }
 
     /**
-     * Display the specified resource.
+     * Show Brand
+     *
      */
+    #[ExcludeRouteFromDocs]
     public function show(Brand $brand)
     {
         //
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update Brand
+     *
      */
+    #[ExcludeRouteFromDocs]
     public function update(Request $request, Brand $brand)
     {
         //
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove Brand
      */
     public function destroy(Brand $brand)
     {

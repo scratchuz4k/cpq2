@@ -1,6 +1,7 @@
 import axios from "axios";
-import {usePage} from "@inertiajs/vue3";
+import { usePage } from "@inertiajs/vue3";
 import { get } from "lodash";
+import { reactive } from "vue";
 
 const page = usePage()
 export const createOrder = async (id) => {
@@ -13,7 +14,7 @@ export const createOrder = async (id) => {
     }
     try {
         let res = await axios.put('/api/quotes/' + id,
-            { status: 'REGISTRY'}
+            { status: 'REGISTRY' }
         )
         notyf.success('Order created with success');
         return true
@@ -58,7 +59,7 @@ export const rejectOrder = async (order) => {
 
     swal.fire({
         title: message,
-    }).then( async (result) => {
+    }).then(async (result) => {
         if (result.isConfirmed) {
             if (!order.user_id) {
                 try {
@@ -80,7 +81,7 @@ export const rejectOrder = async (order) => {
                     }
                     return note;
                 }
-            }).then( async (noteResult) => {
+            }).then(async (noteResult) => {
                 if (noteResult.isConfirmed) {
                     data.note = noteResult.value
                     try {
@@ -119,4 +120,24 @@ export const proceedOrder = async (order) => {
             notyf.error(err?.response?.data?.message ?? 'Something went wrong')
         }
     })
+}
+
+export const order = reactive({})
+
+export const getOrder = async (id) => {
+    try {
+        let res = await axios.get(`/api/orders/${id}`)
+        setOrder(res.data);
+    } catch (ex) {
+        notyf.error(ex.response.data.message)
+    }
+}
+
+export const setOrder = (temp) => {
+    Object.assign(order, temp);
+
+    if (order.solution_type.configurations?.component == 'Simple') {
+        return
+    }
+
 }

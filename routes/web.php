@@ -3,12 +3,11 @@
 use App\Http\Controllers\Web\AccountController;
 use App\Http\Controllers\Web\ApiController;
 use App\Http\Controllers\Web\BlacklistController;
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Web\SpaController;
-use App\Http\Controllers\Web\UserController;
 use App\Http\Controllers\Web\BrandController;
 use App\Http\Controllers\Web\CategoryController;
 use App\Http\Controllers\Web\DashboardController;
+use App\Http\Controllers\Web\EmailHistoryController;
+use App\Http\Controllers\Web\EmailTemplateController;
 use App\Http\Controllers\Web\MerchantController;
 use App\Http\Controllers\Web\OrderController;
 use App\Http\Controllers\Web\ProductController;
@@ -17,11 +16,13 @@ use App\Http\Controllers\Web\QuoteController;
 use App\Http\Controllers\Web\RegionController;
 use App\Http\Controllers\Web\SharedLinkController;
 use App\Http\Controllers\Web\SolutionTypeController;
+use App\Http\Controllers\Web\SpaController;
 use App\Http\Controllers\Web\SupplierController;
 use App\Http\Controllers\Web\TenantController;
 use App\Http\Controllers\Web\TokenController;
+use App\Http\Controllers\Web\UserController;
 use Illuminate\Support\Facades\DB;
-
+use Illuminate\Support\Facades\Route;
 
 Route::get('/health', function () {
     try {
@@ -64,6 +65,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::get('/quotes/{quote}/download', [QuoteController::class, 'download'])->name('quotes.download');
     Route::get('/quotes/{quote}/configure', [QuoteController::class, 'configure'])->name('quotes.configure');
+    Route::post('/quotes/{quote}/email', [QuoteController::class, 'email'])->name('quotes.email');
 
     Route::get('/orders/{order}/preview', [OrderController::class, 'preview'])->name('orders.preview');
     Route::get('/orders/{order}/download', [OrderController::class, 'download'])->name('orders.download');
@@ -72,6 +74,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/users/import', [UserController::class, 'importUsers'])->name('users.import');
 
     Route::resources([
+        'email-templates' => EmailTemplateController::class,
+        'email-history' => EmailHistoryController::class,
         'accounts' => AccountController::class,
         'categories' => CategoryController::class,
         'apis' => ApiController::class,
@@ -97,4 +101,4 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 });
 
-require __DIR__ . '/auth.php';
+require __DIR__.'/auth.php';

@@ -48,7 +48,7 @@ const getData = async () => {
     ? [
         {
           column: "parent_id",
-          operator: "is_null ",
+          operator: "is_null",
           value: "null",
         },
       ]

@@ -37,14 +37,17 @@ const props = defineProps({
     modelValue: Object,
 });
 
-const emit = defineEmits(["update:modelValue"]);
+const emit = defineEmits(["update:modelValue", "change"]);
 const options = ref([]);
 const isLoading = ref(false);
 const searchInput = ref(null);
 
 const proxyValue = computed({
     get: () => props.modelValue,
-    set: (value) => emit("update:modelValue", value),
+    set: (value) => {
+        emit("update:modelValue", value);
+        emit("change", value);
+    },
 });
 
 const search = _.debounce(async () => {

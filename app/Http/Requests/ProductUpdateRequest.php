@@ -2,8 +2,9 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Validation\Rule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 
 class ProductUpdateRequest extends FormRequest
 {
@@ -22,16 +23,25 @@ class ProductUpdateRequest extends FormRequest
      */
     public function rules(): array
     {
+        $user = Auth::user();
         $product_id = null;
-        if (array_key_exists('product', $this->route()->parameters()))
+        if (array_key_exists('product', $this->route()->parameters())) {
             $product_id = $this->route()->parameters()['product']->id;
+        }
+
+        $user = Auth::user();
 
         return [
-            "code" => ["required", "string", "max:255", Rule::unique('products')->ignore($product_id )],
-            "name" => "required|string|max:255",
-            "supplier_id" => "nullable|exists:suppliers,id",
-            "brand_id" => "nullable|exists:brands,id",
-            "price_plan_id" => "required|exists:price_plans,id"
+            'code' => ['required', 'string', 'max:255',
+                Rule::unique('products')->where(function ($query) use ($user) {
+                    return $query->where('tenant_id', $user->tenant_id)
+                        ->where('code', request('code'));
+                })->ignore($product_id),
+            ],
+            'name' => 'required|string|max:255',
+            'supplier_id' => 'nullable|exists:suppliers,id',
+            'brand_id' => 'nullable|exists:brands,id',
+            'price_plan_id' => 'required|exists:price_plans,id',
         ];
     }
 }

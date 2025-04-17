@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Services\CategoryService;
+use Dedoc\Scramble\Attributes\ExcludeRouteFromDocs;
 use Exception;
 use App\Models\Account;
 use App\Models\Category;
@@ -27,7 +28,7 @@ class CategoryController extends BaseController
     }
 
     /**
-     * Index
+     * List Categories
      * @response AnonymousResourceCollection<LengthAwarePaginator<AccountResource>>
      */
     public function index(IndexRequest $request)
@@ -44,21 +45,23 @@ class CategoryController extends BaseController
     }
 
     /**
-     * Store
+     * Store a new Category
      */
+    #[ExcludeRouteFromDocs]
     public function store(Request $request)
     {
     }
 
     /**
-     * Show.
+     * Show Category
      */
+    #[ExcludeRouteFromDocs]
     public function show(Category $category)
     {
     }
 
     /**
-     * Update
+     * Update Category
      */
     public function update(Request $request, Category $category)
     {
@@ -73,7 +76,7 @@ class CategoryController extends BaseController
     }
 
     /**
-     * Remove
+     * Remove Category
      */
     public function destroy(Category $category)
     {
