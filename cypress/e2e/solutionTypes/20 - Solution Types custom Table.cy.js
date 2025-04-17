@@ -10,7 +10,7 @@ describe("Solution Types CRUD", () => {
 
         cy.get("#datatable-search").type('Connectivity - Ethernet')
         cy.get("#datatable-btn-0-edit").click()
-        cy.get("#1-1").click()
+        cy.get("#2-2").click()
 
         cy.get("#has_custom_table").click()
         cy.get("#solution-type-table-group").click()

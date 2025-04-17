@@ -27,18 +27,18 @@ const props = defineProps({
     total_categories: Number
 });
 
+const emit = defineEmits(["update:modelValue"])
 const proxyValue = computed({
     get() { return props.modelValue },
     set(val) { emit('update:modelValue', val) }
 });
 
 const products = ref([])
-const emit = defineEmits(['category_total_products']);
 
 const getProducts = async () => {
     let query = queryString.stringify({
         page: meta.page,
-        perPage: meta.limit,
+        limit: meta.limit,
         filters: JSON.stringify([
             {
                 column: "categories.id",
@@ -103,9 +103,6 @@ const checkQuantity = _.debounce(async (product, temp) => {
 
 getProducts()
 
-watch(products, (products) => {
-    emit('category_total_products', products.length);
-});
 </script>
 
 <template>
@@ -165,8 +162,8 @@ watch(products, (products) => {
                     Add {{products.reduce((acc, x) => acc = acc + x.quantity, 0)}}
                     {{ category.name }}
                 </span>
-                <button :id="'btn-step-1-next'" class="ms-3 btn btn-primary step-nav" type="button"
-                    @click="() => proxyValue++">
+                <button :id="'btn-step-' + (props.index + 1) + '-next'" class="ms-3 btn btn-primary step-nav"
+                    type="button" @click="() => proxyValue++">
                     Next
                     <font-awesome-icon :icon="['fas', 'arrow-right']" />
                 </button>

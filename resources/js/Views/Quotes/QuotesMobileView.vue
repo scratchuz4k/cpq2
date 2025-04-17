@@ -29,7 +29,6 @@ const meta = reactive({
 
 const solution_type = props.modelValue.solution_type
 const active_categories = ref([]);
-const category_total_products = ref(0);
 
 const getCategoriesWithProducts = async () => {
     let query = queryString.stringify({

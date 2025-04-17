@@ -174,6 +174,64 @@ const items = ref([
                             </div>
                         </div>
                     </tab>
+                    <tab title="Price" v-if="solution_type.code != 3">
+                        <Panel class="mt-3" header="Categories" :toggleable="true">
+                            <div class="mb-3">
+                                <label class="form-label">Choose Categories:</label>
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th style="width: 5%;"></th>
+                                            <th style="text-align: left;">Category</th>
+                                            <th style="text-align: right;width: 5%;">
+                                                <button id="solution-type-categories-remove-columns"
+                                                    class="btn p-2 mx-1 border-0" @click="clearAllCategories()">
+                                                    <font-awesome-icon :icon="['fas', 'trash-alt']"></font-awesome-icon>
+                                                </button>
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <draggable v-model="categories" item-key="id" tag="tbody" v-bind="dragOptions"
+                                        handle=".handle">
+                                        <template #item="{ element, index }">
+                                            <tr>
+                                                <td style="width: 5%;">
+                                                    <button class="btn p-1 border-0 handle">
+                                                        <font-awesome-icon icon="fas fa-bars" />
+                                                    </button>
+                                                </td>
+                                                <td style="text-align: left;">
+                                                    <InputSelect v-model="categories[index]" url="/categories"
+                                                        :id="`solution-type-categories-` + index + `-value`"
+                                                        field="name" placeholder="Select a Category"
+                                                        @change="checkCategories(index)">
+                                                    </InputSelect>
+                                                </td>
+                                                <td style="text-align: right; width: 5%;">
+                                                    <button class="btn p-2 mx-1 border-0"
+                                                        @click="deleteCategory(element)">
+                                                        <font-awesome-icon icon="fas fa-trash-alt" />
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        </template>
+                                    </draggable>
+                                    <tfoot>
+                                        <tr>
+                                            <th colspan="4">
+                                                <div class="d-flex justify-content-end">
+                                                    <button id="solution-type-table-add-category" class="btn btn-sm"
+                                                        @click="addCategory()">
+                                                        <font-awesome-icon :icon="['fas', 'plus']"></font-awesome-icon>
+                                                    </button>
+                                                </div>
+                                            </th>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        </Panel>
+                    </tab>
                     <tab title="Quote">
                         <Panel class="mt-3" header="Summary Layout" :toggleable="true">
                             <p class="mb-3">
@@ -277,64 +335,6 @@ const items = ref([
                                     </table>
                                 </div>
                             </template>
-                        </Panel>
-                    </tab>
-                    <tab title="Price" v-if="solution_type.code != 3">
-                        <Panel class="mt-3" header="Categories" :toggleable="true">
-                            <div class="mb-3">
-                                <label class="form-label">Choose Categories:</label>
-                                <table class="table">
-                                    <thead>
-                                        <tr>
-                                            <th style="width: 5%;"></th>
-                                            <th style="text-align: left;">Category</th>
-                                            <th style="text-align: right;width: 5%;">
-                                                <button id="solution-type-categories-remove-columns"
-                                                    class="btn p-2 mx-1 border-0" @click="clearAllCategories()">
-                                                    <font-awesome-icon :icon="['fas', 'trash-alt']"></font-awesome-icon>
-                                                </button>
-                                            </th>
-                                        </tr>
-                                    </thead>
-                                    <draggable v-model="categories" item-key="id" tag="tbody" v-bind="dragOptions"
-                                        handle=".handle">
-                                        <template #item="{ element, index }">
-                                            <tr>
-                                                <td style="width: 5%;">
-                                                    <button class="btn p-1 border-0 handle">
-                                                        <font-awesome-icon icon="fas fa-bars" />
-                                                    </button>
-                                                </td>
-                                                <td style="text-align: left;">
-                                                    <InputSelect v-model="categories[index]" url="/categories"
-                                                        :id="`solution-type-categories-` + index + `-value`"
-                                                        field="name" placeholder="Select a Category"
-                                                        @change="checkCategories(index)">
-                                                    </InputSelect>
-                                                </td>
-                                                <td style="text-align: right; width: 5%;">
-                                                    <button class="btn p-2 mx-1 border-0"
-                                                        @click="deleteCategory(element)">
-                                                        <font-awesome-icon icon="fas fa-trash-alt" />
-                                                    </button>
-                                                </td>
-                                            </tr>
-                                        </template>
-                                    </draggable>
-                                    <tfoot>
-                                        <tr>
-                                            <th colspan="4">
-                                                <div class="d-flex justify-content-end">
-                                                    <button id="solution-type-table-add-category" class="btn btn-sm"
-                                                        @click="addCategory()">
-                                                        <font-awesome-icon :icon="['fas', 'plus']"></font-awesome-icon>
-                                                    </button>
-                                                </div>
-                                            </th>
-                                        </tr>
-                                    </tfoot>
-                                </table>
-                            </div>
                         </Panel>
                     </tab>
                 </tabs>
