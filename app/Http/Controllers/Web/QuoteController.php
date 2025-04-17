@@ -108,6 +108,8 @@ class QuoteController extends BaseController
     public function edit(Quote $quote)
     {
         return Inertia::render('Quotes/Edit', [
+            'accounts' => Account::all(),
+            'solution_types' => Auth::user()->currentTenant->solutionTypes,
             'quote' => new QuoteResource($quote->load(['items'])),
         ]);
     }
@@ -165,14 +167,11 @@ class QuoteController extends BaseController
      */
     public function download(Request $request, Quote $quote)
     {
-        $quote = Quote::withoutGlobalScope(TenantScope::class)->find($request->quote);
-        $tenant = $quote->tenant->makeCurrent();
-        $quote = $quote->refresh();
-        $dir = 'pdf/' . $quote->tenant->id;
+        $pdf = $this->quoteService->generatePdf($request, $quote);
 
-        if (!Storage::makeDirectory($dir)) {
-            throw new \Exception('Could not create directory for PDFs');
-        }
+        return $pdf
+            ->name('quote-' . $quote['id'] . '.pdf')
+            ->download();
 
     }
 
@@ -181,14 +180,30 @@ class QuoteController extends BaseController
         $pdf = $this->quoteService->generatePdf($request, $quote);
         $pdf->save(storage_path('app/temp/quote-' . $quote['id'] . '.pdf'));
 
-        return pdf()
-            ->view("pdf.$view", compact('quote', 'tenant', 'columns', 'items', 'group', 'groupName'))
-            ->format(Format::A4)
-            ->withBrowsershot(function (Browsershot $browsershot) {
-                $browsershot->waitUntilNetworkIdle();
-            })
-            ->name('quote-' . $quote['id'] . '.pdf')
-            ->download();
+        Mail::queue(
+            new DynamicEmail(
+                user: Auth::user(),
+                tenant: Auth::user()->currentTenant,
+                templateEnum: EmailTemplatesEnum::SEND_QUOTE_TO_ACCOUNT,
+                parameters: [
+                    'account_name' => $quote->account->name,
+                    'quote_number' => $quote->id,
+                ],
+                overrides: [
+                    'to' => $request->to,
+                    'cc' => $request->cc,
+                    'bcc' => $request->bcc,
+                ],
+                files: [
+                    [
+                        'disk' => 'temp',
+                        'path' => 'quote-' . $quote['id'] . '.pdf',
+                        'title' => 'quote-' . $quote['id'] . '.pdf',
+                        'mimetype' => 'application/pdf',
+                    ],
+                ],
+            )
+        );
     }
 
     private function descendantsWithQuotes()
