@@ -128,6 +128,7 @@ describe("Creates a Mobile Quote", () => {
         cy.get("#account_id").select(account.name);
         cy.get("#solution_id").select("Mobile");
         cy.get("#btn-create-quote").click();
+        cy.wait(1000);
         cy.get("#btn-plan-0-add-25").click();
         cy.wait(1000);
         cy.get("#btn-plan-1-add-25").click();
