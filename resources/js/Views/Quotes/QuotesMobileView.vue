@@ -44,6 +44,11 @@ const getCategoriesWithProducts = async () => {
                 operator: "not_equals",
                 value: "",
             },
+            {
+                column: "is_active",
+                operator: "equals",
+                value: 1
+            },
         ]),
     });
     let res = await axios.get("/api/categories" + "?" + query);
