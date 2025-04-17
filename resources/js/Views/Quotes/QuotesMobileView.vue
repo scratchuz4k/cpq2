@@ -223,7 +223,6 @@ watch(
     <div class="panel panel-mobile">
         <div class="row justify-content-between">
             <div class="col-lg-7">
-                STEP {{ step }}
                 <div v-for="(category, index) in active_categories">
                     <CategoryProductsView :category="category" :account="props.modelValue.account" v-model="step"
                         :index="index" :total_categories="active_categories.length + 1">
