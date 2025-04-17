@@ -12,7 +12,7 @@ class Category extends Model
 {
     use HasFactory, SetTenantId;
 
-    protected $fillable = ['code', 'name', 'tenant_id'];
+    protected $fillable = ['code', 'name', 'tenant_id', 'is_active'];
     protected static function booted(): void
     {
         static::addGlobalScope(new TenantScope);
@@ -20,5 +20,12 @@ class Category extends Model
     public function products(): BelongsToMany
     {
         return $this->belongsToMany(Product::class, 'product_category', 'category_id');
+    }
+
+    public function solutionTypes(): BelongsToMany
+    {
+        return $this->belongsToMany(SolutionType::class, 'categories_solution_type')
+            ->withPivot('order')
+            ->orderBy('pivot_order');
     }
 }
