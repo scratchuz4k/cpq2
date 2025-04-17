@@ -1,7 +1,7 @@
 <script setup>
+import { MultiSelect } from "primevue";
 import _ from "lodash";
 import { reactive, ref, watch } from "vue";
-import { InputText } from "primevue";
 import format from "@/Composables/format";
 
 const GOOGLE_MAPS_API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
@@ -15,7 +15,10 @@ const props = defineProps({
 const configurations = reactive({
   speed: [0, 10000],
   bearer: [0, 10000],
+  contract_length: [],
 });
+
+props.modelValue.configurations = configurations;
 
 const solutionChange = (form) => {
   if (props.is_updating_quote) {
@@ -108,17 +111,17 @@ const addressSelect = async (form) => {
   }
 };
 
-const formatInput = (ev, index) => {
+const formatInput = (ev, field, index) => {
   if (ev.target.value > 10000) {
-    configurations.speed[index] = 10000;
+    field[index] = 10000;
     return;
   }
   if (ev.target.value < 0) {
-    configurations.speed[index] = 0;
+    field[index] = 0;
     return;
   }
 
-  configurations.speed[index] = format.simpleSpeed(ev.target.value);
+  field[index] = format.simpleSpeed(ev.target.value);
 };
 
 solutionChange(props.modelValue);
@@ -240,58 +243,105 @@ watch(addressPostCode, () => {
   <div class="row" v-if="modelValue.solution_type?.code == 3">
     <div class="col-6">
       <div class="panel">
-        <h5 class="font-bold mb-3">Additionally, set default filters</h5>
-        <div class="mb-3">
-          <p>Speed</p>
-          <hr />
-          <label class="form-label">
-            Min: {{ format.speed(configurations.speed[0]) }} / Max:
-            {{ format.speed(configurations.speed[1]) }}
-          </label>
-          <div class="px-3 mb-5">
-            <SpeedRange
-              v-model="configurations.speed"
-              :options="[0, 10, 100, 1000, 10000]"
-            ></SpeedRange>
+        <h5 class="font-bold mb-3">Optionally, select some default filters</h5>
+        <div class="mb-5">
+          <div class="d-flex justify-content-between">
+            <p>Speed</p>
+            <label class="form-label">
+              Min: {{ format.speed(configurations.speed[0]) }} / Max:
+              {{ format.speed(configurations.speed[1]) }}
+            </label>
           </div>
-          <div class="d-flex">
-            <div class="">
+          <hr />
+          <div class="d-flex align-items-end">
+            <div class="w-20">
               <label class="form-label">Min:</label>
               <input
                 type="number"
                 min="0"
                 max="10000"
                 class="form-control w-100"
-                @change="(ev) => formatInput(ev, 0)"
+                @change="(ev) => formatInput(ev, configurations.speed, 0)"
                 v-model="configurations.speed[0]"
               />
             </div>
-            <div>
+            <div class="px-4 mb-3" style="width: 80%">
+              <SpeedRange
+                v-model="configurations.speed"
+                :options="[0, 10, 100, 1000, 10000]"
+              ></SpeedRange>
+            </div>
+            <div class="w-20">
               <label class="form-label">Max:</label>
               <input
                 type="number"
                 :min="0"
                 :max="10000"
-                @change="(ev) => formatInput(ev, 1)"
+                @change="(ev) => formatInput(ev, configurations.speed, 1)"
                 class="form-control w-100"
                 v-model="configurations.speed[1]"
               />
             </div>
           </div>
         </div>
-        <div class="">
-          <p>Bearer</p>
-          <hr />
-          <label class="form-label">
-            Min: {{ format.speed(configurations.bearer[0]) }} / Max:
-            {{ format.speed(configurations.bearer[1]) }}
-          </label>
-          <div class="px-3 mb-5">
-            <BearerRange
-              v-model="configurations.bearer"
-              :options="[0, 10, 100, 1000, 10000]"
-            ></BearerRange>
+        <div class="mb-5">
+          <div class="d-flex justify-content-between">
+            <p>Bearer</p>
+            <label class="form-label">
+              Min: {{ format.speed(configurations.bearer[0]) }} / Max:
+              {{ format.speed(configurations.bearer[1]) }}
+            </label>
           </div>
+          <hr />
+          <div class="d-flex align-items-end">
+            <div class="w-20">
+              <label class="form-label">Min:</label>
+              <input
+                type="number"
+                min="0"
+                max="10000"
+                class="form-control w-100"
+                @change="(ev) => formatInput(ev, configurations.bearer, 0)"
+                v-model="configurations.bearer[0]"
+              />
+            </div>
+            <div class="px-4 mb-3" style="width: 80%">
+              <BearerRange
+                v-model="configurations.bearer"
+                :options="[0, 10, 100, 1000, 10000]"
+              ></BearerRange>
+            </div>
+            <div class="w-20">
+              <label class="form-label">Max:</label>
+              <input
+                type="number"
+                :min="0"
+                :max="10000"
+                @change="(ev) => formatInput(ev, configurations.bearer, 1)"
+                class="form-control w-100"
+                v-model="configurations.bearer[1]"
+              />
+            </div>
+          </div>
+        </div>
+        <div class="mb-3">
+          <div class="d-flex justify-content-between">
+            <p>Contract Length</p>
+          </div>
+          <hr />
+          <MultiSelect
+            v-model="configurations.contract_length"
+            style="width: 100%"
+            :options="['12', '24', '36', '60']"
+            placeholder="All"
+            class="me-3 custom-multiselect"
+          >
+            <template #option="slotProps">
+              <div style="font-size: 14px; line-height: 1.5rem">
+                {{ slotProps.option }} Months
+              </div>
+            </template>
+          </MultiSelect>
         </div>
       </div>
     </div>

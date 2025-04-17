@@ -28,6 +28,13 @@ class QuoteService
     {
         $quote = Quote::create($array);
 
+        if (
+            array_key_exists('configurations', $array)
+            && is_array($array['configurations'])
+        ) {
+            $quote->syncConfigurations($array['configurations']);
+        }
+
         return $quote;
     }
 

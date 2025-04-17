@@ -2,47 +2,49 @@
 
 namespace App\Models;
 
-use App\Trait\SetTenantId;
 use App\Enums\QuoteStatusesEnum;
 use App\Events\QuoteStatusEvent;
 use App\Models\Scopes\TenantScope;
+use App\Trait\HasConfigurations;
 use App\Trait\RegisterActivity;
+use App\Trait\SetTenantId;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Quote extends Model
 {
-    use HasFactory, SetTenantId, RegisterActivity;
+    use HasConfigurations, HasFactory, RegisterActivity, SetTenantId;
 
     protected $fillable = [
-        "account_id",
-        "solution_type_id",
-        "address_line1",
-        "address_postcode",
-        "address_position",
-        "address_city",
-        "address_country",
-        "address_data",
-        "solution_type_id",
-        "tenant_id",
-        "name",
-        "total",
-        "total_tax",
-        "total_gross",
-        "commission_value",
-        "commission_rate",
-        "margin",
-        "status",
-        "user_id"
+        'account_id',
+        'solution_type_id',
+        'address_line1',
+        'address_postcode',
+        'address_position',
+        'address_city',
+        'address_country',
+        'address_data',
+        'solution_type_id',
+        'tenant_id',
+        'name',
+        'total',
+        'total_tax',
+        'total_gross',
+        'commission_value',
+        'commission_rate',
+        'margin',
+        'status',
+        'user_id',
     ];
+
     protected function casts(): array
     {
         return [
-            "address_position" => "object",
-            "address_data" => "object",
+            'address_position' => 'object',
+            'address_data' => 'object',
         ];
     }
 
@@ -60,38 +62,47 @@ class Quote extends Model
             }
         });
     }
+
     public function tenant(): BelongsTo
     {
         return $this->belongsTo(Tenant::class);
     }
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
+
     public function solutionType(): BelongsTo
     {
         return $this->belongsTo(SolutionType::class);
     }
+
     public function account(): BelongsTo
     {
         return $this->belongsTo(Account::class)->withTrashed();
     }
+
     public function items(): HasMany
     {
         return $this->hasMany(QuoteItem::class);
     }
+
     public function orders(): HasMany
     {
         return $this->hasMany(Order::class);
     }
+
     public function discounts(): HasMany
     {
         return $this->hasMany(QuoteDiscount::class);
     }
+
     public function sharedLink(): MorphOne
     {
         return $this->morphOne(SharedLink::class, 'shareable');
     }
+
     public function computeTotals()
     {
         $this->refresh();
@@ -132,7 +143,7 @@ class Quote extends Model
             return QuoteStatusesEnum::QUOTE->name;
         }
 
-        if (!empty($quote->address_data)) {
+        if (! empty($quote->address_data)) {
             return QuoteStatusesEnum::PRICE->name;
         }
 
