@@ -159,7 +159,7 @@
                 @endif
             </div>
             <div class="col text-end" id="header_right">
-                <p>{{ $quote['account']->name }}<br>{{ $quote['address_data']?->label }}</p>
+                <p>{{ $quote['account']['name'] }}<br>{{ $quote['address_data']?->label }}</p>
                 <p>Tel: +44 (0) 191 300 700</p>
                 <p>Email: sales@example.com</p>
             </div>
@@ -214,7 +214,7 @@
                                 <tr>
                                     @foreach ($columns as $column)
                                         <th class="column-{{ $column['value'] }}-header">
-                                            {{ $column['name'] }} -- {{ $column['value'] }}
+                                            {{ $column['name'] }}
                                         </th>
                                     @endforeach
                                 </tr>

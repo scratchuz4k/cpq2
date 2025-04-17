@@ -5,9 +5,9 @@ import MultiSelect from "primevue/multiselect";
 import Paginator from "primevue/paginator";
 import { quote, setQuote, getQuote } from "@composables/useQuote";
 import {
-    updateQuoteItem,
-    removeQuoteItem,
-    createQuoteItem,
+  updateQuoteItem,
+  removeQuoteItem,
+  createQuoteItem,
 } from "@composables/useQuoteItem";
 import axios from "axios";
 import { router } from "@inertiajs/vue3";
@@ -15,16 +15,16 @@ import { onMounted, popScopeId, reactive, ref, watch } from "vue";
 import queryString from "query-string";
 import InputQuantity from "@/Components/InputQuantity.vue";
 const props = defineProps({
-    modelValue: Object,
+  modelValue: Object,
 });
 
 const meta = reactive({
-    page: 1,
-    total: 0,
-    overallTotal: 0,
-    first: 1,
-    limit: 5,
-    isLoading: false,
+  page: 1,
+  total: 0,
+  overallTotal: 0,
+  first: 1,
+  limit: 5,
+  isLoading: false,
 });
 
 const solution_type = props.modelValue.solution_type
@@ -57,7 +57,7 @@ const getCategoriesWithProducts = async () => {
 
 const urlParams = new URLSearchParams(window.location.search);
 const params = new Proxy(urlParams, {
-    get: (searchParams, prop) => searchParams.get(prop),
+  get: (searchParams, prop) => searchParams.get(prop),
 });
 const step = ref(params["step"] ?? 0);
 
@@ -68,122 +68,124 @@ const productsHardware = ref([]);
 setQuote(props.modelValue);
 
 const filters = reactive({
-    model: {
-        operator: "in",
-        value: null,
-    },
-    name: {
-        operator: "contains",
-        value: null,
-    },
+  model: {
+    operator: "in",
+    value: null,
+  },
+  name: {
+    operator: "contains",
+    value: null,
+  },
 });
 
 const filterList = reactive({
-    models: [],
-    storage: [
-        { label: "1TB", value: "1TB" },
-        { label: "512 GB", value: "512 GB" },
-        { label: "256 GB", value: "256 GB" },
-        { label: "128 GB", value: "128 GB" },
-        { label: "64 GB", value: "64 GB" },
-        { label: "32 GB", value: "32 GB" },
-        { label: "16 GB", value: "16 GB" },
-    ],
+  models: [],
+  storage: [
+    { label: "1TB", value: "1TB" },
+    { label: "512 GB", value: "512 GB" },
+    { label: "256 GB", value: "256 GB" },
+    { label: "128 GB", value: "128 GB" },
+    { label: "64 GB", value: "64 GB" },
+    { label: "32 GB", value: "32 GB" },
+    { label: "16 GB", value: "16 GB" },
+  ],
 });
 
 const sorts = [
-    {
-        label: "Lowest Price",
-        order: "asc",
-        orderBy: "price.net",
-    },
-    {
-        label: "Highest Price",
-        order: "desc",
-        orderBy: "price.net",
-    },
+  {
+    label: "Lowest Price",
+    order: "asc",
+    orderBy: "price.net",
+  },
+  {
+    label: "Highest Price",
+    order: "desc",
+    orderBy: "price.net",
+  },
 ];
 
 const sort = ref(sorts[1]);
 
 const getProductsShopBlocks = async () => {
-    meta.isLoading = true;
-    let temp = [];
-    Object.keys(filters).forEach((key) => {
-        temp.push({
-            column: key,
-            operator: filters[key].operator,
-            value: filters[key].value ?? null,
-        });
+  meta.isLoading = true;
+  let temp = [];
+  Object.keys(filters).forEach((key) => {
+    temp.push({
+      column: key,
+      operator: filters[key].operator,
+      value: filters[key].value ?? null,
     });
-    let query = {
-        page: meta.page,
-        limit: meta.limit,
-        filters: temp,
-        order: sort.value.order,
-        orderBy: sort.value.orderBy,
-        search: search.value,
-        account_id: props.modelValue.account_id,
-    };
-    let res = await axios.post("/api/external/get-articles-from-shop-blocks", query);
-    productsHardware.value = res.data.data;
-    productsHardware.value.forEach((e) => {
-        let temp = props.modelValue.items.find((x) => x.product_code == e.code);
-        e.quantity = temp ? temp.quantity : 0;
-        e.contract_length = 1;
-    });
+  });
+  let query = {
+    page: meta.page,
+    limit: meta.limit,
+    filters: temp,
+    order: sort.value.order,
+    orderBy: sort.value.orderBy,
+    search: search.value,
+    account_id: props.modelValue.account_id,
+  };
+  let res = await axios.post("/api/external/get-articles-from-shop-blocks", query);
+  productsHardware.value = res.data.data;
+  productsHardware.value.forEach((e) => {
+    let temp = props.modelValue.items.find((x) => x.product_code == e.code);
+    e.quantity = temp ? temp.quantity : 0;
+    e.contract_length = 1;
+  });
 
-    meta.first = (meta.page - 1) * meta.limit;
-    meta.total = res.data.total;
-    meta.overallTotal = res.data.overall_total;
-    meta.isLoading = false;
-    filterList.models = Object.keys(res.data.filters.model).sort().reduce((acc, key) => {
-        acc[key] = res.data.filters.model[key];
-        return acc;
-    }, {})
+  meta.first = (meta.page - 1) * meta.limit;
+  meta.total = res.data.total;
+  meta.overallTotal = res.data.overall_total;
+  meta.isLoading = false;
+  filterList.models = Object.keys(res.data.filters.model)
+    .sort()
+    .reduce((acc, key) => {
+      acc[key] = res.data.filters.model[key];
+      return acc;
+    }, {});
 };
 
 const clearFilters = () => {
-    Object.keys(filters).forEach((key) => (filters[key].value = null));
+  Object.keys(filters).forEach((key) => (filters[key].value = null));
 };
 
 const handlePaginator = (ev) => {
-    meta.limit = ev.rows;
-    meta.page = ev.page + 1;
-    getProductsShopBlocks();
+  meta.limit = ev.rows;
+  meta.page = ev.page + 1;
+  getProductsShopBlocks();
 };
 
 const checkQuantity = _.debounce(async (product, temp) => {
-    if (product.stock <= temp) {
-        temp = product.stock;
-    }
-    product.quantity = temp;
+  if (product.stock <= temp) {
+    temp = product.stock;
+  }
+  product.quantity = temp;
+  if (product.quantity == 0) {
+    return;
+  }
+
+  let item = quote.items.find((x) => x.product_code == product.code);
+  if (!item) {
+    await createQuoteItem({
+      quote_id: props.modelValue.id,
+      product_code: product.code,
+      product_id: product.id,
+      quantity: product.quantity,
+      contract_length: product.contract_length,
+      name: product.name,
+      raw_price: product.price ? product.price.net : 0,
+      price: product.price ? product.price.net_spa : 0,
+      price_plan_id: product.price_plan_id,
+    });
+  } else {
     if (product.quantity == 0) {
-        return;
-    }
-
-    let item = quote.items.find((x) => x.product_code == product.code);
-    if (!item) {
-        await createQuoteItem({
-            quote_id: props.modelValue.id,
-            product_code: product.code,
-            product_id: product.id,
-            quantity: product.quantity,
-            contract_length: product.contract_length,
-            name: product.name,
-            raw_price: product.price ? product.price.net : 0,
-            price: product.price ? product.price.net_spa : 0,
-            price_plan_id: product.price_plan_id,
-        });
+      await removeQuoteItem(item.id);
     } else {
-        if (product.quantity == 0) {
-            await removeQuoteItem(item.id);
-        } else {
-            await updateQuoteItem(item.id, { quantity: product.quantity });
-        }
+      await updateQuoteItem(item.id, { quantity: product.quantity });
     }
+  }
 
-    await getQuote(quote.id);
+  await getQuote(quote.id);
 }, 500);
 
 const saveQuote = async () => {
@@ -208,14 +210,14 @@ onMounted(async () => {
 });
 
 watch([filters, sort], () => {
-    getProductsShopBlocks();
+  getProductsShopBlocks();
 });
 
 watch(
-    search,
-    _.debounce(() => {
-        getProductsShopBlocks();
-    }, 300)
+  search,
+  _.debounce(() => {
+    getProductsShopBlocks();
+  }, 300)
 );
 </script>
 <template>
@@ -233,7 +235,7 @@ watch(
                         <h2 class="m-0">Finally, choose your add-ons</h2>
                         <p class="bigger text-primary bold">STEP {{ active_categories.length + 1 }}/{{
                             active_categories.length + 1 }}</p>
-                    </div>
+                      </div>
                     <div class="d-flex justify-content-between mb-3">
                         <h3>Handsets</h3>
                         <div>
@@ -375,9 +377,53 @@ watch(
                         </div>
                     </div>
                 </div>
+              </div>
             </div>
-            <div class="col-lg-4 order-first order-lg-last mb-5">
-                <div style="
+          </div>
+          <Paginator
+            v-model:first="meta.first"
+            :rows="meta.limit"
+            :totalRecords="meta.total"
+            :rowsPerPageOptions="[5, 10, 20]"
+            @page="handlePaginator"
+          >
+          </Paginator>
+          <div class="d-flex justify-content-between align-items-center mt-3">
+            <div>
+              <button
+                id="btn-step-2-previous"
+                class="btn text-primary step-nav btn-sm me-3"
+                type="button"
+                @click="() => step--"
+              >
+                <font-awesome-icon :icon="['fas', 'arrow-left']" /> Previous
+              </button>
+              <button class="btn btn-outline-primary text-primary" @click="saveQuote()">
+                Next
+              </button>
+            </div>
+            <div>
+              <span id="total_add_ons">
+                Add
+                {{ productsHardware.reduce((acc, item) => (acc += item.quantity), 0) }}
+                handsets
+              </span>
+              <button
+                id="btn-step-2-next"
+                class="ms-3 btn btn-primary step-nav"
+                type="button"
+                @click="saveQuote()"
+              >
+                Next
+                <font-awesome-icon :icon="['fas', 'arrow-right']" />
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-4 order-first order-lg-last mb-5">
+        <div
+          style="
             position: sticky;
             top: 25px;
             max-width: 82%;
@@ -416,8 +462,13 @@ watch(
                     </div>
                 </div>
             </div>
+            <button class="btn btn-primary mt-2" @click="saveQuote()">Next</button>
+          </div>
         </div>
+      </div>
     </div>
+  </div>
 </template>
 
 <style></style>
+
