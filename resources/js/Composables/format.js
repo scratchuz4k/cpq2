@@ -46,6 +46,21 @@ const format = {
 
         return number + " " + suffix;
     },
+    simpleSpeed: (value) => {
+        let temp = value ?? 0;
+        let number = temp;
+
+        if (temp < 100) {
+            number = Math.ceil(temp / 10) * 10;
+        } else if (temp < 1000) {
+            number = Math.ceil(temp / 100) * 100;
+        } else {
+            number = Math.ceil(temp / 1000) * 1000;
+        }
+
+        return number;
+    },
+
     toCamelCase: (str) => {
         if (!str) {
             return "";
