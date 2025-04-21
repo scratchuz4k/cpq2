@@ -19,6 +19,9 @@ const props = defineProps({
   },
 });
 
+// TODO: EMAILS: add the rec pass functionality once we get the credentials
+const canResetPassword = false;
+
 const form = useForm({
   email: "",
   password: "",
@@ -88,7 +91,7 @@ const submit = () => {
                       <small>Remember me</small>
                     </label>
                   </div>
-                  <!-- TODO EMAILS: add the rec pass functionality once we get the credentials
+
                   <div class="text-end">
                     <Link
                       v-if="canResetPassword"
@@ -98,7 +101,7 @@ const submit = () => {
                       <small>Forgot password?</small>
                     </Link>
                   </div>
-                  -->
+
                 </div>
                 <div class="d-grid">
                   <PrimaryButton

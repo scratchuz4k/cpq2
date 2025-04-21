@@ -7,6 +7,7 @@ use App\Http\Controllers\BaseController;
 use App\Http\Requests\SolutionTypeCreateRequest;
 use App\Http\Requests\SolutionTypeUpdateRequest;
 use App\Http\Resources\SolutionTypeResource;
+use App\Models\Category;
 use App\Models\SolutionType;
 use App\Services\SolutionTypeService;
 use Illuminate\Support\Facades\DB;
@@ -51,7 +52,7 @@ class SolutionTypeController extends BaseController
                 return $this->solutionTypeService->store($request->all());
             });
         } catch (\Exception $e) {
-            if (! env('APP_DEBUG')) {
+            if (!env('APP_DEBUG')) {
                 Log::error($e->getMessage());
             }
             throw new \Exception($e);
@@ -79,7 +80,7 @@ class SolutionTypeController extends BaseController
         return Inertia::render('SolutionTypes/Edit', [
             'solution_type' => (new SolutionTypeResource($solutionType))->resolve(),
             'available_tables' => TablesEnum::cases(),
-            'available_columns' => $columns,
+            'available_columns' => $columns
         ]);
     }
 

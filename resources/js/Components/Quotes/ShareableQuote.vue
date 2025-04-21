@@ -16,7 +16,7 @@
     <template #header>
       <h2>Share quote</h2>
     </template>
-    <!-- TODO EMAILS: add the tabs once we get the credentials for email functionality
+    <!-- TODO: EMAILS: add the tabs once we get the credentials for email functionality
       <tabs>
         <tab title="Link" :selected="true">
     -->
@@ -84,7 +84,7 @@
             </button>
           </div>
         </div>
-      <!-- TODO EMAILS: add the tabs once we get the credentials for email functionality
+      <!-- TODO: EMAILS: add the tabs once we get the credentials for email functionality
       <tab title="Email">
         <form @submit.prevent="sendEmail()">
           <div class="my-3">

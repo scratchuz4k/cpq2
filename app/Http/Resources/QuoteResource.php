@@ -16,9 +16,9 @@ class QuoteResource extends JsonResource
     {
         return [
             ...$this->resource->toArray(),
-            'margin' => round((float)$this->margin, 4),
-            'discount' => round((float)$this->discount, 4),
-            'commission_rate' => round((float)$this->commission_rate, 2),
+            'margin' => round((float) $this->margin, 4),
+            'discount' => round((float) $this->discount, 4),
+            'commission_rate' => round((float) $this->commission_rate, 2),
             'user' => $this->user,
             'account' => (new AccountResource($this->account))->resolve(),
             'solution_type' => (new SolutionTypeResource($this->solutionType))->resolve(),

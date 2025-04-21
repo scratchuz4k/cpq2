@@ -12,6 +12,7 @@ describe("Creates a Mobile Quote", () => {
         cy.get("#my-account").click()
         cy.get("#link-solutions").click()
         cy.get("#datatable-search").type("Connectivity - Ethernet")
+        cy.wait(1000)
         cy.get("#datatable-btn-0-edit").click()
         cy.get("#1-1").click()
         cy.get("#solution_type-component").click()
@@ -73,8 +74,9 @@ describe("Creates a Mobile Quote", () => {
         cy.get("#my-account").click()
         cy.get("#link-solutions").click()
         cy.get("#datatable-search").type("Connectivity - Ethernet")
+        cy.wait(1000)
         cy.get("#datatable-btn-0-edit").click()
-        cy.get("#1-1").click()
+        cy.get("#2-2").click()
         cy.get("#solution_type-component").click()
         cy.wait(500)
         cy.get(".p-select-list-container").eq(0).within(() => {
