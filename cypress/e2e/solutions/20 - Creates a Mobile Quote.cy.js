@@ -28,7 +28,6 @@ describe("Creates a Mobile Quote", () => {
         cy.get("#create-tab").click();
         cy.get("#link-to-create-account").click();
         cy.get("#account-name").type(account.name);
-        cy.get("#account-name").type(account.name);
         cy.get("#account-reference").type(account.ref);
         cy.get("#btn-save-account").click();
         cy.get(".notyf").contains("Created with Success");
@@ -100,7 +99,7 @@ describe("Creates a Mobile Quote", () => {
         cy.get("#datatable-search").type("Mobile")
         cy.wait(10000)
         cy.get("#datatable-btn-0-edit").click()
-        cy.get("#2-2").click()
+        cy.get("#1-1").click()
         cy.get("#solution-type-table-add-category").click()
         cy.get("#select-solution-type-categories-0-value").click()
         cy.wait(500)
@@ -170,7 +169,7 @@ describe("Creates a Mobile Quote", () => {
 
         cy.get("#btn-step-2-next").click();
 
-        cy.get(".recurring-item").should("have.length", 2);
+        cy.get(".recurring-item").should("have.length", 3);
         cy.get(".one_off-item").then(($items) => {
             cy.then(() => {
                 expect(hardwareCount).to.equal($items.length);
