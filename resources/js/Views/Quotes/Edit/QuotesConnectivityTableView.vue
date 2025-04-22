@@ -10,6 +10,7 @@ import Spinner from "@/Components/Spinner.vue";
 import Select from "primevue/select";
 import ToggleSwitch from "primevue/toggleswitch";
 import TriStateToggle from "@/Components/TriStateToggle.vue";
+import { quote } from "@/Composables/useQuote";
 
 const props = defineProps({
   modelValue: Object,
@@ -101,6 +102,7 @@ const getArticles = async (clearCache = false, runTimeout = false) => {
   }
 
   let query = {
+    quote_id: props.modelValue.id,
     clearCache: clearCache,
     connectivityType: 3,
     postCode: props.modelValue.address_postcode,

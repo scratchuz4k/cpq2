@@ -28,7 +28,7 @@ const submit = () => {
         : form.configurations[key];
     });
   }
-  debugger;
+
   try {
     router.post("/quotes", {
       account_id: form.account?.id,

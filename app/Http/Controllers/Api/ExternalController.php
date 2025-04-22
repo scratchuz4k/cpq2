@@ -12,6 +12,7 @@ use App\Helpers\Prices\PriceRules;
 use App\Http\Controllers\Controller;
 use App\Models\Account;
 use App\Models\PricePlan;
+use App\Models\Quote;
 use App\Services\CloudMarketService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -20,9 +21,7 @@ use Illuminate\Support\Str;
 
 class ExternalController extends Controller
 {
-    public function __construct(protected CloudMarketService $cloudMarketService)
-    {
-    }
+    public function __construct(protected CloudMarketService $cloudMarketService) {}
 
     /**
      * Request Openreach Api to get all address with a Postal Code.
@@ -62,17 +61,17 @@ class ExternalController extends Controller
             'fullAddress' => 'required',
         ]);
 
-        if (!($address = trim(preg_replace('/[\s]+/', ' ', $request->input('fullAddress'))))) {
+        if (! ($address = trim(preg_replace('/[\s]+/', ' ', $request->input('fullAddress'))))) {
             return response('Something went wrong', 400);
         }
 
-        $cache_key = 'address_lookup_' . Str::slug($address);
+        $cache_key = 'address_lookup_'.Str::slug($address);
 
         return Cache::remember($cache_key, 43200, function () use ($address) {
-            $res = Http::get('https://api.tomtom.com/search/2/geocode/' . $address . '.json?key=' . env('TOMTOM_API_KEY') . '&countryCode=GB');
+            $res = Http::get('https://api.tomtom.com/search/2/geocode/'.$address.'.json?key='.env('TOMTOM_API_KEY').'&countryCode=GB');
             $res = json_decode($res->body(), true);
             $position = [];
-            if (is_null($res) || !array_key_exists('results', $res) || !count($res['results'])) {
+            if (is_null($res) || ! array_key_exists('results', $res) || ! count($res['results'])) {
                 return $position;
             }
 
@@ -87,7 +86,7 @@ class ExternalController extends Controller
             }
             $highestScoreIndex = $highestScoreIndex >= 0 ? $highestScoreIndex : 0;
 
-            if (!empty($res['results'][$highestScoreIndex]['position'])) {
+            if (! empty($res['results'][$highestScoreIndex]['position'])) {
                 $position = $res['results'][$highestScoreIndex]['position'];
             }
 
@@ -102,6 +101,7 @@ class ExternalController extends Controller
     {
         $request->validate([
             'connectivityType' => 'required',
+            'quote_id' => 'required|exists:quotes,id',
             'postCode' => 'required',
             'uprn' => 'nullable',
             'latitude' => 'nullable',
@@ -109,6 +109,8 @@ class ExternalController extends Controller
             'street' => 'nullable',
             'town' => 'nullable',
         ]);
+
+        $quote = Quote::find($request->get('quote_id'));
 
         $address = new CloudMarketAddress(
             postCode: $request->get('postCode'),
@@ -123,12 +125,12 @@ class ExternalController extends Controller
             town: $request->input('town', null),
         );
 
-        return $this->cloudMarketService->get($request->get('connectivityType'), $address, $request->input('filters', []));
+        return $this->cloudMarketService->get($quote, $request->get('connectivityType'), $address, $request->input('filters', []));
     }
 
     public function getArticlesFromShopBlocks(Request $request)
     {
-        $cache_key = md5('shop-blocks' . $request->input('category_id', 22));
+        $cache_key = md5('shop-blocks'.$request->input('category_id', 22));
 
         $res = Cache::remember($cache_key, 43200, function () use ($request) {
             $products = [];
@@ -137,7 +139,7 @@ class ExternalController extends Controller
                 $page++;
                 $category_id = $request->input('category_id', 22);
                 $res = (new ShopBlocksApi)->get($category_id, 200, $page);
-                if (!array_key_exists('data', $res)) {
+                if (! array_key_exists('data', $res)) {
                     break;
                 }
                 array_push($products, ...$res['data']);
@@ -152,7 +154,7 @@ class ExternalController extends Controller
             foreach ($products as $key => $product) {
                 $temp = '';
                 foreach (array_keys($product) as $itemKey) {
-                    if (!(is_string($product[$itemKey]) || is_numeric($product[$itemKey]))) {
+                    if (! (is_string($product[$itemKey]) || is_numeric($product[$itemKey]))) {
                         continue;
                     }
                     $temp .= $product[$itemKey];
