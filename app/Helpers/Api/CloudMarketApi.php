@@ -33,6 +33,8 @@ class CloudMarketApi
             'Address1.Town' => $address->town,
 
             'ManagedOption' => 0,
+            'TermMonths' => [],
+
         ];
 
         Log::debug('CloudMarketApi::getQuotes lookup:', $quoteAddress);

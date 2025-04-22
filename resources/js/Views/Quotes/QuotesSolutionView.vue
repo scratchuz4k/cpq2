@@ -1,5 +1,6 @@
 <script setup>
 import { MultiSelect } from "primevue";
+import ToggleSwitch from "primevue/toggleswitch";
 import _ from "lodash";
 import { reactive, ref, watch } from "vue";
 import format from "@/Composables/format";
@@ -16,6 +17,7 @@ const configurations = reactive({
   speed: [0, 10000],
   bearer: [0, 10000],
   contract_length: [],
+  managed: null,
 });
 
 props.modelValue.configurations = configurations;
@@ -342,6 +344,26 @@ watch(addressPostCode, () => {
               </div>
             </template>
           </MultiSelect>
+        </div>
+        <div class="mb-3">
+          <hr />
+          <div class="d-flex">
+            <TriStateToggle v-model="configurations.managed" id="filter-show-contended">
+              <template #handle>
+                <font-awesome-icon
+                  :icon="
+                    configurations.managed === true
+                      ? ['fas', 'circle-check']
+                      : configurations.managed === false
+                      ? ['far', 'circle-xmark']
+                      : ['far', 'circle']
+                  "
+                  class="text-primary"
+                />
+              </template>
+            </TriStateToggle>
+            <label class="form-label">Show Contented products</label>
+          </div>
         </div>
       </div>
     </div>
