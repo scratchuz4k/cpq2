@@ -1,9 +1,23 @@
 <template>
-    <Select :inputId="'select-' + props.id" v-model="proxyValue" :options="options" showClear :optionLabel="props.field"
+    <Select :inputId="'select-' + props.id" v-model="proxyValue" :options="options" showClear
         placeholder="Select an option" class="w-100">
         <template #value="{ value, placeholder }">
-            {{ value && value[props.field] ? value[props.field] : placeholder }}
+            <template v-if="!value">
+                {{ placeholder }}
+            </template>
+            <p v-else v-for="(field, index) in props.fields">
+                <span v-if="index != 0">(</span>
+                {{ value && value[field] ? value[field] : '' }}
+                <span v-if="index != 0">)</span>
+            </p>
         </template>
+
+        <template #option="{ option, selected, index }">
+            <p class="me-2" v-for="(field, index) in props.fields" :class="[selected ? 'text-bold' : '']">
+                {{ index !== 0 ? `(${option?.[field] ?? ''})` : (option?.[field] ?? '') }}
+            </p>
+        </template>
+
         <template #header>
             <IconField class="p-1">
                 <InputIcon>
@@ -33,7 +47,10 @@ const props = defineProps({
         },
     },
     url: String,
-    field: String,
+    fields: {
+        type: Array,
+        default: [],
+    },
     modelValue: Object,
 });
 

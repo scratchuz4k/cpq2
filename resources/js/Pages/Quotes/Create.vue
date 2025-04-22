@@ -3,6 +3,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, router } from '@inertiajs/vue3';
 import { reactive, ref } from 'vue'
 import QuotesSolutionView from "@/Views/Quotes/QuotesSolutionView.vue";
+import { reference } from '@popperjs/core';
 
 
 defineProps({
@@ -62,10 +63,13 @@ const items = ref([
                                 <div class="mb-3">
                                     <label for="account_id" class="form-label">Account <span
                                             class="text-primary fw-bold">*</span></label>
-                                    <select id="account_id" class="form-select" v-model="form.account">
+                                    <!-- <select id="account_id" class="form-select" v-model="form.account">
                                         <option :value="null">Select an account</option>
                                         <option v-for="account in accounts" :value="account">{{ account.name }}</option>
-                                    </select>
+                                    </select> -->
+                                    <InputSelect id="account_id" v-model="form.account" url="/accounts"
+                                        :fields="['name', 'reference']" placeholder="Select an Account">
+                                    </InputSelect>
                                 </div>
                                 or create a <a id="link-to-create-account" href="/accounts/create"
                                     class="text-primary">new account</a>
@@ -78,7 +82,8 @@ const items = ref([
                 <QuotesSolutionView v-model="form" :solution_types="solution_types"></QuotesSolutionView>
                 <div class="row mb-3 ">
                     <div class="col-6 d-flex justify-content-end">
-                        <button id="btn-create-quote" class="btn btn-primary" type="submit" :disabled="form.solutionCheck">
+                        <button id="btn-create-quote" class="btn btn-primary" type="submit"
+                            :disabled="form.solutionCheck">
                             Get prices
                             <font-awesome-icon :icon="['fas', 'arrow-right']" class="ms-2"></font-awesome-icon>
                             <div v-if="form.isLoading" class="spinner-border  spinner-border-sm" role="status">

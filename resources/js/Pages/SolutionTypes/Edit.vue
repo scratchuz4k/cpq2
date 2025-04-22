@@ -203,7 +203,7 @@ const items = ref([
                                                 <td style="text-align: left;">
                                                     <InputSelect v-model="categories[index]" url="/categories"
                                                         :id="`solution-type-categories-` + index + `-value`"
-                                                        field="name" placeholder="Select a Category"
+                                                        :fields="['name']" placeholder="Select a Category"
                                                         @change="checkCategories(index)">
                                                     </InputSelect>
                                                 </td>
