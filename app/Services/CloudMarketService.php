@@ -58,12 +58,12 @@ class CloudMarketService
 
         if (! Cache::has($filename)) {
             $file->write([], true, null, now());
-            CloudMarketConnectivityProducts::dispatch($file, $connectivityType, $address);
+            CloudMarketConnectivityProducts::dispatch($quote, $file, $connectivityType, $address);
         }
 
         if (! $file->exists() || (is_null($content['finished_at']) && $createdAt->addMinutes(10)->isPast())) {
             $file->write([], true, null, now());
-            CloudMarketConnectivityProducts::dispatch($file, $connectivityType, $address);
+            CloudMarketConnectivityProducts::dispatch($quote, $file, $connectivityType, $address);
         }
 
         return $this->cloudMarketRepository->sendResponse($file->getContent(), $filters);

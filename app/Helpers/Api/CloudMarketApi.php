@@ -4,6 +4,7 @@ namespace App\Helpers\Api;
 
 use App\Enums\CloudMarketSuppliersEnum;
 use App\Models\Api;
+use App\Models\Quote;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
@@ -11,7 +12,7 @@ class CloudMarketApi
 {
     public function __construct() {}
 
-    public static function getQuotes($connectivityType, CloudMarketAddress $address)
+    public static function getQuotes(Quote $quote, $connectivityType, CloudMarketAddress $address)
     {
 
         $url = env('CLOUDMARKET_CONNECTION_SERVICE_URL', 'https://cpq-poc-uat-api.cloudmarket.com');
