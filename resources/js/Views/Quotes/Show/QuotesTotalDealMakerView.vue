@@ -170,13 +170,13 @@ const items = ref([
             <a
               id="btn-previous"
               class="btn text-primary"
-              :href="route('quotes.edit', { quote: quote.id }) + '?step=2'"
+              :href="route('quotes.edit', { quote: quote.id })"
             >
               <font-awesome-icon
                 class="me-2"
                 :icon="['fas', 'arrow-left']"
               ></font-awesome-icon>
-              Previous</a
+              Edit Quote</a
             >
             <div>
               <ActivityDialog
