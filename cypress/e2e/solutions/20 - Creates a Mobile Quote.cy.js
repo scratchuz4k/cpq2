@@ -10,7 +10,7 @@ const rand = (notAllowedNumber, max = 101) => {
 };
 
 const temp = getCurrentDate();
-const account = { ref: generateHash(temp), name: temp };
+const account = { ref: generateHash(temp), name: temp, combined_name: temp + "(" + generateHash(temp) + ")" };
 
 const temp1 = getCurrentDate()
 const product = { code: generateHash(temp1), name: temp1 }
@@ -70,7 +70,7 @@ describe("Creates a Mobile Quote", () => {
                 cy.get("#select-product-categories").click()
                 cy.wait(500)
                 cy.get(".p-select-list-container").eq(0).within(() => {
-                    cy.get('li[aria-label="' + category.name + '"]')
+                    cy.contains('li', category.name)
                         .should('exist')
                         .click();
                 })
@@ -86,7 +86,7 @@ describe("Creates a Mobile Quote", () => {
         cy.get("#select-product-categories").click()
         cy.wait(500)
         cy.get(".p-select-list-container").eq(0).within(() => {
-            cy.get('li[aria-label="' + category.name + '"]')
+            cy.contains('li', category.name)
                 .should('exist')
                 .click();
         })
@@ -99,12 +99,12 @@ describe("Creates a Mobile Quote", () => {
         cy.get("#datatable-search").type("Mobile")
         cy.wait(10000)
         cy.get("#datatable-btn-0-edit").click()
-        cy.get("#2-2").click()
+        cy.get("#1-1").click()
         cy.get("#solution-type-table-add-category").click()
         cy.get("#select-solution-type-categories-0-value").click()
         cy.wait(500)
         cy.get(".p-select-list-container").eq(0).within(() => {
-            cy.get('li[aria-label="Plans"]').first()
+            cy.contains('li', 'Plans')
                 .should('exist')
                 .click();
         })
@@ -113,7 +113,7 @@ describe("Creates a Mobile Quote", () => {
         cy.get("#select-solution-type-categories-1-value").click()
         cy.wait(500)
         cy.get(".p-select-list-container").eq(0).within(() => {
-            cy.get('li[aria-label="' + category.name + '"]')
+            cy.contains('li', category.name)
                 .should('exist')
                 .click();
         })
@@ -125,7 +125,14 @@ describe("Creates a Mobile Quote", () => {
     it("Creates Mobile Quote", () => {
         cy.visit("/");
         cy.get("#create-tab").click();
-        cy.get("#account_id").select(account.name);
+        // cy.get("#account_id").select(account.name);
+        cy.get("#select-account_id").click()
+        cy.wait(500)
+        cy.get(".p-select-list-container").eq(0).within(() => {
+            cy.contains('li', account.combined_name)
+                .should('exist')
+                .click();
+        })
         cy.get("#solution_id").select("Mobile");
         cy.get("#btn-create-quote").click();
         cy.wait(1000);
@@ -169,7 +176,7 @@ describe("Creates a Mobile Quote", () => {
 
         cy.get("#btn-step-2-next").click();
 
-        cy.get(".recurring-item").should("have.length", 2);
+        cy.get(".recurring-item").should("have.length", 3);
         cy.get(".one_off-item").then(($items) => {
             cy.then(() => {
                 expect(hardwareCount).to.equal($items.length);
@@ -178,142 +185,141 @@ describe("Creates a Mobile Quote", () => {
     });
 
     it("I can change Margin and Discount", () => {
-        //     cy.visit("/");
-        //     cy.get("#datatable-btn-0-show").click();
+        cy.visit("/");
+        cy.get("#datatable-btn-0-show").click();
 
-        //     let items = ["recurring", "one_off"];
+        let items = ["recurring", "one_off"];
 
-        //     items.forEach((key) => {
-        //         let total = null;
-        //         cy.get("#" + key + "-total").then(($title) => {
-        //             total = $title.text().trim();
-        //         });
+        items.forEach((key) => {
+            let total = null;
+            cy.get("#" + key + "-total").then(($title) => {
+                total = $title.text().trim();
+            });
 
-        //         let line1 = { qty: null, discount: null, margin: null };
-        //         cy.get("#btn-" + key + "-0-edit").click();
-        //         cy.get("#input-" + key + "-0-quantity")
-        //             .then(($input) => {
-        //                 line1.qty = $input.val().trim();
-        //             })
-        //             .clear()
-        //             .type(rand(line1.qty));
-        //         cy.get("#input-" + key + "-0-discount")
-        //             .then(($input) => {
-        //                 line1.discount = $input.val().trim();
-        //             })
-        //             .clear()
-        //             .type(rand(0, 11));
-        //         cy.get("#" + key + "-0-margin").then(($input) => {
-        //             line1.margin = $input.text().trim();
-        //         });
+            let line1 = { qty: null, discount: null, margin: null };
+            cy.get("#btn-" + key + "-0-edit").click();
+            cy.get("#input-" + key + "-0-quantity")
+                .then(($input) => {
+                    line1.qty = $input.val().trim();
+                })
+                .clear()
+                .type(rand(line1.qty));
+            cy.get("#input-" + key + "-0-discount")
+                .then(($input) => {
+                    line1.discount = $input.val().trim();
+                })
+                .clear()
+                .type(rand(0, 11));
+            cy.get("#" + key + "-0-margin").then(($input) => {
+                line1.margin = $input.text().trim();
+            });
 
-        //         cy.get("#btn-" + key + "-0-save").click();
-        //         cy.wait(500);
-        //         cy.get("#btn-" + key + "-0-edit").click();
-        //         cy.get("#input-" + key + "-0-quantity")
-        //             .invoke("val")
-        //             .then((inputValue) => {
-        //                 expect(inputValue).to.not.equal(line1.qty);
-        //             });
-        //         cy.get("#input-" + key + "-0-discount")
-        //             .invoke("val")
-        //             .then((inputValue) => {
-        //                 expect(inputValue).to.not.equal(line1.discount);
-        //             });
+            cy.get("#btn-" + key + "-0-save").click();
+            cy.wait(500);
+            cy.get("#btn-" + key + "-0-edit").click();
+            cy.get("#input-" + key + "-0-quantity")
+                .invoke("val")
+                .then((inputValue) => {
+                    expect(inputValue).to.not.equal(line1.qty);
+                });
+            cy.get("#input-" + key + "-0-discount")
+                .invoke("val")
+                .then((inputValue) => {
+                    expect(inputValue).to.not.equal(line1.discount);
+                });
 
-        //         cy.get("#" + key + "-total")
-        //             .invoke("text")
-        //             .then((text) => {
-        //                 expect(text).to.not.equal(total);
-        //             });
-        //     });
-        // });
-
-        // it("I can change and reset Global Discount", () => {
-        //     cy.visit("/");
-        //     cy.get("#datatable-btn-0-show").click();
-        //     let quote = { margin: null, commission: null, global: null };
-
-        //     cy.get("#input-margin-order").then(($input) => {
-        //         quote.margin = $input.val().trim();
-        //     });
-        //     cy.get("#input-global-MONTHLY-discount")
-        //         .then(($input) => {
-        //             quote.global = $input.val().trim();
-        //         })
-        //         .clear()
-        //         .type(rand(quote.global));
-
-        //     cy.get("#btn-apply-global-discount").click();
-        //     cy.get("#btn-apply-global-discount", { timeout: 3000 }).should(
-        //         "not.be.disabled"
-        //     );
-
-        //     cy.get("#input-margin-order")
-        //         .invoke("val")
-        //         .then((val) => {
-        //             expect(val).to.not.equal(quote.margin);
-        //         });
-
-        //     cy.get("#btn-reset-quote").click();
-        //     cy.get(
-        //         "body > div.swal2-container.swal2-center.swal2-backdrop-show > div > div.swal2-actions > button.swal2-confirm.btn.text-light.btn-lg.mr-2.fs-6.swal2-styled.swal2-default-outline"
-        //     ).click();
-        //     cy.get("#btn-reset-quote", { timeout: 3000 }).should("not.be.disabled");
-
-        //     cy.get(".recurring-item").each(($el, index, $list) => {
-        //         // You can perform actions on each element here
-        //         cy.get(`#recurring-discount-${index}`)
-        //             .invoke("text")
-        //             .then((text) => {
-        //                 expect(text).to.not.equal("0 %");
-        //             });
-        //     });
-        // });
-        // it("I can add and delete a Custom Line", () => {
-        //     cy.visit("/");
-        //     cy.get("#datatable-btn-0-show").click();
-        //     cy.get("#btn-recurring-add").click();
-        //     cy.get("#input-new-recurring-name").type("Custom line recurring");
-        //     cy.get("#input-new-recurring-quantity").type(10);
-        //     cy.get("#input-new-recurring-price").type(10);
-        //     cy.get("#input-new-recurring-discount").type(10);
-        //     cy.get("#btn-new-recurring-add").click();
-        //     cy.get("#table-recurring").contains("Custom line recurring");
-
-        //     cy.get("#btn-one_off-add").click();
-        //     cy.get("#input-new-one_off-name").type("Custom line one_off");
-        //     cy.get("#input-new-one_off-quantity").type(10);
-        //     cy.get("#input-new-one_off-price").type(10);
-        //     cy.get("#input-new-one_off-discount").type(10);
-        //     cy.get("#btn-new-one_off-add").click();
-        //     cy.get("#table-one_off").contains("Custom line one_off");
-
-        //     cy.get(".recurring-item")
-        //         .its("length")
-        //         .then((count) => {
-        //             cy.get(`#btn-recurring-${count - 1}-remove`).click();
-        //         });
-
-        //     cy.get(
-        //         "body > div.swal2-container.swal2-center.swal2-backdrop-show > div > div.swal2-actions > button.swal2-confirm.btn.text-light.btn-lg.mr-2.fs-6.swal2-styled.swal2-default-outline"
-        //     ).click();
-        //     cy.get(".one_off-item")
-        //         .its("length")
-        //         .then((count) => {
-        //             cy.get(`#btn-one_off-${count - 1}-remove`).click();
-        //         });
-        //     cy.get(
-        //         "body > div.swal2-container.swal2-center.swal2-backdrop-show > div > div.swal2-actions > button.swal2-confirm.btn.text-light.btn-lg.mr-2.fs-6.swal2-styled.swal2-default-outline"
-        //     ).click();
-        // });
-
-        // it("I can Create an order from a quote", () => {
-        //     cy.visit("/");
-        //     cy.get("#datatable-btn-0-crete-order").click();
-        //     cy.get(".swal2-confirm").eq(0).click();
-        //     cy.get(".notyf").contains("Order created with success");
-        // });
-
+            cy.get("#" + key + "-total")
+                .invoke("text")
+                .then((text) => {
+                    expect(text).to.not.equal(total);
+                });
+        });
     });
-})
+
+    it("I can change and reset Global Discount", () => {
+        cy.visit("/");
+        cy.get("#datatable-btn-0-show").click();
+        let quote = { margin: null, commission: null, global: null };
+
+        cy.get("#input-margin-order").then(($input) => {
+            quote.margin = $input.val().trim();
+        });
+        cy.get("#input-global-MONTHLY-discount")
+            .then(($input) => {
+                quote.global = $input.val().trim();
+            })
+            .clear()
+            .type(rand(quote.global));
+
+        cy.get("#btn-apply-global-discount").click();
+        cy.get("#btn-apply-global-discount", { timeout: 3000 }).should(
+            "not.be.disabled"
+        );
+
+        cy.get("#input-margin-order")
+            .invoke("val")
+            .then((val) => {
+                expect(val).to.not.equal(quote.margin);
+            });
+
+        cy.get("#btn-reset-quote").click();
+        cy.get(
+            "body > div.swal2-container.swal2-center.swal2-backdrop-show > div > div.swal2-actions > button.swal2-confirm.btn.text-light.btn-lg.mr-2.fs-6.swal2-styled.swal2-default-outline"
+        ).click();
+        cy.get("#btn-reset-quote", { timeout: 3000 }).should("not.be.disabled");
+
+        cy.get(".recurring-item").each(($el, index, $list) => {
+            // You can perform actions on each element here
+            cy.get(`#recurring-discount-${index}`)
+                .invoke("text")
+                .then((text) => {
+                    expect(text).to.not.equal("0 %");
+                });
+        });
+    });
+    it("I can add and delete a Custom Line", () => {
+        cy.visit("/");
+        cy.get("#datatable-btn-0-show").click();
+        cy.get("#btn-recurring-add").click();
+        cy.get("#input-new-recurring-name").type("Custom line recurring");
+        cy.get("#input-new-recurring-quantity").type(10);
+        cy.get("#input-new-recurring-price").type(10);
+        cy.get("#input-new-recurring-discount").type(10);
+        cy.get("#btn-new-recurring-add").click();
+        cy.get("#table-recurring").contains("Custom line recurring");
+
+        cy.get("#btn-one_off-add").click();
+        cy.get("#input-new-one_off-name").type("Custom line one_off");
+        cy.get("#input-new-one_off-quantity").type(10);
+        cy.get("#input-new-one_off-price").type(10);
+        cy.get("#input-new-one_off-discount").type(10);
+        cy.get("#btn-new-one_off-add").click();
+        cy.get("#table-one_off").contains("Custom line one_off");
+
+        cy.get(".recurring-item")
+            .its("length")
+            .then((count) => {
+                cy.get(`#btn-recurring-${count - 1}-remove`).click();
+            });
+
+        cy.get(
+            "body > div.swal2-container.swal2-center.swal2-backdrop-show > div > div.swal2-actions > button.swal2-confirm.btn.text-light.btn-lg.mr-2.fs-6.swal2-styled.swal2-default-outline"
+        ).click();
+        cy.get(".one_off-item")
+            .its("length")
+            .then((count) => {
+                cy.get(`#btn-one_off-${count - 1}-remove`).click();
+            });
+        cy.get(
+            "body > div.swal2-container.swal2-center.swal2-backdrop-show > div > div.swal2-actions > button.swal2-confirm.btn.text-light.btn-lg.mr-2.fs-6.swal2-styled.swal2-default-outline"
+        ).click();
+    });
+
+    it("I can Create an order from a quote", () => {
+        cy.visit("/");
+        cy.get("#datatable-btn-0-crete-order").click();
+        cy.get(".swal2-confirm").eq(0).click();
+        cy.get(".notyf").contains("Order created with success");
+    });
+
+});

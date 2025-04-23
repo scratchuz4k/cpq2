@@ -11,17 +11,17 @@ describe("Solution Types CRUD", () => {
 
         cy.get("#solution_type").click()
         cy.get(".p-select-list-container").eq(0).within(() => {
-            cy.get('li[aria-label="Hardware"]')
+            cy.contains('li', 'Hardware')
                 .should('exist')
                 .click();
         })
 
         //Change tabs
-        cy.get("#2-2").click()
+        cy.get("#1-1").click()
 
         cy.get("#solution_type-component").click()
         cy.get(".p-select-list-container").eq(0).within(() => {
-            cy.get('li[aria-label="Simple"]')
+            cy.contains('li', 'Simple')
                 .should('exist')
                 .click();
         })
@@ -49,7 +49,7 @@ describe("Solution Types CRUD", () => {
 
         cy.get("#solution_type-component").click()
         cy.get(".p-select-list-container").eq(0).within(() => {
-            cy.get('li[aria-label="DealMaker"]')
+            cy.contains('li', 'DealMaker')
                 .should('exist')
                 .click();
         })

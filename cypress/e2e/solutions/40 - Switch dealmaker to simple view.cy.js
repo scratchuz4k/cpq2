@@ -30,7 +30,13 @@ describe("Creates a Mobile Quote", () => {
     it("Creates Connectivity quote and has simple Table", () => {
         cy.visit("/")
         cy.get("#create-tab").click()
-        cy.get("#account_id").select(1)
+        cy.get("#select-account_id").click()
+        cy.wait(500)
+        cy.get(".p-select-list-container").eq(0).within(() => {
+            cy.get('li').first()
+                .should('exist')
+                .click();
+        });
         cy.get("#solution_id").select("Connectivity - Ethernet")
         cy.get("#input_address").type('EH32 9NT')
         cy.get("#select_address").should('be.visible').select(1)
@@ -76,14 +82,14 @@ describe("Creates a Mobile Quote", () => {
         cy.get("#datatable-search").type("Connectivity - Ethernet")
         cy.wait(1000)
         cy.get("#datatable-btn-0-edit").click()
-        cy.get("#2-2").click()
+        cy.get("#1-1").click()
         cy.get("#solution_type-component").click()
         cy.wait(500)
         cy.get(".p-select-list-container").eq(0).within(() => {
-            cy.get('li[aria-label="DealMaker"]')
+            cy.contains('li', 'DealMaker')
                 .should('exist')
                 .click();
-        })
+        });
 
         cy.get("#btn-save-solution-type").click()
         cy.get(".notyf").contains("Updated with Success")
@@ -92,7 +98,7 @@ describe("Creates a Mobile Quote", () => {
         cy.visit("/")
         cy.get("#datatable-btn-0-show").click()
 
-        cy.get('.recurring-item').its('length').should('eq', 3);
+        cy.get('.recurring-item').its('length').should('eq', 2);
         cy.get("#table-recurring > thead").contains("Provider")
         cy.get("#table-recurring > thead").contains("SubProvider")
         cy.get("#table-recurring > thead").contains("Name")

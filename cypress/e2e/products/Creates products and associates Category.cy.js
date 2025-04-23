@@ -48,7 +48,7 @@ describe('Creates products and associates Category.cy', () => {
                 cy.get("#select-product-categories").click()
                 cy.wait(500)
                 cy.get(".p-select-list-container").eq(0).within(() => {
-                    cy.get('li[aria-label="' + category.name + '"]')
+                    cy.contains('li', category.name)
                         .should('exist')
                         .click();
                 })
@@ -64,7 +64,7 @@ describe('Creates products and associates Category.cy', () => {
         cy.get("#select-product-categories").click()
         cy.wait(500)
         cy.get(".p-select-list-container").eq(0).within(() => {
-            cy.get('li[aria-label="' + category.name + '"]')
+            cy.contains('li', category.name)
                 .should('exist')
                 .click();
         })

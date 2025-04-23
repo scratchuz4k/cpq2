@@ -1,6 +1,6 @@
 const { getCurrentDate, generateHash } = require("../../support/utils.js");
 const temp = getCurrentDate();
-const account = { ref: generateHash(temp), name: temp };
+const account = { ref: generateHash(temp), name: temp, combined_name: temp + "(" + generateHash(temp) + ")" };
 let url = "";
 
 describe("Create a Shareable Link.cy", () => {
@@ -20,7 +20,14 @@ describe("Create a Shareable Link.cy", () => {
     it("Creates Mobile Quote", () => {
         cy.visit("/");
         cy.get("#create-tab").click();
-        cy.get("#account_id").select(account.name);
+        // cy.get("#account_id").select(account.name);
+        cy.get("#select-account_id").click()
+        cy.wait(500)
+        cy.get(".p-select-list-container").eq(0).within(() => {
+            cy.contains('li', account.combined_name)
+                .should('exist')
+                .click();
+        })
         cy.get("#solution_id").select("Mobile");
         cy.get("#btn-create-quote").click();
         cy.get("#btn-plan-0-add-25").click();
@@ -29,6 +36,9 @@ describe("Create a Shareable Link.cy", () => {
         cy.wait(1000);
         cy.get("#btn-step-1-next").click();
         cy.wait(1000);
+        cy.get("#btn-plan-0-add-25").click();
+        cy.wait(1000);
+        cy.get("#btn-step-2-next").click();
         let hardwareCount = 0;
         let keys = [0, 1, 2, 3, 4];
         let max_pages = 5;
@@ -60,7 +70,7 @@ describe("Create a Shareable Link.cy", () => {
 
         cy.get("#btn-step-2-next").click();
 
-        cy.get(".recurring-item").should("have.length", 2);
+        cy.get(".recurring-item").should("have.length", 3);
         cy.get(".one_off-item").then(($items) => {
             cy.then(() => {
                 expect(hardwareCount).to.equal($items.length);

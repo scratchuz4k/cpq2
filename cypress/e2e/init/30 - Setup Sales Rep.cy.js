@@ -2,7 +2,7 @@ const crypto = require("crypto");
 const { getCurrentDate, generateHash, slugify } = require("../../support/utils.js");
 const temp = getCurrentDate()
 const user = { name: slugify(temp), email: slugify(temp) + "@email.com", password: generateHash(temp) }
-const account = { ref: generateHash(temp), name: temp }
+const account = { ref: generateHash(temp), name: temp, combined_name: temp + "(" + generateHash(temp) + ")" }
 
 
 describe("Setup Sales Rep.cy", () => {
@@ -33,7 +33,14 @@ describe("Setup Sales Rep.cy", () => {
         cy.get(".notyf").contains("Created with Success")
         cy.visit("/")
         cy.get("#create-tab").click()
-        cy.get("#account_id").select(account.name)
+        // cy.get("#account_id").select(account.name)
+        cy.get("#select-account_id").click()
+        cy.wait(500)
+        cy.get(".p-select-list-container").eq(0).within(() => {
+            cy.contains('li', account.combined_name)
+                .should('exist')
+                .click();
+        })
         cy.get("#solution_id").select("Mobile")
         cy.get("#btn-create-quote").click()
         cy.visit("/")
