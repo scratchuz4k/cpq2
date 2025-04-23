@@ -1,6 +1,7 @@
 <template>
     <Select :inputId="'select-' + props.id" v-model="proxyValue" :options="options" showClear
-        placeholder="Select an option" class="w-100">
+        placeholder="Select an option" class="w-100"
+        :virtualScrollerOptions="options.length > 10 ? { itemSize: 10 } : null">
         <template #value="{ value, placeholder }">
             <template v-if="!value">
                 {{ placeholder }}

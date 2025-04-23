@@ -98,7 +98,7 @@ describe("Creates a Mobile Quote", () => {
         cy.visit("/")
         cy.get("#datatable-btn-0-show").click()
 
-        cy.get('.recurring-item').its('length').should('eq', 2);
+        cy.get('.recurring-item').its('length').should('eq', 3);
         cy.get("#table-recurring > thead").contains("Provider")
         cy.get("#table-recurring > thead").contains("SubProvider")
         cy.get("#table-recurring > thead").contains("Name")
