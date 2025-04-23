@@ -52,7 +52,9 @@ const urlParams = new URLSearchParams(window.location.search);
 const params = new Proxy(urlParams, {
     get: (searchParams, prop) => searchParams.get(prop),
 });
-const step = ref(params["step"] ?? 0);
+
+const last_step = active_categories.value.length + 2;
+const step = ref(params["step"] === 'last' ? last_step : 0);
 
 setQuote(props.modelValue);
 
@@ -86,8 +88,9 @@ getCategoriesWithProducts();
                     </div>
 
 
-                    <HandsetProductsView v-if="(step == active_categories.length && step > 0 || active_categories.length==0 && step == 0)" :step="step" :quote="quote"
-                        v-model="step" @save="saveQuote">
+                    <HandsetProductsView
+                        v-if="(step == active_categories.length && step > 0 || active_categories.length == 0 && step == 0)"
+                        :step="step" :quote="quote" v-model="step" @save="saveQuote">
                     </HandsetProductsView>
                 </div>
             </div>
