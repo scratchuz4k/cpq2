@@ -149,21 +149,22 @@ const items = ref([
                             </div>
                             <div class="mb-3">
                                 <label for="supplier-name" class="form-label">Supplier:</label>
-                                <InputSelect id="product-supplier" url="/suppliers" field="name"
-                                    v-model="product.supplier">
+                                <InputSelect id="product-supplier" url="/suppliers" :fields="['name']"
+                                    v-model="product.supplier" placeholder="Select a Supplier">
                                 </InputSelect>
                             </div>
 
                             <div class="mb-3">
                                 <label for="brand-name" class="form-label">Brand:</label>
-                                <InputSelect id="product-brand" url="/brands" field="name" v-model="product.brand">
+                                <InputSelect id="product-brand" url="/brands" :fields="['name']" v-model="product.brand"
+                                    placeholder="Select a Supplier">
                                 </InputSelect>
                             </div>
 
                             <div class="mb-3">
                                 <label for="brand-name" class="form-label">Categories:</label>
-                                <InputSelect id="product-categories" url="/categories" field="name"
-                                    v-model="categories">
+                                <InputSelect id="product-categories" url="/categories" :fields="['name']"
+                                    v-model="categories" placeholder="Select a Category">
                                 </InputSelect>
                             </div>
                         </div>

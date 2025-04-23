@@ -5,17 +5,17 @@
             <template v-if="!value">
                 {{ placeholder }}
             </template>
-            <p v-else v-for="(field, index) in props.fields">
+            <span v-else v-for="(field, index) in props.fields">
                 <span v-if="index != 0">(</span>
                 {{ value && value[field] ? value[field] : '' }}
                 <span v-if="index != 0">)</span>
-            </p>
+            </span>
         </template>
 
         <template #option="{ option, selected, index }">
-            <p class="me-2" v-for="(field, index) in props.fields" :class="[selected ? 'text-bold' : '']">
+            <span class="me-2" v-for="(field, index) in props.fields" :class="[selected ? 'text-bold' : '']">
                 {{ index !== 0 ? `(${option?.[field] ?? ''})` : (option?.[field] ?? '') }}
-            </p>
+            </span>
         </template>
 
         <template #header>
@@ -36,8 +36,9 @@ import InputIcon from "primevue/inputicon";
 import InputText from "primevue/inputtext";
 
 import Select from "primevue/select";
-import { ref, watch, computed } from "vue";
+import { ref, watch, computed, reactive } from "vue";
 import { v4 as uuidv4 } from "uuid";
+import queryString from "query-string";
 
 const props = defineProps({
     id: {
@@ -52,6 +53,16 @@ const props = defineProps({
         default: [],
     },
     modelValue: Object,
+    limit: null
+});
+
+const meta = reactive({
+    page: 1,
+    total: 0,
+    first: 1,
+    limit: props.limit,
+    orderBy: "id",
+    order: "asc",
 });
 
 const emit = defineEmits(["update:modelValue", "change"]);
@@ -71,7 +82,14 @@ const search = _.debounce(async () => {
     if (!props.url) {
         return;
     }
-    let string = searchInput.value ? `search=${searchInput.value}` : "";
+
+    let string = props.limit
+        ? queryString.stringify({
+            ...meta,
+            search: searchInput.value,
+        })
+        : searchInput.value ? `search=${searchInput.value}` : "";
+
     isLoading.value = true;
     let res = await axios.get(`/api${props.url}?${string}`);
     isLoading.value = false;
