@@ -1,17 +1,9 @@
 <script setup>
 import _ from "lodash";
-import Select from "primevue/select";
-import MultiSelect from "primevue/multiselect";
-import Paginator from "primevue/paginator";
-import { quote, setQuote, getQuote } from "@composables/useQuote";
-import {
-    updateQuoteItem,
-    removeQuoteItem,
-    createQuoteItem,
-} from "@composables/useQuoteItem";
+import { quote, setQuote } from "@composables/useQuote";
 import axios from "axios";
 import { router } from "@inertiajs/vue3";
-import { onMounted, popScopeId, reactive, ref, watch } from "vue";
+import { ref } from "vue";
 import queryString from "query-string";
 
 const props = defineProps({
@@ -22,8 +14,10 @@ const props = defineProps({
 
 const solution_type = props.modelValue.solution_type
 const active_categories = ref([]);
+const loading = ref(true);
 
 const getCategoriesWithProducts = async () => {
+    loading.value = true;
     let query = queryString.stringify({
         limit: 200,
         filters: JSON.stringify([
@@ -51,6 +45,7 @@ const getCategoriesWithProducts = async () => {
     active_categories.value = res.data.data.sort((a, b) => {
         return categories_order.indexOf(a.id) - categories_order.indexOf(b.id);
     });
+    loading.value = false;
 };
 
 const urlParams = new URLSearchParams(window.location.search);
@@ -59,10 +54,7 @@ const params = new Proxy(urlParams, {
 });
 const step = ref(params["step"] ?? 0);
 
-
-const products = ref([]);
 setQuote(props.modelValue);
-
 
 const saveQuote = async () => {
     if (step.value == active_categories.value.length) {
@@ -86,16 +78,18 @@ getCategoriesWithProducts();
     <div class="panel panel-mobile">
         <div class="row justify-content-between">
             <div class="col-lg-7">
-                <div v-for="(category, index) in active_categories">
-                    <CategoryProductsView :category="category" :account="props.modelValue.account" v-model="step"
-                        :index="index" :total_categories="active_categories.length + 1">
-                    </CategoryProductsView>
+                <div v-if="!loading">
+                    <div v-for="(category, index) in active_categories">
+                        <CategoryProductsView :category="category" :account="props.modelValue.account" v-model="step"
+                            :index="index" :total_categories="active_categories.length + 1">
+                        </CategoryProductsView>
+                    </div>
+
+
+                    <HandsetProductsView v-if="(step == active_categories.length && step > 0 || active_categories.length==0 && step == 0)" :step="step" :quote="quote"
+                        v-model="step" @save="saveQuote">
+                    </HandsetProductsView>
                 </div>
-
-
-                <HandsetProductsView v-if="(step == active_categories.length && step > 0)" :step="step" :quote="quote"
-                    v-model="step" @save="saveQuote">
-                </HandsetProductsView>
             </div>
             <div class="col-lg-4 order-first order-lg-last mb-5">
                 <div style="
