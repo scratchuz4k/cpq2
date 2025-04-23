@@ -17,7 +17,7 @@ describe("Solution Types CRUD", () => {
         })
 
         //Change tabs
-        cy.get("#1-1").click()
+        cy.get("#2-2").click()
 
         cy.get("#solution_type-component").click()
         cy.get(".p-select-list-container").eq(0).within(() => {

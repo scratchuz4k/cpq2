@@ -101,6 +101,7 @@ describe("Creates a Mobile Quote", () => {
         cy.get("#datatable-btn-0-edit").click()
         cy.get("#1-1").click()
         cy.get("#solution-type-table-add-category").click()
+        cy.wait(500)
         cy.get("#select-solution-type-categories-0-value").click()
         cy.wait(500)
         cy.get(".p-select-list-container").eq(0).within(() => {
