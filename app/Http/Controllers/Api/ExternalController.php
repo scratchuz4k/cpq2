@@ -12,7 +12,8 @@ use App\Helpers\Prices\PriceRules;
 use App\Http\Controllers\Controller;
 use App\Models\Account;
 use App\Models\PricePlan;
-use App\Services\CloudMarketService;
+use App\Services\External\CloudMarketService;
+use App\Services\External\ShopBlocksService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
@@ -20,9 +21,7 @@ use Illuminate\Support\Str;
 
 class ExternalController extends Controller
 {
-    public function __construct(protected CloudMarketService $cloudMarketService)
-    {
-    }
+    public function __construct(protected CloudMarketService $cloudMarketService, protected ShopBlocksService $shopBlocksService) {}
 
     /**
      * Request Openreach Api to get all address with a Postal Code.
@@ -62,17 +61,17 @@ class ExternalController extends Controller
             'fullAddress' => 'required',
         ]);
 
-        if (!($address = trim(preg_replace('/[\s]+/', ' ', $request->input('fullAddress'))))) {
+        if (! ($address = trim(preg_replace('/[\s]+/', ' ', $request->input('fullAddress'))))) {
             return response('Something went wrong', 400);
         }
 
-        $cache_key = 'address_lookup_' . Str::slug($address);
+        $cache_key = 'address_lookup_'.Str::slug($address);
 
         return Cache::remember($cache_key, 43200, function () use ($address) {
-            $res = Http::get('https://api.tomtom.com/search/2/geocode/' . $address . '.json?key=' . env('TOMTOM_API_KEY') . '&countryCode=GB');
+            $res = Http::get('https://api.tomtom.com/search/2/geocode/'.$address.'.json?key='.env('TOMTOM_API_KEY').'&countryCode=GB');
             $res = json_decode($res->body(), true);
             $position = [];
-            if (is_null($res) || !array_key_exists('results', $res) || !count($res['results'])) {
+            if (is_null($res) || ! array_key_exists('results', $res) || ! count($res['results'])) {
                 return $position;
             }
 
@@ -87,7 +86,7 @@ class ExternalController extends Controller
             }
             $highestScoreIndex = $highestScoreIndex >= 0 ? $highestScoreIndex : 0;
 
-            if (!empty($res['results'][$highestScoreIndex]['position'])) {
+            if (! empty($res['results'][$highestScoreIndex]['position'])) {
                 $position = $res['results'][$highestScoreIndex]['position'];
             }
 
@@ -128,7 +127,35 @@ class ExternalController extends Controller
 
     public function getArticlesFromShopBlocks(Request $request)
     {
-        $cache_key = md5('shop-blocks' . $request->input('category_id', 22));
+        $this->shopBlocksService->getArticles($request);
+
+        // $items = FilterProvider::get($res['items'], request()->input('filters', []));
+
+        // $priceRules = new PriceRules;
+        // $account = Account::where('id', $request->input('account_id', null))->first();
+        // $pricePlan = PricePlan::where('code', PricePlanEnum::SINGLE->name)->first();
+        // $priceRules->find(account: $account, pricePlan: $pricePlan);
+
+        // $items = $items->map(function ($item) use ($priceRules) {
+        //     $net_spa = $priceRules->apply($item['price']['net']);
+        //     $item['price']['net_spa'] = $net_spa;
+        //     $item['price']['tax'] = $net_spa * 0.2;
+        //     $item['price']['gross'] = $net_spa * 1.2;
+        //     $item['price']['active_spas'] = $priceRules->getAppliedSpas();
+
+        //     return $item;
+        // });
+
+        // $paginator = FilterProvider::paginate($items);
+        // $response = $paginator->toArray();
+        // $response['filters'] = $res['filters'];
+
+        // return $response;
+    }
+
+    public function getCategoriesFromShopBlocks(Request $request)
+    {
+        $cache_key = md5('shop-blocks-categories');
 
         $res = Cache::remember($cache_key, 43200, function () use ($request) {
             $products = [];
@@ -136,60 +163,20 @@ class ExternalController extends Controller
             do {
                 $page++;
                 $category_id = $request->input('category_id', 22);
-                $res = (new ShopBlocksApi)->get($category_id, 200, $page);
-                if (!array_key_exists('data', $res)) {
+                $res = (new ShopBlocksApi)->getCategories($category_id, 200, $page);
+                if (! array_key_exists('data', $res)) {
                     break;
                 }
                 array_push($products, ...$res['data']);
                 $last_page = array_key_exists('meta', $res) ? $res['meta']['last_page'] : 1;
             } while ($page != $last_page);
 
-            $tempFilters = [
-                'model' => [],
-            ];
-
-            $pricePlanId = PricePlan::where('code', PricePlanEnum::SINGLE->name)->value('id');
-            foreach ($products as $key => $product) {
-                $temp = '';
-                foreach (array_keys($product) as $itemKey) {
-                    if (!(is_string($product[$itemKey]) || is_numeric($product[$itemKey]))) {
-                        continue;
-                    }
-                    $temp .= $product[$itemKey];
-                }
-                $model = (string) Str::of($product['name'])->words(3, '');
-                $products[$key]['code'] = md5(Str::slug($temp));
-                $products[$key]['model'] = $model;
-                $products[$key]['price_plan_id'] = $pricePlanId;
-                $products[$key]['price'] = [
-                    'code' => 1,
-                    'tax_rate' => 20,
-                    'net' => (float) $product['price'],
-                    'tax' => (float) $product['price'] * 0.2,
-                    'gross' => (float) $product['price'] * 1.2,
-                ];
-                $tempFilters = FilterProvider::process($tempFilters, $products[$key], true);
-            }
+            $tempFilters = [];
 
             return ['items' => $products, 'filters' => $tempFilters];
         });
 
         $items = FilterProvider::get($res['items'], request()->input('filters', []));
-
-        $priceRules = new PriceRules;
-        $account = Account::find($request->input('account_id', null));
-        $pricePlan = PricePlan::where('code', PricePlanEnum::SINGLE->name)->first();
-        $priceRules->find(account: $account, pricePlan: $pricePlan);
-
-        $items = $items->map(function ($item) use ($priceRules) {
-            $net_spa = $priceRules->apply($item['price']['net']);
-            $item['price']['net_spa'] = $net_spa;
-            $item['price']['tax'] = $net_spa * 0.2;
-            $item['price']['gross'] = $net_spa * 1.2;
-            $item['price']['active_spas'] = $priceRules->getAppliedSpas();
-
-            return $item;
-        });
 
         $paginator = FilterProvider::paginate($items);
         $response = $paginator->toArray();
