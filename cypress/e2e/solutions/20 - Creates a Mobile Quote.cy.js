@@ -119,19 +119,6 @@ describe("Creates a Mobile Quote", () => {
                 .click();
         })
         cy.get("#btn-save-solution-type").click()
-
-
-        cy.get("#solution-type-table-add-category").click();
-        cy.get("#select-solution-type-categories-1-value").click();
-        cy.wait(500);
-        cy.get(".p-select-list-container")
-            .eq(0)
-            .within(() => {
-                cy.get('li[aria-label="' + category.name + '"]')
-                    .should("exist")
-                    .click();
-            });
-        cy.get("#btn-save-solution-type").click();
     });
 
     it("Creates Mobile Quote", () => {
