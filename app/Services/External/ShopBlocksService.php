@@ -4,6 +4,7 @@ namespace App\Services\External;
 
 use App\Helpers\Files\ShopBlocksFile;
 use App\Jobs\ShopBlocksProductsJob;
+use Exception;
 use Illuminate\Http\Request;
 
 class ShopBlocksService
@@ -14,8 +15,13 @@ class ShopBlocksService
         $filename = 'shopblock_products.json';
         $path = storage_path('/app/products/');
         $file = new ShopBlocksFile($path, $filename);
-        ShopBlocksProductsJob::dispatch($file);
-        // return ['items' => $products, 'filters' => $tempFilters];
+        try {
+            ShopBlocksProductsJob::dispatch($file);
+        } catch (Exception $ex) {
+            return $ex->getMessage();
+        }
+
+        return ['items' => [], 'filters' => []];
         // return $this->cloudMarketRepository->sendResponse($file->getContent(), $filters);
     }
 }

@@ -10,7 +10,6 @@ use App\Models\PricePlan;
 use Exception;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
-use Illuminate\Queue\Middleware\WithoutOverlapping;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -37,10 +36,10 @@ class ShopBlocksProductsJob implements ShouldQueue, TenantAware
      */
     public function __construct(protected ShopBlocksFile $file) {}
 
-    public function middleware()
-    {
-        return [(new WithoutOverlapping('ShopBlocksProducts'))];
-    }
+    // public function middleware()
+    // {
+    //     // return [(new WithoutOverlapping('ShopBlocksProducts'))];
+    // }
 
     /**
      * Execute the job.
@@ -58,7 +57,7 @@ class ShopBlocksProductsJob implements ShouldQueue, TenantAware
             $filters['updated_after'] = $temp['updated'] > $filters['updated_after'] ? $temp['updated'] : $filters['updated_after'];
         }
 
-        $filters['updated_after'] = $content['finished_at'] == null ? null : $content['finished_at'];
+        $filters['updated_after'] = $content['finished_at'] == null ? null : $filters['updated_after'];
         $page = 0;
         do {
             $page++;
@@ -87,7 +86,7 @@ class ShopBlocksProductsJob implements ShouldQueue, TenantAware
 
             $this->file->write(array_values($this->products), true, null, $this->started_at, $this->tempFilters, $this->errors);
 
-        } while ($page != $last_page);
+        } while ($page != 2);
 
         $this->file->write(array_values($this->products), true, now(), $this->started_at, $this->tempFilters, $this->errors);
     }
