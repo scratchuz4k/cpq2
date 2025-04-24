@@ -326,7 +326,7 @@ watch(
         </Paginator>
         <div class="d-flex justify-content-between align-items-center mt-3">
             <div>
-                <button v-if="step > 0" id="btn-step-2-previous" class="btn text-primary step-nav btn-sm me-3"
+                <button v-if="step > 1" id="btn-step-2-previous" class="btn text-primary step-nav btn-sm me-3"
                     type="button" @click="() => proxyValue--">
                     <font-awesome-icon :icon="['fas', 'arrow-left']" /> Previous
                 </button>
