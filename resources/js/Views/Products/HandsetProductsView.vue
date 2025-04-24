@@ -91,6 +91,12 @@ const getProductsShopBlocks = async () => {
       value: filters[key].value ?? null,
     });
   });
+  temp.push({
+    column: "product_category_id",
+    operator: "equals",
+    value: 22,
+  });
+
   let query = {
     category_id: 22,
     page: meta.page,
