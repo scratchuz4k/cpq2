@@ -5,7 +5,7 @@ import axios from "axios";
 import { router } from "@inertiajs/vue3";
 import { ref } from "vue";
 import queryString from "query-string";
-import { Skeleton } from "primevue";
+
 
 const props = defineProps({
     modelValue: Object,
@@ -93,22 +93,6 @@ getCategoriesWithProducts();
                         v-if="(step == active_categories.length && step > 0 || active_categories.length == 0 && step == 0)"
                         :step="step" :quote="quote" v-model="step" @save="saveQuote">
                     </HandsetProductsView>
-                </div>
-                <div v-else v-for="n in 5" class="mobile-item mobile-product mb-3">
-                    <div class="d-flex justify-content-between mb-3">
-                        <div class="d-flex">
-                            <Skeleton width="10rem" height="1.7rem" class="mb-2 me-2"></Skeleton>
-                            <Skeleton width="10rem" height="1.7rem" class="mb-2"></Skeleton>
-                        </div>
-                        <Skeleton shape="circle" size="1.5rem" class="mb-2 "></Skeleton>
-                    </div>
-                    <Skeleton width="5rem" class="mb-2 me-2"></Skeleton>
-                    <div class="d-flex">
-                        <Skeleton width="10rem" height="2rem" class="mb-2 me-3"></Skeleton>
-                        <Skeleton width="4rem" height="2rem" class="mb-2 me-2"></Skeleton>
-                        <Skeleton width="4rem" height="2rem" class="mb-2 me-2"></Skeleton>
-                        <Skeleton width="4rem" height="2rem" class="mb-2 me-2"></Skeleton>
-                    </div>
                 </div>
             </div>
             <div class="col-lg-4 order-first order-lg-last mb-5">

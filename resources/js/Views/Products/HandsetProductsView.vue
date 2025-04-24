@@ -11,6 +11,7 @@ import {
 } from "@composables/useQuoteItem";
 import { computed, onMounted, reactive, ref, watch } from "vue";
 import InputQuantity from "@/Components/InputQuantity.vue";
+import { Skeleton } from "primevue";
 
 const emit = defineEmits(["save", "update:modelValue"]);
 const proxyValue = computed({
@@ -232,61 +233,89 @@ watch(
                 </div>
             </div>
         </div>
-
-        <div class="text-center pt-2 pb-4" v-if="!productsHardware.length">
-            No Results Found
-        </div>
-        <div v-for="(product, index) in productsHardware" class="panel p-4 mb-3">
-            <div class="row">
-                <div class="col-2">
-                    <a :href="product.url" target="_blank">
-                        <img :src="product.primary_image" style="width: 100%; object-fit: contain" />
-                    </a>
-                </div>
-                <div class="col-10">
-                    <div class="d-flex w-100 justify-content-between">
-                        <p class="big bold">{{ product.model }}</p>
-                        <div class="d-flex justify-content-end">
-                            <div class="me-3">
-                                <p v-if="product.stock > 0" class="badge text-bg-warning" style="--bs-bg-opacity: 0.5">
-                                    <span :id="'hardware-' + index + '-stock'">
-                                        {{ product.stock }}
-                                    </span>
-                                    in stock
-                                </p>
-                                <p v-else class="badge text-bg-danger" style="--bs-bg-opacity: 0.5">
-                                    <font-awesome-icon :icon="['fa', 'warning']" />
-                                    <span :id="'hardware-' + index + '-stock'"></span>
-                                    OUT OF STOCK
-                                </p>
+        <div v-if="!meta.isLoading">
+            <div class="text-center pt-2 pb-4" v-if="!productsHardware.length">
+                No Results Found
+            </div>
+            <div v-for="(product, index) in productsHardware" class="panel p-4 mb-3">
+                <div class="row">
+                    <div class="col-2">
+                        <a :href="product.url" target="_blank">
+                            <img :src="product.primary_image" style="width: 100%; max-height: 135px; object-fit: contain" />
+                        </a>
+                    </div>
+                    <div class="col-10">
+                        <div class="d-flex w-100 justify-content-between">
+                            <p class="big bold">{{ product.model }}</p>
+                            <div class="d-flex justify-content-end">
+                                <div class="me-3">
+                                    <p v-if="product.stock > 0" class="badge text-bg-warning" style="--bs-bg-opacity: 0.5">
+                                        <span :id="'hardware-' + index + '-stock'">
+                                            {{ product.stock }}
+                                        </span>
+                                        in stock
+                                    </p>
+                                    <p v-else class="badge text-bg-danger" style="--bs-bg-opacity: 0.5">
+                                        <font-awesome-icon :icon="['fa', 'warning']" />
+                                        <span :id="'hardware-' + index + '-stock'"></span>
+                                        OUT OF STOCK
+                                    </p>
+                                </div>
+                                <div>
+                                    <p class="bold big">{{ GBP.format(product.price?.net_spa || 0) }}</p>
+                                </div>
                             </div>
-                            <div>
-                                <p class="bold big">{{ GBP.format(product.price?.net_spa || 0) }}</p>
+                        </div>
+                        <p class="small" style="min-height: 50px">{{ product.sku }} - {{ product.name }}</p>
+                        <div class="pt-1">
+                            <p style="font-weight: 500">Quantity</p>
+                            <div class="d-flex align-items-center mb-2">
+                                <InputQuantity :id="'hardware-' + index" v-model="product.quantity"
+                                    @change="(val) => checkQuantity(product, val, true)" />
+
+                                <button :id="'btn-hardware-' + index + '-add-25'"
+                                    class="btn btn-sm ms-4 btn-add-custom-quantity"
+                                    @click="checkQuantity(product, product.quantity + 25, true)">
+                                    +25
+                                </button>
+                                <button :id="'btn-hardware-' + index + '-add-50'"
+                                    class="btn btn-sm ms-2 btn-add-custom-quantity"
+                                    @click="checkQuantity(product, product.quantity + 50, true)">
+                                    +50
+                                </button>
+                                <button :id="'btn-hardware-' + index + '-add-100'"
+                                    class="btn btn-sm ms-2 btn-add-custom-quantity"
+                                    @click="checkQuantity(product, product.quantity + 100, true)">
+                                    +100
+                                </button>
                             </div>
                         </div>
                     </div>
-                    <p class="small">{{ product.sku }} - {{ product.name }}</p>
-                    <div class="pt-3">
-                        <p style="font-weight: 500">Quantity</p>
-                        <div class="d-flex align-items-center mb-2">
-                            <InputQuantity :id="'hardware-' + index" v-model="product.quantity"
-                                @change="(val) => checkQuantity(product, val, true)" />
-
-                            <button :id="'btn-hardware-' + index + '-add-25'"
-                                class="btn btn-sm ms-4 btn-add-custom-quantity"
-                                @click="checkQuantity(product, product.quantity + 25, true)">
-                                +25
-                            </button>
-                            <button :id="'btn-hardware-' + index + '-add-50'"
-                                class="btn btn-sm ms-2 btn-add-custom-quantity"
-                                @click="checkQuantity(product, product.quantity + 50, true)">
-                                +50
-                            </button>
-                            <button :id="'btn-hardware-' + index + '-add-100'"
-                                class="btn btn-sm ms-2 btn-add-custom-quantity"
-                                @click="checkQuantity(product, product.quantity + 100, true)">
-                                +100
-                            </button>
+                </div>
+            </div>
+        </div>
+        <div v-else v-for="n in meta.limit" class="mobile-item mobile-product p-4 mb-3">
+            <div class="row">
+                <div class="col-2">
+                    <Skeleton width="100%" height="8.5rem" />
+                </div>
+                <div class="col-10">
+                    <div class="d-flex w-100 justify-content-between">
+                        <Skeleton width="10rem" height="1.5rem" />
+                        <div class="d-flex justify-content-end">
+                            <Skeleton width="5rem" height="1.5rem" class="me-2" />
+                            <Skeleton width="5rem" height="1.5rem" />
+                        </div>
+                    </div>
+                    <Skeleton width="100%" height="1rem" class="mt-2 " />
+                    <Skeleton width="100%" height="1rem" class="mt-1 mb-2" />
+                    <div class="pt-2 pb-2">
+                        <Skeleton width="5rem" height="1.5rem" class="mb-1" />
+                        <div class="d-flex align-items-center">
+                            <Skeleton width="9rem" height="1.7rem" class="me-3" />
+                            <Skeleton width="3.5rem" height="1.7rem" borderRadius="16px" class="me-2" />
+                            <Skeleton width="3.5rem" height="1.7rem" borderRadius="16px" class="me-2" />
+                            <Skeleton width="3.5rem" height="1.7rem" borderRadius="16px" />
                         </div>
                     </div>
                 </div>
