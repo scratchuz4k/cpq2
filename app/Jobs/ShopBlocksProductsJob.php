@@ -81,12 +81,12 @@ class ShopBlocksProductsJob implements ShouldQueue, TenantAware
                     'tax' => (float) $product['price'] * 0.2,
                     'gross' => (float) $product['price'] * 1.2,
                 ];
-                $this->tempFilters = []; //FilterProvider::process($this->tempFilters, $products[$key], true);
+                $this->tempFilters = FilterProvider::process($this->tempFilters, $this->products[$product['sku']], true);
             }
 
             $this->file->write(array_values($this->products), true, null, $this->started_at, $this->tempFilters, $this->errors);
 
-        } while ($page != 2);
+        } while ($page != $last_page);
 
         $this->file->write(array_values($this->products), true, now(), $this->started_at, $this->tempFilters, $this->errors);
     }

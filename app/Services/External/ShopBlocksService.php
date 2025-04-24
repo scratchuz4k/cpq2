@@ -11,7 +11,6 @@ class ShopBlocksService
 {
     public function getArticles(Request $request)
     {
-
         $filename = 'shopblock_products.json';
         $path = storage_path('/app/products/');
         $file = new ShopBlocksFile($path, $filename);
@@ -21,7 +20,6 @@ class ShopBlocksService
             return $ex->getMessage();
         }
 
-        return ['items' => [], 'filters' => []];
-        // return $this->cloudMarketRepository->sendResponse($file->getContent(), $filters);
+        return $file->getContent();
     }
 }

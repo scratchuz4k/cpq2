@@ -31,8 +31,14 @@ class ShopBlocksApi
 
             return [];
         }
+        $temp = $response->json();
+        if (array_key_exists('data', $temp['data'])) {
+            foreach ($temp['data'] as $key => $value) {
+                $temp[$key] = $value;
+            }
+        }
 
-        return $response->json();
+        return $temp;
     }
 
     public function getCategories($limit = 10, $page = 1)

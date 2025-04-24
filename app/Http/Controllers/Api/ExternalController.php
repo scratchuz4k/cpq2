@@ -127,30 +127,29 @@ class ExternalController extends Controller
 
     public function getArticlesFromShopBlocks(Request $request)
     {
-        $this->shopBlocksService->getArticles($request);
+        $content = $this->shopBlocksService->getArticles($request);
+        $items = FilterProvider::get($content['data'], $request->input('filters', []));
 
-        // $items = FilterProvider::get($res['items'], request()->input('filters', []));
+        $priceRules = new PriceRules;
+        $account = Account::where('id', $request->input('account_id', null))->first();
+        $pricePlan = PricePlan::where('code', PricePlanEnum::SINGLE->name)->first();
+        $priceRules->find(account: $account, pricePlan: $pricePlan);
 
-        // $priceRules = new PriceRules;
-        // $account = Account::where('id', $request->input('account_id', null))->first();
-        // $pricePlan = PricePlan::where('code', PricePlanEnum::SINGLE->name)->first();
-        // $priceRules->find(account: $account, pricePlan: $pricePlan);
+        $items = $items->map(function ($item) use ($priceRules) {
+            $net_spa = $priceRules->apply($item['price']['net']);
+            $item['price']['net_spa'] = $net_spa;
+            $item['price']['tax'] = $net_spa * 0.2;
+            $item['price']['gross'] = $net_spa * 1.2;
+            $item['price']['active_spas'] = $priceRules->getAppliedSpas();
 
-        // $items = $items->map(function ($item) use ($priceRules) {
-        //     $net_spa = $priceRules->apply($item['price']['net']);
-        //     $item['price']['net_spa'] = $net_spa;
-        //     $item['price']['tax'] = $net_spa * 0.2;
-        //     $item['price']['gross'] = $net_spa * 1.2;
-        //     $item['price']['active_spas'] = $priceRules->getAppliedSpas();
+            return $item;
+        });
 
-        //     return $item;
-        // });
+        $paginator = FilterProvider::paginate($items);
+        $response = $paginator->toArray();
+        $response['filters'] = $content['filters'];
 
-        // $paginator = FilterProvider::paginate($items);
-        // $response = $paginator->toArray();
-        // $response['filters'] = $res['filters'];
-
-        // return $response;
+        return $response;
     }
 
     public function getCategoriesFromShopBlocks(Request $request)
