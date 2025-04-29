@@ -7,15 +7,17 @@ use App\Helpers\Api\ShopBlocksApi;
 use App\Helpers\Files\ShopBlocksFile;
 use App\Helpers\FilterProvider;
 use App\Models\PricePlan;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
+use Illuminate\Queue\Middleware\WithoutOverlapping;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
-use Spatie\Multitenancy\Jobs\TenantAware;
+use Spatie\Multitenancy\Jobs\NotTenantAware;
 
-class ShopBlocksProductsJob implements ShouldQueue, TenantAware
+class ShopBlocksProductsJob implements NotTenantAware, ShouldQueue
 {
     use Queueable;
 
@@ -36,19 +38,24 @@ class ShopBlocksProductsJob implements ShouldQueue, TenantAware
      */
     public function __construct(protected ShopBlocksFile $file) {}
 
-    // public function middleware()
-    // {
-    //     // return [(new WithoutOverlapping('ShopBlocksProducts'))];
-    // }
+    public function middleware()
+    {
+        return [(new WithoutOverlapping('sync:ShopBlocksProducts'))->expireAfter(180)];
+    }
 
     /**
      * Execute the job.
      */
     public function handle(): void
     {
+        $start = now();
+        Log::info("ShopBlocksProductsJob | Started at $start");
+        $page = 0;
+        $synced = 0;
         $filters = [
             'updated_after' => null,
         ];
+
         $this->started_at = now();
         $content = $this->file->getContent();
 
@@ -58,10 +65,10 @@ class ShopBlocksProductsJob implements ShouldQueue, TenantAware
         }
 
         $filters['updated_after'] = $content['finished_at'] == null ? null : $filters['updated_after'];
-        $page = 0;
+
         do {
             $page++;
-            $res = (new ShopBlocksApi)->getArticles(500, $page, $filters);
+            $res = (new ShopBlocksApi)->getArticles(200, $page, $filters);
             if (! array_key_exists('data', $res)) {
                 break;
             }
@@ -85,10 +92,18 @@ class ShopBlocksProductsJob implements ShouldQueue, TenantAware
             }
 
             $this->file->write(array_values($this->products), true, null, $this->started_at, $this->tempFilters, $this->errors);
-
+            $synced += count($res['data']);
         } while ($page != $last_page);
 
         $this->file->write(array_values($this->products), true, now(), $this->started_at, $this->tempFilters, $this->errors);
+
+        $end = now();
+        $date1 = Carbon::parse($start);
+        $date2 = Carbon::parse($end);
+
+        $diffInSeconds = $date2->diff($date1); // Output: 3600
+        $time = $diffInSeconds->format('%y-%m-%d %h:%i:%s');
+        Log::info("ShopBlocksProductsJob | Ended at $end with $synced products synced | Elapsed Time: $time");
     }
 
     /**
@@ -102,7 +117,7 @@ class ShopBlocksProductsJob implements ShouldQueue, TenantAware
         $message = '['.strtoupper(env('APP_ENV')).'] ShopBlocksProducts failed with error: '.$exception->getMessage();
 
         $error = [
-            'provider' => 'CPQ',
+            'provider' => 'ShopBlocks',
             'response' => $exception->getMessage(),
         ];
 

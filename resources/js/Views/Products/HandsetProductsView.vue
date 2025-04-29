@@ -282,9 +282,9 @@ watch(
     </div>
     <div v-for="(product, index) in productsHardware" class="panel p-4 mb-3">
       <div class="row">
-        <div class="col-2">
+        <div class="col-2 d-flex justify-content-center">
           <a :href="product.url" target="_blank">
-            <img :src="product.primary_image" style="width: 100%; object-fit: contain" />
+            <img :src="product.primary_image" style="width: 100px; object-fit: contain" />
           </a>
         </div>
         <div class="col-10">
