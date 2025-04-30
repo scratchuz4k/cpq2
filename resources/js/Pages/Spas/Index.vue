@@ -280,7 +280,7 @@ getData();
                             </div>
                             <div class="col">
                                 <label class="form-label">Account</label>
-                                <InputSelect id="filter-account" url="/accounts" :fields="['name']"
+                                <InputSelect id="filter-account" url="/accounts" :fields="['name', 'reference']"
                                     v-model="fields.account" @change="handleFields()" placeholder="Select an Account">
                                 </InputSelect>
                             </div>

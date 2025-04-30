@@ -44,7 +44,7 @@ const icons = {
             </ul>
             <div class="mb-3" v-if="modelValue.entity_1 == 'Account'">
                 <label class="form-label">Select the Account</label>
-                <InputSelect id="Account1" url="/accounts" :fields="['name']" v-model="modelValue.entity_1_value"
+                <InputSelect id="Account1" url="/accounts" :fields="['name', 'reference']" v-model="modelValue.entity_1_value"
                     :is-multiple="false" placeholder="Select an Account">
                 </InputSelect>
             </div>
@@ -77,7 +77,7 @@ const icons = {
             <template v-if="modelValue.entity_2">
                 <div class="mb-3" v-if="modelValue.entity_2 == 'Account'">
                     <label class="form-label">Select the Account</label>
-                    <InputSelect id="Account2" url="/accounts" :fields="['name']" v-model="modelValue.entity_2_value"
+                    <InputSelect id="Account2" url="/accounts" :fields="['name', 'reference']" v-model="modelValue.entity_2_value"
                         :is-multiple="false" placeholder="Select an Account">
                     </InputSelect>
                 </div>

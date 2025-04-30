@@ -1,35 +1,3 @@
-<template>
-    <Select :inputId="'select-' + props.id" v-model="proxyValue" :options="options" showClear
-        placeholder="Select an option" class="w-100"
-        :virtualScrollerOptions="options.length > 10 ? { itemSize: 10 } : null">
-        <template #value="{ value, placeholder }">
-            <template v-if="!value">
-                {{ placeholder }}
-            </template>
-            <span v-else v-for="(field, index) in props.fields">
-                <span v-if="index != 0">(</span>
-                {{ value && value[field] ? value[field] : '' }}
-                <span v-if="index != 0">)</span>
-            </span>
-        </template>
-
-        <template #option="{ option, selected, index }">
-            <span class="me-2" v-for="(field, index) in props.fields" :class="[selected ? 'text-bold' : '']">
-                {{ index !== 0 ? `(${option?.[field] ?? ''})` : (option?.[field] ?? '') }}
-            </span>
-        </template>
-
-        <template #header>
-            <IconField class="p-1">
-                <InputIcon>
-                    <font-awesome-icon icon="fas fa-search" />
-                </InputIcon>
-                <InputText :id="'select-' + props.id + '-search'" class="w-100" v-model="searchInput"
-                    placeholder="Search" />
-            </IconField>
-        </template>
-    </Select>
-</template>
 <script setup>
 import _ from "lodash";
 import IconField from "primevue/iconfield";
@@ -54,7 +22,10 @@ const props = defineProps({
         default: [],
     },
     modelValue: Object,
-    limit: null
+    limit: {
+        type: Number,
+        default: 200,
+    },
 });
 
 const meta = reactive({
@@ -100,6 +71,39 @@ const search = _.debounce(async () => {
 watch(searchInput, () => search());
 search();
 </script>
+
+<template>
+    <Select :inputId="'select-' + props.id" v-model="proxyValue" :options="options" showClear
+        placeholder="Select an option" class="w-100"
+        >
+        <template #value="{ value, placeholder }">
+            <template v-if="!value">
+                {{ placeholder }}
+            </template>
+            <span v-else v-for="(field, index) in props.fields">
+                <span v-if="index != 0">(</span>
+                {{ value && value[field] ? value[field] : '' }}
+                <span v-if="index != 0">)</span>
+            </span>
+        </template>
+
+        <template #option="{ option, selected, index }">
+            <span class="me-2" v-for="(field, index) in props.fields" :class="[selected ? 'text-bold' : '']">
+                {{ index !== 0 ? `(${option?.[field] ?? ''})` : (option?.[field] ?? '') }}
+            </span>
+        </template>
+
+        <template #header>
+            <IconField class="p-1">
+                <InputIcon>
+                    <font-awesome-icon icon="fas fa-search" />
+                </InputIcon>
+                <InputText :id="'select-' + props.id + '-search'" type="search" class="w-100" v-model="searchInput"
+                    placeholder="Search" />
+            </IconField>
+        </template>
+    </Select>
+</template>
 
 <style scoped>
 .select-options {

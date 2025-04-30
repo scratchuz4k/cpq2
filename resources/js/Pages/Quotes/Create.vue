@@ -3,7 +3,6 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, router } from '@inertiajs/vue3';
 import { reactive, ref } from 'vue'
 import QuotesSolutionView from "@/Views/Quotes/QuotesSolutionView.vue";
-import { reference } from '@popperjs/core';
 
 
 defineProps({
@@ -63,10 +62,6 @@ const items = ref([
                                 <div class="mb-3">
                                     <label for="account_id" class="form-label">Account <span
                                             class="text-primary fw-bold">*</span></label>
-                                    <!-- <select id="account_id" class="form-select" v-model="form.account">
-                                        <option :value="null">Select an account</option>
-                                        <option v-for="account in accounts" :value="account">{{ account.name }}</option>
-                                    </select> -->
                                     <InputSelect id="account_id" v-model="form.account" url="/accounts"
                                         :fields="['name', 'reference']" placeholder="Select an Account">
                                     </InputSelect>
