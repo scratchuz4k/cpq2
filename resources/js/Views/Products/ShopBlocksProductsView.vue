@@ -109,7 +109,6 @@ const getProductsShopBlocks = async () => {
   }
 
   let query = {
-    category_id: 22,
     page: meta.page,
     limit: meta.limit,
     filters: filters,
@@ -197,6 +196,9 @@ watch(currentCategory, () => {
 watch(
   search,
   _.debounce(() => {
+    if (!search.value) {
+      meta.page = 0;
+    }
     getProductsShopBlocks();
   }, 300)
 );

@@ -12,7 +12,7 @@ const props = defineProps({
     class="rounded border border-surface-200 dark:border-surface-700 p-4 mb-3 bg-surface-0 dark:bg-surface-900"
   >
     <div class="row">
-      <div class="col d-flex justify-content-center" v-if="props.showImage">
+      <div class="col-2 d-flex justify-content-center" v-if="props.showImage">
         <Skeleton width="100px" height="100px" class="mr-2"></Skeleton>
       </div>
       <div class="col">
