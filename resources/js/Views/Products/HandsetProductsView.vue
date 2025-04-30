@@ -3,7 +3,7 @@ import _ from "lodash";
 import Select from "primevue/select";
 import MultiSelect from "primevue/multiselect";
 import Paginator from "primevue/paginator";
-import { quote, setQuote, getQuote } from "@/Composables/useQuote";
+import { quote, getQuote } from "@/Composables/useQuote";
 import {
   updateQuoteItem,
   removeQuoteItem,
@@ -38,8 +38,6 @@ const meta = reactive({
 const search = ref(null);
 
 const productsHardware = ref([]);
-
-setQuote(props.quote);
 
 const filters = reactive({
   model: {
@@ -325,21 +323,21 @@ watch(
 
               <button
                 :id="'btn-hardware-' + index + '-add-25'"
-                class="btn btn-sm ms-4 btn-add-custom-quantity"
+                class="btn btn-sm ms-4 btn-add-quantity "
                 @click="checkQuantity(product, product.quantity + 25, true)"
               >
                 +25
               </button>
               <button
                 :id="'btn-hardware-' + index + '-add-50'"
-                class="btn btn-sm ms-2 btn-add-custom-quantity"
+                class="btn btn-sm ms-2 btn-add-quantity "
                 @click="checkQuantity(product, product.quantity + 50, true)"
               >
                 +50
               </button>
               <button
                 :id="'btn-hardware-' + index + '-add-100'"
-                class="btn btn-sm ms-2 btn-add-custom-quantity"
+                class="btn btn-sm ms-2 btn-add-quantity "
                 @click="checkQuantity(product, product.quantity + 100, true)"
               >
                 +100

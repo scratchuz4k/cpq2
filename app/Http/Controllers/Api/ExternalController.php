@@ -15,6 +15,7 @@ use App\Models\PricePlan;
 use App\Services\External\CloudMarketService;
 use App\Services\External\ShopBlocksService;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
@@ -156,13 +157,12 @@ class ExternalController extends Controller
     {
         $cache_key = md5('shop-blocks-categories');
 
-        $res = Cache::remember($cache_key, 43200, function () use ($request) {
+        $res = Cache::remember($cache_key, 43200, function () {
             $products = [];
             $page = 0;
             do {
                 $page++;
-                $category_id = $request->input('category_id', 22);
-                $res = (new ShopBlocksApi)->getCategories($category_id, 200, $page);
+                $res = (new ShopBlocksApi)->getCategories(200, $page);
                 if (! array_key_exists('data', $res)) {
                     break;
                 }
@@ -177,10 +177,6 @@ class ExternalController extends Controller
 
         $items = FilterProvider::get($res['items'], request()->input('filters', []));
 
-        $paginator = FilterProvider::paginate($items);
-        $response = $paginator->toArray();
-        $response['filters'] = $res['filters'];
-
-        return $response;
+        return new LengthAwarePaginator($items, $items->count(), 1000, 1);
     }
 }

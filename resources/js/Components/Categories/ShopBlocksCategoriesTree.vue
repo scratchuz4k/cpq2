@@ -1,0 +1,111 @@
+<script setup>
+import { computed } from "vue";
+import { categories, drillDown } from "@composables/custom/shopblocks";
+
+const props = defineProps({
+  parent_id: {
+    default: null,
+    type: Number,
+  },
+  categories: {
+    default: [],
+    type: Array,
+  },
+  level: {
+    default: 0,
+    type: Number,
+  },
+  modelValue: Object,
+});
+
+const emit = defineEmits(["update:modelValue"]);
+const proxyValue = computed({
+  get: () => props.modelValue,
+  set: (value) => emit("update:modelValue", value),
+});
+
+const getShopBlocksCategories = async () => {
+  let res = await axios.post("/api/external/get-categories-from-shop-blocks");
+  categories.value = res.data.data;
+};
+
+const selectCategory = (category) => {
+  drillDown.value.push(category);
+  proxyValue.value = category;
+};
+
+const rollback = (item) => {
+  if (item == null) {
+    drillDown.value = [];
+    proxyValue.value = null;
+    return;
+  }
+  let index = drillDown.value.findIndex((x) => x.id == item.id);
+  drillDown.value.splice(index + 1, drillDown.value.length - (index + 1));
+  proxyValue.value = item;
+};
+
+const styles = {
+  0: { backgroundColor: "whitesmoke" },
+  1: { backgroundColor: "white", border: "1px solid black", borderWidth: "1px 0 0 0" },
+  2: {
+    backgroundColor: "whitesmoke",
+    padding: "0 0 0 10px",
+    border: "1px solid black",
+    borderWidth: "1px 0 0 0",
+  },
+  3: {
+    backgroundColor: "lightgray",
+    padding: "0 0 0 10px",
+    border: "1px solid black",
+    borderWidth: "1px 0 0 0",
+  },
+};
+
+if (props.parent_id == null) {
+  getShopBlocksCategories();
+}
+</script>
+<template>
+  <ul style="margin: 0; padding: 5px 0; list-style: none">
+    <li class="me-1 border-1 mb-1" v-if="!!drillDown.length">
+      <div
+        class="btn btn-category d-flex justify-content-between"
+        @click="rollback(null)"
+      >
+        <p class="m-0">All</p>
+      </div>
+    </li>
+    <li
+      v-for="(item, index) in drillDown"
+      class="me-1 border-1 mb-1"
+      @click="rollback(item)"
+    >
+      <div
+        class="btn btn-category d-flex justify-content-between"
+        :class="[drillDown.length == index + 1 ? 'btn-category-current' : '']"
+        @click="rollback(item)"
+      >
+        <p class="m-0">{{ item.name }}</p>
+      </div>
+    </li>
+  </ul>
+  <ul
+    style="margin-left: 10px; padding: 5px 0; list-style: none"
+    :style="styles[props.level]"
+  >
+    <template v-for="category in categories.filter((x) => x.parent_id == proxyValue?.id)">
+      <li>
+        <div
+          class="btn btn-light d-flex justify-content-between pointer"
+          @click="selectCategory(category)"
+        >
+          <p class="m-0 text-left">{{ category.name }}</p>
+          <div class="" v-if="categories.find((x) => x.parent_id == category.id)">
+            <font-awesome-icon :icon="['fas', 'arrow-right']" />
+          </div>
+        </div>
+      </li>
+    </template>
+  </ul>
+</template>

@@ -1,14 +1,13 @@
 <script setup>
 import _ from "lodash";
-import Select from "primevue/select";
-import MultiSelect from "primevue/multiselect";
-import Paginator from "primevue/paginator";
-import { quote, setQuote, getQuote } from "@/Composables/useQuote";
+import { Paginator, Skeleton } from "primevue";
+import { quote, getQuote } from "@/Composables/useQuote";
 import {
   updateQuoteItem,
   removeQuoteItem,
   createQuoteItem,
 } from "@composables/useQuoteItem";
+import { categories } from "@composables/custom/shopblocks";
 import { computed, onMounted, reactive, ref, watch } from "vue";
 import InputQuantity from "@/Components/InputQuantity.vue";
 
@@ -39,8 +38,6 @@ const search = ref(null);
 
 const productsHardware = ref([]);
 
-setQuote(props.quote);
-
 const filters = reactive({
   model: {
     operator: "in",
@@ -51,6 +48,8 @@ const filters = reactive({
     value: null,
   },
 });
+
+const currentCategory = ref(null);
 
 const filterList = reactive({
   models: [],
@@ -83,25 +82,37 @@ const step = ref(props.modelValue + 1);
 
 const getProductsShopBlocks = async () => {
   meta.isLoading = true;
-  let temp = [];
+  let filters = [];
   Object.keys(filters).forEach((key) => {
-    temp.push({
+    filters.push({
       column: key,
       operator: filters[key].operator,
       value: filters[key].value ?? null,
     });
   });
-  temp.push({
-    column: "product_category_id",
-    operator: "equals",
-    value: 22,
-  });
+  if (currentCategory.value) {
+    let array = [currentCategory.value];
+    let items = [];
+
+    do {
+      let current = array.pop();
+      items.push(current);
+      let temp = categories.value.filter((x) => x.parent_id == current.id);
+      array.push(...temp);
+    } while (array.length != 0);
+
+    filters.push({
+      column: "product_category_id",
+      operator: "in",
+      value: items.map((x) => x.id),
+    });
+  }
 
   let query = {
     category_id: 22,
     page: meta.page,
     limit: meta.limit,
-    filters: temp,
+    filters: filters,
     order: sort.value.order,
     orderBy: sort.value.orderBy,
     search: search.value,
@@ -179,6 +190,10 @@ watch([filters, sort], () => {
   getProductsShopBlocks();
 });
 
+watch(currentCategory, () => {
+  getProductsShopBlocks();
+});
+
 watch(
   search,
   _.debounce(() => {
@@ -191,23 +206,8 @@ watch(
     <div class="d-flex justify-content-end mb-4">
       <p class="bigger text-primary bold">STEP {{ step }}/{{ step }}</p>
     </div>
-    <div class="d-flex justify-content-between mb-3">
-      <h3>Handsets</h3>
-      <div>
-        <div class="input-group">
-          <input
-            type="search"
-            class="form-control"
-            placeholder="Search Handsets"
-            v-model="search"
-          />
-          <button class="btn btn-primary" type="submit" id="button-addon2">
-            <font-awesome-icon :icon="['fas', 'magnifying-glass']" />
-          </button>
-        </div>
-      </div>
-    </div>
-    <div class="panel mb-3">
+
+    <!-- <div class="panel mb-3">
       <div class="d-flex justify-content-between mb-2">
         <div class="d-flex">
           <h4>Filters</h4>
@@ -274,88 +274,114 @@ watch(
           </Select>
         </div>
       </div>
-    </div>
+    </div> -->
 
-    <div class="text-center pt-2 pb-4" v-if="!productsHardware.length">
-      No Results Found
-    </div>
-    <div v-for="(product, index) in productsHardware" class="panel p-4 mb-3">
-      <div class="row">
-        <div class="col d-flex justify-content-center">
-          <a :href="product.url" target="_blank">
-            <img :src="product.primary_image" style="width: 100px; object-fit: contain" />
-          </a>
+    <div class="row">
+      <div class="col-3">
+        <div class="mb-3">
+          <label class="form-label">Search</label>
+          <input type="search" class="form-control" placeholder="" v-model="search" />
         </div>
-        <div class="col-10">
-          <div class="d-flex w-100 justify-content-between">
-            <p class="big bold">{{ product.model }}</p>
-            <div class="d-flex justify-content-end">
-              <div class="me-3">
-                <p
-                  v-if="product.stock > 0"
-                  class="badge text-bg-warning"
-                  style="--bs-bg-opacity: 0.5"
-                >
-                  <span :id="'hardware-' + index + '-stock'">
-                    {{ product.stock }}
-                  </span>
-                  in stock
-                </p>
-                <p v-else class="badge text-bg-danger" style="--bs-bg-opacity: 0.5">
-                  <font-awesome-icon :icon="['fa', 'warning']" />
-                  <span :id="'hardware-' + index + '-stock'"></span>
-                  OUT OF STOCK
-                </p>
+        <hr />
+        <label class="form-label">Categories</label>
+        <ShopBlocksCategoriesTree v-model="currentCategory"></ShopBlocksCategoriesTree>
+      </div>
+      <div class="col">
+        <template v-if="meta.isLoading">
+          <Skeleton height="180px" class="mb-3"></Skeleton>
+          <Skeleton height="180px" class="mb-3"></Skeleton>
+          <Skeleton height="180px" class="mb-3"></Skeleton>
+          <Skeleton height="180px" class="mb-3"></Skeleton>
+        </template>
+        <template v-else>
+          <div class="text-center pt-2 pb-4" v-if="!productsHardware.length">
+            No Results Found
+          </div>
+          <div v-for="(product, index) in productsHardware" class="panel p-4 mb-3">
+            <div class="row row-cols-6">
+              <div class="col d-flex justify-content-center">
+                <a :href="product.url" target="_blank">
+                  <img
+                    :src="product.primary_image"
+                    style="width: 100px; height: 100px; object-fit: contain"
+                  />
+                </a>
               </div>
-              <div>
-                <p class="bold big">{{ GBP.format(product.price?.net_spa || 0) }}</p>
+              <div class="col-10">
+                <div class="d-flex w-100 justify-content-between">
+                  <p class="big bold">{{ product.model }}</p>
+                  <div class="d-flex justify-content-end">
+                    <div class="me-3">
+                      <p
+                        v-if="product.stock > 0"
+                        class="badge text-bg-warning"
+                        style="--bs-bg-opacity: 0.5"
+                      >
+                        <span :id="'hardware-' + index + '-stock'">
+                          {{ product.stock }}
+                        </span>
+                        in stock
+                      </p>
+                      <p v-else class="badge text-bg-danger" style="--bs-bg-opacity: 0.5">
+                        <font-awesome-icon :icon="['fa', 'warning']" />
+                        <span :id="'hardware-' + index + '-stock'"></span>
+                        OUT OF STOCK
+                      </p>
+                    </div>
+                    <div>
+                      <p class="bold big">
+                        {{ GBP.format(product.price?.net_spa || 0) }}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <p class="small">{{ product.sku }} - {{ product.name }}</p>
+                <div class="pt-3">
+                  <p style="font-weight: 500">Quantity</p>
+                  <div class="d-flex align-items-center mb-2">
+                    <InputQuantity
+                      :id="'hardware-' + index"
+                      v-model="product.quantity"
+                      @change="(val) => checkQuantity(product, val, true)"
+                    />
+
+                    <button
+                      :id="'btn-hardware-' + index + '-add-25'"
+                      class="btn btn-sm ms-4 btn-add-quantity"
+                      @click="checkQuantity(product, product.quantity + 25, true)"
+                    >
+                      +25
+                    </button>
+                    <button
+                      :id="'btn-hardware-' + index + '-add-50'"
+                      class="btn btn-sm ms-2 btn-add-quantity"
+                      @click="checkQuantity(product, product.quantity + 50, true)"
+                    >
+                      +50
+                    </button>
+                    <button
+                      :id="'btn-hardware-' + index + '-add-100'"
+                      class="btn btn-sm ms-2 btn-add-quantity"
+                      @click="checkQuantity(product, product.quantity + 100, true)"
+                    >
+                      +100
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
-          <p class="small">{{ product.sku }} - {{ product.name }}</p>
-          <div class="pt-3">
-            <p style="font-weight: 500">Quantity</p>
-            <div class="d-flex align-items-center mb-2">
-              <InputQuantity
-                :id="'hardware-' + index"
-                v-model="product.quantity"
-                @change="(val) => checkQuantity(product, val, true)"
-              />
-
-              <button
-                :id="'btn-hardware-' + index + '-add-25'"
-                class="btn btn-sm ms-4 btn-add-custom-quantity"
-                @click="checkQuantity(product, product.quantity + 25, true)"
-              >
-                +25
-              </button>
-              <button
-                :id="'btn-hardware-' + index + '-add-50'"
-                class="btn btn-sm ms-2 btn-add-custom-quantity"
-                @click="checkQuantity(product, product.quantity + 50, true)"
-              >
-                +50
-              </button>
-              <button
-                :id="'btn-hardware-' + index + '-add-100'"
-                class="btn btn-sm ms-2 btn-add-custom-quantity"
-                @click="checkQuantity(product, product.quantity + 100, true)"
-              >
-                +100
-              </button>
-            </div>
-          </div>
-        </div>
+          <Paginator
+            v-model:first="meta.first"
+            :rows="meta.limit"
+            :totalRecords="meta.total"
+            :rowsPerPageOptions="[5, 10, 20]"
+            @page="handlePaginator"
+          >
+          </Paginator
+        ></template>
       </div>
     </div>
-    <Paginator
-      v-model:first="meta.first"
-      :rows="meta.limit"
-      :totalRecords="meta.total"
-      :rowsPerPageOptions="[5, 10, 20]"
-      @page="handlePaginator"
-    >
-    </Paginator>
     <div class="d-flex justify-content-between align-items-center mt-3">
       <div>
         <button

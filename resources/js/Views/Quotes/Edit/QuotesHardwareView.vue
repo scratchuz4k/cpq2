@@ -36,7 +36,7 @@ const getCategoriesWithProducts = async () => {
       },
     ]),
   });
-  let res = await axios.get("/api/categories" + "?" + query);
+  let res = await axios.get("/api/categories?" + query);
 
   const categories_order = solution_type.categories.map((x) => x.id);
 
@@ -62,18 +62,13 @@ const saveQuote = async () => {
   step.value++;
 };
 
-const getHardwareProductsCount = () => {
-  let items = [...quote.items];
-  return items.filter((x) => !x.product_id).reduce((acc, i) => (acc += i.quantity), 0);
-};
-
 getCategoriesWithProducts();
 </script>
 <template>
   <div class="panel panel-mobile">
     <div class="row justify-content-between">
       <div class="col">
-        <div v-if="!loading" v-for="(category, index) in active_categories">
+        <template v-if="!loading" v-for="(category, index) in active_categories">
           <CategoryProductsView
             :category="category"
             :account="props.modelValue.account"
@@ -82,7 +77,7 @@ getCategoriesWithProducts();
             :total_categories="active_categories.length + 1"
           >
           </CategoryProductsView>
-        </div>
+        </template>
 
         <ShopBlocksProductsView
           v-if="

@@ -130,17 +130,17 @@ getProducts()
                     <InputQuantity :id="'bolt-' + index" v-model="product.quantity"
                         @change="(ev) => checkQuantity(product, ev)" />
                     <button :id="'btn-plan-' + index + '-add-25'" type=" button"
-                        class="btn btn-sm ms-4 btn-add-custom-quantity"
+                        class="btn btn-sm ms-4 btn-add-quantity "
                         @click="checkQuantity(product, product.quantity + 25)">
                         +25
                     </button>
                     <button :id="'btn-plan-' + index + '-add-50'" type=" button"
-                        class="btn btn-sm mx-2 btn-add-custom-quantity"
+                        class="btn btn-sm mx-2 btn-add-quantity "
                         @click="checkQuantity(product, product.quantity + 50)">
                         +50
                     </button>
                     <button :id="'btn-plan-' + index + '-add-100'" type=" button"
-                        class="btn btn-sm btn-add-custom-quantity"
+                        class="btn btn-sm btn-add-quantity "
                         @click="checkQuantity(product, product.quantity + 100)">
                         +100
                     </button>
