@@ -81,8 +81,9 @@ getCategoriesWithProducts();
 
         <ShopBlocksProductsView
           v-if="
-            (step == active_categories.length && step > 0) ||
-            (active_categories.length == 0 && step == 0)
+            !loading &&
+            ((step == active_categories.length && step > 0) ||
+              (active_categories.length == 0 && step == 0))
           "
           :step="step"
           :quote="quote"

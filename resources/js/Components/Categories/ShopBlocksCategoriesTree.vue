@@ -67,8 +67,8 @@ if (props.parent_id == null) {
 }
 </script>
 <template>
-  <ul style="margin: 0; padding: 5px 0; list-style: none">
-    <li class="me-1 border-1 mb-1" v-if="!!drillDown.length">
+  <ul style="margin: 0; padding: 5px 0; list-style: none" v-if="!!drillDown.length">
+    <li class="me-1 border-1 mb-1">
       <div
         class="btn btn-category d-flex justify-content-between"
         @click="rollback(null)"

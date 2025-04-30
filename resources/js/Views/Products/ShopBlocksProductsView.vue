@@ -1,6 +1,6 @@
 <script setup>
 import _ from "lodash";
-import { Paginator, Skeleton } from "primevue";
+import { Paginator } from "primevue";
 import { quote, getQuote } from "@/Composables/useQuote";
 import {
   updateQuoteItem,
@@ -278,27 +278,26 @@ watch(
 
     <div class="row">
       <div class="col-3">
-        <div class="mb-3">
-          <label class="form-label">Search</label>
-          <input type="search" class="form-control" placeholder="" v-model="search" />
+        <div class="rounded border border-surface-200 dark:border-surface-700 p-3">
+          <div class="mb-3">
+            <label class="form-label">Search</label>
+            <input type="search" class="form-control" placeholder="" v-model="search" />
+          </div>
+          <hr />
+          <label class="form-label">Categories</label>
+          <ShopBlocksCategoriesTree v-model="currentCategory"></ShopBlocksCategoriesTree>
         </div>
-        <hr />
-        <label class="form-label">Categories</label>
-        <ShopBlocksCategoriesTree v-model="currentCategory"></ShopBlocksCategoriesTree>
       </div>
       <div class="col">
         <template v-if="meta.isLoading">
-          <Skeleton height="180px" class="mb-3"></Skeleton>
-          <Skeleton height="180px" class="mb-3"></Skeleton>
-          <Skeleton height="180px" class="mb-3"></Skeleton>
-          <Skeleton height="180px" class="mb-3"></Skeleton>
-        </template>
+          <ProductSkeleton v-for="item in [0, 1, 2, 3, 4]"></ProductSkeleton
+        ></template>
         <template v-else>
           <div class="text-center pt-2 pb-4" v-if="!productsHardware.length">
             No Results Found
           </div>
           <div v-for="(product, index) in productsHardware" class="panel p-4 mb-3">
-            <div class="row row-cols-6">
+            <div class="row">
               <div class="col d-flex justify-content-center">
                 <a :href="product.url" target="_blank">
                   <img
