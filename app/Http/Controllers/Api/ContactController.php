@@ -22,7 +22,7 @@ class ContactController extends BaseController
         parent::__construct();
     }
     /**
-     * Index
+     * List Contacts
      * @response AnonymousResourceCollection<LengthAwarePaginator<ContactResource>>
      */
     public function index(IndexRequest $request)
@@ -39,7 +39,7 @@ class ContactController extends BaseController
     }
 
     /**
-     * Store
+     * Store a new Contact
      */
     public function store(ContactCreateRequest $request)
     {
@@ -55,7 +55,7 @@ class ContactController extends BaseController
     }
 
     /**
-     * Show
+     * Show Contact
      */
     public function show(Contact $contact)
     {
@@ -63,7 +63,7 @@ class ContactController extends BaseController
     }
 
     /**
-     * Update
+     * Update Contact
      */
     public function update(Request $request, Contact $contact)
     {
@@ -79,7 +79,7 @@ class ContactController extends BaseController
     }
 
     /**
-     * Remove
+     * Remove Contact
      */
     public function destroy(Contact $contact)
     {

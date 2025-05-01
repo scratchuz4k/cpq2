@@ -16,77 +16,129 @@
     <template #header>
       <h2>Share quote</h2>
     </template>
-    <div v-if="!shareLink.link">
-      <div class="mb-3">
-        <label for="expiration_data" class="form-label">Expiration Date</label>
-        <DatePicker
-          v-model="shareLink.expires_at"
-          dateFormat="dd-mm-yy"
-          showIcon
-          fluid
-          iconDisplay="input"
-          :minDate="dateNow.toJSDate()"
-        />
-      </div>
-      <div class="mb-3">
-        <label for="expiration_data" class="form-label">Password</label>
-        <input
-          type="password"
-          id="input-shareable-password"
-          class="form-control"
-          v-model="shareLink.password"
-          autocomplete="off"
-        />
-      </div>
+    <!-- TODO: EMAILS: add the tabs once we get the credentials for email functionality
+      <tabs>
+        <tab title="Link" :selected="true">
+    -->
+        <div v-if="!shareLink.link">
+          <div class="my-3">
+            <label for="expiration_data" class="form-label">Expiration Date</label>
+            <DatePicker
+              v-model="shareLink.expires_at"
+              dateFormat="dd-mm-yy"
+              showIcon
+              fluid
+              iconDisplay="input"
+              :minDate="dateNow.toJSDate()"
+            />
+          </div>
+          <div class="mb-3">
+            <label for="expiration_data" class="form-label">Password</label>
+            <input
+              type="password"
+              id="input-shareable-password"
+              class="form-control"
+              v-model="shareLink.password"
+              autocomplete="off"
+            />
+          </div>
 
-      <div class="mb-3">
-        <button
-          id="btn-shareable-create"
-          class="btn btn-primary"
-          @click="createSharedLink()"
-        >
-          Create
-        </button>
-        <button class="btn" @click="() => (showShareDialog = !showShareDialog)">
-          Cancel
-        </button>
-      </div>
-    </div>
-    <div v-else>
-      <div class="mb-3">
-        <label for="expiration_data" class="form-label">
-          Anyone with this link can view the quote.
-        </label>
-        <div class="input-group mb-3">
-          <input
-            id="input-shareable-link"
-            type="text"
-            class="form-control"
-            v-model="shareLink.link"
-            disabled
-          />
-
-          <button class="input-group-text" @click="copyToClipboard(shareLink.link)">
-            <font-awesome-icon role="button" :icon="['far', 'clipboard']" />
-          </button>
+          <div class="mb-3">
+            <button
+              id="btn-shareable-create"
+              class="btn btn-primary"
+              @click="createSharedLink()"
+            >
+              Create
+            </button>
+            <button class="btn" @click="() => (showShareDialog = !showShareDialog)">
+              Cancel
+            </button>
+          </div>
         </div>
-        <p class="small">
-          Expires at: {{ shareLink.expires_at ?? "without expiration date" }}
-        </p>
-      </div>
-      <div class="mb-3">
-        <button class="btn btn-outline-primary" @click="deleteShareLink()">Delete</button>
-      </div>
-    </div>
+        <div v-else>
+          <div class="my-3">
+            <label for="expiration_data" class="form-label">
+              Anyone with this link can view the quote.
+            </label>
+            <div class="input-group mb-3">
+              <input
+                id="input-shareable-link"
+                type="text"
+                class="form-control"
+                v-model="shareLink.link"
+                disabled
+              />
+
+              <button class="input-group-text" @click="copyToClipboard(shareLink.link)">
+                <font-awesome-icon role="button" :icon="['far', 'clipboard']" />
+              </button>
+            </div>
+            <p class="small">
+              Expires at: {{ shareLink.expires_at ?? "without expiration date" }}
+            </p>
+          </div>
+          <div class="mb-3">
+            <button class="btn btn-outline-primary" @click="deleteShareLink()">
+              Delete
+            </button>
+          </div>
+        </div>
+      <!-- TODO: EMAILS: add the tabs once we get the credentials for email functionality
+      <tab title="Email">
+        <form @submit.prevent="sendEmail()">
+          <div class="my-3">
+            <label for="email_to" class="form-label">TO:</label>
+            <InputText type="email" class="form-control" v-model="email.to" required />
+          </div>
+          <div class="mb-3">
+            <label for="email_CC" class="form-label">CC:</label>
+            <InputText type="email" class="form-control" v-model="email.cc" />
+          </div>
+          <div class="mb-3">
+            <label for="email_BCC" class="form-label">BCC:</label>
+            <InputText type="email" class="form-control" v-model="email.bcc" />
+          </div>
+          <div class="mb-3">
+            <button
+              type="submit"
+              id="btn-shareable-create"
+              class="btn btn-primary"
+              :disabled="isLoading"
+            >
+              Send
+              <div
+                v-if="isLoading"
+                class="spinner-border spinner-border-sm"
+                role="status"
+              >
+                <span class="visually-hidden">Loading...</span>
+              </div>
+            </button>
+            <button
+              type="button"
+              class="btn"
+              @click="() => (showShareDialog = !showShareDialog)"
+            >
+              Cancel
+            </button>
+          </div>
+        </form>
+      </tab>
+    </tabs>
+      -->
   </Dialog>
 </template>
 <script setup>
+import { router } from "@inertiajs/vue3";
 import Dialog from "primevue/dialog";
 import DatePicker from "primevue/datepicker";
+import InputText from "primevue/inputtext";
 import { DateTime } from "luxon";
 import { reactive, ref } from "vue";
 import { quote } from "@composables/useQuote";
 
+const isLoading = ref(false);
 const showShareDialog = ref(false);
 const dateNow = DateTime.now();
 
@@ -95,6 +147,12 @@ const shareLink = reactive({
   expires_at: quote.shared_link?.expires_at ?? null,
   link: quote.shared_link?.url,
   id: quote.shared_link?.id,
+});
+
+const email = reactive({
+  to: quote.account.contacts.find((x) => x.email)?.email,
+  cc: null,
+  bcc: null,
 });
 
 const openShare = () => {
@@ -131,6 +189,25 @@ const deleteShareLink = async () => {
     let res = await axios.delete(`/api/shared-links/${shareLink.id}`);
     shareLink.link = null;
     shareLink.expires_at = null;
+  } catch (ex) {
+    notyf.error(ex.response.data.message);
+  }
+};
+
+const sendEmail = async () => {
+  isLoading.value = true;
+  try {
+    router.post(`/quotes/${quote.id}/email`, email, {
+      onSuccess: (page) => {
+        isLoading.value = false;
+        showShareDialog.value = false;
+        notyf.success("Email sent with Success");
+      },
+      onError: (errors) => {
+        isLoading.value = false;
+        notyf.error("Something went wrong.");
+      },
+    });
   } catch (ex) {
     notyf.error(ex.response.data.message);
   }

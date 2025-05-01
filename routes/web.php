@@ -2,9 +2,12 @@
 
 use App\Http\Controllers\Web\AccountController;
 use App\Http\Controllers\Web\ApiController;
+use App\Http\Controllers\Web\BlacklistController;
 use App\Http\Controllers\Web\BrandController;
 use App\Http\Controllers\Web\CategoryController;
 use App\Http\Controllers\Web\DashboardController;
+use App\Http\Controllers\Web\EmailHistoryController;
+use App\Http\Controllers\Web\EmailTemplateController;
 use App\Http\Controllers\Web\MerchantController;
 use App\Http\Controllers\Web\OrderController;
 use App\Http\Controllers\Web\ProductController;
@@ -62,6 +65,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::get('/quotes/{quote}/download', [QuoteController::class, 'download'])->name('quotes.download');
     Route::get('/quotes/{quote}/configure', [QuoteController::class, 'configure'])->name('quotes.configure');
+    Route::post('/quotes/{quote}/email', [QuoteController::class, 'email'])->name('quotes.email');
 
     Route::get('/orders/{order}/preview', [OrderController::class, 'preview'])->name('orders.preview');
     Route::get('/orders/{order}/download', [OrderController::class, 'download'])->name('orders.download');
@@ -70,6 +74,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/users/import', [UserController::class, 'importUsers'])->name('users.import');
 
     Route::resources([
+        'email-templates' => EmailTemplateController::class,
+        'email-history' => EmailHistoryController::class,
         'accounts' => AccountController::class,
         'categories' => CategoryController::class,
         'apis' => ApiController::class,
@@ -85,6 +91,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         'users' => UserController::class,
         'tokens' => TokenController::class,
         'solution-types' => SolutionTypeController::class,
+        'blacklist' => BlacklistController::class,
     ]);
 
     Route::middleware('auth')->group(function () {

@@ -2,32 +2,33 @@
 
 namespace App\Models;
 
-use App\Trait\SetTenantId;
 use App\Models\Scopes\TenantScope;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Trait\SetTenantId;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class OrderItem extends Model
 {
     use HasFactory, SetTenantId;
+
     protected $fillable = [
-        "order_id",
-        "price_plan_id",
-        "product_code",
-        "product_id",
-        "quantity",
-        "name",
-        "data",
+        'order_id',
+        'price_plan_id',
+        'product_code',
+        'product_id',
+        'quantity',
+        'name',
+        'data',
         'discount',
         'price',
         'total',
         'total_tax',
         'total_gross',
         'tax_order_item',
-        "contract_length",
-        'parent_id'
+        'contract_length',
+        'group',
     ];
 
     protected function casts(): array
@@ -41,6 +42,7 @@ class OrderItem extends Model
     {
         static::addGlobalScope(new TenantScope);
     }
+
     public function product(): HasOne
     {
         return $this->hasOne(Product::class);
@@ -56,13 +58,5 @@ class OrderItem extends Model
     {
         related:
         return $this->belongsTo(PricePlan::class);
-    }
-
-        /**
-     * Get the children users of this user.
-     */
-    public function children()
-    {
-        return $this->hasMany(OrderItem::class, 'parent_id', 'id');
     }
 }

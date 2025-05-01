@@ -124,6 +124,35 @@
         ),
     ];
 
+    $items = [];
+
+    foreach ($quote['items'] as $key => $item) {
+        $nr_groups = array_reduce(
+            $quote['items'],
+            function ($acc, $temp) use ($item) {
+                if ($temp['group'] == $item['group']) {
+                    $acc = $acc + 1;
+                    return $acc;
+                }
+                return $acc;
+            },
+            0,
+        );
+
+        if ($nr_groups == 1) {
+            array_push($items, [...$item, 'children' => []]);
+            continue;
+        }
+
+        $index = array_search($item['group'], array_column($items, 'group'));
+
+        if ($index === false) {
+            array_push($items, [...$item, 'children' => [$item]]);
+        } else {
+            array_push($items[$index]['children'], $item);
+        }
+    }
+
 @endphp
 
 <!doctype html>
@@ -166,7 +195,7 @@
                 @endif
             </div>
             <div class="col text-end" id="header_right">
-                <p>{{ $quote['account']->name }}<br>{{ $quote['address_data']?->label }}</p>
+                <p>{{ $quote['account']['name'] }}<br>{{ $quote['address_data']?->label }}</p>
                 <p>Tel: +44 (0) 191 300 700</p>
                 <p>Email: sales@example.com</p>
             </div>
@@ -186,29 +215,10 @@
                     <div class="row">
                         <div class="col">
                             <InfoBox class="m-4 p-0" severity="error">
-                                <div class="small">
-                                    <div class="mb-2 fw-bold" style="color:#dc3545">Important Information:</div>
-                                    @foreach ($warningProviders as $providerName => $hasWarning)
-                                        @if ($hasWarning)
-                                            <div class="mb-2" style="color:#dc3545; line-height: 1.2">
-                                                <span
-                                                    class="small fw-bold bg-light rounded-2 py-1 px-2 me-1 text-capitalize">
-                                                    {{ strtoupper($providerName) }}
-                                                </span>
-                                                <i>
-                                                    Please note, quote references for
-                                                    {{ strtoupper($providerName) }} quotes cannot currently
-                                                    be used to place an order. To obtain a valid quote for ordering
-                                                    please generate the quote directly on the
-                                                    {{ strtoupper($providerName) }}
-                                                    portal.
-                                                </i>
-                                            </div>
-                                        @endif
-                                    @endforeach
-                                </div>
+                                @component('components.warning-note', ['warnings' => $warningProviders])
+                                @endcomponent
+                            </InfoBox>
                         </div>
-                        </InfoBox>
                     </div>
             </div>
             @endif
@@ -226,15 +236,15 @@
                                     @else
                                         <th class="column-name-header w-20">Name</th>
                                     @endif
-                                    <th class="column-contract_lenght-header w-5">Months</th>
                                     <th class="column-price_plan-header w-20">Price Plan</th>
+                                    <th class="column-contract_lenght-header w-5">Months</th>
                                     <th class="column-quantity-header w-5">Quantity</th>
                                     <th class="column-price-header w-10">Price</th>
                                     <th class="column-total-header">Total </th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach ($quote['items'] as $key => $group)
+                                @foreach ($items as $key => $group)
                                     @if ($isConnectivity)
                                         <tr class="group-row" style="vertical-align: middle;">
                                             <td class="group-body" colspan="8">
@@ -243,23 +253,29 @@
                                                         @if ($group['data']?->providerKey)
                                                             <img class="img-provider"
                                                                 style="max-width: 60px; max-height: 20px; width: auto; height: auto;"
-                                                                src="{{ $group['image'] ?? public_path() . '/images/providers/' . $group['data']?->providerKey . '.png' }}" />
+                                                                src="{{ $group['image'] ?? public_path() . '/images/providers/' . $group['data']?->providerKey . '.png' }}"
+                                                                onerror="this.src='/images/no_image.png'" />
                                                         @endif
                                                     </div>
                                                     <div class="me-3">
                                                         @if ($group['data']?->connectivitySupplierGroup)
                                                             <img class="img-provider"
                                                                 style="max-width: 60px; max-height: 20px; width: auto; height: auto;"
-                                                                src="{{ $group['image'] ?? public_path() . '/images/providers/' . str_replace(' ', '', strtolower($group['data']?->connectivitySupplierGroup)) . '.png' }}" />
+                                                                src="{{ $group['image'] ?? public_path() . '/images/providers/' . str_replace(' ', '', strtolower($group['data']?->connectivitySupplierGroup)) . '.png' }}"
+                                                                onerror="this.src='/images/no_image.png'" />
                                                         @endif
                                                     </div>
                                                     <div class="me-3 d-flex">
+
+
                                                         <p class="m-0">{{ $group['name'] }}
-                                                            @if (isset($group['data']->additionalInfo->{'Primary Router Model'}))
+                                                            @if (isset($group['data']->additionalInfo->{'router'}))
                                                                 <span
-                                                                    class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm router-model">
+                                                                    class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm router-model"
+                                                                    data-bs-toggle="tooltip" data-bs-placement="top"
+                                                                    title="Primary Router Model" v-tooltip>
                                                                     <i class="fa-solid fa-plug"></i>
-                                                                    {{ $group['data']->additionalInfo->{'Primary Router Model'} }}
+                                                                    {{ $group['data']->additionalInfo->{'router'} }}
                                                                 </span>
                                                             @endif
                                                             @if (isset($group['data']->isContended) and $group['data']->isContended)
@@ -346,11 +362,13 @@
                                         <tr class="item-row" style="vertical-align: middle;">
                                             <td class="column-quote_ref-body">
                                                 {{ $group['name'] }}
-                                                @if (isset($group['data']->additionalInfo->{'Primary Router Model'}))
+                                                @if (isset($group['data']->additionalInfo->{'router'}))
                                                     <span
-                                                        class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm router-model">
+                                                        class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm router-model"
+                                                        data-bs-toggle="tooltip" data-bs-placement="top"
+                                                        title="Primary Router Model" v-tooltip>
                                                         <i class="fa-solid fa-plug"></i>
-                                                        {{ $group['data']->additionalInfo->{'Primary Router Model'} }}
+                                                        {{ $group['data']->additionalInfo->{'router'} }}
                                                     </span>
                                                 @endif
                                                 @if (isset($group['data']->isContended) and $group['data']->isContended)
@@ -401,7 +419,7 @@
                             <tr>
                                 <th></th>
                                 <th>NET</th>
-                                <th>VAT (20%)</th>
+                                {{-- <th>VAT (20%)</th> --}}
                                 <th>GROSS</th>
                             </tr>
                         </thead>
@@ -413,9 +431,9 @@
                                 <td id="total_monthly_net">
                                     £{{ number_format(quoteQuantityPrice('MONTHLY', $quote['items']), 2) }}
                                 </td>
-                                <td id="total_monthly_vat">
+                                {{-- <td id="total_monthly_vat">
                                     £{{ number_format(quoteQuantityPrice('MONTHLY', $quote['items'], 'tax'), 2) }}
-                                </td>
+                                </td> --}}
                                 <td id="total_monthly_gross">
                                     £{{ number_format(quoteQuantityPrice('MONTHLY', $quote['items'], 'total'), 2) }}
                                 </td>
@@ -427,9 +445,9 @@
                                 <td id="total_single_net">
                                     £{{ number_format(quoteTotal('SINGLE', 'total', $quote['items']), 2) }}
                                 </td>
-                                <td id="total_single_vat">
+                                {{-- <td id="total_single_vat">
                                     £{{ number_format(quoteTotal('SINGLE', 'total_tax', $quote['items']), 2) }}
-                                </td>
+                                </td> --}}
                                 <td id="total_single_gross">
                                     £{{ number_format(quoteTotal('SINGLE', 'total_gross', $quote['items']), 2) }}
                                 </td>
@@ -441,9 +459,9 @@
                                 <td id="total_net">
                                     £{{ number_format($quote['total'], 2) }}
                                 </td>
-                                <td id="total_vat">
+                                {{-- <td id="total_vat">
                                     £{{ number_format($quote['total_tax'], 2) }}
-                                </td>
+                                </td> --}}
                                 <td id="total_gross">
                                     £{{ number_format($quote['total_gross'], 2) }}
                                 </td>

@@ -23,7 +23,8 @@ class SolutionTypeResource extends JsonResource
         foreach (SolutionTypesEnum::cases() as $case) {
             if ($case->value == $this->code) {
                 $code = $case->name;
-            };
+            }
+            ;
         }
 
         $file = app_path("Helpers/Tables/$code.php");
@@ -32,15 +33,21 @@ class SolutionTypeResource extends JsonResource
             $data = require $file;
             if (array_key_exists("component", $this->configs) && array_key_exists($this->configs["component"], $data)) {
                 $columns = $data[$this->configs["component"]];
-            }else{
+            } else {
                 $columns = $data["DealMaker"];
             }
+        }
+
+        $table = $this->tables->first() ? $this->tables->first()->toArray() : [];
+        if (!array_key_exists("has_custom_table", $this->configs) || !$this->configs["has_custom_table"]) {
+            $table["columns"] = (array) $columns;
         }
 
         return [
             ...$this->resource->toArray(),
             "configurations" => $this->configs,
-            "table" => ["columns" => $columns]
+            "table" => $table,
+            "categories" => (new CategoryResource($this->categories))->resolve()
         ];
     }
 }

@@ -225,19 +225,19 @@ getData();
             </button>
             <div class="filter-content" :class="{ last: key + 1 == columns.length }">
               <template v-if="Object.keys(props.filters).includes(column.data)">
-                  <div class="my-1" v-if="props.filters[column.data].type === 'checkbox'">
-                      <div class="form-check p-0">
-                          <Checkbox
-                              id="active-filter"
-                              class="form-check-input"
-                              v-model="form.filters[key].value"
-                              :checked="!!form.filters[key].value"
-                          />
-                          <label class="form-check-label ms-2" for="active-filter">
-                              Active
-                          </label>
-                      </div>
+                <div class="my-1" v-if="props.filters[column.data].type === 'checkbox'">
+                  <div class="form-check p-0">
+                    <Checkbox
+                      id="active-filter"
+                      class="form-check-input"
+                      v-model="form.filters[key].value"
+                      :checked="!!form.filters[key].value"
+                    />
+                    <label class="form-check-label ms-2" for="active-filter">
+                      Active
+                    </label>
                   </div>
+                </div>
                 <div v-if="props.filters[column.data].type === 'options'" class="mb-3">
                   <label class="form-label" :for="`filter-value-${key}`">Options</label>
                   <select
@@ -366,16 +366,6 @@ getData();
 .p-datatable tr td:not(.p-0),
 .p-datatable tr th {
   padding: 0.5rem 0.5rem !important;
-}
-
-.column-title {
-  padding: 0.5rem 0.5rem 0.5rem 0;
-}
-
-.column-title {
-  margin: 0;
-  width: 100%;
-  cursor: pointer;
 }
 
 .sortable:hover {

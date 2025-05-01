@@ -16,17 +16,17 @@ class QuoteResource extends JsonResource
     {
         return [
             ...$this->resource->toArray(),
-            'margin' => round((float)$this->margin,4),
-            'discount' => round((float)$this->discount,4),
-            'commission_rate' => round((float)$this->commission_rate,2),
+            'margin' => round((float) $this->margin, 4),
+            'discount' => round((float) $this->discount, 4),
+            'commission_rate' => round((float) $this->commission_rate, 2),
             'user' => $this->user,
-            'account' => $this->account,
+            'account' => (new AccountResource($this->account))->resolve(),
             'solution_type' => (new SolutionTypeResource($this->solutionType))->resolve(),
             'shared_link' => (new SharedLinkResource($this->sharedLink))->resolve(),
             'discounts' => QuoteDiscountResource::collection($this->discounts)->resolve(),
             'items' => QuoteItemResource::collection($this->items)->resolve(),
+            'orders' => $this->whenLoaded('orders'),
             'updated_at' => $this->updated_at,
-            'orders' => $this->whenLoaded('orders')
         ];
     }
 }

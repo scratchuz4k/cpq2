@@ -2,9 +2,9 @@
 
 namespace Database\Seeders;
 
+use App\Models\Permission;
 use App\Models\Role;
 use App\Models\User;
-use App\Models\Permission;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\PermissionRegistrar;
 
@@ -16,7 +16,7 @@ class RolePermissionSeeder extends Seeder
 
         $simplePermissions = [
             'Admin' => [
-                'access admin' => 'Administration Access'
+                'access admin' => 'Administration Access',
             ],
         ];
 
@@ -53,7 +53,11 @@ class RolePermissionSeeder extends Seeder
                 'quote' => 'Quote',
                 'quote_item' => 'Quote Item',
                 'solution_type' => 'Solution Type',
+                'email_template' => 'Email Template',
+                'email_history' => 'Email History',
                 'api' => 'API',
+                'price_plan' => 'Price Plan',
+                'activity' => 'Activity',
             ],
         ];
 
@@ -61,26 +65,26 @@ class RolePermissionSeeder extends Seeder
             'Super Admin' => [
                 'parent' => null,
                 'permissions' => [],
-                'simple_permission' => []
+                'simple_permission' => [],
             ],
             'Support Agent' => [
                 'parent' => 'Super Admin',
-                'permissions' => ['merchant', 'account', 'contact', 'token', 'quote', 'quote_item', 'order', 'order_item'],
-                'simple_permission' => ['viewAny product', 'view product', 'viewAny category', 'view category']
+                'permissions' => ['merchant', 'account', 'contact', 'token', 'quote', 'quote_item', 'order', 'order_item', 'activity', 'price_plan'],
+                'simple_permission' => ['viewAny product', 'view product', 'viewAny category', 'view category'],
             ],
             'Company Admin' => [
                 'parent' => 'Super Admin',
-                'permissions' => ['quote', 'quote_item', 'merchant', 'account', 'contact',  'price', 'product', 'category', 'region', 'tenant', 'brand', 'supplier', 'spa', 'user', 'solution_type', 'api'],
-                'simple_permission' => []
+                'permissions' => ['quote', 'quote_item', 'merchant', 'account', 'contact',  'price', 'product', 'category', 'region', 'tenant', 'brand', 'supplier', 'spa', 'user', 'solution_type', 'api', 'price_plan', 'activity', 'email_template', 'email_history'],
+                'simple_permission' => [],
             ],
             'Sales Rep' => [
                 'parent' => 'Company Admin',
-                'permissions' => ['quote', 'quote_item', 'account', 'contact', 'brand', 'supplier'],
-                'simple_permission' => ['viewAny product', 'view product', 'viewAny category', 'view category']
+                'permissions' => ['quote', 'quote_item', 'account', 'contact', 'brand', 'supplier', 'activity', 'price_plan'],
+                'simple_permission' => ['viewAny product', 'view product', 'viewAny category', 'view category'],
             ],
             'Order Manager' => [
                 'parent' => 'Company Admin',
-                'permissions' => ['order', 'order_item'],
+                'permissions' => ['order', 'order_item', 'activity'],
                 'simple_permission' => [
                     'viewAny product',
                     'view product',
@@ -93,9 +97,9 @@ class RolePermissionSeeder extends Seeder
                     'viewAny brand',
                     'view brand',
                     'viewAny supplier',
-                    'view supplier'
-                ]
-            ]
+                    'view supplier',
+                ],
+            ],
         ];
 
         foreach ($simplePermissions as $key => $pe) {
@@ -126,7 +130,7 @@ class RolePermissionSeeder extends Seeder
             $permissions = [];
             $temp = null;
 
-            if (!is_null($item['parent'])) {
+            if (! is_null($item['parent'])) {
                 $temp = Role::where('name', $item['parent'])->firstOrFail();
             }
 

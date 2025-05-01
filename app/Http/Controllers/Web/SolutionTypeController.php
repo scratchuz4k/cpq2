@@ -2,16 +2,17 @@
 
 namespace App\Http\Controllers\Web;
 
+use App\Enums\TablesEnum;
+use App\Http\Controllers\BaseController;
 use App\Http\Requests\SolutionTypeCreateRequest;
+use App\Http\Requests\SolutionTypeUpdateRequest;
+use App\Http\Resources\SolutionTypeResource;
+use App\Models\Category;
+use App\Models\SolutionType;
+use App\Services\SolutionTypeService;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
-use App\Models\SolutionType;
-use App\Enums\TablesEnum;
-use Illuminate\Support\Facades\DB;
-use App\Services\SolutionTypeService;
-use App\Http\Controllers\BaseController;
-use App\Http\Resources\SolutionTypeResource;
-use App\Http\Requests\SolutionTypeUpdateRequest;
 
 class SolutionTypeController extends BaseController
 {
@@ -21,6 +22,7 @@ class SolutionTypeController extends BaseController
     {
         parent::__construct();
     }
+
     /**
      * Display a listing of the resource.
      */
@@ -72,9 +74,13 @@ class SolutionTypeController extends BaseController
      */
     public function edit(SolutionType $solutionType)
     {
+
+        $columns = require app_path('Helpers/Tables/Custom.php');
+
         return Inertia::render('SolutionTypes/Edit', [
             'solution_type' => (new SolutionTypeResource($solutionType))->resolve(),
             'available_tables' => TablesEnum::cases(),
+            'available_columns' => $columns
         ]);
     }
 

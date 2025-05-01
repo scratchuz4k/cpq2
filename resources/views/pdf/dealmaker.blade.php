@@ -183,7 +183,7 @@
                 @endif
             </div>
             <div class="col text-end" id="header_right">
-                <p>{{ $quote['account']->name }}<br>{{ $quote['address_data']?->label }}</p>
+                <p>{{ $quote['account']['name'] }}<br>{{ $quote['address_data']?->label }}</p>
                 <p>Tel: +44 (0) 191 300 700</p>
                 <p>Email: sales@example.com</p>
             </div>
@@ -203,32 +203,13 @@
                     <div class="row">
                         <div class="col">
                             <InfoBox class="m-4 p-0" severity="error">
-                                <div class="small">
-                                    <div class="mb-2 fw-bold" style="color:#dc3545">Important Information:</div>
-                                    @foreach ($warningProviders as $providerName => $hasWarning)
-                                        @if ($hasWarning)
-                                            <div class="mb-2" style="color:#dc3545; line-height: 1.2">
-                                                <span
-                                                    class="small fw-bold bg-light rounded-2 py-1 px-2 me-1 text-capitalize">
-                                                    {{ strtoupper($providerName) }}
-                                                </span>
-                                                <i>
-                                                    Please note, quote references for
-                                                    {{ strtoupper($providerName) }} quotes cannot currently
-                                                    be used to place an order. To obtain a valid quote for ordering
-                                                    please generate the quote directly on the
-                                                    {{ strtoupper($providerName) }}
-                                                    portal.
-                                                </i>
-                                            </div>
-                                        @endif
-                                    @endforeach
-                                </div>
+                                @component('components.warning-note', ['warnings' => $warningProviders])
+                                @endcomponent
+                            </InfoBox>
                         </div>
-                        </InfoBox>
                     </div>
+                @endif
             </div>
-            @endif
             <div class="row mb-4">
                 <div class="col">
                     <div class="mb-5">
@@ -280,11 +261,13 @@
                                         @endif
                                         <td class="column-name-body">
                                             {{ $item['name'] }}
-                                            @if (isset($item['data']->additionalInfo->{'Primary Router Model'}))
+                                            @if (isset($item['data']->additionalInfo->{'router'}))
                                                 <span
-                                                    class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm router-model">
+                                                    class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm router-model"
+                                                    data-bs-toggle="tooltip" data-bs-placement="top"
+                                                    title="Primary Router Model" v-tooltip>
                                                     <i class="fa-solid fa-plug"></i>
-                                                    {{ $item['data']->additionalInfo->{'Primary Router Model'} }}
+                                                    {{ $item['data']->additionalInfo->{'router'} }}
                                                 </span>
                                             @endif
                                             @if (isset($item['data']->isContended) and $item['data']->isContended)
@@ -382,19 +365,18 @@
                                         @endif
                                         <td class="column-name-body">
                                             {{ $item['name'] }}
-                                            @if (isset($item['data']->additionalInfo->{'Primary Router Model'}))
+                                            @if (isset($item['data']->additionalInfo->{'router'}))
                                                 <span
-                                                    class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm router-model">
+                                                    class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm router-model"
+                                                    data-bs-toggle="tooltip" data-bs-placement="top"
+                                                    title="Primary Router Model" v-tooltip>
                                                     <i class="fa-solid fa-plug"></i>
-                                                    {{ $item['data']->additionalInfo->{'Primary Router Model'} }}
+                                                    {{ $item['data']->additionalInfo->{'router'} }}
                                                 </span>
                                             @endif
                                             @if (isset($item['data']->isContended) and $item['data']->isContended)
                                                 <span
                                                     class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm is-contended"
-                                                    data-bs-toggle="tooltip" data-bs-placement="top"
-                                                    title="Contended" v-tooltip>
-                                                    <i class="fa-solid fa-network-wired"></i>
                                                     data-bs-toggle="tooltip" data-bs-placement="top"
                                                     title="Contended, wires only full fibre service with symmetrical upload and download speeds"
                                                     v-tooltip>
@@ -444,7 +426,7 @@
                             <tr>
                                 <th></th>
                                 <th>NET</th>
-                                <th>VAT (20%)</th>
+                                {{-- <th>VAT (20%)</th> --}}
                                 <th>GROSS</th>
                             </tr>
                         </thead>
@@ -456,9 +438,9 @@
                                 <td id="total_monthly_net">
                                     £{{ number_format(quoteQuantityPrice('MONTHLY', $quote['items']), 2) }}
                                 </td>
-                                <td id="total_monthly_vat">
+                                {{-- <td id="total_monthly_vat">
                                     £{{ number_format(quoteQuantityPrice('MONTHLY', $quote['items'], 'tax'), 2) }}
-                                </td>
+                                </td> --}}
                                 <td id="total_monthly_gross">
                                     £{{ number_format(quoteQuantityPrice('MONTHLY', $quote['items'], 'total'), 2) }}
                                 </td>
@@ -470,9 +452,9 @@
                                 <td id="total_single_net">
                                     £{{ number_format(quoteTotal('SINGLE', 'total', $quote['items']), 2) }}
                                 </td>
-                                <td id="total_single_vat">
+                                {{-- <td id="total_single_vat">
                                     £{{ number_format(quoteTotal('SINGLE', 'total_tax', $quote['items']), 2) }}
-                                </td>
+                                </td> --}}
                                 <td id="total_single_gross">
                                     £{{ number_format(quoteTotal('SINGLE', 'total_gross', $quote['items']), 2) }}
                                 </td>
@@ -484,9 +466,9 @@
                                 <td id="total_net">
                                     £{{ number_format($quote['total'], 2) }}
                                 </td>
-                                <td id="total_vat">
+                                {{-- <td id="total_vat">
                                     £{{ number_format($quote['total_tax'] ?? 0, 2) }}
-                                </td>
+                                </td> --}}
                                 <td id="total_gross">
                                     £{{ number_format($quote['total_gross'], 2) }}
                                 </td>

@@ -66,7 +66,7 @@ const getChildren = async () => {
     filters: JSON.stringify([
       {
         column: "parent_id",
-        operator: "equals ",
+        operator: "equals",
         value: props.item.id,
       },
     ]),
