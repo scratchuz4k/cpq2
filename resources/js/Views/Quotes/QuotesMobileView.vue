@@ -16,6 +16,14 @@ const props = defineProps({
 const solution_type = props.modelValue.solution_type
 const active_categories = ref([]);
 const loading = ref(true);
+const urlParams = new URLSearchParams(window.location.search);
+const params = new Proxy(urlParams, {
+    get: (searchParams, prop) => searchParams.get(prop),
+});
+
+const last_step = ref(0)
+const step = ref(params["step"] === 'last' ? last_step : 0);
+
 
 const getCategoriesWithProducts = async () => {
     loading.value = true;
@@ -46,16 +54,10 @@ const getCategoriesWithProducts = async () => {
     active_categories.value = res.data.data.sort((a, b) => {
         return categories_order.indexOf(a.id) - categories_order.indexOf(b.id);
     });
+
+    last_step.value = active_categories.value.length;
     loading.value = false;
 };
-
-const urlParams = new URLSearchParams(window.location.search);
-const params = new Proxy(urlParams, {
-    get: (searchParams, prop) => searchParams.get(prop),
-});
-
-const last_step = active_categories.value.length + 2;
-const step = ref(params["step"] === 'last' ? last_step : 0);
 
 setQuote(props.modelValue);
 
