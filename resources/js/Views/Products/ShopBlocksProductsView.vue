@@ -1,12 +1,7 @@
 <script setup>
 import _ from "lodash";
 import { Paginator } from "primevue";
-import { quote, getQuote } from "@/Composables/useQuote";
-import {
-  updateQuoteItem,
-  removeQuoteItem,
-  createQuoteItem,
-} from "@composables/useQuoteItem";
+import { quote } from "@/Composables/useQuote";
 import { categories } from "@composables/custom/shopblocks";
 import { computed, onMounted, reactive, ref, watch } from "vue";
 import InputQuantity from "@/Components/InputQuantity.vue";
@@ -31,10 +26,11 @@ const meta = reactive({
   total: 0,
   overallTotal: 0,
   first: 1,
-  limit: 5,
+  limit: 12,
   isLoading: false,
 });
 const search = ref(null);
+const showCards = ref(false);
 
 const productsHardware = ref([]);
 
@@ -114,6 +110,7 @@ const getProductsShopBlocks = async () => {
     filters: filters,
     order: sort.value.order,
     orderBy: sort.value.orderBy,
+    columns: "model,name",
     search: search.value,
     account_id: quote.account_id,
   };
@@ -148,39 +145,6 @@ const handlePaginator = (ev) => {
   getProductsShopBlocks();
 };
 
-const checkQuantity = _.debounce(async (product, temp) => {
-  if (product.stock <= temp) {
-    temp = product.stock;
-  }
-  product.quantity = temp;
-  if (product.quantity == 0) {
-    return;
-  }
-
-  let item = quote.items.find((x) => x.product_code == product.code);
-  if (!item) {
-    await createQuoteItem({
-      quote_id: quote.id,
-      product_code: product.code,
-      product_id: product.id,
-      quantity: product.quantity,
-      contract_length: product.contract_length,
-      name: product.name,
-      raw_price: product.price ? product.price.net : 0,
-      price: product.price ? product.price.net_spa : 0,
-      price_plan_id: product.price_plan_id,
-    });
-  } else {
-    if (product.quantity == 0) {
-      await removeQuoteItem(item.id);
-    } else {
-      await updateQuoteItem(item.id, { quantity: product.quantity });
-    }
-  }
-
-  await getQuote(quote.id);
-}, 500);
-
 onMounted(async () => {
   await getProductsShopBlocks();
 });
@@ -205,10 +169,33 @@ watch(
 </script>
 <template>
   <div id="mobile_step_shopblocks" class="step">
-    <div class="d-flex justify-content-end mb-4">
-      <p class="bigger text-primary bold">STEP {{ step }}/{{ step }}</p>
-    </div>
+    <div class="row justify-content-end">
+      <div class="col-3"></div>
+      <div class="col-9">
+        <div class="d-flex justify-content-between mb-4">
+          <div class="d-flex justify-content-end">
+            <button
+              class="btn border"
+              :class="[showCards ? 'btn-dark' : '']"
+              @click="() => (showCards = !showCards)"
+              style="border-radius: 5px 0 0 5px"
+            >
+              <font-awesome-icon :icon="['fas', 'grip']"></font-awesome-icon>
+            </button>
+            <button
+              class="btn border"
+              :class="[showCards ? '' : 'btn-dark']"
+              @click="() => (showCards = !showCards)"
+              style="border-radius: 0 5px 5px 0"
+            >
+              <font-awesome-icon :icon="['fas', 'grip-lines']"></font-awesome-icon>
+            </button>
+          </div>
 
+          <p class="bigger text-primary bold">STEP {{ step }}/{{ step }}</p>
+        </div>
+      </div>
+    </div>
     <!-- <div class="panel mb-3">
       <div class="d-flex justify-content-between mb-2">
         <div class="d-flex">
@@ -298,85 +285,20 @@ watch(
           <div class="text-center pt-2 pb-4" v-if="!productsHardware.length">
             No Results Found
           </div>
-          <div v-for="(product, index) in productsHardware" class="panel p-4 mb-3">
-            <div class="row">
-              <div class="col d-flex justify-content-center">
-                <a :href="product.url" target="_blank">
-                  <img
-                    :src="product.primary_image"
-                    style="width: 100px; height: 100px; object-fit: contain"
-                  />
-                </a>
-              </div>
-              <div class="col-10">
-                <div class="d-flex w-100 justify-content-between">
-                  <p class="big bold">{{ product.model }}</p>
-                  <div class="d-flex justify-content-end">
-                    <div class="me-3">
-                      <p
-                        v-if="product.stock > 0"
-                        class="badge text-bg-warning"
-                        style="--bs-bg-opacity: 0.5"
-                      >
-                        <span :id="'hardware-' + index + '-stock'">
-                          {{ product.stock }}
-                        </span>
-                        in stock
-                      </p>
-                      <p v-else class="badge text-bg-danger" style="--bs-bg-opacity: 0.5">
-                        <font-awesome-icon :icon="['fa', 'warning']" />
-                        <span :id="'hardware-' + index + '-stock'"></span>
-                        OUT OF STOCK
-                      </p>
-                    </div>
-                    <div>
-                      <p class="bold big">
-                        {{ GBP.format(product.price?.net_spa || 0) }}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-                <p class="small">{{ product.sku }} - {{ product.name }}</p>
-                <div class="pt-3">
-                  <p style="font-weight: 500">Quantity</p>
-                  <div class="d-flex align-items-center mb-2">
-                    <InputQuantity
-                      :id="'hardware-' + index"
-                      v-model="product.quantity"
-                      @change="(val) => checkQuantity(product, val, true)"
-                    />
-
-                    <button
-                      :id="'btn-hardware-' + index + '-add-25'"
-                      class="btn btn-sm ms-4 btn-add-quantity"
-                      @click="checkQuantity(product, product.quantity + 25, true)"
-                    >
-                      +25
-                    </button>
-                    <button
-                      :id="'btn-hardware-' + index + '-add-50'"
-                      class="btn btn-sm ms-2 btn-add-quantity"
-                      @click="checkQuantity(product, product.quantity + 50, true)"
-                    >
-                      +50
-                    </button>
-                    <button
-                      :id="'btn-hardware-' + index + '-add-100'"
-                      class="btn btn-sm ms-2 btn-add-quantity"
-                      @click="checkQuantity(product, product.quantity + 100, true)"
-                    >
-                      +100
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
+          <div class="row" :class="[showCards ? 'row-cols-4' : 'row-cols-1']">
+            <ProductCard
+              v-for="(product, index) in productsHardware"
+              :showAsColumn="showCards"
+              :index="index"
+              v-model="productsHardware[index]"
+            >
+            </ProductCard>
           </div>
           <Paginator
             v-model:first="meta.first"
             :rows="meta.limit"
             :totalRecords="meta.total"
-            :rowsPerPageOptions="[5, 10, 20]"
+            :rowsPerPageOptions="[12, 24, 48]"
             @page="handlePaginator"
           >
           </Paginator
