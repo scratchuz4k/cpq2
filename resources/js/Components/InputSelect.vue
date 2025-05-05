@@ -68,6 +68,15 @@ const search = _.debounce(async () => {
     options.value = res.data.data;
 }, 200);
 
+const onLazyLoad = (event) => {
+    isLoading.value = true
+    console.log('test')
+    setTimeout(() => {
+        isLoading.value = false
+    }, 100)
+
+}
+
 watch(searchInput, () => search());
 search();
 </script>
@@ -75,7 +84,7 @@ search();
 <template>
     <Select :inputId="'select-' + props.id" v-model="proxyValue" :options="options" showClear
         placeholder="Select an option" class="w-100"
-        >
+        :virtualScrollerOptions="{ lazy: true, onLazyLoad: onLazyLoad, itemSize: 38, showLoader: true, loading: isLoading.value, delay: 100 }">
         <template #value="{ value, placeholder }">
             <template v-if="!value">
                 {{ placeholder }}
