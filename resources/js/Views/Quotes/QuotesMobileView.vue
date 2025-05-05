@@ -21,8 +21,7 @@ const params = new Proxy(urlParams, {
     get: (searchParams, prop) => searchParams.get(prop),
 });
 
-const last_step = ref(0)
-const step = ref(params["step"] === 'last' ? last_step : 0);
+const step = ref(0);
 
 
 const getCategoriesWithProducts = async () => {
@@ -55,7 +54,9 @@ const getCategoriesWithProducts = async () => {
         return categories_order.indexOf(a.id) - categories_order.indexOf(b.id);
     });
 
-    last_step.value = active_categories.value.length;
+    if (params["step"] === 'last') {
+        step.value = active_categories.value.length
+    }
     loading.value = false;
 };
 
