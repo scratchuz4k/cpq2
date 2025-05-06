@@ -73,7 +73,12 @@
         </div>
         <div class="mt-2">
           <p style="font-weight: 500">Quantity</p>
-          <div class="d-flex align-items-center mb-2">
+          <div
+            class="d-flex mb-2"
+            :style="{
+              flexDirection: showAsColumn ? 'column' : 'row',
+            }"
+          >
             <InputQuantity
               :id="'hardware-' + index"
               v-model="proxyValue.quantity"
@@ -97,13 +102,26 @@
               </button>
               <button
                 :id="'btn-hardware-' + index + '-add-100'"
-                class="btn btn-sm ms-2 btn-add-quantity"
+                class="btn btn-sm ms-2 me-4 btn-add-quantity"
                 @click="checkQuantity(proxyValue, proxyValue.quantity + 100, true)"
               >
                 +100
               </button>
             </template>
+            <button
+              v-if="hasSelect && !showAsColumn"
+              class="btn btn-add-quantity"
+              @click="select"
+            >
+              Add to Compator
+            </button>
           </div>
+          <template v-if="hasSelect && showAsColumn">
+            <hr />
+            <button class="btn btn-add-quantity w-100" @click="select">
+              Add to Compator
+            </button>
+          </template>
         </div>
       </div>
     </div>
@@ -120,11 +138,12 @@ import {
 import { quote, getQuote } from "@/Composables/useQuote";
 const props = defineProps({
   index: Number,
+  hasSelect: Boolean,
   showAsColumn: Boolean,
   modelValue: Object,
 });
 
-const emit = defineEmits(["update:modelValue"]);
+const emit = defineEmits(["update:modelValue", "select"]);
 const proxyValue = computed({
   get: () => props.modelValue,
   set: (value) => emit("update:modelValue", value),
@@ -162,6 +181,13 @@ const checkQuantity = _.debounce(async (product, temp) => {
 
   await getQuote(quote.id);
 }, 500);
+
+const select = () => {
+  if (!props.hasSelect) {
+    return;
+  }
+  emit("select", proxyValue);
+};
 </script>
 <style>
 .truncate-2-lines {
@@ -183,5 +209,10 @@ const checkQuantity = _.debounce(async (product, temp) => {
   line-height: 2em; /* or a fixed px value, e.g. 24px */
   height: calc(2em * 3); /* 3 lines × line-height */
   font-size: 14px !important;
+}
+
+.shopblock-product:hover {
+  cursor: pointer;
+  box-shadow: var(--color-purple) 0px 1px 8px 0px;
 }
 </style>

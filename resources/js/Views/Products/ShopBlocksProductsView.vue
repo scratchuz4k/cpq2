@@ -20,7 +20,7 @@ const props = defineProps({
   modelValue: Number,
   quote: Object,
 });
-
+const selectedItems = ref([]);
 const meta = reactive({
   page: 1,
   total: 0,
@@ -135,8 +135,17 @@ const getProductsShopBlocks = async () => {
     }, {});
 };
 
-const clearFilters = () => {
-  Object.keys(filters).forEach((key) => (filters[key].value = null));
+const addSelected = (item) => {
+  if (selectedItems.value.length >= 4) {
+    notyf.error("Comparator is full");
+    return;
+  }
+  if (selectedItems.value.find((x) => x.sku == item.value.sku)) {
+    notyf.error("Already added");
+    return;
+  }
+
+  selectedItems.value.push(item.value);
 };
 
 const handlePaginator = (ev) => {
@@ -196,75 +205,6 @@ watch(
         </div>
       </div>
     </div>
-    <!-- <div class="panel mb-3">
-      <div class="d-flex justify-content-between mb-2">
-        <div class="d-flex">
-          <h4>Filters</h4>
-          <ul class="mb-0" style="list-style: none; display: flex; flex-wrap: wrap">
-            <template v-for="filter in filters">
-              <li class="bullet me-2 mb-2" v-for="(item, index) in filter.value">
-                <p class="small">
-                  {{ item }}
-                  <span
-                    @click="() => filter.value.splice(index, 1)"
-                    style="cursor: pointer"
-                  >
-                    <font-awesome-icon :icon="['fas', 'xmark']"
-                  /></span>
-                </p>
-              </li>
-            </template>
-          </ul>
-        </div>
-        <div>
-          <button
-            @click="clearFilters()"
-            class="btn border-0 p-0 text-primary"
-            type="button"
-          >
-            Clear filters
-          </button>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-4">
-          <label class="mb-1">Models</label>
-          <MultiSelect
-            v-model="filters.model.value"
-            :options="Object.keys(filterList.models)"
-            placeholder="All"
-            filter
-            class="w-100"
-          >
-          </MultiSelect>
-        </div>
-        <div class="col-4">
-          <label class="mb-1">Storage</label>
-          <MultiSelect
-            v-model="filters.name.value"
-            :options="filterList.storage"
-            optionLabel="label"
-            optionValue="value"
-            placeholder="All"
-            filter
-            class="w-100"
-          >
-          </MultiSelect>
-        </div>
-        <div class="col-4">
-          <label class="mb-1">Sort by</label>
-          <Select
-            v-model="sort"
-            :options="sorts"
-            optionLabel="label"
-            placeholder="All"
-            class="w-100"
-          >
-          </Select>
-        </div>
-      </div>
-    </div> -->
-
     <div class="row">
       <div class="col-3">
         <div class="rounded border border-surface-200 dark:border-surface-700 p-3">
@@ -288,6 +228,8 @@ watch(
           <div class="row" :class="[showCards ? 'row-cols-4' : 'row-cols-1']">
             <ProductCard
               v-for="(product, index) in productsHardware"
+              @select="(item) => addSelected(item)"
+              :hasSelect="true"
               :showAsColumn="showCards"
               :index="index"
               v-model="productsHardware[index]"
@@ -334,6 +276,7 @@ watch(
         </button>
       </div>
     </div>
+    <ProductCompareShopblocks v-model="selectedItems"></ProductCompareShopblocks>
   </div>
 </template>
 <style></style>
