@@ -118,12 +118,14 @@ const getProductsShopBlocks = async () => {
   meta.total = res.data.total;
   meta.overallTotal = res.data.overall_total;
   meta.isLoading = false;
-  filterList.models = Object.keys(res.data.filters.model)
-    .sort()
-    .reduce((acc, key) => {
-      acc[key] = res.data.filters.model[key];
-      return acc;
-    }, {});
+  filterList.models = res.data?.filters?.model
+    ? Object.keys(res.data.filters.model)
+        .sort()
+        .reduce((acc, key) => {
+          acc[key] = res.data.filters.model[key];
+          return acc;
+        }, {})
+    : [];
 };
 
 const clearFilters = () => {
@@ -323,21 +325,21 @@ watch(
 
               <button
                 :id="'btn-hardware-' + index + '-add-25'"
-                class="btn btn-sm ms-4 btn-add-quantity "
+                class="btn btn-sm ms-4 btn-add-quantity"
                 @click="checkQuantity(product, product.quantity + 25, true)"
               >
                 +25
               </button>
               <button
                 :id="'btn-hardware-' + index + '-add-50'"
-                class="btn btn-sm ms-2 btn-add-quantity "
+                class="btn btn-sm ms-2 btn-add-quantity"
                 @click="checkQuantity(product, product.quantity + 50, true)"
               >
                 +50
               </button>
               <button
                 :id="'btn-hardware-' + index + '-add-100'"
-                class="btn btn-sm ms-2 btn-add-quantity "
+                class="btn btn-sm ms-2 btn-add-quantity"
                 @click="checkQuantity(product, product.quantity + 100, true)"
               >
                 +100

@@ -8,6 +8,8 @@ use App\Helpers\Files\ShopBlocksFile;
 use App\Helpers\FilterProvider;
 use App\Models\PricePlan;
 use Carbon\Carbon;
+use DOMDocument;
+use DOMXPath;
 use Exception;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
@@ -53,7 +55,7 @@ class ShopBlocksProductsJob implements NotTenantAware, ShouldQueue
         $page = 0;
         $synced = 0;
         $filters = [
-            'updated_after' => null,
+            'updatedAfter' => null,
         ];
 
         $this->started_at = now();
@@ -61,10 +63,10 @@ class ShopBlocksProductsJob implements NotTenantAware, ShouldQueue
 
         foreach ($content['data'] as $temp) {
             $this->products[$temp['sku']] = $temp;
-            $filters['updated_after'] = $temp['updated'] > $filters['updated_after'] ? $temp['updated'] : $filters['updated_after'];
+            $filters['updatedAfter'] = $temp['updated'] > $filters['updatedAfter'] ? $temp['updated'] : $filters['updatedAfter'];
         }
 
-        $filters['updated_after'] = $content['finished_at'] == null ? null : $filters['updated_after'];
+        $filters['updatedAfter'] = $content['finished_at'] == null ? null : $filters['updatedAfter'];
 
         do {
             $page++;
@@ -76,19 +78,10 @@ class ShopBlocksProductsJob implements NotTenantAware, ShouldQueue
 
             $pricePlanId = PricePlan::where('code', PricePlanEnum::SINGLE->name)->value('id');
             foreach ($res['data'] as $key => $product) {
-
-                $this->products[$product['sku']] = $product;
-                $this->products[$product['sku']]['code'] = $product['sku'];
-                $this->products[$product['sku']]['model'] = (string) Str::of($product['name'])->words(3, '');
-                $this->products[$product['sku']]['price_plan_id'] = $pricePlanId;
-                $this->products[$product['sku']]['price'] = [
-                    'code' => 1,
-                    'tax_rate' => 20,
-                    'net' => (float) $product['price'],
-                    'tax' => (float) $product['price'] * 0.2,
-                    'gross' => (float) $product['price'] * 1.2,
-                ];
-                $this->tempFilters = FilterProvider::process($this->tempFilters, $this->products[$product['sku']], true);
+                $sku = $product['children'][0]['sku'];
+                $this->products[$sku] = $this->getProduct($product);
+                $this->products[$sku]['price_plan_id'] = $pricePlanId;
+                $this->tempFilters = FilterProvider::process($this->tempFilters, $this->products[$sku], true);
             }
 
             $this->file->write(array_values($this->products), true, null, $this->started_at, $this->tempFilters, $this->errors);
@@ -132,5 +125,69 @@ class ShopBlocksProductsJob implements NotTenantAware, ShouldQueue
         if (env('DISCORD_CLOUDMARKET_JOBS')) {
             Http::post(env('DISCORD_CLOUDMARKET_JOBS'), ['content' => $message]);
         }
+    }
+
+    private function getProduct($product)
+    {
+        $child = $product['children'][0];
+        $temp = [];
+
+        $temp['model'] = (string) Str::of($product['name'])->words(3, '');
+        $temp['sku'] = $child['sku'];
+        $temp['code'] = $child['sku'];
+        $temp['slug'] = $child['slug'];
+        $temp['name'] = $product['name'];
+        $temp['description'] = $product['description'];
+        $temp['product_category_id'] = $product['category']['id'];
+        $temp['brand'] = $product['brand'];
+        $temp['stock'] = $product['stock'];
+        $temp['primary_image'] = $child['images'][0]['url'];
+        $temp['updated'] = $product['updated'];
+        $temp['created'] = $product['created'];
+
+        $temp['features'] = $this->getFeaturesFromContent($product['tabbed_content']);
+        $temp['price'] = [
+            'code' => 1,
+            'tax_rate' => 20,
+            'net' => (float) $child['price'],
+            'tax' => (float) $child['price'] * 0.2,
+            'gross' => (float) $child['price'] * 1.2,
+        ];
+
+        return $temp;
+    }
+
+    private function getFeaturesFromContent($contents)
+    {
+
+        $result = [];
+        foreach ($contents as $key => $item) {
+            $dom = new DOMDocument;
+            libxml_use_internal_errors(true); // Suppress warnings for malformed HTML
+            $dom->loadHTML($item['content']);
+            libxml_clear_errors();
+
+            $xpath = new DOMXPath($dom);
+            $rows = $xpath->query('//table[@class="generic"]//tr');
+
+            $currentSection = 'General';
+
+            foreach ($rows as $tr) {
+                $th = $tr->getElementsByTagName('th')->item(0);
+                if ($th && $th->hasAttribute('colspan') && $th->getAttribute('colspan') == '2') {
+                    $currentSection = trim($th->textContent);
+                } else {
+                    $tds = $tr->getElementsByTagName('td');
+                    if ($tds->length == 2 && $currentSection) {
+                        $key = trim($tds->item(0)->textContent);
+                        $value = trim($tds->item(1)->textContent);
+                        array_push($result, ['group' => $currentSection, 'key' => Str::slug($key), 'label' => $key, 'value' => $value]);
+                    }
+                }
+            }
+
+        }
+
+        return $result;
     }
 }

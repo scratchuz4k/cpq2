@@ -13,17 +13,18 @@ class ShopBlocksApi
             'page' => $page,
             'perPage' => $limit,
             'fields' => 'slug,sku,name,price,created,product_category_id,brand_id,stock,primary_image,updated',
-            'search_fields' => ['active' => 1],
+            'active' => 1,
         ];
+
         foreach ($filters as $key => $value) {
             if ($value == null) {
                 continue;
             }
-            $params['search_fields'][$key] = $value;
+            $params[$key] = $value;
         }
 
         $response = Http::withToken(env('SHOPBLOCKS_API_KEY'))
-            ->get('https://api.shopblocks.com/api/v2/products/simplified', $params);
+            ->get('https://api.shopblocks.com/api/v2/products', $params);
 
         if (! $response->successful()) {
             // Handle the error accordingly. For now, we'll just log and return an empty array.

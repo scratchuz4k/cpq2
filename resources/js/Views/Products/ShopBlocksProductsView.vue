@@ -4,7 +4,6 @@ import { Paginator } from "primevue";
 import { quote } from "@/Composables/useQuote";
 import { categories } from "@composables/custom/shopblocks";
 import { computed, onMounted, reactive, ref, watch } from "vue";
-import InputQuantity from "@/Components/InputQuantity.vue";
 
 const emit = defineEmits(["save", "update:modelValue"]);
 const proxyValue = computed({
@@ -127,12 +126,14 @@ const getProductsShopBlocks = async () => {
   meta.total = res.data.total;
   meta.overallTotal = res.data.overall_total;
   meta.isLoading = false;
-  filterList.models = Object.keys(res.data.filters.model)
-    .sort()
-    .reduce((acc, key) => {
-      acc[key] = res.data.filters.model[key];
-      return acc;
-    }, {});
+  filterList.models = res.data?.filters?.model
+    ? Object.keys(res.data.filters.model)
+        .sort()
+        .reduce((acc, key) => {
+          acc[key] = res.data.filters.model[key];
+          return acc;
+        }, {})
+    : [];
 };
 
 const addSelected = (item) => {
