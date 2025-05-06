@@ -5,9 +5,14 @@
   >
     <div
       class="row"
-      style="height: 80px; cursor: pointer; border-bottom: 1px solid var(--color-purple)"
+      style="
+        height: 80px;
+        cursor: pointer;
+        border-top: 2px solid var(--color-purple);
+        border-bottom: 2px solid var(--color-purple);
+      "
     >
-      <div class="col">
+      <div class="col px-5">
         <div class="row">
           <div v-for="(item, index) in proxyValue" class="col-3">
             <div class="d-flex align-items-center">
@@ -57,22 +62,31 @@
       class="row p-3"
       style="overflow-y: scroll; overflow-x: hidden; height: calc(100% - 80px)"
     >
-      <div v-for="item in proxyValue" class="col-3">
-        <div class="panel h-100" style="border: 1px solid var(--color-purple)">
+      <div class="col">
+        <div class="panel h-100" style="border: 2px solid var(--color-purple)">
           <p class="bold">General</p>
           <table class="table">
             <tbody>
               <tr>
-                <th>Stock</th>
-                <td>{{ item.stock }}</td>
-              </tr>
-              <tr>
                 <th>Sku</th>
-                <td>{{ item.sku }}</td>
+                <td v-if="proxyValue.length >= 1">{{ proxyValue[0].sku }}</td>
+                <td v-if="proxyValue.length >= 2">{{ proxyValue[1].sku }}</td>
+                <td v-if="proxyValue.length >= 3">{{ proxyValue[2].sku }}</td>
+                <td v-if="proxyValue.length >= 4">{{ proxyValue[3].sku }}</td>
               </tr>
               <tr>
                 <th>Model</th>
-                <td>{{ item.model }}</td>
+                <td v-if="proxyValue.length >= 1">{{ proxyValue[0].model }}</td>
+                <td v-if="proxyValue.length >= 2">{{ proxyValue[1].model }}</td>
+                <td v-if="proxyValue.length >= 3">{{ proxyValue[2].model }}</td>
+                <td v-if="proxyValue.length >= 4">{{ proxyValue[3].model }}</td>
+              </tr>
+              <tr>
+                <th>Stock</th>
+                <td v-if="proxyValue.length >= 1">{{ proxyValue[0].stock }}</td>
+                <td v-if="proxyValue.length >= 2">{{ proxyValue[1].stock }}</td>
+                <td v-if="proxyValue.length >= 3">{{ proxyValue[2].stock }}</td>
+                <td v-if="proxyValue.length >= 4">{{ proxyValue[3].stock }}</td>
               </tr>
             </tbody>
           </table>
@@ -86,11 +100,33 @@
             <tbody>
               <tr>
                 <th>Net</th>
-                <td>{{ GBP.format(item.price.net_spa) }}</td>
+                <td v-if="proxyValue.length >= 1">
+                  {{ GBP.format(proxyValue[0].price.net_spa) }}
+                </td>
+                <td v-if="proxyValue.length >= 2">
+                  {{ GBP.format(proxyValue[1].price.net_spa) }}
+                </td>
+                <td v-if="proxyValue.length >= 3">
+                  {{ GBP.format(proxyValue[2].price.net_spa) }}
+                </td>
+                <td v-if="proxyValue.length >= 4">
+                  {{ GBP.format(proxyValue[3].price.net_spa) }}
+                </td>
               </tr>
               <tr>
                 <th>Gross</th>
-                <td>{{ GBP.format(item.price.gross) }}</td>
+                <td v-if="proxyValue.length >= 1">
+                  {{ GBP.format(proxyValue[0].price.gross) }}
+                </td>
+                <td v-if="proxyValue.length >= 2">
+                  {{ GBP.format(proxyValue[1].price.gross) }}
+                </td>
+                <td v-if="proxyValue.length >= 3">
+                  {{ GBP.format(proxyValue[2].price.gross) }}
+                </td>
+                <td v-if="proxyValue.length >= 4">
+                  {{ GBP.format(proxyValue[3].price.gross) }}
+                </td>
               </tr>
             </tbody>
           </table>
@@ -134,5 +170,9 @@ const proxyValue = computed({
   line-height: 2em; /* or a fixed px value, e.g. 24px */
   height: calc(2em * 3); /* 3 lines × line-height */
   font-size: 14px !important;
+}
+.table tbody th,
+.table tbody td {
+  width: 20%;
 }
 </style>
