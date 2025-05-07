@@ -1,6 +1,6 @@
 const { getCurrentDate, generateHash } = require("../../support/utils.js");
 const temp = getCurrentDate();
-const account = { ref: generateHash(temp), name: temp, combined_name: temp + "(" + generateHash(temp) + ")" };
+const account = { ref: generateHash(temp), name: temp };
 let url = "";
 
 describe("Create a Shareable Link.cy", () => {
@@ -20,14 +20,7 @@ describe("Create a Shareable Link.cy", () => {
     it("Creates Mobile Quote", () => {
         cy.visit("/");
         cy.get("#create-tab").click();
-        // cy.get("#account_id").select(account.name);
-        cy.get("#select-account_id").click()
-        cy.wait(500)
-        cy.get(".p-select-list-container").eq(0).within(() => {
-            cy.contains('li', account.combined_name)
-                .should('exist')
-                .click();
-        })
+        cy.selectLazyOption('account_id', account.name);
         cy.get("#solution_id").select("Mobile");
         cy.get("#btn-create-quote").click();
         cy.get("#btn-plan-0-add-25").click();

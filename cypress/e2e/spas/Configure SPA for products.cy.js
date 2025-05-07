@@ -1,7 +1,7 @@
 import { generateHash, getCurrentDate } from "../../support/utils.js";
 
 const temp = getCurrentDate()
-const account = { ref: generateHash(temp), name: temp, combined_name: temp + "(" + generateHash(temp) + ")" }
+const account = { ref: generateHash(temp), name: temp }
 const price = { install: null, price: null }
 
 describe('Creates a Connectivity quote', () => {
@@ -22,14 +22,7 @@ describe('Creates a Connectivity quote', () => {
     it('Get Price From Gamma Product', () => {
         cy.visit("/")
         cy.get("#create-tab").click()
-        // cy.get("#account_id").select(account.name)
-        cy.get("#select-account_id").click()
-        cy.wait(500)
-        cy.get(".p-select-list-container").eq(0).within(() => {
-            cy.contains('li', account.combined_name)
-                .should('exist')
-                .click();
-        })
+        cy.selectLazyOption('account_id', account.name);
         cy.get("#solution_id").select("Connectivity - Ethernet")
         cy.get("#input_address").type('EH32 9NT')
         cy.get("#select_address").should('be.visible').select(1)

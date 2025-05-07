@@ -34,7 +34,34 @@ Cypress.Commands.add("login", (email, password) => {
         cy.get("#email").type(email, { force: true })
         cy.get("#password").type(password, { force: true })
         cy.get("#btn-login").click()
-            cy.get('#page-title').contains(/Quotes|Orders/);
-        }
+        cy.get('#page-title').contains(/Quotes|Orders/);
+    }
     )
+})
+
+Cypress.Commands.add('selectLazyOption', (id, option) => {
+    const inputSelect = `#input-select-${id}`;
+    const optionsContainer = `#${id}-sidebar`;
+
+    cy.get(inputSelect).click();
+
+    const scrollToOption = (retries = 10) => {
+        cy.get(optionsContainer).then($container => {
+            if ($container.find(`div:contains("${option}")`).length) {
+                cy.wrap($container)
+                    .contains('div', option)
+                    .scrollIntoView()
+                    .click();
+            } else if (retries > 0) {
+                cy.wrap($container)
+                    .scrollTo('bottom')
+                    .wait(300)
+                    .then(() => scrollToOption(retries - 1));
+            } else {
+                throw new Error(`Option "${option}" not found in #${id}-sidebar`);
+            }
+        });
+    };
+
+    scrollToOption();
 })

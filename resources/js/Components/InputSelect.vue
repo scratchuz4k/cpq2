@@ -74,7 +74,7 @@ onMounted(() => {
         { passive: true }
     )
 
-    var select = document.getElementById(props.id)
+    var select = document.getElementById('input-select-' + props.id)
     document.addEventListener(
         'click',
         (ev) => {
@@ -95,9 +95,9 @@ search()
 </script>
 
 <template>
-    <div :id="props.id" class="position-relative">
+    <div :id="'input-select-' + props.id" class="position-relative">
         <div class="form-select w-100" @click="() => (showOptions = !showOptions)">
-            <template v-if="!proxyValue">
+            <template v-if="!proxyValue || Object.values(proxyValue).every(value => !value)">
                 {{ props.placeholder }}
             </template>
             <template v-else v-for="field, index in fields">
