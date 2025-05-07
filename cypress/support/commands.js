@@ -46,20 +46,20 @@ Cypress.Commands.add('selectLazyOption', (id, option) => {
     cy.get(inputSelect).click();
 
     const scrollToOption = (retries = 10) => {
-        cy.get(optionsContainer).then($container => {
-            if ($container.find(`div:contains("${option}")`).length) {
-                cy.wrap($container)
-                    .contains('div', option)
-                    .scrollIntoView()
-                    .click();
-            } else if (retries > 0) {
-                cy.wrap($container)
-                    .scrollTo('bottom')
-                    .wait(300)
-                    .then(() => scrollToOption(retries - 1));
-            } else {
-                throw new Error(`Option "${option}" not found in #${id}-sidebar`);
-            }
+        cy.get(optionsContainer).within(() => {
+            cy.contains('.option', option).then((el) => {
+                if (el.length) {
+                    cy.wrap(el)
+                        .scrollIntoView()
+                        .click()
+                } else if (retries > 0) {
+                    cy.get(optionsContainer)
+                        .scrollTo('bottom')
+                        .wait(300)
+                        .then(() => scrollToOption(retries - 1))
+
+                }
+            })
         });
     };
 
