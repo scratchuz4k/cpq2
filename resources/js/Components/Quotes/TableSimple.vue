@@ -1,5 +1,6 @@
 <script setup>
-import { quote } from "@composables/useQuote";
+import { ref } from 'vue';
+import { quote, getQuote } from "@composables/useQuote";
 
 defineProps({
     preview: Boolean,
@@ -7,20 +8,27 @@ defineProps({
 const columns = quote.solution_type?.table?.columns ?? [];
 const groupColumns = columns.filter((x) => x.is_group);
 
-let groups = [];
-quote.items.forEach((e) => {
-    let index = groups.findIndex((x) => x.group == e.group);
-    if (index == -1) {
-        let temp = quote.items.find(
-            (x) => x.group == e.group && x.price_plan.code == "MONTHLY"
-        );
-        groups.push({ ...e, name: temp?.name ?? e.name, children: [e] });
-    } else {
-        groups[index].children.push(e);
-    }
-});
-emitter.on("quote-items:updated", () => {
-    getQuote(quote.id);
+
+const groups = ref([]);
+const groupItems = () => {
+    groups.value = [];
+    quote.items.forEach((e) => {
+        let index = groups.value.findIndex((x) => x.group == e.group);
+        if (index == -1) {
+            let temp = quote.items.find(
+                (x) => x.group == e.group && x.price_plan.code == "MONTHLY"
+            );
+            groups.value.push({ ...e, name: temp?.name ?? e.name, children: [e] });
+        } else {
+            groups.value[index].children.push(e);
+        }
+    });
+};
+groupItems();
+
+emitter.on("quote-items:updated", async () => {
+    await getQuote(quote.id);
+    groupItems();
 });
 </script>
 <template>
