@@ -36,7 +36,7 @@ describe("Blacklist Crud", () => {
 
         cy.visit("/");
         cy.get("#create-tab").click();
-        cy.selectLazyOption('account_id', 'Cris');
+        cy.selectLazyOption('account_id', account.name);
 
         cy.get("#solution_id").select("Connectivity - Ethernet");
         cy.get("#input_address").type("EH32 9NT");

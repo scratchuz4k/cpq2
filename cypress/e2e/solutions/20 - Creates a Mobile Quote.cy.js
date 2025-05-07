@@ -248,6 +248,7 @@ describe("Creates a Mobile Quote", () => {
                 });
         });
     });
+
     it("I can add and delete a Custom Line", () => {
         cy.visit("/");
         cy.get("#datatable-btn-0-show").click();

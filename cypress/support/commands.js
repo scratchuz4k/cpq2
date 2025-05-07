@@ -39,27 +39,30 @@ Cypress.Commands.add("login", (email, password) => {
     )
 })
 
-Cypress.Commands.add('selectLazyOption', (id, option) => {
+Cypress.Commands.add('selectLazyOption', (id, option = null) => {
     const inputSelect = `#input-select-${id}`;
     const optionsContainer = `#${id}-sidebar`;
 
     cy.get(inputSelect).click();
-
+    cy.wait(1000)
     const scrollToOption = (retries = 10) => {
-        cy.get(optionsContainer).within(() => {
-            cy.contains('.option', option).then((el) => {
-                if (el.length) {
-                    cy.wrap(el)
-                        .scrollIntoView()
-                        .click()
-                } else if (retries > 0) {
-                    cy.get(optionsContainer)
-                        .scrollTo('bottom')
-                        .wait(300)
-                        .then(() => scrollToOption(retries - 1))
+        cy.get(optionsContainer).then($container => {
+            const options = [...$container[0].querySelectorAll('.option')]
+            console.log(options)
+            const match = option
+                ? options.find(el => el.textContent.trim().includes(option))
+                : options[0]
 
-                }
-            })
+
+            if (match) {
+                cy.wrap(match).scrollIntoView().click();
+            } else if (retries > 0) {
+                cy.wrap($container).scrollTo('bottom').wait(300).then(() => {
+                    scrollToOption(retries - 1);
+                });
+            } else {
+                throw new Error(`Option "${option}" not found in ${optionsContainer}`);
+            }
         });
     };
 

@@ -30,13 +30,7 @@ describe("Creates a Mobile Quote", () => {
     it("Creates Connectivity quote and has simple Table", () => {
         cy.visit("/")
         cy.get("#create-tab").click()
-        cy.get("#input-select-account_id").click()
-        cy.wait(500)
-        cy.get("#account_id-sidebar").eq(0).within(() => {
-            cy.contains('div', option)
-                .should('exist')
-                .click();
-        })
+        cy.selectLazyOption('account_id')
 
         cy.get("#solution_id").select("Connectivity - Ethernet")
         cy.get("#input_address").type('EH32 9NT')
