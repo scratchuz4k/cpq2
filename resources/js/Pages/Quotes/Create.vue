@@ -63,7 +63,7 @@ const items = ref([
                                     <label for="account_id" class="form-label">Account <span
                                             class="text-primary fw-bold">*</span></label>
                                     <InputSelect id="account_id" v-model="form.account" url="/accounts"
-                                        :fields="['name', 'reference']" placeholder="Select an Account">
+                                        :fields="['name', 'reference']" :placeholder="'Select an Account'">
                                     </InputSelect>
                                 </div>
                                 or create a <a id="link-to-create-account" href="/accounts/create"

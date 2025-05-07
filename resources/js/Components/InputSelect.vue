@@ -1,13 +1,8 @@
 <script setup>
 import _ from "lodash";
-import IconField from "primevue/iconfield";
-import InputIcon from "primevue/inputicon";
-import InputText from "primevue/inputtext";
-
-import Select from "primevue/select";
-import { ref, watch, computed, reactive } from "vue";
-import { v4 as uuidv4 } from "uuid";
+import { IconField, InputIcon, InputText } from "primevue";
 import queryString from "query-string";
+import { ref, watch, computed, reactive, onMounted } from "vue";
 
 const props = defineProps({
     id: {
@@ -22,25 +17,20 @@ const props = defineProps({
         default: [],
     },
     modelValue: Object,
-    limit: {
-        type: Number,
-        default: 200,
-    },
-});
+    placeholder: String
+})
 
 const meta = reactive({
-    page: 1,
-    total: 0,
-    first: 1,
-    limit: props.limit,
-    orderBy: "id",
-    order: "asc",
-});
+    total_pages: 0
+})
 
 const emit = defineEmits(["update:modelValue", "change"]);
+const page = ref(1);
 const options = ref([]);
 const isLoading = ref(false);
-const searchInput = ref(null);
+const showOptions = ref(false);
+const inputSearch = ref(null)
+
 
 const proxyValue = computed({
     get: () => props.modelValue,
@@ -48,126 +38,114 @@ const proxyValue = computed({
         emit("update:modelValue", value);
         emit("change", value);
     },
-});
+})
 
 const search = _.debounce(async () => {
-    if (!props.url) {
-        return;
-    }
+    if (!props.url) return
 
-    let string = props.limit
-        ? queryString.stringify({
-            ...meta,
-            search: searchInput.value,
-        })
-        : searchInput.value ? `search=${searchInput.value}` : "";
+    let string = queryString.stringify({
+        page: page.value,
+        search: inputSearch.value
+    })
 
-    isLoading.value = true;
-    let res = await axios.get(`/api${props.url}?${string}`);
-    isLoading.value = false;
-    options.value = res.data.data;
-}, 200);
-
-const onLazyLoad = (event) => {
     isLoading.value = true
-    console.log('test')
-    setTimeout(() => {
-        isLoading.value = false
-    }, 100)
+    let res = await axios.get(`/api${props.url}?${string}`);
+    meta.total_pages = res.data.meta.last_page
+    options.value.push(...res.data.data)
+    isLoading.value = false
+}, 200)
 
-}
+onMounted(() => {
+    var sidebar = document.getElementById(props.id + '-sidebar')
 
-watch(searchInput, () => search());
-search();
+    sidebar.addEventListener(
+        'scroll',
+        () => {
+            var isAtBottom = sidebar.scrollTop + sidebar.clientHeight === sidebar.scrollHeight
+            if (isAtBottom) {
+                page.value++
+                search()
+            }
+        },
+        { passive: true }
+    )
+
+    var select = document.getElementById(props.id)
+    document.addEventListener(
+        'click',
+        (ev) => {
+            if (!select.contains(ev.target)) {
+                showOptions.value = false
+            }
+        }
+    )
+})
+
+watch(inputSearch, () => {
+    page.value = 1;
+    options.value = [];
+    search();
+});
+
+search()
 </script>
 
 <template>
-    <Select :inputId="'select-' + props.id" v-model="proxyValue" :options="options" showClear
-        placeholder="Select an option" class="w-100"
-        :virtualScrollerOptions="{ lazy: true, onLazyLoad: onLazyLoad, itemSize: 38, showLoader: true, loading: isLoading.value, delay: 100 }">
-        <template #value="{ value, placeholder }">
-            <template v-if="!value">
-                {{ placeholder }}
+    <div :id="props.id" class="position-relative">
+        <div class="form-select w-100" @click="() => (showOptions = !showOptions)">
+            <template v-if="!proxyValue">
+                {{ props.placeholder }}
             </template>
-            <span v-else v-for="(field, index) in props.fields">
-                <span v-if="index != 0">(</span>
-                {{ value && value[field] ? value[field] : '' }}
-                <span v-if="index != 0">)</span>
-            </span>
-        </template>
-
-        <template #option="{ option, selected, index }">
-            <span class="me-2" v-for="(field, index) in props.fields" :class="[selected ? 'text-bold' : '']">
-                {{ index !== 0 ? `(${option?.[field] ?? ''})` : (option?.[field] ?? '') }}
-            </span>
-        </template>
-
-        <template #header>
-            <IconField class="p-1">
-                <InputIcon>
-                    <font-awesome-icon icon="fas fa-search" />
+            <template v-else v-for="field, index in fields">
+                {{ index !== 0 ? ` (${proxyValue?.[field] ?? ''})` : (proxyValue?.[field] ?? '') }}
+            </template>
+        </div>
+        <div class="form-control position-absolute mt-1 p-1" :style="{
+            visibility: !showOptions ? 'hidden' : 'visible',
+            height: !showOptions ? '0' : 'auto'
+        }">
+            <IconField class="p-0">
+                <InputIcon v-if="isLoading">
+                    <font-awesome-icon :icon="['fa', 'spinner']" class="fa-spin"></font-awesome-icon>
                 </InputIcon>
-                <InputText :id="'select-' + props.id + '-search'" type="search" class="w-100" v-model="searchInput"
-                    placeholder="Search" />
+                <InputIcon v-else>
+                    <font-awesome-icon :icon="['fas', 'search']"></font-awesome-icon>
+                </InputIcon>
+                <InputText :id="'select-' + props.id + '-seach'" class="w-100" v-model="inputSearch"
+                    placeholder="Search">
+                </InputText>
             </IconField>
-        </template>
-    </Select>
+            <div :id="props.id + '-sidebar'" class="options-container mt-2" style="height: 200px; overflow-y: scroll;">
+                <div class="option" :class="{ selected: proxyValue === option }" v-for="option in options"
+                    @click="() => { proxyValue = option; showOptions = false }" style="cursor: pointer;">
+                    <template v-for="field, index in props.fields">
+                        {{ index !== 0 ? ` (${option?.[field] ?? ''})` : (option?.[field] ?? '') }}
+                    </template>
+                </div>
+            </div>
+        </div>
+    </div>
 </template>
 
 <style scoped>
-.select-options {
-    min-height: 2.5em;
-    height: auto;
+.options-container {
     display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 10px;
+    flex-direction: column;
+    gap: 2px;
 }
 
-.select-option {
-    border: 1px solid hsl(0, 0%, 86%);
-    margin-right: 5px;
+.option {
+    padding: 0.25rem 0.75rem;
     border-radius: 4px;
-    cursor: pointer;
-    background-color: whitesmoke;
 }
 
-.select-items {
-    position: absolute;
-    visibility: hidden;
-    pointer-events: none;
-    width: 100%;
-    max-height: 300px;
-    overflow: auto;
-    background-color: white;
-    padding: 10px;
-    z-index: 100;
-    border: 1px solid hsl(0, 0%, 86%);
-    border-radius: 4px;
-    color: hsl(0, 0%, 21%);
+.option.selected {
+    color: white;
+    background-color: var(--color-purple);
 }
 
-.select-item:hover {
-    font-weight: bold;
-    cursor: pointer;
-}
-
-.show {
-    visibility: visible !important;
-    pointer-events: auto !important;
-}
-
-.hide {
-    visibility: hidden !important;
-    pointer-events: auto !important;
-}
-
-.disabled {
-    pointer-events: none;
-    background-color: whitesmoke;
-}
-
-.text-bold {
-    font-weight: bold;
+.option:not(.selected):hover {
+    color: black;
+    background-color: var(--color-purple-light);
 }
 </style>
