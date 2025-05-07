@@ -22,7 +22,7 @@ class OrderResource extends JsonResource
             'contract_length' => format_currency($this->contract_length),
             'user' => $this->user,
             'account' => $this->account,
-            'solution_type' => $this->solutionType,
+            'solution_type' => (new SolutionTypeResource($this->solutionType))->resolve(),
             'items' => OrderItemResource::collection($this->whenLoaded('items', default: collect([])))->resolve(),
             'updated_at' => $this->updated_at,
         ];

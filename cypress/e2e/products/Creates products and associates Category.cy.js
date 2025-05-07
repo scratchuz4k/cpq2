@@ -45,10 +45,14 @@ describe('Creates products and associates Category.cy', () => {
                 cy.get("#product-name").type(product.name)
                 cy.get("#product-code").type(product.code)
 
-                cy.get("#select-product-categories > div.p-multiselect-label-container > div").click()
-                cy.get("#select-product-categories-search").type(category.name)
-                cy.wait(3000)
-                cy.get("#select-product-categories_0 > span").click()
+                cy.get("#select-product-categories").click()
+                cy.wait(500)
+                cy.get(".p-select-list-container").eq(0).within(() => {
+                    cy.get('li[aria-label="' + category.name + '"]')
+                        .should('exist')
+                        .click();
+                })
+
                 cy.get("#btn-save-product").click()
                 cy.get(".notyf").contains("Created with Success")
             }
@@ -57,7 +61,13 @@ describe('Creates products and associates Category.cy', () => {
         cy.get("#datatable-search").type(product.code)
         cy.wait(3000)
         cy.get("#datatable-btn-0-edit").click()
-        cy.get("#select-product-categories > div.p-multiselect-label-container > div").contains(category.name)
+        cy.get("#select-product-categories").click()
+        cy.wait(500)
+        cy.get(".p-select-list-container").eq(0).within(() => {
+            cy.get('li[aria-label="' + category.name + '"]')
+                .should('exist')
+                .click();
+        })
     })
 
 })

@@ -3,27 +3,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link } from "@inertiajs/vue3";
 import { ref } from 'vue';
 import axios from "axios";
-
-const toggle_is_active = async (data) => {
-
-    let result = await swal.fire({
-        title: 'Do you want to change the active status?'
-    })
-
-    if (['cancel', 'backdrop'].includes(result.dismiss)) {
-        return false
-    }
-
-    try {
-        let res = await axios.put(`/api/apis/` + data.id, { is_active: !data.is_active})
-        if (res) {
-            emitter.emit("datatable-refresh");
-        }
-        notyf.success('Updated with Success')
-    } catch (err) {
-        notyf.error(err?.response?.data?.message ?? 'Something went wrong')
-    }
-}
+import { toggle_is_active } from '@/Composables/handleActive';
 
 const items = ref([
     { label: 'Home', url: '/' },
@@ -72,7 +52,7 @@ const items = ref([
                         {{ format.date(value) }}
                     </template>
                     <template #is_active="{ data, value }">
-                        <div role="button" @click="toggle_is_active(data)">
+                        <div role="button" @click="toggle_is_active('apis', data)">
                             <font-awesome-icon
                                 v-if="value"
                                 :icon="['fas', 'circle-check']"

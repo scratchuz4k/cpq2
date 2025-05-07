@@ -83,16 +83,18 @@ const handleFields = () => {
     selectedRules.value = [];
     notyf.error("Only two entities may be selected at a time");
     return;
-  }
+  } else if (keys.length == 0) {
+    selectedRules.value = [];
+  } else {
+    selectedRules.value = props.rules;
 
-  selectedRules.value = props.rules;
-
-  keys.forEach((e) => {
-    selectedRules.value = selectedRules.value.filter((x) => {
-      return x.code.includes(format.capitalizeFirstLetter(e));
+    keys.forEach((e) => {
+        selectedRules.value = selectedRules.value.filter((x) => {
+        return x.code.includes(format.capitalizeFirstLetter(e));
+        });
     });
-  });
 
+  }
   getData();
 };
 
@@ -214,6 +216,7 @@ const handlePaginator = (ev) => {
 const clearFilters = () => {
   showGlobal.value = false;
   Object.keys(fields).forEach((x) => (fields[x] = null));
+  selectedRules.value = [];
   getData();
 };
 

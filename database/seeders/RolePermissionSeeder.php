@@ -57,6 +57,7 @@ class RolePermissionSeeder extends Seeder
                 'email_history' => 'Email History',
                 'api' => 'API',
                 'price_plan' => 'Price Plan',
+                'activity' => 'Activity',
             ],
         ];
 
@@ -68,22 +69,22 @@ class RolePermissionSeeder extends Seeder
             ],
             'Support Agent' => [
                 'parent' => 'Super Admin',
-                'permissions' => ['merchant', 'account', 'contact', 'token', 'quote', 'quote_item', 'order', 'order_item', 'price_plan'],
+                'permissions' => ['merchant', 'account', 'contact', 'token', 'quote', 'quote_item', 'order', 'order_item', 'activity', 'price_plan'],
                 'simple_permission' => ['viewAny product', 'view product', 'viewAny category', 'view category'],
             ],
             'Company Admin' => [
                 'parent' => 'Super Admin',
-                'permissions' => ['quote', 'quote_item', 'merchant', 'account', 'contact',  'price', 'product', 'category', 'region', 'tenant', 'brand', 'supplier', 'spa', 'user', 'solution_type', 'api', 'price_plan', 'email_template', 'email_history'],
+                'permissions' => ['quote', 'quote_item', 'merchant', 'account', 'contact',  'price', 'product', 'category', 'region', 'tenant', 'brand', 'supplier', 'spa', 'user', 'solution_type', 'api', 'price_plan', 'activity', 'email_template', 'email_history'],
                 'simple_permission' => [],
             ],
             'Sales Rep' => [
                 'parent' => 'Company Admin',
-                'permissions' => ['quote', 'quote_item', 'account', 'contact', 'brand', 'supplier', 'price_plan'],
+                'permissions' => ['quote', 'quote_item', 'account', 'contact', 'brand', 'supplier', 'activity', 'price_plan'],
                 'simple_permission' => ['viewAny product', 'view product', 'viewAny category', 'view category'],
             ],
             'Order Manager' => [
                 'parent' => 'Company Admin',
-                'permissions' => ['order', 'order_item'],
+                'permissions' => ['order', 'order_item', 'activity'],
                 'simple_permission' => [
                     'viewAny product',
                     'view product',

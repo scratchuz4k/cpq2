@@ -3,10 +3,15 @@ const props = defineProps({
   quote: Object,
 });
 
+const group = props.quote.solution_type?.table?.group ?? null;
 const pricePlanskeys = { "One-Off": "SINGLE", Recurring: "MONTHLY" };
 const quoteTotal = (price_plan, column = "total") => {
   let total = 0;
   let items = props.quote.items;
+
+  if (group) {
+    items = props.quote.items.flatMap((obj) => obj.items ?? obj);
+  }
   items.forEach((e) => {
     if (e.children?.lenght) {
       total += e.children
@@ -22,15 +27,16 @@ const quoteQuantityPrice = (price_plan, operation = "simple") => {
   let total = 0;
   let tax = 0;
   let items = props.quote.items;
+
+  if (group) {
+    items = props.quote.items.flatMap((obj) => obj.items ?? obj);
+  }
   items.forEach((e) => {
     if (e.price_plan && e.price_plan.code == pricePlanskeys[price_plan]) {
       total += e.price * e.quantity;
       tax += e.price * e.quantity * e.tax;
     }
   });
-  if (operation == "tax") {
-    return tax;
-  }
   if (operation == "total") {
     return total + tax;
   }
@@ -48,43 +54,49 @@ const quoteQuantityPrice = (price_plan, operation = "simple") => {
       <tr>
         <th></th>
         <th>NET</th>
-        <th>VAT (20%)</th>
+        <!-- <th>VAT (20%)</th> -->
         <th>GROSS</th>
       </tr>
     </thead>
     <tbody>
       <tr>
-        <th><p class="small text-start">Monthly Total</p></th>
+        <th>
+          <p class="small text-start">Monthly Total</p>
+        </th>
         <td id="total_monthly_net">
           {{ GBP.format(quoteQuantityPrice("Recurring")) }}
         </td>
-        <td id="total_monthly_vat">
-          {{ GBP.format(quoteQuantityPrice("Recurring", "tax")) }}
-        </td>
+        <!-- <td id="total_monthly_vat">
+                    {{ GBP.format(quoteQuantityPrice("Recurring", "tax")) }}
+                </td> -->
         <td id="total_monthly_gross">
           {{ GBP.format(quoteQuantityPrice("Recurring", "total")) }}
         </td>
       </tr>
       <tr>
-        <th><p class="small text-start">One Off Total</p></th>
+        <th>
+          <p class="small text-start">One Off Total</p>
+        </th>
         <td id="total_net">
           {{ GBP.format(quoteTotal("One-Off")) }}
         </td>
-        <td id="total_vat">
-          {{ GBP.format(quoteTotal("One-Off", "total_tax")) }}
-        </td>
+        <!-- <td id="total_vat">
+                    {{ GBP.format(quoteTotal("One-Off", "total_tax")) }}
+                </td> -->
         <td id="total_gross">
           {{ GBP.format(quoteTotal("One-Off", "total_gross")) }}
         </td>
       </tr>
       <tr>
-        <th><p class="small text-start">Total</p></th>
+        <th>
+          <p class="small text-start">Total</p>
+        </th>
         <td id="total_net">
           {{ GBP.format(quote.total) }}
         </td>
-        <td id="total_vat">
-          {{ GBP.format(quote.total_vat ?? 0) }}
-        </td>
+        <!-- <td id="total_vat">
+                    {{ GBP.format(quote.total_vat ?? 0) }}
+                </td> -->
         <td id="total_gross">
           {{ GBP.format(quote.total_gross) }}
         </td>

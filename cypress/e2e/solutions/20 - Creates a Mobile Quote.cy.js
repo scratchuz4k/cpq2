@@ -12,6 +12,12 @@ const rand = (notAllowedNumber, max = 101) => {
 const temp = getCurrentDate();
 const account = { ref: generateHash(temp), name: temp };
 
+const temp1 = getCurrentDate();
+const product = { code: generateHash(temp1), name: temp1 };
+
+const temp2 = getCurrentDate();
+const category = { code: generateHash(temp2), name: temp2 };
+
 describe("Creates a Mobile Quote", () => {
     beforeEach(() => {
         cy.login("super@example.com", "werwerwer");
@@ -27,23 +33,123 @@ describe("Creates a Mobile Quote", () => {
         cy.get(".notyf").contains("Created with Success");
     });
 
+    it("Creates a Category", () => {
+        cy.visit("/");
+        cy.get("#my-account").click();
+        cy.get("#link-categories").click();
+
+        cy.get("#datatable-search").type(category.code);
+        cy.wait(3000);
+        cy.get("#categories-table").then(($table) => {
+            if ($table.text().includes("No records found")) {
+                cy.get("#category-create-btn").click();
+
+                cy.get("#category-name").type(category.name);
+                cy.get("#category-code").type(category.code);
+
+                cy.get("#btn-save-category").click();
+                cy.get(".notyf").contains("Created with Success");
+            }
+        });
+    });
+
+    it("Creates a Product and add category", () => {
+        cy.visit("/");
+        cy.get("#my-account").click();
+        cy.get("#link-products").click();
+
+        cy.get("#datatable-search").type(product.code);
+        cy.wait(3000);
+        cy.get("#products-table").then(($table) => {
+            if ($table.text().includes("No records found")) {
+                cy.get("#product-create-btn").click();
+
+                cy.get("#product-name").type(product.name);
+                cy.get("#product-code").type(product.code);
+
+                cy.get("#select-product-categories").click();
+                cy.wait(500);
+                cy.get(".p-select-list-container")
+                    .eq(0)
+                    .within(() => {
+                        cy.get('li[aria-label="' + category.name + '"]')
+                            .should("exist")
+                            .click();
+                    });
+
+                cy.get("#btn-save-product").click();
+                cy.get(".notyf").contains("Created with Success");
+            }
+        });
+
+        cy.get("#datatable-search").type(product.code);
+        cy.wait(3000);
+        cy.get("#datatable-btn-0-edit").click();
+        cy.get("#select-product-categories").click();
+        cy.wait(500);
+        cy.get(".p-select-list-container")
+            .eq(0)
+            .within(() => {
+                cy.get('li[aria-label="' + category.name + '"]')
+                    .should("exist")
+                    .click();
+            });
+    });
+
+    it("Associate Category with Mobile Solution", () => {
+        cy.visit("/");
+        cy.get("#my-account").click();
+        cy.get("#link-solutions").click();
+        cy.get("#datatable-search").type("Mobile");
+        cy.wait(10000);
+        cy.get("#datatable-btn-0-edit").click();
+        cy.get("#1-1").click();
+        cy.get("#solution-type-table-add-category").click();
+        cy.get("#select-solution-type-categories-0-value").click();
+        cy.wait(500);
+        cy.get(".p-select-list-container")
+            .eq(0)
+            .within(() => {
+                cy.get('li[aria-label="Plans"]')
+                    .first()
+                    .should("exist")
+                    .click();
+            });
+
+        cy.get("#solution-type-table-add-category").click();
+        cy.get("#select-solution-type-categories-1-value").click();
+        cy.wait(500);
+        cy.get(".p-select-list-container")
+            .eq(0)
+            .within(() => {
+                cy.get('li[aria-label="' + category.name + '"]')
+                    .should("exist")
+                    .click();
+            });
+        cy.get("#btn-save-solution-type").click();
+    });
+
     it("Creates Mobile Quote", () => {
         cy.visit("/");
         cy.get("#create-tab").click();
         cy.get("#account_id").select(account.name);
         cy.get("#solution_id").select("Mobile");
         cy.get("#btn-create-quote").click();
+        cy.wait(1000);
         cy.get("#btn-plan-0-add-25").click();
         cy.wait(1000);
         cy.get("#btn-plan-1-add-25").click();
         cy.wait(1000);
         cy.get("#btn-step-1-next").click();
         cy.wait(1000);
+        cy.get("#btn-plan-0-add-25").click();
+        cy.wait(1000);
+        cy.get("#btn-step-2-next").click();
         let hardwareCount = 0;
         let keys = [0, 1, 2, 3, 4];
         let max_pages = 5;
         let current_page = 1;
-
+        cy.wait(2000);
         do {
             keys.forEach((key) => {
                 cy.get(`#hardware-${key}-stock`).then(($input) => {
@@ -70,7 +176,7 @@ describe("Creates a Mobile Quote", () => {
 
         cy.get("#btn-step-2-next").click();
 
-        cy.get(".recurring-item").should("have.length", 2);
+        cy.get(".recurring-item").should("have.length", 3);
         cy.get(".one_off-item").then(($items) => {
             cy.then(() => {
                 expect(hardwareCount).to.equal($items.length);

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\AccountController;
 use App\Http\Controllers\Api\ApiController;
+use App\Http\Controllers\Api\ActivityController;
 use App\Http\Controllers\Api\BlacklistController;
 use App\Http\Controllers\Api\BrandController;
 use App\Http\Controllers\Api\CategoryController;
@@ -39,6 +40,7 @@ Route::prefix('external')->group(function () {
 
 Route::apiResources([
     'apis' => ApiController::class,
+    'activity' => ActivityController::class,
     'price-plans' => PricePlanController::class,
     'accounts' => AccountController::class,
     'contacts' => ContactController::class,

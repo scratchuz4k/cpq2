@@ -177,9 +177,7 @@ body {
                         }
 
                         &:hover {
-                            background-color: var(
-                                --color-purple-dark
-                            ) !important;
+                            background-color: var(--color-purple-dark) !important;
                             color: white !important;
                         }
                     }
@@ -419,7 +417,7 @@ body {
         padding: 30px;
     }
 
-    #resources > div {
+    #resources>div {
         max-width: 300px;
         margin-bottom: 10px;
         background: none;
@@ -428,11 +426,11 @@ body {
         border-radius: 6px;
     }
 
-    #resources > div img {
+    #resources>div img {
         width: 30px;
     }
 
-    #resources > div a {
+    #resources>div a {
         color: white;
     }
 
@@ -480,16 +478,16 @@ body {
         border-radius: 6px;
     }
 
-    .summary .inner > div {
+    .summary .inner>div {
         display: flex;
     }
 
-    .summary .inner > div > div {
+    .summary .inner>div>div {
         margin-right: 15px;
         min-width: 140px;
     }
 
-    .summary .inner > div p {
+    .summary .inner>div p {
         font-size: 20px;
     }
 
@@ -1138,7 +1136,7 @@ body {
     width: 300px;
 }
 
-.preview-logo > img {
+.preview-logo>img {
     max-height: 100px;
     max-width: 300px;
     object-fit: scale-down;
@@ -1184,6 +1182,7 @@ body {
         }
     }
 }
+
 .custom-range-container:has(.handle-checked) {
     background: var(--color-purple-light) !important;
 }
@@ -1192,9 +1191,27 @@ body {
     #warning-note-container {
         text-align: left !important;
 
-        .small > div:first-of-type {
+        .small>div:first-of-type {
             font-size: 1.5rem;
             margin-bottom: 1.5rem !important;
         }
     }
+}
+
+.btn-add-custom-quantity {
+    font-size: 12px;
+    font-weight: 600;
+    border-radius: 20px;
+    text-decoration: none;
+    background: #f5e5f3;
+    color: #a34996;
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+.bullet {
+    padding: 0px 12px 0px 12px;
+    border-radius: 20px;
+    opacity: 0px;
+    background: #f5f5f5;
 }
