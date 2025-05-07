@@ -17,7 +17,11 @@ const props = defineProps({
         default: [],
     },
     modelValue: Object,
-    placeholder: String
+    placeholder: String,
+    filter: {
+        type: Boolean,
+        default: true
+    }
 })
 
 const meta = reactive({
@@ -103,8 +107,8 @@ search()
         <div class="form-control position-absolute mt-1 p-1" :style="{
             visibility: !showOptions ? 'hidden' : 'visible',
             height: !showOptions ? '0' : 'auto'
-        }">
-            <IconField class="p-0">
+        }" style="z-index: 1;">
+            <IconField v-if="props.filter" class="p-0">
                 <InputIcon v-if="isLoading">
                     <font-awesome-icon :icon="['fa', 'spinner']" class="fa-spin"></font-awesome-icon>
                 </InputIcon>
@@ -115,8 +119,12 @@ search()
                     placeholder="Search">
                 </InputText>
             </IconField>
-            <div :id="props.id + '-sidebar'" class="options-container mt-2" style="height: 200px; overflow-y: scroll;">
-                <div class="option" :class="{ selected: proxyValue === option }" v-for="option in options"
+            <div :id="props.id + '-sidebar'" class="options-container mt-2"
+                style="max-height: 300px; overflow-y: auto;">
+                <div class="p-2" v-if="!options.length">
+                    <p class="ps-1">No available options</p>
+                </div>
+                <div v-else v-for="option in options" class="option" :class="{ selected: proxyValue === option }"
                     @click="() => { proxyValue = option; showOptions = false }" style="cursor: pointer;">
                     <template v-for="field, index in props.fields">
                         {{ index !== 0 ? ` (${option?.[field] ?? ''})` : (option?.[field] ?? '') }}
