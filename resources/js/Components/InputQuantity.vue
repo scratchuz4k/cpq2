@@ -1,5 +1,5 @@
 <template>
-  <div class="d-flex">
+  <div class="d-flex w-100">
     <button
       :id="'btn-' + props.id + '-remove-1'"
       class="btn-quantity btn-minus-quantity"
@@ -12,7 +12,7 @@
     <input
       :id="'input-' + props.id + '-quantity'"
       type="number"
-      class="input-quantity"
+      class="input-quantity w-100"
       v-model="proxyValue"
     />
     <button

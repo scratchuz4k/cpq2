@@ -5,16 +5,18 @@
         :class="[!showAsColumn ? 'me-4' : '']"
         style="position: relative; top: 0; right: 0"
       >
-        <a :href="proxyValue.url" target="_blank">
-          <img
-            :src="proxyValue.primary_image"
-            style="object-fit: cover"
-            :style="{
-              width: showAsColumn ? '100%' : '120px',
-              height: showAsColumn ? '140px' : '120px',
-            }"
-          />
-        </a>
+        <div class="d-flex justify-content-center align-items-middle">
+          <a :href="proxyValue.url" target="_blank">
+            <img
+              :src="proxyValue.primary_image"
+              style="object-fit: cover"
+              :style="{
+                width: '140px',
+                height: '140px',
+              }"
+            />
+          </a>
+        </div>
         <div v-if="showAsColumn" class="m-0" style="position: absolute; top: 0; right: 0">
           <p
             v-if="proxyValue.stock > 0"
@@ -35,7 +37,7 @@
       </div>
       <div class="w-100">
         <div class="d-flex justify-content-between">
-          <p class="big bold" :class="[showAsColumn ? 'truncate-2-lines' : '']">
+          <p class="bold" :class="[showAsColumn ? 'truncate-2-lines' : '']">
             {{ proxyValue.model }}
           </p>
           <div v-if="!showAsColumn" class="d-flex justify-content-end">
@@ -66,24 +68,30 @@
         <p :class="[showAsColumn ? 'truncate-3-lines' : null]">
           {{ proxyValue.sku }} - {{ proxyValue.name }}
         </p>
+        <a style="cursor: pointer" @click="">More Info...</a>
         <div v-if="showAsColumn">
           <p class="bold big mt-3">
             {{ GBP.format(proxyValue.price?.net_spa || 0) }}
           </p>
         </div>
-        <div class="mt-2">
-          <p style="font-weight: 500">Quantity</p>
+        <div class="mt-3">
           <div
-            class="d-flex mb-2"
+            class="d-flex"
             :style="{
               flexDirection: showAsColumn ? 'column' : 'row',
             }"
           >
-            <InputQuantity
-              :id="'hardware-' + index"
-              v-model="proxyValue.quantity"
-              @change="(val) => checkQuantity(proxyValue, val, true)"
-            />
+            <div
+              :style="{
+                width: showAsColumn ? '100%' : '150px',
+              }"
+            >
+              <InputQuantity
+                :id="'hardware-' + index"
+                v-model="proxyValue.quantity"
+                @change="(val) => checkQuantity(proxyValue, val, true)"
+              />
+            </div>
 
             <template v-if="!showAsColumn">
               <button

@@ -277,7 +277,10 @@ watch(
         </button>
       </div>
     </div>
-    <ProductCompareShopblocks v-model="selectedItems"></ProductCompareShopblocks>
+    <ProductCompareShopblocks
+      v-if="selectedItems.length"
+      v-model="selectedItems"
+    ></ProductCompareShopblocks>
   </div>
 </template>
 <style></style>
