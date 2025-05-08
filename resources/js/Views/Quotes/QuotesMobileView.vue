@@ -6,6 +6,7 @@ import { router } from "@inertiajs/vue3";
 import { ref } from "vue";
 import queryString from "query-string";
 
+
 const props = defineProps({
     modelValue: Object,
 });
@@ -52,7 +53,9 @@ const urlParams = new URLSearchParams(window.location.search);
 const params = new Proxy(urlParams, {
     get: (searchParams, prop) => searchParams.get(prop),
 });
-const step = ref(params["step"] ?? 0);
+
+const last_step = active_categories.value.length + 2;
+const step = ref(params["step"] === 'last' ? last_step : 0);
 
 setQuote(props.modelValue);
 
