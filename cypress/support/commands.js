@@ -48,7 +48,7 @@ Cypress.Commands.add('selectLazyOption', (id, option = null) => {
     const scrollToOption = (retries = 10) => {
         cy.get(optionsContainer).then($container => {
             const options = [...$container[0].querySelectorAll('.option')]
-            console.log(options)
+
             const match = option
                 ? options.find(el => el.textContent.trim().includes(option))
                 : options[0]
