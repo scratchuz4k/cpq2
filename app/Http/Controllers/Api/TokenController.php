@@ -2,26 +2,27 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Requests\IndexRequest;
-use App\Models\Token;
 use App\Helpers\DataProvider;
+use App\Http\Controllers\BaseController;
+use App\Http\Requests\IndexRequest;
+use App\Http\Resources\TokenResource;
+use App\Models\Token;
 use Dedoc\Scramble\Attributes\ExcludeRouteFromDocs;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
-use App\Http\Controllers\BaseController;
-use App\Http\Resources\TokenResource;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Log;
 
 class TokenController extends BaseController
 {
-
     protected $model = Token::class;
 
     /**
      * List of Tokens
+     *
      * @response AnonymousResourceCollection<LengthAwarePaginator<TokenResource>>
      */
+    #[ExcludeRouteFromDocs]
     public function index(IndexRequest $request)
     {
         $dataProvider = new DataProvider(Token::class);
@@ -29,6 +30,7 @@ class TokenController extends BaseController
             $data = $dataProvider->get();
         } catch (\Exception $e) {
             Log::debug($e->getMessage());
+
             return $e->getMessage();
         }
 
@@ -62,10 +64,10 @@ class TokenController extends BaseController
         //
     }
 
-
     /**
      * Remove Token
      */
+    #[ExcludeRouteFromDocs]
     public function destroy(Token $token)
     {
         $token->delete();
