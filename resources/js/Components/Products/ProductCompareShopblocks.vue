@@ -58,10 +58,9 @@
                 <p class="truncate-1-line">{{ item.sku }}</p>
               </div>
               <div class="mx-3">
-                <font-awesome-icon
-                  :icon="['fas', 'trash']"
-                  @click="() => proxyValue.splice(index, 1)"
-                />
+                <button @click="() => proxyValue.splice(index, 1)" class="btn">
+                  <font-awesome-icon :icon="['fas', 'trash']" @click="" />
+                </button>
               </div>
             </div>
           </div>

@@ -118,7 +118,7 @@
             </template>
             <button
               v-if="hasSelect && !showAsColumn"
-              class="btn btn-add-quantity"
+              class="btn btn-add-comparator"
               @click="select"
             >
               Add to Compator
@@ -126,7 +126,7 @@
           </div>
           <template v-if="hasSelect && showAsColumn">
             <hr />
-            <button class="btn btn-add-quantity w-100" @click="select">
+            <button class="btn btn-add-comparator w-100" @click="select">
               Add to Compator
             </button>
           </template>
