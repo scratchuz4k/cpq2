@@ -317,11 +317,13 @@ watch(
           <div class="pt-3">
             <p style="font-weight: 500">Quantity</p>
             <div class="d-flex align-items-center mb-2">
-              <InputQuantity
-                :id="'hardware-' + index"
-                v-model="product.quantity"
-                @change="(val) => checkQuantity(product, val, true)"
-              />
+              <div :style="{ width: '150px' }">
+                <InputQuantity
+                  :id="'hardware-' + index"
+                  v-model="product.quantity"
+                  @change="(val) => checkQuantity(product, val, true)"
+                />
+              </div>
 
               <button
                 :id="'btn-hardware-' + index + '-add-25'"

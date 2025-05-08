@@ -142,11 +142,13 @@ getProducts();
       <div class="mobile-product-quantity">
         <label>Quantity</label>
         <div class="d-flex align-items-center pb-3">
-          <InputQuantity
-            :id="'bolt-' + index"
-            v-model="product.quantity"
-            @change="(ev) => checkQuantity(product, ev)"
-          />
+          <div :style="{ width: '150px' }">
+            <InputQuantity
+              :id="'bolt-' + index"
+              v-model="product.quantity"
+              @change="(ev) => checkQuantity(product, ev)"
+            />
+          </div>
           <button
             :id="'btn-plan-' + index + '-add-25'"
             type=" button"
