@@ -34,7 +34,7 @@ const dragOptions = {
     ghostClass: "ghost",
 };
 
-const categories = ref(props.solution_type.categories);
+const categories = ref(props.solution_type.categories.data);
 
 const saveSolutionType = () => {
     table.columns = table.columns.filter((x) => !!x.value);
