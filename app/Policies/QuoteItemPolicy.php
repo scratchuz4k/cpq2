@@ -43,7 +43,8 @@ class QuoteItemPolicy
 
         $quote = Quote::find(request('quote_id'));
 
-        if ($user->id !== $quote->user_id) return false;
+        if ($user->id !== $quote->user_id)
+            return false;
 
         if (!$user->can("create $this->model")) {
             return false;
@@ -56,7 +57,13 @@ class QuoteItemPolicy
      */
     public function update(User $user, QuoteItem $quoteItem): bool
     {
-        if ($user->id !== $quoteItem->quote->user_id) {
+        $userAncestors = User::ancestors($quoteItem->quote->user);
+
+        if (
+            $user->id !== $quoteItem->quote->user_id
+            && !$userAncestors->contains('id', $quoteItem->quote->user_id)
+            && !$user->hasRole('Company Admin')
+        ) {
             return false;
         }
 

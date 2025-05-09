@@ -54,7 +54,13 @@ class QuotePolicy
      */
     public function update(User $user, Quote $quote): bool
     {
-        if ($user->id !== $quote->user_id) {
+        $userAncestors = User::ancestors($quote->user);
+
+        if (
+            $user->id !== $quote->user_id
+            && !$userAncestors->contains('id', $quote->user_id)
+            && !$user->hasRole('Company Admin')
+        ) {
             return false;
         }
 
