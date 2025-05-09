@@ -33,7 +33,7 @@ describe("Setup Sales Rep.cy", () => {
         cy.get(".notyf").contains("Created with Success")
         cy.visit("/")
         cy.get("#create-tab").click()
-        cy.get("#account_id").select(account.name)
+        cy.selectLazyOption('account_id', account.name);
         cy.get("#solution_id").select("Mobile")
         cy.get("#btn-create-quote").click()
         cy.visit("/")

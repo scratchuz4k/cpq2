@@ -93,7 +93,7 @@ class QuoteItem extends Model
         $discounts = [$this->discount, ...$discounts];
 
         foreach ($discounts as $discount) {
-            $price = ($price * (1 - ($discount / 100)));
+            $price = format_currency(($price * (1 - ($discount / 100))));
         }
 
         $this->price = $price;

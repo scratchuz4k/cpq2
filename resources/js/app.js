@@ -58,10 +58,6 @@ window.swal = Swal.mixin({
 }
 )
 
-window.GBP = new Intl.NumberFormat("en-GB", {
-    style: "currency",
-    currency: "GBP",
-});
 
 /* import the fontawesome core */
 import { library } from '@fortawesome/fontawesome-svg-core'
@@ -84,7 +80,6 @@ createInertiaApp({
     title: (title) => `${title} - ${appName}`,
     resolve: (name) => resolvePageComponent(`./Pages/${name}.vue`, import.meta.glob('./Pages/**/*.vue')),
     setup({ el, App, props, plugin }) {
-
 
         let app = createApp({ render: () => h(App, props) })
             .use(plugin)
@@ -134,10 +129,14 @@ createInertiaApp({
             }
         });
 
+        let currency = JSON.parse(document.head.querySelector('meta[name="currency-config"]').content);
+
         app.config.globalProperties.format = format
         app.config.globalProperties.GBP = new Intl.NumberFormat("en-GB", {
             style: "currency",
             currency: "GBP",
+            minimumFractionDigits: currency.precision ?? 2,
+            maximumFractionDigits: currency.precision ?? 2
         });
 
         Sentry.init({
@@ -154,7 +153,7 @@ createInertiaApp({
                     networkResponseHeaders: ["Referrer-Policy"],
                 }),
                 Sentry.feedbackIntegration({
-					triggerLabel: "Provide Feedback",
+                    triggerLabel: "Provide Feedback",
                     submitButtonLabel: "Submit Feedback",
                     formTitle: "Provide Feedback",
                     messagePlaceholder:

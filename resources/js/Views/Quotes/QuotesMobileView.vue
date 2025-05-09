@@ -16,6 +16,13 @@ const props = defineProps({
 const solution_type = props.modelValue.solution_type
 const active_categories = ref([]);
 const loading = ref(true);
+const urlParams = new URLSearchParams(window.location.search);
+const params = new Proxy(urlParams, {
+    get: (searchParams, prop) => searchParams.get(prop),
+});
+
+const step = ref(0);
+
 
 const getCategoriesWithProducts = async () => {
     loading.value = true;
@@ -46,16 +53,12 @@ const getCategoriesWithProducts = async () => {
     active_categories.value = res.data.data.sort((a, b) => {
         return categories_order.indexOf(a.id) - categories_order.indexOf(b.id);
     });
+
+    if (params["step"] === 'last') {
+        step.value = active_categories.value.length
+    }
     loading.value = false;
 };
-
-const urlParams = new URLSearchParams(window.location.search);
-const params = new Proxy(urlParams, {
-    get: (searchParams, prop) => searchParams.get(prop),
-});
-
-const last_step = active_categories.value.length + 2;
-const step = ref(params["step"] === 'last' ? last_step : 0);
 
 setQuote(props.modelValue);
 
@@ -115,6 +118,7 @@ getCategoriesWithProducts();
                         <div v-for="(category, index) in active_categories">
                             <h4 id="sidebar_products" data-total="0">{{ index + 1 }}. {{ category.name }}</h4>
                             <div class="sidebar_items mb-3">
+                                <!-- //TODO: Change the categories product fetching to use the products api instead of category relation -->
                                 <div v-for="product in category.products" class="item mb-2">
                                     <span>{{ product.name }}</span>
                                     <span class="badge bg-light-grey dark">
