@@ -118,6 +118,7 @@ getCategoriesWithProducts();
                         <div v-for="(category, index) in active_categories">
                             <h4 id="sidebar_products" data-total="0">{{ index + 1 }}. {{ category.name }}</h4>
                             <div class="sidebar_items mb-3">
+                                <!-- //TODO: Change the categories product fetching to use the products api instead of category relation -->
                                 <div v-for="product in category.products" class="item mb-2">
                                     <span>{{ product.name }}</span>
                                     <span class="badge bg-light-grey dark">
