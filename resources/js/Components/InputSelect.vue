@@ -122,10 +122,10 @@ search()
                     <font-awesome-icon :icon="['fas', 'search']"></font-awesome-icon>
                 </InputIcon>
                 <InputText :id="'select-' + props.id + '-search'" class="w-100" v-model="inputSearch"
-                    placeholder="Search">
+                    placeholder="Search" type="search">
                 </InputText>
             </IconField>
-            <div :id="props.id + '-sidebar'" class="options-container mt-2"
+            <div :id="props.id + '-sidebar'" class=" options-container mt-2"
                 style="max-height: 300px; overflow-y: auto;">
                 <div class="p-2" v-if="!options.length">
                     <p class="ps-1">No available options</p>
