@@ -34,7 +34,7 @@ const saveProduct = () => {
             ...props.product,
             supplier_id: props.product.supplier?.id,
             brand_id: props.product.brand?.id,
-            categories: categories.value?.id,
+            categories: categories.value?.id ?? null,
         },
         {
             onSuccess: (page) => {

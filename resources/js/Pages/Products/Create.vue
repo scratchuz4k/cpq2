@@ -32,7 +32,7 @@ const product = reactive({
 
 const editingRows = ref([]);
 const showModal = ref(false);
-const categories = ref([]);
+const categories = ref(null);
 
 const saveProduct = () => {
     router.post(
