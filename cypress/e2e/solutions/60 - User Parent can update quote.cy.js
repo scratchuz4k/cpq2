@@ -1,4 +1,4 @@
-const { getCurrentDate, generateHash } = require("../../support/utils.js");
+const { getCurrentDate, generateHash, slugify } = require("../../support/utils.js");
 const temp = getCurrentDate();
 const account = { ref: generateHash(temp), name: temp };
 const user = { name: slugify(temp), email: slugify(temp) + "@email.com", password: generateHash(temp) }
