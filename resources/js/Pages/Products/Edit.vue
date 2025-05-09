@@ -157,7 +157,7 @@ const items = ref([
                             <div class="mb-3">
                                 <label for="brand-name" class="form-label">Brand:</label>
                                 <InputSelect id="product-brand" url="/brands" :fields="['name']" v-model="product.brand"
-                                    placeholder="Select a Supplier">
+                                    placeholder="Select a Brand">
                                 </InputSelect>
                             </div>
 

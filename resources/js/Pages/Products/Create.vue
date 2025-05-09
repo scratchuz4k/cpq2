@@ -32,7 +32,7 @@ const product = reactive({
 
 const editingRows = ref([]);
 const showModal = ref(false);
-const categories = ref(null);
+const categories = ref([]);
 
 const saveProduct = () => {
     router.post(
@@ -158,7 +158,7 @@ const items = ref([
                         <div class="mb-3">
                             <label for="product-categories" class="form-label">Categories:</label>
                             <InputSelect id="product-categories" url="/categories" :fields="['name']"
-                                v-model="categories" placeholder="Select categories">
+                                v-model="categories" placeholder="Select a Category">
                             </InputSelect>
                         </div>
                     </div>

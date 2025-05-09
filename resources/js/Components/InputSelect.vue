@@ -43,7 +43,7 @@ const proxyValue = computed({
     },
 })
 
-const search = _.debounce(async () => {
+const search = _.debounce(async (clearOptions = false) => {
     if (!props.url) return
 
     let string = queryString.stringify({
@@ -53,6 +53,9 @@ const search = _.debounce(async () => {
 
     isLoading.value = true
     let res = await axios.get(`/api${props.url}?${string}`);
+    if (clearOptions) {
+        options.value = [];
+    }
     meta.total_pages = res.data.meta?.last_page ?? res.data.last_page
     options.value.push(...res.data.data)
     isLoading.value = false
@@ -65,7 +68,7 @@ onMounted(() => {
         'scroll',
         () => {
             var isAtBottom = sidebar.scrollTop + sidebar.clientHeight === sidebar.scrollHeight
-            if (isAtBottom) {
+            if (isAtBottom && page.value < meta.total_pages) {
                 page.value++
                 search()
             }
@@ -86,8 +89,7 @@ onMounted(() => {
 
 watch(inputSearch, () => {
     page.value = 1;
-    options.value = [];
-    search();
+    search(true);
 });
 
 search()
@@ -95,7 +97,7 @@ search()
 
 <template>
     <div :id="'input-select-' + props.id" class="position-relative">
-        <div class="form-select w-100 d-flex" @click="() => (showOptions = !showOptions)">
+        <div class="form-select w-100 d-flex" role='button' @click="() => (showOptions = !showOptions)">
             <template v-if="!proxyValue || Object.values(proxyValue).every(value => !value)">
                 {{ props.placeholder }}
             </template>
@@ -105,8 +107,8 @@ search()
                 </template>
             </span>
 
-            <font-awesome-icon v-if="(proxyValue)" class="my-auto ms-auto" :icon="['fas', 'xmark']"
-                @click="() => proxyValue = null" />
+            <font-awesome-icon v-if="(proxyValue)" class="my-auto ms-auto" role="button" style="font-size: 0.8rem;"
+                :icon="['fas', 'xmark']" @click="() => proxyValue = null" />
         </div>
         <div class="form-control position-absolute mt-1 p-1" :style="{
             visibility: !showOptions ? 'hidden' : 'visible',
@@ -119,7 +121,7 @@ search()
                 <InputIcon v-else>
                     <font-awesome-icon :icon="['fas', 'search']"></font-awesome-icon>
                 </InputIcon>
-                <InputText :id="'select-' + props.id + '-seach'" class="w-100" v-model="inputSearch"
+                <InputText :id="'select-' + props.id + '-search'" class="w-100" v-model="inputSearch"
                     placeholder="Search">
                 </InputText>
             </IconField>
@@ -133,6 +135,11 @@ search()
                     <template v-for="field, index in props.fields">
                         {{ index !== 0 ? ` (${option?.[field] ?? ''})` : (option?.[field] ?? '') }}
                     </template>
+                </div>
+                <div class="m-auto" v-if="page < meta.total_pages">
+                    <div class="spinner-border spinner-border-sm" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
                 </div>
             </div>
         </div>
