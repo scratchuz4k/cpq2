@@ -1,10 +1,11 @@
 <template>
   <div class="col" :style="{ flexDirection: showAsColumn ? 'column' : 'row' }">
-    <div class="panel" :class="[!showAsColumn ? 'w-100 d-flex ' : 'p-3']">
-      <div
-        :class="[!showAsColumn ? 'me-4' : '']"
-        style="position: relative; top: 0; right: 0"
-      >
+    <div
+      class="panel"
+      :class="[!showAsColumn ? 'w-100 d-flex ' : 'p-3']"
+      style="position: relative; top: 0; right: 0"
+    >
+      <div :class="[!showAsColumn ? 'me-4' : '']">
         <div class="d-flex justify-content-center align-items-middle">
           <a :href="proxyValue.url" target="_blank">
             <img
@@ -17,30 +18,19 @@
             />
           </a>
         </div>
-        <div v-if="showAsColumn" class="m-0" style="position: absolute; top: 0; right: 0">
-          <p
-            v-if="proxyValue.stock > 0"
-            class="badge text-bg-warning"
-            style="--bs-bg-opacity: 0.5"
-          >
-            <span :id="'hardware-' + index + '-stock'">
-              {{ proxyValue.stock }}
-            </span>
-            in stock
-          </p>
-          <p v-else class="badge text-bg-danger" style="--bs-bg-opacity: 0.5">
-            <font-awesome-icon :icon="['fa', 'warning']" />
-            <span :id="'hardware-' + index + '-stock'"></span>
-            OUT OF STOCK
-          </p>
-        </div>
       </div>
       <div class="w-100">
         <div class="d-flex justify-content-between">
           <p class="bold" :class="[showAsColumn ? 'truncate-2-lines' : '']">
             {{ proxyValue.model }}
           </p>
-          <div v-if="!showAsColumn" class="d-flex justify-content-end">
+          <div
+            :class="[
+              !showAsColumn
+                ? 'd-flex justify-content-end'
+                : 'position-absolute top-0 right-0',
+            ]"
+          >
             <div class="me-3">
               <p
                 v-if="proxyValue.stock > 0"
@@ -58,7 +48,7 @@
                 OUT OF STOCK
               </p>
             </div>
-            <div>
+            <div v-if="!showAsColumn">
               <p class="bold big">
                 {{ GBP.format(proxyValue.price?.net_spa || 0) }}
               </p>
@@ -68,7 +58,9 @@
         <p :class="[showAsColumn ? 'truncate-3-lines' : null]">
           {{ proxyValue.sku }} - {{ proxyValue.name }}
         </p>
-        <a style="cursor: pointer" @click="">More Info...</a>
+        <a style="cursor: pointer" @click="() => (showModal = !showModal)"
+          >More Info...</a
+        >
         <div v-if="showAsColumn">
           <p class="bold big mt-3">
             {{ GBP.format(proxyValue.price?.net_spa || 0) }}
@@ -133,10 +125,103 @@
         </div>
       </div>
     </div>
+    <Dialog
+      v-model:visible="showModal"
+      modal
+      :header="proxyValue.model"
+      :style="{ width: '80rem' }"
+    >
+      <div class="panel h-100">
+        <p class="bold">General</p>
+        <hr />
+        <table class="table">
+          <tbody>
+            <tr>
+              <th>Sku</th>
+              <td>
+                {{ proxyValue.sku }}
+              </td>
+            </tr>
+            <tr>
+              <th>Model</th>
+              <td>
+                {{ proxyValue.model }}
+              </td>
+            </tr>
+            <tr>
+              <th>Name</th>
+              <td>
+                {{ proxyValue.name }}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="d-flex justify-content-between align-items-end mb-3 mt-5">
+        <p class="bold">Features</p>
+        <div>
+          <IconField>
+            <InputIcon>
+              <font-awesome-icon icon="fas fa-search" />
+            </InputIcon>
+            <InputText
+              :id="'select-' + props.id + '-search'"
+              v-model="searchInput"
+              placeholder="Search"
+            />
+          </IconField>
+        </div>
+      </div>
+      <hr />
+      <div class="row">
+        <div class="col">
+          <table class="table">
+            <tbody>
+              <template v-for="group in temp">
+                <tr>
+                  <th colspan="2" style="background: whitesmoke">
+                    <div
+                      @click="() => (group.show = !group.show)"
+                      style="cursor: pointer"
+                    >
+                      <div class="d-flex justify-content-between w-100">
+                        <p>{{ group.name }}</p>
+                        <div>
+                          <font-awesome-icon
+                            class="w-100"
+                            v-if="group.show"
+                            style="color: var(--color-purple)"
+                            :icon="['fas', 'chevron-down']"
+                          />
+                          <font-awesome-icon
+                            class="w-100"
+                            v-else
+                            style="color: var(--color-purple)"
+                            :icon="['fas', 'chevron-up']"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </th>
+                </tr>
+                <tr v-if="group.show" v-for="row in group.features">
+                  <th>{{ row.label }}</th>
+                  <td>{{ row.items[0] }}</td>
+                </tr>
+              </template>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </Dialog>
   </div>
 </template>
 <script setup>
-import { ref, computed } from "vue";
+import Dialog from "primevue/dialog";
+import IconField from "primevue/iconfield";
+import InputIcon from "primevue/inputicon";
+import InputText from "primevue/inputtext";
+import { ref, computed, watch } from "vue";
 import _ from "lodash";
 import {
   updateQuoteItem,
@@ -151,6 +236,7 @@ const props = defineProps({
   modelValue: Object,
 });
 
+const showModal = ref(false);
 const emit = defineEmits(["update:modelValue", "select"]);
 const proxyValue = computed({
   get: () => props.modelValue,
@@ -196,8 +282,50 @@ const select = () => {
   }
   emit("select", proxyValue);
 };
+
+const searchInput = ref("");
+const temp = ref([]);
+const getFeaturesTable = () => {
+  temp.value = [];
+  if (!proxyValue.value.features) {
+    return;
+  }
+  let lowerSearch = searchInput.value.toLowerCase();
+  let features = proxyValue.value.features.filter((obj) =>
+    obj.label.toLowerCase().includes(lowerSearch)
+  );
+
+  features.forEach((e) => {
+    let gIndex = temp.value.findIndex((t) => t.name == e.group);
+    if (gIndex == -1) {
+      temp.value.push({ name: e.group, show: true, features: [] });
+      gIndex = temp.value.length - 1;
+    }
+
+    let index = temp.value[gIndex].features.findIndex((t) => t.key == e.key);
+    if (index == -1) {
+      temp.value[gIndex].features.push({ key: e.key, label: e.label, items: [] });
+      index = temp.value[gIndex].features.length - 1;
+    }
+    temp.value[gIndex].features[index].items.push(e.value);
+  });
+};
+
+watch(searchInput, () => {
+  getFeaturesTable();
+});
+
+getFeaturesTable();
 </script>
-<style>
+<style scoped>
+.table tbody th {
+  width: 30%;
+}
+
+.table tbody td {
+  width: 70%;
+}
+
 .truncate-2-lines {
   display: -webkit-box;
   -webkit-box-orient: vertical;
