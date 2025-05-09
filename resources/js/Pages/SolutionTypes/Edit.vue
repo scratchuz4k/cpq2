@@ -8,6 +8,7 @@ import { Head, router } from "@inertiajs/vue3";
 import { reactive, ref } from "vue";
 import Checkbox from "primevue/checkbox";
 import InputSelect from "@/Components/InputSelect.vue";
+import { v4 as uuid } from "uuid"
 
 const props = defineProps({
     solution_type: Object,
@@ -34,7 +35,11 @@ const dragOptions = {
     ghostClass: "ghost",
 };
 
-const categories = ref(props.solution_type.categories.data);
+const categories = ref([]);
+
+props.solution_type.categories.forEach((x) => {
+    categories.value.push({ id: uuid(), category: x })
+})
 
 const saveSolutionType = () => {
     table.columns = table.columns.filter((x) => !!x.value);
@@ -47,10 +52,10 @@ const saveSolutionType = () => {
 
     let temp = {};
     categories.value.forEach((item, index) => {
-        if (item.id == null) {
+        if (item.category == null) {
             return
         }
-        temp[item.id] = { order: index }
+        temp[item.category.id] = { order: index }
     });
 
     router.put(
@@ -108,7 +113,7 @@ const clearAllColumns = async (table) => {
 };
 
 const addCategory = () => {
-    categories.value.push({ name: null, id: null });
+    categories.value.push({ category: null, id: uuid() });
 };
 
 const deleteCategory = (element) => {
@@ -201,7 +206,7 @@ const items = ref([
                                                     </button>
                                                 </td>
                                                 <td style="text-align: left;">
-                                                    <InputSelect v-model="categories[index]" url="/categories"
+                                                    <InputSelect v-model="categories[index].category" url="/categories"
                                                         :id="`solution-type-categories-` + index + `-value`"
                                                         :fields="['name']" placeholder="Select a Category"
                                                         @change="checkCategories(index)">

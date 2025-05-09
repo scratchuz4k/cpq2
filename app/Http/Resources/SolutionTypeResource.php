@@ -47,7 +47,7 @@ class SolutionTypeResource extends JsonResource
             ...$this->resource->toArray(),
             "configurations" => $this->configs,
             "table" => $table,
-            "categories" => CategoryResource::collection($this->categories)
+            "categories" => CategoryResource::collection($this->categories)->resolve()
         ];
     }
 }

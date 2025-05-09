@@ -35,7 +35,6 @@ const isLoading = ref(false);
 const showOptions = ref(false);
 const inputSearch = ref(null)
 
-
 const proxyValue = computed({
     get: () => props.modelValue,
     set: (value) => {
@@ -54,7 +53,7 @@ const search = _.debounce(async () => {
 
     isLoading.value = true
     let res = await axios.get(`/api${props.url}?${string}`);
-    meta.total_pages = res.data.meta.last_page
+    meta.total_pages = res.data.meta?.last_page ?? res.data.last_page
     options.value.push(...res.data.data)
     isLoading.value = false
 }, 200)
@@ -96,13 +95,18 @@ search()
 
 <template>
     <div :id="'input-select-' + props.id" class="position-relative">
-        <div class="form-select w-100" @click="() => (showOptions = !showOptions)">
+        <div class="form-select w-100 d-flex" @click="() => (showOptions = !showOptions)">
             <template v-if="!proxyValue || Object.values(proxyValue).every(value => !value)">
                 {{ props.placeholder }}
             </template>
-            <template v-else v-for="field, index in fields">
-                {{ index !== 0 ? ` (${proxyValue?.[field] ?? ''})` : (proxyValue?.[field] ?? '') }}
-            </template>
+            <span v-else>
+                <template v-for="field, index in fields">
+                    {{ index !== 0 ? ` (${proxyValue?.[field] ?? ''})` : (proxyValue?.[field] ?? '') }}
+                </template>
+            </span>
+
+            <font-awesome-icon v-if="(proxyValue)" class="my-auto ms-auto" :icon="['fas', 'xmark']"
+                @click="() => proxyValue = null" />
         </div>
         <div class="form-control position-absolute mt-1 p-1" :style="{
             visibility: !showOptions ? 'hidden' : 'visible',

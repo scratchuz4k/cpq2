@@ -41,7 +41,7 @@ const saveProduct = () => {
             ...product,
             supplier_id: product.supplier?.id,
             brand_id: product.brand?.id,
-            categories: categories.value.id,
+            categories: categories.value?.id,
         },
         {
             onSuccess: (page) => {
