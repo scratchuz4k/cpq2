@@ -43,7 +43,8 @@ class QuoteItemPolicy
 
         $quote = Quote::find(request('quote_id'));
 
-        if ($user->id !== $quote->user_id) return false;
+        if (!$this->canManageQuoteItem($user, $quote))
+            return false;
 
         if (!$user->can("create $this->model")) {
             return false;
@@ -56,9 +57,8 @@ class QuoteItemPolicy
      */
     public function update(User $user, QuoteItem $quoteItem): bool
     {
-        if ($user->id !== $quoteItem->quote->user_id) {
+        if (!$this->canManageQuoteItem($user, $quoteItem->quote))
             return false;
-        }
 
         if (!$user->can("update $this->model")) {
             return false;
@@ -72,9 +72,8 @@ class QuoteItemPolicy
      */
     public function delete(User $user, QuoteItem $quoteItem): bool
     {
-        if ($user->id !== $quoteItem->quote->user_id) {
+        if (!$this->canManageQuoteItem($user, $quoteItem->quote))
             return false;
-        }
 
         if (!$user->can("delete $this->model")) {
             return false;
@@ -103,5 +102,17 @@ class QuoteItemPolicy
             return true;
         }
         return false;
+    }
+
+    /*
+     * Can logged user manage quote Items
+     */
+    private function canManageQuoteItem(User $user, Quote $quote): bool
+    {
+        $userAncestors = User::ancestors($quote->user);
+
+        return $user->id === $quote->user_id
+            || $userAncestors->contains('id', $quote->user_id)
+            || $user->hasRole('Company Admin');
     }
 }

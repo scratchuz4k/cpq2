@@ -54,7 +54,7 @@ class QuotePolicy
      */
     public function update(User $user, Quote $quote): bool
     {
-        if ($user->id !== $quote->user_id) {
+        if (!$this->canManageQuote($user, $quote)) {
             return false;
         }
 
@@ -73,7 +73,7 @@ class QuotePolicy
      */
     public function delete(User $user, Quote $quote): bool
     {
-        if ($user->id !== $quote->user_id) {
+        if (!$this->canManageQuote($user, $quote)) {
             return false;
         }
 
@@ -112,5 +112,17 @@ class QuotePolicy
             return false;
         }
         return true;
+    }
+
+    /*
+     * Can logged user manage this quote
+     */
+    private function canManageQuote(User $user, Quote $quote): bool
+    {
+        $userAncestors = User::ancestors($quote->user);
+
+        return $user->id === $quote->user_id
+            || $userAncestors->contains('id', $quote->user_id)
+            || $user->hasRole('Company Admin');
     }
 }
