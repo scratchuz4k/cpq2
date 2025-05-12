@@ -171,7 +171,7 @@
                   </th>
                 </tr>
                 <tr v-if="group.show" v-for="row in group.features">
-                  <td>{{ row.label }}</td>
+                  <th>{{ row.label }}</th>
                   <td>{{ row.items[0] }}</td>
                   <td>{{ row.items[1] }}</td>
                   <td>{{ row.items[2] }}</td>
@@ -330,7 +330,9 @@ watch(show, () => {
 getFeaturesTable();
 </script>
 <style scoped>
-.table tbody th,
+.table tbody th {
+  width: 20%;
+}
 .table tbody td {
   width: 20%;
 }
