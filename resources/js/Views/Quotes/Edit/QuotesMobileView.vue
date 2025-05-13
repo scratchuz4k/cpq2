@@ -85,7 +85,7 @@ getCategoriesWithProducts();
             </CategoryProductsView>
           </div>
 
-          <HandsetProductsView
+          <!-- <HandsetProductsView
             v-if="
               (step == active_categories.length && step > 0) ||
               (active_categories.length == 0 && step == 0)
@@ -95,7 +95,7 @@ getCategoriesWithProducts();
             v-model="step"
             @save="saveQuote"
           >
-          </HandsetProductsView>
+          </HandsetProductsView> -->
         </div>
       </div>
       <div class="col-lg-4 order-first order-lg-last mb-5">
