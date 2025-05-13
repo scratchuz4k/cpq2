@@ -7,9 +7,6 @@ const props = defineProps({
   index: Number,
 });
 const item = defineModel();
-const render = () => {
-  return "Overall Cost:<br>" + GBP.format(item.value[props.column.value]);
-};
 </script>
 <template>
   <template v-if="!isGroup">
@@ -28,7 +25,9 @@ const render = () => {
       class="column_total cpq-tooltip"
     >
       {{ GBP.format(item.quantity * item.price) }}
-      <span class="cpq-tooltip-text" v-html="render()"></span>
+      <span class="cpq-tooltip-text">
+        Overall Cost:<br />{{ GBP.format(item[props.column.value]) }}
+      </span>
     </div>
   </template>
 </template>
