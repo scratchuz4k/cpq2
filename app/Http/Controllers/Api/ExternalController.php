@@ -7,6 +7,8 @@ use App\Helpers\Api\CloudMarketAddress;
 use App\Helpers\Api\OpenreachLookupApi;
 use App\Helpers\Api\ShopBlocksApi;
 use App\Helpers\Api\VirtualOneLookupApi;
+use App\Helpers\DataProvider;
+use App\Helpers\Files\ShopBlocksProducts;
 use App\Helpers\FilterProvider;
 use App\Helpers\Prices\PriceRules;
 use App\Http\Controllers\Controller;
@@ -14,6 +16,7 @@ use App\Models\Account;
 use App\Models\PricePlan;
 use App\Services\External\CloudMarketService;
 use App\Services\External\ShopBlocksService;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Cache;
@@ -129,7 +132,13 @@ class ExternalController extends Controller
     public function getArticlesFromShopBlocks(Request $request)
     {
         $content = $this->shopBlocksService->getArticles($request);
-        $items = FilterProvider::get($content['data'], $request->input('filters', []));
+
+        $dataProvider = new DataProvider(ShopBlocksProducts::class);
+        try {
+            $items = $dataProvider->getCollection();
+        } catch (Exception $e) {
+            return $e->getMessage();
+        }
 
         $priceRules = new PriceRules;
         $account = Account::where('id', $request->input('account_id', null))->first();
@@ -137,11 +146,14 @@ class ExternalController extends Controller
         $priceRules->find(account: $account, pricePlan: $pricePlan);
 
         $items = $items->map(function ($item) use ($priceRules) {
-            $net_spa = $priceRules->apply($item['price']['net']);
-            $item['price']['net_spa'] = $net_spa;
-            $item['price']['tax'] = $net_spa * 0.2;
-            $item['price']['gross'] = $net_spa * 1.2;
-            $item['price']['active_spas'] = $priceRules->getAppliedSpas();
+            $net_spa = $priceRules->apply($item->price['net']);
+            $item['price'] = [
+                'net' => $item->price['net'],
+                'net_spa' => $net_spa,
+                'tax' => $net_spa * 0.2,
+                'gross' => $net_spa * 1.2,
+                'active_spas' => $priceRules->getAppliedSpas(),
+            ];
 
             return $item;
         });

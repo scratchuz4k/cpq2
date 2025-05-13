@@ -2,7 +2,6 @@
 
 namespace App\Console\Commands;
 
-use App\Helpers\Files\ShopBlocksFile;
 use App\Jobs\ShopBlocksProductsJob;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
@@ -31,10 +30,7 @@ class SyncShopBlocksProducts extends Command
         Log::withContext(['signature' => $this->signature]);
         Log::info('Job Started.');
 
-        $filename = 'shopblock_products.json';
-        $path = storage_path('/app/products/');
-        $file = new ShopBlocksFile($path, $filename);
-        ShopBlocksProductsJob::dispatch($file);
+        ShopBlocksProductsJob::dispatch();
 
         Log::info('Job Finished.');
         Log::withContext([]);

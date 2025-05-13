@@ -50,7 +50,7 @@
             </div>
             <div v-if="!showAsColumn">
               <p class="bold big">
-                {{ GBP.format(proxyValue.price?.net_spa || 0) }}
+                {{ format.GBP(proxyValue.price?.net_spa || 0) }}
               </p>
             </div>
           </div>
@@ -63,7 +63,7 @@
         >
         <div v-if="showAsColumn">
           <p class="bold big mt-3">
-            {{ GBP.format(proxyValue.price?.net_spa || 0) }}
+            {{ format.GBP(proxyValue.price?.net_spa || 0) }}
           </p>
         </div>
         <div class="mt-3">

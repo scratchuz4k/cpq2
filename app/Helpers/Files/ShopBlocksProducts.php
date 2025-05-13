@@ -13,6 +13,4 @@ class ShopBlocksProducts extends Model
     protected $dates = ['expire_at']; // Ensure the field is treated as a DateTime
 
     protected $guarded = [];
-
-    protected $primaryKey = 'sku';
 }

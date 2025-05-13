@@ -12,7 +12,7 @@ class TTLIndexSeeder extends Seeder
         DB::connection('mongodb')->table('shop_blocks_products')
             ->raw(function ($collection) {
                 $collection->createIndex(
-                    ['expire_at' => 5],
+                    ['expire_at' => 60],
                     ['expireAfterSeconds' => 0]
                 );
             });

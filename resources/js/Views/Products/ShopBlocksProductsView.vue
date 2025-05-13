@@ -63,12 +63,12 @@ const sorts = [
   {
     label: "Lowest Price",
     order: "asc",
-    orderBy: "price.net",
+    orderBy: "price.net_spa",
   },
   {
     label: "Highest Price",
-    order: "desc",
-    orderBy: "price.net",
+    order: "asc",
+    orderBy: "price.net_spa",
   },
 ];
 
@@ -92,7 +92,7 @@ const getProductsShopBlocks = async () => {
     filters.push({
       column: "product_category_id",
       operator: "in",
-      value: items.map((x) => x.id),
+      value: items.map((x) => x.id).join(","),
     });
   }
 
