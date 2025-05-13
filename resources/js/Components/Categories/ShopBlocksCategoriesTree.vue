@@ -3,10 +3,6 @@ import { computed } from "vue";
 import { categories, drillDown } from "@composables/custom/shopblocks";
 
 const props = defineProps({
-  parent_id: {
-    default: null,
-    type: Number,
-  },
   categories: {
     default: [],
     type: Array,
@@ -62,9 +58,7 @@ const styles = {
   },
 };
 
-if (props.parent_id == null) {
-  getShopBlocksCategories();
-}
+getShopBlocksCategories();
 </script>
 <template>
   <ul style="margin: 0; padding: 5px 0; list-style: none" v-if="!!drillDown.length">

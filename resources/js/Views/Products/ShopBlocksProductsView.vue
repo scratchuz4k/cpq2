@@ -78,13 +78,6 @@ const step = ref(props.modelValue + 1);
 const getProductsShopBlocks = async () => {
   meta.isLoading = true;
   let filters = [];
-  Object.keys(filters).forEach((key) => {
-    filters.push({
-      column: key,
-      operator: filters[key].operator,
-      value: filters[key].value ?? null,
-    });
-  });
   if (currentCategory.value) {
     let array = [currentCategory.value];
     let items = [];
