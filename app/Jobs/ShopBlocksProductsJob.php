@@ -41,10 +41,10 @@ class ShopBlocksProductsJob implements NotTenantAware, ShouldQueue
      */
     public function __construct(protected ShopBlocksFile $file) {}
 
-    public function middleware()
-    {
-        return [(new WithoutOverlapping('sync:ShopBlocksProducts'))->expireAfter(180)];
-    }
+    // public function middleware()
+    // {
+    //     return [(new WithoutOverlapping('sync:ShopBlocksProducts'))->expireAfter(180)];
+    // }
 
     /**
      * Execute the job.
@@ -63,12 +63,11 @@ class ShopBlocksProductsJob implements NotTenantAware, ShouldQueue
         $content = $this->file->getContent();
 
         foreach ($content['data'] as $temp) {
-            $this->products[$temp['sku']] = $temp;
             $filters['updatedAfter'] = $temp['updated'] > $filters['updatedAfter'] ? $temp['updated'] : $filters['updatedAfter'];
         }
 
         $filters['updatedAfter'] = $content['finished_at'] == null ? null : $filters['updatedAfter'];
-
+        $time = Carbon::now()->addSeconds(60);
         do {
             $page++;
             $res = (new ShopBlocksApi)->getArticles(200, $page, $filters);
@@ -83,20 +82,18 @@ class ShopBlocksProductsJob implements NotTenantAware, ShouldQueue
                     continue;
                 }
                 $sku = $product['children'][0]['sku'];
-                $this->products[$sku] = $this->getProduct($product);
-                $this->products[$sku]['price_plan_id'] = $pricePlanId;
+                $temp = $this->getProduct($product);
+                $temp['price_plan_id'] = $pricePlanId;
+                $temp['expire_at'] = $time;
                 ShopBlocksProducts::updateOrCreate(
-                    ['sku' => 'ABC123'],
-                    ['price' => 79.99, 'name' => 'Sample Product']
+                    ['sku' => $sku],
+                    $temp
                 );
                 // $this->tempFilters = FilterProvider::process($this->tempFilters, $this->products[$sku], true);
             }
 
-            // $this->file->write(array_values($this->products), true, null, $this->started_at, $this->tempFilters, $this->errors);
             $synced += count($res['data']);
         } while ($page != 1);
-
-        // $this->file->write(array_values($this->products), true, now(), $this->started_at, $this->tempFilters, $this->errors);
 
         $end = now();
         $date1 = Carbon::parse($start);

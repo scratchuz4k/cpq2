@@ -2,9 +2,9 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
-use App\Models\Tenant;
 use App\Models\Merchant;
+use App\Models\Tenant;
+use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
@@ -17,10 +17,10 @@ class DummySeeder extends Seeder
         $merchant = Merchant::factory(10)->create([]);
 
         $tenant = Tenant::updateOrCreate([
-            "name" => "CloudMarket"
+            'name' => 'CloudMarket',
         ], [
-            "domain" => "localhost",
-            "database" => "cloudmarket"
+            'domain' => 'localhost',
+            'database' => 'cloudmarket',
         ]);
 
         $support_user = User::updateOrCreate([
@@ -56,10 +56,10 @@ class DummySeeder extends Seeder
             'password' => Hash::make('werwerwer'),
         ]);
 
-        $tenant->users()->attach([$support_user->id, $company_admin_user->id,  $sales_user->id, $order_manager_user->id]);
+        $tenant->users()->sync([$support_user->id, $company_admin_user->id,  $sales_user->id, $order_manager_user->id]);
 
         $super_user = User::where('email', 'super@example.com')->first();
-        $super_user->tenants()->attach($dummy_tenants->pluck('id'));
+        $super_user->tenants()->sync($dummy_tenants->pluck('id'));
 
         $supp = User::where('email', 'support@example.com')->first();
         $supp->assignRole('Support Agent');
