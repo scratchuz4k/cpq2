@@ -36,7 +36,10 @@ class ShopBlocksProductsSyncJob implements NotTenantAware, ShouldQueue
     /**
      * Create a new job instance.
      */
-    public function __construct(protected $expire_at, protected int $page, protected array $filters) {}
+    public function __construct(protected $expire_at, protected int $page, protected array $filters)
+    {
+        $this->onQueue('shopblocks');
+    }
 
     /**
      * Execute the job.

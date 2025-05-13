@@ -26,7 +26,10 @@ class ShopBlocksProductsJob implements NotTenantAware, ShouldQueue
     /**
      * Create a new job instance.
      */
-    public function __construct(protected ShopBlocksFile $file) {}
+    public function __construct(protected ShopBlocksFile $file)
+    {
+        $this->onQueue('shopblocks');
+    }
 
     // public function middleware()
     // {
