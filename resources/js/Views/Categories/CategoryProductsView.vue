@@ -140,10 +140,11 @@ getProducts();
                 @change="(ev) => checkQuantity(product, ev)"
               />
             </div>
+
             <button
               :id="'btn-plan-' + index + '-add-25'"
               type=" button"
-              class="btn btn-sm ms-4 btn-add-quantity"
+              class="btn btn-sm ms-4 btn-add-custom-quantity"
               @click="checkQuantity(product, product.quantity + 25)"
             >
               +25
@@ -151,7 +152,7 @@ getProducts();
             <button
               :id="'btn-plan-' + index + '-add-50'"
               type=" button"
-              class="btn btn-sm mx-2 btn-add-quantity"
+              class="btn btn-sm mx-2 btn-add-custom-quantity"
               @click="checkQuantity(product, product.quantity + 50)"
             >
               +50
@@ -159,7 +160,7 @@ getProducts();
             <button
               :id="'btn-plan-' + index + '-add-100'"
               type=" button"
-              class="btn btn-sm btn-add-quantity"
+              class="btn btn-sm btn-add-custom-quantity"
               @click="checkQuantity(product, product.quantity + 100)"
             >
               +100
@@ -184,43 +185,41 @@ getProducts();
         <Skeleton width="4rem" height="1.7rem" class="mb-2 me-2"></Skeleton>
       </div>
     </div>
-    <font-awesome-icon :icon="['fa', 'circle-info']" />
-  </div>
-
-  <Paginator
-    v-model:first="meta.first"
-    :rows="meta.limit"
-    :totalRecords="meta.total"
-    :rowsPerPageOptions="[5, 10, 20]"
-    @page="handlePaginator"
-  >
-  </Paginator>
-  <div class="d-flex justify-content-between align-items-center mt-3">
-    <div>
-      <button
-        v-if="props.index > 0"
-        :id="'btn-step-{{ props.index + 1}}-previous'"
-        class="btn text-primary step-nav btn-sm me-3"
-        type="button"
-        @click="() => proxyValue--"
-      >
-        <font-awesome-icon :icon="['fas', 'arrow-left']" /> Previous
-      </button>
-    </div>
-    <div>
-      <span id="total_mobile_users">
-        Add {{ products.reduce((acc, x) => (acc = acc + x.quantity), 0) }}
-        {{ category.name }}
-      </span>
-      <button
-        :id="'btn-step-' + (props.index + 1) + '-next'"
-        class="ms-3 btn btn-primary step-nav"
-        type="button"
-        @click="() => proxyValue++"
-      >
-        Next
-        <font-awesome-icon :icon="['fas', 'arrow-right']" />
-      </button>
+    <Paginator
+      v-model:first="meta.first"
+      :rows="meta.limit"
+      :totalRecords="meta.total"
+      :rowsPerPageOptions="[5, 10, 20]"
+      @page="handlePaginator"
+    >
+    </Paginator>
+    <div class="d-flex justify-content-between align-items-center mt-3">
+      <div>
+        <button
+          v-if="props.index > 0"
+          :id="'btn-step-{{ props.index + 1}}-previous'"
+          class="btn text-primary step-nav btn-sm me-3"
+          type="button"
+          @click="() => proxyValue--"
+        >
+          <font-awesome-icon :icon="['fas', 'arrow-left']" /> Previous
+        </button>
+      </div>
+      <div>
+        <span id="total_mobile_users">
+          Add {{ products.reduce((acc, x) => (acc = acc + x.quantity), 0) }}
+          {{ category.name }}
+        </span>
+        <button
+          :id="'btn-step-' + (props.index + 1) + '-next'"
+          class="ms-3 btn btn-primary step-nav"
+          type="button"
+          @click="() => proxyValue++"
+        >
+          Next
+          <font-awesome-icon :icon="['fas', 'arrow-right']" />
+        </button>
+      </div>
     </div>
   </div>
 </template>
