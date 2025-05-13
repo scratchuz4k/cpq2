@@ -105,56 +105,42 @@ beforeEach(function () {
 
     Auth::login($this->sales_user_child);
     $this->actingAs($this->sales_user_child);
+
+    $this->quotes = array_map(fn () => createQuoteWithItems($this), range(1,4));
 });
 
-it('Managers can add an item to quote', function () {
-    $quotes = [];
-
-    for ($i = 0; $i < 4; $i++) {
-        $response = $this->post('api/quotes', $this->quote_data);
-        $response->assertSuccessful();
-        $quotes[$i] = $response->json();
-
-        $response = $this->post('api/quote-items', [...$this->quote_item, 'quote_id' => $quotes[$i]['id']]);
-        $response->assertSuccessful();
-    }
-
-
-
+it('Managers and Owner can add an item to quote', function () {
     foreach ($this->users as $index => $user) {
         Auth::guard('web')->logout();
         Auth::guard('web')->login($user);
         $this->actingAs($user);
 
-        $item_response = $this->post('api/quote-items', [...$this->quote_item, 'quote_id' => $quotes[$index]['id']]);
+        $item_response = $this->post('api/quote-items', [...$this->quote_item, 'quote_id' => $this->quotes[$index]['id']]);
 
         $item_response->assertSuccessful();
     }
 });
 
-it('Managers can update the quote', function () {
-    $quotes = [];
-    $data = [
-        'status' => QuoteStatusesEnum::REGISTRY->name
-    ];
-
-    for ($i = 0; $i < 4; $i++) {
-        $response = $this->post('api/quotes', $this->quote_data);
-        $response->assertSuccessful();
-        $quote = $response->json();
-
-        $item_response = $this->post('api/quote-items', [...$this->quote_item, 'quote_id' => $quote['id']]);
-        $item_response->assertSuccessful();
-        $quotes[$i] = $this->get('api/quotes/'.$quote['id'])->json();
-    }
-
-
+it('Managers and Owner can update the quote', function () {
     foreach ($this->users as $index => $user) {
         Auth::guard('web')->logout();
         Auth::guard('web')->login($user); // Log in as the sales user
         $this->actingAs($user);
 
-        $response = $this->put('api/quotes/' . $quotes[$index]['id'], $data);
+        $response = $this->put('api/quotes/' . $this->quotes[$index]['id'], [
+            'status' => QuoteStatusesEnum::REGISTRY->name
+        ]);
+        $response->assertSuccessful();
+    }
+});
+
+it('Managers and Owner can delete quotes', function () {
+    foreach ($this->users as $index => $user) {
+        Auth::guard('web')->logout();
+        Auth::guard('web')->login($user);
+        $this->actingAs($user);
+
+        $response = $this->delete('api/quotes/' . $this->quotes[$index]['id']);
         $response->assertSuccessful();
     }
 });
