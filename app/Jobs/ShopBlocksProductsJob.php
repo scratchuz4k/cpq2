@@ -5,6 +5,7 @@ namespace App\Jobs;
 use App\Enums\PricePlanEnum;
 use App\Helpers\Api\ShopBlocksApi;
 use App\Helpers\Files\ShopBlocksFile;
+use App\Helpers\Files\ShopBlocksProducts;
 use App\Helpers\FilterProvider;
 use App\Models\PricePlan;
 use Carbon\Carbon;
@@ -78,17 +79,24 @@ class ShopBlocksProductsJob implements NotTenantAware, ShouldQueue
 
             $pricePlanId = PricePlan::where('code', PricePlanEnum::SINGLE->name)->value('id');
             foreach ($res['data'] as $key => $product) {
+                if (count($product['children']) == 0) {
+                    continue;
+                }
                 $sku = $product['children'][0]['sku'];
                 $this->products[$sku] = $this->getProduct($product);
                 $this->products[$sku]['price_plan_id'] = $pricePlanId;
-                $this->tempFilters = FilterProvider::process($this->tempFilters, $this->products[$sku], true);
+                ShopBlocksProducts::updateOrCreate(
+                    ['sku' => 'ABC123'],
+                    ['price' => 79.99, 'name' => 'Sample Product']
+                );
+                // $this->tempFilters = FilterProvider::process($this->tempFilters, $this->products[$sku], true);
             }
 
-            $this->file->write(array_values($this->products), true, null, $this->started_at, $this->tempFilters, $this->errors);
+            // $this->file->write(array_values($this->products), true, null, $this->started_at, $this->tempFilters, $this->errors);
             $synced += count($res['data']);
-        } while ($page != $last_page);
+        } while ($page != 1);
 
-        $this->file->write(array_values($this->products), true, now(), $this->started_at, $this->tempFilters, $this->errors);
+        // $this->file->write(array_values($this->products), true, now(), $this->started_at, $this->tempFilters, $this->errors);
 
         $end = now();
         $date1 = Carbon::parse($start);
@@ -141,7 +149,7 @@ class ShopBlocksProductsJob implements NotTenantAware, ShouldQueue
         $temp['product_category_id'] = $product['category']['id'];
         $temp['brand'] = $product['brand'];
         $temp['stock'] = $product['stock'];
-        $temp['primary_image'] = $child['images'][0]['url'];
+        $temp['primary_image'] = count($child['images']) ? $child['images'][0]['url'] : null;
         $temp['updated'] = $product['updated'];
         $temp['created'] = $product['created'];
 
@@ -159,8 +167,12 @@ class ShopBlocksProductsJob implements NotTenantAware, ShouldQueue
 
     private function getFeaturesFromContent($contents)
     {
-
         $result = [];
+
+        if (is_null($contents)) {
+            return $result;
+        }
+
         foreach ($contents as $key => $item) {
             $dom = new DOMDocument;
             libxml_use_internal_errors(true); // Suppress warnings for malformed HTML

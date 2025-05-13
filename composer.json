@@ -16,6 +16,7 @@
         "laravel/tinker": "^2.9",
         "maatwebsite/excel": "^3.1",
         "moneyphp/money": "^4.5",
+        "mongodb/laravel-mongodb": "^5.1",
         "reedware/laravel-relation-joins": "^6.0",
         "sentry/sentry-laravel": "^4.9",
         "socialiteproviders/google": "^4.1",
