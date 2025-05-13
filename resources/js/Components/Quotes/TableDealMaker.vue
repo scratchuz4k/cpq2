@@ -80,7 +80,7 @@ emitter.on("quote-items:updated", () => {
     >
       <h3>{{ pricePlan.name }} charges</h3>
       <h3 :id="pricePlanskeys[pricePlan.code] + '-total'">
-        {{ GBP.format(quoteTotal(pricePlan.code)) }}
+        {{ format.GBP(quoteTotal(pricePlan.code)) }}
       </h3>
     </div>
     <div>

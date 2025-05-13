@@ -121,7 +121,7 @@ getProducts()
                         <h4 class="m-0">{{ product.name }}</h4>
                         <p class="m-0 ms-2">
                             {{ product.description }} /
-                            {{ GBP.format(product.price?.net_spa || 0) }}
+                            {{ format.GBP(product.price?.net_spa || 0) }}
                         </p>
                     </div>
                     <font-awesome-icon :icon="['fa', 'circle-info']" />

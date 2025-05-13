@@ -64,13 +64,13 @@ const quoteQuantityPrice = (price_plan, operation = "simple") => {
           <p class="small text-start">Monthly Total</p>
         </th>
         <td id="total_monthly_net">
-          {{ GBP.format(quoteQuantityPrice("Recurring")) }}
+          {{ format.GBP(quoteQuantityPrice("Recurring")) }}
         </td>
         <!-- <td id="total_monthly_vat">
-                    {{ GBP.format(quoteQuantityPrice("Recurring", "tax")) }}
+                    {{ format.GBP(quoteQuantityPrice("Recurring", "tax")) }}
                 </td> -->
         <td id="total_monthly_gross">
-          {{ GBP.format(quoteQuantityPrice("Recurring", "total")) }}
+          {{ format.GBP(quoteQuantityPrice("Recurring", "total")) }}
         </td>
       </tr>
       <tr>
@@ -78,13 +78,13 @@ const quoteQuantityPrice = (price_plan, operation = "simple") => {
           <p class="small text-start">One Off Total</p>
         </th>
         <td id="total_net">
-          {{ GBP.format(quoteTotal("One-Off")) }}
+          {{ format.GBP(quoteTotal("One-Off")) }}
         </td>
         <!-- <td id="total_vat">
-                    {{ GBP.format(quoteTotal("One-Off", "total_tax")) }}
+                    {{ format.GBP(quoteTotal("One-Off", "total_tax")) }}
                 </td> -->
         <td id="total_gross">
-          {{ GBP.format(quoteTotal("One-Off", "total_gross")) }}
+          {{ format.GBP(quoteTotal("One-Off", "total_gross")) }}
         </td>
       </tr>
       <tr>
@@ -92,13 +92,13 @@ const quoteQuantityPrice = (price_plan, operation = "simple") => {
           <p class="small text-start">Total</p>
         </th>
         <td id="total_net">
-          {{ GBP.format(quote.total) }}
+          {{ format.GBP(quote.total) }}
         </td>
         <!-- <td id="total_vat">
-                    {{ GBP.format(quote.total_vat ?? 0) }}
+                    {{ format.GBP(quote.total_vat ?? 0) }}
                 </td> -->
         <td id="total_gross">
-          {{ GBP.format(quote.total_gross) }}
+          {{ format.GBP(quote.total_gross) }}
         </td>
       </tr>
     </tbody>

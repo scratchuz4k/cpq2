@@ -22,7 +22,7 @@ describe('Creates a Connectivity quote', () => {
     it('Get Price From Gamma Product', () => {
         cy.visit("/")
         cy.get("#create-tab").click()
-        cy.get("#account_id").select(account.name)
+        cy.selectLazyOption('account_id', account.name);
         cy.get("#solution_id").select("Connectivity - Ethernet")
         cy.get("#input_address").type('EH32 9NT')
         cy.get("#select_address").should('be.visible').select(1)
@@ -45,6 +45,7 @@ describe('Creates a Connectivity quote', () => {
             cy.log(price.monthly)
         })
     })
+
     it('Create Supplier Gamma Products', () => {
         cy.visit("/")
         cy.get("#my-account").click()
@@ -67,10 +68,11 @@ describe('Creates a Connectivity quote', () => {
         cy.get("#link-spas").click()
         cy.get("#create-spa").click()
         cy.get("#spa-entity-Supplier").click()
-        cy.get("#select-Supplier1").click()
-        cy.get("#select-Supplier1-search").type("Gamma")
-        cy.wait(2000)
-        cy.get(".p-select-option").eq(0).click()
+        cy.selectLazyOption('Supplier1', "Gamma")
+        // cy.get("#select-Supplier1").click()
+        // cy.get("#select-Supplier1-search").type("Gamma")
+        // cy.wait(2000)
+        // cy.get(".p-select-option").eq(0).click()
 
         cy.get("#spa-percentage").type(20)
         cy.get("#save-spa").click()

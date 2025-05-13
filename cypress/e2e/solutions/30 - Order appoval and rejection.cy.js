@@ -15,6 +15,7 @@ describe('Order Approval and Rejection', () => {
         cy.login("orders@example.com", "werwerwer")
         cy.visit("/")
         cy.get("#datatable-btn-0-show").click()
+        cy.wait(500);
         cy.get("#proceed-order-btn").eq(0).click()
         cy.get('.swal2-cancel').eq(0).click()
         cy.get("#proceed-order-btn").click()
