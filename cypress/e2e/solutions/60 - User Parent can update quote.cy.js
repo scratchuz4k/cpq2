@@ -40,7 +40,7 @@ describe("User Parent can update a quote.cy", () => {
         cy.login(user.email, user.password);
         cy.visit("/");
         cy.get("#create-tab").click();
-        cy.get("#account_id").select(account.name);
+        cy.get("#input-select-account_id").select(account.name);
         cy.get("#solution_id").select("Mobile");
         cy.get("#btn-create-quote").click();
         cy.get("#btn-plan-0-add-25").click();
@@ -79,7 +79,7 @@ describe("User Parent can update a quote.cy", () => {
             current_page += 1;
             cy.get(".p-paginator-page").contains(current_page).click();
             cy.wait(500);
-        } while (hardwareCount == 0 && current_page <= max_pages);
+        } while (hardwareCount === 0 && current_page <= max_pages);
 
         cy.get("#btn-step-2-next").click();
 
