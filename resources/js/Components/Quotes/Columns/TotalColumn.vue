@@ -15,7 +15,7 @@ const item = defineModel();
       :id="'total-' + index"
       class="small column_total"
     >
-      {{ GBP.format(item.quantity * item.price) }}
+      {{ format.GBP(item.quantity * item.price) }}
     </p>
 
     <div
@@ -24,9 +24,9 @@ const item = defineModel();
       :id="'total-' + index"
       class="column_total cpq-tooltip"
     >
-      {{ GBP.format(item.quantity * item.price) }}
+      {{ format.GBP(item.quantity * item.price) }}
       <span class="cpq-tooltip-text">
-        Overall Cost:<br />{{ GBP.format(item[props.column.value]) }}
+        Overall Cost:<br />{{ format.GBP(item[props.column.value]) }}
       </span>
     </div>
   </template>

@@ -262,7 +262,7 @@ watch(
                                     </p>
                                 </div>
                                 <div>
-                                    <p class="bold big">{{ GBP.format(product.price?.net_spa || 0) }}</p>
+                                    <p class="bold big">{{ format.GBP(product.price?.net_spa || 0) }}</p>
                                 </div>
                             </div>
                         </div>

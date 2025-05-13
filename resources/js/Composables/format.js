@@ -1,3 +1,11 @@
+let currency = JSON.parse(document.head.querySelector('meta[name="currency-config"]').content);
+const GBP = new Intl.NumberFormat("en-GB", {
+    style: "currency",
+    currency: "GBP",
+    minimumFractionDigits: currency.precision ?? 2,
+    maximumFractionDigits: currency.precision ?? 2
+})
+
 const format = {
     date: (date) => {
         if (!date) {
@@ -82,8 +90,10 @@ const format = {
         return str
             .toLowerCase() // Convert the whole string to lowercase
             .replace(/\b\w/g, (char) => char.toUpperCase()); // Capitalize first letter of each word
-    }
-
+    },
+    GBP: (value) => {
+        return GBP.format(value)
+    },
 }
 
 

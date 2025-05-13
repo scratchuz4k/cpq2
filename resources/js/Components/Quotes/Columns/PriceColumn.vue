@@ -9,5 +9,5 @@ defineProps({
 const item = defineModel()
 </script>
 <template>
-        <p class="small" v-if="!isGroup">{{ GBP.format(item.price) }}</p>
+        <p class="small" v-if="!isGroup">{{ format.GBP(item.price) }}</p>
 </template>
