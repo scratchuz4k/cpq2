@@ -67,72 +67,43 @@ describe("Creates a Mobile Quote", () => {
                 cy.get("#product-name").type(product.name);
                 cy.get("#product-code").type(product.code);
 
-                cy.get("#select-product-categories").click();
-                cy.wait(500);
-                cy.get(".p-select-list-container")
-                    .eq(0)
-                    .within(() => {
-                        cy.get('li[aria-label="' + category.name + '"]')
-                            .should("exist")
-                            .click();
-                    });
+                cy.selectLazyOption('product-categories', category.name);
 
                 cy.get("#btn-save-product").click();
                 cy.get(".notyf").contains("Created with Success");
             }
         });
 
-        cy.get("#datatable-search").type(product.code);
-        cy.wait(3000);
-        cy.get("#datatable-btn-0-edit").click();
-        cy.get("#select-product-categories").click();
-        cy.wait(500);
-        cy.get(".p-select-list-container")
-            .eq(0)
-            .within(() => {
-                cy.get('li[aria-label="' + category.name + '"]')
-                    .should("exist")
-                    .click();
-            });
-    });
+        cy.get("#datatable-search").type(product.code)
+        cy.wait(3000)
+        cy.get("#datatable-btn-0-edit").click()
+
+        cy.selectLazyOption('product-categories', category.name);
+    })
 
     it("Associate Category with Mobile Solution", () => {
         cy.visit("/");
         cy.get("#my-account").click();
         cy.get("#link-solutions").click();
-        cy.get("#datatable-search").type("Mobile");
-        cy.wait(10000);
-        cy.get("#datatable-btn-0-edit").click();
-        cy.get("#1-1").click();
-        cy.get("#solution-type-table-add-category").click();
-        cy.get("#select-solution-type-categories-0-value").click();
-        cy.wait(500);
-        cy.get(".p-select-list-container")
-            .eq(0)
-            .within(() => {
-                cy.get('li[aria-label="Plans"]')
-                    .first()
-                    .should("exist")
-                    .click();
-            });
+        cy.get("#datatable-search").type("Mobile")
+        cy.wait(10000)
+        cy.get("#datatable-btn-0-edit").click()
+        cy.get("#1-1").click()
 
-        cy.get("#solution-type-table-add-category").click();
-        cy.get("#select-solution-type-categories-1-value").click();
-        cy.wait(500);
-        cy.get(".p-select-list-container")
-            .eq(0)
-            .within(() => {
-                cy.get('li[aria-label="' + category.name + '"]')
-                    .should("exist")
-                    .click();
-            });
-        cy.get("#btn-save-solution-type").click();
+        cy.get("#solution-type-table-add-category").click()
+        cy.wait(500)
+        cy.selectLazyOption('solution-type-categories-0-value', 'Plans');
+
+        cy.get("#solution-type-table-add-category").click()
+        cy.selectLazyOption('solution-type-categories-1-value', category.name);
+        cy.get("#btn-save-solution-type").click()
     });
 
     it("Creates Mobile Quote", () => {
         cy.visit("/");
         cy.get("#create-tab").click();
-        cy.get("#account_id").select(account.name);
+        cy.selectLazyOption('account_id', account.name);
+
         cy.get("#solution_id").select("Mobile");
         cy.get("#btn-create-quote").click();
         cy.wait(1000);
@@ -277,6 +248,7 @@ describe("Creates a Mobile Quote", () => {
                 });
         });
     });
+
     it("I can add and delete a Custom Line", () => {
         cy.visit("/");
         cy.get("#datatable-btn-0-show").click();

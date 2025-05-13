@@ -136,17 +136,18 @@ class User extends Authenticatable
         return $this->hasMany(Order::class);
     }
 
-    public static function ancestors()
+    public static function ancestors(User $user = null)
     {
+        $currentUser = is_null($user) ? Auth::user() : $user;
         $users = collect([]);
-        if (is_null(Auth::user())) {
+        if (is_null($currentUser)) {
             return $users;
         }
-        $userAscendents = collect([Auth::user()]);
+        $userAscendents = collect([$currentUser]);
         do {
             $current = $userAscendents->pop();
             $users->push($current);
-            if (! $current->parent) {
+            if (!$current->parent) {
                 break;
             }
             $userAscendents->push($current->parent);

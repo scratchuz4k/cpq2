@@ -1,29 +1,8 @@
-<template>
-    <Select :inputId="'select-' + props.id" v-model="proxyValue" :options="options" showClear :optionLabel="props.field"
-        placeholder="Select an option" class="w-100">
-        <template #value="{ value, placeholder }">
-            {{ value && value[props.field] ? value[props.field] : placeholder }}
-        </template>
-        <template #header>
-            <IconField class="p-1">
-                <InputIcon>
-                    <font-awesome-icon icon="fas fa-search" />
-                </InputIcon>
-                <InputText :id="'select-' + props.id + '-search'" class="w-100" v-model="searchInput"
-                    placeholder="Search" />
-            </IconField>
-        </template>
-    </Select>
-</template>
 <script setup>
 import _ from "lodash";
-import IconField from "primevue/iconfield";
-import InputIcon from "primevue/inputicon";
-import InputText from "primevue/inputtext";
-
-import Select from "primevue/select";
-import { ref, watch, computed } from "vue";
-import { v4 as uuidv4 } from "uuid";
+import { IconField, InputIcon, InputText } from "primevue";
+import queryString from "query-string";
+import { ref, watch, computed, reactive, onMounted } from "vue";
 
 const props = defineProps({
     id: {
@@ -33,14 +12,28 @@ const props = defineProps({
         },
     },
     url: String,
-    field: String,
+    fields: {
+        type: Array,
+        default: [],
+    },
     modelValue: Object,
-});
+    placeholder: String,
+    filter: {
+        type: Boolean,
+        default: true
+    }
+})
+
+const meta = reactive({
+    total_pages: 0
+})
 
 const emit = defineEmits(["update:modelValue", "change"]);
+const page = ref(1);
 const options = ref([]);
 const isLoading = ref(false);
-const searchInput = ref(null);
+const showOptions = ref(false);
+const inputSearch = ref(null)
 
 const proxyValue = computed({
     get: () => props.modelValue,
@@ -48,77 +41,130 @@ const proxyValue = computed({
         emit("update:modelValue", value);
         emit("change", value);
     },
+})
+
+const search = _.debounce(async (clearOptions = false) => {
+    if (!props.url) return
+
+    let string = queryString.stringify({
+        page: page.value,
+        search: inputSearch.value
+    })
+
+    isLoading.value = true
+    let res = await axios.get(`/api${props.url}?${string}`);
+    if (clearOptions) {
+        options.value = [];
+    }
+    meta.total_pages = res.data.meta?.last_page ?? res.data.last_page
+    options.value.push(...res.data.data)
+    isLoading.value = false
+}, 200)
+
+onMounted(() => {
+    var sidebar = document.getElementById(props.id + '-sidebar')
+
+    sidebar.addEventListener(
+        'scroll',
+        () => {
+            var isAtBottom = sidebar.scrollTop + sidebar.clientHeight === sidebar.scrollHeight
+            if (isAtBottom && page.value < meta.total_pages) {
+                page.value++
+                search()
+            }
+        },
+        { passive: true }
+    )
+
+    var select = document.getElementById('input-select-' + props.id)
+    document.addEventListener(
+        'click',
+        (ev) => {
+            if (!select.contains(ev.target)) {
+                showOptions.value = false
+            }
+        }
+    )
+})
+
+watch(inputSearch, () => {
+    page.value = 1;
+    search(true);
 });
 
-const search = _.debounce(async () => {
-    if (!props.url) {
-        return;
-    }
-    let string = searchInput.value ? `search=${searchInput.value}` : "";
-    isLoading.value = true;
-    let res = await axios.get(`/api${props.url}?${string}`);
-    isLoading.value = false;
-    options.value = res.data.data;
-}, 200);
-
-watch(searchInput, () => search());
-search();
+search()
 </script>
 
+<template>
+    <div :id="'input-select-' + props.id" class="position-relative">
+        <div class="form-select w-100 d-flex" role='button' @click="() => (showOptions = !showOptions)">
+            <template v-if="!proxyValue || Object.values(proxyValue).every(value => !value)">
+                {{ props.placeholder }}
+            </template>
+            <span v-else>
+                <template v-for="field, index in fields">
+                    {{ index !== 0 ? ` (${proxyValue?.[field] ?? ''})` : (proxyValue?.[field] ?? '') }}
+                </template>
+            </span>
+
+            <font-awesome-icon v-if="(proxyValue)" class="my-auto ms-auto" role="button" style="font-size: 0.8rem;"
+                :icon="['fas', 'xmark']" @click="() => proxyValue = null" />
+        </div>
+        <div class="form-control position-absolute mt-1 p-1" :style="{
+            visibility: !showOptions ? 'hidden' : 'visible',
+            height: !showOptions ? '0' : 'auto'
+        }" style="z-index: 1;">
+            <IconField v-if="props.filter" class="p-0">
+                <InputIcon v-if="isLoading">
+                    <font-awesome-icon :icon="['fa', 'spinner']" class="fa-spin"></font-awesome-icon>
+                </InputIcon>
+                <InputIcon v-else>
+                    <font-awesome-icon :icon="['fas', 'search']"></font-awesome-icon>
+                </InputIcon>
+                <InputText :id="'select-' + props.id + '-search'" class="w-100" v-model="inputSearch"
+                    placeholder="Search" type="search">
+                </InputText>
+            </IconField>
+            <div :id="props.id + '-sidebar'" class=" options-container mt-2"
+                style="max-height: 300px; overflow-y: auto;">
+                <div class="p-2" v-if="!options.length">
+                    <p class="ps-1">No available options</p>
+                </div>
+                <div v-else v-for="option in options" class="option" :class="{ selected: proxyValue === option }"
+                    @click="() => { proxyValue = option; showOptions = false }" style="cursor: pointer;">
+                    <template v-for="field, index in props.fields">
+                        {{ index !== 0 ? ` (${option?.[field] ?? ''})` : (option?.[field] ?? '') }}
+                    </template>
+                </div>
+                <div class="m-auto" v-if="page < meta.total_pages">
+                    <div class="spinner-border spinner-border-sm" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
 <style scoped>
-.select-options {
-    min-height: 2.5em;
-    height: auto;
+.options-container {
     display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 10px;
+    flex-direction: column;
+    gap: 2px;
 }
 
-.select-option {
-    border: 1px solid hsl(0, 0%, 86%);
-    margin-right: 5px;
+.option {
+    padding: 0.25rem 0.75rem;
     border-radius: 4px;
-    cursor: pointer;
-    background-color: whitesmoke;
 }
 
-.select-items {
-    position: absolute;
-    visibility: hidden;
-    pointer-events: none;
-    width: 100%;
-    max-height: 300px;
-    overflow: auto;
-    background-color: white;
-    padding: 10px;
-    z-index: 100;
-    border: 1px solid hsl(0, 0%, 86%);
-    border-radius: 4px;
-    color: hsl(0, 0%, 21%);
+.option.selected {
+    color: white;
+    background-color: var(--color-purple);
 }
 
-.select-item:hover {
-    font-weight: bold;
-    cursor: pointer;
-}
-
-.show {
-    visibility: visible !important;
-    pointer-events: auto !important;
-}
-
-.hide {
-    visibility: hidden !important;
-    pointer-events: auto !important;
-}
-
-.disabled {
-    pointer-events: none;
-    background-color: whitesmoke;
-}
-
-.text-bold {
-    font-weight: bold;
+.option:not(.selected):hover {
+    color: black;
+    background-color: var(--color-purple-light);
 }
 </style>

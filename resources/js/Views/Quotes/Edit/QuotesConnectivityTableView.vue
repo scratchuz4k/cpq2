@@ -1008,14 +1008,14 @@ getArticles(false, true);
                 <td>{{ format.speed(article.bearer) }}</td>
                 <td>{{ format.speed(article.speed) }}</td>
                 <td :id="'line-' + index + '-price-install'">
-                  {{ GBP.format(article.priceInstall_spa) }}
+                  {{ format.GBP(article.priceInstall_spa) }}
                 </td>
                 <td :id="'line-' + index + '-price-monthly'">
-                  {{ GBP.format(article.priceMonthly_spa) }}
+                  {{ format.GBP(article.priceMonthly_spa) }}
                 </td>
                 <td>
                   <template v-if="article.priceECC">
-                    {{ GBP.format(article.priceECC) }}
+                    {{ format.GBP(article.priceECC) }}
                   </template>
                   <span
                     v-else

@@ -20,7 +20,7 @@ describe("Create a Shareable Link.cy", () => {
     it("Creates Mobile Quote", () => {
         cy.visit("/");
         cy.get("#create-tab").click();
-        cy.get("#account_id").select(account.name);
+        cy.selectLazyOption('account_id', account.name);
         cy.get("#solution_id").select("Mobile");
         cy.get("#btn-create-quote").click();
         cy.get("#btn-plan-0-add-25").click();

@@ -30,7 +30,8 @@ describe("Creates a Mobile Quote", () => {
     it("Creates Connectivity quote and has simple Table", () => {
         cy.visit("/")
         cy.get("#create-tab").click()
-        cy.get("#account_id").select(1)
+        cy.selectLazyOption('account_id')
+
         cy.get("#solution_id").select("Connectivity - Ethernet")
         cy.get("#input_address").type('EH32 9NT')
         cy.get("#select_address").should('be.visible').select(1)
@@ -80,10 +81,10 @@ describe("Creates a Mobile Quote", () => {
         cy.get("#solution_type-component").click()
         cy.wait(500)
         cy.get(".p-select-list-container").eq(0).within(() => {
-            cy.get('li[aria-label="DealMaker"]')
+            cy.contains('li', 'DealMaker')
                 .should('exist')
                 .click();
-        })
+        });
 
         cy.get("#btn-save-solution-type").click()
         cy.get(".notyf").contains("Updated with Success")
