@@ -12,10 +12,26 @@ uses(RefreshDatabase::class);
 beforeEach(function () {
     $this->artisan('db:seed');
     $this->super_user = User::find(1);
+    $this->tenant = Tenant::find(1);
+
+    $this->company_admin = User::factory()->create([]);
+    $this->company_admin->tenants()->attach($this->tenant->id);
+    $this->company_admin->assignRole('Company Admin');
 
     $this->sales_user = User::factory()->create();
-    $this->sales_user->tenants()->attach(Tenant::find(1));
+    $this->sales_user->tenants()->attach($this->tenant->id);
     $this->sales_user->assignRole('Sales Rep');
+
+    $this->sales_user_child = User::factory()->create(['parent_id' => $this->sales_user->id]);
+    $this->sales_user_child->tenants()->attach($this->tenant->id);
+    $this->sales_user_child->assignRole('Sales Rep');
+
+    $this->users = [
+        $this->super_user,
+        $this->company_admin,
+        $this->sales_user,
+        $this->sales_user_child
+    ];
 
     $this->account = Account::factory()->create();
 
@@ -50,18 +66,7 @@ beforeEach(function () {
         'address_postcode' => 'EH32 9NT',
         'solution_type_id' => 1,
     ];
-
-    Auth::login($this->super_user);
-    $this->actingAs($this->super_user);
-});
-
-it('Only owner can add an item to quote', function () {
-    $response = $this->post('api/quotes', $this->quote_data);
-    $response->assertSuccessful();
-    $quote = $response->json();
-
-    $quote_item = [
-        'quote_id' => $quote['id'],
+    $this->quote_item = [
         'product_id' => null,
         'quantity' => 1,
         'name' => 'ADSL 2+ MPF',
@@ -98,32 +103,58 @@ it('Only owner can add an item to quote', function () {
         'price_monthly' => 13.59,
     ];
 
-    $response = $this->post('api/quote-items', $quote_item);
+    Auth::login($this->sales_user_child);
+    $this->actingAs($this->sales_user_child);
+});
 
-    $response->assertSuccessful();
+it('Managers can add an item to quote', function () {
+    $quotes = [];
 
-    Auth::guard('web')->logout();
-    Auth::guard('web')->login($this->sales_user); // Log in as the sales user
-    $this->actingAs($this->sales_user);
+    for ($i = 0; $i < 4; $i++) {
+        $response = $this->post('api/quotes', $this->quote_data);
+        $response->assertSuccessful();
+        $quotes[$i] = $response->json();
 
-    $response = $this->post('api/quote-items', $quote_item);
+        $response = $this->post('api/quote-items', [...$this->quote_item, 'quote_id' => $quotes[$i]['id']]);
+        $response->assertSuccessful();
+    }
 
-    $response->assertStatus(403);
-})->skip();
 
-it('Only owner can update the quote', function () {
-    $response = $this->post('api/quotes', $this->quote_data);
-    $response->assertSuccessful();
-    $quote = $response->json();
 
-    Auth::guard('web')->logout();
-    Auth::guard('web')->login($this->sales_user); // Log in as the sales user
-    $this->actingAs($this->sales_user);
+    foreach ($this->users as $index => $user) {
+        Auth::guard('web')->logout();
+        Auth::guard('web')->login($user);
+        $this->actingAs($user);
 
+        $item_response = $this->post('api/quote-items', [...$this->quote_item, 'quote_id' => $quotes[$index]['id']]);
+
+        $item_response->assertSuccessful();
+    }
+});
+
+it('Managers can update the quote', function () {
+    $quotes = [];
     $data = [
         'status' => QuoteStatusesEnum::REGISTRY->name
     ];
 
-    $response = $this->put('api/quotes/' . $quote['id'], $data);
-    $response->assertStatus(403);
-})->skip();
+    for ($i = 0; $i < 4; $i++) {
+        $response = $this->post('api/quotes', $this->quote_data);
+        $response->assertSuccessful();
+        $quote = $response->json();
+
+        $item_response = $this->post('api/quote-items', [...$this->quote_item, 'quote_id' => $quote['id']]);
+        $item_response->assertSuccessful();
+        $quotes[$i] = $this->get('api/quotes/'.$quote['id'])->json();
+    }
+
+
+    foreach ($this->users as $index => $user) {
+        Auth::guard('web')->logout();
+        Auth::guard('web')->login($user); // Log in as the sales user
+        $this->actingAs($user);
+
+        $response = $this->put('api/quotes/' . $quotes[$index]['id'], $data);
+        $response->assertSuccessful();
+    }
+});
