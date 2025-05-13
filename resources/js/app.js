@@ -129,15 +129,8 @@ createInertiaApp({
             }
         });
 
-        let currency = JSON.parse(document.head.querySelector('meta[name="currency-config"]').content);
 
         app.config.globalProperties.format = format
-        app.config.globalProperties.GBP = new Intl.NumberFormat("en-GB", {
-            style: "currency",
-            currency: "GBP",
-            minimumFractionDigits: currency.precision ?? 2,
-            maximumFractionDigits: currency.precision ?? 2
-        });
 
         Sentry.init({
             app,

@@ -15,6 +15,6 @@ const item = defineModel();
     :id="code + '-' + index + '-margin'"
     style="white-space: nowrap"
   >
-    {{ GBP.format(item[column.value]) }}
+    {{ format.GBP(item[column.value]) }}
   </p>
 </template>

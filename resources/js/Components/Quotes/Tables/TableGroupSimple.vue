@@ -16,7 +16,7 @@ const colspan = props.columns.length;
 
 const getFormat = (name, group) => {
   if (["discount", "margin", "total", "price"].includes(group)) {
-    return GBP.format(name);
+    return format.GBP(name);
   }
   if (["speed", "bearer"].includes(group)) {
     return format.speed(name);
