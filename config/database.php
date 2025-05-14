@@ -47,7 +47,7 @@ return [
             'dsn' => env('MONGODB_URI', 'mongodb://localhost:27017'),
             'database' => env('MONGODB_DATABASE', 'laravel_app'),
             'options' => [
-                'maxPoolSize' => 20,
+                'maxPoolSize' => 50,
                 'w' => 'majority',
             ],
         ],

@@ -92,7 +92,7 @@ const getProductsShopBlocks = async () => {
     filters.push({
       column: "product_category_id",
       operator: "in",
-      value: items.map((x) => x.id).join(","),
+      value: items.map((x) => x.id),
     });
   }
 

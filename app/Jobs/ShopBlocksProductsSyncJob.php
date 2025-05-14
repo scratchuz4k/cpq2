@@ -115,7 +115,7 @@ class ShopBlocksProductsSyncJob implements NotTenantAware, ShouldQueue
         $temp['updated'] = $product['updated'];
         $temp['created'] = $product['created'];
 
-        $temp['features'] = $this->getFeaturesFromContent($product['tabbed_content']);
+        $temp['features'] = []; // $this->getFeaturesFromContent($product['tabbed_content']);
         $temp['price'] = [
             'code' => 1,
             'tax_rate' => 20,

@@ -211,22 +211,22 @@
                 <th>Net</th>
                 <td>
                   <template v-if="proxyValue.length >= 1">
-                    {{ GBP.format(proxyValue[0].price.net_spa) }}</template
+                    {{ format.GBP(proxyValue[0].price.net_spa) }}</template
                   >
                 </td>
                 <td>
                   <template v-if="proxyValue.length >= 2">
-                    {{ GBP.format(proxyValue[1].price.net_spa) }}
+                    {{ format.GBP(proxyValue[1].price.net_spa) }}
                   </template>
                 </td>
                 <td>
                   <template v-if="proxyValue.length >= 3">
-                    {{ GBP.format(proxyValue[2].price.net_spa) }}</template
+                    {{ format.GBP(proxyValue[2].price.net_spa) }}</template
                   >
                 </td>
                 <td>
                   <template v-if="proxyValue.length >= 4">
-                    {{ GBP.format(proxyValue[3].price.net_spa) }}</template
+                    {{ format.GBP(proxyValue[3].price.net_spa) }}</template
                   >
                 </td>
               </tr>
@@ -234,22 +234,22 @@
                 <th>Gross</th>
                 <td>
                   <template v-if="proxyValue.length >= 1">
-                    {{ GBP.format(proxyValue[0].price.gross) }}</template
+                    {{ format.GBP(proxyValue[0].price.gross) }}</template
                   >
                 </td>
                 <td>
                   <template v-if="proxyValue.length >= 2">
-                    {{ GBP.format(proxyValue[1].price.gross) }}</template
+                    {{ format.GBP(proxyValue[1].price.gross) }}</template
                   >
                 </td>
                 <td>
                   <template v-if="proxyValue.length >= 3">
-                    {{ GBP.format(proxyValue[2].price.gross) }}</template
+                    {{ format.GBP(proxyValue[2].price.gross) }}</template
                   >
                 </td>
                 <td>
                   <template v-if="proxyValue.length >= 4">
-                    {{ GBP.format(proxyValue[3].price.gross) }}</template
+                    {{ format.GBP(proxyValue[3].price.gross) }}</template
                   >
                 </td>
               </tr>

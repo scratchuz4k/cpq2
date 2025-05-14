@@ -3,7 +3,6 @@
 namespace App\Helpers;
 
 use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 
 class DataProvider
@@ -170,7 +169,9 @@ class DataProvider
 
     protected function basicQuery($query, $column, $operator, $value, $func)
     {
-        $column = $query->getModel()->getTable().'.'.$column;
+        if ($query->getModel()->getConnection()->getDriverName() == 'mysql') {
+            $column = $query->getModel()->getTable().'.'.$column;
+        }
 
         if ($this->model->translatable && in_array($column, $this->model->translatable)) {
             $column = $column.'->'.app()->getLocale();
@@ -242,63 +243,80 @@ class DataProvider
 
     protected function resolveQueryParts($operator, $value)
     {
-        return Arr::get([
-            'not_equals' => [
-                'operator' => '!=',
-                'value' => $value,
-            ],
-            'equals' => [
-                'operator' => '=',
-                'value' => $value,
-            ],
-            'not_contains' => [
-                'operator' => 'NOT LIKE',
-                'value' => "%{$value}%",
-            ],
-            'contains' => [
-                'operator' => 'LIKE',
-                'value' => "%{$value}%",
-            ],
-            'starts_with' => [
-                'operator' => 'LIKE',
-                'value' => "{$value}%",
-            ],
-            'ends_with' => [
-                'operator' => 'LIKE',
-                'value' => "%{$value}",
-            ],
-            'greater_than' => [
-                'operator' => '>',
-                'value' => $value,
-            ],
-            'less_than' => [
-                'operator' => '<',
-                'value' => $value,
-            ],
-            'greater_than_or_equal_to' => [
-                'operator' => '>=',
-                'value' => $value,
-            ],
-            'less_than_or_equal_to' => [
-                'operator' => '<=',
-                'value' => $value,
-            ],
-            'is_null' => [
-                'operator' => 'is_null',
-                'value' => '',
-            ],
-            'in' => [
-                'operator' => 'in',
-                'value' => explode(',', $value),
-            ],
-            'not_in' => [
-                'operator' => 'not_in',
-                'value' => explode(',', $value),
-            ],
-            'search' => [
-                'operator' => 'search',
-                'value' => $value,
-            ],
-        ], Str::snake($operator));
+        switch (Str::snake($operator)) {
+            case 'not_equals':
+                return [
+                    'operator' => '!=',
+                    'value' => $value,
+                ];
+            case 'equals':
+                return [
+                    'operator' => '=',
+                    'value' => $value,
+                ];
+            case 'not_contains':
+                return [
+                    'operator' => 'NOT LIKE',
+                    'value' => "%{$value}%",
+                ];
+            case 'contains':
+                return [
+                    'operator' => 'LIKE',
+                    'value' => "%{$value}%",
+                ];
+            case 'starts_with':
+                return [
+                    'operator' => 'LIKE',
+                    'value' => "{$value}%",
+                ];
+            case 'ends_with':
+                return [
+                    'operator' => 'LIKE',
+                    'value' => "%{$value}",
+                ];
+            case 'greater_than':
+                return [
+                    'operator' => '>',
+                    'value' => $value,
+                ];
+            case 'less_than':
+                return [
+                    'operator' => '<',
+                    'value' => $value,
+                ];
+            case 'greater_than_or_equal_to':
+                return [
+                    'operator' => '>=',
+                    'value' => $value,
+                ];
+            case 'less_than_or_equal_to':
+                return [
+                    'operator' => '<=',
+                    'value' => $value,
+                ];
+            case 'is_null':
+                return [
+                    'operator' => 'is_null',
+                    'value' => '',
+                ];
+            case 'in':
+                return [
+                    'operator' => 'in',
+                    'value' => is_array($value) ? $value : explode(',', $value),
+                ];
+            case 'not_in':
+                return [
+                    'operator' => 'not_in',
+                    'value' => is_array($value) ? $value : explode(',', $value),
+                ];
+            case 'search':
+                return [
+                    'operator' => 'search',
+                    'value' => $value,
+                ];
+            default:
+                return null; // or throw an exception, or handle as needed
+        }
+
     }
 }

@@ -131,7 +131,7 @@ class ExternalController extends Controller
 
     public function getArticlesFromShopBlocks(Request $request)
     {
-        $content = $this->shopBlocksService->getArticles($request);
+        // $content = $this->shopBlocksService->getArticles($request);
 
         $dataProvider = new DataProvider(ShopBlocksProducts::class);
         try {
@@ -160,7 +160,7 @@ class ExternalController extends Controller
 
         $paginator = FilterProvider::paginate($items);
         $response = $paginator->toArray();
-        $response['filters'] = $content['filters'];
+        // $response['filters'] = $content['filters'];
 
         return $response;
     }
