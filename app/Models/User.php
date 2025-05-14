@@ -5,8 +5,8 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Trait\SetTenantId;
 use Laravel\Sanctum\HasApiTokens;
-use App\Models\Scopes\TenantScope;
 use Illuminate\Support\Facades\Auth;
+use Laravel\Sanctum\NewAccessToken;
 use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
@@ -170,5 +170,21 @@ class User extends Authenticatable
         } while (count($userDescedents));
 
         return $users;
+    }
+
+    /**
+     * Override createToken method from Sanctum
+     */
+    public function createTokenWithTenant(string $name, int $tenantId, array $abilities = ['*'])
+    {
+        $plainTextToken = $this->generateTokenString();
+        $token = $this->tokens()->create([
+            'name' => $name,
+            'token' => hash('sha256', $plainTextToken),
+            'abilities' => $abilities,
+            'tenant_id' => $tenantId,
+        ]);
+
+        return new NewAccessToken($token, $token->getKey() . '|' . $plainTextToken);
     }
 }

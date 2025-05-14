@@ -8,6 +8,7 @@ use App\Models\Role;
 use App\Models\Token;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class TokenController extends BaseController
@@ -37,13 +38,13 @@ class TokenController extends BaseController
     /**
      * Login api
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function store(TokenCreateRequest $request)
     {
         try {
             $user = User::find($request->user_id);
-            $token = $user->createToken($request->name);
+            $token = $user->createTokenWithTenant($request->name, Auth::user()->tenant_id);
         } catch (\Exception $e) {
             throw new \Exception($e);
         }
