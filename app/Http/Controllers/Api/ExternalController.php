@@ -2,23 +2,13 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Enums\PricePlanEnum;
 use App\Helpers\Api\CloudMarketAddress;
 use App\Helpers\Api\OpenreachLookupApi;
-use App\Helpers\Api\ShopBlocksApi;
 use App\Helpers\Api\VirtualOneLookupApi;
-use App\Helpers\DataProvider;
-use App\Helpers\Files\ShopBlocksProducts;
-use App\Helpers\FilterProvider;
-use App\Helpers\Prices\PriceRules;
 use App\Http\Controllers\Controller;
-use App\Models\Account;
-use App\Models\PricePlan;
 use App\Services\External\CloudMarketService;
 use App\Services\External\ShopBlocksService;
-use Exception;
 use Illuminate\Http\Request;
-use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
@@ -127,68 +117,5 @@ class ExternalController extends Controller
         );
 
         return $this->cloudMarketService->get($request->get('connectivityType'), $address, $request->input('filters', []));
-    }
-
-    public function getArticlesFromShopBlocks(Request $request)
-    {
-        // $content = $this->shopBlocksService->getArticles($request);
-
-        $dataProvider = new DataProvider(ShopBlocksProducts::class);
-        try {
-            $items = $dataProvider->getCollection();
-        } catch (Exception $e) {
-            return $e->getMessage();
-        }
-
-        $priceRules = new PriceRules;
-        $account = Account::where('id', $request->input('account_id', null))->first();
-        $pricePlan = PricePlan::where('code', PricePlanEnum::SINGLE->name)->first();
-        $priceRules->find(account: $account, pricePlan: $pricePlan);
-
-        $items = $items->map(function ($item) use ($priceRules) {
-            $net_spa = $priceRules->apply($item->price['net']);
-            $item['price'] = [
-                'net' => $item->price['net'],
-                'net_spa' => $net_spa,
-                'tax' => $net_spa * 0.2,
-                'gross' => $net_spa * 1.2,
-                'active_spas' => $priceRules->getAppliedSpas(),
-            ];
-
-            return $item;
-        });
-
-        $paginator = FilterProvider::paginate($items);
-        $response = $paginator->toArray();
-        // $response['filters'] = $content['filters'];
-
-        return $response;
-    }
-
-    public function getCategoriesFromShopBlocks(Request $request)
-    {
-        $cache_key = md5('shop-blocks-categories');
-
-        $res = Cache::remember($cache_key, 43200, function () {
-            $products = [];
-            $page = 0;
-            do {
-                $page++;
-                $res = (new ShopBlocksApi)->getCategories(200, $page);
-                if (! array_key_exists('data', $res)) {
-                    break;
-                }
-                array_push($products, ...$res['data']);
-                $last_page = array_key_exists('meta', $res) ? $res['meta']['last_page'] : 1;
-            } while ($page != $last_page);
-
-            $tempFilters = [];
-
-            return ['items' => $products, 'filters' => $tempFilters];
-        });
-
-        $items = FilterProvider::get($res['items'], request()->input('filters', []));
-
-        return new LengthAwarePaginator($items, $items->count(), 1000, 1);
     }
 }

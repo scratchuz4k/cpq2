@@ -3,7 +3,6 @@
 namespace App\Jobs;
 
 use App\Helpers\Api\ShopBlocksApi;
-use App\Helpers\Files\ShopBlocksFile;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -26,7 +25,7 @@ class ShopBlocksProductsJob implements NotTenantAware, ShouldQueue
     /**
      * Create a new job instance.
      */
-    public function __construct(protected ShopBlocksFile $file)
+    public function __construct()
     {
         $this->onQueue('shopblocks');
     }
@@ -87,13 +86,9 @@ class ShopBlocksProductsJob implements NotTenantAware, ShouldQueue
             'response' => $exception->getMessage(),
         ];
 
-        $file = $this->file->getContent();
-        $file['errors'][] = $error;
-
         // Handle the failure, log exception details, etc.
-        $message = '['.strtoupper(env('APP_ENV')).'] ShopBlocksProducts failed with error: '.json_encode($file['errors']);
+        $message = '['.strtoupper(env('APP_ENV')).'] ShopBlocksProducts failed with error: '.json_encode($error);
 
-        $this->file->write($file['data'], false, now(), $file['created_at'], $file['filters'], $file['errors']);
         Log::error($message);
         if (env('DISCORD_CLOUDMARKET_JOBS')) {
             Http::post(env('DISCORD_CLOUDMARKET_JOBS'), ['content' => $message]);

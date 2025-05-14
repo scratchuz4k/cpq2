@@ -1,5 +1,6 @@
 <script setup>
 import _ from "lodash";
+import queryString from "query-string";
 import Select from "primevue/select";
 import MultiSelect from "primevue/multiselect";
 import Paginator from "primevue/paginator";
@@ -96,17 +97,17 @@ const getProductsShopBlocks = async () => {
     value: 22,
   });
 
-  let query = {
+  let query = queryString.stringify({
     page: meta.page,
     limit: meta.limit,
-    filters: temp,
+    filters: JSON.stringify(temp),
     order: sort.value.order,
     orderBy: sort.value.orderBy,
     search: search.value,
     account_id: quote.account_id,
-  };
+  });
 
-  let res = await axios.post("/api/external/get-articles-from-shop-blocks", query);
+  let res = await axios.get("/api/shop-blocks/products?" + query);
   productsHardware.value = res.data.data;
   productsHardware.value.forEach((e) => {
     let temp = quote.items.find((x) => x.product_code == e.code);

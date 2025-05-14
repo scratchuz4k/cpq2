@@ -4,9 +4,9 @@ namespace App\Jobs;
 
 use App\Enums\PricePlanEnum;
 use App\Helpers\Api\ShopBlocksApi;
-use App\Helpers\Files\ShopBlocksProducts;
-use App\Helpers\FilterProvider;
 use App\Models\PricePlan;
+use App\Models\ShopBlocks\Product;
+use App\Models\ShopBlocks\ProductFeature;
 use DOMDocument;
 use DOMXPath;
 use Exception;
@@ -62,13 +62,12 @@ class ShopBlocksProductsSyncJob implements NotTenantAware, ShouldQueue
             $temp = $this->getProduct($product);
             $temp['price_plan_id'] = $pricePlanId;
             $temp['expire_at'] = $this->expire_at;
-            ShopBlocksProducts::updateOrCreate(
+            $temp = Product::updateOrCreate(
                 ['sku' => $sku],
                 $temp
             );
-            // $this->tempFilters = FilterProvider::process($this->tempFilters, $this->products[$sku], true);
+            $this->getFeaturesFromContent($temp, $product['tabbed_content']);
         }
-
     }
 
     /**
@@ -86,10 +85,8 @@ class ShopBlocksProductsSyncJob implements NotTenantAware, ShouldQueue
             'response' => $exception->getMessage(),
         ];
 
-        $file['errors'][] = $error;
-
         // Handle the failure, log exception details, etc.
-        $message = '['.strtoupper(env('APP_ENV')).'] ShopBlocksProducts failed with error: '.json_encode($file['errors']);
+        $message = '['.strtoupper(env('APP_ENV')).'] ShopBlocksProducts failed with error: '.json_encode($error);
 
         Log::error($message);
         if (env('DISCORD_CLOUDMARKET_JOBS')) {
@@ -115,7 +112,6 @@ class ShopBlocksProductsSyncJob implements NotTenantAware, ShouldQueue
         $temp['updated'] = $product['updated'];
         $temp['created'] = $product['created'];
 
-        $temp['features'] = []; // $this->getFeaturesFromContent($product['tabbed_content']);
         $temp['price'] = [
             'code' => 1,
             'tax_rate' => 20,
@@ -127,12 +123,13 @@ class ShopBlocksProductsSyncJob implements NotTenantAware, ShouldQueue
         return $temp;
     }
 
-    private function getFeaturesFromContent($contents)
+    private function getFeaturesFromContent($product, $contents)
     {
         $result = [];
+        ProductFeature::where('product_id', $product->id)->delete();
 
         if (is_null($contents)) {
-            return $result;
+            return;
         }
 
         foreach ($contents as $key => $item) {
@@ -155,13 +152,12 @@ class ShopBlocksProductsSyncJob implements NotTenantAware, ShouldQueue
                     if ($tds->length == 2 && $currentSection) {
                         $key = trim($tds->item(0)->textContent);
                         $value = trim($tds->item(1)->textContent);
-                        array_push($result, ['group' => $currentSection, 'key' => Str::slug($key), 'label' => $key, 'value' => $value]);
+                        array_push($result, ['product_id' => $product->id, 'group' => $currentSection, 'key' => Str::slug($key), 'label' => $key, 'value' => $value]);
                     }
                 }
             }
 
         }
-
-        return $result;
+        ProductFeature::insert($result);
     }
 }
