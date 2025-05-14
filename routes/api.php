@@ -24,6 +24,7 @@ use App\Http\Controllers\Api\ResourceController;
 use App\Http\Controllers\Api\SharedLinkController;
 use App\Http\Controllers\Api\ShopBlocks\CategoryController as ShopBlocksCategoryController;
 use App\Http\Controllers\Api\ShopBlocks\ProductController as ShopBlocksProductController;
+use App\Http\Controllers\Api\ShopBlocks\ProductFeatureController;
 use App\Http\Controllers\Api\SolutionTypeController;
 use App\Http\Controllers\Api\SpaController;
 use App\Http\Controllers\Api\SupplierController;
@@ -41,7 +42,9 @@ Route::prefix('external')->group(function () {
 Route::prefix('shop-blocks')->group(callback: function () {
     Route::get('products', [ShopBlocksProductController::class, 'index']);
     Route::get('products/{article}', [ShopBlocksProductController::class, 'show']);
+    Route::get('product-features', [ProductFeatureController::class, 'index']);
     Route::get('categories', [ShopBlocksCategoryController::class, 'index']);
+
 });
 
 Route::apiResources([

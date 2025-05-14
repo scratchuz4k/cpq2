@@ -28,7 +28,7 @@
             :class="[
               !showAsColumn
                 ? 'd-flex justify-content-end'
-                : 'position-absolute top-0 right-0',
+                : 'position-absolute top-0 end-0 mt-2',
             ]"
           >
             <div class="me-3">
@@ -58,9 +58,7 @@
         <p :class="[showAsColumn ? 'truncate-3-lines' : null]">
           {{ proxyValue.sku }} - {{ proxyValue.name }}
         </p>
-        <a style="cursor: pointer" @click="() => (showModal = !showModal)"
-          >More Info...</a
-        >
+        <a style="cursor: pointer" @click="openModal()">More Info...</a>
         <div v-if="showAsColumn">
           <p class="bold big mt-3">
             {{ format.GBP(proxyValue.price?.net_spa || 0) }}
@@ -173,7 +171,10 @@
         </div>
       </div>
       <hr />
-      <div class="row">
+      <div v-if="loadingFeatures" class="row">
+        <div class="col text-center">Loading...</div>
+      </div>
+      <div v-else class="row">
         <div class="col">
           <table class="table">
             <tbody>
@@ -217,6 +218,7 @@
   </div>
 </template>
 <script setup>
+import queryString from "query-string";
 import Dialog from "primevue/dialog";
 import IconField from "primevue/iconfield";
 import InputIcon from "primevue/inputicon";
@@ -237,6 +239,7 @@ const props = defineProps({
 });
 
 const showModal = ref(false);
+const loadingFeatures = ref(false);
 const emit = defineEmits(["update:modelValue", "select"]);
 const proxyValue = computed({
   get: () => props.modelValue,
@@ -310,11 +313,30 @@ const getFeaturesTable = () => {
   });
 };
 
+const openModal = async () => {
+  loadingFeatures.value = true;
+  showModal.value = !showModal.value;
+  if (!proxyValue.value.features) {
+    let query = queryString.stringify({
+      filters: JSON.stringify([
+        {
+          column: "product_id",
+          operator: "equals",
+          value: proxyValue.value.id,
+        },
+      ]),
+    });
+
+    let res = await axios.get("/api/shop-blocks/product-features?" + query);
+    proxyValue.value.features = res.data.data;
+  }
+  await getFeaturesTable();
+  loadingFeatures.value = false;
+};
+
 watch(searchInput, () => {
   getFeaturesTable();
 });
-
-getFeaturesTable();
 </script>
 <style scoped>
 .table tbody th {
