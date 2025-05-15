@@ -328,7 +328,10 @@ const openModal = async () => {
     });
 
     let res = await axios.get("/api/shop-blocks/product-features?" + query);
-    proxyValue.value.features = res.data.data;
+    proxyValue.value.features = res.data?.data.reduce(
+      (acc, x) => acc.concat(x.items),
+      []
+    );
   }
   await getFeaturesTable();
   loadingFeatures.value = false;

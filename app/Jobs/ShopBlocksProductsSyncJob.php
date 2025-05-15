@@ -66,7 +66,7 @@ class ShopBlocksProductsSyncJob implements NotTenantAware, ShouldQueue
                 ['sku' => $sku],
                 $temp
             );
-            $this->getFeaturesFromContent($temp, $product['tabbed_content']);
+            $this->getFeaturesFromContent($temp, $product['tabbed_content'], $this->expire_at);
         }
     }
 
@@ -123,7 +123,7 @@ class ShopBlocksProductsSyncJob implements NotTenantAware, ShouldQueue
         return $temp;
     }
 
-    private function getFeaturesFromContent($product, $contents)
+    private function getFeaturesFromContent($product, $contents, $expire_at)
     {
         $result = [];
         ProductFeature::where('product_id', $product->id)->delete();
@@ -152,12 +152,12 @@ class ShopBlocksProductsSyncJob implements NotTenantAware, ShouldQueue
                     if ($tds->length == 2 && $currentSection) {
                         $key = trim($tds->item(0)->textContent);
                         $value = trim($tds->item(1)->textContent);
-                        array_push($result, ['product_id' => $product->id, 'group' => $currentSection, 'key' => Str::slug($key), 'label' => $key, 'value' => $value]);
+                        array_push($result, ['group' => $currentSection, 'key' => Str::slug($key), 'label' => $key, 'value' => $value, 'expires_at' => $expire_at]);
                     }
                 }
             }
 
         }
-        ProductFeature::insert($result);
+        ProductFeature::insert(['product_id' => $product->id, 'items' => $result]);
     }
 }

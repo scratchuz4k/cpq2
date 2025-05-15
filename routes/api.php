@@ -44,7 +44,6 @@ Route::prefix('shop-blocks')->group(callback: function () {
     Route::get('products/{article}', [ShopBlocksProductController::class, 'show']);
     Route::get('product-features', [ProductFeatureController::class, 'index']);
     Route::get('categories', [ShopBlocksCategoryController::class, 'index']);
-
 });
 
 Route::apiResources([

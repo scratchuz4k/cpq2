@@ -335,7 +335,7 @@ const getFeatures = () => {
     });
 
     let res = await axios.get("/api/shop-blocks/product-features?" + query);
-    x.features = res.data.data;
+    x.features = res.data?.data.reduce((acc, x) => acc.concat(x.items), []);
   });
   loadingFeatures.value = false;
 };

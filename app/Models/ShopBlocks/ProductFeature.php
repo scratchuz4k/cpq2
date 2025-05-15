@@ -10,8 +10,6 @@ class ProductFeature extends Model
 
     protected $collection = 'product_features'; // Specify the collection name
 
-    protected $hidden = ['product_id', '_id'];
-
     protected $guarded = [];
 
     public function product()

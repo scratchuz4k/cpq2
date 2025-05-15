@@ -30,7 +30,7 @@ class ProductController extends BaseController
     #[ExcludeRouteFromDocs]
     public function index(IndexRequest $request)
     {
-        $content = $this->shopBlocksService->getArticles($request);
+        // $content = $this->shopBlocksService->getArticles($request);
 
         $dataProvider = new DataProvider(Product::class);
         try {

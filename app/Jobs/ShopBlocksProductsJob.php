@@ -30,10 +30,10 @@ class ShopBlocksProductsJob implements NotTenantAware, ShouldQueue
         $this->onQueue('shopblocks');
     }
 
-    // public function middleware()
-    // {
-    //     return [(new WithoutOverlapping('sync:ShopBlocksProducts'))->expireAfter(180)];
-    // }
+    public function middleware()
+    {
+        return [(new WithoutOverlapping('sync:ShopBlocksProducts'))->expireAfter(180)];
+    }
 
     /**
      * Execute the job.
