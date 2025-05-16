@@ -153,7 +153,6 @@ const checkQuantity = _.debounce(async (product, temp) => {
     await createQuoteItem({
       quote_id: quote.id,
       product_code: product.code,
-      product_id: product.id,
       quantity: product.quantity,
       contract_length: product.contract_length,
       name: product.name,
@@ -323,11 +322,13 @@ watch(
             <div class="pt-1">
               <p style="font-weight: 500">Quantity</p>
               <div class="d-flex align-items-center mb-2">
-                <InputQuantity
-                  :id="'hardware-' + index"
-                  v-model="product.quantity"
-                  @change="(val) => checkQuantity(product, val, true)"
-                />
+                <div :style="{ width: '150px' }">
+                  <InputQuantity
+                    :id="'hardware-' + index"
+                    v-model="product.quantity"
+                    @change="(val) => checkQuantity(product, val, true)"
+                  />
+                </div>
 
                 <button
                   :id="'btn-hardware-' + index + '-add-25'"
