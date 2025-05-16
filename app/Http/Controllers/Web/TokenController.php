@@ -29,7 +29,7 @@ class TokenController extends BaseController
     public function create()
     {
         return Inertia::render('Tokens/Create', [
-            'users' => User::with('roles')->whereHas('roles', function ($query) {
+            'users' => User::where('tenant_id', Auth::user()->tenant_id)->with('roles')->whereHas('roles', function ($query) {
                 $query->whereIn('id', Role::descendants()->pluck('id'));
             })->get(),
         ]);
