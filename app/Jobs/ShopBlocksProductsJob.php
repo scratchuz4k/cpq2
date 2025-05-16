@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use App\Helpers\Api\ShopBlocksApi;
+use App\Models\ShopBlocks\Product;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -43,11 +44,10 @@ class ShopBlocksProductsJob implements NotTenantAware, ShouldQueue
         $start = now();
         Log::info("ShopBlocksProductsJob | Started at $start");
         $page = 1;
-        $filters = [
-            'updatedAfter' => null,
-        ];
 
-        $filters['updatedAfter'] = null;
+        $product = Product::latest('date')->first();
+        $filters = ['updatedAfter' => $product?->updated];
+
         $time = Carbon::now()->addSeconds(86400);
 
         $res = (new ShopBlocksApi)->getArticles(200, $page, $filters);
