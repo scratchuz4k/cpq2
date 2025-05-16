@@ -18,4 +18,14 @@ class Product extends Model
     {
         return $this->hasMany(ProductFeature::class);
     }
+
+    public function brand()
+    {
+        return $this->hasOne(Brand::class);
+    }
+
+    public function model()
+    {
+        return $this->hasOne(Model::class);
+    }
 }

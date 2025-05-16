@@ -16,7 +16,7 @@ class ProductResource extends JsonResource
     {
         return [
             ...$this->resource->toArray(),
-            'features' => $this->features,
+            'brand' => $this->brand,
         ];
     }
 }

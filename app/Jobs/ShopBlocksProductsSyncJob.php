@@ -5,6 +5,8 @@ namespace App\Jobs;
 use App\Enums\PricePlanEnum;
 use App\Helpers\Api\ShopBlocksApi;
 use App\Models\PricePlan;
+use App\Models\ShopBlocks\Brand;
+use App\Models\ShopBlocks\Model;
 use App\Models\ShopBlocks\Product;
 use App\Models\ShopBlocks\ProductFeature;
 use DOMDocument;
@@ -28,10 +30,6 @@ class ShopBlocksProductsSyncJob implements NotTenantAware, ShouldQueue
     public $errors = [];
 
     public $started_at = null;
-
-    public $tempFilters = [
-        'model' => [],
-    ];
 
     /**
      * Create a new job instance.
@@ -59,13 +57,17 @@ class ShopBlocksProductsSyncJob implements NotTenantAware, ShouldQueue
                 continue;
             }
             $sku = $product['children'][0]['sku'];
+
             $temp = $this->getProduct($product);
             $temp['price_plan_id'] = $pricePlanId;
             $temp['expire_at'] = $this->expire_at;
+
+            $temp = $this->getBrandAndModel($product, $temp);
             $temp = Product::updateOrCreate(
                 ['sku' => $sku],
                 $temp
             );
+
             $this->getFeaturesFromContent($temp, $product['tabbed_content'], $this->expire_at);
         }
     }
@@ -99,14 +101,12 @@ class ShopBlocksProductsSyncJob implements NotTenantAware, ShouldQueue
         $child = $product['children'][0];
         $temp = [];
 
-        $temp['model'] = (string) Str::of($product['name'])->words(3, '');
         $temp['sku'] = $child['sku'];
         $temp['code'] = $child['sku'];
         $temp['slug'] = $child['slug'];
         $temp['name'] = $product['name'];
         $temp['description'] = $product['description'];
         $temp['product_category_id'] = $product['category']['id'];
-        $temp['brand'] = $product['brand'];
         $temp['stock'] = $product['stock'];
         $temp['primary_image'] = count($child['images']) ? $child['images'][0]['url'] : null;
         $temp['updated'] = $product['updated'];
@@ -159,5 +159,21 @@ class ShopBlocksProductsSyncJob implements NotTenantAware, ShouldQueue
 
         }
         ProductFeature::insert(['product_id' => $product->id, 'items' => $result]);
+    }
+
+    private function getBrandAndModel($product, $temp)
+    {
+        $brand = null;
+        if (! is_null($product['brand'])) {
+            unset($product['brand']['id']);
+            $brand = Brand::updateOrCreate(['code' => $product['brand']['slug']], $product['brand']);
+        }
+
+        $temp['brand_id'] = $brand?->id;
+        $modelName = (string) Str::of($product['name'])->words(3, '');
+        $model = Model::updateOrCreate(['brand_id' => $brand?->id, 'code' => Str::slug($modelName)], ['name' => $modelName]);
+        $temp['model_id'] = $model?->id;
+
+        return $temp;
     }
 }

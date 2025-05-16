@@ -8,7 +8,6 @@ use App\Helpers\FilterProvider;
 use App\Helpers\Prices\PriceRules;
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\IndexRequest;
-use App\Http\Resources\ShopBlocks\ProductResource;
 use App\Models\Account;
 use App\Models\PricePlan;
 use App\Models\ShopBlocks\Product;
@@ -30,8 +29,6 @@ class ProductController extends BaseController
     #[ExcludeRouteFromDocs]
     public function index(IndexRequest $request)
     {
-        $content = $this->shopBlocksService->getArticles($request);
-
         $dataProvider = new DataProvider(Product::class);
         try {
             $items = $dataProvider->getCollection();
