@@ -26,7 +26,7 @@ jobs:
       - uses: shivammathur/setup-php@v2
         with:
           php-version: 8.3
-          extensions: json, dom, libxml, mbstring, bcmath, curl, sqlite3, fileinfo, pcntl, redis, bcmath, gd, zip, mongodb-1.21.0
+          extensions: json, dom, libxml, mbstring, bcmath, curl, sqlite3, fileinfo, pcntl, redis, bcmath, gd, zip, mongodb
           coverage: none
 
       - name: Setup NodeJS
