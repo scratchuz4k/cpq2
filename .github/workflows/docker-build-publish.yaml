@@ -19,19 +19,7 @@ jobs:
       contents: read
       packages: write
       id-token: write
-    services:
-      mongodb:
-        image: mongodb/mongodb-atlas-local
-        ports:
-          - 27017:27017
-        env:
-          MONGO_INITDB_ROOT_USERNAME: user
-          MONGO_INITDB_ROOT_PASSWORD: user
-        options: >-
-          --health-cmd="mongosh --eval 'db.runCommand({ ping: 1 })'"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=5
+
     steps:
       - uses: actions/checkout@v4
 
@@ -55,6 +43,18 @@ jobs:
           echo "VIRTUAL1_ADDRESS_USERNAME=${{ secrets.VIRTUAL1_ADDRESS_USERNAME }}" >> .env
           echo "VITE_GOOGLE_MAPS_API_KEY=${{ secrets.VITE_GOOGLE_MAPS_API_KEY }}" >> .env
 
+      - name: Install Node Dependencies
+        run: |
+          npm install
+          npm run build
+
+      - name: Start MongoDB
+        uses: supercharge/mongodb-github-action@1.12.0
+        with:
+          mongodb-version: ${{ matrix.mongodb-version }}
+          mongodb-username: user
+          mongodb-password: user
+
       - name: Create Database
         run: |
           sudo systemctl start mysql
@@ -68,11 +68,6 @@ jobs:
           php artisan key:generate
           php artisan migrate:fresh --seed
           php artisan db:seed CategoryProductsSeeder
-
-      - name: Install Node Dependencies
-        run: |
-          npm install
-          npm run build
 
       - name: Run Laravel Server
         run: php artisan serve --host=0.0.0.0 --port=8000 &
