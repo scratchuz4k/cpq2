@@ -1,11 +1,14 @@
-{ 
+{
     "name": "laravel/laravel",
     "type": "project",
     "description": "The skeleton application for the Laravel framework.",
-    "keywords": ["laravel", "framework"],
+    "keywords": [
+        "laravel",
+        "framework"
+    ],
     "license": "MIT",
     "require": {
-        "php": "^8.2",
+        "php": "^8.4",
         "dedoc/scramble": "^0.11.16",
         "halaxa/json-machine": "^1.1",
         "inertiajs/inertia-laravel": "^1.0",
@@ -16,6 +19,7 @@
         "laravel/tinker": "^2.9",
         "maatwebsite/excel": "^3.1",
         "moneyphp/money": "^4.5",
+        "mongodb/laravel-mongodb": "^5.4",
         "reedware/laravel-relation-joins": "^6.0",
         "sentry/sentry-laravel": "^4.9",
         "socialiteproviders/google": "^4.1",

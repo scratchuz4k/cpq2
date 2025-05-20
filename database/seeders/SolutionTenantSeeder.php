@@ -4,7 +4,6 @@ namespace Database\Seeders;
 
 use App\Models\SolutionType;
 use App\Models\Tenant;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class SolutionTenantSeeder extends Seeder
@@ -15,10 +14,10 @@ class SolutionTenantSeeder extends Seeder
     public function run(): void
     {
         $tenants = Tenant::all();
-        $solutions = SolutionType::whereIn('code', [3,4])->get();
+        $solutions = SolutionType::whereIn('code', [3, 4])->get();
 
         $solutions->each(function ($solution) use ($tenants) {
-            $solution->tenants()->attach($tenants);
+            $solution->tenants()->sync($tenants);
         });
     }
 }

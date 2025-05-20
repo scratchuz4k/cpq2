@@ -211,22 +211,22 @@
                 <th>Net</th>
                 <td>
                   <template v-if="proxyValue.length >= 1">
-                    {{ GBP.format(proxyValue[0].price.net_spa) }}</template
+                    {{ format.GBP(proxyValue[0].price.net_spa) }}</template
                   >
                 </td>
                 <td>
                   <template v-if="proxyValue.length >= 2">
-                    {{ GBP.format(proxyValue[1].price.net_spa) }}
+                    {{ format.GBP(proxyValue[1].price.net_spa) }}
                   </template>
                 </td>
                 <td>
                   <template v-if="proxyValue.length >= 3">
-                    {{ GBP.format(proxyValue[2].price.net_spa) }}</template
+                    {{ format.GBP(proxyValue[2].price.net_spa) }}</template
                   >
                 </td>
                 <td>
                   <template v-if="proxyValue.length >= 4">
-                    {{ GBP.format(proxyValue[3].price.net_spa) }}</template
+                    {{ format.GBP(proxyValue[3].price.net_spa) }}</template
                   >
                 </td>
               </tr>
@@ -234,22 +234,22 @@
                 <th>Gross</th>
                 <td>
                   <template v-if="proxyValue.length >= 1">
-                    {{ GBP.format(proxyValue[0].price.gross) }}</template
+                    {{ format.GBP(proxyValue[0].price.gross) }}</template
                   >
                 </td>
                 <td>
                   <template v-if="proxyValue.length >= 2">
-                    {{ GBP.format(proxyValue[1].price.gross) }}</template
+                    {{ format.GBP(proxyValue[1].price.gross) }}</template
                   >
                 </td>
                 <td>
                   <template v-if="proxyValue.length >= 3">
-                    {{ GBP.format(proxyValue[2].price.gross) }}</template
+                    {{ format.GBP(proxyValue[2].price.gross) }}</template
                   >
                 </td>
                 <td>
                   <template v-if="proxyValue.length >= 4">
-                    {{ GBP.format(proxyValue[3].price.gross) }}</template
+                    {{ format.GBP(proxyValue[3].price.gross) }}</template
                   >
                 </td>
               </tr>
@@ -261,6 +261,7 @@
   </div>
 </template>
 <script setup>
+import queryString from "query-string";
 import { computed, ref, watch } from "vue";
 import _ from "lodash";
 import IconField from "primevue/iconfield";
@@ -275,6 +276,7 @@ const props = defineProps({
   },
 });
 
+const loadingFeatures = ref(false);
 const searchInput = ref("");
 const show = ref(false);
 const emit = defineEmits(["update:modelValue"]);
@@ -312,22 +314,49 @@ const getFeaturesTable = () => {
   });
 };
 
+const getFeatures = () => {
+  loadingFeatures.value = true;
+  if (!proxyValue.value.length) {
+    loadingFeatures.value = false;
+    return;
+  }
+  proxyValue.value.forEach(async (x) => {
+    if (x.features) {
+      return;
+    }
+    let query = queryString.stringify({
+      filters: JSON.stringify([
+        {
+          column: "product_id",
+          operator: "equals",
+          value: x.id,
+        },
+      ]),
+    });
+
+    let res = await axios.get("/api/shop-blocks/product-features?" + query);
+    x.features = res.data?.data.reduce((acc, x) => acc.concat(x.items), []);
+  });
+  loadingFeatures.value = false;
+};
+
 watch(searchInput, () => {
   getFeaturesTable();
 });
 
 watch(props.modelValue, () => {
-  getFeaturesTable();
-  if (props.modelValue.length) {
-    document.body.style.overflow = "auto";
+  if (!props.modelValue.length) {
+    return;
   }
+  document.body.style.overflow = "auto";
+  getFeatures();
+  getFeaturesTable();
 });
 
 watch(show, () => {
   document.body.style.overflow = show.value ? "hidden" : "auto";
 });
-
-getFeaturesTable();
+getFeatures();
 </script>
 <style scoped>
 .table tbody th {

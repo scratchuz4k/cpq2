@@ -1,5 +1,6 @@
 <script setup>
 import _ from "lodash";
+import queryString from "query-string";
 import { Paginator } from "primevue";
 import { quote } from "@/Composables/useQuote";
 import { categories } from "@composables/custom/shopblocks";
@@ -63,12 +64,12 @@ const sorts = [
   {
     label: "Lowest Price",
     order: "asc",
-    orderBy: "price.net",
+    orderBy: "price.net_spa",
   },
   {
     label: "Highest Price",
-    order: "desc",
-    orderBy: "price.net",
+    order: "asc",
+    orderBy: "price.net_spa",
   },
 ];
 
@@ -96,18 +97,18 @@ const getProductsShopBlocks = async () => {
     });
   }
 
-  let query = {
+  let query = queryString.stringify({
     page: meta.page,
     limit: meta.limit,
-    filters: filters,
+    filters: JSON.stringify(filters),
     order: sort.value.order,
     orderBy: sort.value.orderBy,
     columns: "model,name",
     search: search.value,
     account_id: quote.account_id,
-  };
+  });
 
-  let res = await axios.post("/api/external/get-articles-from-shop-blocks", query);
+  let res = await axios.get("/api/shop-blocks/products?" + query);
   productsHardware.value = res.data.data;
   productsHardware.value.forEach((e) => {
     let temp = quote.items.find((x) => x.product_code == e.code);

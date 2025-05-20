@@ -21,7 +21,7 @@ const proxyValue = computed({
 });
 
 const getShopBlocksCategories = async () => {
-  let res = await axios.post("/api/external/get-categories-from-shop-blocks");
+  let res = await axios.get("/api/shop-blocks/categories");
   categories.value = res.data.data;
 };
 

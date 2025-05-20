@@ -1,5 +1,6 @@
 <script setup>
 import _ from "lodash";
+import queryString from "query-string";
 import Select from "primevue/select";
 import MultiSelect from "primevue/multiselect";
 import Paginator from "primevue/paginator";
@@ -96,17 +97,17 @@ const getProductsShopBlocks = async () => {
     value: 22,
   });
 
-  let query = {
+  let query = queryString.stringify({
     page: meta.page,
     limit: meta.limit,
-    filters: temp,
+    filters: JSON.stringify(temp),
     order: sort.value.order,
     orderBy: sort.value.orderBy,
     search: search.value,
     account_id: quote.account_id,
-  };
+  });
 
-  let res = await axios.post("/api/external/get-articles-from-shop-blocks", query);
+  let res = await axios.get("/api/shop-blocks/products?" + query);
   productsHardware.value = res.data.data;
   productsHardware.value.forEach((e) => {
     let temp = quote.items.find((x) => x.product_code == e.code);
@@ -152,7 +153,6 @@ const checkQuantity = _.debounce(async (product, temp) => {
     await createQuoteItem({
       quote_id: quote.id,
       product_code: product.code,
-      product_id: product.id,
       quantity: product.quantity,
       contract_length: product.contract_length,
       name: product.name,
@@ -322,11 +322,13 @@ watch(
             <div class="pt-1">
               <p style="font-weight: 500">Quantity</p>
               <div class="d-flex align-items-center mb-2">
-                <InputQuantity
-                  :id="'hardware-' + index"
-                  v-model="product.quantity"
-                  @change="(val) => checkQuantity(product, val, true)"
-                />
+                <div :style="{ width: '150px' }">
+                  <InputQuantity
+                    :id="'hardware-' + index"
+                    v-model="product.quantity"
+                    @change="(val) => checkQuantity(product, val, true)"
+                  />
+                </div>
 
                 <button
                   :id="'btn-hardware-' + index + '-add-25'"
