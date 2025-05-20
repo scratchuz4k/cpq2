@@ -49,6 +49,7 @@ return [
             'options' => [
                 'maxPoolSize' => 50,
                 'w' => 'majority',
+                'authSource' => 'admin',
             ],
         ],
 
