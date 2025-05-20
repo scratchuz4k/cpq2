@@ -1,0 +1,1898 @@
+[
+    {
+        "_id": "682c548727da46ab2008b2ba",
+        "brand_id": "682c53fa27da46ab2008980d",
+        "code": "skech-skb-iph14p-bb-mobile",
+        "name": "Skech SKB-IPH14P-BB mobile",
+        "updated_at": "2025-05-20T10:08:07.410Z",
+        "created_at": "2025-05-20T10:08:07.410Z"
+    },
+    {
+        "_id": "682c5594cd1ded80520136af",
+        "brand_id": "682c531a81441419fc0c487a",
+        "code": "samsung-galaxy-a56",
+        "name": "Samsung Galaxy A56",
+        "updated_at": "2025-05-20T10:12:36.547Z",
+        "created_at": "2025-05-20T10:12:36.547Z"
+    },
+    {
+        "_id": "682c53cb27da46ab20088e9a",
+        "brand_id": "682c53c1fad982ba5c0e43c7",
+        "code": "panzerglass-eyecare",
+        "name": "PanzerGlass ® Eyecare",
+        "updated_at": "2025-05-20T10:04:59.257Z",
+        "created_at": "2025-05-20T10:04:59.257Z"
+    },
+    {
+        "_id": "682c55e11c89e497840fa40a",
+        "brand_id": "682c53fa27da46ab2008980d",
+        "code": "skech-pure-bundle",
+        "name": "Skech Pure Bundle",
+        "updated_at": "2025-05-20T10:13:53.092Z",
+        "created_at": "2025-05-20T10:13:53.092Z"
+    },
+    {
+        "_id": "682c548727da46ab2008b2bf",
+        "brand_id": "682c53fa27da46ab2008980d",
+        "code": "skech-iphone-14",
+        "name": "Skech iPhone 14",
+        "updated_at": "2025-05-20T10:08:07.470Z",
+        "created_at": "2025-05-20T10:08:07.470Z"
+    },
+    {
+        "_id": "682c5459fad982ba5c0e6175",
+        "brand_id": "682c535027da46ab2008717b",
+        "code": "motorola-moto-e14",
+        "name": "Motorola moto e14",
+        "updated_at": "2025-05-20T10:07:21.403Z",
+        "created_at": "2025-05-20T10:07:21.403Z"
+    },
+    {
+        "_id": "682c53f981441419fc0c7f9e",
+        "brand_id": "682c53f981441419fc0c7f9d",
+        "code": "nothing-phone-2",
+        "name": "Nothing Phone (2)",
+        "updated_at": "2025-05-20T10:05:45.218Z",
+        "created_at": "2025-05-20T10:05:45.218Z"
+    },
+    {
+        "_id": "682c55985f039578b9054e62",
+        "brand_id": "682c531827da46ab20085e64",
+        "code": "apple-mdgq4zma-mobile",
+        "name": "Apple MDGQ4ZM/A mobile",
+        "updated_at": "2025-05-20T10:12:40.571Z",
+        "created_at": "2025-05-20T10:12:40.571Z"
+    },
+    {
+        "_id": "682c5595cd1ded80520136e4",
+        "brand_id": "682c531827da46ab20085e64",
+        "code": "apple-mdgr4zma-mobile",
+        "name": "Apple MDGR4ZM/A mobile",
+        "updated_at": "2025-05-20T10:12:37.613Z",
+        "created_at": "2025-05-20T10:12:37.613Z"
+    },
+    {
+        "_id": "682c55e51c89e497840fa507",
+        "brand_id": "682c5360fad982ba5c0e2d69",
+        "code": "socket-mobile-ds840",
+        "name": "Socket Mobile DS840",
+        "updated_at": "2025-05-20T10:13:57.744Z",
+        "created_at": "2025-05-20T10:13:57.744Z"
+    },
+    {
+        "_id": "682c54f7cd1ded8052011c1f",
+        "brand_id": "682c53cd81441419fc0c76c1",
+        "code": "honor-200-5g",
+        "name": "Honor 200 5G",
+        "updated_at": "2025-05-20T10:09:59.488Z",
+        "created_at": "2025-05-20T10:09:59.488Z"
+    },
+    {
+        "_id": "682c535281441419fc0c58be",
+        "brand_id": "682c534cfad982ba5c0e271c",
+        "code": "doro-8100-155",
+        "name": "Doro 8100 15.5",
+        "updated_at": "2025-05-20T10:02:58.181Z",
+        "created_at": "2025-05-20T10:02:58.181Z"
+    },
+    {
+        "_id": "682c56691c89e497840fb607",
+        "brand_id": "682c539781441419fc0c6a6e",
+        "code": "google-pixel-9a",
+        "name": "Google Pixel 9a",
+        "updated_at": "2025-05-20T10:16:10.749Z",
+        "created_at": "2025-05-20T10:16:09.701Z"
+    },
+    {
+        "_id": "682c5918cd1ded805201993f",
+        "brand_id": "682c531927da46ab20085fac",
+        "code": "dicota-d80169-4ad-display",
+        "name": "DICOTA D80169-4AD display",
+        "updated_at": "2025-05-20T10:27:36.259Z",
+        "created_at": "2025-05-20T10:27:36.259Z"
+    },
+    {
+        "_id": "682c55355f039578b9053d4a",
+        "brand_id": "682c534cfad982ba5c0e271c",
+        "code": "doro-8200-155",
+        "name": "Doro 8200 15.5",
+        "updated_at": "2025-05-20T10:11:01.203Z",
+        "created_at": "2025-05-20T10:11:01.203Z"
+    },
+    {
+        "_id": "682c543d81441419fc0c8d2b",
+        "brand_id": "682c535027da46ab2008717b",
+        "code": "motorola-g34-165",
+        "name": "Motorola G34 16.5",
+        "updated_at": "2025-05-20T10:06:53.221Z",
+        "created_at": "2025-05-20T10:06:53.221Z"
+    },
+    {
+        "_id": "682c54adfad982ba5c0e712b",
+        "brand_id": "682c531927da46ab20085fac",
+        "code": "dicota-d70930-mobile",
+        "name": "DICOTA D70930 mobile",
+        "updated_at": "2025-05-20T10:08:45.674Z",
+        "created_at": "2025-05-20T10:08:45.674Z"
+    },
+    {
+        "_id": "682c53c881441419fc0c7623",
+        "brand_id": "682c531827da46ab20085ee6",
+        "code": "otterbox-glass-series",
+        "name": "OtterBox Glass Series",
+        "updated_at": "2025-05-20T10:04:56.985Z",
+        "created_at": "2025-05-20T10:04:56.985Z"
+    },
+    {
+        "_id": "682c54f4cd1ded8052011b76",
+        "brand_id": "682c53cd81441419fc0c76c1",
+        "code": "honor-x6b-167",
+        "name": "Honor X6b 16.7",
+        "updated_at": "2025-05-20T10:09:56.885Z",
+        "created_at": "2025-05-20T10:09:56.885Z"
+    },
+    {
+        "_id": "682c53cc81441419fc0c76aa",
+        "brand_id": "682c535027da46ab2008717b",
+        "code": "motorola-moto-g14",
+        "name": "Motorola moto g14",
+        "updated_at": "2025-05-20T10:05:00.946Z",
+        "created_at": "2025-05-20T10:05:00.946Z"
+    },
+    {
+        "_id": "682c54adfad982ba5c0e711f",
+        "brand_id": "682c531927da46ab20085fac",
+        "code": "dicota-d70935-mobile",
+        "name": "DICOTA D70935 mobile",
+        "updated_at": "2025-05-20T10:08:45.521Z",
+        "created_at": "2025-05-20T10:08:45.521Z"
+    },
+    {
+        "_id": "682c5519cd1ded8052012193",
+        "brand_id": "682c53cd81441419fc0c76c1",
+        "code": "honor-magic7-lite",
+        "name": "Honor Magic7 Lite",
+        "updated_at": "2025-05-20T10:10:33.781Z",
+        "created_at": "2025-05-20T10:10:33.781Z"
+    },
+    {
+        "_id": "682c545581441419fc0c8fe8",
+        "brand_id": "682c5442fad982ba5c0e5d22",
+        "code": "emporia-emporiasmart6-167",
+        "name": "Emporia emporiaSMART.6 16.7",
+        "updated_at": "2025-05-20T10:07:17.184Z",
+        "created_at": "2025-05-20T10:07:17.184Z"
+    },
+    {
+        "_id": "682c5457fad982ba5c0e60c2",
+        "brand_id": "682c53df81441419fc0c7a34",
+        "code": "dbramante1928-oslo",
+        "name": "dbramante1928 Oslo -",
+        "updated_at": "2025-05-20T10:07:19.386Z",
+        "created_at": "2025-05-20T10:07:19.386Z"
+    },
+    {
+        "_id": "682c53ae27da46ab2008889b",
+        "brand_id": "682c53ae27da46ab2008889a",
+        "code": "sony-xperia-5",
+        "name": "Sony Xperia 5",
+        "updated_at": "2025-05-20T10:04:30.653Z",
+        "created_at": "2025-05-20T10:04:30.653Z"
+    },
+    {
+        "_id": "682c5484fad982ba5c0e69bd",
+        "brand_id": "682c539781441419fc0c6a6e",
+        "code": "google-pixel-9",
+        "name": "Google Pixel 9",
+        "updated_at": "2025-05-20T10:08:04.365Z",
+        "created_at": "2025-05-20T10:08:04.365Z"
+    },
+    {
+        "_id": "682c55ab5f039578b9055102",
+        "brand_id": "682c531a81441419fc0c487a",
+        "code": "samsung-galaxy-a53",
+        "name": "Samsung Galaxy A53",
+        "updated_at": "2025-05-20T10:12:59.908Z",
+        "created_at": "2025-05-20T10:12:59.908Z"
+    },
+    {
+        "_id": "682c53c1fad982ba5c0e43b6",
+        "brand_id": "682c531827da46ab20085ee6",
+        "code": "otterbox-strada-folio",
+        "name": "OtterBox Strada Folio",
+        "updated_at": "2025-05-20T10:04:49.376Z",
+        "created_at": "2025-05-20T10:04:49.376Z"
+    },
+    {
+        "_id": "682c53cd81441419fc0c76d8",
+        "brand_id": "682c531a81441419fc0c487a",
+        "code": "samsung-galaxy-sm-a057gzsueub",
+        "name": "Samsung Galaxy SM-A057GZSUEUB",
+        "updated_at": "2025-05-20T10:05:01.363Z",
+        "created_at": "2025-05-20T10:05:01.363Z"
+    },
+    {
+        "_id": "682c54cd5f039578b9052c4b",
+        "brand_id": "682c54cd5f039578b9052c4a",
+        "code": "esd-applecare-iphone",
+        "name": "ESD APPLECARE+ IPHONE",
+        "updated_at": "2025-05-20T10:09:17.652Z",
+        "created_at": "2025-05-20T10:09:17.652Z"
+    },
+    {
+        "_id": "682c54f21c89e497840f7dfb",
+        "brand_id": "682c53cd81441419fc0c76c1",
+        "code": "honor-90-smart",
+        "name": "Honor 90 Smart",
+        "updated_at": "2025-05-20T10:09:54.290Z",
+        "created_at": "2025-05-20T10:09:54.290Z"
+    },
+    {
+        "_id": "682c5442fad982ba5c0e5cfd",
+        "brand_id": "682c539781441419fc0c6a6e",
+        "code": "google-pixel-fold",
+        "name": "Google Pixel Fold",
+        "updated_at": "2025-05-20T10:06:58.036Z",
+        "created_at": "2025-05-20T10:06:58.036Z"
+    },
+    {
+        "_id": "682c53abfad982ba5c0e3ead",
+        "brand_id": "682c536181441419fc0c5e46",
+        "code": "fairphone-5-164",
+        "name": "Fairphone 5 16.4",
+        "updated_at": "2025-05-20T10:04:27.101Z",
+        "created_at": "2025-05-20T10:04:27.101Z"
+    },
+    {
+        "_id": "682c5442fad982ba5c0e5d23",
+        "brand_id": "682c5442fad982ba5c0e5d22",
+        "code": "emporia-emporiame6-167",
+        "name": "Emporia emporiaME6 16.7",
+        "updated_at": "2025-05-20T10:06:58.494Z",
+        "created_at": "2025-05-20T10:06:58.494Z"
+    },
+    {
+        "_id": "682c551acd1ded8052012145",
+        "brand_id": "682c53cd81441419fc0c76c1",
+        "code": "honor-magic7-pro",
+        "name": "Honor Magic7 Pro",
+        "updated_at": "2025-05-20T10:10:34.734Z",
+        "created_at": "2025-05-20T10:10:34.734Z"
+    },
+    {
+        "_id": "682c549d81441419fc0c9e32",
+        "brand_id": "682c531a81441419fc0c487a",
+        "code": "samsung-galaxy-a16",
+        "name": "Samsung Galaxy A16",
+        "updated_at": "2025-05-20T10:08:29.092Z",
+        "created_at": "2025-05-20T10:08:29.092Z"
+    },
+    {
+        "_id": "682c548781441419fc0c99f9",
+        "brand_id": "682c531827da46ab20085e64",
+        "code": "apple-iphone-16",
+        "name": "Apple iPhone 16",
+        "updated_at": "2025-05-20T10:09:21.742Z",
+        "created_at": "2025-05-20T10:08:07.576Z"
+    },
+    {
+        "_id": "682c53c1fad982ba5c0e43a1",
+        "brand_id": "682c531827da46ab20085ee6",
+        "code": "otterbox-strada-via",
+        "name": "OtterBox Strada Via",
+        "updated_at": "2025-05-20T10:04:49.186Z",
+        "created_at": "2025-05-20T10:04:49.186Z"
+    },
+    {
+        "_id": "682c5451fad982ba5c0e5fa0",
+        "brand_id": "682c5451fad982ba5c0e5f9f",
+        "code": "hmd-pulse",
+        "name": "HMD Pulse -",
+        "updated_at": "2025-05-20T10:07:15.053Z",
+        "created_at": "2025-05-20T10:07:13.828Z"
+    },
+    {
+        "_id": "682c5366fad982ba5c0e2e7d",
+        "brand_id": "682c531827da46ab20085e52",
+        "code": "startechcom-2-m",
+        "name": "StarTech.com 2 m",
+        "updated_at": "2025-05-20T10:03:18.699Z",
+        "created_at": "2025-05-20T10:03:18.699Z"
+    },
+    {
+        "_id": "682c5344fad982ba5c0e2494",
+        "brand_id": "682c531827da46ab20085e64",
+        "code": "apple-iphone-13",
+        "name": "Apple iPhone 13",
+        "updated_at": "2025-05-20T10:02:44.904Z",
+        "created_at": "2025-05-20T10:02:44.904Z"
+    },
+    {
+        "_id": "682c548727da46ab2008b2dc",
+        "brand_id": "682c53fa27da46ab2008980d",
+        "code": "skech-iphone-12",
+        "name": "Skech iPhone 12",
+        "updated_at": "2025-05-20T10:08:07.831Z",
+        "created_at": "2025-05-20T10:08:07.831Z"
+    },
+    {
+        "_id": "682c54adfad982ba5c0e7125",
+        "brand_id": "682c531927da46ab20085fac",
+        "code": "dicota-d70931-mobile",
+        "name": "DICOTA D70931 mobile",
+        "updated_at": "2025-05-20T10:08:45.594Z",
+        "created_at": "2025-05-20T10:08:45.594Z"
+    },
+    {
+        "_id": "682c54f4cd1ded8052011b7d",
+        "brand_id": "682c53cd81441419fc0c76c1",
+        "code": "honor-200-pro",
+        "name": "Honor 200 Pro",
+        "updated_at": "2025-05-20T10:09:56.990Z",
+        "created_at": "2025-05-20T10:09:56.990Z"
+    },
+    {
+        "_id": "682c55101c89e497840f837c",
+        "brand_id": "682c535027da46ab2008717b",
+        "code": "motorola-moto-g75",
+        "name": "Motorola moto G75",
+        "updated_at": "2025-05-20T10:10:24.028Z",
+        "created_at": "2025-05-20T10:10:24.028Z"
+    },
+    {
+        "_id": "682c5594cd1ded80520136a0",
+        "brand_id": "682c531a81441419fc0c487a",
+        "code": "samsung-galaxy-a26",
+        "name": "Samsung Galaxy A26",
+        "updated_at": "2025-05-20T10:12:36.266Z",
+        "created_at": "2025-05-20T10:12:36.266Z"
+    },
+    {
+        "_id": "682c54eacd1ded8052011ad0",
+        "brand_id": "682c54eacd1ded8052011acf",
+        "code": "jcb-toughphone-max",
+        "name": "JCB Toughphone Max",
+        "updated_at": "2025-05-20T10:09:46.314Z",
+        "created_at": "2025-05-20T10:09:46.314Z"
+    },
+    {
+        "_id": "682c54adfad982ba5c0e7122",
+        "brand_id": "682c531927da46ab20085fac",
+        "code": "dicota-d70934-mobile",
+        "name": "DICOTA D70934 mobile",
+        "updated_at": "2025-05-20T10:08:45.557Z",
+        "created_at": "2025-05-20T10:08:45.557Z"
+    },
+    {
+        "_id": "682c548f27da46ab2008b42c",
+        "brand_id": "682c531981441419fc0c4813",
+        "code": "tech21-evolite-mobile",
+        "name": "Tech21 EvoLite mobile",
+        "updated_at": "2025-05-20T10:08:15.887Z",
+        "created_at": "2025-05-20T10:08:15.887Z"
+    },
+    {
+        "_id": "682c54adfad982ba5c0e713a",
+        "brand_id": "682c531927da46ab20085fac",
+        "code": "dicota-d70923-mobile",
+        "name": "DICOTA D70923 mobile",
+        "updated_at": "2025-05-20T10:08:45.864Z",
+        "created_at": "2025-05-20T10:08:45.864Z"
+    },
+    {
+        "_id": "682c54f5cd1ded8052011b80",
+        "brand_id": "682c53cd81441419fc0c76c1",
+        "code": "honor-200-lite",
+        "name": "Honor 200 Lite",
+        "updated_at": "2025-05-20T10:09:57.030Z",
+        "created_at": "2025-05-20T10:09:57.030Z"
+    },
+    {
+        "_id": "682c531981441419fc0c480a",
+        "brand_id": "682c531981441419fc0c4809",
+        "code": "urban-armor-gear",
+        "name": "Urban Armor Gear",
+        "updated_at": "2025-05-20T10:02:01.729Z",
+        "created_at": "2025-05-20T10:02:01.729Z"
+    },
+    {
+        "_id": "682c53c681441419fc0c7555",
+        "brand_id": "682c53c1fad982ba5c0e43c7",
+        "code": "panzerglass-hardcase",
+        "name": "PanzerGlass ® HardCase",
+        "updated_at": "2025-05-20T10:04:55.002Z",
+        "created_at": "2025-05-20T10:04:55.002Z"
+    },
+    {
+        "_id": "682c54adfad982ba5c0e7137",
+        "brand_id": "682c531927da46ab20085fac",
+        "code": "dicota-d70928-mobile",
+        "name": "DICOTA D70928 mobile",
+        "updated_at": "2025-05-20T10:08:45.828Z",
+        "created_at": "2025-05-20T10:08:45.828Z"
+    },
+    {
+        "_id": "682c53af81441419fc0c6fd0",
+        "brand_id": "682c531827da46ab20085e64",
+        "code": "apple-iphone-15",
+        "name": "Apple iPhone 15",
+        "updated_at": "2025-05-20T10:04:31.580Z",
+        "created_at": "2025-05-20T10:04:31.580Z"
+    },
+    {
+        "_id": "682c55005f039578b9053469",
+        "brand_id": "682c535027da46ab2008717b",
+        "code": "motorola-moto-g35",
+        "name": "Motorola moto g35",
+        "updated_at": "2025-05-20T10:10:11.925Z",
+        "created_at": "2025-05-20T10:10:08.599Z"
+    },
+    {
+        "_id": "682c59171c89e497840ffbe2",
+        "brand_id": "682c535027da46ab2008717b",
+        "code": "motorola-moto-g73",
+        "name": "Motorola moto g73",
+        "updated_at": "2025-05-20T10:27:35.144Z",
+        "created_at": "2025-05-20T10:27:35.144Z"
+    },
+    {
+        "_id": "682c540e81441419fc0c8483",
+        "brand_id": "682c531a81441419fc0c487a",
+        "code": "samsung-galaxy-a55",
+        "name": "Samsung Galaxy A55",
+        "updated_at": "2025-05-20T10:06:06.978Z",
+        "created_at": "2025-05-20T10:06:06.978Z"
+    },
+    {
+        "_id": "682c540f81441419fc0c848d",
+        "brand_id": "682c531a81441419fc0c487a",
+        "code": "samsung-galaxy-a35",
+        "name": "Samsung Galaxy A35",
+        "updated_at": "2025-05-20T10:06:07.085Z",
+        "created_at": "2025-05-20T10:06:07.085Z"
+    },
+    {
+        "_id": "682c55985f039578b9054e53",
+        "brand_id": "682c531827da46ab20085e64",
+        "code": "apple-mdgm4zma-mobile",
+        "name": "Apple MDGM4ZM/A mobile",
+        "updated_at": "2025-05-20T10:12:40.266Z",
+        "created_at": "2025-05-20T10:12:40.266Z"
+    },
+    {
+        "_id": "682c55995f039578b9054e90",
+        "brand_id": "682c531827da46ab20085e64",
+        "code": "apple-mdgw4zma-mobile",
+        "name": "Apple MDGW4ZM/A mobile",
+        "updated_at": "2025-05-20T10:12:41.543Z",
+        "created_at": "2025-05-20T10:12:41.543Z"
+    },
+    {
+        "_id": "682c548a27da46ab2008b390",
+        "brand_id": "682c53acfad982ba5c0e3f22",
+        "code": "epico-90912151000002-mobile",
+        "name": "Epico 90912151000002 mobile",
+        "updated_at": "2025-05-20T10:08:10.215Z",
+        "created_at": "2025-05-20T10:08:10.215Z"
+    },
+    {
+        "_id": "682c55021c89e497840f811c",
+        "brand_id": "682c535027da46ab2008717b",
+        "code": "motorola-moto-g24",
+        "name": "Motorola moto g24",
+        "updated_at": "2025-05-20T10:10:10.022Z",
+        "created_at": "2025-05-20T10:10:10.022Z"
+    },
+    {
+        "_id": "682c53b1fad982ba5c0e4088",
+        "brand_id": "682c539781441419fc0c6a6e",
+        "code": "google-pixel-8",
+        "name": "Google Pixel 8",
+        "updated_at": "2025-05-20T10:04:33.042Z",
+        "created_at": "2025-05-20T10:04:33.042Z"
+    },
+    {
+        "_id": "682c557a5f039578b9054901",
+        "brand_id": "682c531827da46ab20085e64",
+        "code": "apple-md3p4zma-mobile",
+        "name": "Apple MD3P4ZM/A mobile",
+        "updated_at": "2025-05-20T10:12:10.998Z",
+        "created_at": "2025-05-20T10:12:10.998Z"
+    },
+    {
+        "_id": "682c5504cd1ded8052011eaf",
+        "brand_id": "682c5388fad982ba5c0e3743",
+        "code": "nokia-g11-166",
+        "name": "Nokia G11 16.6",
+        "updated_at": "2025-05-20T10:10:12.179Z",
+        "created_at": "2025-05-20T10:10:12.179Z"
+    },
+    {
+        "_id": "682c548781441419fc0c9a02",
+        "brand_id": "682c531881441419fc0c46d3",
+        "code": "belkin-ova169hq-mobile",
+        "name": "Belkin OVA169HQ mobile",
+        "updated_at": "2025-05-20T10:08:07.697Z",
+        "created_at": "2025-05-20T10:08:07.697Z"
+    },
+    {
+        "_id": "682c53c1fad982ba5c0e43c8",
+        "brand_id": "682c53c1fad982ba5c0e43c7",
+        "code": "panzerglass-privacy",
+        "name": "PanzerGlass ® Privacy",
+        "updated_at": "2025-05-20T10:04:49.510Z",
+        "created_at": "2025-05-20T10:04:49.510Z"
+    },
+    {
+        "_id": "682c53cd81441419fc0c770f",
+        "brand_id": "682c531a81441419fc0c487a",
+        "code": "samsung-galaxy-s24",
+        "name": "Samsung Galaxy S24",
+        "updated_at": "2025-05-20T10:13:07.440Z",
+        "created_at": "2025-05-20T10:05:01.817Z"
+    },
+    {
+        "_id": "682c5593cd1ded8052013669",
+        "brand_id": "682c531a81441419fc0c487a",
+        "code": "samsung-galaxy-a36",
+        "name": "Samsung Galaxy A36",
+        "updated_at": "2025-05-20T10:12:35.270Z",
+        "created_at": "2025-05-20T10:12:35.270Z"
+    },
+    {
+        "_id": "682c53ca27da46ab20088e76",
+        "brand_id": "682c53acfad982ba5c0e3f22",
+        "code": "epico-mag-mobile",
+        "name": "Epico Mag+ mobile",
+        "updated_at": "2025-05-20T10:04:58.881Z",
+        "created_at": "2025-05-20T10:04:58.881Z"
+    },
+    {
+        "_id": "682c53c781441419fc0c756e",
+        "brand_id": "682c53c1fad982ba5c0e43c7",
+        "code": "panzerglass-safe-by",
+        "name": "PanzerGlass SAFE. by",
+        "updated_at": "2025-05-20T10:04:55.254Z",
+        "created_at": "2025-05-20T10:04:55.254Z"
+    },
+    {
+        "_id": "682c554bcd1ded8052012a6a",
+        "brand_id": "682c5388fad982ba5c0e3743",
+        "code": "nokia-x30-5g",
+        "name": "Nokia X30 5G",
+        "updated_at": "2025-05-20T10:11:23.761Z",
+        "created_at": "2025-05-20T10:11:23.761Z"
+    },
+    {
+        "_id": "682c538827da46ab20087ffe",
+        "brand_id": "682c538827da46ab20087ffd",
+        "code": "tcl-40-406",
+        "name": "TCL 40 406",
+        "updated_at": "2025-05-20T10:03:52.457Z",
+        "created_at": "2025-05-20T10:03:52.457Z"
+    },
+    {
+        "_id": "682c53a681441419fc0c6d88",
+        "brand_id": "682c5388fad982ba5c0e3743",
+        "code": "nokia-c-c12",
+        "name": "Nokia C C12",
+        "updated_at": "2025-05-20T10:04:22.071Z",
+        "created_at": "2025-05-20T10:04:22.071Z"
+    },
+    {
+        "_id": "682c53ca27da46ab20088e7e",
+        "brand_id": "682c53acfad982ba5c0e3f22",
+        "code": "epico-mag-hero",
+        "name": "Epico Mag+ Hero",
+        "updated_at": "2025-05-20T10:04:58.953Z",
+        "created_at": "2025-05-20T10:04:58.953Z"
+    },
+    {
+        "_id": "682c55e31c89e497840fa4a1",
+        "brand_id": "682c53acfad982ba5c0e3f22",
+        "code": "epico-90812151000003-mobile",
+        "name": "Epico 90812151000003 mobile",
+        "updated_at": "2025-05-20T10:13:55.699Z",
+        "created_at": "2025-05-20T10:13:55.699Z"
+    },
+    {
+        "_id": "682c55475f039578b9054007",
+        "brand_id": "682c53acfad982ba5c0e3f22",
+        "code": "epico-91012151000002-mobile",
+        "name": "Epico 91012151000002 mobile",
+        "updated_at": "2025-05-20T10:11:19.244Z",
+        "created_at": "2025-05-20T10:11:19.244Z"
+    },
+    {
+        "_id": "682c53c3fad982ba5c0e44b1",
+        "brand_id": "682c531827da46ab20085e64",
+        "code": "apple-iphone-12",
+        "name": "Apple iPhone 12",
+        "updated_at": "2025-05-20T10:04:51.531Z",
+        "created_at": "2025-05-20T10:04:51.531Z"
+    },
+    {
+        "_id": "682c53a681441419fc0c6d85",
+        "brand_id": "682c5388fad982ba5c0e3743",
+        "code": "nokia-c-c02",
+        "name": "Nokia C C02",
+        "updated_at": "2025-05-20T10:04:22.051Z",
+        "created_at": "2025-05-20T10:04:22.051Z"
+    },
+    {
+        "_id": "682c538e81441419fc0c6788",
+        "brand_id": "682c535027da46ab2008717b",
+        "code": "motorola-thinkphone-166",
+        "name": "Motorola ThinkPhone 16.6",
+        "updated_at": "2025-05-20T10:03:58.227Z",
+        "created_at": "2025-05-20T10:03:58.227Z"
+    },
+    {
+        "_id": "682c55891c89e497840f9739",
+        "brand_id": "682c55891c89e497840f9738",
+        "code": "apple3rd-apple-iphone",
+        "name": "APPLE3RD APPLE IPHONE",
+        "updated_at": "2025-05-20T10:12:25.547Z",
+        "created_at": "2025-05-20T10:12:25.547Z"
+    },
+    {
+        "_id": "682c553c5f039578b9053e67",
+        "brand_id": "682c535027da46ab2008717b",
+        "code": "motorola-moto-g05",
+        "name": "Motorola moto g05",
+        "updated_at": "2025-05-20T10:11:08.733Z",
+        "created_at": "2025-05-20T10:11:08.733Z"
+    },
+    {
+        "_id": "682c5366fad982ba5c0e2e8e",
+        "brand_id": "682c531827da46ab20085e52",
+        "code": "startechcom-3-m",
+        "name": "StarTech.com 3 m",
+        "updated_at": "2025-05-20T10:03:18.816Z",
+        "created_at": "2025-05-20T10:03:18.816Z"
+    },
+    {
+        "_id": "682c5452fad982ba5c0e5fff",
+        "brand_id": "682c5451fad982ba5c0e5f9f",
+        "code": "hmd-pulse-pro",
+        "name": "HMD Pulse Pro",
+        "updated_at": "2025-05-20T10:07:14.992Z",
+        "created_at": "2025-05-20T10:07:14.992Z"
+    },
+    {
+        "_id": "682c551a5f039578b90538d6",
+        "brand_id": "682c531827da46ab20085e29",
+        "code": "hp-elite-x3",
+        "name": "HP Elite x3",
+        "updated_at": "2025-05-20T10:10:34.755Z",
+        "created_at": "2025-05-20T10:10:34.755Z"
+    },
+    {
+        "_id": "682c548881441419fc0c9a3f",
+        "brand_id": "682c531881441419fc0c46d3",
+        "code": "belkin-glass-priv",
+        "name": "Belkin GLASS PRIV",
+        "updated_at": "2025-05-20T10:08:08.574Z",
+        "created_at": "2025-05-20T10:08:08.574Z"
+    },
+    {
+        "_id": "682c548081441419fc0c9952",
+        "brand_id": "682c53df81441419fc0c7a34",
+        "code": "dbramante1928-iceland-pro",
+        "name": "dbramante1928 Iceland Pro",
+        "updated_at": "2025-05-20T10:08:00.961Z",
+        "created_at": "2025-05-20T10:08:00.961Z"
+    },
+    {
+        "_id": "682c55495f039578b90540b2",
+        "brand_id": "682c55495f039578b905408a",
+        "code": "tcl-30-17",
+        "name": "TCL 30 17",
+        "updated_at": "2025-05-20T10:11:21.672Z",
+        "created_at": "2025-05-20T10:11:21.672Z"
+    },
+    {
+        "_id": "682c538e81441419fc0c6782",
+        "brand_id": "682c535027da46ab2008717b",
+        "code": "motorola-edge-30",
+        "name": "Motorola edge 30",
+        "updated_at": "2025-05-20T10:03:58.187Z",
+        "created_at": "2025-05-20T10:03:58.187Z"
+    },
+    {
+        "_id": "682c5442fad982ba5c0e5d26",
+        "brand_id": "682c539781441419fc0c6a6e",
+        "code": "google-pixel-8a",
+        "name": "Google Pixel 8a",
+        "updated_at": "2025-05-20T10:06:58.525Z",
+        "created_at": "2025-05-20T10:06:58.525Z"
+    },
+    {
+        "_id": "682c54fe1c89e497840f8047",
+        "brand_id": "682c5442fad982ba5c0e5d22",
+        "code": "emporia-emporiasmart6lite-138",
+        "name": "Emporia emporiaSMART.6lite 13.8",
+        "updated_at": "2025-05-20T10:10:06.836Z",
+        "created_at": "2025-05-20T10:10:06.836Z"
+    },
+    {
+        "_id": "682c5899cd1ded8052018dba",
+        "brand_id": "682c535027da46ab2008717b",
+        "code": "motorola-razr-60",
+        "name": "Motorola razr 60",
+        "updated_at": "2025-05-20T10:25:29.923Z",
+        "created_at": "2025-05-20T10:25:29.923Z"
+    },
+    {
+        "_id": "682c544a27da46ab2008a795",
+        "brand_id": "682c535027da46ab2008717b",
+        "code": "motorola-moto-g",
+        "name": "Motorola Moto G",
+        "updated_at": "2025-05-20T10:07:06.603Z",
+        "created_at": "2025-05-20T10:07:06.603Z"
+    },
+    {
+        "_id": "682c554b5f039578b9054137",
+        "brand_id": "682c535027da46ab2008717b",
+        "code": "motorola-edge-20",
+        "name": "Motorola Edge 20",
+        "updated_at": "2025-05-20T10:11:23.764Z",
+        "created_at": "2025-05-20T10:11:23.764Z"
+    },
+    {
+        "_id": "682c54aefad982ba5c0e7148",
+        "brand_id": "682c531927da46ab20085fac",
+        "code": "dicota-d70922-mobile",
+        "name": "DICOTA D70922 mobile",
+        "updated_at": "2025-05-20T10:08:46.043Z",
+        "created_at": "2025-05-20T10:08:46.043Z"
+    },
+    {
+        "_id": "682c551a1c89e497840f8415",
+        "brand_id": "682c551a1c89e497840f8414",
+        "code": "oppo-reno-12",
+        "name": "OPPO Reno 12",
+        "updated_at": "2025-05-20T10:10:34.387Z",
+        "created_at": "2025-05-20T10:10:34.387Z"
+    },
+    {
+        "_id": "682c55335f039578b9053cf0",
+        "brand_id": "682c531a81441419fc0c487a",
+        "code": "samsung-galaxy-a23",
+        "name": "Samsung Galaxy A23",
+        "updated_at": "2025-05-20T10:10:59.942Z",
+        "created_at": "2025-05-20T10:10:59.942Z"
+    },
+    {
+        "_id": "682c55985f039578b9054e49",
+        "brand_id": "682c531827da46ab20085e64",
+        "code": "apple-mdgp4zma-mobile",
+        "name": "Apple MDGP4ZM/A mobile",
+        "updated_at": "2025-05-20T10:12:40.084Z",
+        "created_at": "2025-05-20T10:12:40.084Z"
+    },
+    {
+        "_id": "682c5388fad982ba5c0e372b",
+        "brand_id": "682c531a81441419fc0c487a",
+        "code": "samsung-galaxy-a34",
+        "name": "Samsung Galaxy A34",
+        "updated_at": "2025-05-20T10:03:52.010Z",
+        "created_at": "2025-05-20T10:03:52.010Z"
+    },
+    {
+        "_id": "682c53fffad982ba5c0e507a",
+        "brand_id": "682c53fffad982ba5c0e5079",
+        "code": "ocushield-anti-blue",
+        "name": "Ocushield Anti Blue",
+        "updated_at": "2025-05-20T10:05:51.266Z",
+        "created_at": "2025-05-20T10:05:51.266Z"
+    },
+    {
+        "_id": "682c557b5f039578b9054928",
+        "brand_id": "682c531827da46ab20085e64",
+        "code": "apple-md3x4zma-mobile",
+        "name": "Apple MD3X4ZM/A mobile",
+        "updated_at": "2025-05-20T10:12:11.619Z",
+        "created_at": "2025-05-20T10:12:11.619Z"
+    },
+    {
+        "_id": "682c53c2fad982ba5c0e441f",
+        "brand_id": "682c531827da46ab20085ee6",
+        "code": "otterbox-react-series",
+        "name": "OtterBox React Series",
+        "updated_at": "2025-05-20T10:04:50.221Z",
+        "created_at": "2025-05-20T10:04:50.221Z"
+    },
+    {
+        "_id": "682c548881441419fc0c9a32",
+        "brand_id": "682c531881441419fc0c46d3",
+        "code": "belkin-sfa121zw-mobile",
+        "name": "Belkin SFA121ZW mobile",
+        "updated_at": "2025-05-20T10:08:08.393Z",
+        "created_at": "2025-05-20T10:08:08.393Z"
+    },
+    {
+        "_id": "682c55961c89e497840f9952",
+        "brand_id": "682c535027da46ab2008717b",
+        "code": "motorola-g32-165",
+        "name": "Motorola g32 16.5",
+        "updated_at": "2025-05-20T10:12:38.340Z",
+        "created_at": "2025-05-20T10:12:38.340Z"
+    },
+    {
+        "_id": "682c548781441419fc0c9a05",
+        "brand_id": "682c531827da46ab20085e64",
+        "code": "apple-beats-iphone",
+        "name": "Apple Beats iPhone",
+        "updated_at": "2025-05-20T10:08:07.730Z",
+        "created_at": "2025-05-20T10:08:07.730Z"
+    },
+    {
+        "_id": "682c54d35f039578b9052e02",
+        "brand_id": "682c53cd81441419fc0c76c1",
+        "code": "honor-handy-90",
+        "name": "Honor Handy 90",
+        "updated_at": "2025-05-20T10:09:23.589Z",
+        "created_at": "2025-05-20T10:09:23.589Z"
+    },
+    {
+        "_id": "682c55011c89e497840f8103",
+        "brand_id": "682c5451fad982ba5c0e5f9f",
+        "code": "hmd-fusion-business",
+        "name": "HMD Fusion Business",
+        "updated_at": "2025-05-20T10:10:09.689Z",
+        "created_at": "2025-05-20T10:10:09.689Z"
+    },
+    {
+        "_id": "682c554c1c89e497840f8d27",
+        "brand_id": "682c53acfad982ba5c0e3f22",
+        "code": "epico-hero-clear",
+        "name": "Epico Hero Clear",
+        "updated_at": "2025-05-20T10:11:24.842Z",
+        "created_at": "2025-05-20T10:11:24.842Z"
+    },
+    {
+        "_id": "682c55c95f039578b9055584",
+        "brand_id": "682c535027da46ab2008717b",
+        "code": "motorola-moto-g23",
+        "name": "Motorola moto g23",
+        "updated_at": "2025-05-20T10:13:29.162Z",
+        "created_at": "2025-05-20T10:13:29.162Z"
+    },
+    {
+        "_id": "682c545e27da46ab2008aaea",
+        "brand_id": "682c535027da46ab2008717b",
+        "code": "motorola-razr-50",
+        "name": "Motorola razr 50",
+        "updated_at": "2025-05-20T10:07:26.154Z",
+        "created_at": "2025-05-20T10:07:26.154Z"
+    },
+    {
+        "_id": "682c559a5f039578b9054ed7",
+        "brand_id": "682c531827da46ab20085e64",
+        "code": "apple-mdgy4zma-mobile",
+        "name": "Apple MDGY4ZM/A mobile",
+        "updated_at": "2025-05-20T10:12:42.969Z",
+        "created_at": "2025-05-20T10:12:42.969Z"
+    },
+    {
+        "_id": "682c5388fad982ba5c0e375c",
+        "brand_id": "682c531a81441419fc0c487a",
+        "code": "samsung-galaxy-a54",
+        "name": "Samsung Galaxy A54",
+        "updated_at": "2025-05-20T10:03:52.447Z",
+        "created_at": "2025-05-20T10:03:52.447Z"
+    },
+    {
+        "_id": "682c5388fad982ba5c0e3744",
+        "brand_id": "682c5388fad982ba5c0e3743",
+        "code": "nokia-g22-166",
+        "name": "Nokia G22 16.6",
+        "updated_at": "2025-05-20T10:03:52.217Z",
+        "created_at": "2025-05-20T10:03:52.217Z"
+    },
+    {
+        "_id": "682c55e31c89e497840fa492",
+        "brand_id": "682c53c1fad982ba5c0e43c7",
+        "code": "panzerglass-pictureperfect",
+        "name": "PanzerGlass ® PicturePerfect",
+        "updated_at": "2025-05-20T10:13:55.443Z",
+        "created_at": "2025-05-20T10:13:55.443Z"
+    },
+    {
+        "_id": "682c543027da46ab2008a2f0",
+        "brand_id": "682c531827da46ab20085ee6",
+        "code": "otterbox-premium-pro",
+        "name": "OtterBox Premium Pro",
+        "updated_at": "2025-05-20T10:06:40.348Z",
+        "created_at": "2025-05-20T10:06:40.348Z"
+    },
+    {
+        "_id": "682c557b5f039578b905493d",
+        "brand_id": "682c535027da46ab2008717b",
+        "code": "motorola-moto-e15",
+        "name": "Motorola moto e15",
+        "updated_at": "2025-05-20T10:12:11.960Z",
+        "created_at": "2025-05-20T10:12:11.960Z"
+    },
+    {
+        "_id": "682c53c981441419fc0c7640",
+        "brand_id": "682c531827da46ab20085ee6",
+        "code": "otterbox-defender-xt",
+        "name": "OtterBox Defender XT",
+        "updated_at": "2025-05-20T10:04:57.263Z",
+        "created_at": "2025-05-20T10:04:57.263Z"
+    },
+    {
+        "_id": "682c543f81441419fc0c8dd5",
+        "brand_id": "682c535027da46ab2008717b",
+        "code": "motorola-g04-167",
+        "name": "Motorola G04 16.7",
+        "updated_at": "2025-05-20T10:06:55.242Z",
+        "created_at": "2025-05-20T10:06:55.242Z"
+    },
+    {
+        "_id": "682c589d5f039578b905a381",
+        "brand_id": "682c53ae27da46ab2008889a",
+        "code": "sony-xperia-1",
+        "name": "Sony Xperia 1",
+        "updated_at": "2025-05-20T10:25:33.167Z",
+        "created_at": "2025-05-20T10:25:33.167Z"
+    },
+    {
+        "_id": "682c590c1c89e497840ffa74",
+        "brand_id": "682c590c1c89e497840ffa73",
+        "code": "app-ace-ace",
+        "name": "APP ACE ACE",
+        "updated_at": "2025-05-20T10:27:24.691Z",
+        "created_at": "2025-05-20T10:27:24.691Z"
+    },
+    {
+        "_id": "682c53cd81441419fc0c76cf",
+        "brand_id": "682c531a81441419fc0c487a",
+        "code": "samsung-galaxy-sm-a156b",
+        "name": "Samsung Galaxy SM-A156B",
+        "updated_at": "2025-05-20T10:05:01.281Z",
+        "created_at": "2025-05-20T10:05:01.281Z"
+    },
+    {
+        "_id": "682c536181441419fc0c5e47",
+        "brand_id": "682c536181441419fc0c5e46",
+        "code": "fairphone-4-16",
+        "name": "Fairphone 4 16",
+        "updated_at": "2025-05-20T10:03:13.518Z",
+        "created_at": "2025-05-20T10:03:13.518Z"
+    },
+    {
+        "_id": "682c55975f039578b9054e41",
+        "brand_id": "682c531827da46ab20085e64",
+        "code": "apple-mdg14zma-mobile",
+        "name": "Apple MDG14ZM/A mobile",
+        "updated_at": "2025-05-20T10:12:39.953Z",
+        "created_at": "2025-05-20T10:12:39.953Z"
+    },
+    {
+        "_id": "682c55ad5f039578b9055163",
+        "brand_id": "682c55ad5f039578b9055162",
+        "code": "backbone-one-for",
+        "name": "Backbone One for",
+        "updated_at": "2025-05-20T10:13:01.504Z",
+        "created_at": "2025-05-20T10:13:01.504Z"
+    },
+    {
+        "_id": "682c53c581441419fc0c74bd",
+        "brand_id": "682c531827da46ab20085e64",
+        "code": "apple-iphone-se",
+        "name": "Apple iPhone SE",
+        "updated_at": "2025-05-20T10:04:53.473Z",
+        "created_at": "2025-05-20T10:04:53.473Z"
+    },
+    {
+        "_id": "682c535e27da46ab20087601",
+        "brand_id": "682c532027da46ab20086127",
+        "code": "manhattan-usb-c-to",
+        "name": "Manhattan USB-C to",
+        "updated_at": "2025-05-20T10:03:10.441Z",
+        "created_at": "2025-05-20T10:03:10.441Z"
+    },
+    {
+        "_id": "682c554dcd1ded8052012ad0",
+        "brand_id": "682c535027da46ab2008717b",
+        "code": "motorola-moto-g13",
+        "name": "Motorola moto g13",
+        "updated_at": "2025-05-20T10:11:25.142Z",
+        "created_at": "2025-05-20T10:11:25.142Z"
+    },
+    {
+        "_id": "682c548927da46ab2008b378",
+        "brand_id": "682c53acfad982ba5c0e3f22",
+        "code": "epico-hero-mobile",
+        "name": "Epico Hero mobile",
+        "updated_at": "2025-05-20T10:08:09.900Z",
+        "created_at": "2025-05-20T10:08:09.900Z"
+    },
+    {
+        "_id": "682c554b5f039578b905411d",
+        "brand_id": "682c531881441419fc0c46d3",
+        "code": "belkin-sfa119zw-mobile",
+        "name": "Belkin SFA119ZW mobile",
+        "updated_at": "2025-05-20T10:11:23.319Z",
+        "created_at": "2025-05-20T10:11:23.319Z"
+    },
+    {
+        "_id": "682c55945f039578b9054d9a",
+        "brand_id": "682c531881441419fc0c46d3",
+        "code": "belkin-magnetic-protectcase",
+        "name": "Belkin MAGNETIC PROTECTCASE",
+        "updated_at": "2025-05-20T10:12:36.603Z",
+        "created_at": "2025-05-20T10:12:36.603Z"
+    },
+    {
+        "_id": "682c55975f039578b9054e3e",
+        "brand_id": "682c531827da46ab20085e64",
+        "code": "apple-mdg04zma-mobile",
+        "name": "Apple MDG04ZM/A mobile",
+        "updated_at": "2025-05-20T10:12:39.910Z",
+        "created_at": "2025-05-20T10:12:39.910Z"
+    },
+    {
+        "_id": "682c53cb27da46ab20088e89",
+        "brand_id": "682c53c1fad982ba5c0e43c7",
+        "code": "panzerglass-3-in-1",
+        "name": "PanzerGlass ® 3-in-1",
+        "updated_at": "2025-05-20T10:04:59.068Z",
+        "created_at": "2025-05-20T10:04:59.068Z"
+    },
+    {
+        "_id": "682c54adfad982ba5c0e7145",
+        "brand_id": "682c531927da46ab20085fac",
+        "code": "dicota-d70926-mobile",
+        "name": "DICOTA D70926 mobile",
+        "updated_at": "2025-05-20T10:08:46.005Z",
+        "created_at": "2025-05-20T10:08:46.005Z"
+    },
+    {
+        "_id": "682c548981441419fc0c9a98",
+        "brand_id": "682c531881441419fc0c46d3",
+        "code": "belkin-ova159hq-mobile",
+        "name": "Belkin OVA159HQ mobile",
+        "updated_at": "2025-05-20T10:08:09.999Z",
+        "created_at": "2025-05-20T10:08:09.999Z"
+    },
+    {
+        "_id": "682c5500cd1ded8052011dac",
+        "brand_id": "682c535027da46ab2008717b",
+        "code": "motorola-moto-g55",
+        "name": "Motorola moto g55",
+        "updated_at": "2025-05-20T10:10:08.341Z",
+        "created_at": "2025-05-20T10:10:08.341Z"
+    },
+    {
+        "_id": "682c5452fad982ba5c0e5ffc",
+        "brand_id": "682c5451fad982ba5c0e5f9f",
+        "code": "hmd-pulse-business",
+        "name": "HMD Pulse+ Business",
+        "updated_at": "2025-05-20T10:07:14.962Z",
+        "created_at": "2025-05-20T10:07:14.962Z"
+    },
+    {
+        "_id": "682c53cb27da46ab20088eb3",
+        "brand_id": "682c53c1fad982ba5c0e43c7",
+        "code": "panzerglass-clearcase",
+        "name": "PanzerGlass ® ClearCase",
+        "updated_at": "2025-05-20T10:07:45.133Z",
+        "created_at": "2025-05-20T10:04:59.511Z"
+    },
+    {
+        "_id": "682c55ae5f039578b9055195",
+        "brand_id": "682c533281441419fc0c4ff4",
+        "code": "asus-zenfone-8",
+        "name": "ASUS ZenFone 8",
+        "updated_at": "2025-05-20T10:13:02.340Z",
+        "created_at": "2025-05-20T10:13:02.340Z"
+    },
+    {
+        "_id": "682c531827da46ab20085f66",
+        "brand_id": "682c531827da46ab20085e52",
+        "code": "startechcom-1-m",
+        "name": "StarTech.com 1 m",
+        "updated_at": "2025-05-20T10:02:00.892Z",
+        "created_at": "2025-05-20T10:02:00.892Z"
+    },
+    {
+        "_id": "682c59215f039578b905b069",
+        "brand_id": "682c54b65f039578b9052891",
+        "code": "xiaomi-redmi-14c",
+        "name": "Xiaomi Redmi 14C",
+        "updated_at": "2025-05-20T10:27:45.269Z",
+        "created_at": "2025-05-20T10:27:45.269Z"
+    },
+    {
+        "_id": "682c544881441419fc0c8e0f",
+        "brand_id": "682c535027da46ab2008717b",
+        "code": "motorola-edge-50",
+        "name": "Motorola edge 50",
+        "updated_at": "2025-05-20T10:07:04.716Z",
+        "created_at": "2025-05-20T10:07:04.716Z"
+    },
+    {
+        "_id": "682c55a61c89e497840f9ba8",
+        "brand_id": "682c535381441419fc0c5971",
+        "code": "mobilis-066070-mobile",
+        "name": "Mobilis 066070 mobile",
+        "updated_at": "2025-05-20T10:12:54.710Z",
+        "created_at": "2025-05-20T10:12:54.710Z"
+    },
+    {
+        "_id": "682c53c4fad982ba5c0e4545",
+        "brand_id": "682c531981441419fc0c4813",
+        "code": "tech21-evo-sparkle",
+        "name": "Tech21 EVO SPARKLE",
+        "updated_at": "2025-05-20T10:07:08.638Z",
+        "created_at": "2025-05-20T10:04:52.819Z"
+    },
+    {
+        "_id": "682c54acfad982ba5c0e70ba",
+        "brand_id": "682c53c1fad982ba5c0e43c7",
+        "code": "panzerglass-care-by",
+        "name": "PanzerGlass CARE by",
+        "updated_at": "2025-05-20T10:08:44.025Z",
+        "created_at": "2025-05-20T10:08:44.025Z"
+    },
+    {
+        "_id": "682c55985f039578b9054e71",
+        "brand_id": "682c531827da46ab20085e64",
+        "code": "apple-mdfy4zma-mobile",
+        "name": "Apple MDFY4ZM/A mobile",
+        "updated_at": "2025-05-20T10:12:40.870Z",
+        "created_at": "2025-05-20T10:12:40.870Z"
+    },
+    {
+        "_id": "682c548f27da46ab2008b423",
+        "brand_id": "682c531a81441419fc0c487a",
+        "code": "samsung-galaxy-s20",
+        "name": "Samsung Galaxy S20",
+        "updated_at": "2025-05-20T10:08:15.785Z",
+        "created_at": "2025-05-20T10:08:15.785Z"
+    },
+    {
+        "_id": "682c531981441419fc0c47f9",
+        "brand_id": "682c531827da46ab20085ee6",
+        "code": "otterbox-defender-series",
+        "name": "OtterBox Defender Series",
+        "updated_at": "2025-05-20T10:02:01.673Z",
+        "created_at": "2025-05-20T10:02:01.673Z"
+    },
+    {
+        "_id": "682c54adfad982ba5c0e7128",
+        "brand_id": "682c531927da46ab20085fac",
+        "code": "dicota-d70929-mobile",
+        "name": "DICOTA D70929 mobile",
+        "updated_at": "2025-05-20T10:08:45.631Z",
+        "created_at": "2025-05-20T10:08:45.631Z"
+    },
+    {
+        "_id": "682c54adfad982ba5c0e711c",
+        "brand_id": "682c531927da46ab20085fac",
+        "code": "dicota-d70924-mobile",
+        "name": "DICOTA D70924 mobile",
+        "updated_at": "2025-05-20T10:08:45.483Z",
+        "created_at": "2025-05-20T10:08:45.483Z"
+    },
+    {
+        "_id": "682c54b65f039578b9052892",
+        "brand_id": "682c54b65f039578b9052891",
+        "code": "xiaomi-redmi-note",
+        "name": "Xiaomi Redmi Note",
+        "updated_at": "2025-05-20T10:08:54.796Z",
+        "created_at": "2025-05-20T10:08:54.796Z"
+    },
+    {
+        "_id": "682c553d1c89e497840f8a13",
+        "brand_id": "682c53df81441419fc0c7a34",
+        "code": "dbramante1928-iphone-16",
+        "name": "Dbramante1928 IPHONE 16",
+        "updated_at": "2025-05-20T10:11:09.333Z",
+        "created_at": "2025-05-20T10:11:09.333Z"
+    },
+    {
+        "_id": "682c53c3fad982ba5c0e44b4",
+        "brand_id": "682c531881441419fc0c46d3",
+        "code": "belkin-screenforce-clear",
+        "name": "Belkin ScreenForce Clear",
+        "updated_at": "2025-05-20T10:08:09.056Z",
+        "created_at": "2025-05-20T10:04:51.554Z"
+    },
+    {
+        "_id": "682c53c2fad982ba5c0e446a",
+        "brand_id": "682c531827da46ab20085ee6",
+        "code": "otterbox-symmetry-clear",
+        "name": "OtterBox Symmetry+ Clear",
+        "updated_at": "2025-05-20T10:25:30.263Z",
+        "created_at": "2025-05-20T10:04:50.864Z"
+    },
+    {
+        "_id": "682c548b81441419fc0c9b0a",
+        "brand_id": "682c548b81441419fc0c9b09",
+        "code": "data-select-iphone",
+        "name": "DATA SELECT IPHONE",
+        "updated_at": "2025-05-20T10:08:11.655Z",
+        "created_at": "2025-05-20T10:08:11.655Z"
+    },
+    {
+        "_id": "682c591c1c89e497840ffc1e",
+        "brand_id": "682c531927da46ab20085fac",
+        "code": "dicota-screen",
+        "name": "Dicota - Screen",
+        "updated_at": "2025-05-20T10:27:40.068Z",
+        "created_at": "2025-05-20T10:27:40.068Z"
+    },
+    {
+        "_id": "682c53c0fad982ba5c0e4386",
+        "brand_id": "682c531827da46ab20085ee6",
+        "code": "otterbox-universe-series",
+        "name": "OtterBox Universe Series",
+        "updated_at": "2025-05-20T10:07:14.107Z",
+        "created_at": "2025-05-20T10:04:48.955Z"
+    },
+    {
+        "_id": "682c548727da46ab2008b2b7",
+        "brand_id": "682c53fa27da46ab2008980d",
+        "code": "skech-skb-iph14-bb-mobile",
+        "name": "Skech SKB-IPH14-BB mobile",
+        "updated_at": "2025-05-20T10:08:07.377Z",
+        "created_at": "2025-05-20T10:08:07.377Z"
+    },
+    {
+        "_id": "682c5401fad982ba5c0e5162",
+        "brand_id": "682c53acfad982ba5c0e3f22",
+        "code": "epico-resolve-mobile",
+        "name": "Epico RESOLVE mobile",
+        "updated_at": "2025-05-20T10:09:21.371Z",
+        "created_at": "2025-05-20T10:05:53.533Z"
+    },
+    {
+        "_id": "682c53cd81441419fc0c76c2",
+        "brand_id": "682c53cd81441419fc0c76c1",
+        "code": "honor-magic6-lite",
+        "name": "Honor Magic6 Lite",
+        "updated_at": "2025-05-20T10:05:01.150Z",
+        "created_at": "2025-05-20T10:05:01.150Z"
+    },
+    {
+        "_id": "682c5594cd1ded80520136b6",
+        "brand_id": "682c531827da46ab20085e64",
+        "code": "apple-mdgv4zma-mobile",
+        "name": "Apple MDGV4ZM/A mobile",
+        "updated_at": "2025-05-20T10:12:36.672Z",
+        "created_at": "2025-05-20T10:12:36.672Z"
+    },
+    {
+        "_id": "682c535e27da46ab200875dc",
+        "brand_id": "682c531827da46ab20085e52",
+        "code": "startechcom-6-foot",
+        "name": "StarTech.com 6 foot",
+        "updated_at": "2025-05-20T10:03:10.171Z",
+        "created_at": "2025-05-20T10:03:10.171Z"
+    },
+    {
+        "_id": "682c54adfad982ba5c0e7131",
+        "brand_id": "682c531927da46ab20085fac",
+        "code": "dicota-d70933-mobile",
+        "name": "DICOTA D70933 mobile",
+        "updated_at": "2025-05-20T10:08:45.748Z",
+        "created_at": "2025-05-20T10:08:45.748Z"
+    },
+    {
+        "_id": "682c551b5f039578b90538fb",
+        "brand_id": "682c535027da46ab2008717b",
+        "code": "motorola-moto-g15",
+        "name": "Motorola moto g15",
+        "updated_at": "2025-05-20T10:10:35.356Z",
+        "created_at": "2025-05-20T10:10:35.356Z"
+    },
+    {
+        "_id": "682c539781441419fc0c6a6f",
+        "brand_id": "682c539781441419fc0c6a6e",
+        "code": "google-pixel-7a",
+        "name": "Google Pixel 7a",
+        "updated_at": "2025-05-20T10:04:07.249Z",
+        "created_at": "2025-05-20T10:04:07.249Z"
+    },
+    {
+        "_id": "682c53c2fad982ba5c0e4453",
+        "brand_id": "682c531827da46ab20085ee6",
+        "code": "otterbox-trusted-glass",
+        "name": "OtterBox Trusted Glass",
+        "updated_at": "2025-05-20T10:04:50.655Z",
+        "created_at": "2025-05-20T10:04:50.655Z"
+    },
+    {
+        "_id": "682c55001c89e497840f80d3",
+        "brand_id": "682c53cd81441419fc0c76c1",
+        "code": "honor-magic-v3",
+        "name": "Honor Magic V3",
+        "updated_at": "2025-05-20T10:10:09.003Z",
+        "created_at": "2025-05-20T10:10:09.003Z"
+    },
+    {
+        "_id": "682c54adfad982ba5c0e7119",
+        "brand_id": "682c531927da46ab20085fac",
+        "code": "dicota-d70921-mobile",
+        "name": "DICOTA D70921 mobile",
+        "updated_at": "2025-05-20T10:08:45.440Z",
+        "created_at": "2025-05-20T10:08:45.440Z"
+    },
+    {
+        "_id": "682c557b5f039578b905492b",
+        "brand_id": "682c531827da46ab20085e64",
+        "code": "apple-iphone-16e",
+        "name": "Apple iPhone 16e",
+        "updated_at": "2025-05-20T10:12:11.659Z",
+        "created_at": "2025-05-20T10:12:11.659Z"
+    },
+    {
+        "_id": "682c545c27da46ab2008aa6b",
+        "brand_id": "682c53cd81441419fc0c76c1",
+        "code": "honor-magic5-pro",
+        "name": "Honor Magic5 Pro",
+        "updated_at": "2025-05-20T10:07:24.672Z",
+        "created_at": "2025-05-20T10:07:24.672Z"
+    },
+    {
+        "_id": "682c55985f039578b9054e46",
+        "brand_id": "682c531827da46ab20085e64",
+        "code": "apple-mdgt4zma-mobile",
+        "name": "Apple MDGT4ZM/A mobile",
+        "updated_at": "2025-05-20T10:12:40.041Z",
+        "created_at": "2025-05-20T10:12:40.041Z"
+    },
+    {
+        "_id": "682c53cd81441419fc0c76d5",
+        "brand_id": "682c531a81441419fc0c487a",
+        "code": "samsung-galaxy-a05s",
+        "name": "Samsung Galaxy A05s",
+        "updated_at": "2025-05-20T10:05:01.337Z",
+        "created_at": "2025-05-20T10:05:01.337Z"
+    },
+    {
+        "_id": "682c550e5f039578b905365d",
+        "brand_id": "682c535027da46ab2008717b",
+        "code": "motorola-thinkphone25-161",
+        "name": "Motorola ThinkPhone25 16.1",
+        "updated_at": "2025-05-20T10:10:22.014Z",
+        "created_at": "2025-05-20T10:10:22.014Z"
+    },
+    {
+        "_id": "682c53cd81441419fc0c76d2",
+        "brand_id": "682c531a81441419fc0c487a",
+        "code": "samsung-galaxy-a25",
+        "name": "Samsung Galaxy A25",
+        "updated_at": "2025-05-20T10:05:01.309Z",
+        "created_at": "2025-05-20T10:05:01.309Z"
+    },
+    {
+        "_id": "682c55995f039578b9054e97",
+        "brand_id": "682c531827da46ab20085e64",
+        "code": "apple-mdgn4zma-mobile",
+        "name": "Apple MDGN4ZM/A mobile",
+        "updated_at": "2025-05-20T10:12:41.682Z",
+        "created_at": "2025-05-20T10:12:41.682Z"
+    },
+    {
+        "_id": "682c5899cd1ded8052018db7",
+        "brand_id": "682c535027da46ab2008717b",
+        "code": "motorola-edge-60",
+        "name": "Motorola edge 60",
+        "updated_at": "2025-05-20T10:25:29.852Z",
+        "created_at": "2025-05-20T10:25:29.852Z"
+    },
+    {
+        "_id": "682c53c981441419fc0c763b",
+        "brand_id": "682c531827da46ab20085ee6",
+        "code": "otterbox-premium-glass",
+        "name": "OtterBox Premium Glass",
+        "updated_at": "2025-05-20T10:04:57.219Z",
+        "created_at": "2025-05-20T10:04:57.219Z"
+    },
+    {
+        "_id": "682c5532cd1ded8052012556",
+        "brand_id": "682c5451fad982ba5c0e5f9f",
+        "code": "hmd-key-166",
+        "name": "HMD Key 16.6",
+        "updated_at": "2025-05-20T10:10:58.500Z",
+        "created_at": "2025-05-20T10:10:58.500Z"
+    },
+    {
+        "_id": "682c5662cd1ded80520152db",
+        "brand_id": "682c53acfad982ba5c0e3f22",
+        "code": "epico-91112151000002-mobile",
+        "name": "Epico 91112151000002 mobile",
+        "updated_at": "2025-05-20T10:16:02.753Z",
+        "created_at": "2025-05-20T10:16:02.753Z"
+    },
+    {
+        "_id": "682c53f881441419fc0c7f6d",
+        "brand_id": "682c5388fad982ba5c0e3743",
+        "code": "nokia-c-c32",
+        "name": "Nokia C C32",
+        "updated_at": "2025-05-20T10:05:44.740Z",
+        "created_at": "2025-05-20T10:05:44.740Z"
+    },
+    {
+        "_id": "682c54c45f039578b9052ac8",
+        "brand_id": "682c531a81441419fc0c487a",
+        "code": "samsung-galaxy-s22",
+        "name": "Samsung Galaxy S22",
+        "updated_at": "2025-05-20T10:09:08.017Z",
+        "created_at": "2025-05-20T10:09:08.017Z"
+    },
+    {
+        "_id": "682c542581441419fc0c899e",
+        "brand_id": "682c538827da46ab20087ffd",
+        "code": "tcl-50-5g",
+        "name": "TCL 50 5G",
+        "updated_at": "2025-05-20T10:06:29.758Z",
+        "created_at": "2025-05-20T10:06:29.758Z"
+    },
+    {
+        "_id": "682c548a27da46ab2008b38b",
+        "brand_id": "682c53acfad982ba5c0e3f22",
+        "code": "epico-91012151300004-mobile",
+        "name": "Epico 91012151300004 mobile",
+        "updated_at": "2025-05-20T10:08:10.158Z",
+        "created_at": "2025-05-20T10:08:10.158Z"
+    },
+    {
+        "_id": "682c54eacd1ded8052011ade",
+        "brand_id": "682c54eacd1ded8052011acf",
+        "code": "jcb-toughphone-145",
+        "name": "JCB Toughphone 14.5",
+        "updated_at": "2025-05-20T10:09:46.486Z",
+        "created_at": "2025-05-20T10:09:46.486Z"
+    },
+    {
+        "_id": "682c55e31c89e497840fa48b",
+        "brand_id": "682c53cd81441419fc0c76c1",
+        "code": "honor-x6a-167",
+        "name": "Honor X6a 16.7",
+        "updated_at": "2025-05-20T10:13:55.315Z",
+        "created_at": "2025-05-20T10:13:55.315Z"
+    },
+    {
+        "_id": "682c55e31c89e497840fa488",
+        "brand_id": "682c535027da46ab2008717b",
+        "code": "motorola-moto-g53",
+        "name": "Motorola moto g53",
+        "updated_at": "2025-05-20T10:13:55.265Z",
+        "created_at": "2025-05-20T10:13:55.265Z"
+    },
+    {
+        "_id": "682c54d05f039578b9052cff",
+        "brand_id": "682c53c3fad982ba5c0e44ad",
+        "code": "invisibleshield-glass-elite",
+        "name": "InvisibleShield Glass Elite",
+        "updated_at": "2025-05-20T10:16:08.613Z",
+        "created_at": "2025-05-20T10:09:20.057Z"
+    },
+    {
+        "_id": "682c554bcd1ded8052012a67",
+        "brand_id": "682c5388fad982ba5c0e3743",
+        "code": "nokia-g-g60",
+        "name": "Nokia G G60",
+        "updated_at": "2025-05-20T10:11:23.723Z",
+        "created_at": "2025-05-20T10:11:23.723Z"
+    },
+    {
+        "_id": "682c557b5f039578b905493a",
+        "brand_id": "682c531827da46ab20085e64",
+        "code": "apple-md3n4zma-mobile",
+        "name": "Apple MD3N4ZM/A mobile",
+        "updated_at": "2025-05-20T10:12:11.917Z",
+        "created_at": "2025-05-20T10:12:11.917Z"
+    },
+    {
+        "_id": "682c59235f039578b905b0b6",
+        "brand_id": "682c54cd5f039578b9052c4a",
+        "code": "esd-applecare-for",
+        "name": "ESD APPLECARE+ FOR",
+        "updated_at": "2025-05-20T10:27:47.318Z",
+        "created_at": "2025-05-20T10:27:47.318Z"
+    },
+    {
+        "_id": "682c542bfad982ba5c0e58dd",
+        "brand_id": "682c538827da46ab20087ffd",
+        "code": "tcl-50-se",
+        "name": "TCL 50 SE",
+        "updated_at": "2025-05-20T10:06:35.048Z",
+        "created_at": "2025-05-20T10:06:35.048Z"
+    },
+    {
+        "_id": "682c544c81441419fc0c8f62",
+        "brand_id": "682c5388fad982ba5c0e3743",
+        "code": "nokia-c2-2e",
+        "name": "Nokia C2 2E",
+        "updated_at": "2025-05-20T10:07:08.505Z",
+        "created_at": "2025-05-20T10:07:08.505Z"
+    },
+    {
+        "_id": "682c545c27da46ab2008aa36",
+        "brand_id": "682c535027da46ab2008717b",
+        "code": "motorola-moto-g85",
+        "name": "Motorola moto g85",
+        "updated_at": "2025-05-20T10:07:24.080Z",
+        "created_at": "2025-05-20T10:07:24.080Z"
+    },
+    {
+        "_id": "682c548a27da46ab2008b3be",
+        "brand_id": "682c531881441419fc0c46d3",
+        "code": "belkin-screenforce-privacy",
+        "name": "Belkin ScreenForce Privacy",
+        "updated_at": "2025-05-20T10:08:10.897Z",
+        "created_at": "2025-05-20T10:08:10.897Z"
+    },
+    {
+        "_id": "682c54adfad982ba5c0e7134",
+        "brand_id": "682c531927da46ab20085fac",
+        "code": "dicota-d70932-mobile",
+        "name": "DICOTA D70932 mobile",
+        "updated_at": "2025-05-20T10:08:45.788Z",
+        "created_at": "2025-05-20T10:08:45.788Z"
+    },
+    {
+        "_id": "682c590c1c89e497840ffa6b",
+        "brand_id": "682c54b65f039578b9052891",
+        "code": "xiaomi-redmi-a5",
+        "name": "Xiaomi Redmi A5",
+        "updated_at": "2025-05-20T10:27:24.492Z",
+        "created_at": "2025-05-20T10:27:24.492Z"
+    },
+    {
+        "_id": "682c548881441419fc0c9a3d",
+        "brand_id": "682c531881441419fc0c46d3",
+        "code": "belkin-ultraglass2-am",
+        "name": "Belkin ULTRAGLASS2 AM",
+        "updated_at": "2025-05-20T10:08:08.543Z",
+        "created_at": "2025-05-20T10:08:08.543Z"
+    },
+    {
+        "_id": "682c5353fad982ba5c0e2843",
+        "brand_id": "682c531827da46ab20085e64",
+        "code": "apple-iphone-14",
+        "name": "Apple iPhone 14",
+        "updated_at": "2025-05-20T10:02:59.064Z",
+        "created_at": "2025-05-20T10:02:59.064Z"
+    },
+    {
+        "_id": "682c53cc81441419fc0c76a2",
+        "brand_id": "682c538827da46ab20087ffd",
+        "code": "tcl-40-nxtpaper",
+        "name": "TCL 40 NXTPAPER",
+        "updated_at": "2025-05-20T10:05:00.872Z",
+        "created_at": "2025-05-20T10:05:00.872Z"
+    },
+    {
+        "_id": "682c544881441419fc0c8e00",
+        "brand_id": "682c53f981441419fc0c7f9d",
+        "code": "nothing-phone-2a",
+        "name": "Nothing Phone (2a)",
+        "updated_at": "2025-05-20T10:07:04.541Z",
+        "created_at": "2025-05-20T10:07:04.541Z"
+    },
+    {
+        "_id": "682c55195f039578b9053817",
+        "brand_id": "682c5451fad982ba5c0e5f9f",
+        "code": "hmd-xr21",
+        "name": "HMD XR21 -",
+        "updated_at": "2025-05-20T10:10:33.869Z",
+        "created_at": "2025-05-20T10:10:33.869Z"
+    },
+    {
+        "_id": "682c53cd81441419fc0c76df",
+        "brand_id": "682c531a81441419fc0c487a",
+        "code": "samsung-galaxy-a15",
+        "name": "Samsung Galaxy A15",
+        "updated_at": "2025-05-20T10:05:01.433Z",
+        "created_at": "2025-05-20T10:05:01.433Z"
+    },
+    {
+        "_id": "682c53e081441419fc0c7a8a",
+        "brand_id": "682c531827da46ab20085ee6",
+        "code": "otterbox-core-series",
+        "name": "OtterBox Core Series",
+        "updated_at": "2025-05-20T10:05:20.095Z",
+        "created_at": "2025-05-20T10:05:20.095Z"
+    },
+    {
+        "_id": "682c58a25f039578b905a445",
+        "brand_id": "682c531881441419fc0c46d3",
+        "code": "belkin-ova160hq-mobile",
+        "name": "Belkin OVA160HQ mobile",
+        "updated_at": "2025-05-20T10:25:38.506Z",
+        "created_at": "2025-05-20T10:25:38.506Z"
+    },
+    {
+        "_id": "682c542bfad982ba5c0e58e8",
+        "brand_id": "682c538827da46ab20087ffd",
+        "code": "tcl-505-171",
+        "name": "TCL 505 17.1",
+        "updated_at": "2025-05-20T10:06:35.171Z",
+        "created_at": "2025-05-20T10:06:35.171Z"
+    },
+    {
+        "_id": "682c553b5f039578b9053e1c",
+        "brand_id": "682c531a81441419fc0c487a",
+        "code": "samsung-galaxy-s25",
+        "name": "Samsung Galaxy S25",
+        "updated_at": "2025-05-20T10:12:33.991Z",
+        "created_at": "2025-05-20T10:11:07.465Z"
+    },
+    {
+        "_id": "682c55975f039578b9054e12",
+        "brand_id": "682c531827da46ab20085e64",
+        "code": "apple-mdgu4zma-mobile",
+        "name": "Apple MDGU4ZM/A mobile",
+        "updated_at": "2025-05-20T10:12:39.012Z",
+        "created_at": "2025-05-20T10:12:39.012Z"
+    },
+    {
+        "_id": "682c548927da46ab2008b36d",
+        "brand_id": "682c53acfad982ba5c0e3f22",
+        "code": "epico-90812151300002-mobile",
+        "name": "Epico 90812151300002 mobile",
+        "updated_at": "2025-05-20T10:08:09.748Z",
+        "created_at": "2025-05-20T10:08:09.748Z"
+    },
+    {
+        "_id": "682c545f81441419fc0c9223",
+        "brand_id": "682c531a81441419fc0c487a",
+        "code": "samsung-galaxy-z",
+        "name": "Samsung Galaxy Z",
+        "updated_at": "2025-05-20T10:07:27.433Z",
+        "created_at": "2025-05-20T10:07:27.433Z"
+    },
+    {
+        "_id": "682c589d5f039578b905a384",
+        "brand_id": "682c53ae27da46ab2008889a",
+        "code": "sony-xperia-10",
+        "name": "Sony Xperia 10",
+        "updated_at": "2025-05-20T10:25:33.233Z",
+        "created_at": "2025-05-20T10:25:33.233Z"
+    },
+    {
+        "_id": "682c55495f039578b90540a3",
+        "brand_id": "682c55495f039578b905408a",
+        "code": "tcl-30",
+        "name": "TCL 30 +",
+        "updated_at": "2025-05-20T10:11:21.449Z",
+        "created_at": "2025-05-20T10:11:21.449Z"
+    },
+    {
+        "_id": "682c55ce5f039578b90556c0",
+        "brand_id": "682c53f981441419fc0c7f9d",
+        "code": "nothing-phone-3a",
+        "name": "Nothing Phone (3a)",
+        "updated_at": "2025-05-20T10:13:34.574Z",
+        "created_at": "2025-05-20T10:13:34.574Z"
+    },
+    {
+        "_id": "682c548a27da46ab2008b393",
+        "brand_id": "682c53acfad982ba5c0e3f22",
+        "code": "epico-90812151000002-mobile",
+        "name": "Epico 90812151000002 mobile",
+        "updated_at": "2025-05-20T10:08:10.244Z",
+        "created_at": "2025-05-20T10:08:10.244Z"
+    },
+    {
+        "_id": "682c53c1fad982ba5c0e43c1",
+        "brand_id": "682c531827da46ab20085ee6",
+        "code": "otterbox-symmetry-series",
+        "name": "OtterBox Symmetry Series",
+        "updated_at": "2025-05-20T10:04:49.464Z",
+        "created_at": "2025-05-20T10:04:49.464Z"
+    },
+    {
+        "_id": "682c54adfad982ba5c0e713d",
+        "brand_id": "682c531927da46ab20085fac",
+        "code": "dicota-d70927-mobile",
+        "name": "DICOTA D70927 mobile",
+        "updated_at": "2025-05-20T10:08:45.899Z",
+        "created_at": "2025-05-20T10:08:45.899Z"
+    },
+    {
+        "_id": "682c5384fad982ba5c0e35bd",
+        "brand_id": "682c531827da46ab20085ee6",
+        "code": "otterbox-react-folio",
+        "name": "OtterBox React Folio",
+        "updated_at": "2025-05-20T10:03:48.610Z",
+        "created_at": "2025-05-20T10:03:48.610Z"
+    },
+    {
+        "_id": "682c5597cd1ded8052013745",
+        "brand_id": "682c551a1c89e497840f8414",
+        "code": "oppo-a80-169",
+        "name": "OPPO A80 16.9",
+        "updated_at": "2025-05-20T10:12:39.464Z",
+        "created_at": "2025-05-20T10:12:39.464Z"
+    },
+    {
+        "_id": "682c53c2fad982ba5c0e4424",
+        "brand_id": "682c53c1fad982ba5c0e43c7",
+        "code": "panzerglass-screen",
+        "name": "PanzerGlass ® Screen",
+        "updated_at": "2025-05-20T10:04:50.267Z",
+        "created_at": "2025-05-20T10:04:50.267Z"
+    },
+    {
+        "_id": "682c554bcd1ded8052012a58",
+        "brand_id": "682c5442fad982ba5c0e5d22",
+        "code": "emporia-smart5-14",
+        "name": "Emporia SMART.5 14",
+        "updated_at": "2025-05-20T10:11:23.490Z",
+        "created_at": "2025-05-20T10:11:23.490Z"
+    },
+    {
+        "_id": "682c5593cd1ded8052013673",
+        "brand_id": "682c531827da46ab20085e64",
+        "code": "apple-mdfx4zma-mobile",
+        "name": "Apple MDFX4ZM/A mobile",
+        "updated_at": "2025-05-20T10:12:35.424Z",
+        "created_at": "2025-05-20T10:12:35.424Z"
+    },
+    {
+        "_id": "682c54adfad982ba5c0e710e",
+        "brand_id": "682c531927da46ab20085fac",
+        "code": "dicota-d70925-mobile",
+        "name": "DICOTA D70925 mobile",
+        "updated_at": "2025-05-20T10:08:45.295Z",
+        "created_at": "2025-05-20T10:08:45.295Z"
+    },
+    {
+        "_id": "682c535381441419fc0c59c3",
+        "brand_id": "682c531a81441419fc0c487a",
+        "code": "samsung-galaxy-xcover6",
+        "name": "Samsung Galaxy Xcover6",
+        "updated_at": "2025-05-20T10:02:59.652Z",
+        "created_at": "2025-05-20T10:02:59.652Z"
+    },
+    {
+        "_id": "682c54f21c89e497840f7e04",
+        "brand_id": "682c53cd81441419fc0c76c1",
+        "code": "honor-n-series",
+        "name": "Honor N Series",
+        "updated_at": "2025-05-20T10:09:54.407Z",
+        "created_at": "2025-05-20T10:09:54.407Z"
+    },
+    {
+        "_id": "682c55001c89e497840f80aa",
+        "brand_id": "682c538827da46ab20087ffd",
+        "code": "tcl-50-pro",
+        "name": "TCL 50 Pro",
+        "updated_at": "2025-05-20T10:10:08.378Z",
+        "created_at": "2025-05-20T10:10:08.378Z"
+    },
+    {
+        "_id": "682c55011c89e497840f80d6",
+        "brand_id": "682c5451fad982ba5c0e5f9f",
+        "code": "hmd-skyline",
+        "name": "HMD Skyline -",
+        "updated_at": "2025-05-20T10:10:09.041Z",
+        "created_at": "2025-05-20T10:10:09.041Z"
+    },
+    {
+        "_id": "682c54adfad982ba5c0e712e",
+        "brand_id": "682c531927da46ab20085fac",
+        "code": "dicota-d70936-mobile",
+        "name": "DICOTA D70936 mobile",
+        "updated_at": "2025-05-20T10:08:45.711Z",
+        "created_at": "2025-05-20T10:08:45.711Z"
+    },
+    {
+        "_id": "682c55a61c89e497840f9b96",
+        "brand_id": "682c55a61c89e497840f9b95",
+        "code": "i-go-life-iphone",
+        "name": "i-go Life iPhone",
+        "updated_at": "2025-05-20T10:12:54.404Z",
+        "created_at": "2025-05-20T10:12:54.404Z"
+    },
+    {
+        "_id": "682c591f1c89e497840ffc99",
+        "brand_id": "682c551a1c89e497840f8414",
+        "code": "oppo-a38-167",
+        "name": "OPPO A38 16.7",
+        "updated_at": "2025-05-20T10:27:43.630Z",
+        "created_at": "2025-05-20T10:27:43.630Z"
+    },
+    {
+        "_id": "682c55495f039578b905408b",
+        "brand_id": "682c55495f039578b905408a",
+        "code": "tcl-30-e",
+        "name": "TCL 30 E",
+        "updated_at": "2025-05-20T10:11:21.113Z",
+        "created_at": "2025-05-20T10:11:21.113Z"
+    },
+    {
+        "_id": "682c55955f039578b9054dbc",
+        "brand_id": "682c531881441419fc0c46d3",
+        "code": "belkin-mag-protectcase",
+        "name": "Belkin MAG PROTECTCASE",
+        "updated_at": "2025-05-20T10:12:37.239Z",
+        "created_at": "2025-05-20T10:12:37.239Z"
+    },
+    {
+        "_id": "682c53cd81441419fc0c76cc",
+        "brand_id": "682c531a81441419fc0c487a",
+        "code": "samsung-galaxy-xcover7",
+        "name": "Samsung Galaxy XCover7",
+        "updated_at": "2025-05-20T10:05:01.255Z",
+        "created_at": "2025-05-20T10:05:01.255Z"
+    },
+    {
+        "_id": "682c5384fad982ba5c0e3581",
+        "brand_id": "682c531a81441419fc0c487a",
+        "code": "samsung-galaxy-s23",
+        "name": "Samsung Galaxy S23",
+        "updated_at": "2025-05-20T10:03:48.024Z",
+        "created_at": "2025-05-20T10:03:48.024Z"
+    },
+    {
+        "_id": "682c55011c89e497840f810d",
+        "brand_id": "682c5451fad982ba5c0e5f9f",
+        "code": "hmd-fusion",
+        "name": "HMD Fusion -",
+        "updated_at": "2025-05-20T10:10:09.834Z",
+        "created_at": "2025-05-20T10:10:09.834Z"
+    },
+    {
+        "_id": "682c558acd1ded805201356e",
+        "brand_id": "682c531827da46ab20085ee6",
+        "code": "otterbox-react-for",
+        "name": "OtterBox React for",
+        "updated_at": "2025-05-20T10:12:26.610Z",
+        "created_at": "2025-05-20T10:12:26.610Z"
+    },
+    {
+        "_id": "682c559a5f039578b9054ec4",
+        "brand_id": "682c531827da46ab20085e64",
+        "code": "apple-mdh04zma-mobile",
+        "name": "Apple MDH04ZM/A mobile",
+        "updated_at": "2025-05-20T10:12:42.590Z",
+        "created_at": "2025-05-20T10:12:42.590Z"
+    },
+    {
+        "_id": "682c55e51c89e497840fa50a",
+        "brand_id": "682c5360fad982ba5c0e2d69",
+        "code": "socket-mobile-durasled",
+        "name": "Socket Mobile DuraSled",
+        "updated_at": "2025-05-20T10:13:57.789Z",
+        "created_at": "2025-05-20T10:13:57.789Z"
+    },
+    {
+        "_id": "682c542bfad982ba5c0e58e5",
+        "brand_id": "682c538827da46ab20087ffd",
+        "code": "tcl-501-152",
+        "name": "TCL 501 15.2",
+        "updated_at": "2025-05-20T10:06:35.140Z",
+        "created_at": "2025-05-20T10:06:35.140Z"
+    }
+]
