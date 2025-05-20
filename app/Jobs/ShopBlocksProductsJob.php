@@ -45,7 +45,7 @@ class ShopBlocksProductsJob implements NotTenantAware, ShouldQueue
         Log::info("ShopBlocksProductsJob | Started at $start");
         $page = 1;
 
-        $product = Product::latest('date')->first();
+        $product = Product::latest('updated')->first();
         $filters = ['updatedAfter' => $product?->updated];
 
         $time = Carbon::now()->addSeconds(86400);

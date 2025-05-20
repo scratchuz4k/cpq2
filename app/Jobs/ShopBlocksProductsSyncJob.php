@@ -151,13 +151,13 @@ class ShopBlocksProductsSyncJob implements NotTenantAware, ShouldQueue
                     if ($tds->length == 2 && $currentSection) {
                         $key = trim($tds->item(0)->textContent);
                         $value = trim($tds->item(1)->textContent);
-                        array_push($result, ['group' => $currentSection, 'key' => Str::slug($key), 'label' => $key, 'value' => $value, 'expires_at' => $expire_at]);
+                        array_push($result, ['group' => $currentSection, 'key' => Str::slug($key), 'label' => $key, 'value' => $value]);
                     }
                 }
             }
 
         }
-        ProductFeature::insert(['product_id' => $product->id, 'items' => $result]);
+        ProductFeature::insert(['product_id' => $product->id, 'items' => $result, 'expires_at' => $expire_at]);
     }
 
     private function getBrandAndModel($product, $temp)

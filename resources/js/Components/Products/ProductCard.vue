@@ -111,13 +111,13 @@
               class="btn btn-add-comparator"
               @click="select"
             >
-              Add to Compator
+              Add to Comparator
             </button>
           </div>
           <template v-if="hasSelect && showAsColumn">
             <hr />
             <button class="btn btn-add-comparator w-100" @click="select">
-              Add to Compator
+              Add to Comparator
             </button>
           </template>
         </div>
