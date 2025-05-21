@@ -42,28 +42,20 @@ const search = ref(null);
 const productsHardware = ref([]);
 
 const filters = reactive({
-  model: {
-    operator: "in",
-    value: null,
-  },
-  name: {
-    operator: "contains",
-    value: null,
-  },
+  brands: [],
+  storage: null,
+  name: null,
 });
 
-const filterList = reactive({
-  models: [],
-  storage: [
-    { label: "1TB", value: "1TB" },
-    { label: "512 GB", value: "512 GB" },
-    { label: "256 GB", value: "256 GB" },
-    { label: "128 GB", value: "128 GB" },
-    { label: "64 GB", value: "64 GB" },
-    { label: "32 GB", value: "32 GB" },
-    { label: "16 GB", value: "16 GB" },
-  ],
-});
+const storage = [
+  { label: "1TB", value: "1TB" },
+  { label: "512 GB", value: "512 GB" },
+  { label: "256 GB", value: "256 GB" },
+  { label: "128 GB", value: "128 GB" },
+  { label: "64 GB", value: "64 GB" },
+  { label: "32 GB", value: "32 GB" },
+  { label: "16 GB", value: "16 GB" },
+];
 
 const sorts = [
   {
@@ -84,13 +76,22 @@ const step = ref(props.modelValue + 1);
 const getProductsShopBlocks = async () => {
   meta.isLoading = true;
   let temp = [];
-  Object.keys(filters).forEach((key) => {
+  if (filters.brands.length) {
     temp.push({
-      column: key,
-      operator: filters[key].operator,
-      value: filters[key].value ?? null,
+      column: "brand_id",
+      operator: "in",
+      value: filters.brands.map((x) => x.id).join(","),
     });
-  });
+  }
+
+  if (filters.storage) {
+    temp.push({
+      column: "name",
+      operator: "contains",
+      value: filters.storage,
+    });
+  }
+
   temp.push({
     column: "product_category_id",
     operator: "equals",
@@ -119,14 +120,6 @@ const getProductsShopBlocks = async () => {
   meta.total = res.data.total;
   meta.overallTotal = res.data.overall_total;
   meta.isLoading = false;
-  filterList.models = res.data?.filters?.model
-    ? Object.keys(res.data.filters.model)
-        .sort()
-        .reduce((acc, key) => {
-          acc[key] = res.data.filters.model[key];
-          return acc;
-        }, {})
-    : [];
 };
 
 const clearFilters = () => {
@@ -213,7 +206,7 @@ watch(
         <div class="d-flex">
           <h4>Filters</h4>
           <ul class="mb-0" style="list-style: none; display: flex; flex-wrap: wrap">
-            <template v-for="filter in filters">
+            <!-- <template v-for="filter in filters">
               <li class="bullet me-2 mb-2" v-for="(item, index) in filter.value">
                 <p class="small">
                   {{ item }}
@@ -225,7 +218,7 @@ watch(
                   /></span>
                 </p>
               </li>
-            </template>
+            </template> -->
           </ul>
         </div>
         <div>
@@ -240,28 +233,27 @@ watch(
       </div>
       <div class="row">
         <div class="col-4">
-          <label class="mb-1">Models</label>
-          <MultiSelect
-            v-model="filters.model.value"
-            :options="Object.keys(filterList.models)"
-            placeholder="All"
-            filter
-            class="w-100"
+          <label class="mb-1">Brands</label>
+          <InputSelectMultiple
+            id="product-brands"
+            url="/shop-blocks/brands"
+            :field="'name'"
+            v-model="filters.brands"
+            placeholder="Select a Supplier"
           >
-          </MultiSelect>
+          </InputSelectMultiple>
         </div>
         <div class="col-4">
           <label class="mb-1">Storage</label>
-          <MultiSelect
-            v-model="filters.name.value"
-            :options="filterList.storage"
+          <Select
+            v-model="filters.storage"
+            :options="storage"
             optionLabel="label"
             optionValue="value"
             placeholder="All"
-            filter
             class="w-100"
           >
-          </MultiSelect>
+          </Select>
         </div>
         <div class="col-4">
           <label class="mb-1">Sort by</label>
@@ -292,7 +284,7 @@ watch(
           </div>
           <div class="col-10">
             <div class="d-flex w-100 justify-content-between">
-              <p class="big bold">{{ product.model }}</p>
+              <p class="truncate-1-line bold me-4">{{ product.name }}</p>
               <div class="d-flex justify-content-end">
                 <div class="me-3">
                   <p
@@ -316,7 +308,7 @@ watch(
                 </div>
               </div>
             </div>
-            <p class="small" style="min-height: 50px">
+            <p class="truncate-2-lines" style="min-height: 50px">
               {{ product.sku }} - {{ product.name }}
             </p>
             <div class="pt-1">
@@ -423,4 +415,25 @@ watch(
     </div>
   </div>
 </template>
-<style></style>
+<style scoped>
+.truncate-1-line {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.5em; /* or a fixed px value, e.g. 24px */
+  height: calc(1.5em * 1); /* 3 lines × line-height */
+}
+
+.truncate-2-lines {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 2em; /* or a fixed px value, e.g. 24px */
+  height: calc(2em * 2); /* 3 lines × line-height */
+  font-size: 14px !important;
+}
+</style>

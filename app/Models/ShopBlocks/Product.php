@@ -2,6 +2,7 @@
 
 namespace App\Models\ShopBlocks;
 
+use App\Models\ShopBlocks\Model as ShopblocksModel;
 use MongoDB\Laravel\Eloquent\Model;
 
 class Product extends Model
@@ -11,6 +12,8 @@ class Product extends Model
     protected $collection = 'products'; // Specify the collection name
 
     protected $dates = ['expire_at']; // Ensure the field is treated as a DateTime
+
+    protected $fillable = ['name', 'description'];
 
     protected $guarded = [];
 
@@ -26,6 +29,6 @@ class Product extends Model
 
     public function model()
     {
-        return $this->hasOne(Model::class);
+        return $this->hasOne(ShopblocksModel::class);
     }
 }

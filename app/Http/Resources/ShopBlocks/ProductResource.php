@@ -16,7 +16,6 @@ class ProductResource extends JsonResource
     {
         return [
             ...$this->resource->toArray(),
-            'brand' => $this->brand,
         ];
     }
 }

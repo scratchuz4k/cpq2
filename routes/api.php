@@ -22,6 +22,7 @@ use App\Http\Controllers\Api\QuoteItemController;
 use App\Http\Controllers\Api\RegionController;
 use App\Http\Controllers\Api\ResourceController;
 use App\Http\Controllers\Api\SharedLinkController;
+use App\Http\Controllers\Api\ShopBlocks\BrandController as ShopBlocksBrandController;
 use App\Http\Controllers\Api\ShopBlocks\CategoryController as ShopBlocksCategoryController;
 use App\Http\Controllers\Api\ShopBlocks\ProductController as ShopBlocksProductController;
 use App\Http\Controllers\Api\ShopBlocks\ProductFeatureController;
@@ -40,6 +41,7 @@ Route::prefix('external')->group(function () {
 });
 
 Route::prefix('shop-blocks')->group(callback: function () {
+    Route::get('brands', [ShopBlocksBrandController::class, 'index']);
     Route::get('products', [ShopBlocksProductController::class, 'index']);
     Route::get('products/{article}', [ShopBlocksProductController::class, 'show']);
     Route::get('product-features', [ProductFeatureController::class, 'index']);

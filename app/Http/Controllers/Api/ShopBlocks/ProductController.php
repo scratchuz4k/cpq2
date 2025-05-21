@@ -8,6 +8,7 @@ use App\Helpers\FilterProvider;
 use App\Helpers\Prices\PriceRules;
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\IndexRequest;
+use App\Http\Resources\ShopBlocks\ProductResource;
 use App\Models\Account;
 use App\Models\PricePlan;
 use App\Models\ShopBlocks\Product;
@@ -54,11 +55,10 @@ class ProductController extends BaseController
             return $item;
         });
 
-        // $items = ProductResource::collection($items)->toArray(request());
+        $items = ProductResource::collection($items)->toArray(request());
         $paginator = FilterProvider::paginate(collect($items));
 
         return $paginator->toArray();
-
     }
 
     /**
