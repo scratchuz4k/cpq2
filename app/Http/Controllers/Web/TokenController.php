@@ -59,7 +59,7 @@ class TokenController extends BaseController
     {
         return Inertia::render('Tokens/Show', [
             'plainTextToken' => $request->input('plain-text-token', null),
-            'users' => User::with('roles')->get(),
+            'users' => collect([User::with('roles')->find($token->tokenable_id)]),
             'token' => $token,
         ]);
     }
