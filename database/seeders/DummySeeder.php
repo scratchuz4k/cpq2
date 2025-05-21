@@ -59,7 +59,7 @@ class DummySeeder extends Seeder
         $tenant->users()->sync([$support_user->id, $company_admin_user->id,  $sales_user->id, $order_manager_user->id]);
 
         $super_user = User::where('email', 'super@example.com')->first();
-        $super_user->tenants()->sync($dummy_tenants->pluck('id'));
+        $super_user->tenants()->sync([$tenant->id, ...$dummy_tenants->pluck('id')]);
 
         $supp = User::where('email', 'support@example.com')->first();
         $supp->assignRole('Support Agent');

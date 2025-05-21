@@ -86,7 +86,7 @@ describe("Creates a Mobile Quote", () => {
         cy.get("#my-account").click();
         cy.get("#link-solutions").click();
         cy.get("#datatable-search").type("Mobile")
-        cy.wait(10000)
+        cy.wait(3000)
         cy.get("#datatable-btn-0-edit").click()
         cy.get("#1-1").click()
 
