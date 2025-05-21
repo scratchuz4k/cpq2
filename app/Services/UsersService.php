@@ -29,6 +29,10 @@ class UsersService
             $user->assignRole(User::$default_role);
         }
 
+        if ($user->tenant_id) {
+            $user->tenants()->sync($user->tenant_id);
+        }
+
         return $user;
     }
 
@@ -48,6 +52,10 @@ class UsersService
 
         if (array_key_exists('role_id', $array)) {
             $user->syncRoles($array['role_id']);
+        }
+
+        if ($user->tenant_id) {
+            $user->tenants()->sync($user->tenant_id);
         }
 
         return $user;
