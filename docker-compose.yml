@@ -74,7 +74,9 @@ services:
             retries: 3
             timeout: 5s
     mongodb:
-        image: "mongodb/mongodb-atlas-local:latest"
+        image: mongo:latest
+        container_name: mongodb
+        restart: always
         environment:
             - "MONGODB_INITDB_ROOT_USERNAME=${MONGODB_USERNAME:-}"
             - "MONGODB_INITDB_ROOT_PASSWORD=${MONGODB_PASSWORD:-}"
