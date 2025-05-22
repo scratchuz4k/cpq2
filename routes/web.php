@@ -8,6 +8,7 @@ use App\Http\Controllers\Web\CategoryController;
 use App\Http\Controllers\Web\DashboardController;
 use App\Http\Controllers\Web\EmailHistoryController;
 use App\Http\Controllers\Web\EmailTemplateController;
+use App\Http\Controllers\Web\GroupController;
 use App\Http\Controllers\Web\MerchantController;
 use App\Http\Controllers\Web\OrderController;
 use App\Http\Controllers\Web\ProductController;
@@ -92,6 +93,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         'tokens' => TokenController::class,
         'solution-types' => SolutionTypeController::class,
         'blacklist' => BlacklistController::class,
+        'groups' => GroupController::class,
     ]);
 
     Route::middleware('auth')->group(function () {

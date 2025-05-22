@@ -1,14 +1,16 @@
 <?php
 
 use App\Http\Controllers\Api\AccountController;
-use App\Http\Controllers\Api\ApiController;
 use App\Http\Controllers\Api\ActivityController;
+use App\Http\Controllers\Api\ApiController;
 use App\Http\Controllers\Api\BlacklistController;
 use App\Http\Controllers\Api\BrandController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\ContactController;
 use App\Http\Controllers\Api\EmailHistoryController;
+use App\Http\Controllers\Api\EmailTemplateController;
 use App\Http\Controllers\Api\ExternalController;
+use App\Http\Controllers\Api\GroupController;
 use App\Http\Controllers\Api\MerchantController;
 use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\OrderItemController;
@@ -19,7 +21,6 @@ use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\QuoteController;
 use App\Http\Controllers\Api\QuoteItemController;
 use App\Http\Controllers\Api\RegionController;
-use App\Http\Controllers\Api\EmailTemplateController;
 use App\Http\Controllers\Api\ResourceController;
 use App\Http\Controllers\Api\SharedLinkController;
 use App\Http\Controllers\Api\SolutionTypeController;
@@ -36,7 +37,6 @@ Route::prefix('external')->group(function () {
     Route::post('get-articles-from-cloud-market', [ExternalController::class, 'getArticlesFromCloudMarket']);
     Route::post('get-articles-from-shop-blocks', [ExternalController::class, 'getArticlesFromShopBlocks']);
 });
-
 
 Route::apiResources([
     'apis' => ApiController::class,
@@ -66,4 +66,5 @@ Route::apiResources([
     'blacklist' => BlacklistController::class,
     'email-templates' => EmailTemplateController::class,
     'email-history' => EmailHistoryController::class,
+    'groups' => GroupController::class,
 ]);

@@ -2,9 +2,8 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import { Head, Link, router } from "@inertiajs/vue3";
 import { reactive, ref } from "vue";
-import PrimaryButton from "@/Components/PrimaryButton.vue";
-import Button from "primevue/button";
-import Dialog from "primevue/dialog";
+import { Dialog, Button, InputText } from "primevue";
+import { can, hasRole } from "@/Composables/useAuth";
 
 const props = defineProps({
   results: {
@@ -13,12 +12,11 @@ const props = defineProps({
   },
 });
 
-const users = ref([]);
-
+const showModal = ref(false);
+const showGroupModel = ref(false);
 const showForm = ref(false);
-const isLoading = ref(false);
 const selectedItems = ref([]);
-let showModal = ref(false);
+const isLoading = ref(false);
 
 const onFileChange = (event) => {
   formFile.file = event.target.files[0];
@@ -29,7 +27,7 @@ const formFile = reactive({
 });
 
 const commission = ref(0);
-
+const newGroup = ref(null);
 const submitFileForm = () => {
   isLoading.value = true;
   router.post(
@@ -75,6 +73,12 @@ const saveCommissionBulk = (items, toggleModal = null) => {
   notyf.success("Updated with Success");
 };
 
+const saveNewGroup = async () => {
+  await axios.post("/api/groups", { name: newGroup.value });
+  showGroupModel.value = false;
+  emitter.emit("datatable-refresh");
+};
+
 const items = ref([
   { label: "Home", url: "/" },
   { label: "My Account", url: "/myaccount" },
@@ -86,80 +90,142 @@ const items = ref([
   <AuthenticatedLayout>
     <div class="panel">
       <Header title="Users" :breadcrumbs="items">
-        <template #buttons>
-          <PrimaryButton
-            class="btn btn-secondary me-2"
-            @click="showModal = true"
-            :disabled="!(selectedItems.length > 0)"
-            >Add Commission</PrimaryButton
-          >
-          <Link
-            id="link-to-create-user"
-            :href="route('users.create')"
-            class="btn btn-primary me-2"
-          >
-            <font-awesome-icon :icon="['fas', 'plus']"></font-awesome-icon> New User
-          </Link>
-          <div class="btn btn-secondary me-2" @click.prevent="showForm = !showForm">
-            <font-awesome-icon :icon="['fas', 'file']"></font-awesome-icon> Import from
-            CSV
-          </div>
-        </template>
+        <template #buttons> </template>
       </Header>
-      <div
-        v-if="showForm"
-        id="csv-import-form"
-        class="max-w-7xl mx-auto sm:px-6 lg:px-8 mb-4 pb-4 border-bottom"
-      >
-        <form @submit.prevent="submitFileForm" enctype="multipart/form-data">
-          <h4>Import Users from CSV</h4>
-          <p>
-            Your CSV must contain the following columns: name*, email*, password, sso,
-            managername. * must not be blank
-          </p>
-          <input type="file" accept=".csv" required @input="onFileChange" />
-          <button type="submit" class="btn btn-primary ms-2" :disabled="isLoading">
-            <span v-if="isLoading">
-              <font-awesome-icon
-                :icon="['fa', 'spinner']"
-                class="fa-spin"
-              ></font-awesome-icon>
-              Uploading...
-            </span>
-            <span v-else>Upload</span>
-          </button>
-        </form>
-      </div>
-      <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-        <TreeTable
-          id="users-table"
-          :allow="{
-            update: true,
-            delete: true,
-            link: false,
-            commission: true,
-            create: true,
-          }"
-          :columns="[
-            { data: 'id', title: '#' },
-            { data: 'sso', title: 'SSO', style: 'width:4%' },
-            { data: 'name', title: 'Name' },
-            { data: 'email', title: 'Email' },
-            { data: 'commission_rate', title: 'Commission' },
-            { data: 'roles.name', title: 'Role' },
-          ]"
-          route="/users"
-          v-model="selectedItems"
-        >
-          <template #dialog_content="{ data, toggleModal }">
+      <tabs>
+        <tab title="Users" :selected="true">
+          <div class="d-flex mt-3 justify-content-end">
+            <Button
+              class="btn btn-secondary me-2"
+              @click="showModal = true"
+              :disabled="!(selectedItems.length > 0)"
+              >Add Commission</Button
+            >
+            <div class="btn btn-secondary me-2" @click.prevent="showForm = !showForm">
+              <font-awesome-icon :icon="['fas', 'file']"></font-awesome-icon> Import from
+              CSV
+            </div>
+            <Link
+              id="link-to-create-user"
+              :href="route('users.create')"
+              class="btn btn-primary me-2"
+            >
+              <font-awesome-icon :icon="['fas', 'plus']"></font-awesome-icon> New User
+            </Link>
+          </div>
+          <Dialog
+            v-model:visible="showForm"
+            id="csv-import-form"
+            modal
+            :style="{ marginTop: '4rem' }"
+            :breakpoints="{ '1199px': '75vw', '575px': '90vw' }"
+            :draggable="false"
+            position="top"
+          >
+            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 mb-4 pb-4 border-bottom">
+              <form @submit.prevent="submitFileForm" enctype="multipart/form-data">
+                <h4>Import Users from CSV</h4>
+                <p>
+                  Your CSV must contain the following columns: name*, email*, password,
+                  sso, managername. * must not be blank
+                </p>
+                <input type="file" accept=".csv" required @input="onFileChange" />
+                <button type="submit" class="btn btn-primary ms-2" :disabled="isLoading">
+                  <span v-if="isLoading">
+                    <font-awesome-icon
+                      :icon="['fa', 'spinner']"
+                      class="fa-spin"
+                    ></font-awesome-icon>
+                    Uploading...
+                  </span>
+                  <span v-else>Upload</span>
+                </button>
+              </form>
+            </div>
+          </Dialog>
+          <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 mt-3">
+            <TreeTable
+              id="users-table"
+              :allow="{
+                update: true,
+                delete: true,
+                link: false,
+                commission: true,
+                create: true,
+              }"
+              :columns="[
+                { data: 'id', title: '#' },
+                { data: 'sso', title: 'SSO', style: 'width:4%' },
+                { data: 'name', title: 'Name' },
+                { data: 'email', title: 'Email' },
+                { data: 'commission_rate', title: 'Commission' },
+                { data: 'roles.name', title: 'Role' },
+              ]"
+              route="/users"
+              v-model="selectedItems"
+            >
+              <template #dialog_content="{ data, toggleModal }">
+                <div class="panel">
+                  <div class="row">
+                    <label for="user-commission-rate" class="form-label"
+                      >Commission Rate:</label
+                    >
+                    <div class="input-group">
+                      <input
+                        id="user-commission-rate"
+                        type="number"
+                        class="form-control"
+                        v-model="commission"
+                      />
+                      <span class="input-group-text">%</span>
+                    </div>
+                    <div class="d-flex justify-content-end mt-3">
+                      <div class="btn btn-secondary me-2" @click="toggleModal()">
+                        Cancel
+                      </div>
+                      <Button
+                        class="btn btn-primary"
+                        @click="saveCommissionBulk([data], toggleModal)"
+                      >
+                        Save
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </template>
+              <template #sso="{ value }">
+                <font-awesome-icon
+                  v-if="value === true"
+                  :icon="['fas', 'circle-check']"
+                  style="font-size: 1.125rem"
+                  class="text-primary"
+                />
+                <font-awesome-icon
+                  v-else
+                  :icon="['far', 'circle-xmark']"
+                  style="font-size: 1.125rem"
+                  class="text-secondary"
+                />
+              </template>
+              <template #commission_rate="{ value }"> {{ value }}% </template>
+            </TreeTable>
+          </div>
+          <Dialog
+            v-model:visible="showModal"
+            modal
+            :style="{ marginTop: '4rem' }"
+            :breakpoints="{ '1199px': '75vw', '575px': '90vw' }"
+            :draggable="false"
+            position="top"
+          >
             <div class="panel">
               <div class="row">
-                <label for="user-commission-rate" class="form-label"
+                <label for="user-bulk-commission-rate" class="form-label"
                   >Commission Rate:</label
                 >
                 <div class="input-group">
                   <input
-                    id="user-commission-rate"
+                    id="user-bulk-commission-rate"
                     type="number"
                     class="form-control"
                     v-model="commission"
@@ -167,69 +233,84 @@ const items = ref([
                   <span class="input-group-text">%</span>
                 </div>
                 <div class="d-flex justify-content-end mt-3">
-                  <div class="btn btn-secondary me-2" @click="toggleModal()">Cancel</div>
-                  <PrimaryButton
+                  <div class="btn btn-secondary me-2" @click="showModal = false">
+                    Cancel
+                  </div>
+                  <Button
                     class="btn btn-primary"
-                    @click="saveCommissionBulk([data], toggleModal)"
+                    @click="saveCommissionBulk(selectedItems)"
+                    :disabled="!(selectedItems.length > 0)"
                   >
                     Save
-                  </PrimaryButton>
+                  </Button>
                 </div>
               </div>
             </div>
-          </template>
-          <template #sso="{ value }">
-            <font-awesome-icon
-              v-if="value === true"
-              :icon="['fas', 'circle-check']"
-              style="font-size: 1.125rem"
-              class="text-primary"
-            />
-            <font-awesome-icon
-              v-else
-              :icon="['far', 'circle-xmark']"
-              style="font-size: 1.125rem"
-              class="text-secondary"
-            />
-          </template>
-          <template #commission_rate="{ value }"> {{ value }}% </template>
-        </TreeTable>
-      </div>
-    </div>
-    <Dialog
-      v-model:visible="showModal"
-      modal
-      :style="{ marginTop: '4rem' }"
-      :breakpoints="{ '1199px': '75vw', '575px': '90vw' }"
-      :draggable="false"
-      position="top"
-    >
-      <div class="panel">
-        <div class="row">
-          <label for="user-bulk-commission-rate" class="form-label"
-            >Commission Rate:</label
-          >
-          <div class="input-group">
-            <input
-              id="user-bulk-commission-rate"
-              type="number"
-              class="form-control"
-              v-model="commission"
-            />
-            <span class="input-group-text">%</span>
-          </div>
-          <div class="d-flex justify-content-end mt-3">
-            <div class="btn btn-secondary me-2" @click="showModal = false">Cancel</div>
-            <PrimaryButton
-              class="btn btn-primary"
-              @click="saveCommissionBulk(selectedItems)"
-              :disabled="!(selectedItems.length > 0)"
+          </Dialog>
+        </tab>
+        <tab title="Groups" v-if="hasRole('Super Admin') || can('viewAny group')">
+          <div class="d-flex mt-3 justify-content-end">
+            <Button
+              id="link-to-create-group"
+              class="btn btn-primary me-2"
+              @click="showGroupModel = !showGroupModel"
             >
-              Save
-            </PrimaryButton>
+              <font-awesome-icon :icon="['fas', 'plus']"></font-awesome-icon> New Gruop
+            </Button>
           </div>
-        </div>
-      </div>
-    </Dialog>
+          <Datatable
+            :allow="{
+              update: true,
+              delete: true,
+              link: false,
+            }"
+            :columns="[
+              { data: 'id', title: '#', style: 'width:5%' },
+              { data: 'name', title: 'Name', style: 'width:55%' },
+              { data: 'created_at', title: 'Created At', style: 'width:15%' },
+              { data: 'updated_at', title: 'Updated At', style: 'width:15%' },
+            ]"
+            route="/groups"
+          >
+            <template #updated_at="{ value }">
+              {{ format.date(value) }}
+            </template>
+            <template #created_at="{ value }">
+              {{ format.date(value) }}
+            </template>
+          </Datatable>
+
+          <Dialog
+            v-model:visible="showGroupModel"
+            modal
+            header="New Group"
+            :style="{ marginTop: '4rem' }"
+            :breakpoints="{ '1199px': '75vw', '575px': '90vw' }"
+            :draggable="false"
+            position="top"
+          >
+            <div class="panel">
+              <form class="row" @submit.prevent="saveNewGroup()">
+                <div class="col">
+                  <label for="user-bulk-commission-rate" class="form-label">Name:</label>
+                  <InputText
+                    id="user-bulk-commission-rate"
+                    type="text"
+                    class="w-100"
+                    v-model="newGroup"
+                  />
+                </div>
+                <div class="d-flex justify-content-end mt-3">
+                  <div class="btn btn-secondary me-2" @click="showModal = false">
+                    Cancel
+                  </div>
+                  <Button class="btn btn-primary" type="submit"> Save </Button>
+                </div>
+              </form>
+            </div>
+          </Dialog>
+        </tab>
+      </tabs>
+    </div>
   </AuthenticatedLayout>
 </template>
