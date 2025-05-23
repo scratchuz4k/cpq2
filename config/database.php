@@ -44,11 +44,12 @@ return [
 
         'mongodb_shopblocks' => [
             'driver' => 'mongodb',
-            'dsn' => env('MONGODB_URI', 'mongodb://localhost:27017'),
-            'database' => 'shopblocks',
+            'host' => env('DB_MONGO_HOST', 'mongodb'),
+            'port' => env('DB_MONGO_PORT', 27017),
+            'database' => env('DB_MONGO_DATABASE', 'myappdb'),
+            'username' => env('DB_MONGO_USERNAME', 'root'),
+            'password' => env('DB_MONGO_PASSWORD', 'secret'),
             'options' => [
-                'maxPoolSize' => 50,
-                'w' => 'majority',
                 'authSource' => 'admin',
             ],
         ],

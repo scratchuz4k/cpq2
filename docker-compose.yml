@@ -78,8 +78,8 @@ services:
         container_name: mongodb
         restart: always
         environment:
-            - "MONGODB_INITDB_ROOT_USERNAME=${MONGODB_USERNAME:-}"
-            - "MONGODB_INITDB_ROOT_PASSWORD=${MONGODB_PASSWORD:-}"
+            - "MONGO_INITDB_ROOT_USERNAME=${DB_MONGO_USERNAME:-}"
+            - "MONGO_INITDB_ROOT_PASSWORD=${DB_MONGO_PASSWORD:-}"
         volumes:
             - "sail-mongodb:/data/db"
         ports:
