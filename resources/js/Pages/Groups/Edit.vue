@@ -33,9 +33,18 @@ const setGroup = async (user_id, group_id) => {
   if (!user_id) {
     return;
   }
-  await axios.put("/api/users/" + user_id, { group_id: group_id });
-  user.value = null;
-  emitter.emit("datatable-refresh:group-users");
+  try {
+    await axios.put("/api/users/" + user_id, { group_id: group_id });
+    user.value = null;
+
+    if (group_id) {
+      notyf.success("Created with Success");
+    }
+    emitter.emit("datatable-refresh:group-users");
+  } catch (ex) {
+    user.value = null;
+    notyf.error(ex.response?.data?.message ?? ex.response?.data);
+  }
 };
 
 const addAccount = async () => {
@@ -49,6 +58,7 @@ const addAccount = async () => {
     });
     account.value = null;
     emitter.emit("datatable-refresh:group-accounts");
+    notyf.success("Created with Success");
   } catch (ex) {
     account.value = null;
     notyf.error(ex.response?.data?.message ?? ex.response?.data);
@@ -93,6 +103,7 @@ const items = ref([
               <div class="me-3" style="width: 100%">
                 <label class="form-label">Add Users without group:</label>
                 <InputSelect
+                  id="select-user"
                   url="/users"
                   :fields="['name']"
                   v-model="user"
@@ -102,7 +113,11 @@ const items = ref([
                 </InputSelect>
               </div>
               <div class="d-flex align-items-end justify-content-end">
-                <Button type="submit" class="btn btn-secondary">
+                <Button
+                  id="button-add-user-to-group"
+                  type="submit"
+                  class="btn btn-secondary"
+                >
                   <font-awesome-icon :icon="['fas', 'plus']"></font-awesome-icon>
                 </Button>
               </div>
@@ -142,15 +157,20 @@ const items = ref([
               <div class="me-3" style="width: 100%">
                 <label class="form-label">Add Accounts:</label>
                 <InputSelect
+                  id="select-account"
                   url="/accounts"
                   :fields="['name']"
                   v-model="account"
-                  placeholder="Select an User"
+                  placeholder="Select an Account"
                 >
                 </InputSelect>
               </div>
               <div class="d-flex align-items-end justify-content-end">
-                <Button type="submit" class="btn btn-secondary">
+                <Button
+                  id="button-add-account-to-group"
+                  type="submit"
+                  class="btn btn-secondary"
+                >
                   <font-awesome-icon :icon="['fas', 'plus']"></font-awesome-icon>
                 </Button>
               </div>

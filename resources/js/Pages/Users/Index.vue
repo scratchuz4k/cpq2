@@ -74,9 +74,15 @@ const saveCommissionBulk = (items, toggleModal = null) => {
 };
 
 const saveNewGroup = async () => {
-  await axios.post("/api/groups", { name: newGroup.value });
-  showGroupModel.value = false;
-  emitter.emit("datatable-refresh");
+  try {
+    await axios.post("/api/groups", { name: newGroup.value });
+    showGroupModel.value = false;
+    emitter.emit("datatable-refresh");
+    notyf.success("Created with Success");
+  } catch (ex) {
+    notyf.error(ex.response?.data?.message ?? "Something went wrong!");
+    showGroupModel.value = false;
+  }
 };
 
 const items = ref([
@@ -292,9 +298,9 @@ const items = ref([
             <div class="panel">
               <form class="row" @submit.prevent="saveNewGroup()">
                 <div class="col">
-                  <label for="user-bulk-commission-rate" class="form-label">Name:</label>
+                  <label for="group-create-name" class="form-label">Name:</label>
                   <InputText
-                    id="user-bulk-commission-rate"
+                    id="group-create-name"
                     type="text"
                     class="w-100"
                     v-model="newGroup"
@@ -304,7 +310,9 @@ const items = ref([
                   <div class="btn btn-secondary me-2" @click="showGroupModel = false">
                     Cancel
                   </div>
-                  <Button class="btn btn-primary" type="submit"> Save </Button>
+                  <Button id="group-create-submit" class="btn btn-primary" type="submit">
+                    Save
+                  </Button>
                 </div>
               </form>
             </div>
