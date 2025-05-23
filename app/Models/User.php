@@ -4,17 +4,16 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Trait\SetTenantId;
-use Laravel\Sanctum\HasApiTokens;
-use App\Models\Scopes\TenantScope;
-use Illuminate\Support\Facades\Auth;
-use Spatie\Permission\Traits\HasRoles;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Notifications\Notifiable;
-use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Auth;
+use Laravel\Sanctum\HasApiTokens;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
@@ -28,7 +27,7 @@ class User extends Authenticatable
 
         static::creating(function (Model $model) {
             // Check if tenant_id is not set and the user is authenticated
-            if (auth()->check() && !$model->tenant_id) {
+            if (auth()->check() && ! $model->tenant_id) {
                 $model->tenant_id = auth()->user()->tenant_id;
             }
         });
@@ -49,7 +48,7 @@ class User extends Authenticatable
             if ($child->parent_id) {
                 $parent = User::find($child->parent_id);
                 if ($parent) {
-                    $parent->has_children = $parent->children()->where("id", "!=", $child->id)->exists();
+                    $parent->has_children = $parent->children()->where('id', '!=', $child->id)->exists();
                     $parent->save();
                 }
             }
@@ -67,6 +66,7 @@ class User extends Authenticatable
         'password',
         'parent_id', // Add parent_id to fillable attributes
         'tenant_id',
+        'group_id',
         'sso', // Add sso to fillable attributes
         'commission_rate',
         'has_children',
@@ -136,7 +136,7 @@ class User extends Authenticatable
         return $this->hasMany(Order::class);
     }
 
-    public static function ancestors(User $user = null)
+    public static function ancestors(?User $user = null)
     {
         $currentUser = is_null($user) ? Auth::user() : $user;
         $users = collect([]);
@@ -147,7 +147,7 @@ class User extends Authenticatable
         do {
             $current = $userAscendents->pop();
             $users->push($current);
-            if (!$current->parent) {
+            if (! $current->parent) {
                 break;
             }
             $userAscendents->push($current->parent);

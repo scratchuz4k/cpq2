@@ -1,12 +1,17 @@
 <script setup>
-import { Button, InputText } from "primevue";
+import queryString from "query-string";
+import { Button, InputText, DataTable, Column, Panel } from "primevue";
 import { reactive, ref } from "vue";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
-import { Head, router, usePage } from "@inertiajs/vue3";
+import { Head, router } from "@inertiajs/vue3";
 const props = defineProps({
   group: Object,
 });
 
+const user = ref(null);
+const account = ref(null);
+const accounts = ref([]);
+const users = ref([]);
 const group = reactive(props.group);
 
 const saveGroup = () => {
@@ -23,6 +28,33 @@ const saveGroup = () => {
     },
   });
 };
+
+const setGroup = async (user_id, group_id) => {
+  if (!user_id) {
+    return;
+  }
+  await axios.put("/api/users/" + user_id, { group_id: group_id });
+  user.value = null;
+  emitter.emit("datatable-refresh:group-users");
+};
+
+const addAccount = async () => {
+  if (!account.value) {
+    return;
+  }
+  try {
+    await axios.post("/api/group-accounts/", {
+      account_id: account.value.id,
+      group_id: group.id,
+    });
+    account.value = null;
+    emitter.emit("datatable-refresh:group-accounts");
+  } catch (ex) {
+    account.value = null;
+    notyf.error(ex.response?.data?.message ?? ex.response?.data);
+  }
+};
+
 const items = ref([
   { label: "Home", url: "/" },
   { label: "My Account", url: "/myaccount" },
@@ -31,11 +63,11 @@ const items = ref([
 ]);
 </script>
 <template>
-  <Head :title="'Edit User #' + group.id" />
+  <Head :title="'Edit Group #' + group.id" />
   <AuthenticatedLayout>
     <div class="panel">
       <form @submit.prevent="saveGroup()">
-        <Header :title="'Edit User #' + group.id" :breadcrumbs="items">
+        <Header :title="'Edit Group #' + group.id" :breadcrumbs="items">
           <template #buttons>
             <Button class="btn btn-primary">
               <font-awesome-icon class="me-2" :icon="['fas', 'save']"></font-awesome-icon>
@@ -43,21 +75,116 @@ const items = ref([
             </Button>
           </template>
         </Header>
-        <div class="row">
-          <div class="col">
-            <label for="user-bulk-commission-rate" class="form-label">Name:</label>
-            <InputText
-              id="user-bulk-commission-rate"
-              type="text"
-              class="w-100"
-              v-model="group.name"
-            />
-          </div>
-        </div>
-        <div class="d-flex justify-content-end mt-3">
-          <div class="btn btn-secondary me-2" @click="showModal = false">Cancel</div>
-          <Button class="btn btn-primary" type="submit"> Save </Button>
-        </div>
+        <tabs>
+          <tab title="General" :selected="true">
+            <div class="row mt-3">
+              <div class="col">
+                <label for="user-bulk-commission-rate" class="form-label">Name:</label>
+                <InputText
+                  id="user-bulk-commission-rate"
+                  type="text"
+                  class="w-100"
+                  v-model="group.name"
+                />
+              </div></div
+          ></tab>
+          <tab title="Users">
+            <form @submit.prevent="setGroup(user?.id, group.id)" class="mt-3 d-flex">
+              <div class="me-3" style="width: 100%">
+                <label class="form-label">Add Users without group:</label>
+                <InputSelect
+                  url="/users"
+                  :fields="['name']"
+                  v-model="user"
+                  placeholder="Select an User"
+                  :query="[{ column: 'group_id', operator: 'is_null', value: '' }]"
+                >
+                </InputSelect>
+              </div>
+              <div class="d-flex align-items-end justify-content-end">
+                <Button type="submit" class="btn btn-secondary">
+                  <font-awesome-icon :icon="['fas', 'plus']"></font-awesome-icon>
+                </Button>
+              </div>
+            </form>
+            <div class="row mt-3">
+              <div class="col">
+                <label class="form-label">Users:</label>
+                <Datatable
+                  id="group-users"
+                  :query="[{ column: 'group_id', operator: 'equals', value: group.id }]"
+                  :columns="[
+                    { data: 'id', title: '#', style: 'width:5%' },
+                    { data: 'name', title: 'Name', style: 'width:50%' },
+                    { data: 'created_at', title: 'Created At', style: 'width:15%' },
+                    { data: 'updated_at', title: 'Updated At', style: 'width:15%' },
+                    { data: 'actions', title: ' At', style: 'width:5%' },
+                  ]"
+                  route="/users"
+                >
+                  <template #updated_at="{ value }">
+                    {{ format.date(value) }}
+                  </template>
+                  <template #created_at="{ value }">
+                    {{ format.date(value) }}
+                  </template>
+                  <template #actions="{ data, value, index }">
+                    <Button severity="secondary" @click="setGroup(data.id, null)">
+                      <font-awesome-icon :icon="['fas', 'trash']"></font-awesome-icon>
+                    </Button>
+                  </template>
+                </Datatable>
+              </div>
+            </div>
+          </tab>
+          <tab title="Accounts">
+            <form @submit.prevent="addAccount()" class="mt-3 d-flex">
+              <div class="me-3" style="width: 100%">
+                <label class="form-label">Add Accounts:</label>
+                <InputSelect
+                  url="/accounts"
+                  :fields="['name']"
+                  v-model="account"
+                  placeholder="Select an User"
+                >
+                </InputSelect>
+              </div>
+              <div class="d-flex align-items-end justify-content-end">
+                <Button type="submit" class="btn btn-secondary">
+                  <font-awesome-icon :icon="['fas', 'plus']"></font-awesome-icon>
+                </Button>
+              </div>
+            </form>
+            <div class="row mt-3">
+              <div class="col">
+                <label class="form-label">Accounts:</label>
+                <Datatable
+                  id="group-accounts"
+                  :allow="{
+                    update: true,
+                    delete: true,
+                    link: false,
+                  }"
+                  :query="[{ column: 'group_id', operator: 'equals', value: group.id }]"
+                  :columns="[
+                    { data: 'id', title: '#', style: 'width:5%' },
+                    { data: 'account.name', title: 'Name', style: 'width:55%' },
+                    { data: 'created_at', title: 'Created At', style: 'width:15%' },
+                    { data: 'updated_at', title: 'Updated At', style: 'width:15%' },
+                  ]"
+                  route="/group-accounts"
+                >
+                  <template #updated_at="{ value }">
+                    {{ format.date(value) }}
+                  </template>
+                  <template #created_at="{ value }">
+                    {{ format.date(value) }}
+                  </template>
+                </Datatable>
+              </div>
+            </div>
+          </tab>
+        </tabs>
       </form>
     </div>
   </AuthenticatedLayout>

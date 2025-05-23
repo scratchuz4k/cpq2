@@ -301,7 +301,7 @@ const items = ref([
                   />
                 </div>
                 <div class="d-flex justify-content-end mt-3">
-                  <div class="btn btn-secondary me-2" @click="showModal = false">
+                  <div class="btn btn-secondary me-2" @click="showGroupModel = false">
                     Cancel
                   </div>
                   <Button class="btn btn-primary" type="submit"> Save </Button>
