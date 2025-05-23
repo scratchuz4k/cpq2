@@ -18,6 +18,6 @@ class Group extends Model
 
     public function accounts(): BelongsToMany
     {
-        return $this->belongsToMany(Group::class, 'group_account');
+        return $this->belongsToMany(Account::class, 'group_account');
     }
 }

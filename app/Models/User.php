@@ -6,6 +6,7 @@ namespace App\Models;
 use App\Trait\SetTenantId;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -106,6 +107,14 @@ class User extends Authenticatable
     public function parent()
     {
         return $this->hasOne(User::class, 'id', 'parent_id');
+    }
+
+    /**
+     * Get the parent user of this user.
+     */
+    public function group(): BelongsTo
+    {
+        return $this->belongsTo(Group::class);
     }
 
     /**
