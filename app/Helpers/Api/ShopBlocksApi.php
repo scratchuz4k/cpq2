@@ -54,7 +54,7 @@ class ShopBlocksApi
         ];
 
         $response = Http::withOptions([
-            'timeout' => this->requestTimeout,
+            'timeout' => $this->requestTimeout,
             'connect_timeout' => 30,
         ])->withToken(env('SHOPBLOCKS_API_KEY'))->get('https://api.symphonycommerce.io/api/v2/categories', $params);
 
