@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\Log;
 
 class ShopBlocksApi
 {
+    protected $requestTimeout = 420;
+
     public function getArticles($limit = 10, $page = 1, $filters = [])
     {
         $params = [
@@ -23,8 +25,10 @@ class ShopBlocksApi
             $params[$key] = $value;
         }
 
-        $response = Http::withToken(env('SHOPBLOCKS_API_KEY'))
-            ->get('https://api.shopblocks.com/api/v2/products', $params);
+        $response = Http::withOptions([
+            'timeout' => $this->requestTimeout,
+            'connect_timeout' => 30,
+        ])->withToken(env('SHOPBLOCKS_API_KEY'))->get('https://api.shopblocks.com/api/v2/products', $params);
 
         if (! $response->successful()) {
             // Handle the error accordingly. For now, we'll just log and return an empty array.
@@ -48,8 +52,12 @@ class ShopBlocksApi
             'page' => $page,
             'perPage' => $limit,
         ];
-        $response = Http::withToken(env('SHOPBLOCKS_API_KEY'))
-            ->get('https://api.symphonycommerce.io/api/v2/categories', $params);
+
+        $response = Http::withOptions([
+            'timeout' => this->requestTimeout,
+            'connect_timeout' => 30,
+        ])->withToken(env('SHOPBLOCKS_API_KEY'))->get('https://api.symphonycommerce.io/api/v2/categories', $params);
+
         if (! $response->successful()) {
             // Handle the error accordingly. For now, we'll just log and return an empty array.
             Log::error('Failed to retrieve categories from Shopblocks API: '.$response->body());

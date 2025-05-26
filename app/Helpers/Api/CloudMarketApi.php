@@ -48,7 +48,11 @@ class CloudMarketApi
 
         $quoteRequestParams = array_merge($quoteAddress, $quoteCredentials);
 
-        return Http::withOptions(['stream' => true])->timeout($requestTimeout)->withToken(env('ALPNET_API_TOKEN'))
+        return Http::withOptions([
+            'stream' => true,
+            'timeout' => $requestTimeout,
+            'connect_timeout' => 30,
+        ])->timeout($requestTimeout)->withToken(env('ALPNET_API_TOKEN'))
             ->get(
                 $url.'/PartnerQuoteService/GetQuotes',
                 $quoteRequestParams
