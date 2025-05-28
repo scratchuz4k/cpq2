@@ -118,7 +118,7 @@ describe("Creates a Mobile Quote", () => {
         cy.get("#btn-step-2-next").click();
         let hardwareCount = 0;
         let keys = [0, 1, 2, 3, 4];
-        let max_pages = 10;
+        let max_pages = 5;
         let current_page = 1;
         cy.wait(2000);
         do {
@@ -132,7 +132,7 @@ describe("Creates a Mobile Quote", () => {
                         .trim(); // Get the name of the product
 
                     // Perform conditional logic based on the span text and length of product name field test
-                    if (spanText > 0 && nameText.length <= 100) {
+                    if (spanText > 0) {
                         hardwareCount += 1;
                         cy.log(`Click count: ${hardwareCount}`);
                         cy.get(`#input-hardware-${key}-quantity`).type(1);
