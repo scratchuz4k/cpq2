@@ -91,7 +91,7 @@ const getProductsShopBlocks = async () => {
     } while (array.length != 0);
 
     filters.push({
-      column: "product_category_id",
+      column: "category.id",
       operator: "in",
       value: items.map((x) => x.id),
     });

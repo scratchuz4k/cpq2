@@ -1,5 +1,6 @@
 <script setup>
 import { computed } from "vue";
+import queryString from "query-string";
 import { categories, drillDown } from "@composables/custom/shopblocks";
 
 const props = defineProps({
@@ -21,8 +22,19 @@ const proxyValue = computed({
 });
 
 const getShopBlocksCategories = async () => {
-  let res = await axios.get("/api/shop-blocks/categories");
-  categories.value = res.data.data;
+  categories.value = [];
+  let current_page = 1;
+  let last_page = 1;
+  do {
+    let string = queryString.stringify({
+      limit: 500,
+      page: current_page,
+    });
+    let res = await axios.get("/api/shop-blocks/categories?" + string);
+    categories.value.push(...res.data.data);
+    last_page = res.data.meta?.last_page;
+    current_page++;
+  } while (current_page != last_page + 1);
 };
 
 const selectCategory = (category) => {

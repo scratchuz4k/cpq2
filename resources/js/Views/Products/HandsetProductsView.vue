@@ -93,7 +93,7 @@ const getProductsShopBlocks = async () => {
   }
 
   temp.push({
-    column: "product_category_id",
+    column: "category.id",
     operator: "equals",
     value: 22,
   });

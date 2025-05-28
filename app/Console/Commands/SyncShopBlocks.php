@@ -2,18 +2,19 @@
 
 namespace App\Console\Commands;
 
+use App\Jobs\ShopBlocksCategoriesJob;
 use App\Jobs\ShopBlocksProductsJob;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 
-class SyncShopBlocksProducts extends Command
+class SyncShopBlocks extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'sync:shopblocks-products';
+    protected $signature = 'sync:shopblocks';
 
     /**
      * The console command description.
@@ -30,6 +31,7 @@ class SyncShopBlocksProducts extends Command
         Log::withContext(['signature' => $this->signature]);
         Log::info('Job Started.');
 
+        ShopBlocksCategoriesJob::dispatch();
         ShopBlocksProductsJob::dispatch();
 
         Log::info('Job Finished.');

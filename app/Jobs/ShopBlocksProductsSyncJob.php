@@ -6,6 +6,7 @@ use App\Enums\PricePlanEnum;
 use App\Helpers\Api\ShopBlocksApi;
 use App\Models\PricePlan;
 use App\Models\ShopBlocks\Brand;
+use App\Models\ShopBlocks\Category;
 use App\Models\ShopBlocks\Model;
 use App\Models\ShopBlocks\Product;
 use App\Models\ShopBlocks\ProductFeature;
@@ -63,9 +64,11 @@ class ShopBlocksProductsSyncJob implements NotTenantAware, ShouldQueue
             $temp['expire_at'] = $this->expire_at;
 
             $temp = $this->getBrandAndModel($product, $temp);
+            $category = $this->getCategory($product);
+
             $temp = Product::updateOrCreate(
                 ['sku' => $sku],
-                $temp
+                [...$temp, 'category_id' => $category->id]
             );
 
             $this->getFeaturesFromContent($temp, $product['tabbed_content'], $this->expire_at);
@@ -106,7 +109,6 @@ class ShopBlocksProductsSyncJob implements NotTenantAware, ShouldQueue
         $temp['slug'] = $child['slug'];
         $temp['name'] = $product['name'];
         $temp['description'] = $product['description'];
-        $temp['product_category_id'] = $product['category']['id'];
         $temp['stock'] = $product['stock'];
         $temp['primary_image'] = count($child['images']) ? $child['images'][0]['url'] : null;
         $temp['updated'] = $product['updated'];
@@ -120,6 +122,13 @@ class ShopBlocksProductsSyncJob implements NotTenantAware, ShouldQueue
         ];
 
         return $temp;
+    }
+
+    private function getCategory($product)
+    {
+        $code = $product['category']['id'];
+
+        return Category::updateOrCreate(['code' => $code], $product['category']);
     }
 
     private function getFeaturesFromContent($product, $contents, $expire_at)

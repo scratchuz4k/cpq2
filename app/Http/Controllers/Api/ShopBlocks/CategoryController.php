@@ -3,13 +3,18 @@
 namespace App\Http\Controllers\Api\ShopBlocks;
 
 use App\Helpers\Api\ShopBlocksApi;
+use App\Helpers\DataProvider;
 use App\Helpers\FilterProvider;
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\IndexRequest;
 use App\Http\Resources\ProductResource;
+use App\Models\ShopBlocks\Category;
+use App\Models\ShopBlocks\Product;
 use App\Services\External\ShopBlocksService;
 use Dedoc\Scramble\Attributes\ExcludeRouteFromDocs;
+use Exception;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Cache;
 
@@ -25,29 +30,38 @@ class CategoryController extends BaseController
     #[ExcludeRouteFromDocs]
     public function index(IndexRequest $request)
     {
-        $cache_key = md5('shop-blocks-categories');
+        $dataProvider = new DataProvider(Category::class);
+        try {
+            $items = $dataProvider->get();
+        } catch (Exception $e) {
+            return $e->getMessage();
+        }
 
-        $res = Cache::remember($cache_key, 43200, function () {
-            $products = [];
-            $page = 0;
-            do {
-                $page++;
-                $res = (new ShopBlocksApi)->getCategories(200, $page);
-                if (! array_key_exists('data', $res)) {
-                    break;
-                }
-                array_push($products, ...$res['data']);
-                $last_page = array_key_exists('meta', $res) ? $res['meta']['last_page'] : 1;
-            } while ($page != $last_page);
+        return JsonResource::collection($items);
 
-            $tempFilters = [];
+        // $cache_key = md5('shop-blocks-categories');
 
-            return ['items' => $products, 'filters' => $tempFilters];
-        });
+        // $res = Cache::remember($cache_key, 43200, function () {
+        //     $products = [];
+        //     $page = 0;
+        //     do {
+        //         $page++;
+        //         $res = (new ShopBlocksApi)->getCategories(200, $page);
+        //         if (! array_key_exists('data', $res)) {
+        //             break;
+        //         }
+        //         array_push($products, ...$res['data']);
+        //         $last_page = array_key_exists('meta', $res) ? $res['meta']['last_page'] : 1;
+        //     } while ($page != $last_page);
 
-        $items = FilterProvider::get($res['items'], request()->input('filters', []));
+        //     $tempFilters = [];
 
-        return new LengthAwarePaginator($items, $items->count(), 1000, 1);
+        //     return ['items' => $products, 'filters' => $tempFilters];
+        // });
+
+        // $items = FilterProvider::get($res['items'], request()->input('filters', []));
+
+        // return new LengthAwarePaginator($items, $items->count(), 1000, 1);
     }
 
     /**

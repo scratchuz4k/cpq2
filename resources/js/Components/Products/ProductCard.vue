@@ -10,7 +10,7 @@
           <a :href="proxyValue.url" target="_blank">
             <img
               :src="proxyValue.primary_image ?? '/images/no_image.png'"
-              style="object-fit: cover"
+              style="object-fit: contain"
               :style="{
                 width: '140px',
                 height: '140px',
