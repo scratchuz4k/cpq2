@@ -2,8 +2,10 @@
 
 namespace App\Helpers;
 
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Str;
+use ReflectionClass;
 
 class DataProvider
 {
@@ -94,7 +96,7 @@ class DataProvider
         $filters = is_string($filters) ? json_decode($filters, true) : $filters;
 
         if ($search) {
-            $columns = request()->get('columns') ? explode(',', request()->get('columns')) : $this->builder->getModel()->getFillable();
+            $columns = request()->get(key: 'columns') ? explode(',', request()->get('columns')) : $this->builder->getModel()->getFillable();
             $hidden = $this->builder->getModel()->getHidden();
 
             $columns = array_filter($columns, function ($column) use ($hidden) {
@@ -114,8 +116,13 @@ class DataProvider
             }
 
             $queryParts = $this->resolveQueryParts($filter['operator'], $filter['value']);
-            $func = $this->getFunction($filter);
-            $this->builder = $this->buildSearch($this->builder, $filter['column'], $queryParts['operator'], $queryParts['value'], $func);
+            $this->builder = $this->buildSearch(
+                $this->builder,
+                $filter['column'],
+                $queryParts['operator'],
+                $queryParts['value'],
+                $this->getFunction($filter)
+            );
         }
     }
 
@@ -139,6 +146,11 @@ class DataProvider
         $orderBy = request()->input('orderBy', 'id');
         $orderByArray = explode('.', $orderBy);
 
+        $relations = explode('.', $orderBy);
+        if (count($relations) > 1 && ! $this->checkModelRelationships($relations[0])) {
+            return;
+        }
+
         if (count($orderByArray) == 2) {
             $table = $this->builder->getModel()->getTable();
             $this->builder = $this->builder->select($table.'.*')->joinRelation(Str::camel($orderByArray[0]).' as '.$orderByArray[0])
@@ -151,11 +163,12 @@ class DataProvider
     public function buildSearch($builder, $column, $operator, $value, $func)
     {
         $relations = explode('.', $column);
-        $column = array_pop($relations);
-
-        if (count($relations) == 0) {
+        if (! $this->checkModelRelationships($relations[0])) {
             return $this->basicQuery($builder, $column, $operator, $value, $func);
         }
+
+        $relations = explode('.', $column);
+        $column = array_pop($relations);
 
         return $this->relatedQuery(
             $builder,
@@ -167,14 +180,19 @@ class DataProvider
         );
     }
 
+    protected function relatedQuery($query, $relation, $column, $operator, $value, $func)
+    {
+        $temp = $func == 'orWhere' ? 'orWhereHas' : 'whereHas';
+
+        return $query->{$temp}($relation, function ($query) use ($column, $operator, $value, $func) {
+            $this->basicQuery($query, $column, $operator, $value, $func);
+        });
+    }
+
     protected function basicQuery($query, $column, $operator, $value, $func)
     {
         if ($query->getModel()->getConnection()->getDriverName() == 'mysql') {
             $column = $query->getModel()->getTable().'.'.$column;
-        }
-
-        if ($this->model->translatable && in_array($column, $this->model->translatable)) {
-            $column = $column.'->'.app()->getLocale();
         }
 
         switch ($operator) {
@@ -187,30 +205,6 @@ class DataProvider
             default:
                 return $query->{$func}($column, $operator, $value);
         }
-    }
-
-    protected function relatedQuery($query, $relation, $column, $operator, $value, $func)
-    {
-        $temp = $func == 'orWhere' ? 'orWhereHas' : 'whereHas';
-
-        return $query->{$temp}($relation, function ($query) use ($column, $operator, $value) {
-            $relatedTableName = $query->getModel()->getTable();
-
-            if ($query->getModel()->translatable && in_array($column, $query->getModel()->translatable)) {
-                $column = $column.'->'.app()->getLocale();
-            }
-
-            switch ($operator) {
-                case 'in':
-                    return $query->whereIn($relatedTableName.'.'.$column, $value);
-                case 'not_in':
-                    return $query->whereNotIn($relatedTableName.'.'.$column, $value);
-                case 'is_null':
-                    return $query->whereNull($relatedTableName.'.'.$column);
-                default:
-                    return $query->where($relatedTableName.'.'.$column, $operator, $value);
-            }
-        });
     }
 
     protected function searchModel($query, $columns, $searchTerm)
@@ -318,5 +312,33 @@ class DataProvider
                 return null; // or throw an exception, or handle as needed
         }
 
+    }
+
+    protected function checkModelRelationships($relation)
+    {
+        $class = new ReflectionClass($this->model);
+        $methods = $class->getMethods(\ReflectionMethod::IS_PUBLIC);
+        $relationships = [];
+
+        foreach ($methods as $method) {
+            // Skip inherited methods and methods with required parameters
+            if (
+                $method->class != get_class($this->model) ||
+                $method->getNumberOfRequiredParameters() > 0
+            ) {
+                continue;
+            }
+
+            try {
+                $result = $method->invoke($this->model);
+                if ($result instanceof Relation) {
+                    $relationships[] = $method->getName();
+                }
+            } catch (\Throwable $e) {
+                // Ignore methods that throw exceptions
+            }
+        }
+
+        return in_array($relation, $relationships);
     }
 }

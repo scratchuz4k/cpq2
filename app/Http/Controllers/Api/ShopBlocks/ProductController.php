@@ -43,9 +43,9 @@ class ProductController extends BaseController
         $priceRules->find(account: $account, pricePlan: $pricePlan);
 
         $items = $items->map(function ($item) use ($priceRules) {
-            $net_spa = $priceRules->apply($item->price['net']);
+            $net_spa = $priceRules->apply($item->price['net'] ?? 0);
             $item['price'] = [
-                'net' => $item->price['net'],
+                'net' => $item->price['net'] ?? 0,
                 'net_spa' => $net_spa,
                 'tax' => $net_spa * 0.2,
                 'gross' => $net_spa * 1.2,

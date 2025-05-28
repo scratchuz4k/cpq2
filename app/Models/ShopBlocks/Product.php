@@ -13,8 +13,6 @@ class Product extends Model
 
     protected $dates = ['expire_at']; // Ensure the field is treated as a DateTime
 
-    protected $fillable = ['name', 'description'];
-
     protected $guarded = [];
 
     public function features()

@@ -206,10 +206,6 @@ getProducts();
         </button>
       </div>
       <div>
-        <span id="total_mobile_users">
-          Add {{ products.reduce((acc, x) => (acc = acc + x.quantity), 0) }}
-          {{ category.name }}
-        </span>
         <button
           :id="'btn-step-' + (props.index + 1) + '-next'"
           class="ms-3 btn btn-primary step-nav"

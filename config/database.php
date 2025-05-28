@@ -46,7 +46,7 @@ return [
             'driver' => 'mongodb',
             'host' => env('DB_MONGO_HOST', 'mongodb'),
             'port' => env('DB_MONGO_PORT', 27017),
-            'database' => env('DB_MONGO_DATABASE', 'myappdb'),
+            'database' => env('DB_MONGO_DATABASE', 'shopblocks'),
             'username' => env('DB_MONGO_USERNAME', 'root'),
             'password' => env('DB_MONGO_PASSWORD', 'secret'),
             'options' => [

@@ -397,11 +397,6 @@ watch(
         </button>
       </div>
       <div>
-        <span id="total_add_ons">
-          Add
-          {{ productsHardware.reduce((acc, item) => (acc += item.quantity), 0) }}
-          handsets
-        </span>
         <button
           id="btn-step-2-next"
           class="ms-3 btn btn-primary step-nav"

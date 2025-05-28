@@ -16,6 +16,7 @@ class ProductResource extends JsonResource
     {
         return [
             ...$this->resource->toArray(),
+            'price' => $this->price,
         ];
     }
 }

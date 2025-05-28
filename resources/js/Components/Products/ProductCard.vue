@@ -9,7 +9,7 @@
         <div class="d-flex justify-content-center align-items-middle">
           <a :href="proxyValue.url" target="_blank">
             <img
-              :src="proxyValue.primary_image"
+              :src="proxyValue.primary_image ?? '/images/no_image.png'"
               style="object-fit: cover"
               :style="{
                 width: '140px',
@@ -313,6 +313,9 @@ const getFeaturesTable = () => {
   });
 };
 
+const setAltImg = (event) => {
+  event.target.src = "/images/no_image.png";
+};
 const openModal = async () => {
   loadingFeatures.value = true;
   showModal.value = !showModal.value;

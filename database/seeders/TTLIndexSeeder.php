@@ -23,5 +23,12 @@ class TTLIndexSeeder extends Seeder
                     ['expireAfterSeconds' => 0]
                 );
             });
+        DB::connection('mongodb_shopblocks')->table('prices')
+            ->raw(function ($collection) {
+                $collection->createIndex(
+                    ['expire_at' => 60],
+                    ['expireAfterSeconds' => 0]
+                );
+            });
     }
 }

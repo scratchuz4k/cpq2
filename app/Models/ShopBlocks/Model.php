@@ -12,8 +12,6 @@ class Model extends MongodbModel
 
     protected $dates = ['expire_at']; // Ensure the field is treated as a DateTime
 
-    protected $fillable = ['name'];
-
     protected $guarded = [];
 
     public function products()

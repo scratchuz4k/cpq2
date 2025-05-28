@@ -95,6 +95,12 @@ const getProductsShopBlocks = async () => {
       operator: "in",
       value: items.map((x) => x.id),
     });
+  } else {
+    filters.push({
+      column: "stock",
+      operator: "greater_than_or_equal_to",
+      value: 1,
+    });
   }
 
   let query = queryString.stringify({
@@ -103,7 +109,7 @@ const getProductsShopBlocks = async () => {
     filters: JSON.stringify(filters),
     order: sort.value.order,
     orderBy: sort.value.orderBy,
-    columns: "model,name",
+    columns: "description,name",
     search: search.value,
     account_id: quote.account_id,
   });
@@ -157,18 +163,21 @@ watch([filters, sort], () => {
   getProductsShopBlocks();
 });
 
-watch(currentCategory, () => {
-  getProductsShopBlocks();
-});
+watch(
+  currentCategory,
+  _.debounce(() => {
+    getProductsShopBlocks();
+  }, 500)
+);
 
 watch(
   search,
   _.debounce(() => {
-    if (!search.value) {
-      meta.page = 0;
+    if (search.value) {
+      meta.page = 1;
     }
     getProductsShopBlocks();
-  }, 300)
+  }, 800)
 );
 </script>
 <template>
@@ -245,7 +254,7 @@ watch(
     <div class="d-flex justify-content-between align-items-center mt-3">
       <div>
         <button
-          v-if="step > 0"
+          v-if="step != 1"
           id="btn-step-2-previous"
           class="btn text-primary step-nav btn-sm me-3"
           type="button"
@@ -255,11 +264,6 @@ watch(
         </button>
       </div>
       <div>
-        <span id="total_add_ons">
-          Add
-          {{ productsHardware.reduce((acc, item) => (acc += item.quantity), 0) }}
-          handsets
-        </span>
         <button
           id="btn-step-2-next"
           class="ms-3 btn btn-primary step-nav"

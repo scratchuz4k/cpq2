@@ -25,6 +25,7 @@
     "socialiteproviders/google": "^4.1",
     "socialiteproviders/saml2": "^4.7",
     "spatie/browsershot": "^5.0",
+    "spatie/fork": "^1.2",
     "spatie/laravel-multitenancy": "^4.0",
     "spatie/laravel-pdf": "^1.5",
     "spatie/laravel-permission": "^6.9",
