@@ -163,11 +163,12 @@ class DataProvider
     public function buildSearch($builder, $column, $operator, $value, $func)
     {
         $relations = explode('.', $column);
-        if (! $this->checkModelRelationships($relations[0])) {
+        $relation = Str::camel($relations[0]);
+        if (! $this->checkModelRelationships($relation)) {
             return $this->basicQuery($builder, $column, $operator, $value, $func);
         }
 
-        $relations = explode('.', $column);
+        $relations = explode('.', string: $column);
         $column = array_pop($relations);
 
         return $this->relatedQuery(
@@ -184,8 +185,8 @@ class DataProvider
     {
         $temp = $func == 'orWhere' ? 'orWhereHas' : 'whereHas';
 
-        return $query->{$temp}($relation, function ($query) use ($column, $operator, $value, $func) {
-            $this->basicQuery($query, $column, $operator, $value, $func);
+        return $query->{$temp}($relation, function ($query) use ($column, $operator, $value) {
+            $this->basicQuery($query, $column, $operator, $value, 'where');
         });
     }
 
@@ -211,7 +212,13 @@ class DataProvider
     {
         foreach ($columns as $key => $column) {
             $queryParts = $this->resolveQueryParts('contains', $searchTerm);
-            $query = $this->buildSearch($query, $column, $queryParts['operator'], $queryParts['value'], ! $key ? 'where' : 'orWhere');
+            $query = $this->buildSearch(
+                $query,
+                $column,
+                $queryParts['operator'],
+                $queryParts['value'],
+                'orWhere'
+            );
         }
 
         return $query;

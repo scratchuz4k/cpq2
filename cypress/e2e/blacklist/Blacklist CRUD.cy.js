@@ -69,6 +69,7 @@ describe("Blacklist Crud", () => {
 
     it("Edit a Blacklist Item", () => {
         cy.visit("/blacklist");
+        cy.wait(500);
         cy.get("#datatable-btn-0-edit").click();
 
         cy.get("#item-name").clear().type(product_name);
