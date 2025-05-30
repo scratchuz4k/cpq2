@@ -22,7 +22,7 @@ class Product extends Model
 
     public function brand()
     {
-        return $this->hasOne(Brand::class);
+        return $this->belongsTo(Brand::class);
     }
 
     public function category()
@@ -32,6 +32,6 @@ class Product extends Model
 
     public function model()
     {
-        return $this->hasOne(ShopblocksModel::class);
+        return $this->belongsTo(ShopblocksModel::class);
     }
 }

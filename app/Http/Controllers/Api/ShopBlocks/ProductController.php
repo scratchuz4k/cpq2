@@ -55,10 +55,15 @@ class ProductController extends BaseController
             return $item;
         });
 
-        $items = ProductResource::collection($items)->toArray(request());
-        $paginator = FilterProvider::paginate(collect($items));
+        $paginator = FilterProvider::slice(collect($items));
+        $items = ProductResource::collection($paginator['items'])->toArray(request());
 
-        return $paginator->toArray();
+        return new LengthAwarePaginator(
+            $items,
+            $paginator['total'],
+            $paginator['perPage'],
+            $paginator['currentPage'],
+        );
     }
 
     /**

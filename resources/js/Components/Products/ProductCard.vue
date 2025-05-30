@@ -21,8 +21,11 @@
       </div>
       <div class="w-100">
         <div class="d-flex justify-content-between">
-          <p class="bold" :class="[showAsColumn ? 'truncate-2-lines' : '']">
-            {{ proxyValue.model }}
+          <p
+            class="bold truncate-1-lines me-3"
+            :class="[showAsColumn ? 'truncate-2-lines' : '']"
+          >
+            {{ proxyValue.model.name }}
           </p>
           <div
             :class="[
@@ -55,9 +58,10 @@
             </div>
           </div>
         </div>
-        <p :class="[showAsColumn ? 'truncate-3-lines' : null]">
-          {{ proxyValue.sku }} - {{ proxyValue.name }}
-        </p>
+        <p
+          :class="[showAsColumn ? 'truncate-3-lines' : null]"
+          v-html="proxyValue.name"
+        ></p>
         <a style="cursor: pointer" @click="openModal()">More Info...</a>
         <div v-if="showAsColumn">
           <p class="bold big mt-3">
@@ -126,7 +130,7 @@
     <Dialog
       v-model:visible="showModal"
       modal
-      :header="proxyValue.model"
+      :header="proxyValue.model.name"
       :style="{ width: '80rem' }"
     >
       <div class="panel h-100">
@@ -143,13 +147,19 @@
             <tr>
               <th>Model</th>
               <td>
-                {{ proxyValue.model }}
+                {{ proxyValue.model.name }}
               </td>
             </tr>
             <tr>
               <th>Name</th>
               <td>
                 {{ proxyValue.name }}
+              </td>
+            </tr>
+            <tr>
+              <th>Description</th>
+              <td>
+                <div v-html="proxyValue.description"></div>
               </td>
             </tr>
           </tbody>
@@ -351,6 +361,15 @@ watch(searchInput, () => {
 
 .table tbody td {
   width: 70%;
+}
+.truncate-1-lines {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 2em; /* or a fixed px value, e.g. 24px */
+  height: calc(2em * 1); /* 3 lines × line-height */
 }
 
 .truncate-2-lines {
