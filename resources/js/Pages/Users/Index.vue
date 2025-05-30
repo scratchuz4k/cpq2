@@ -164,6 +164,7 @@ const items = ref([
                 { data: 'sso', title: 'SSO', style: 'width:4%' },
                 { data: 'name', title: 'Name' },
                 { data: 'email', title: 'Email' },
+                { data: 'group.name', title: 'Group' },
                 { data: 'commission_rate', title: 'Commission' },
                 { data: 'roles.name', title: 'Role' },
               ]"
