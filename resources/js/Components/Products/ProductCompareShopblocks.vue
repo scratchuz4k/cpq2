@@ -53,7 +53,7 @@
             </div>
             <div class="mx-2 w-100">
                 <p class="bold truncate-1-line">
-                {{ item.model }}
+				{{ item.model.name }}
                 </p>
                 <p class="truncate-1-line">{{ item.sku }}</p>
             </div>
@@ -103,22 +103,45 @@
                 <th>Model</th>
                 <td>
                   <template v-if="proxyValue.length >= 1">
-                    {{ proxyValue[0].model }}
+                    {{ proxyValue[0].model.name }}
                   </template>
                 </td>
                 <td>
                   <template v-if="proxyValue.length >= 2">
-                    {{ proxyValue[1].model }}
+                    {{ proxyValue[1].model.name }}
                   </template>
                 </td>
                 <td>
                   <template v-if="proxyValue.length >= 3">
-                    {{ proxyValue[2].model }}
+                    {{ proxyValue[2].model.name }}
                   </template>
                 </td>
                 <td>
                   <template v-if="proxyValue.length >= 4">
-                    {{ proxyValue[3].model }}
+                    {{ proxyValue[3].model.name }}
+                  </template>
+                </td>
+              </tr>
+              <tr>
+                <th>Name</th>
+                <td>
+                  <template v-if="proxyValue.length >= 1">
+                    {{ proxyValue[0].name }}
+                  </template>
+                </td>
+                <td>
+                  <template v-if="proxyValue.length >= 2">
+                    {{ proxyValue[1].name }}
+                  </template>
+                </td>
+                <td>
+                  <template v-if="proxyValue.length >= 3">
+                    {{ proxyValue[2].name }}
+                  </template>
+                </td>
+                <td>
+                  <template v-if="proxyValue.length >= 4">
+                    {{ proxyValue[3].name }}
                   </template>
                 </td>
               </tr>

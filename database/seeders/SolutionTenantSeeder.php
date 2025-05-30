@@ -14,7 +14,7 @@ class SolutionTenantSeeder extends Seeder
     public function run(): void
     {
         $tenants = Tenant::all();
-        $solutions = SolutionType::whereIn('code', [3, 4])->get();
+        $solutions = SolutionType::whereIn('code', [3, 4, 5])->get();
 
         $solutions->each(function ($solution) use ($tenants) {
             $solution->tenants()->sync($tenants);

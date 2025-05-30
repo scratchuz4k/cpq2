@@ -28,7 +28,7 @@ class FilterProvider
         return $data->values();
     }
 
-    public static function paginate(Collection $items)
+    public static function slice(Collection $items): array
     {
         $order = request()->input('order', 'asc');
         $orderBy = 'id';
@@ -42,7 +42,19 @@ class FilterProvider
         $currentPage = request()->input('page', 1);
         $temp = $items->slice(($currentPage - 1) * $limit, $limit)->values();
 
-        return new LengthAwarePaginator($temp, $items->count(), $limit, $currentPage);
+        return [
+            'items' => $temp,
+            'total' => $items->count(),
+            'perPage' => $limit,
+            'currentPage' => $currentPage,
+        ];
+    }
+
+    public static function paginate(Collection $items): LengthAwarePaginator
+    {
+        $res = static::slice($items);
+
+        return new LengthAwarePaginator(...$res);
     }
 
     public static function process($filters, $value, $addCount = false)
