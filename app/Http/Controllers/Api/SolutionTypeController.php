@@ -25,8 +25,6 @@ class SolutionTypeController extends BaseController
         $tenant_id = Auth::user()->tenant_id;
 
         $dataProvider = new DataProvider(SolutionTypeTenant::class);
-        $dataProvider->builder = $dataProvider->builder
-            ->where('tenant_id', $tenant_id);
 
         try {
             $data = $dataProvider->get();

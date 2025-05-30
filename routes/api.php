@@ -1,13 +1,14 @@
 <?php
 
 use App\Http\Controllers\Api\AccountController;
-use App\Http\Controllers\Api\ApiController;
 use App\Http\Controllers\Api\ActivityController;
+use App\Http\Controllers\Api\ApiController;
 use App\Http\Controllers\Api\BlacklistController;
 use App\Http\Controllers\Api\BrandController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\ContactController;
 use App\Http\Controllers\Api\EmailHistoryController;
+use App\Http\Controllers\Api\EmailTemplateController;
 use App\Http\Controllers\Api\ExternalController;
 use App\Http\Controllers\Api\MerchantController;
 use App\Http\Controllers\Api\OrderController;
@@ -19,9 +20,12 @@ use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\QuoteController;
 use App\Http\Controllers\Api\QuoteItemController;
 use App\Http\Controllers\Api\RegionController;
-use App\Http\Controllers\Api\EmailTemplateController;
 use App\Http\Controllers\Api\ResourceController;
 use App\Http\Controllers\Api\SharedLinkController;
+use App\Http\Controllers\Api\ShopBlocks\BrandController as ShopBlocksBrandController;
+use App\Http\Controllers\Api\ShopBlocks\CategoryController as ShopBlocksCategoryController;
+use App\Http\Controllers\Api\ShopBlocks\ProductController as ShopBlocksProductController;
+use App\Http\Controllers\Api\ShopBlocks\ProductFeatureController;
 use App\Http\Controllers\Api\SolutionTypeController;
 use App\Http\Controllers\Api\SpaController;
 use App\Http\Controllers\Api\SupplierController;
@@ -34,9 +38,15 @@ Route::prefix('external')->group(function () {
     Route::post('get-address-by-postcode', [ExternalController::class, 'getAddressesByPostCode']);
     Route::post('get-position-by-address', [ExternalController::class, 'getPositionByAddress']);
     Route::post('get-articles-from-cloud-market', [ExternalController::class, 'getArticlesFromCloudMarket']);
-    Route::post('get-articles-from-shop-blocks', [ExternalController::class, 'getArticlesFromShopBlocks']);
 });
 
+Route::prefix('shop-blocks')->group(callback: function () {
+    Route::get('brands', [ShopBlocksBrandController::class, 'index']);
+    Route::get('products', [ShopBlocksProductController::class, 'index']);
+    Route::get('products/{article}', [ShopBlocksProductController::class, 'show']);
+    Route::get('product-features', [ProductFeatureController::class, 'index']);
+    Route::get('categories', [ShopBlocksCategoryController::class, 'index']);
+});
 
 Route::apiResources([
     'apis' => ApiController::class,
