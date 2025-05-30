@@ -42,6 +42,7 @@ describe("Solution Types CRUD", () => {
         cy.get("#link-solutions").click()
 
         cy.get("#datatable-search").type('Hardware')
+		cy.wait(1000)
         cy.get("#datatable-btn-0-edit").click()
 
 
@@ -67,7 +68,7 @@ describe("Solution Types CRUD", () => {
         cy.get("#link-solutions").click()
 
         cy.get("#datatable-search").type('Hardware')
-        // cy.get("#datatable-btn-0-delete").click()
+        cy.wait(1000)
 
         cy.get('.p-datatable-tbody tr')
             .contains('td', 'Hardware')
