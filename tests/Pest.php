@@ -148,3 +148,14 @@ function runPermissionTest(array $permissions, array &$modelsData) {
         }
     }
 }
+
+function createQuoteWithItems($testInstance){
+    $response = $testInstance->post('api/quotes', $testInstance->quote_data);
+    $response->assertSuccessful();
+    $quote = $response->json();
+
+    $response = $testInstance->post('api/quote-items', [...$testInstance->quote_item, 'quote_id' => $quote['id']]);
+    $response->assertSuccessful();
+
+    return $testInstance->get('api/quotes/' . $quote['id']);
+}
