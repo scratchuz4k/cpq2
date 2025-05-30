@@ -10,6 +10,8 @@ use App\Http\Controllers\Api\ContactController;
 use App\Http\Controllers\Api\EmailHistoryController;
 use App\Http\Controllers\Api\EmailTemplateController;
 use App\Http\Controllers\Api\ExternalController;
+use App\Http\Controllers\Api\GroupAccountController;
+use App\Http\Controllers\Api\GroupController;
 use App\Http\Controllers\Api\MerchantController;
 use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\OrderItemController;
@@ -76,4 +78,6 @@ Route::apiResources([
     'blacklist' => BlacklistController::class,
     'email-templates' => EmailTemplateController::class,
     'email-history' => EmailHistoryController::class,
+    'groups' => GroupController::class,
+    'group-accounts' => GroupAccountController::class,
 ]);
