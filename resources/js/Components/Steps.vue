@@ -23,10 +23,6 @@ const props = defineProps({
 </script>
 
 <style scoped>
-/*=============== GOOGLE FONTS ===============*/
-@import url("https://fonts.googleapis.com/css2?family=Poppins&display=swap");
-
-/*=============== VARIABLES ===============*/
 
 .content {
     text-align: center;
