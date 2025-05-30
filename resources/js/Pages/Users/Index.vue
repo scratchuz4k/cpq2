@@ -164,9 +164,9 @@ const items = ref([
                 { data: 'sso', title: 'SSO', style: 'width:4%' },
                 { data: 'name', title: 'Name' },
                 { data: 'email', title: 'Email' },
-                { data: 'group.name', title: 'Group' },
                 { data: 'commission_rate', title: 'Commission' },
                 { data: 'roles.name', title: 'Role' },
+                { data: 'group.name', title: 'Group' },
               ]"
               route="/users"
               v-model="selectedItems"
@@ -214,6 +214,9 @@ const items = ref([
                   class="text-secondary"
                 />
               </template>
+                <template #group.name="{ value }">
+                    <span class="badge text-bg-secondary">{{ value }}</span>
+                </template>
               <template #commission_rate="{ value }"> {{ value }}% </template>
             </TreeTable>
           </div>
