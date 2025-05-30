@@ -84,8 +84,8 @@ const items = ref([
                 id="user-group-owner"
                 type="text"
                 class="w-100"
-                v-model="group.owner?.name"
-                disabled
+                :value="group?.owner?.name"
+                :disabled="true"
               />
             </div>
           </div>

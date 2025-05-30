@@ -23,7 +23,9 @@ class GroupController extends BaseController
      */
     public function edit(Request $request, Group $group): Response
     {
-        return Inertia::render('Groups/Edit', ['group' => (new GroupResource($group))->toArray(request())]);
+        return Inertia::render('Groups/Edit', [
+            'group' => (new GroupResource($group))->toArray(request()),
+        ]);
     }
 
     /**
