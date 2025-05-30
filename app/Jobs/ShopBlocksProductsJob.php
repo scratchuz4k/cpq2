@@ -57,6 +57,7 @@ class ShopBlocksProductsJob implements NotTenantAware, ShouldQueue
 
         $last_page = array_key_exists('meta', $res) ? $res['meta']['last_page'] : 1;
 
+        Log::info("ShopBlocksProductsJob | Total pages to sync:  $last_page ");
         do {
             ShopBlocksProductsSyncJob::dispatch($time, $page, $filters);
             $page++;

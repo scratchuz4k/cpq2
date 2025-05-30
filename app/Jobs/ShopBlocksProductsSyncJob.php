@@ -45,8 +45,6 @@ class ShopBlocksProductsSyncJob implements NotTenantAware, ShouldQueue
      */
     public function handle(): void
     {
-        Log::info("ShopBlocksProductsJob | Syncing page:  $this->page");
-
         $res = (new ShopBlocksApi)->getArticles(200, $this->page, $this->filters);
         if (! array_key_exists('data', $res)) {
             return;
