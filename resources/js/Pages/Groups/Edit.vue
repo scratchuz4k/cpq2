@@ -13,7 +13,7 @@ const account = ref(null);
 const group = reactive(props.group);
 
 const saveGroup = () => {
-  router.put(`/api/groups/${props.group.id}`, group, {
+  router.put(`/groups/${props.group.id}`, group, {
     onSuccess: (page) => {
       notyf.success("Updated with Success");
     },
@@ -27,7 +27,7 @@ const saveGroup = () => {
   });
 };
 
-const setGroup = async (user_id, group_id) => {
+const setUserGroup = async (user_id, group_id) => {
   if (!user_id) {
     return;
   }
@@ -78,6 +78,18 @@ const items = ref([
       <tabs>
         <tab title="General" :selected="true">
           <div class="row mt-3">
+            <div class="col-3">
+              <label for="user-group-owner" class="form-label">Owner:</label>
+              <InputText
+                id="user-group-owner"
+                type="text"
+                class="w-100"
+                v-model="group.owner?.name"
+                disabled
+              />
+            </div>
+          </div>
+          <div class="row mt-3">
             <div class="col">
               <label for="user-group-name" class="form-label">Name:</label>
               <InputText
@@ -102,7 +114,7 @@ const items = ref([
           </div>
         </tab>
         <tab title="Users">
-          <form @submit.prevent="setGroup(user?.id, group.id)" class="mt-3 d-flex">
+          <form @submit.prevent="setUserGroup(user?.id, group.id)" class="mt-3 d-flex">
             <div class="me-3" style="width: 100%">
               <label class="form-label">Add Users without group:</label>
               <InputSelect
@@ -149,7 +161,7 @@ const items = ref([
                 <template #actions="{ data, value, index }">
                   <button
                     class="btn px-2 py-0 mx-1 border-0"
-                    @click="setGroup(data.id, null)"
+                    @click="setUserGroup(data.id, null)"
                   >
                     <font-awesome-icon :icon="['fas', 'trash-alt']"></font-awesome-icon>
                   </button>

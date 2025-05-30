@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\BaseController;
+use App\Http\Resources\GroupResource;
 use App\Models\Group;
 use App\Services\GroupService;
 use Illuminate\Http\Request;
@@ -22,7 +23,7 @@ class GroupController extends BaseController
      */
     public function edit(Request $request, Group $group): Response
     {
-        return Inertia::render('Groups/Edit', ['group' => $group]);
+        return Inertia::render('Groups/Edit', ['group' => (new GroupResource($group))->toArray(request())]);
     }
 
     /**
@@ -38,7 +39,7 @@ class GroupController extends BaseController
             throw new \Exception($e);
         }
 
-        return redirect()->route('groups.index');
+        return redirect()->route('users.index');
 
     }
 }

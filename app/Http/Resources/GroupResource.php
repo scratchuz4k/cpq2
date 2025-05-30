@@ -16,6 +16,7 @@ class GroupResource extends JsonResource
     {
         return [
             ...$this->resource->toArray(),
+            'owner' => $this->owner,
         ];
     }
 }

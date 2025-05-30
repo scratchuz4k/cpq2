@@ -261,7 +261,7 @@ const items = ref([
               class="btn btn-primary me-2"
               @click="showGroupModel = !showGroupModel"
             >
-              <font-awesome-icon :icon="['fas', 'plus']"></font-awesome-icon> New Gruop
+              <font-awesome-icon :icon="['fas', 'plus']"></font-awesome-icon> New Group
             </Button>
           </div>
           <Datatable
