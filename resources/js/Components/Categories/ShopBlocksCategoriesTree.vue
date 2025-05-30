@@ -54,10 +54,10 @@ const rollback = (item) => {
 };
 
 const styles = {
-  0: { backgroundColor: "whitesmoke" },
+  0: { backgroundColor: "white" },
   1: { backgroundColor: "white", border: "1px solid black", borderWidth: "1px 0 0 0" },
   2: {
-    backgroundColor: "whitesmoke",
+    backgroundColor: "white",
     padding: "0 0 0 10px",
     border: "1px solid black",
     borderWidth: "1px 0 0 0",
@@ -76,7 +76,7 @@ getShopBlocksCategories();
   <ul style="margin: 0; padding: 5px 0; list-style: none" v-if="!!drillDown.length">
     <li class="me-1 border-1 mb-1">
       <div
-        class="btn btn-category d-flex justify-content-between"
+        class="btn btn-category d-flex justify-content-between py-1"
         @click="rollback(null)"
       >
         <p class="m-0">All</p>
@@ -88,7 +88,7 @@ getShopBlocksCategories();
       @click="rollback(item)"
     >
       <div
-        class="btn btn-category d-flex justify-content-between"
+        class="btn btn-category d-flex justify-content-between py-1"
         :class="[drillDown.length == index + 1 ? 'btn-category-current' : '']"
         @click="rollback(item)"
       >
@@ -97,7 +97,7 @@ getShopBlocksCategories();
     </li>
   </ul>
   <ul
-    style="margin-left: 10px; padding: 5px 0; list-style: none"
+    style="padding: 0; list-style: none"
     :style="styles[props.level]"
   >
     <template v-for="category in categories.filter((x) => x.parent_id == proxyValue?.id)">

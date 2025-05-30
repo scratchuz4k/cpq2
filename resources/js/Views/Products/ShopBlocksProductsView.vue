@@ -76,8 +76,15 @@ const sorts = [
 const sort = ref(sorts[1]);
 const step = ref(props.modelValue + 1);
 
+let abortController = null
+
 const getProductsShopBlocks = async () => {
   meta.isLoading = true;
+  if (abortController) {
+    abortController.abort();
+  }
+  abortController = new AbortController();
+
   let filters = [];
   if (currentCategory.value) {
     let array = [currentCategory.value];
@@ -113,27 +120,36 @@ const getProductsShopBlocks = async () => {
     search: search.value,
     account_id: quote.account_id,
   });
+  try {
+    let res = await axios.get("/api/shop-blocks/products?" + query, {
+        signal: abortController.signal,
+        });
+    productsHardware.value = res.data.data;
+    productsHardware.value.forEach((e) => {
+        let temp = quote.items.find((x) => x.product_code == e.code);
+        e.quantity = temp ? temp.quantity : 0;
+        e.contract_length = 1;
+    });
 
-  let res = await axios.get("/api/shop-blocks/products?" + query);
-  productsHardware.value = res.data.data;
-  productsHardware.value.forEach((e) => {
-    let temp = quote.items.find((x) => x.product_code == e.code);
-    e.quantity = temp ? temp.quantity : 0;
-    e.contract_length = 1;
-  });
-
-  meta.first = (meta.page - 1) * meta.limit;
-  meta.total = res.data.total;
-  meta.overallTotal = res.data.overall_total;
-  meta.isLoading = false;
-  filterList.models = res.data?.filters?.model
-    ? Object.keys(res.data.filters.model)
-        .sort()
-        .reduce((acc, key) => {
-          acc[key] = res.data.filters.model[key];
-          return acc;
-        }, {})
-    : [];
+    meta.first = (meta.page - 1) * meta.limit;
+    meta.total = res.data.total;
+    meta.overallTotal = res.data.overall_total;
+    meta.isLoading = false;
+    filterList.models = res.data?.filters?.model
+        ? Object.keys(res.data.filters.model)
+            .sort()
+            .reduce((acc, key) => {
+            acc[key] = res.data.filters.model[key];
+            return acc;
+            }, {})
+        : [];
+  } catch (error) {
+        if (axios.isCancel?.(error) || error.name === 'CanceledError' || error.code === 'ERR_CANCELED') {
+        // Request was cancelled, do nothing
+        } else {
+            console.error(error);
+        }
+  }
 };
 
 const addSelected = (item) => {
@@ -152,6 +168,7 @@ const addSelected = (item) => {
 const handlePaginator = (ev) => {
   meta.limit = ev.rows;
   meta.page = ev.page + 1;
+  window.scrollTo({ top: 0, behavior: "smooth" });
   getProductsShopBlocks();
 };
 
@@ -164,9 +181,10 @@ watch([filters, sort], () => {
 });
 
 watch(
-  currentCategory,
+    currentCategory,
   _.debounce(() => {
-    getProductsShopBlocks();
+        meta.page = 1;
+        getProductsShopBlocks();
   }, 500)
 );
 
@@ -177,7 +195,7 @@ watch(
       meta.page = 1;
     }
     getProductsShopBlocks();
-  }, 800)
+  }, 500)
 );
 </script>
 <template>
@@ -211,13 +229,12 @@ watch(
     </div>
     <div class="row">
       <div class="col-3">
-        <div class="rounded border border-surface-200 dark:border-surface-700 p-3">
-          <div class="mb-3">
-            <label class="form-label">Search</label>
+        <div class="rounded bg-white p-3">
+          <div class="mb-4">
+            <h4>Search</h4>
             <input type="search" class="form-control" placeholder="" v-model="search" />
           </div>
-          <hr />
-          <label class="form-label">Categories</label>
+          <h4>Categories</h4>
           <ShopBlocksCategoriesTree v-model="currentCategory"></ShopBlocksCategoriesTree>
         </div>
       </div>

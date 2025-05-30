@@ -1,7 +1,7 @@
 <template>
   <div class="col" :style="{ flexDirection: showAsColumn ? 'column' : 'row' }">
     <div
-      class="panel"
+      class="panel p-4 mb-3"
       :class="[!showAsColumn ? 'w-100 d-flex ' : 'p-3']"
       style="position: relative; top: 0; right: 0"
     >
@@ -86,21 +86,21 @@
             <template v-if="!showAsColumn">
               <button
                 :id="'btn-hardware-' + index + '-add-25'"
-                class="btn btn-sm ms-4 btn-add-quantity"
+                class="btn btn-sm ms-4 btn-add-custom-quantity"
                 @click="checkQuantity(proxyValue, proxyValue.quantity + 25, true)"
               >
                 +25
               </button>
               <button
                 :id="'btn-hardware-' + index + '-add-50'"
-                class="btn btn-sm ms-2 btn-add-quantity"
+                class="btn btn-sm ms-2 btn-add-custom-quantity"
                 @click="checkQuantity(proxyValue, proxyValue.quantity + 50, true)"
               >
                 +50
               </button>
               <button
                 :id="'btn-hardware-' + index + '-add-100'"
-                class="btn btn-sm ms-2 me-4 btn-add-quantity"
+                class="btn btn-sm ms-2 me-4 btn-add-custom-quantity"
                 @click="checkQuantity(proxyValue, proxyValue.quantity + 100, true)"
               >
                 +100
@@ -129,9 +129,11 @@
       :header="proxyValue.model"
       :style="{ width: '80rem' }"
     >
+    <template #header>
+      <h2>Product Information</h2>
+    </template>
       <div class="panel h-100">
-        <p class="bold">General</p>
-        <hr />
+        <h3 class="mb-3">General</h3>
         <table class="table">
           <tbody>
             <tr>
@@ -156,7 +158,7 @@
         </table>
       </div>
       <div class="d-flex justify-content-between align-items-end mb-3 mt-5">
-        <p class="bold">Features</p>
+        <h3>Features</h3>
         <div>
           <IconField>
             <InputIcon>
@@ -166,11 +168,11 @@
               :id="'select-' + props.id + '-search'"
               v-model="searchInput"
               placeholder="Search"
+              type="search"
             />
           </IconField>
         </div>
       </div>
-      <hr />
       <div v-if="loadingFeatures" class="row">
         <div class="col text-center">Loading...</div>
       </div>
@@ -187,7 +189,7 @@
                     >
                       <div class="d-flex justify-content-between w-100">
                         <p>{{ group.name }}</p>
-                        <div>
+                        <div class="px-2">
                           <font-awesome-icon
                             class="w-100"
                             v-if="group.show"

@@ -22,16 +22,16 @@
     >
       <div class="col px-5">
         <div class="row h-100">
-          <div class="col-3" @click="() => (show = !show)">
+          <div class="w-20" @click="() => (show = !show)">
             <div class="d-flex align-items-center justify-content-start h-100">
               <font-awesome-icon
                 v-if="!show"
-                style="font-size: 50px; color: var(--color-purple)"
+                style="font-size: 32px; color: var(--color-purple)"
                 :icon="['fas', 'chevron-up']"
               />
               <font-awesome-icon
                 v-else
-                style="font-size: 50px; color: var(--color-purple)"
+                style="font-size: 32px; color: var(--color-purple)"
                 :icon="['fas', 'chevron-down']"
               />
               <p class="big bold ms-2" style="color: var(--color-purple)">
@@ -39,31 +39,31 @@
               </p>
             </div>
           </div>
-          <div v-for="(item, index) in proxyValue" class="col-2">
+          <div v-for="(item, index) in proxyValue" class="w-20">
             <div class="d-flex align-items-center h-100">
-              <div>
+            <div>
                 <img
-                  :src="item.primary_image"
-                  style="object-fit: contain"
-                  :style="{
+                :src="item.primary_image?? '/images/no_image.png'"
+                style="object-fit: contain"
+                :style="{
                     width: '60px',
                     height: '60px',
-                  }"
+                }"
                 />
-              </div>
-              <div class="mx-2 w-100">
+            </div>
+            <div class="mx-2 w-100">
                 <p class="bold truncate-1-line">
-                  {{ item.model }}
+                {{ item.model }}
                 </p>
                 <p class="truncate-1-line">{{ item.sku }}</p>
-              </div>
-              <div class="mx-3">
-                <button @click="() => proxyValue.splice(index, 1)" class="btn">
-                  <font-awesome-icon :icon="['fas', 'trash']" @click="" />
-                </button>
-              </div>
             </div>
-          </div>
+            <div class="mx-3">
+                <button @click="() => proxyValue.splice(index, 1)" class="btn">
+                <font-awesome-icon :icon="['fas', 'trash']" @click="" />
+                </button>
+            </div>
+            </div>
+        </div>
         </div>
       </div>
     </div>
@@ -72,10 +72,9 @@
       style="overflow-y: scroll; overflow-x: hidden; height: calc(100% - 80px)"
     >
       <div class="col">
-        <div class="panel h-100" style="border: 2px solid var(--color-purple)">
-          <p class="bold">General</p>
-          <hr />
-          <table class="table">
+        <div class="panel h-100">
+          <h3 class="mb-3">General</h3>
+          <table class="table table-bordered">
             <tbody>
               <tr>
                 <th>Sku</th>
@@ -125,8 +124,8 @@
               </tr>
             </tbody>
           </table>
-          <div class="d-flex justify-content-between align-items-end mt-5">
-            <p class="bold">Features</p>
+          <div class="d-flex justify-content-between align-items-end mt-5 py-3">
+            <h3>Features</h3>
             <div>
               <IconField>
                 <InputIcon>
@@ -136,12 +135,12 @@
                   :id="'select-' + props.id + '-search'"
                   v-model="searchInput"
                   placeholder="Search"
+                  type="search"
                 />
               </IconField>
             </div>
           </div>
-          <hr />
-          <table class="table">
+          <table class="table table-bordered">
             <tbody>
               <template v-for="group in temp">
                 <tr>
@@ -152,7 +151,7 @@
                     >
                       <div class="d-flex justify-content-between w-100">
                         <p>{{ group.name }}</p>
-                        <div>
+                        <div class="px-2">
                           <font-awesome-icon
                             class="w-100"
                             v-if="group.show"
@@ -180,9 +179,8 @@
               </template>
             </tbody>
           </table>
-          <p class="mt-5 bold">Prices</p>
-          <hr />
-          <table class="table">
+          <h3 class="mb-3 mt-5">Prices</h3>
+          <table class="table table-bordered">
             <tbody>
               <tr>
                 <th>Stock</th>
@@ -364,6 +362,11 @@ getFeatures();
 }
 .table tbody td {
   width: 20%;
+}
+
+.w-20 {
+    flex: 0 0 auto;
+    width:20%;
 }
 
 .truncate-1-line {

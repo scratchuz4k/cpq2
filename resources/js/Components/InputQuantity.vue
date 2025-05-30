@@ -12,7 +12,7 @@
     <input
       :id="'input-' + props.id + '-quantity'"
       type="number"
-      class="input-quantity w-100"
+      class="input-quantity"
       v-model="proxyValue"
     />
     <button

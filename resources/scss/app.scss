@@ -158,7 +158,7 @@ body {
         text-align: right !important;
     }
 
-    input[type='search']::-webkit-search-cancel-button {
+    input[type="search"]::-webkit-search-cancel-button {
         -webkit-appearance: none;
         background-color: black;
         -webkit-mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23777'><path d='M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z'/></svg>");
@@ -186,7 +186,9 @@ body {
                         }
 
                         &:hover {
-                            background-color: var(--color-purple-dark) !important;
+                            background-color: var(
+                                --color-purple-dark
+                            ) !important;
                             color: white !important;
                         }
                     }
@@ -426,7 +428,7 @@ body {
         padding: 30px;
     }
 
-    #resources>div {
+    #resources > div {
         max-width: 300px;
         margin-bottom: 10px;
         background: none;
@@ -435,11 +437,11 @@ body {
         border-radius: 6px;
     }
 
-    #resources>div img {
+    #resources > div img {
         width: 30px;
     }
 
-    #resources>div a {
+    #resources > div a {
         color: white;
     }
 
@@ -487,16 +489,16 @@ body {
         border-radius: 6px;
     }
 
-    .summary .inner>div {
+    .summary .inner > div {
         display: flex;
     }
 
-    .summary .inner>div>div {
+    .summary .inner > div > div {
         margin-right: 15px;
         min-width: 140px;
     }
 
-    .summary .inner>div p {
+    .summary .inner > div p {
         font-size: 20px;
     }
 
@@ -1145,7 +1147,7 @@ body {
     width: 300px;
 }
 
-.preview-logo>img {
+.preview-logo > img {
     max-height: 100px;
     max-width: 300px;
     object-fit: scale-down;
@@ -1200,22 +1202,24 @@ body {
     #warning-note-container {
         text-align: left !important;
 
-        .small>div:first-of-type {
+        .small > div:first-of-type {
             font-size: 1.5rem;
             margin-bottom: 1.5rem !important;
         }
     }
 }
 
+.row-cols-4 {
+    .input-quantity {
+        width: 100%;
+    }
+}
+
 .btn-add-quantity {
-    font-size: 12px;
-    font-weight: 600;
     border-radius: 20px;
     text-decoration: none;
     background: var(--color-purple-light);
     color: var(--color-purple);
-    padding-left: 15px;
-    padding-right: 15px;
 }
 
 .btn-add-comparator {
