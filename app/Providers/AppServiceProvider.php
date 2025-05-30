@@ -2,12 +2,14 @@
 
 namespace App\Providers;
 
+use App\Models\Token;
 use Dedoc\Scramble\Scramble;
 use Illuminate\Routing\Route;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
+use Laravel\Sanctum\Sanctum;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -58,5 +60,7 @@ class AppServiceProvider extends ServiceProvider
             $ability = $this->abilities[$action[2]];
             return auth()->user()->can("$ability $model");
         });
+
+        Sanctum::usePersonalAccessTokenModel(Token::class);
     }
 }
