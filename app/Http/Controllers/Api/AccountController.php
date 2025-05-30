@@ -35,7 +35,7 @@ class AccountController extends BaseController
         $dataProvider = new DataProvider(Account::class);
 
         $user = request()->user();
-        if ($user->group && ! $user->hasRole('Super Admin')) {
+        if ($user->group && ! $user->hasRole('Super Admin') && ! $user->hasRole('Company Admin')) {
             $ids = $user->group->accounts->pluck('id');
             $dataProvider->builder = $dataProvider->builder->whereIn('id', $ids);
         }

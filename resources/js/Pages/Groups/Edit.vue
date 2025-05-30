@@ -10,12 +10,10 @@ const props = defineProps({
 
 const user = ref(null);
 const account = ref(null);
-const accounts = ref([]);
-const users = ref([]);
 const group = reactive(props.group);
 
 const saveGroup = () => {
-  router.put(`/users/${props.group.id}`, group, {
+  router.put(`/api/groups/${props.group.id}`, group, {
     onSuccess: (page) => {
       notyf.success("Updated with Success");
     },
@@ -76,136 +74,143 @@ const items = ref([
   <Head :title="'Edit Group #' + group.id" />
   <AuthenticatedLayout>
     <div class="panel">
-      <form @submit.prevent="saveGroup()">
-        <Header :title="'Edit Group #' + group.id" :breadcrumbs="items">
-          <template #buttons>
-            <Button class="btn btn-primary">
-              <font-awesome-icon class="me-2" :icon="['fas', 'save']"></font-awesome-icon>
-              Save
-            </Button>
-          </template>
-        </Header>
-        <tabs>
-          <tab title="General" :selected="true">
-            <div class="row mt-3">
-              <div class="col">
-                <label for="user-bulk-commission-rate" class="form-label">Name:</label>
-                <InputText
-                  id="user-bulk-commission-rate"
-                  type="text"
-                  class="w-100"
-                  v-model="group.name"
-                />
-              </div></div
-          ></tab>
-          <tab title="Users">
-            <form @submit.prevent="setGroup(user?.id, group.id)" class="mt-3 d-flex">
-              <div class="me-3" style="width: 100%">
-                <label class="form-label">Add Users without group:</label>
-                <InputSelect
-                  id="select-user"
-                  url="/users"
-                  :fields="['name']"
-                  v-model="user"
-                  placeholder="Select an User"
-                  :query="[{ column: 'group_id', operator: 'is_null', value: '' }]"
-                >
-                </InputSelect>
-              </div>
-              <div class="d-flex align-items-end justify-content-end">
-                <Button
-                  id="button-add-user-to-group"
-                  type="submit"
-                  class="btn btn-secondary"
-                >
-                  <font-awesome-icon :icon="['fas', 'plus']"></font-awesome-icon>
-                </Button>
-              </div>
-            </form>
-            <div class="row mt-3">
-              <div class="col">
-                <label class="form-label">Users:</label>
-                <Datatable
-                  id="group-users"
-                  :query="[{ column: 'group_id', operator: 'equals', value: group.id }]"
-                  :columns="[
-                    { data: 'id', title: '#', style: 'width:5%' },
-                    { data: 'name', title: 'Name', style: 'width:50%' },
-                    { data: 'created_at', title: 'Created At', style: 'width:15%' },
-                    { data: 'updated_at', title: 'Updated At', style: 'width:15%' },
-                    { data: 'actions', title: ' At', style: 'width:5%' },
-                  ]"
-                  route="/users"
-                >
-                  <template #updated_at="{ value }">
-                    {{ format.date(value) }}
-                  </template>
-                  <template #created_at="{ value }">
-                    {{ format.date(value) }}
-                  </template>
-                  <template #actions="{ data, value, index }">
-                    <Button severity="secondary" @click="setGroup(data.id, null)">
-                      <font-awesome-icon :icon="['fas', 'trash']"></font-awesome-icon>
-                    </Button>
-                  </template>
-                </Datatable>
-              </div>
+      <Header :title="'Edit Group #' + group.id" :breadcrumbs="items"> </Header>
+      <tabs>
+        <tab title="General" :selected="true">
+          <div class="row mt-3">
+            <div class="col">
+              <label for="user-group-name" class="form-label">Name:</label>
+              <InputText
+                id="user-group-name"
+                type="text"
+                class="w-100"
+                v-model="group.name"
+              />
             </div>
-          </tab>
-          <tab title="Accounts">
-            <form @submit.prevent="addAccount()" class="mt-3 d-flex">
-              <div class="me-3" style="width: 100%">
-                <label class="form-label">Add Accounts:</label>
-                <InputSelect
-                  id="select-account"
-                  url="/accounts"
-                  :fields="['name']"
-                  v-model="account"
-                  placeholder="Select an Account"
-                >
-                </InputSelect>
-              </div>
-              <div class="d-flex align-items-end justify-content-end">
-                <Button
-                  id="button-add-account-to-group"
-                  type="submit"
-                  class="btn btn-secondary"
-                >
-                  <font-awesome-icon :icon="['fas', 'plus']"></font-awesome-icon>
-                </Button>
-              </div>
-            </form>
-            <div class="row mt-3">
-              <div class="col">
-                <label class="form-label">Accounts:</label>
-                <Datatable
-                  id="group-accounts"
-                  :allow="{
-                    update: true,
-                    delete: true,
-                    link: false,
-                  }"
-                  :query="[{ column: 'group_id', operator: 'equals', value: group.id }]"
-                  :columns="[
-                    { data: 'id', title: '#', style: 'width:5%' },
-                    { data: 'account.name', title: 'Name', style: 'width:55%' },
-                    { data: 'created_at', title: 'Created At', style: 'width:15%' },
-                    { data: 'updated_at', title: 'Updated At', style: 'width:15%' },
-                  ]"
-                  route="/group-accounts"
-                >
-                  <template #updated_at="{ value }">
-                    {{ format.date(value) }}
-                  </template>
-                  <template #created_at="{ value }">
-                    {{ format.date(value) }}
-                  </template>
-                </Datatable>
-              </div>
+          </div>
+
+          <div class="row mt-3">
+            <div class="col d-flex justify-content-end">
+              <Button class="btn btn-primary" @click="saveGroup()">
+                <font-awesome-icon
+                  class="me-2"
+                  :icon="['fas', 'save']"
+                ></font-awesome-icon>
+                Save
+              </Button>
             </div>
-          </tab>
-        </tabs>
-      </form>
+          </div>
+        </tab>
+        <tab title="Users">
+          <form @submit.prevent="setGroup(user?.id, group.id)" class="mt-3 d-flex">
+            <div class="me-3" style="width: 100%">
+              <label class="form-label">Add Users without group:</label>
+              <InputSelect
+                id="select-user"
+                url="/users"
+                :fields="['name']"
+                v-model="user"
+                placeholder="Select an User"
+                :query="[{ column: 'group_id', operator: 'is_null', value: '' }]"
+              >
+              </InputSelect>
+            </div>
+            <div class="d-flex align-items-end justify-content-end">
+              <Button
+                id="button-add-user-to-group"
+                type="submit"
+                class="btn btn-secondary"
+              >
+                <font-awesome-icon :icon="['fas', 'plus']"></font-awesome-icon>
+              </Button>
+            </div>
+          </form>
+          <div class="row mt-3">
+            <div class="col">
+              <label class="form-label">Users:</label>
+              <Datatable
+                id="group-users"
+                :query="[{ column: 'group_id', operator: 'equals', value: group.id }]"
+                :columns="[
+                  { data: 'id', title: '#', style: 'width:5%' },
+                  { data: 'name', title: 'Name', style: 'width:50%' },
+                  { data: 'created_at', title: 'Created At', style: 'width:15%' },
+                  { data: 'updated_at', title: 'Updated At', style: 'width:15%' },
+                  { data: 'actions', title: ' At', style: 'width:5%' },
+                ]"
+                route="/users"
+              >
+                <template #updated_at="{ value }">
+                  {{ format.date(value) }}
+                </template>
+                <template #created_at="{ value }">
+                  {{ format.date(value) }}
+                </template>
+                <template #actions="{ data, value, index }">
+                  <button
+                    class="btn px-2 py-0 mx-1 border-0"
+                    @click="setGroup(data.id, null)"
+                  >
+                    <font-awesome-icon :icon="['fas', 'trash-alt']"></font-awesome-icon>
+                  </button>
+                </template>
+              </Datatable>
+            </div>
+          </div>
+        </tab>
+        <tab title="Accounts">
+          <form @submit.prevent="addAccount()" class="mt-3 d-flex">
+            <div class="me-3" style="width: 100%">
+              <label class="form-label">Add Accounts:</label>
+              <InputSelect
+                id="select-account"
+                url="/accounts"
+                :fields="['name']"
+                v-model="account"
+                placeholder="Select an Account"
+              >
+              </InputSelect>
+            </div>
+            <div class="d-flex align-items-end justify-content-end">
+              <Button
+                id="button-add-account-to-group"
+                type="submit"
+                class="btn btn-secondary"
+              >
+                <font-awesome-icon :icon="['fas', 'plus']"></font-awesome-icon>
+              </Button>
+            </div>
+          </form>
+          <div class="row mt-3">
+            <div class="col">
+              <label class="form-label">Accounts:</label>
+              <Datatable
+                id="group-accounts"
+                :allow="{
+                  update: false,
+                  delete: true,
+                  link: false,
+                }"
+                :query="[{ column: 'group_id', operator: 'equals', value: group.id }]"
+                :columns="[
+                  { data: 'id', title: '#', style: 'width:5%' },
+                  { data: 'account.name', title: 'Name', style: 'width:55%' },
+                  { data: 'created_at', title: 'Created At', style: 'width:15%' },
+                  { data: 'updated_at', title: 'Updated At', style: 'width:15%' },
+                ]"
+                route="/group-accounts"
+              >
+                <template #updated_at="{ value }">
+                  {{ format.date(value) }}
+                </template>
+                <template #created_at="{ value }">
+                  {{ format.date(value) }}
+                </template>
+              </Datatable>
+            </div>
+          </div>
+        </tab>
+      </tabs>
     </div>
   </AuthenticatedLayout>
 </template>
