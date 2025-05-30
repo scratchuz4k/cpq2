@@ -62,7 +62,7 @@
           :class="[showAsColumn ? 'truncate-3-lines' : null]"
           v-html="proxyValue.name"
         ></p>
-        <a class="fw-bold small" type="button" style="text-decoration: none" @click="openModal()"><font-awesome-icon :icon="['fas', 'plus']" /> More Info</a>
+        <a class="fw-bold small" type="button" style="text-decoration: none" @click="openModal()">More Info<font-awesome-icon class="ps-2" :icon="['fas', 'plus']" /></a>
         <div v-if="showAsColumn">
           <p class="bold big mt-3">
             {{ format.GBP(proxyValue.price?.net_spa || 0) }}
@@ -133,7 +133,7 @@
       :style="{ width: '80rem' }"
     >
     <template #header>
-      <h2>Product Information</h2>
+      <h2>Product Information ({{proxyValue.model.name}})</h2>
     </template>
       <div class="panel h-100">
         <h3 class="mb-3">General</h3>

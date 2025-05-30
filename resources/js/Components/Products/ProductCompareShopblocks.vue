@@ -12,25 +12,28 @@
     "
   >
     <div
-      class="row"
+      class="w-100 row px-4"
       style="
+        position: relative;
+        z-index: 1;
         height: 80px;
         cursor: pointer;
         border-top: 2px solid var(--color-purple);
+        box-shadow: 0px 10px 10px -8px rgba(0,0,0,0.1);
       "
     >
       <div class="col px-5">
-        <div class="row h-100">
+        <div class="row pe-3 h-100">
           <div class="w-20" @click="() => (show = !show)">
             <div class="d-flex align-items-center justify-content-start h-100">
               <font-awesome-icon
                 v-if="!show"
-                style="font-size: 32px; color: var(--color-purple)"
+                style="font-size: 24px; color: var(--color-purple)"
                 :icon="['fas', 'chevron-up']"
               />
               <font-awesome-icon
                 v-else
-                style="font-size: 32px; color: var(--color-purple)"
+                style="font-size: 24px; color: var(--color-purple)"
                 :icon="['fas', 'chevron-down']"
               />
               <p class="big bold ms-2" style="color: var(--color-purple)">
@@ -57,7 +60,7 @@
                 <p class="truncate-1-line">{{ item.sku }}</p>
             </div>
             <div class="mx-3">
-                <button @click="() => proxyValue.splice(index, 1)" class="btn">
+                <button @click="() => removeCompareItem(index)" class="btn">
                 <font-awesome-icon :icon="['fas', 'trash']" @click="" />
                 </button>
             </div>
@@ -67,7 +70,7 @@
       </div>
     </div>
     <div
-      class="row p-3"
+      class="w-100 row p-3 product-info"
       style="overflow-y: scroll; overflow-x: hidden; height: calc(100% - 80px)"
     >
       <div class="col">
@@ -361,6 +364,13 @@ const getFeatures = () => {
   loadingFeatures.value = false;
 };
 
+const removeCompareItem = (index) => {
+    proxyValue.value.splice(index, 1);
+    if (proxyValue.value.length === 0) {
+        document.body.style.overflow = "auto";
+    }
+};
+
 watch(searchInput, () => {
   getFeaturesTable();
 });
@@ -369,7 +379,7 @@ watch(props.modelValue, () => {
   if (!props.modelValue.length) {
     return;
   }
-  document.body.style.overflow = "auto";
+  document.body.style.overflow = show.value ? "hidden" : "auto";
   getFeatures();
   getFeaturesTable();
 });
