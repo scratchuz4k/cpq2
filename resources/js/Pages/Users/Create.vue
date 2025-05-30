@@ -1,18 +1,15 @@
 <script setup>
 import {computed, ref, watch} from "vue";import Button from 'primevue/button';
-import MultiSelect from 'primevue/multiselect';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, router, useForm, usePage } from "@inertiajs/vue3";
-import { hasRole } from '@composables/useAuth'
 
 const page = usePage();
 
 const props = defineProps({
     roles: Object,
     managers: Object,
-    parent_id: Number,
-    tenants: Array
+    parent_id: Number
 })
 
 const user = useForm({
@@ -22,7 +19,6 @@ const user = useForm({
     role_id: props.roles.find(role => role.name.toLowerCase() === 'sales rep').id,
     parent_id: props.parent_id ?? 0,
     commission_rate: 0,
-    tenants: [page.props.tenant.id],
     sso: false
 })
 
@@ -32,7 +28,6 @@ const showCommissionRate = computed(() => {
 })
 
 const saveUser = () => {
-    user.tenants = user.tenants
     router.post(`/users`, user,
         {
             onSuccess: (page) => {
@@ -103,15 +98,6 @@ const items = ref([
                         <option value="0">No Manager</option>
                         <option v-for="manager in managers" :value="manager.id">{{ manager.name }}</option>
                     </select>
-                </div>
-                <div class="row mb-3" v-if="hasRole('Super Admin')">
-                    <label class="form-label">Tenants:</label>
-                    <MultiSelect v-model="user.tenants" :options="tenants" optionLabel="name" optionValue="id">
-                        <template #option="slotProps">
-                            <div style="font-size:14px;line-height: 1.5rem;">{{ slotProps.option.name }}
-                            </div>
-                        </template>
-                    </MultiSelect>
                 </div>
                 <div class="row mb-3">
                     <div class="form-check p-0">

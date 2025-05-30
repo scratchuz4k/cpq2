@@ -1,10 +1,12 @@
-let currency = JSON.parse(document.head.querySelector('meta[name="currency-config"]').content);
+let currency = JSON.parse(
+    document.head.querySelector('meta[name="currency-config"]').content
+);
 const GBP = new Intl.NumberFormat("en-GB", {
     style: "currency",
     currency: "GBP",
     minimumFractionDigits: currency.precision ?? 2,
-    maximumFractionDigits: currency.precision ?? 2
-})
+    maximumFractionDigits: currency.precision ?? 2,
+});
 
 const format = {
     date: (date) => {
@@ -77,14 +79,13 @@ const format = {
             return "";
         }
         return str
-            .replace(/([a-z])([A-Z])/g, '$1$2') // Insert an underscore between lowercase and uppercase letters
-            .replace(/\s+/g, '')               // Replace spaces with underscores
+            .replace(/([a-z])([A-Z])/g, "$1$2") // Insert an underscore between lowercase and uppercase letters
+            .replace(/\s+/g, "") // Replace spaces with underscores
             .toLowerCase();
-
     },
     capitalizeFirstLetter: (str) => {
         if (!str) {
-            return '';
+            return "";
         }
 
         return str
@@ -92,10 +93,13 @@ const format = {
             .replace(/\b\w/g, (char) => char.toUpperCase()); // Capitalize first letter of each word
     },
     GBP: (value) => {
-        return GBP.format(value)
+        return GBP.format(value);
     },
-}
-
+    decimalPlaces: (value) => {
+        const precision = currency.precision ?? 2;
+        return `${Number(value).toFixed(precision)}`;
+    },
+};
 
 // Helper function to return human-readable time differences
 function timeDiffForHumans(date) {

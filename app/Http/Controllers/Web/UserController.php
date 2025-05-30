@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Web;
 use App\Models\Role;
 use App\Models\User;
 use Inertia\Inertia;
-use App\Models\Tenant;
 use App\Services\UsersService;
 use Illuminate\Support\Facades\DB;
 use App\Http\Resources\UserResource;
@@ -40,7 +39,6 @@ class UserController extends BaseController
         return Inertia::render('Users/Create', [
             'roles'     => Role::descendants(),
             'managers'  => $users->get(),
-            'tenants'   => Tenant::all(),
             'parent_id' => $users->where('id', request('parent_id'))->first() ?  intval(request('parent_id')) : null
         ]);
     }
@@ -83,7 +81,6 @@ class UserController extends BaseController
             'roles'         => Role::descendants(),
             'managers'      => $users->get(),
             'permissions'   => $user->getAllPermissions(),
-            'tenants'       => Tenant::all()
         ]);
     }
 

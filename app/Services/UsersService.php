@@ -6,7 +6,6 @@ use App\Imports\UsersImport;
 use App\Models\Role;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -30,8 +29,8 @@ class UsersService
             $user->assignRole(User::$default_role);
         }
 
-        if (array_key_exists('tenants', $array)) {
-            $user->tenants()->sync($array['tenants']);
+        if ($user->tenant_id) {
+            $user->tenants()->sync($user->tenant_id);
         }
 
         return $user;
@@ -55,8 +54,8 @@ class UsersService
             $user->syncRoles($array['role_id']);
         }
 
-        if (array_key_exists('tenants', $array)) {
-            $user->tenants()->sync($array['tenants']);
+        if ($user->tenant_id) {
+            $user->tenants()->sync($user->tenant_id);
         }
 
         return $user;

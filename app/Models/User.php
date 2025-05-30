@@ -180,4 +180,20 @@ class User extends Authenticatable
 
         return $users;
     }
+
+    /**
+     * Override createToken method from Sanctum
+     */
+    public function createTokenWithTenant(string $name, int $tenantId, array $abilities = ['*'])
+    {
+        $plainTextToken = $this->generateTokenString();
+        $token = $this->tokens()->create([
+            'name' => $name,
+            'token' => hash('sha256', $plainTextToken),
+            'abilities' => $abilities,
+            'tenant_id' => $tenantId,
+        ]);
+
+        return new NewAccessToken($token, $token->getKey() . '|' . $plainTextToken);
+    }
 }
