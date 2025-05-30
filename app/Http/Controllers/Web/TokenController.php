@@ -8,6 +8,7 @@ use App\Models\Role;
 use App\Models\Token;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class TokenController extends BaseController
@@ -28,22 +29,23 @@ class TokenController extends BaseController
     public function create()
     {
         return Inertia::render('Tokens/Create', [
-            'users' => User::with('roles')->whereHas('roles', function ($query) {
-                $query->whereIn('id', Role::descendants()->pluck('id'));
-            })->get(),
+            'users' => User::where('tenant_id', Auth::user()->tenant_id)
+                ->with('roles')
+                ->permission(['view token', 'viewAny token', 'create token'])
+                ->get()
         ]);
     }
 
     /**
      * Login api
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function store(TokenCreateRequest $request)
     {
         try {
             $user = User::find($request->user_id);
-            $token = $user->createToken($request->name);
+            $token = $user->createTokenWithTenant($request->name, Auth::user()->tenant_id);
         } catch (\Exception $e) {
             throw new \Exception($e);
         }
@@ -58,7 +60,7 @@ class TokenController extends BaseController
     {
         return Inertia::render('Tokens/Show', [
             'plainTextToken' => $request->input('plain-text-token', null),
-            'users' => User::with('roles')->get(),
+            'users' => collect([User::with('roles')->find($token->tokenable_id)]),
             'token' => $token,
         ]);
     }

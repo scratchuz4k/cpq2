@@ -20,7 +20,7 @@ describe("Create a Shareable Link.cy", () => {
     it("Creates Mobile Quote", () => {
         cy.visit("/");
         cy.get("#create-tab").click();
-        cy.selectLazyOption('account_id', account.name);
+        cy.selectLazyOption("account_id", account.name);
         cy.get("#solution_id").select("Mobile");
         cy.get("#btn-create-quote").click();
         cy.get("#btn-plan-0-add-25").click();
@@ -48,7 +48,7 @@ describe("Create a Shareable Link.cy", () => {
                         .trim(); // Get the name of the product
 
                     // Perform conditional logic based on the span text and length of product name field test
-                    if (spanText > 0 && nameText.length <= 100) {
+                    if (spanText > 0) {
                         hardwareCount += 1;
                         cy.log(`Click count: ${hardwareCount}`);
                         cy.get(`#input-hardware-${key}-quantity`).type(1);

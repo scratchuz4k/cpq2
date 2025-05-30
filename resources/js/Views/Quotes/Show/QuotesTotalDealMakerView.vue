@@ -162,7 +162,7 @@ const items = ref([
                     </div>
                     <div class="d-flex justify-content-between">
                         <a id="btn-previous" class="btn text-primary"
-                            :href="route('quotes.edit', { quote: quote.id }) + '?step=last'">
+                            :href="route('quotes.edit', { quote: quote.id })">
                             <font-awesome-icon class="me-2" :icon="['fas', 'arrow-left']"></font-awesome-icon>
                             Edit Quote</a>
                         <div>
@@ -238,7 +238,7 @@ const items = ref([
                     <p class="mb-2" style="font-size: 14px">
                         Currently, you will make <b>{{ format.GBP(quote.commission_value) }}</b>
                         commission and
-                        <b>{{ quote.margin.toFixed(2) }} %</b>
+                        <b>{{ format.decimalPlaces(quote.margin) }} %</b>
                         margin on this quote.
                     </p>
                     <div class="p-3 mb-3" style="background: #e9edf0">
@@ -246,14 +246,14 @@ const items = ref([
                             <label class="form-label">Margin</label>
                             <div class="input-group">
                                 <input id="input-margin-order" class="form-control"
-                                    :value="quote.margin.toFixed(2) + ' %'" disabled />
+                                    :value="format.decimalPlaces(quote.margin) + ' %'" disabled />
                                 <span class="input-group-text"><font-awesome-icon
                                         :icon="['fas', 'lock']"></font-awesome-icon></span>
                             </div>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Commission
-                                <b>(<span id="order-tax-commission"> {{ quote.commission_rate }}</span>%)</b>
+                                <b>(<span id="order-tax-commission"> {{ format.decimalPlaces(quote.commission_rate) }}</span> %)</b>
                             </label>
                             <div class="input-group">
                                 <input id="input-commission_value-order" class="form-control"
