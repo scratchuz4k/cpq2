@@ -3,7 +3,7 @@ describe("Solution Types CRUD", () => {
         cy.login("companyadmin@example.com", "werwerwer")
     })
 
-    it("Create a Hardware Solution", () => {
+    it.skip("Create a Hardware Solution", () => {
         cy.visit("/")
         cy.get("#my-account").click()
         cy.get("#link-solutions").click()

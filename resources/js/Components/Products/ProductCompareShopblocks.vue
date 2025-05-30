@@ -17,7 +17,6 @@
         height: 80px;
         cursor: pointer;
         border-top: 2px solid var(--color-purple);
-        border-bottom: 2px solid var(--color-purple);
       "
     >
       <div class="col px-5">
@@ -315,7 +314,8 @@ const getFeaturesTable = () => {
     }
     let lowerSearch = searchInput.value.toLowerCase();
     let features = x.features.filter((obj) =>
-      obj.label.toLowerCase().includes(lowerSearch)
+    obj.value.toLowerCase().includes(lowerSearch) ||
+    obj.label.toLowerCase().includes(lowerSearch)
     );
 
     features.forEach((e) => {

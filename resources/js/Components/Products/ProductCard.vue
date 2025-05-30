@@ -22,8 +22,8 @@
       <div class="w-100">
         <div class="d-flex justify-content-between">
           <p
-            class="bold truncate-1-lines me-3"
-            :class="[showAsColumn ? 'truncate-2-lines' : '']"
+            class="bold truncate-1-lines"
+            :class="[showAsColumn ? 'truncate-2-lines mb-2' : 'me-3']"
           >
             {{ proxyValue.model.name }}
           </p>
@@ -62,7 +62,7 @@
           :class="[showAsColumn ? 'truncate-3-lines' : null]"
           v-html="proxyValue.name"
         ></p>
-        <a style="cursor: pointer" @click="openModal()">More Info...</a>
+        <a class="fw-bold small" type="button" style="text-decoration: none" @click="openModal()"><font-awesome-icon :icon="['fas', 'plus']" /> More Info</a>
         <div v-if="showAsColumn">
           <p class="bold big mt-3">
             {{ format.GBP(proxyValue.price?.net_spa || 0) }}
@@ -119,8 +119,7 @@
             </button>
           </div>
           <template v-if="hasSelect && showAsColumn">
-            <hr />
-            <button class="btn btn-add-comparator w-100" @click="select">
+            <button class="btn btn-add-comparator w-100 mt-3" @click="select">
               Add to Comparator
             </button>
           </template>
@@ -306,6 +305,7 @@ const getFeaturesTable = () => {
   }
   let lowerSearch = searchInput.value.toLowerCase();
   let features = proxyValue.value.features.filter((obj) =>
+    obj.value.toLowerCase().includes(lowerSearch) ||
     obj.label.toLowerCase().includes(lowerSearch)
   );
 
@@ -370,8 +370,8 @@ watch(searchInput, () => {
   -webkit-line-clamp: 1;
   overflow: hidden;
   text-overflow: ellipsis;
-  line-height: 2em; /* or a fixed px value, e.g. 24px */
-  height: calc(2em * 1); /* 3 lines × line-height */
+  line-height: 1.5em; /* or a fixed px value, e.g. 24px */
+  height: calc(1.5em * 1); /* 3 lines × line-height */
 }
 
 .truncate-2-lines {
@@ -380,8 +380,8 @@ watch(searchInput, () => {
   -webkit-line-clamp: 2;
   overflow: hidden;
   text-overflow: ellipsis;
-  line-height: 2em; /* or a fixed px value, e.g. 24px */
-  height: calc(2em * 2); /* 3 lines × line-height */
+  line-height: 1.5em; /* or a fixed px value, e.g. 24px */
+  height: calc(1.5em * 2); /* 3 lines × line-height */
 }
 
 .truncate-3-lines {
@@ -390,8 +390,8 @@ watch(searchInput, () => {
   -webkit-line-clamp: 3;
   overflow: hidden;
   text-overflow: ellipsis;
-  line-height: 2em; /* or a fixed px value, e.g. 24px */
-  height: calc(2em * 3); /* 3 lines × line-height */
+  line-height: 1.5em; /* or a fixed px value, e.g. 24px */
+  height: calc(1.5em * 3); /* 3 lines × line-height */
   font-size: 14px !important;
 }
 
