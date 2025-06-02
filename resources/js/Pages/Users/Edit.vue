@@ -93,6 +93,10 @@ const items = ref([
                             <option v-for="manager in managers" :value="manager.id">{{ manager.name }}</option>
                         </select>
                     </div>
+                    <div class="row mb-3" v-if="user.group">
+                        <label for="user-group" class="form-label">Group:</label>
+                        <input id="user-group" disabled class="form-control" v-model="user.group.name">
+                    </div>
                     <div class="row mb-3">
                         <div class="form-check p-0">
                             <input id="user-sso " type="checkbox" class="form-check-input" v-model="user.sso">

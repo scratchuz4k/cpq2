@@ -42,6 +42,17 @@ return [
             'synchronous' => null,
         ],
 
+        'mongodb_shopblocks' => [
+            'driver' => 'mongodb',
+            'host' => env('DB_MONGO_HOST', 'mongodb'),
+            'port' => env('DB_MONGO_PORT', 27017),
+            'database' => env('DB_MONGO_DATABASE', 'shopblocks'),
+            'username' => env('DB_MONGO_USERNAME', 'root'),
+            'password' => env('DB_MONGO_PASSWORD', 'secret'),
+            'options' => [
+                'authSource' => 'admin',
+            ],
+        ],
 
         'sqlite' => [
             'driver' => 'sqlite',
@@ -159,7 +170,7 @@ return [
 
         'options' => [
             'cluster' => env('REDIS_CLUSTER', 'redis'),
-            'prefix' => env('REDIS_PREFIX', Str::slug(env('APP_NAME', 'laravel'), '_') . '_database_'),
+            'prefix' => env('REDIS_PREFIX', Str::slug(env('APP_NAME', 'laravel'), '_').'_database_'),
         ],
 
         'default' => [

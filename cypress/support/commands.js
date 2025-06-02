@@ -46,7 +46,11 @@ Cypress.Commands.add('selectLazyOption', (id, option = null) => {
     const optionsContainer = `#${id}-sidebar`;
 
     cy.get(inputSelect).click();
-    cy.wait(1000)
+    cy.wait(200)
+    if (option) {
+        cy.get('#select-' + id + '-search').type(option)
+        cy.wait(1000)
+    }
     const scrollToOption = (retries = 10) => {
         cy.get(optionsContainer).then($container => {
             const options = [...$container[0].querySelectorAll('.option')]

@@ -18,12 +18,17 @@ const slots = useSlots();
 const usedSlots = Object.keys(slots);
 
 const props = defineProps({
+  id: String,
   tableProps: Object,
   route: String,
   columns: Array,
   filters: {
     type: Object,
     default: {},
+  },
+  query: {
+    type: Array,
+    default: [],
   },
   allow: Object,
 });
@@ -60,7 +65,7 @@ const getData = async () => {
       .filter((column) => column.data !== "actions")
       .map((x) => x.data)
       .join(","),
-    filters: JSON.stringify([...form.filters]),
+    filters: JSON.stringify([...form.filters, ...props.query]),
     search: global.value,
   });
 
@@ -127,7 +132,7 @@ const getValue = (item, key) => {
   return result;
 };
 
-emitter.on("datatable-refresh", () => {
+emitter.on("datatable-refresh" + (props.id ? ":" + props.id : ""), () => {
   getData();
 });
 
@@ -281,7 +286,7 @@ getData();
       </template>
     </Column>
     <Column
-      v-if="allow.update || allow.link || allow.delete"
+      v-if="allow?.update || allow?.link || allow?.delete"
       :class="['p-0']"
       style="width: auto"
     >
@@ -309,6 +314,7 @@ getData();
 
           <template v-if="allow.delete">
             <button
+              type="button"
               :id="'datatable-btn-' + index + '-delete'"
               class="btn p-2 mx-1 border-0"
               @click="deleteRecord(data.id)"

@@ -5,8 +5,6 @@ namespace Database\Seeders;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 use Illuminate\Database\Seeder;
-use Database\Seeders\InitTableSeeder;
-use Database\Seeders\EmailTemplateSeeder;
 
 class DatabaseSeeder extends Seeder
 {
@@ -21,6 +19,7 @@ class DatabaseSeeder extends Seeder
             InitTableSeeder::class,
             RolePermissionSeeder::class,
             EmailTemplateSeeder::class,
+            TTLIndexSeeder::class,
         ]);
 
         if (config('app.env') === 'local') {
@@ -29,6 +28,7 @@ class DatabaseSeeder extends Seeder
                 ApiConfigurationSeeder::class,
                 SolutionTenantSeeder::class,
                 CategoryProductsSeeder::class,
+                ShopBlocksSeeder::class,
             ]);
         }
 
