@@ -237,7 +237,7 @@ watch(
           <InputSelectMultiple
             id="product-brands"
             url="/shop-blocks/brands"
-            :field="'name'"
+            :fields="['name']"
             v-model="filters.brands"
             placeholder="Select a Supplier"
           >
