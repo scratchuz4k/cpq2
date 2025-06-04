@@ -115,31 +115,42 @@ search();
       role="button"
       @click="() => (showOptions = !showOptions)"
     >
-      <div class="d-flex flex-wrap">
-        <template
-          v-if="!proxyValue || Object.values(proxyValue).every((value) => !value)"
+      <template v-if="!proxyValue || Object.values(proxyValue).every((value) => !value)">
+        {{ props.placeholder }}
+      </template>
+      <template v-else-if="proxyValue.length == 1">
+        <p
+          v-for="(items, index) in proxyValue"
+          class="w-100 d-flex justify-content-between"
         >
-          {{ props.placeholder }}
-        </template>
-        <template v-else>
-          <p
-            v-for="(items, index) in proxyValue"
-            class="badge rounded-pill bg-light text-dark m-1"
-          >
+          <span>
             <template v-for="(field, index) in fields">
               {{ index !== 0 ? ` (${items?.[field] ?? ""})` : items?.[field] ?? "" }}
             </template>
+          </span>
 
-            <font-awesome-icon
-              class="my-auto ms-1"
-              role="button"
-              style="font-size: 0.8rem"
-              :icon="['fas', 'xmark']"
-              @click="() => proxyValue.splice(index, 1)"
-            />
-          </p>
-        </template>
-      </div>
+          <font-awesome-icon
+            class="my-auto ms-1"
+            role="button"
+            style="font-size: 0.8rem"
+            :icon="['fas', 'xmark']"
+            @click="() => proxyValue.splice(index, 1)"
+          />
+        </p>
+      </template>
+      <template v-else>
+        <p class="w-100 d-flex justify-content-between">
+          <span>{{ proxyValue.length }} selected</span>
+
+          <font-awesome-icon
+            class="my-auto ms-1"
+            role="button"
+            style="font-size: 0.8rem"
+            :icon="['fas', 'xmark']"
+            @click="() => proxyValue.splice(index, 1)"
+          />
+        </p>
+      </template>
     </div>
     <div
       class="form-control position-absolute mt-1 p-1"
