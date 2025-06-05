@@ -2,17 +2,9 @@
 import _ from "lodash";
 import queryString from "query-string";
 import Select from "primevue/select";
-import MultiSelect from "primevue/multiselect";
 import Paginator from "primevue/paginator";
-import { quote, getQuote } from "@/Composables/useQuote";
-import {
-  updateQuoteItem,
-  removeQuoteItem,
-  createQuoteItem,
-} from "@composables/useQuoteItem";
+import { quote } from "@/Composables/useQuote";
 import { computed, onMounted, reactive, ref, watch } from "vue";
-import InputQuantity from "@/Components/InputQuantity.vue";
-import { Skeleton } from "primevue";
 
 const emit = defineEmits(["save", "update:modelValue"]);
 const proxyValue = computed({
@@ -131,38 +123,18 @@ const handlePaginator = (ev) => {
   meta.page = ev.page + 1;
   getProductsShopBlocks();
 };
-
-const checkQuantity = _.debounce(async (product, temp) => {
-  if (product.stock <= temp) {
-    temp = product.stock;
+const addSelected = (item) => {
+  if (selectedItems.value.length >= 4) {
+    notyf.error("Comparator is full");
+    return;
   }
-  product.quantity = temp;
-  if (product.quantity == 0) {
+  if (selectedItems.value.find((x) => x.sku == item.value.sku)) {
+    notyf.error("Already added");
     return;
   }
 
-  let item = quote.items.find((x) => x.product_code == product.code);
-  if (!item) {
-    await createQuoteItem({
-      quote_id: quote.id,
-      product_code: product.code,
-      quantity: product.quantity,
-      contract_length: product.contract_length,
-      name: product.name,
-      raw_price: product.price ? product.price.net : 0,
-      price: product.price ? product.price.net_spa : 0,
-      price_plan_id: product.price_plan_id,
-    });
-  } else {
-    if (product.quantity == 0) {
-      await removeQuoteItem(item.id);
-    } else {
-      await updateQuoteItem(item.id, { quantity: product.quantity });
-    }
-  }
-
-  await getQuote(quote.id);
-}, 500);
+  selectedItems.value.push(item.value);
+};
 
 onMounted(async () => {
   await getProductsShopBlocks();
@@ -272,82 +244,15 @@ watch(
       <div class="text-center pt-2 pb-4" v-if="!productsHardware.length">
         No Results Found
       </div>
-      <div v-for="(product, index) in productsHardware" class="panel p-4 mb-3">
-        <div class="row">
-          <div class="col-2">
-            <a :href="product.url" target="_blank">
-              <img
-                :src="product.primary_image"
-                style="width: 100%; max-height: 135px; object-fit: contain"
-              />
-            </a>
-          </div>
-          <div class="col-10">
-            <div class="d-flex w-100 justify-content-between">
-              <p class="truncate-1-line bold me-4">{{ product.name }}</p>
-              <div class="d-flex justify-content-end">
-                <div class="me-3">
-                  <p
-                    v-if="product.stock > 0"
-                    class="badge text-bg-warning"
-                    style="--bs-bg-opacity: 0.5"
-                  >
-                    <span :id="'hardware-' + index + '-stock'">
-                      {{ product.stock }}
-                    </span>
-                    in stock
-                  </p>
-                  <p v-else class="badge text-bg-danger" style="--bs-bg-opacity: 0.5">
-                    <font-awesome-icon :icon="['fa', 'warning']" />
-                    <span :id="'hardware-' + index + '-stock'"></span>
-                    OUT OF STOCK
-                  </p>
-                </div>
-                <div>
-                  <p class="bold big">{{ format.GBP(product.price?.net_spa || 0) }}</p>
-                </div>
-              </div>
-            </div>
-            <p class="truncate-2-lines" style="min-height: 50px">
-              {{ product.sku }} - {{ product.name }}
-            </p>
-            <div class="pt-1">
-              <p style="font-weight: 500">Quantity</p>
-              <div class="d-flex align-items-center mb-2">
-                <div :style="{ width: '150px' }">
-                  <InputQuantity
-                    :id="'hardware-' + index"
-                    v-model="product.quantity"
-                    @change="(val) => checkQuantity(product, val, true)"
-                  />
-                </div>
-
-                <button
-                  :id="'btn-hardware-' + index + '-add-25'"
-                  class="btn btn-sm ms-4 btn-add-custom-quantity"
-                  @click="checkQuantity(product, product.quantity + 25, true)"
-                >
-                  +25
-                </button>
-                <button
-                  :id="'btn-hardware-' + index + '-add-50'"
-                  class="btn btn-sm ms-2 btn-add-custom-quantity"
-                  @click="checkQuantity(product, product.quantity + 50, true)"
-                >
-                  +50
-                </button>
-                <button
-                  :id="'btn-hardware-' + index + '-add-100'"
-                  class="btn btn-sm ms-2 btn-add-custom-quantity"
-                  @click="checkQuantity(product, product.quantity + 100, true)"
-                >
-                  +100
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      <ProductCard
+        v-for="(product, index) in productsHardware"
+        @select="(item) => addSelected(item)"
+        :hasSelect="true"
+        :showAsColumn="false"
+        :index="index"
+        v-model="productsHardware[index]"
+      >
+      </ProductCard>
     </div>
     <div v-else>
       <ProductSkeleton v-for="n in meta.limit"></ProductSkeleton>
