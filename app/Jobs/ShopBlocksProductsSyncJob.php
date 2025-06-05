@@ -164,7 +164,7 @@ class ShopBlocksProductsSyncJob implements NotTenantAware, ShouldQueue
             }
 
         }
-        ProductFeature::insert(['product_id' => $product->id, 'items' => $result, 'expires_at' => $expire_at]);
+        ProductFeature::insert(['product_id' => $product->id, 'items' => $result, 'expire_at' => $expire_at]);
     }
 
     private function getBrandAndModel($product, $temp)
