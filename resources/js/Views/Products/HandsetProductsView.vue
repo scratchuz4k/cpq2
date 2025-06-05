@@ -26,11 +26,11 @@ const meta = reactive({
   total: 0,
   overallTotal: 0,
   first: 1,
-  limit: 5,
+  limit: 6,
   isLoading: false,
 });
+const showCards = ref(true);
 const search = ref(null);
-
 const productsHardware = ref([]);
 
 const filters = reactive({
@@ -62,6 +62,7 @@ const sorts = [
   },
 ];
 
+const selectedItems = ref([]);
 const sort = ref(sorts[1]);
 const step = ref(props.modelValue + 1);
 
@@ -96,6 +97,7 @@ const getProductsShopBlocks = async () => {
     filters: JSON.stringify(temp),
     order: sort.value.order,
     orderBy: sort.value.orderBy,
+    columns: ["name", "description"],
     search: search.value,
     account_id: quote.account_id,
   });
@@ -115,7 +117,8 @@ const getProductsShopBlocks = async () => {
 };
 
 const clearFilters = () => {
-  Object.keys(filters).forEach((key) => (filters[key].value = null));
+  Object.keys(filters).forEach((key) => (filters[key] = null));
+  filters.brands = [];
 };
 
 const handlePaginator = (ev) => {
@@ -154,12 +157,29 @@ watch(
 <template>
   <div id="mobile_step_shopblocks" class="step">
     <div class="d-flex justify-content-between mb-4">
-      <h2 class="m-0">Finally, choose your add-ons</h2>
+      <h2 class="m-0">Finally, choose your handsets</h2>
       <p class="bigger text-primary bold">STEP {{ step }}/{{ step }}</p>
     </div>
     <div class="d-flex justify-content-between mb-3">
-      <h3>Handsets</h3>
-      <div>
+      <div class="d-flex justify-content-end">
+        <button
+          class="btn border"
+          :class="[showCards ? 'btn-dark' : '']"
+          @click="() => (showCards = !showCards)"
+          style="border-radius: 5px 0 0 5px"
+        >
+          <font-awesome-icon :icon="['fas', 'grip']"></font-awesome-icon>
+        </button>
+        <button
+          class="btn border"
+          :class="[showCards ? '' : 'btn-dark']"
+          @click="() => (showCards = !showCards)"
+          style="border-radius: 0 5px 5px 0"
+        >
+          <font-awesome-icon :icon="['fas', 'grip-lines']"></font-awesome-icon>
+        </button>
+      </div>
+      <div class="d-flex">
         <div class="input-group">
           <input
             type="search"
@@ -244,15 +264,17 @@ watch(
       <div class="text-center pt-2 pb-4" v-if="!productsHardware.length">
         No Results Found
       </div>
-      <ProductCard
-        v-for="(product, index) in productsHardware"
-        @select="(item) => addSelected(item)"
-        :hasSelect="true"
-        :showAsColumn="false"
-        :index="index"
-        v-model="productsHardware[index]"
-      >
-      </ProductCard>
+      <div class="row" :class="[showCards ? 'row-cols-3' : 'row-cols-1']">
+        <ProductCard
+          v-for="(product, index) in productsHardware"
+          @select="(item) => addSelected(item)"
+          :hasSelect="true"
+          :showAsColumn="showCards"
+          :index="index"
+          v-model="productsHardware[index]"
+        >
+        </ProductCard>
+      </div>
     </div>
     <div v-else>
       <ProductSkeleton v-for="n in meta.limit"></ProductSkeleton>
@@ -261,7 +283,7 @@ watch(
       v-model:first="meta.first"
       :rows="meta.limit"
       :totalRecords="meta.total"
-      :rowsPerPageOptions="[5, 10, 20]"
+      :rowsPerPageOptions="[6, 12, 24]"
       @page="handlePaginator"
     >
     </Paginator>
@@ -289,6 +311,11 @@ watch(
         </button>
       </div>
     </div>
+
+    <ProductCompareShopblocks
+      v-if="selectedItems.length"
+      v-model="selectedItems"
+    ></ProductCompareShopblocks>
   </div>
 </template>
 <style scoped>
