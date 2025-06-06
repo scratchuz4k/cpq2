@@ -172,7 +172,7 @@ const getArticles = async (clearCache = false, runTimeout = false) => {
       if (article.productName.includes("with router:")) {
         const productInfo = article.productName.split("with router:");
         article.productName = productInfo[0].trim();
-        if (productInfo.length > 1) {
+        if (productInfo.length > 1 && productInfo[1].trim() !== "n/a") {
           article.additionalInfo = article.additionalInfo || {};
           article.additionalInfo["router"] = productInfo[1].trim();
         }
@@ -624,7 +624,7 @@ getArticles(false, true);
                       </template>
                     </ToggleSwitch>
                     <label class="form-check-label" for="filter-lower-cost">
-                      Show only lowest cost router
+                      Show only lowest cost products
                     </label>
                   </div>
                   <div class="checkbox d-flex py-1 px-2">
@@ -1010,14 +1010,14 @@ getArticles(false, true);
                 <td>{{ format.speed(article.bearer) }}</td>
                 <td>{{ format.speed(article.speed) }}</td>
                 <td :id="'line-' + index + '-price-install'">
-                  {{ GBP.format(article.priceInstall_spa) }}
+                  {{ format.GBP(article.priceInstall_spa) }}
                 </td>
                 <td :id="'line-' + index + '-price-monthly'">
-                  {{ GBP.format(article.priceMonthly_spa) }}
+                  {{ format.GBP(article.priceMonthly_spa) }}
                 </td>
                 <td>
                   <template v-if="article.priceECC">
-                    {{ GBP.format(article.priceECC) }}
+                    {{ format.GBP(article.priceECC) }}
                   </template>
                   <span
                     v-else

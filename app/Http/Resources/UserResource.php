@@ -19,6 +19,7 @@ class UserResource extends JsonResource
             'has_children' => $this->has_children,
             'parent' => $this->whenLoaded('parent'),
             'roles' => $this->roles,
+            'group' => $this->group,
             'tenants' => $this->whenLoaded('tenants'),
             'updated_at' => $this->updated_at,
             'created_at' => $this->created_at,

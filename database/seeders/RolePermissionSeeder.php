@@ -58,6 +58,7 @@ class RolePermissionSeeder extends Seeder
                 'api' => 'API',
                 'price_plan' => 'Price Plan',
                 'activity' => 'Activity',
+                'group' => 'Groups',
             ],
         ];
 
@@ -74,7 +75,12 @@ class RolePermissionSeeder extends Seeder
             ],
             'Company Admin' => [
                 'parent' => 'Super Admin',
-                'permissions' => ['quote', 'quote_item', 'merchant', 'account', 'contact',  'price', 'product', 'category', 'region', 'tenant', 'brand', 'supplier', 'spa', 'user', 'solution_type', 'api', 'price_plan', 'activity', 'email_template', 'email_history'],
+                'permissions' => [
+                    'quote', 'quote_item', 'order', 'order_item', 'merchant', 'account', 'contact',
+                    'price', 'product', 'category', 'region', 'tenant', 'brand', 'supplier',
+                    'spa', 'user', 'solution_type', 'api', 'price_plan', 'activity', 'email_template', 'email_history',
+                    'group',
+                ],
                 'simple_permission' => [],
             ],
             'Sales Rep' => [

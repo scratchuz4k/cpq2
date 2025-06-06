@@ -16,7 +16,7 @@ const items = ref([
         <div class="panel">
             <Header title="Tokens" :breadcrumbs="items">
                 <template #buttons>
-                    <Link :href="route('tokens.create')" class="btn btn-primary me-2">
+                    <Link :href="route('tokens.create')" id="token-create-btn" class="btn btn-primary me-2">
                         <font-awesome-icon :icon="['fas', 'plus']"></font-awesome-icon> New Token
                     </Link>
                 </template>

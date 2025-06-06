@@ -123,8 +123,8 @@ class Quote extends Model
         $total_cost = $raw_total;
         $margin_value = $this->total - $total_cost;
 
-        $this->margin = $total_cost ? ($margin_value / $total_cost) * 100 : 100;
-        $this->commission_value = $margin_value * ($this->commission_rate / 100);
+        $this->margin = $total_cost ? format_currency(($margin_value / $total_cost) * 100) : 100;
+        $this->commission_value = format_currency($margin_value * ($this->commission_rate / 100));
     }
 
     public static function resolveStatus(Quote $quote): string

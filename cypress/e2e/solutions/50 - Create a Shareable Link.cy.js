@@ -20,7 +20,7 @@ describe("Create a Shareable Link.cy", () => {
     it("Creates Mobile Quote", () => {
         cy.visit("/");
         cy.get("#create-tab").click();
-        cy.get("#account_id").select(account.name);
+        cy.selectLazyOption("account_id", account.name);
         cy.get("#solution_id").select("Mobile");
         cy.get("#btn-create-quote").click();
         cy.get("#btn-plan-0-add-25").click();
@@ -29,6 +29,9 @@ describe("Create a Shareable Link.cy", () => {
         cy.wait(1000);
         cy.get("#btn-step-1-next").click();
         cy.wait(1000);
+        cy.get("#btn-plan-0-add-25").click();
+        cy.wait(1000);
+        cy.get("#btn-step-2-next").click();
         let hardwareCount = 0;
         let keys = [0, 1, 2, 3, 4];
         let max_pages = 5;
@@ -45,7 +48,7 @@ describe("Create a Shareable Link.cy", () => {
                         .trim(); // Get the name of the product
 
                     // Perform conditional logic based on the span text and length of product name field test
-                    if (spanText > 0 && nameText.length <= 100) {
+                    if (spanText > 0) {
                         hardwareCount += 1;
                         cy.log(`Click count: ${hardwareCount}`);
                         cy.get(`#input-hardware-${key}-quantity`).type(1);
@@ -60,7 +63,7 @@ describe("Create a Shareable Link.cy", () => {
 
         cy.get("#btn-step-2-next").click();
 
-        cy.get(".recurring-item").should("have.length", 2);
+        cy.get(".recurring-item").should("have.length", 3);
         cy.get(".one_off-item").then(($items) => {
             cy.then(() => {
                 expect(hardwareCount).to.equal($items.length);

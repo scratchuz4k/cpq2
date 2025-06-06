@@ -5,11 +5,9 @@ namespace App\Http\Controllers\Api;
 use App\Services\CategoryService;
 use Dedoc\Scramble\Attributes\ExcludeRouteFromDocs;
 use Exception;
-use App\Models\Account;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use App\Helpers\DataProvider;
-use App\Services\AccountService;
 use Illuminate\Support\Facades\DB;
 use App\Http\Requests\IndexRequest;
 use Illuminate\Support\Facades\Log;
@@ -29,7 +27,7 @@ class CategoryController extends BaseController
 
     /**
      * List Categories
-     * @response AnonymousResourceCollection<LengthAwarePaginator<AccountResource>>
+     * @response AnonymousResourceCollection<LengthAwarePaginator<CategoryResource>>
      */
     public function index(IndexRequest $request)
     {
@@ -41,7 +39,7 @@ class CategoryController extends BaseController
             return $e->getMessage();
         }
 
-        return CategoryResource::collection($data->load('products'));
+        return CategoryResource::collection($data);
     }
 
     /**

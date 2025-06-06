@@ -2,18 +2,12 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Enums\PricePlanEnum;
 use App\Helpers\Api\CloudMarketAddress;
 use App\Helpers\Api\OpenreachLookupApi;
-use App\Helpers\Api\ShopBlocksApi;
 use App\Helpers\Api\VirtualOneLookupApi;
-use App\Helpers\FilterProvider;
-use App\Helpers\Prices\PriceRules;
 use App\Http\Controllers\Controller;
-use App\Models\Account;
-use App\Models\PricePlan;
-use App\Models\Quote;
-use App\Services\CloudMarketService;
+use App\Services\External\CloudMarketService;
+use App\Services\External\ShopBlocksService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
@@ -21,7 +15,7 @@ use Illuminate\Support\Str;
 
 class ExternalController extends Controller
 {
-    public function __construct(protected CloudMarketService $cloudMarketService) {}
+    public function __construct(protected CloudMarketService $cloudMarketService, protected ShopBlocksService $shopBlocksService) {}
 
     /**
      * Request Openreach Api to get all address with a Postal Code.
@@ -126,77 +120,5 @@ class ExternalController extends Controller
         );
 
         return $this->cloudMarketService->get($quote, $request->get('connectivityType'), $address, $request->input('filters', []));
-    }
-
-    public function getArticlesFromShopBlocks(Request $request)
-    {
-        $cache_key = md5('shop-blocks'.$request->input('category_id', 22));
-
-        $res = Cache::remember($cache_key, 43200, function () use ($request) {
-            $products = [];
-            $page = 0;
-            do {
-                $page++;
-                $category_id = $request->input('category_id', 22);
-                $res = (new ShopBlocksApi)->get($category_id, 200, $page);
-                if (! array_key_exists('data', $res)) {
-                    break;
-                }
-                array_push($products, ...$res['data']);
-                $last_page = array_key_exists('meta', $res) ? $res['meta']['last_page'] : 1;
-            } while ($page != $last_page);
-
-            $tempFilters = [
-                'model' => [],
-            ];
-
-            $pricePlanId = PricePlan::where('code', PricePlanEnum::SINGLE->name)->value('id');
-            foreach ($products as $key => $product) {
-                $temp = '';
-                foreach (array_keys($product) as $itemKey) {
-                    if (! (is_string($product[$itemKey]) || is_numeric($product[$itemKey]))) {
-                        continue;
-                    }
-                    $temp .= $product[$itemKey];
-                }
-                $model = (string) Str::of($product['name'])->words(3, '');
-                $products[$key]['code'] = md5(Str::slug($temp));
-                $products[$key]['model'] = $model;
-                $products[$key]['price_plan_id'] = $pricePlanId;
-                $products[$key]['price'] = [
-                    'code' => 1,
-                    'tax_rate' => 20,
-                    'net' => (float) $product['price'],
-                    'tax' => (float) $product['price'] * 0.2,
-                    'gross' => (float) $product['price'] * 1.2,
-                ];
-                $tempFilters = FilterProvider::process($tempFilters, $products[$key], true);
-            }
-
-            return ['items' => $products, 'filters' => $tempFilters];
-        });
-
-        $items = FilterProvider::get($res['items'], request()->input('filters', []));
-
-        $priceRules = new PriceRules;
-        $account = Account::find($request->input('account_id', null));
-        $pricePlan = PricePlan::where('code', PricePlanEnum::SINGLE->name)->first();
-        $priceRules->find(account: $account, pricePlan: $pricePlan);
-
-        $items = $items->map(function ($item) use ($priceRules) {
-            $net_spa = $priceRules->apply($item['price']['net']);
-            $item['price']['net_spa'] = $net_spa;
-            $item['price']['tax'] = $net_spa * 0.2;
-            $item['price']['gross'] = $net_spa * 1.2;
-            $item['price']['active_spas'] = $priceRules->getAppliedSpas();
-
-            return $item;
-        });
-
-        $paginator = FilterProvider::paginate($items);
-        $response = $paginator->toArray();
-        $response['filters'] = $res['filters'];
-
-        return $response;
     }
 }

@@ -4,17 +4,18 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Trait\SetTenantId;
-use Laravel\Sanctum\HasApiTokens;
-use App\Models\Scopes\TenantScope;
-use Illuminate\Support\Facades\Auth;
-use Spatie\Permission\Traits\HasRoles;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Notifications\Notifiable;
-use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Auth;
+use Laravel\Sanctum\HasApiTokens;
+use Laravel\Sanctum\NewAccessToken;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
@@ -28,7 +29,7 @@ class User extends Authenticatable
 
         static::creating(function (Model $model) {
             // Check if tenant_id is not set and the user is authenticated
-            if (auth()->check() && !$model->tenant_id) {
+            if (auth()->check() && ! $model->tenant_id) {
                 $model->tenant_id = auth()->user()->tenant_id;
             }
         });
@@ -49,7 +50,7 @@ class User extends Authenticatable
             if ($child->parent_id) {
                 $parent = User::find($child->parent_id);
                 if ($parent) {
-                    $parent->has_children = $parent->children()->where("id", "!=", $child->id)->exists();
+                    $parent->has_children = $parent->children()->where('id', '!=', $child->id)->exists();
                     $parent->save();
                 }
             }
@@ -67,6 +68,7 @@ class User extends Authenticatable
         'password',
         'parent_id', // Add parent_id to fillable attributes
         'tenant_id',
+        'group_id',
         'sso', // Add sso to fillable attributes
         'commission_rate',
         'has_children',
@@ -109,6 +111,14 @@ class User extends Authenticatable
     }
 
     /**
+     * Get the parent user of this user.
+     */
+    public function group(): BelongsTo
+    {
+        return $this->belongsTo(Group::class);
+    }
+
+    /**
      * Get the children users of this user.
      */
     public function children()
@@ -136,13 +146,14 @@ class User extends Authenticatable
         return $this->hasMany(Order::class);
     }
 
-    public static function ancestors()
+    public static function ancestors(?User $user = null)
     {
+        $currentUser = is_null($user) ? Auth::user() : $user;
         $users = collect([]);
-        if (is_null(Auth::user())) {
+        if (is_null($currentUser)) {
             return $users;
         }
-        $userAscendents = collect([Auth::user()]);
+        $userAscendents = collect([$currentUser]);
         do {
             $current = $userAscendents->pop();
             $users->push($current);
@@ -169,5 +180,21 @@ class User extends Authenticatable
         } while (count($userDescedents));
 
         return $users;
+    }
+
+    /**
+     * Override createToken method from Sanctum
+     */
+    public function createTokenWithTenant(string $name, int $tenantId, array $abilities = ['*'])
+    {
+        $plainTextToken = $this->generateTokenString();
+        $token = $this->tokens()->create([
+            'name' => $name,
+            'token' => hash('sha256', $plainTextToken),
+            'abilities' => $abilities,
+            'tenant_id' => $tenantId,
+        ]);
+
+        return new NewAccessToken($token, $token->getKey().'|'.$plainTextToken);
     }
 }

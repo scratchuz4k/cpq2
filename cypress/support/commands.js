@@ -23,7 +23,9 @@
 //
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
-
+const { getCurrentDate, generateHash, slugify } = require("../support/utils.js");
+const temp = getCurrentDate()
+const user = { name: slugify(temp), email: slugify(temp) + "@email.com", password: generateHash(temp) }
 
 Cypress.Commands.add("login", (email, password) => {
     // run these tests as if in a desktop
@@ -34,7 +36,54 @@ Cypress.Commands.add("login", (email, password) => {
         cy.get("#email").type(email, { force: true })
         cy.get("#password").type(password, { force: true })
         cy.get("#btn-login").click()
-            cy.get('#page-title').contains(/Quotes|Orders/);
-        }
+        cy.get('#page-title').contains(/Quotes|Orders/);
+    }
     )
+})
+
+Cypress.Commands.add('selectLazyOption', (id, option = null) => {
+    const inputSelect = `#input-select-${id}`;
+    const optionsContainer = `#${id}-sidebar`;
+
+    cy.get(inputSelect).click();
+    cy.wait(200)
+    if (option) {
+        cy.get('#select-' + id + '-search').type(option)
+        cy.wait(1000)
+    }
+    const scrollToOption = (retries = 10) => {
+        cy.get(optionsContainer).then($container => {
+            const options = [...$container[0].querySelectorAll('.option')]
+
+            const match = option
+                ? options.find(el => el.textContent.trim().includes(option))
+                : options[0]
+
+
+            if (match) {
+                cy.wrap(match).scrollIntoView().click();
+            } else if (retries > 0) {
+                cy.wrap($container).scrollTo('bottom').wait(300).then(() => {
+                    scrollToOption(retries - 1);
+                });
+            } else {
+                throw new Error(`Option "${option}" not found in ${optionsContainer}`);
+            }
+        });
+    };
+
+    scrollToOption();
+})
+
+Cypress.Commands.add('createUser', (role) => {
+    cy.visit("/users")
+    cy.get("#link-to-create-user").click()
+
+    cy.get("#user-name").type(user.name)
+    cy.get("#user-email").type(user.email)
+    cy.get("#user-password").type(user.password)
+    cy.get("#user-role").select(role)
+    cy.get("#btn-save-user").click()
+    cy.get("#treetable-search").type(user.name)
+    cy.get("#users-table").contains(user.name)
 })

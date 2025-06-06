@@ -115,19 +115,6 @@ const items = ref([
                             </div>
                         </div>
                     </tab>
-                    <tab title="Quote" id="tab-quotes">
-                        <p class="my-3">
-                            This section contains all the customizations for the appearance of the
-                            solution type to match specific preferences within the quote.
-                        </p>
-                        <div class="my-3">
-                            <p for="solution_type-component" class="form-label">Choose the view:</p>
-                            <Select required inputId="solution_type-component"
-                                v-model="solution.configurations.component" :options="available_tables"
-                                placeholder="Select a View" class="w-100" />
-                        </div>
-                    </tab>
-
                     <tab title="Price" v-if="solution.code != 3">
                         <Panel class="mt-3" header="Categories" :toggleable="true">
                             <div class="mb-3">
@@ -157,7 +144,7 @@ const items = ref([
                                                 <td style="text-align: left;">
                                                     <InputSelect v-model="solution.categories[index]" url="/categories"
                                                         :id="`solution-type-categories-` + index + `-value`"
-                                                        field="name" placeholder="Select a Category"
+                                                        :fields="['name']" placeholder="Select a Category"
                                                         @change="checkCategories(index)">
                                                     </InputSelect>
                                                 </td>
@@ -185,6 +172,18 @@ const items = ref([
                                 </table>
                             </div>
                         </Panel>
+                    </tab>
+                    <tab title="Quote" id="tab-quotes">
+                        <p class="my-3">
+                            This section contains all the customizations for the appearance of the
+                            solution type to match specific preferences within the quote.
+                        </p>
+                        <div class="my-3">
+                            <p for="solution_type-component" class="form-label">Choose the view:</p>
+                            <Select required inputId="solution_type-component"
+                                v-model="solution.configurations.component" :options="available_tables"
+                                placeholder="Select a View" class="w-100" />
+                        </div>
                     </tab>
                 </tabs>
             </div>

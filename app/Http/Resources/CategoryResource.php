@@ -16,6 +16,7 @@ class CategoryResource extends JsonResource
     {
         return [
             ...$this->resource->toArray(),
+            'products' => $this->products
         ];
     }
 }
