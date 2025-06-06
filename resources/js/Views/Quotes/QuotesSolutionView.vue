@@ -242,7 +242,10 @@ watch(addressPostCode, () => {
       </InfoBox>
     </div>
   </div>
-  <div class="row" v-if="modelValue.solution_type?.code == 3">
+  <div
+    class="row"
+    v-if="modelValue.solution_type?.code == 3 && modelValue.address != null"
+  >
     <div class="col-6">
       <div class="panel">
         <h5 class="font-bold mb-3">Optionally, select some default filters</h5>

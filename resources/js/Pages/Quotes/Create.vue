@@ -49,35 +49,30 @@ const items = ref([{ label: "Home", url: "/dashboard" }, { label: "Create a quot
 
 <template>
   <Head title="Create a quote" />
+
   <AuthenticatedLayout>
     <Header title="Create a quote" :breadcrumbs="items"></Header>
     <h5 class="font-bold my-3">Select an account to start a quote</h5>
 
-    <Head title="Create a quote" />
-    <AuthenticatedLayout>
-
-        <Header title="Create a quote" :breadcrumbs="items"></Header>
-        <h5 class="font-bold my-3">Select an account to start a quote</h5>
-
-        <form @submit.prevent="submit">
-            <div class="row mb-3">
-                <div class="col-6">
-                    <div class="panel mb-3 ">
-                        <div class="row">
-                            <div class="col-8">
-                                <h5 class="font-bold mb-3">Select an account to start a quote</h5>
-                                <div class="mb-3">
-                                    <label for="account_id" class="form-label">Account <span
-                                            class="text-primary fw-bold">*</span></label>
-                                    <InputSelect id="account_id" v-model="form.account" url="/accounts"
-                                        :fields="['name', 'reference']" :placeholder="'Select an Account'">
-                                    </InputSelect>
-                                </div>
-                                or create a <a id="link-to-create-account" href="/accounts/create"
-                                    class="text-primary">new account</a>
-                            </div>
-                        </div>
-                    </div>
+    <form @submit.prevent="submit">
+      <div class="row mb-3">
+        <div class="col-6">
+          <div class="panel mb-3">
+            <div class="row">
+              <div class="col-8">
+                <h5 class="font-bold mb-3">Select an account to start a quote</h5>
+                <div class="mb-3">
+                  <label for="account_id" class="form-label"
+                    >Account <span class="text-primary fw-bold">*</span></label
+                  >
+                  <InputSelect
+                    id="account_id"
+                    v-model="form.account"
+                    url="/accounts"
+                    :fields="['name', 'reference']"
+                    :placeholder="'Select an Account'"
+                  >
+                  </InputSelect>
                 </div>
                 or create a
                 <a
@@ -88,22 +83,38 @@ const items = ref([{ label: "Home", url: "/dashboard" }, { label: "Create a quot
                 >
               </div>
             </div>
-            <template v-if="form.account">
-                <QuotesSolutionView v-model="form" :solution_types="solution_types"></QuotesSolutionView>
-                <div class="row mb-3 ">
-                    <div class="col-6 d-flex justify-content-end">
-                        <button id="btn-create-quote" class="btn btn-primary" type="submit"
-                            :disabled="form.solutionCheck">
-                            Get prices
-                            <font-awesome-icon :icon="['fas', 'arrow-right']" class="ms-2"></font-awesome-icon>
-                            <div v-if="form.isLoading" class="spinner-border  spinner-border-sm" role="status">
-                                <span class="visually-hidden">Loading...</span>
-                            </div>
-                        </button>
-                    </div>
-                </div>
-            </template>
-
-        </form>
-    </AuthenticatedLayout>
+          </div>
+        </div>
+      </div>
+      <template v-if="form.account">
+        <QuotesSolutionView
+          v-model="form"
+          :solution_types="solution_types"
+        ></QuotesSolutionView>
+        <div class="row mb-3">
+          <div class="col-6 d-flex justify-content-end">
+            <button
+              id="btn-create-quote"
+              class="btn btn-primary"
+              type="submit"
+              :disabled="form.solutionCheck"
+            >
+              Get prices
+              <font-awesome-icon
+                :icon="['fas', 'arrow-right']"
+                class="ms-2"
+              ></font-awesome-icon>
+              <div
+                v-if="form.isLoading"
+                class="spinner-border spinner-border-sm"
+                role="status"
+              >
+                <span class="visually-hidden">Loading...</span>
+              </div>
+            </button>
+          </div>
+        </div>
+      </template>
+    </form>
+  </AuthenticatedLayout>
 </template>
