@@ -186,9 +186,7 @@ body {
                         }
 
                         &:hover {
-                            background-color: var(
-                                --color-purple-dark
-                            ) !important;
+                            background-color: var(--color-purple-dark) !important;
                             color: white !important;
                         }
                     }
@@ -428,7 +426,7 @@ body {
         padding: 30px;
     }
 
-    #resources > div {
+    #resources>div {
         max-width: 300px;
         margin-bottom: 10px;
         background: none;
@@ -437,11 +435,11 @@ body {
         border-radius: 6px;
     }
 
-    #resources > div img {
+    #resources>div img {
         width: 30px;
     }
 
-    #resources > div a {
+    #resources>div a {
         color: white;
     }
 
@@ -489,16 +487,16 @@ body {
         border-radius: 6px;
     }
 
-    .summary .inner > div {
+    .summary .inner>div {
         display: flex;
     }
 
-    .summary .inner > div > div {
+    .summary .inner>div>div {
         margin-right: 15px;
         min-width: 140px;
     }
 
-    .summary .inner > div p {
+    .summary .inner>div p {
         font-size: 20px;
     }
 
@@ -1147,7 +1145,7 @@ body {
     width: 300px;
 }
 
-.preview-logo > img {
+.preview-logo>img {
     max-height: 100px;
     max-width: 300px;
     object-fit: scale-down;
@@ -1202,17 +1200,15 @@ body {
     #warning-note-container {
         text-align: left !important;
 
-        .small > div:first-of-type {
+        .small>div:first-of-type {
             font-size: 1.5rem;
             margin-bottom: 1.5rem !important;
         }
     }
 }
 
-.row-cols-4 {
-    .input-quantity {
-        width: 100%;
-    }
+.input-quantity {
+    width: 100%;
 }
 
 .btn-add-quantity {
