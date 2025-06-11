@@ -3,9 +3,8 @@
 namespace App\Http\Middleware;
 
 use App\Http\Resources\TenantResource;
-use App\Models\Tenant;
-use Inertia\Middleware;
 use Illuminate\Http\Request;
+use Inertia\Middleware;
 
 class HandleInertiaRequests extends Middleware
 {
@@ -19,7 +18,7 @@ class HandleInertiaRequests extends Middleware
     /**
      * Determine the current asset version.
      */
-    public function version(Request $request): string|null
+    public function version(Request $request): ?string
     {
         return parent::version($request);
     }
@@ -36,9 +35,9 @@ class HandleInertiaRequests extends Middleware
             'auth' => [
                 'user' => $request->user(),
                 'permissions' => $request->user() ? $request->user()->getAllPermissions() : [],
-                'roles' =>  $request->user() ? $request->user()->getRoleNames() : [],
+                'roles' => $request->user() ? $request->user()->getRoleNames() : [],
             ],
-            'tenant' =>  $request->user() ? (new TenantResource($request->user()->currentTenant))->resolve() : [],
+            'tenant' => $request->user() ? (new TenantResource($request->user()->currentTenant))->resolve() : [],
         ];
     }
 }

@@ -36,8 +36,9 @@ describe("Blacklist Crud", () => {
 
         cy.visit("/");
         cy.get("#create-tab").click();
-        cy.get("#account_id").select(account.name);
-        cy.get("#solution_id").select("Connectivity - Ethernet");
+        cy.selectLazyOption("account_id", account.name);
+
+        cy.get("#solution_id").select("Connectivity");
         cy.get("#input_address").type("EH32 9NT");
         cy.get("#select_address").should("be.visible").select(1);
         cy.get("#btn-create-quote").should("not.be.disabled").click();
@@ -68,6 +69,7 @@ describe("Blacklist Crud", () => {
 
     it("Edit a Blacklist Item", () => {
         cy.visit("/blacklist");
+        cy.wait(500);
         cy.get("#datatable-btn-0-edit").click();
 
         cy.get("#item-name").clear().type(product_name);

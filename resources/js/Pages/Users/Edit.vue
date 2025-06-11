@@ -3,23 +3,19 @@ import {reactive, ref} from "vue";
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, router, usePage } from "@inertiajs/vue3";
 import Permissions from "@/Components/Permissions.vue";
-import MultiSelect from 'primevue/multiselect';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
-import { hasRole } from '@composables/useAuth'
 
 const props = defineProps({
     user: Object,
     roles: Object,
     managers: Object,
     permissions: Array,
-    tenants: Array
 })
 
 const page = usePage()
 const form = reactive({
     parent_id: props.user.parent_id ?? 0,
-    role_id: props.user.roles.length ? props.user.roles[0].id : null,
-    tenants: props.user.tenants.map((item) => item.id)
+    role_id: props.user.roles.length ? props.user.roles[0].id : null
 })
 
 const role_id = ref(props.user.roles.length ? props.user.roles[0].id : { id: null})
@@ -97,14 +93,9 @@ const items = ref([
                             <option v-for="manager in managers" :value="manager.id">{{ manager.name }}</option>
                         </select>
                     </div>
-                    <div class="row mb-3" v-if="hasRole('Super Admin')">
-                        <label for="user-name" class="form-label">Tenants:</label>
-                        <MultiSelect v-model="form.tenants" :options="tenants" optionLabel="name" optionValue="id">
-                            <template #option="slotProps">
-                                <div style="font-size:14px;line-height: 1.5rem;">{{ slotProps.option.name }}
-                                </div>
-                            </template>
-                        </MultiSelect>
+                    <div class="row mb-3" v-if="user.group">
+                        <label for="user-group" class="form-label">Group:</label>
+                        <input id="user-group" disabled class="form-control" v-model="user.group.name">
                     </div>
                     <div class="row mb-3">
                         <div class="form-check p-0">

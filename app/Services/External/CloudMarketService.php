@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services;
+namespace App\Services\External;
 
 use App\Enums\CloudMarketSuppliersEnum;
 use App\Helpers\Api\CloudMarketAddress;

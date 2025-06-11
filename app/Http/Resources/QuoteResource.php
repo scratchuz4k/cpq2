@@ -16,10 +16,12 @@ class QuoteResource extends JsonResource
     {
         return [
             ...$this->resource->toArray(),
-            'margin' => round((float) $this->margin, 4),
-            'discount' => round((float) $this->discount, 4),
-            'commission_rate' => round((float) $this->commission_rate, 2),
             'user' => $this->user,
+            'commission_value' => format_currency($this->commission_value),
+            'margin' => format_currency($this->margin),
+            'total' => format_currency($this->total),
+            'total_tax' => format_currency($this->total_tax),
+            'total_gross' => format_currency($this->total_gross),
             'account' => (new AccountResource($this->account))->resolve(),
             'solution_type' => (new SolutionTypeResource($this->solutionType))->resolve(),
             'shared_link' => (new SharedLinkResource($this->sharedLink))->resolve(),

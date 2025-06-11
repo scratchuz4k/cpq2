@@ -56,8 +56,8 @@ const items = ref([
                     <input id="token-name" class="form-control" v-model="token.name">
                 </div>
                 <div class="row mb-3">
-                    <label class="form-label">User:</label>
-                    <select class="form-select" v-model="token.user_id">
+                    <label for="token-user" class="form-label">User:</label>
+                    <select id="token-user" class="form-select" v-model="token.user_id">
                         <option v-for="user in users" :value="user.id">
                             {{ user.name }}
                             ({{ user.roles.map(x => x.name).join(',') }})

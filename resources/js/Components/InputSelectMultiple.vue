@@ -1,163 +1,217 @@
-<template>
-  <MultiSelect
-    :id="'select-' + props.id"
-    :inputId="'select-' + props.id + '-input'"
-    v-model="proxyValue"
-    :options="options"
-    :optionLabel="props.field"
-    placeholder="Select options"
-    class="w-100"
-    display="chip"
-  >
-    <template #value="{ value, placeholder }">
-      <div>
-        <span v-if="value.length" v-for="(item, index) in value" class="chip">
-          {{ item ? item[props.field] : placeholder }}
-          <font-awesome-icon
-            :id="'select-' + props.id + '-remove-' + index"
-            @click="remove(index)"
-            class="ms-1"
-            :icon="['far', 'circle-xmark']"
-          ></font-awesome-icon>
-        </span>
-        <span v-else>{{ placeholder }}</span>
-      </div>
-    </template>
-    <template #header>
-      <IconField class="p-1">
-        <InputIcon>
-          <font-awesome-icon icon="fas fa-search" />
-        </InputIcon>
-        <InputText
-          :id="'select-' + props.id + '-search'"
-          class="w-100"
-          v-model="searchInput"
-          placeholder="Search"
-        />
-      </IconField>
-    </template>
-  </MultiSelect>
-</template>
 <script setup>
-import _ from "lodash";
-import IconField from "primevue/iconfield";
-import InputIcon from "primevue/inputicon";
-import InputText from "primevue/inputtext";
-import MultiSelect from "primevue/multiselect";
-
-import { ref, computed, watch } from "vue";
-import { v4 as uuidv4 } from "uuid";
+import _ from 'lodash';
+import { IconField, InputIcon, InputText } from 'primevue';
+import queryString from 'query-string';
+import { ref, watch, computed, reactive, onMounted } from 'vue';
+import { v4 as uuidv4 } from 'uuid';
 
 const props = defineProps({
-  id: {
-    required: false,
-    default: () => {
-      return `${uuidv4()}`;
+    id: {
+        required: false,
+        default: () => {
+            return `${uuidv4()}`;
+        }
     },
-  },
-  url: String,
-  field: String,
-  modelValue: Object,
+    url: String,
+    fields: {
+        type: Array,
+        default: []
+    },
+    modelValue: Array,
+    placeholder: String,
+    query: {
+        type: Array,
+        default: []
+    },
+    filter: {
+        type: Boolean,
+        default: true
+    }
 });
 
-const emit = defineEmits(["update:modelValue"]);
+const meta = reactive({
+    total_pages: 0
+});
+
+const emit = defineEmits(['update:modelValue', 'change']);
+const page = ref(1);
 const options = ref([]);
 const isLoading = ref(false);
-const searchInput = ref(null);
+const showOptions = ref(false);
+const inputSearch = ref(null);
 
 const proxyValue = computed({
-  get: () => props.modelValue,
-  set: (value) => emit("update:modelValue", value),
+    get: () => props.modelValue ?? [],
+    set: (value) => {
+        emit('update:modelValue', value);
+        emit('change', value);
+    }
 });
 
-const search = _.debounce(async () => {
-  if (!props.url) {
-    return;
-  }
-  let string = searchInput.value ? `search=${searchInput.value}` : "";
-  isLoading.value = true;
-  let res = await axios.get(`/api${props.url}?${string}`);
-  isLoading.value = false;
-  options.value = res.data.data.map((e) => {
-    let item = { id: e.id };
-    item[props.field] = e[props.field];
-    return item;
-  });
-}, 500);
+const search = _.debounce(async (clearOptions = false) => {
+    if (!props.url) return;
 
-const remove = (index) => {
-  proxyValue.value.splice(index, 1);
+    let string = queryString.stringify({
+        filters: JSON.stringify(props.query),
+        page: page.value,
+        search: inputSearch.value,
+        columns: props.fields
+    });
+
+    isLoading.value = true;
+    let res = await axios.get(`/api${props.url}?${string}`);
+    if (clearOptions) {
+        options.value = [];
+    }
+    meta.total_pages = res.data.meta?.last_page ?? res.data.last_page;
+    options.value.push(...res.data.data);
+    isLoading.value = false;
+}, 200);
+
+onMounted(() => {
+    var sidebar = document.getElementById(props.id + '-sidebar');
+
+    sidebar.addEventListener(
+        'scroll',
+        () => {
+            var isAtBottom = sidebar.scrollTop + sidebar.clientHeight === sidebar.scrollHeight;
+            if (isAtBottom && page.value < meta.total_pages) {
+                page.value++;
+                search();
+            }
+        },
+        { passive: true }
+    );
+
+    var select = document.getElementById('input-select-' + props.id);
+    document.addEventListener('click', (ev) => {
+        if (!select.contains(ev.target)) {
+            showOptions.value = false;
+        }
+    });
+});
+
+const selectOption = (option) => {
+    let index = proxyValue.value.findIndex((x) => x === option);
+    if (index === -1) {
+        proxyValue.value.push(option);
+        return;
+    }
+    proxyValue.value.splice(index, 1);
 };
-watch(searchInput, () => {
-  search();
+
+watch(inputSearch, () => {
+    page.value = 1;
+    search(true);
 });
+
 search();
 </script>
 
-<style>
-.select-options {
-  min-height: 2.5em;
-  height: auto;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 10px;
+<template>
+    <div :id="'input-select-' + props.id" class="position-relative">
+        <div class="form-select w-100 d-flex" role="button" @click="() => (showOptions = !showOptions)">
+            <template v-if="!proxyValue || Object.values(proxyValue).every((value) => !value)">
+                {{ props.placeholder }}
+            </template>
+            <template v-else-if="proxyValue.length == 1">
+                <p v-for="(items, index) in proxyValue" class="w-100 d-flex justify-content-between">
+                    <span>
+                        <template v-for="(field, index) in fields">
+                            {{ index !== 0 ? ` (${items?.[field] ?? ''})` : items?.[field] ?? '' }}
+                        </template>
+                    </span>
+
+                    <font-awesome-icon
+                        class="my-auto ms-1 text-muted"
+                        role="button"
+                        :icon="['fas', 'xmark']"
+                        @click="() => proxyValue.splice(index, 1)"
+                    />
+                </p>
+            </template>
+            <template v-else>
+                <p class="w-100 d-flex justify-content-between">
+                    <span>{{ proxyValue.length }} selected</span>
+
+                    <font-awesome-icon
+                        class="my-auto ms-1 text-muted"
+                        role="button"
+                        :icon="['fas', 'xmark']"
+                        @click="() => proxyValue.splice(0, proxyValue.length)"
+                    />
+                </p>
+            </template>
+        </div>
+        <div
+            class="form-control position-absolute mt-1 p-1"
+            :style="{
+                visibility: !showOptions ? 'hidden' : 'visible',
+                height: !showOptions ? '0' : 'auto'
+            }"
+            style="z-index: 100"
+        >
+            <IconField v-if="props.filter" class="p-0">
+                <InputIcon v-if="isLoading">
+                    <font-awesome-icon :icon="['fa', 'spinner']" class="fa-spin"></font-awesome-icon>
+                </InputIcon>
+                <InputIcon v-else>
+                    <font-awesome-icon :icon="['fas', 'search']"></font-awesome-icon>
+                </InputIcon>
+                <InputText
+                    :id="'select-' + props.id + '-search'"
+                    class="w-100"
+                    v-model="inputSearch"
+                    placeholder="Search"
+                    type="search"
+                >
+                </InputText>
+            </IconField>
+            <div :id="props.id + '-sidebar'" class="options-container mt-2" style="max-height: 300px; overflow-y: auto">
+                <div class="p-2" v-if="!options.length">
+                    <p class="ps-1">No available options</p>
+                </div>
+                <div
+                    v-else
+                    v-for="option in options"
+                    class="option"
+                    :class="{ selected: proxyValue.find((x) => x === option) }"
+                    @click="selectOption(option)"
+                    style="cursor: pointer"
+                >
+                    <template v-for="(field, index) in props.fields">
+                        {{ index !== 0 ? ` (${option?.[field] ?? ''})` : option?.[field] ?? '' }}
+                    </template>
+                </div>
+                <div class="m-auto" v-if="page < meta.total_pages">
+                    <div class="spinner-border spinner-border-sm" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<style scoped>
+.options-container {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
 }
 
-.select-option {
-  border: 1px solid hsl(0, 0%, 86%);
-  margin-right: 5px;
-  border-radius: 4px;
-  cursor: pointer;
-  background-color: whitesmoke;
+.option {
+    padding: 0.25rem 0.75rem;
+    border-radius: 4px;
 }
 
-.select-items {
-  position: absolute;
-  visibility: hidden;
-  pointer-events: none;
-  width: 100%;
-  max-height: 300px;
-  overflow: auto;
-  background-color: white;
-  padding: 10px;
-  z-index: 100;
-  border: 1px solid hsl(0, 0%, 86%);
-  border-radius: 4px;
-  color: hsl(0, 0%, 21%);
+.option.selected {
+    color: white;
+    background-color: var(--color-purple);
 }
 
-.select-item:hover {
-  font-weight: bold;
-  cursor: pointer;
-}
-
-.show {
-  visibility: visible !important;
-  pointer-events: auto !important;
-}
-
-.hide {
-  visibility: hidden !important;
-  pointer-events: auto !important;
-}
-
-.disabled {
-  pointer-events: none;
-  background-color: whitesmoke;
-}
-
-.text-bold {
-  font-weight: bold;
-}
-
-.chip {
-  background-color: whitesmoke;
-  padding: 0 5px;
-  border-radius: 5px;
-  margin-left: 5px;
-}
-.p-multiselect-label {
-  white-space: normal !important;
+.option:not(.selected):hover {
+    color: black;
+    background-color: var(--color-purple-light);
 }
 </style>

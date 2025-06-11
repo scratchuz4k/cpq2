@@ -154,10 +154,10 @@ const items = ref([
                     <div>
                         <p class="payment-info border-bottom pb-3 mb-3 big bold">
                             <span class="text-primary">1 payment </span> of
-                            {{ GBP.format(quoteTotal("SINGLE")) }}<br />
+                            {{ format.GBP(quoteTotal("SINGLE")) }}<br />
                             followed by
                             <span class="text-primary"> monthly payments</span> of
-                            {{ GBP.format(quoteQuantityPrice("MONTHLY")) }}
+                            {{ format.GBP(quoteQuantityPrice("MONTHLY")) }}
                         </p>
                     </div>
                     <div class="d-flex justify-content-between">
@@ -236,9 +236,9 @@ const items = ref([
                 <div class="price-mobile-sidebar commission-calculator px-4 pt-4 pb-2 mb-3">
                     <h3 class="mb-3">Commission Calculator</h3>
                     <p class="mb-2" style="font-size: 14px">
-                        Currently, you will make <b>{{ GBP.format(quote.commission_value) }}</b>
+                        Currently, you will make <b>{{ format.GBP(quote.commission_value) }}</b>
                         commission and
-                        <b>{{ quote.margin.toFixed(2) }} %</b>
+                        <b>{{ format.decimalPlaces(quote.margin) }} %</b>
                         margin on this quote.
                     </p>
                     <div class="p-3 mb-3" style="background: #e9edf0">
@@ -246,18 +246,18 @@ const items = ref([
                             <label class="form-label">Margin</label>
                             <div class="input-group">
                                 <input id="input-margin-order" class="form-control"
-                                    :value="quote.margin.toFixed(2) + ' %'" disabled />
+                                    :value="format.decimalPlaces(quote.margin) + ' %'" disabled />
                                 <span class="input-group-text"><font-awesome-icon
                                         :icon="['fas', 'lock']"></font-awesome-icon></span>
                             </div>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Commission
-                                <b>(<span id="order-tax-commission"> {{ quote.commission_rate }}</span>%)</b>
+                                <b>(<span id="order-tax-commission"> {{ format.decimalPlaces(quote.commission_rate) }}</span> %)</b>
                             </label>
                             <div class="input-group">
                                 <input id="input-commission_value-order" class="form-control"
-                                    :value="GBP.format(quote.commission_value)" disabled />
+                                    :value="format.GBP(quote.commission_value)" disabled />
                                 <span class="input-group-text"><font-awesome-icon
                                         :icon="['fas', 'lock']"></font-awesome-icon></span>
                             </div>
