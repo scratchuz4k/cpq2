@@ -15,7 +15,13 @@ class Activity extends Model
         'activitable_id',
         'activitable_type',
         'user_id',
+        'tenant_id',
     ];
+
+    public static function booted()
+    {
+        static::addGlobalScope(new TenantScope);
+    }
 
     protected function casts(): array
     {

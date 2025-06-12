@@ -1,9 +1,9 @@
 <script setup>
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import Permissions from "@/Components/Permissions.vue";
-import { Head, Link } from "@inertiajs/vue3";
-import { can, hasRole } from "@composables/useAuth";
-import { ref } from "vue";
+import {Head, Link} from "@inertiajs/vue3";
+import {can, hasRole} from "@composables/useAuth";
+import {ref} from "vue";
 
 defineProps({
   permissions: Array,
@@ -309,6 +309,25 @@ const items = ref([{ label: "Home", url: "/" }, { label: "My Account" }]);
               </div>
             </div>
           </div>
+            <div
+                v-if="hasRole('Super Admin') || can('viewAny export')"
+                class="col"
+            >
+                <div class="card bg-light border-0">
+                    <a
+                        id="link-reporting"
+                        :href="route('reporting')"
+                        class="card-body text-center p-2 text-decoration-none"
+                    >
+                        <font-awesome-icon
+                            :icon="['fas', 'gauge']"
+                            class="py-3 opacity-25"
+                            size="2x"
+                        ></font-awesome-icon>
+                        <span class="d-block h5">Reporting</span>
+                    </a>
+                </div>
+            </div>
         </div>
       </div>
     </div>
