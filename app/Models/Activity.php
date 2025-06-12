@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Scopes\TenantScope;
 use App\Trait\SetTenantId;
 use Illuminate\Database\Eloquent\Model;
 
