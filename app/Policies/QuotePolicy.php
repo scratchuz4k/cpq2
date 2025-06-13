@@ -29,6 +29,10 @@ class QuotePolicy
      */
     public function view(User $user, Quote $quote): bool
     {
+        if (!$this->canManageQuote($user, $quote)) {
+            return false;
+        }
+
         if (!$user->can("view $this->model")) {
             return false;
         }
@@ -122,7 +126,7 @@ class QuotePolicy
         $userAncestors = User::ancestors($quote->user);
 
         return $user->id === $quote->user_id
-            || $userAncestors->contains('id', $quote->user_id)
+            || $userAncestors->contains('id', $user->id)
             || $user->hasRole('Company Admin');
     }
 }
