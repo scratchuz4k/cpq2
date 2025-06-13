@@ -18,14 +18,15 @@ class AccountPolicy
 
     public function userCanManageAccount(User $user, Account $account)
     {
-        if ($user->hasRole('Super Admin') || $user->hasRole('Company Admin')) {
+        if (!$user->group()->exists()) {
             return true;
         }
 
-        if ($user->group()->exists() && $user->group->accounts->contains('id', $account->id)) {
-            return true;
+        if (!$user->hasRole('Super Admin') && !$user->hasRole('Company Admin')) {
+            return $user->group->accounts->contains('id', $account->id);
         }
-        return false;
+
+        return true;
     }
 
     private function hasPermission(User $user, string $action): bool
