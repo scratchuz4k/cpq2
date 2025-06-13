@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Scopes\TenantScope;
 use App\Trait\SetTenantId;
 use Illuminate\Database\Eloquent\Model;
 
@@ -15,7 +16,13 @@ class Activity extends Model
         'activitable_id',
         'activitable_type',
         'user_id',
+        'tenant_id',
     ];
+
+    public static function booted()
+    {
+        static::addGlobalScope(new TenantScope);
+    }
 
     protected function casts(): array
     {

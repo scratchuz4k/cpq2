@@ -1,3 +1,5 @@
+import {DateTime} from "luxon";
+
 let currency = JSON.parse(
     document.head.querySelector('meta[name="currency-config"]').content
 );
@@ -99,6 +101,23 @@ const format = {
         const precision = currency.precision ?? 2;
         return `${Number(value).toFixed(precision)}`;
     },
+    parsedDateRange: (rangeDate) => {
+        const dateMethods = {
+            start: dt => dt.startOf('day'),
+            end: dt => dt.endOf('day'),
+        };
+
+        return Object.fromEntries(
+            Object.entries(rangeDate)
+                .map(([key, value]) => [
+                        key,
+                        value === null
+                            ? null
+                            : dateMethods[key](DateTime.fromJSDate(value)).toISO()
+                    ]
+                )
+        )
+    }
 };
 
 // Helper function to return human-readable time differences

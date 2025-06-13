@@ -32,6 +32,12 @@ window.notyf = new Notyf({
         {
             type: 'error',
             className: 'notyf-error'
+        },
+        {
+            type: 'warning',
+            background: 'orange',
+            icon: false,
+            className: 'notyf-warning'
         }
     ]
 });

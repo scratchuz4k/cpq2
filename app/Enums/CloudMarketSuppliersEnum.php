@@ -10,6 +10,7 @@ enum CloudMarketSuppliersEnum: string
     case Giacom = 'giacom';
     case Vorboss = 'vorboss';
     case IPRiver = 'ipriver';
+    case PXC = 'pxc';
 
     public static function asArray(): array
     {
