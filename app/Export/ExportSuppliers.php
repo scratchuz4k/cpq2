@@ -11,11 +11,11 @@ use Maatwebsite\Excel\Concerns\WithMultipleSheets;
 
 class ExportSuppliers implements WithMultipleSheets
 {
-    public function __construct(protected array $dateRange, protected array $columns){}
+    public function __construct(protected array $dateRange, protected array $columns) {}
 
     public static function getColumns()
     {
-        $quote = new Quote();
+        $quote = new Quote;
         $quote_columns = array_diff(
             Schema::getColumnListing($quote->getTable()),
             $quote->getHidden()
@@ -27,7 +27,7 @@ class ExportSuppliers implements WithMultipleSheets
     public function collection($provider)
     {
         $connectivity_solution_id = SolutionType::where('code', SolutionTypesEnum::ConnectivityEthernet)->value('id');
-        $quotes = Quote::select($this->columns)
+        $data = Quote::select($this->columns)
             ->where('solution_type_id', $connectivity_solution_id)
             ->whereHas('items', function ($query) use ($provider) {
                 $query->where('data->providerKey', $provider);
@@ -35,21 +35,26 @@ class ExportSuppliers implements WithMultipleSheets
             ->whereBetween('created_at', formated_date_range($this->dateRange, Quote::class))
             ->get();
 
-        return $quotes->map(function ($quote) {
-            return $quote->getAttributes();
-        });
+        if ($data->count()) {
+            return $data->map(function ($quote) {
+                return $quote->getAttributes();
+            });
+        } else {
+            throw new \Exception('No data Found!');
+        }
     }
 
     public function sheets(): array
     {
         $sheets = [];
-        $providers = array_map(fn($provider) => $provider->name, CloudMarketSuppliersEnum::cases());
+        $providers = array_map(fn ($provider) => $provider->name, CloudMarketSuppliersEnum::cases());
         foreach ($providers as $provider) {
             $collection = $this->collection($provider);
             if ($collection->count()) {
                 $sheets[$provider] = new ExportSheet($provider, $collection, $this->columns);
             }
         }
+
         return $sheets;
     }
 }

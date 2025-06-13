@@ -3,16 +3,16 @@
 namespace App\Export;
 
 use App\Models\User;
-use Carbon\Carbon;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 
-class ExportUsers implements FromCollection, WithHeadings, ShouldAutoSize
+class ExportUsers implements FromCollection, ShouldAutoSize, WithHeadings
 {
-    public function __construct(protected array $dateRange, protected array $columns){}
+    public function __construct(protected array $dateRange, protected array $columns) {}
+
     public function collection()
     {
         $query = User::select($this->columns)
@@ -20,13 +20,17 @@ class ExportUsers implements FromCollection, WithHeadings, ShouldAutoSize
             ->where('tenant_id', request()->user()->tenant_id)
             ->whereBetween('created_at', formated_date_range($this->dateRange, User::class));
 
-        return $query->get();
+        if ($query->count()) {
+            return $query->get();
+        } else {
+            throw new \Exception('No data Found!');
+        }
     }
 
     public function headings(): array
     {
         return array_map(
-            fn($col) => Str::title(str_replace('_', ' ', $col)),
+            fn ($col) => Str::title(str_replace('_', ' ', $col)),
             $this->columns
         );
     }
@@ -38,6 +42,7 @@ class ExportUsers implements FromCollection, WithHeadings, ShouldAutoSize
             Schema::getColumnListing($user->getTable()),
             $user->getHidden()
         );
+
         return array_values($columns);
     }
 }

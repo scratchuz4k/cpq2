@@ -10,22 +10,25 @@ use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 
-class ExportActiveUsers implements FromCollection, WithHeadings, ShouldAutoSize
+class ExportActiveUsers implements FromCollection, ShouldAutoSize, WithHeadings
 {
-    public function __construct(protected array $dateRange, protected array $columns){}
+    public function __construct(protected array $dateRange, protected array $columns) {}
 
     public function collection()
     {
-        $this->columns = array_map(fn($col) => "users.$col", $this->columns);
-        $query = User::join('activities', function($join) {
+        $this->columns = array_map(fn ($col) => "users.$col", $this->columns);
+        $query = User::join('activities', function ($join) {
             $join->on('users.id', '=', 'activities.user_id')
                 ->where('activities.operation', 'user_login')
                 ->where('activities.activitable_type', 'App\Models\User')
                 ->whereBetween('activities.created_at', formated_date_range($this->dateRange, User::class));
-            })
+        })
             ->select(array_merge(
                 $this->columns,
-                [DB::raw('count(activities.id) as login_count')]
+                [
+                    DB::raw('count(activities.id) as daily_login_count'),
+                    DB::raw('MAX(activities.created_at) as last_login_at'),
+                ]
             ))
             ->where('users.id', '!=', 1)
             ->where('users.tenant_id', request()->user()->tenant_id)
@@ -43,11 +46,11 @@ class ExportActiveUsers implements FromCollection, WithHeadings, ShouldAutoSize
     public function headings(): array
     {
         $headings = array_map(
-            fn($col) => Str::title(str_replace('_', ' ', $col)),
+            fn ($col) => Str::title(str_replace('_', ' ', $col)),
             $this->columns
         );
 
-        return array_merge($headings, ['Login Count']);
+        return array_merge($headings, ['Daily Login Count', 'Last Login At']);
     }
 
     public static function getColumns()
@@ -57,6 +60,7 @@ class ExportActiveUsers implements FromCollection, WithHeadings, ShouldAutoSize
             Schema::getColumnListing($user->getTable()),
             $user->getHidden()
         );
+
         return array_values($columns);
     }
 }
