@@ -214,6 +214,15 @@ class DashboardService
                 ->whereBetween('created_at', $date_interval)
                 ->value('provider_count');
 
+            if (!isset($labels)) {
+                $labels = [
+                    ($date_interval[0]->diffInDays($date_interval[1]) < 1)
+                        ? $date_interval[0]->subDay()->format('Y-m-d')
+                        : $date_interval[0]->format('Y-m-d'),
+                    $date_interval[1]->format('Y-m-d')
+                ];
+            }
+
             return [
                 'data' => $results ?? collect(),
                 'total' => $total,

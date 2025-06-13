@@ -35,24 +35,24 @@ class ExportSuppliers implements WithMultipleSheets
             ->whereBetween('created_at', formated_date_range($this->dateRange, Quote::class))
             ->get();
 
-        if ($data->count()) {
-            return $data->map(function ($quote) {
-                return $quote->getAttributes();
-            });
-        } else {
-            throw new \Exception('No data Found!');
-        }
+        return $data->map(function ($quote) {
+            return $quote->getAttributes();
+        });
     }
 
     public function sheets(): array
     {
         $sheets = [];
-        $providers = array_map(fn ($provider) => $provider->name, CloudMarketSuppliersEnum::cases());
+        $providers = array_map(fn ($provider) => $provider->value, CloudMarketSuppliersEnum::cases());
         foreach ($providers as $provider) {
             $collection = $this->collection($provider);
             if ($collection->count()) {
                 $sheets[$provider] = new ExportSheet($provider, $collection, $this->columns);
             }
+        }
+
+        if (is_array($sheets) && !count($sheets)) {
+            throw new \Exception('No data Found!');
         }
 
         return $sheets;
