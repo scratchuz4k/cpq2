@@ -9,6 +9,27 @@ use Illuminate\Auth\Access\Response;
 class AccountPolicy
 {
     private string $model = "account";
+
+    private function isAccountManagementRestricted(User $user): bool
+    {
+        $configs = $user->currentTenant->configs ?? [];
+        return !empty($configs['restrict_account_management_is_active']) && $configs['restrict_account_management_is_active'] !== '0';
+    }
+
+    private function hasPermission(User $user, string $action): bool
+    {
+        if ($user->can("$action $this->model") && !$this->isAccountManagementRestricted($user)) {
+            return true;
+        }
+
+        if ($user->can("view token") && request()->expectsJson()) {
+            return true;
+        }
+        return false;
+    }
+
+
+
     /**
      * Determine whether the user can view any models.
      */
@@ -36,10 +57,7 @@ class AccountPolicy
      */
     public function create(User $user): bool
     {
-        if (!$user->can("create $this->model")) {
-            return false;
-        }
-        return true;
+        return $this->hasPermission($user, 'create');
     }
 
     /**
@@ -47,10 +65,7 @@ class AccountPolicy
      */
     public function update(User $user, Account $account): bool
     {
-        if (!$user->can(abilities: "update $this->model")) {
-            return false;
-        }
-        return true;
+        return $this->hasPermission($user, 'update');
     }
 
     /**
@@ -58,10 +73,7 @@ class AccountPolicy
      */
     public function delete(User $user, Account $account): bool
     {
-        if (!$user->can("delete $this->model")) {
-            return false;
-        }
-        return true;
+        return $this->hasPermission($user, 'delete');
     }
 
     /**
@@ -69,10 +81,7 @@ class AccountPolicy
      */
     public function restore(User $user, Account $account): bool
     {
-        if (!$user->can("restore $this->model")) {
-            return false;
-        }
-        return true;
+        return $this->hasPermission($user, 'restore');
     }
 
     /**
@@ -80,9 +89,6 @@ class AccountPolicy
      */
     public function forceDelete(User $user, Account $account): bool
     {
-        if (!$user->can("forceDelete $this->model")) {
-            return false;
-        }
-        return true;
+        return $this->hasPermission($user, 'forceDelete');
     }
 }

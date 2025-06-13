@@ -18,6 +18,7 @@ const tenant = reactive({
   configurations: {
     orders_flow_is_active: props.tenant.configurations.orders_flow_is_active ?? "0",
     log_system_is_active: props.tenant.configurations.log_system_is_active ?? "0",
+      restrict_account_management_is_active: props.tenant.configurations.restrict_account_management_is_active ?? "0",
   },
 });
 
@@ -318,6 +319,44 @@ const items = ref([
                             </div>
                           </div>
                         </div>
+                          <div class="card bg-light border-0 settings-block m-2">
+                              <div class="card-body">
+                                  <h6 class="fw-bold">Account Management</h6>
+                                  <div class="restrict_account_management_is_active">
+                                      <div>
+                                          <label
+                                              for="active-orders-flow"
+                                              class="form-label lh-sm small pb-2"
+                                          >
+                                              <i>
+                                                  If this setting is active, users will be restricted from managing accounts
+                                              </i>
+                                          </label>
+                                      </div>
+                                      <div>
+                                          <ToggleSwitch
+                                              id="active-orders-flow"
+                                              v-model="tenant.configurations.restrict_account_management_is_active"
+                                              @change="submitTenantOrdersSettings"
+                                              trueValue="1"
+                                              falseValue="0"
+                                              binary
+                                          >
+                                              <template #handle>
+                                                  <font-awesome-icon
+                                                      :icon="
+                                        tenant.configurations.restrict_account_management_is_active === '1'
+                                          ? ['fas', 'circle-check']
+                                          : ['far', 'circle-xmark']
+                                      "
+                                                      class="text-primary"
+                                                  />
+                                              </template>
+                                          </ToggleSwitch>
+                                      </div>
+                                  </div>
+                              </div>
+                          </div>
                       </div>
                     </div>
                   </div>
