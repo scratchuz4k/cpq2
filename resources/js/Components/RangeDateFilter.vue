@@ -62,7 +62,7 @@ const resetFilters = () => {
                 </div>
                 <div class="col-2 d-flex gap-2">
                     <button id="filter-data-btn" class="btn btn-primary w-100" @click="filterData">Filter</button>
-                    <button id="reset-data-btn" class="btn btn-primary w-100" @click="resetFilters">Reset</button>
+                    <button id="reset-data-btn" class="btn btn-outline-primary w-100" @click="resetFilters">Reset</button>
                 </div>
             </div>
         </div>

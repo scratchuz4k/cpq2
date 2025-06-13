@@ -77,8 +77,8 @@ const setChartData = () => {
                 data: value.data,
                 fill: true,
                 tension: 0.4,
-                borderColor: providersColors[key].borderColor,
-                backgroundColor: providersColors[key].backgroundColor
+                borderColor: providersColors[key]?.borderColor,
+                backgroundColor: providersColors[key]?.backgroundColor
             }))
     };
 };
