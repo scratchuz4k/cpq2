@@ -16,6 +16,19 @@ class AccountPolicy
         return !empty($configs['restrict_account_management_is_active']) && $configs['restrict_account_management_is_active'] !== '0';
     }
 
+    public function userCanManageAccount(User $user, Account $account)
+    {
+        if (!$user->group()->exists()) {
+            return true;
+        }
+
+        if (!$user->hasRole('Super Admin') && !$user->hasRole('Company Admin')) {
+            return $user->group->accounts->contains('id', $account->id);
+        }
+
+        return true;
+    }
+
     private function hasPermission(User $user, string $action): bool
     {
         if ($user->can("$action $this->model") && !$this->isAccountManagementRestricted($user)) {
@@ -46,7 +59,7 @@ class AccountPolicy
      */
     public function view(User $user, Account $account): bool
     {
-        if (!$user->can("view $this->model")) {
+        if (!$user->can("view $this->model") && $this->userCanManageAccount($user, $account)) {
             return false;
         }
         return true;
@@ -65,7 +78,7 @@ class AccountPolicy
      */
     public function update(User $user, Account $account): bool
     {
-        return $this->hasPermission($user, 'update');
+        return $this->hasPermission($user, 'update') && $this->userCanManageAccount($user, $account);
     }
 
     /**
@@ -73,7 +86,7 @@ class AccountPolicy
      */
     public function delete(User $user, Account $account): bool
     {
-        return $this->hasPermission($user, 'delete');
+        return $this->hasPermission($user, 'delete') && $this->userCanManageAccount($user, $account);
     }
 
     /**
@@ -81,7 +94,7 @@ class AccountPolicy
      */
     public function restore(User $user, Account $account): bool
     {
-        return $this->hasPermission($user, 'restore');
+        return $this->hasPermission($user, 'restore') && $this->userCanManageAccount($user, $account);
     }
 
     /**
@@ -89,6 +102,6 @@ class AccountPolicy
      */
     public function forceDelete(User $user, Account $account): bool
     {
-        return $this->hasPermission($user, 'forceDelete');
+        return $this->hasPermission($user, 'forceDelete') && $this->userCanManageAccount($user, $account);
     }
 }
