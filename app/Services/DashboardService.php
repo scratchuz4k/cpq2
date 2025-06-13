@@ -206,7 +206,7 @@ class DashboardService
                 $results[$key] = [
                     'data' => $data,
                     'total' => $group->count(),
-                    'label' => CloudMarketSuppliersEnum::tryFrom($key)->name,
+                    'label' => CloudMarketSuppliersEnum::tryFrom($key)->name ?? "Unknown",
                 ];
             }
 
