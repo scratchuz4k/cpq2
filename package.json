@@ -34,6 +34,7 @@
         "@primevue/themes": "^4.0.5",
         "@sentry/vue": "^8.34.0",
         "bootstrap": "^5.3.3",
+        "chart.js": "^4.4.9",
         "dropzone": "^6.0.0-beta.2",
         "lodash": "^4.17.21",
         "luxon": "^3.5.0",
@@ -47,6 +48,7 @@
         "sweetalert2": "^11.14.1",
         "uuid": "^10.0.0",
         "vite-plugin-static-copy": "^1.0.6",
+        "vue-countup-v3": "^1.4.2",
         "vuedraggable": "^4.1.0"
     }
 }

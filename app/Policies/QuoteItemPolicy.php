@@ -112,7 +112,7 @@ class QuoteItemPolicy
         $userAncestors = User::ancestors($quote->user);
 
         return $user->id === $quote->user_id
-            || $userAncestors->contains('id', $quote->user_id)
+            || $userAncestors->contains('id', $user->id)
             || $user->hasRole('Company Admin');
     }
 }
