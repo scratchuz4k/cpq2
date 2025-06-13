@@ -16,7 +16,19 @@ class AccountPolicy
         return !empty($configs['restrict_account_management_is_active']) && $configs['restrict_account_management_is_active'] !== '0';
     }
 
-    private function hasPermission(User $user, string $action): bool
+    public function isAccountInUserGroup(User $user, Account $account)
+    {
+        if (!$user->group()->exists()) {
+            return true;
+        }
+
+        if ($user->group()->exists() && $user->group->accounts->contains('id', $account->id)) {
+            return true;
+        }
+        return false;
+    }
+
+    private function canManageAccount(User $user, string $action): bool
     {
         if ($user->can("$action $this->model") && !$this->isAccountManagementRestricted($user)) {
             return true;
@@ -46,7 +58,7 @@ class AccountPolicy
      */
     public function view(User $user, Account $account): bool
     {
-        if (!$user->can("view $this->model")) {
+        if (!$user->can("view $this->model") && $this->isAccountInUserGroup($user, $account)) {
             return false;
         }
         return true;
@@ -57,7 +69,7 @@ class AccountPolicy
      */
     public function create(User $user): bool
     {
-        return $this->hasPermission($user, 'create');
+        return $this->canManageAccount($user, 'create');
     }
 
     /**
@@ -65,7 +77,7 @@ class AccountPolicy
      */
     public function update(User $user, Account $account): bool
     {
-        return $this->hasPermission($user, 'update');
+        return $this->canManageAccount($user, 'update') && $this->isAccountInUserGroup($user, $account);
     }
 
     /**
@@ -73,7 +85,7 @@ class AccountPolicy
      */
     public function delete(User $user, Account $account): bool
     {
-        return $this->hasPermission($user, 'delete');
+        return $this->canManageAccount($user, 'delete') && $this->isAccountInUserGroup($user, $account);
     }
 
     /**
@@ -81,7 +93,7 @@ class AccountPolicy
      */
     public function restore(User $user, Account $account): bool
     {
-        return $this->hasPermission($user, 'restore');
+        return $this->canManageAccount($user, 'restore') && $this->isAccountInUserGroup($user, $account);
     }
 
     /**
@@ -89,6 +101,6 @@ class AccountPolicy
      */
     public function forceDelete(User $user, Account $account): bool
     {
-        return $this->hasPermission($user, 'forceDelete');
+        return $this->canManageAccount($user, 'forceDelete') && $this->isAccountInUserGroup($user, $account);
     }
 }
