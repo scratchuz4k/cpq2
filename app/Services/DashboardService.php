@@ -56,6 +56,39 @@ class DashboardService
             $cumulative = false;
         }
 
+        if (!isset($this->relation) && $this->model instanceof $this->quote_instance) {
+            $results = [];
+            $grouped = collect();
+
+            $solution_types = $this->model->distinct()->pluck('solution_type_id');
+
+            foreach ($solution_types as $key => $solution_type_id) {
+                $solution_type = SolutionType::find($solution_type_id);
+                $quotes_collection = $solution_type->quotes;
+
+                [$data, $labels] = $this->getParsedData(
+                    $date_interval[0],
+                    $date_interval[1],
+                    $quotes_collection
+                );
+
+                $results[$solution_type->name] = [
+                    'data' => $data,
+                    'total' => $quotes_collection->count(),
+                    'label' => $solution_type->name ?? "Unknown",
+                ];
+            }
+
+            uasort($results, function ($a, $b) {
+                return $b['total'] <=> $a['total'];
+            });
+
+            return [
+                'data' => $results ?? collect(),
+                'labels' => $labels ?? []
+            ];
+        }
+
         [$data, $labels] = $this->getParsedData(
             $date_interval[0],
             $date_interval[1],
@@ -226,6 +259,10 @@ class DashboardService
                     $date_interval[1]->format('Y-m-d')
                 ];
             }
+
+            uasort($results, function ($a, $b) {
+                return $b['total'] <=> $a['total'];
+            });
 
             return [
                 'data' => $results ?? collect(),
