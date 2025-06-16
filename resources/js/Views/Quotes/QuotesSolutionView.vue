@@ -365,7 +365,16 @@ watch(addressPostCode, () => {
                 />
               </template>
             </TriStateToggle>
-            <label class="form-label">Show Contented products</label>
+            <label class="form-label"
+              >Show Contented products ({{
+                configurations.managed === true
+                  ? "Managed"
+                  : configurations.managed === false
+                  ? "Unmanaged"
+                  : "Both"
+              }}
+              )
+            </label>
           </div>
         </div>
       </div>

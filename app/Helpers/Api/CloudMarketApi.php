@@ -35,8 +35,30 @@ class CloudMarketApi
 
             'ManagedOption' => 0,
             'TermMonths' => [],
-
+            'ConnectionSpeeds.MinBearer' => 10,
+            'ConnectionSpeeds.MaxBearer' => 100000,
+            'ConnectionSpeeds.MinSpeed' => 100,
+            'ConnectionSpeeds.MaxSpeed' => 100000,
         ];
+        if (array_key_exists('contract_length', $quote->configs)) {
+            $quoteAddress['TermMonths'] = (bool) $quote->configs['contract_length'] ? explode(',', $quote->configs['contract_length']) : [];
+        }
+
+        if (array_key_exists('bearer', $quote->configs)) {
+            $temp = explode(',', $quote->configs['bearer']);
+            if (count($temp) == 2) {
+                $quoteAddress['ConnectionSpeeds.MinBearer'] = (int) $temp[0] > 100 ? (int) $temp[0] : 100;
+                $quoteAddress['ConnectionSpeeds.MaxBearer'] = (int) $temp[1];
+            }
+        }
+
+        if (array_key_exists('speed', $quote->configs)) {
+            (int) $temp = explode(',', $quote->configs['speed']);
+            if (count($temp) == 2) {
+                $quoteAddress['ConnectionSpeeds.MinSpeed'] = (int) $temp[0] > 10 ? (int) $temp[0] : 10;
+                $quoteAddress['ConnectionSpeeds.MaxSpeed'] = (int) $temp[1];
+            }
+        }
 
         Log::debug('CloudMarketApi::getQuotes lookup:', $quoteAddress);
 

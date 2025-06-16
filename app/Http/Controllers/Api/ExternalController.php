@@ -6,6 +6,7 @@ use App\Helpers\Api\CloudMarketAddress;
 use App\Helpers\Api\OpenreachLookupApi;
 use App\Helpers\Api\VirtualOneLookupApi;
 use App\Http\Controllers\Controller;
+use App\Models\Quote;
 use App\Services\External\CloudMarketService;
 use App\Services\External\ShopBlocksService;
 use Illuminate\Http\Request;
