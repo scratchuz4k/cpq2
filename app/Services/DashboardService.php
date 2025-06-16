@@ -185,7 +185,11 @@ class DashboardService
             $grouped = collect();
 
             $connectivity_solution_id = SolutionType::where('code', SolutionTypesEnum::ConnectivityEthernet)->value('id');
-            $items = $query->where('solution_type_id', $connectivity_solution_id)->get();
+            $items = $query->where('solution_type_id', $connectivity_solution_id)
+                ->with(['items' => function ($query) {
+                    $query->whereNotNull('data');
+                }])
+                ->get();
             $items->each(function ($quote) use (&$grouped) {
                 $providers = $quote->items->map(function ($item) {
                     return data_get($item->data, 'providerKey');
