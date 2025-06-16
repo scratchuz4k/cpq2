@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Order;
+use Carbon\Carbon;
 
 if (! function_exists('format_date')) {
     /**
@@ -49,5 +50,21 @@ if (! function_exists('format_currency')) {
     function format_currency($value)
     {
         return round((float) $value, config('currency.precision'));
+    }
+}
+
+if (! function_exists('formated_date_range')) {
+    function formated_date_range(array $array, $model): array
+    {
+        $start_date = Carbon::parse($array['start'] ?? $model::min('created_at'));
+        $end_date = Carbon::parse($array['end'] ?? Carbon::now());
+
+        if ($start_date->greaterThan($end_date)) {
+            [ $start_date, $end_date ] = [ $end_date, $start_date ];
+        }
+
+        return $start_date->greaterThan($end_date)
+            ? [ $end_date, $start_date ]
+            : [ $start_date, $end_date ];
     }
 }

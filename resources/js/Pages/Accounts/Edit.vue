@@ -65,7 +65,7 @@ const items = ref([
 
             <Header :title="'Edit Account #' + account.id" :breadcrumbs="items">
                 <template #buttons>
-                    <PrimaryButton @click="saveAccount()">
+                    <PrimaryButton id="btn-update-account" @click="saveAccount()">
                         <font-awesome-icon class="me-2" :icon="['fas', 'save']"></font-awesome-icon> Save
                     </PrimaryButton>
                 </template>

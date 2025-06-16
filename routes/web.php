@@ -60,7 +60,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('index');
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/myaccount', [DashboardController::class, 'myAccount'])->name('myaccount');
-
+    Route::get('/reporting', [DashboardController::class, 'reporting'])->name('reporting');
+    
     Route::get('/tenant/{tenant}/make-current', [TenantController::class, 'switch'])->name('tenant.make-current');
     Route::get('/quotes/{quote}/preview', [QuoteController::class, 'preview'])->name('quotes.preview');
 

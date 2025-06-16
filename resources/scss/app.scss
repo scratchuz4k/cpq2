@@ -33,6 +33,7 @@
     --teal: #3fb8af;
     --light-teal: #cfedeb;
     --red: #dc3545;
+    --orange: #FD7E14;
     --light-red: #fbeaec;
     --primary-dark: #f00;
     --primary-light: var(--vivid-pink);
@@ -75,6 +76,10 @@ body {
 
     .color-purple-dark {
         color: var(--color-purple-dark);
+    }
+
+    .color-purple-light {
+        color: var(--color-purple-light);
     }
 
     .color-purple {
@@ -186,9 +191,7 @@ body {
                         }
 
                         &:hover {
-                            background-color: var(
-                                --color-purple-dark
-                            ) !important;
+                            background-color: var(--color-purple-dark) !important;
                             color: white !important;
                         }
                     }
@@ -428,7 +431,7 @@ body {
         padding: 30px;
     }
 
-    #resources > div {
+    #resources>div {
         max-width: 300px;
         margin-bottom: 10px;
         background: none;
@@ -437,11 +440,11 @@ body {
         border-radius: 6px;
     }
 
-    #resources > div img {
+    #resources>div img {
         width: 30px;
     }
 
-    #resources > div a {
+    #resources>div a {
         color: white;
     }
 
@@ -489,16 +492,16 @@ body {
         border-radius: 6px;
     }
 
-    .summary .inner > div {
+    .summary .inner>div {
         display: flex;
     }
 
-    .summary .inner > div > div {
+    .summary .inner>div>div {
         margin-right: 15px;
         min-width: 140px;
     }
 
-    .summary .inner > div p {
+    .summary .inner>div p {
         font-size: 20px;
     }
 
@@ -1019,6 +1022,24 @@ body {
     margin-right: auto !important;
 }
 
+.notyf-warning {
+    background: var(--orange) !important;
+    border-radius: 0.5rem !important;
+    box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.2) !important;
+    padding: 1rem !important;
+    margin-bottom: 1rem !important;
+    padding: 0 !important;
+    max-width: 420px !important;
+}
+
+.notyf-warning .notyf__wrapper {
+    padding: 15px 40px 15px 15px !important;
+}
+
+.notyf-warning .notyf__dismiss {
+    margin-right: auto !important;
+}
+
 .notyf-success {
     background: var(--color-purple) !important;
     border-radius: 0.5rem !important;
@@ -1129,7 +1150,7 @@ body {
     width: 300px;
 }
 
-.preview-logo > img {
+.preview-logo>img {
     max-height: 100px;
     max-width: 300px;
     object-fit: scale-down;
@@ -1184,43 +1205,15 @@ body {
     #warning-note-container {
         text-align: left !important;
 
-        .small > div:first-of-type {
+        .small>div:first-of-type {
             font-size: 1.5rem;
             margin-bottom: 1.5rem !important;
         }
     }
 }
 
-
-.slider {
-    min-width: 240px;
-    font-size: 10px;
-
-    .noUi-tooltip {
-        padding: 2px 5px;
-    }
-
-    .noUi-value {
-        top: 11px;
-    }
-
-    .noUi-marker-horizontal.noUi-marker-large {
-        height: 8px;
-    }
-
-    &#bearerSlider {
-        min-width: 120px;
-    }
-
-    .noUi-connect {
-        background: var(--color-purple);
-    }
-}
-
-.row-cols-4 {
-    .input-quantity {
-        width: 100%;
-    }
+.input-quantity {
+    width: 100%;
 }
 
 .btn-add-quantity {
@@ -1285,4 +1278,52 @@ body {
     border-radius: 20px;
     opacity: 0px;
     background: #f5f5f5;
+}
+
+.p-picklist-list-container {
+    .p-listbox {
+        .p-listbox-list {
+            .p-listbox-option {
+                &.p-listbox-option-selected {
+                    background-color: var(--color-purple) !important;
+                    color: white !important;
+                }
+            }
+        }
+
+        &:not(.p-disabled) {
+            .p-listbox-option {
+                &:not(.p-listbox-option-selected) {
+                    &:not(.p-disabled) {
+                        &:hover {
+                            background: var(--color-purple-light)!important;
+                            color: black!important;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+.p-datepicker-input-icon-container {
+    padding-right: 0.75rem!important;
+    color: var(--color-purple-light)!important;
+}
+.p-datepicker-day {
+    &.p-datepicker-day-selected {
+        background-color: var(--color-purple)!important;
+    }
+    &:not(.p-datepicker-day-selected) {
+        &:not(.p-disabled) {
+            &:hover {
+                background-color: var(--color-purple-light)!important;
+            }
+        }
+    }
+}
+.p-datepicker-today{
+    >.p-datepicker-day {
+        background-color: var(--color-purple-light)!important;
+    }
 }
