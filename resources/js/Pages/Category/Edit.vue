@@ -27,7 +27,7 @@ const saveCate = () => {
   });
 };
 
-const setProductCategory = async (product_id, category_id) => {
+const setProductCategory = async (product_id, category_id, action) => {
   if (!product_id) {
     return;
   }
@@ -36,7 +36,7 @@ const setProductCategory = async (product_id, category_id) => {
     product.value = null;
 
     if (product_id) {
-      notyf.success("Created with Success");
+      notyf.success(action === 'remove' ? "Product removed with success" : "Product added with Success");
     }
     emitter.emit("datatable-refresh:group-users");
   } catch (ex) {
@@ -49,7 +49,7 @@ const items = ref([
   { label: "Home", url: "/" },
   { label: "My Account", url: "/myaccount" },
   { label: "Categories", url: "/categories" },
-  { label: "New Category" },
+  { label: "Edit Category" },
 ]);
 </script>
 <template>
@@ -80,12 +80,12 @@ const items = ref([
         <tab title="Products">
           <form
             class="mt-3 d-flex"
-            @submit.prevent="setProductCategory(product?.id, category.id)"
+            @submit.prevent="setProductCategory(product?.id, category.id, 'add')"
           >
             <div class="me-3" style="width: 100%">
               <label class="form-label">Add Products:</label>
               <InputSelect
-                id="select-product"
+                id="product"
                 v-model="product"
                 :fields="['name']"
                 placeholder="Select a Product"
@@ -134,7 +134,8 @@ const items = ref([
                 <template #actions="{ data, value, index }">
                   <button
                     class="btn px-2 py-0 mx-1 border-0"
-                    @click="setProductCategory(data.id, category.id)"
+                    :id="'datatable-btn-' + index + '-delete'"
+                    @click="setProductCategory(data.id, category.id, 'remove')"
                   >
                     <font-awesome-icon :icon="['fas', 'trash-alt']"></font-awesome-icon>
                   </button>

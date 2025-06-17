@@ -27,7 +27,7 @@ const items = ref([
                 <Datatable :table-props="{ id: 'categories-table' }" :allow="{
                     update: true,
                     delete: true,
-                    link: false,
+                    link: true,
                 }" :columns="[
                     { data: 'id', title: '#', style: 'width:5%' },
                     { data: 'is_active', title: 'Active', style: 'width:5%' },
