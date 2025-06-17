@@ -88,7 +88,7 @@ const icons = {
         </InputSelect>
       </div>
       <div class="mb-3" v-if="modelValue.entity_1 == 'Group'">
-        <label class="form-label">Select the Product</label>
+        <label class="form-label">Select a Group</label>
         <InputSelect
           id="Group1"
           url="/groups"
