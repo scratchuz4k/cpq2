@@ -1,5 +1,5 @@
 <script setup>
-import { Panel, Checkbox, Select, InputText } from "primevue";
+import { Panel, Checkbox, MultiSelect, Select, InputText } from "primevue";
 import draggable from "vuedraggable";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import { Head, router } from "@inertiajs/vue3";
@@ -14,7 +14,13 @@ const props = defineProps({
   available_columns: Array,
 });
 
-const accTable = reactive({});
+const configurations = reactive({
+  amortisation: props.solution_type.configurations.amortisation
+    ? JSON.parse(props.solution_type.configurations.amortisation)
+    : {},
+  component: props.solution_type.configurations.component ?? "DealMaker",
+  has_custom_table: props.solution_type.configurations.has_custom_table ?? "0",
+});
 
 const table = reactive(
   props.solution_type.table
@@ -59,7 +65,14 @@ const saveSolutionType = () => {
 
   router.put(
     `/solution-types/${props.solution_type.id}`,
-    { ...solutiontype, tables: [table], categories: temp },
+    {
+      configurations: {
+        ...configurations,
+        amortisation: JSON.stringify(configurations.amortisation),
+      },
+      tables: [table],
+      categories: temp,
+    },
     {
       onSuccess: (page) => {
         notyf.success("Updated with Success");
@@ -74,15 +87,6 @@ const saveSolutionType = () => {
     }
   );
 };
-let len = Object.keys(props.solution_type.configurations).length;
-// let categoriesLen = Object.keys(props.solution_type.categories).length;
-
-const solutiontype = reactive({
-  configurations:
-    len && props.solution_type.configurations.component
-      ? props.solution_type.configurations
-      : { component: "DealMaker" },
-});
 
 const addColumn = (table) => {
   if (!Object.keys(table).includes("columns")) {
@@ -264,35 +268,33 @@ const items = ref([
             </Panel>
           </tab>
           <tab title="Price" v-if="solution_type.code == 3">
-            <Panel class="mt-3" header="Accounts" :toggleable="true">
+            <Panel class="mt-3" header="Amortisation" :toggleable="true">
               <div class="mb-3">
-                <label class="form-label">Choose Accounts:</label>
-                {{ accTable }}
+                <label class="form-label">Choose months to use amortisation:</label>
                 <table class="table">
                   <thead>
                     <tr>
                       <th style="text-align: left; width: 40%">Supplier</th>
-                      <th style="text-align: center">12</th>
-                      <th style="text-align: center">24</th>
-                      <th style="text-align: center">36</th>
-                      <th style="text-align: center">48</th>
+                      <th style="text-align: center">Months</th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr style="text-align: center" v-for="supplier in props.suppliers">
                       <td style="text-align: left">{{ supplier.name }}</td>
                       <td>
-                        <Checkbox
-                          inputId="has_custom_table"
-                          v-model="accTable[supplier.value]"
-                          binary
-                          trueValue="1"
-                          falseValue="0"
-                        />
+                        <MultiSelect
+                          v-model="configurations.amortisation[supplier.value]"
+                          style="width: 100%"
+                          :options="['12', '24', '36', '48']"
+                          placeholder="Select Months"
+                        >
+                          <template #option="slotProps">
+                            <div style="font-size: 14px; line-height: 1.5rem">
+                              {{ slotProps.option }} Months
+                            </div>
+                          </template>
+                        </MultiSelect>
                       </td>
-                      <td></td>
-                      <td></td>
-                      <td></td>
                     </tr>
                   </tbody>
                   <tfoot>
@@ -314,7 +316,7 @@ const items = ref([
                 <p for="solution_type-component" class="form-label">Choose the view:</p>
                 <Select
                   inputId="solution_type-component"
-                  v-model="solutiontype.configurations.component"
+                  v-model="configurations.component"
                   :options="available_tables"
                   placeholder="Select a View"
                   class="w-100"
@@ -331,7 +333,7 @@ const items = ref([
                 <div class="d-flex align-items-center gap-2">
                   <Checkbox
                     inputId="has_custom_table"
-                    v-model="solutiontype.configurations.has_custom_table"
+                    v-model="configurations.has_custom_table"
                     binary
                     trueValue="1"
                     falseValue="0"
@@ -339,7 +341,7 @@ const items = ref([
                   <label for="has_custom_table"> Enable Custom Table </label>
                 </div>
               </div>
-              <template v-if="solutiontype.configurations.has_custom_table == '1'">
+              <template v-if="configurations.has_custom_table == '1'">
                 <div class="mb-3">
                   <label class="form-label">Choose the group field (optional):</label>
                   <Select
