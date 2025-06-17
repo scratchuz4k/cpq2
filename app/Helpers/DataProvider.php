@@ -89,43 +89,6 @@ class DataProvider
         return new LengthAwarePaginator($collection, $total, $limit, $page);
     }
 
-    private function processFilters()
-    {
-        $search = request()->input('search', null);
-        $filters = request()->input('filters', []);
-        $filters = is_string($filters) ? json_decode($filters, true) : $filters;
-
-        if ($search) {
-            $columns = request()->get(key: 'columns') ? explode(',', request()->get('columns')) : $this->builder->getModel()->getFillable();
-            $hidden = $this->builder->getModel()->getHidden();
-
-            $columns = array_filter($columns, function ($column) use ($hidden) {
-                $firstPart = explode('.', $column)[0];
-
-                return ! in_array($firstPart, $hidden);
-            });
-
-            $this->builder = $this->builder->where(function ($query) use ($columns, $search) {
-                return $this->searchModel($query, $columns, $search);
-            });
-        }
-
-        foreach ($filters as $filter) {
-            if (is_null($filter['value'])) {
-                continue;
-            }
-
-            $queryParts = $this->resolveQueryParts($filter['operator'], $filter['value']);
-            $this->builder = $this->buildSearch(
-                $this->builder,
-                $filter['column'],
-                $queryParts['operator'],
-                $queryParts['value'],
-                $this->getFunction($filter)
-            );
-        }
-    }
-
     private function processRequest()
     {
         $group = request()->input('group', null);
@@ -160,10 +123,48 @@ class DataProvider
         }
     }
 
+    private function processFilters()
+    {
+        $search = request()->input('search', null);
+        $filters = request()->input('filters', []);
+        $filters = is_string($filters) ? json_decode($filters, true) : $filters;
+
+        if ($search) {
+            $columns = request()->get(key: 'columns') ? explode(',', request()->get('columns')) : $this->builder->getModel()->getFillable();
+            $hidden = $this->builder->getModel()->getHidden();
+
+            $columns = array_filter($columns, function ($column) use ($hidden) {
+                $firstPart = explode('.', $column)[0];
+
+                return ! in_array($firstPart, $hidden);
+            });
+
+            $this->builder = $this->builder->where(function ($query) use ($columns, $search) {
+                return $this->searchModel($query, $columns, $search);
+            });
+        }
+
+        foreach ($filters as $filter) {
+            if (is_null($filter['value'])) {
+                continue;
+            }
+
+            $queryParts = $this->resolveQueryParts($filter['operator'], $filter['value']);
+            $this->builder = $this->buildSearch(
+                $this->builder,
+                $filter['column'],
+                $queryParts['operator'],
+                $queryParts['value'],
+                array_key_exists('function', $filter) ? $filter['function'] : 'where'
+            );
+        }
+    }
+
     public function buildSearch($builder, $column, $operator, $value, $func)
     {
         $relations = explode('.', $column);
         $relation = Str::camel($relations[0]);
+
         if (! $this->checkModelRelationships($relation)) {
             return $this->basicQuery($builder, $column, $operator, $value, $func);
         }
@@ -181,25 +182,13 @@ class DataProvider
         );
     }
 
-    protected function relatedQuery($query, $relation, $column, $operator, $value, $func)
-    {
-
-        if ($operator === 'is_null') {
-            return $query->whereDoesntHave($relation);
-        }
-
-        $temp = $func == 'orWhere' ? 'orWhereHas' : 'whereHas';
-
-        return $query->{$temp}($relation, function ($query) use ($column, $operator, $value) {
-            $this->basicQuery($query, $column, $operator, $value, 'where');
-        });
-    }
-
-    protected function basicQuery($query, $column, $operator, $value, $func)
+    protected function basicQuery($query, $column, $operator, $value, $function)
     {
         if ($query->getModel()->getConnection()->getDriverName() == 'mysql') {
             $column = $query->getModel()->getTable().'.'.$column;
         }
+
+        $func = $this->getFunction($function, $operator);
 
         switch ($operator) {
             case 'in':
@@ -210,6 +199,20 @@ class DataProvider
                 return $query->whereNull($column);
             default:
                 return $query->{$func}($column, $operator, $value);
+        }
+    }
+
+    protected function relatedQuery($query, $relation, $column, $operator, $value, $function)
+    {
+        $temp = $function == 'orWhere' ? 'orWhereHas' : 'whereHas';
+
+        switch ($operator) {
+            case 'is_null':
+                return $query->whereDoesntHave($relation);
+            default:
+                return $query->{$temp}($relation, function ($query) use ($column, $operator, $value) {
+                    $this->basicQuery($query, $column, $operator, $value, 'where');
+                });
         }
     }
 
@@ -229,22 +232,19 @@ class DataProvider
         return $query;
     }
 
-    protected function getFunction($filter)
+    protected function getFunction($function, $operator)
     {
         $functions = ['where', 'orWhere', 'whereNull'];
-        if (! array_key_exists('function', $filter)) {
+
+        if (! in_array($function, $functions)) {
             return 'where';
         }
 
-        if (! in_array($filter['function'], $functions)) {
-            return 'where';
-        }
-
-        if ($filter['operator'] == 'is_null') {
+        if ($operator == 'is_null') {
             return 'whereNull';
         }
 
-        return $filter['function'];
+        return $function;
     }
 
     protected function resolveQueryParts($operator, $value)
