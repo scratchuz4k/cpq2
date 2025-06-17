@@ -1,20 +1,20 @@
 <script setup>
-import { Panel, Checkbox, Select, InputText } from "primevue";
+import Panel from "primevue/panel";
+import Select from "primevue/select";
 import draggable from "vuedraggable";
+import InputText from "primevue/inputtext";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import { Head, router } from "@inertiajs/vue3";
 import { reactive, ref } from "vue";
+import Checkbox from "primevue/checkbox";
 import InputSelect from "@/Components/InputSelect.vue";
 import { v4 as uuid } from "uuid";
 
 const props = defineProps({
-  suppliers: Object,
   solution_type: Object,
   available_tables: Array,
   available_columns: Array,
 });
-
-const accTable = reactive({});
 
 const table = reactive(
   props.solution_type.table
@@ -257,47 +257,6 @@ const items = ref([
                           </button>
                         </div>
                       </th>
-                    </tr>
-                  </tfoot>
-                </table>
-              </div>
-            </Panel>
-          </tab>
-          <tab title="Price" v-if="solution_type.code == 3">
-            <Panel class="mt-3" header="Accounts" :toggleable="true">
-              <div class="mb-3">
-                <label class="form-label">Choose Accounts:</label>
-                {{ accTable }}
-                <table class="table">
-                  <thead>
-                    <tr>
-                      <th style="text-align: left; width: 40%">Supplier</th>
-                      <th style="text-align: center">12</th>
-                      <th style="text-align: center">24</th>
-                      <th style="text-align: center">36</th>
-                      <th style="text-align: center">48</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr style="text-align: center" v-for="supplier in props.suppliers">
-                      <td style="text-align: left">{{ supplier.name }}</td>
-                      <td>
-                        <Checkbox
-                          inputId="has_custom_table"
-                          v-model="accTable[supplier.value]"
-                          binary
-                          trueValue="1"
-                          falseValue="0"
-                        />
-                      </td>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                    </tr>
-                  </tbody>
-                  <tfoot>
-                    <tr>
-                      <th colspan="5"></th>
                     </tr>
                   </tfoot>
                 </table>
