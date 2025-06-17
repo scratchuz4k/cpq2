@@ -183,6 +183,11 @@ class DataProvider
 
     protected function relatedQuery($query, $relation, $column, $operator, $value, $func)
     {
+
+        if ($operator === 'is_null') {
+            return $query->whereDoesntHave($relation);
+        }
+
         $temp = $func == 'orWhere' ? 'orWhereHas' : 'whereHas';
 
         return $query->{$temp}($relation, function ($query) use ($column, $operator, $value) {
