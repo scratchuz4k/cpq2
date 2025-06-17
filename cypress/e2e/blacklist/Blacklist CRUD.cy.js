@@ -46,7 +46,8 @@ describe("Blacklist Crud", () => {
         // Scroll back to top
         cy.scrollTo("top");
         //Provider filter
-        cy.get(".p-multiselect").eq(0).click();
+        cy.get("#provider-multiselect").click();
+        cy.wait(500);
         cy.get(".p-multiselect-list-container")
             .eq(0)
             .within(() => {
@@ -54,7 +55,7 @@ describe("Blacklist Crud", () => {
             });
 
         //SubProvider filter
-        cy.get(".p-multiselect").eq(1).click();
+        cy.get("#subprovider-multiselect").click();
         cy.wait(500);
         cy.get(".p-multiselect-list-container")
             .eq(0)
