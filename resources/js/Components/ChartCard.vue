@@ -153,7 +153,7 @@ watch(
                     </div>
                     <div v-else>
                         <div class="d-flex justify-content-between fw-bold px-4 fs-4" v-for="supp in props.data?.data">
-                            <span>{{ supp.label }}</span>
+                            <span class="text-muted fw-normal fst-italic fs-5">{{ supp.label }}</span>
                             <count-up :duration="duration" :endVal='supp.total ?? 0' :startVal='startValue'/>
                         </div>
                     </div>

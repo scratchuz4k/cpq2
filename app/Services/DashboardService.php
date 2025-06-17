@@ -29,6 +29,22 @@ class DashboardService
         }
     }
 
+	private function excludeSuperAdmins($query)
+    {
+        return $query->whereDoesntHave('roles', function ($q) {
+            $q->where('name', 'Super Admin');
+        });
+    }
+
+    private function excludeSuperAdminActivities($query)
+    {
+        return $query->whereHas('user', function ($userQuery) {
+            $userQuery->whereDoesntHave('roles', function ($roleQuery) {
+                $roleQuery->where('name', 'Super Admin');
+            });
+        });
+    }
+
     public function getData(array $array)
     {
         if ($this->relation) {
@@ -45,10 +61,10 @@ class DashboardService
         $total_query = $this->model->query();
 
         if ($this->model instanceof $this->user_instance) {
-            $query->where('id', '!=', 1)
+            $query = $this->excludeSuperAdmins($query)
                 ->where('tenant_id', request()->user()->tenant_id);
 
-            $total_query->where('id', '!=', 1)
+            $total_query = $this->excludeSuperAdmins($total_query)
                 ->where('tenant_id', request()->user()->tenant_id);
         }
 
@@ -69,7 +85,8 @@ class DashboardService
                 [$data, $labels] = $this->getParsedData(
                     $date_interval[0],
                     $date_interval[1],
-                    $quotes_collection
+                    $quotes_collection,
+					$cumulative
                 );
 
                 $results[$solution_type->name] = [
@@ -173,12 +190,12 @@ class DashboardService
             }
 
             if ($model instanceof $this->user_instance) {
-                $query->where('id', '!=', 1)
+                $query = $this->excludeSuperAdmins($query)
                     ->where('tenant_id', request()->user()->tenant_id);
             }
 
-            if ( $model instanceof $this->activity_instance) {
-                $query->where('user_id', '!=', 1)->distinct('user_id');
+            if ($model instanceof $this->activity_instance) {
+                $query = $this->excludeSuperAdminActivities($query)->distinct('user_id');
             }
 
             return [
@@ -200,16 +217,16 @@ class DashboardService
         $total_query = $this->model->query();
 
         if ($this->model instanceof $this->user_instance) {
-            $query->where('id', '!=', 1)
+            $query = $this->excludeSuperAdmins($query)
                 ->where('tenant_id', request()->user()->tenant_id);
 
-            $total_query->where('id', '!=', 1)
+            $total_query = $this->excludeSuperAdmins($total_query)
                 ->where('tenant_id', request()->user()->tenant_id);
         }
 
         if ($this->model instanceof $this->activity_instance) {
-            $query->where('user_id', '!=', 1);
-            $total_query->where('user_id', '!=', 1);
+            $query = $this->excludeSuperAdminActivities($query);
+            $total_query = $this->excludeSuperAdminActivities($total_query);
         }
 
 
@@ -223,6 +240,7 @@ class DashboardService
                     $query->whereNotNull('data');
                 }])
                 ->get();
+
             $items->each(function ($quote) use (&$grouped) {
                 $providers = $quote->items->map(function ($item) {
                     return data_get($item->data, 'providerKey');
@@ -243,7 +261,7 @@ class DashboardService
                 $results[$key] = [
                     'data' => $data,
                     'total' => $group->count(),
-                    'label' => CloudMarketSuppliersEnum::tryFrom($key)->name ?? "Unknown",
+                    'label' => CloudMarketSuppliersEnum::tryFrom($key)?->name ?? "Unknown",
                 ];
             }
 
