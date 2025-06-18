@@ -10,6 +10,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class Account extends Model
 {
@@ -22,6 +24,22 @@ class Account extends Model
     protected static function booted(): void
     {
         static::addGlobalScope(new TenantScope);
+
+        static::created(function ($account) {
+            $user = Auth::user();
+            if ($user->group) {
+                try {
+                    GroupAccount::create([
+                        'account_id' => $account->id,
+                        'group_id' => $user->group->id,
+                    ]);
+                } catch (\Exception $e) {
+                    if (! env('APP_DEBUG')) {
+                        Log::error($e->getMessage());
+                    }
+                }
+            }
+        });
     }
 
     public function tenant(): BelongsTo
