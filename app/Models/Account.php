@@ -27,7 +27,7 @@ class Account extends Model
 
         static::created(function ($account) {
             $user = Auth::user();
-            if ($user->group) {
+            if ($user && $user->group) {
                 try {
                     GroupAccount::create([
                         'account_id' => $account->id,
