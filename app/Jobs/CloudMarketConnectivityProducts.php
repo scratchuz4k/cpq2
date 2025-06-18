@@ -46,6 +46,7 @@ class CloudMarketConnectivityProducts implements ShouldQueue, TenantAware
      */
     public function handle(): void
     {
+
         $res = CloudMarketApi::getQuotes($this->connectivityType, $this->address);
         $this->started_at = now();
         if (! $this->file->exists()) {

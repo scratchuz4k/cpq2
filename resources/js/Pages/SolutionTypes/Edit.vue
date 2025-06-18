@@ -278,7 +278,7 @@ const items = ref([
                                                 <MultiSelect
                                                     v-model="configurations.amortisation[supplier.value]"
                                                     style="width: 100%"
-                                                    :options="['12', '24', '36', '48']"
+                                                    :options="['12', '24', '36', '48', '60']"
                                                     placeholder="Select Months"
                                                 >
                                                     <template #option="slotProps">
