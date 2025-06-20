@@ -13,11 +13,10 @@ describe('Solution Types CRUD', () => {
 
         cy.get('#solution-type-table').then(($table) => {
             if ($table.text().includes('Hardware')) {
-                cy.get('.p-datatable-tbody tr')
-                    .contains('td', 'Hardware')
-                    .parent()
-                    .find('button[id*="delete"]')
-                    .click();
+                cy.get('#datatable-btn-0-delete').click();
+
+                cy.get('.swal2-confirm').eq(0).click();
+                cy.get('.notyf').contains('Removed with success');
             }
         });
 
