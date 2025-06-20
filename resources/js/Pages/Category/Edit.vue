@@ -38,7 +38,7 @@ const setProductCategory = async (product_id, category_id, action) => {
     if (product_id) {
       notyf.success(action === 'remove' ? "Product removed with success" : "Product added with Success");
     }
-    emitter.emit("datatable-refresh:group-users");
+    emitter.emit("datatable-refresh:group-products");
   } catch (ex) {
     product.value = null;
     notyf.error(ex.response?.data?.message ?? ex.response?.data);
