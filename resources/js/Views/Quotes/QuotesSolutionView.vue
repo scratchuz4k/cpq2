@@ -124,6 +124,16 @@ const formatInput = (ev, field, index) => {
   }
 
   field[index] = format.simpleSpeed(ev.target.value);
+
+  if (Array.isArray(field) && field.length === 2) {
+    if (field[0] > field[1]) {
+      if (index === 0) {
+        field[0] = field[1];
+      } else {
+        field[1] = field[0];
+      }
+    }
+  }
 };
 
 solutionChange(props.modelValue);
