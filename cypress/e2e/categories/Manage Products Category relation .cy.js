@@ -66,7 +66,7 @@ describe('Manage Products Category relation', () => {
         cy.get('#1-1').click();
         cy.get('.p-datatable-table').contains(products[1].name);
 
-        cy.selectLazyOption('product', products[0].name);
+        cy.selectLazyOption('select-product', products[0].name);
         cy.get('#button-add-product-to-category').click();
         cy.get('.p-datatable-table').contains(products[0].name);
     });
@@ -82,11 +82,11 @@ describe('Manage Products Category relation', () => {
         cy.get('#1-1').click();
 
         products.forEach(product => {
-            cy.get('#input-select-product').click()
-            cy.get('#select-product-search').type(product.name)
+            cy.get('#input-select-select-product').click()
+            cy.get('#select-select-product-search').type(product.name)
             cy.wait(200)
-            cy.get('#product-sidebar').contains('No available options')
-            cy.get('#input-select-product').click()
+            cy.get('#select-product-sidebar').contains('No available options')
+            cy.get('#input-select-select-product').click()
         })
     });
 
