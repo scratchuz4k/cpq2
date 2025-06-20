@@ -45,6 +45,30 @@ class User extends Authenticatable
             }
         });
 
+        static::updating(function ($child) {
+            // Check if parent_id is being changed
+            if ($child->isDirty('parent_id')) {
+                $oldParentId = $child->getOriginal('parent_id');
+                $newParentId = $child->parent_id;
+                // Update old parent
+                if ($oldParentId) {
+                    $oldParent = User::find($oldParentId);
+                    if ($oldParent) {
+                        $oldParent->has_children = $oldParent->children()->where('id', '!=', $child->id)->exists();
+                        $oldParent->save();
+                    }
+                }
+                // Update new parent
+                if ($newParentId) {
+                    $newParent = User::find($newParentId);
+                    if ($newParent) {
+                        $newParent->has_children = true;
+                        $newParent->save();
+                    }
+                }
+            }
+        });
+
         // Update parent when a child is deleted
         static::deleting(function ($child) {
             if ($child->parent_id) {
