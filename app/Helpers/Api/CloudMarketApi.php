@@ -34,12 +34,17 @@ class CloudMarketApi
             'Address1.Town' => $address->town,
 
             'ManagedOption' => 0,
-            'TermMonths' => [],
-            'ConnectionSpeeds.MinBearer' => 10,
+			'TermMonths' => [],
+            'ConnectionSpeeds.MinBearer' => 0,
             'ConnectionSpeeds.MaxBearer' => 100000,
-            'ConnectionSpeeds.MinSpeed' => 100,
+            'ConnectionSpeeds.MinSpeed' => 0,
             'ConnectionSpeeds.MaxSpeed' => 100000,
         ];
+
+        if (array_key_exists('managed', $quote->configs)) {
+            $quoteAddress['ManagedOption'] = (int) $quote->configs['managed'];
+        }
+
         if (array_key_exists('contract_length', $quote->configs)) {
             $quoteAddress['TermMonths'] = (bool) $quote->configs['contract_length'] ? explode(',', $quote->configs['contract_length']) : [];
         }

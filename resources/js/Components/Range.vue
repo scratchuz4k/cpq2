@@ -68,3 +68,15 @@ watch(props.modelValue, () => {
   });
 });
 </script>
+<style>
+.noUi-connects {
+    background: var(--color-purple-light);
+}
+.noUi-connect {
+    background: var(--color-purple);
+}
+.noUi-value {
+    font-size: 0.75rem;
+    padding-top: 0.375rem;
+}
+</style>

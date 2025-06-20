@@ -56,10 +56,10 @@ const items = ref([{ label: "Home", url: "/dashboard" }, { label: "Create a quot
 
     <form @submit.prevent="submit">
       <div class="row mb-3">
-        <div class="col-6">
+        <div class="col-lg-6">
           <div class="panel mb-3">
             <div class="row">
-              <div class="col-8">
+              <div class="col-12">
                 <h5 class="font-bold mb-3">Select an account to start a quote</h5>
                 <div class="mb-3">
                   <label for="account_id" class="form-label"

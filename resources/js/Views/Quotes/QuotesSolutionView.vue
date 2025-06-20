@@ -1,9 +1,9 @@
 <script setup>
 import { MultiSelect } from "primevue";
-import ToggleSwitch from "primevue/toggleswitch";
 import _ from "lodash";
 import { reactive, ref, watch } from "vue";
 import format from "@/Composables/format";
+import RadioCard from '@/Components/RadioCard.vue';
 
 const GOOGLE_MAPS_API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
 
@@ -17,7 +17,7 @@ const configurations = reactive({
   speed: [0, 10000],
   bearer: [0, 10000],
   contract_length: [],
-  managed: null,
+  managed: 0,
 });
 
 props.modelValue.configurations = configurations;
@@ -249,18 +249,18 @@ watch(addressPostCode, () => {
     <div class="col-6">
       <div class="panel">
         <h5 class="font-bold mb-3">Optionally, select some default filters</h5>
-        <div class="mb-5">
-          <div class="d-flex justify-content-between">
-            <p>Speed</p>
-            <label class="form-label">
-              Min: {{ format.speed(configurations.speed[0]) }} / Max:
-              {{ format.speed(configurations.speed[1]) }}
-            </label>
+        <div class="mb-5 pb-2">
+          <div class="d-flex justify-content-between mb-2">
+            <p class="form-label">Speed</p>
+            <span>
+              <span class="badge text-bg-secondary">Min</span>
+				{{ format.speed(configurations.speed[0]) }}
+				<span class="ms-2 badge text-bg-secondary">Max</span>
+				{{ format.speed(configurations.speed[1]) }}
+              </span>
           </div>
-          <hr />
           <div class="d-flex align-items-end">
             <div class="w-20">
-              <label class="form-label">Min:</label>
               <input
                 type="number"
                 min="0"
@@ -277,7 +277,6 @@ watch(addressPostCode, () => {
               ></SpeedRange>
             </div>
             <div class="w-20">
-              <label class="form-label">Max:</label>
               <input
                 type="number"
                 :min="0"
@@ -289,18 +288,19 @@ watch(addressPostCode, () => {
             </div>
           </div>
         </div>
-        <div class="mb-5">
-          <div class="d-flex justify-content-between">
-            <p>Bearer</p>
-            <label class="form-label">
-              Min: {{ format.speed(configurations.bearer[0]) }} / Max:
-              {{ format.speed(configurations.bearer[1]) }}
-            </label>
+		<hr class="mb-4" />
+        <div class="mb-5 pb-2">
+          <div class="d-flex justify-content-between mb-2">
+            <p class="form-label">Bearer</p>
+            <span>
+              <span class="badge text-bg-secondary">Min</span>
+				{{ format.speed(configurations.bearer[0]) }}
+				<span class="ms-2 badge text-bg-secondary">Max</span>
+				{{ format.speed(configurations.bearer[1]) }}
+            </span>
           </div>
-          <hr />
           <div class="d-flex align-items-end">
             <div class="w-20">
-              <label class="form-label">Min:</label>
               <input
                 type="number"
                 min="0"
@@ -317,7 +317,6 @@ watch(addressPostCode, () => {
               ></BearerRange>
             </div>
             <div class="w-20">
-              <label class="form-label">Max:</label>
               <input
                 type="number"
                 :min="0"
@@ -329,11 +328,10 @@ watch(addressPostCode, () => {
             </div>
           </div>
         </div>
-        <div class="mb-3">
+        <div class="mb-4 pb-2">
           <div class="d-flex justify-content-between">
-            <p>Contract Length</p>
+            <p class="form-label">Contract Length</p>
           </div>
-          <hr />
           <MultiSelect
             v-model="configurations.contract_length"
             style="width: 100%"
@@ -349,35 +347,46 @@ watch(addressPostCode, () => {
           </MultiSelect>
         </div>
         <div class="mb-3">
-          <hr />
-          <div class="d-flex">
-            <TriStateToggle v-model="configurations.managed" id="filter-show-contended">
-              <template #handle>
-                <font-awesome-icon
-                  :icon="
-                    configurations.managed === true
-                      ? ['fas', 'circle-check']
-                      : configurations.managed === false
-                      ? ['far', 'circle-xmark']
-                      : ['far', 'circle']
-                  "
-                  class="text-primary"
-                />
-              </template>
-            </TriStateToggle>
-            <label class="form-label"
-              >Show Contented products ({{
-                configurations.managed === true
-                  ? "Managed"
-                  : configurations.managed === false
-                  ? "Unmanaged"
-                  : "Both"
-              }}
-              )
-            </label>
-          </div>
+		  <p class="form-label mb-2">Managed Products:</p>
+		  <div class="row row-cols-1 row-cols-md-3 g-3">
+		    <div class="col">
+		      <RadioCard v-model="configurations.managed" :value="0" name="managed-products">
+		        <font-awesome-icon
+		        	class="py-3 opacity-25"
+		        	:icon="['fa', 'layer-group']"
+		        	size="2x"
+		        ></font-awesome-icon>
+		        <span class="d-block h6">Show All</span>
+		      </RadioCard>
+		    </div>
+		    <div class="col">
+		      <RadioCard v-model="configurations.managed" :value="1" name="managed-products">
+		        <font-awesome-icon
+		        	class="py-3 opacity-25"
+		        	:icon="['fa', 'lock']"
+		        	size="2x"
+		        ></font-awesome-icon>
+		        <span class="d-block h6">Show Managed Only</span>
+		      </RadioCard>
+		    </div>
+		    <div class="col">
+		      <RadioCard v-model="configurations.managed" :value="2" name="managed-products">
+		        <font-awesome-icon
+		        	class="py-3 opacity-25"
+		        	:icon="['fa', 'lock-open']"
+		        	size="2x"
+		        ></font-awesome-icon>
+		        <span class="d-block h6">Show Unmanaged Only</span>
+		      </RadioCard>
+		    </div>
+		  </div>
         </div>
       </div>
     </div>
   </div>
 </template>
+<style scoped>
+.form-label{
+	font-size:14px;
+}
+</style>
