@@ -92,7 +92,7 @@ const items = ref([{ label: "Home", url: "/dashboard" }, { label: "Create a quot
           :solution_types="solution_types"
         ></QuotesSolutionView>
         <div class="row mb-3">
-          <div class="col-6 d-flex justify-content-end">
+          <div class="col-lg-6 d-flex justify-content-end">
             <button
               id="btn-create-quote"
               class="btn btn-primary"

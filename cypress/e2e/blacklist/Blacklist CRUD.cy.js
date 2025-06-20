@@ -40,6 +40,7 @@ describe("Blacklist Crud", () => {
 
         cy.get("#solution_id").select("Connectivity");
         cy.get("#input_address").type("EH32 9NT");
+		cy.wait(1000);
         cy.get("#select_address").should("be.visible").select(1);
         cy.get("#btn-create-quote").should("not.be.disabled").click();
 

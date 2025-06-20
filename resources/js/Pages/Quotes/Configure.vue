@@ -54,7 +54,7 @@ const items = ref([
             </div>
             <QuotesSolutionView v-model="form" :solution_types="solution_types" :is_updating_quote="true"></QuotesSolutionView>
             <div class="row mb-3 ">
-                <div class="col-6 d-flex justify-content-end">
+                <div class="col-lg-6 d-flex justify-content-end">
                     <button id="btn-create-quote" class="btn btn-primary" type="submit" :disabled="!form.address" @click="submit()">
                         Get prices
                         <font-awesome-icon :icon="['fas', 'arrow-right']" class="ms-2"></font-awesome-icon>

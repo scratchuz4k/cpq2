@@ -147,7 +147,7 @@ watch(addressPostCode, () => {
 </script>
 <template>
   <div class="row">
-    <div class="col-6">
+    <div class="col-lg-6">
       <div class="panel">
         <h5 class="font-bold mb-3">Now, select an solution type</h5>
         <div class="mb-3">
@@ -225,7 +225,7 @@ watch(addressPostCode, () => {
     </div>
   </div>
   <div class="row mb-3" v-if="modelValue.address && addresses.length">
-    <div class="col-6">
+    <div class="col-lg-6">
       <InfoBox>
         <p id="location_company" class="mb-2">
           {{ modelValue.account?.name }}
@@ -256,7 +256,7 @@ watch(addressPostCode, () => {
     class="row"
     v-if="modelValue.solution_type?.code == 3 && modelValue.address != null"
   >
-    <div class="col-6">
+    <div class="col-lg-6">
       <div class="panel">
         <h5 class="font-bold mb-3">Optionally, select some default filters</h5>
         <div class="mb-5 pb-2">
