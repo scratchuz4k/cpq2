@@ -95,7 +95,7 @@ class CloudMarketService
         }
 
         $solutionType = SolutionType::where('code', $connectivityType)->first();
-        $amortisation = $solutionType->configs['amortisation'] ? json_decode($solutionType->configs['amortisation'], true) : [];
+        $amortisation = array_key_exists('amortisation', $solutionType->configs) ? json_decode($solutionType->configs['amortisation'], true) : [];
         $priceRules = new PriceRules;
 
         $account = Account::where('id', request()->input('account_id', null))->first();
