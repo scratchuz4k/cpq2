@@ -39,6 +39,7 @@ const setProductCategory = async (product_id, category_id, action) => {
       notyf.success(action === 'remove' ? "Product removed with success" : "Product added with Success");
     }
     emitter.emit("datatable-refresh:group-products");
+    emitter.emit("input-select-refresh:select-product");
   } catch (ex) {
     product.value = null;
     notyf.error(ex.response?.data?.message ?? ex.response?.data);
@@ -85,12 +86,12 @@ const items = ref([
             <div class="me-3" style="width: 100%">
               <label class="form-label">Add Products:</label>
               <InputSelect
-                id="product"
+                id="select-product"
                 v-model="product"
                 :fields="['name']"
                 placeholder="Select a Product"
                 :query="[
-                  { column: 'categories.id', operator: 'is_null', value: category.id },
+                  { column: 'categories.id', operator: 'is_null', value: 'category.id' },
                 ]"
                 url="/products"
               >

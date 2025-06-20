@@ -114,7 +114,7 @@ describe('Manage Products Category relation', () => {
         cy.get('#link-categories').click();
         cy.get('#datatable-search').type(category.name);
         cy.wait(1000)
-        cy.get('#datatable-btn-0-show').click()
+        cy.get('#datatable-btn-0-edit').click()
 
         cy.get('#1-1').click();
 
