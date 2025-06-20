@@ -57,9 +57,7 @@ class CategoryController extends BaseController
      */
     public function show(Category $category)
     {
-        return Inertia::render('Category/Show', [
-            "category" => (new CategoryResource($category))->resolve()
-        ]);
+       //
     }
 
     /**
