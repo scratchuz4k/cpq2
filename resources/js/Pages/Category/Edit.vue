@@ -108,9 +108,9 @@ const items = ref([
           </form>
           <div class="row mt-3">
             <div class="col">
-              <label class="form-label">Users:</label>
+              <label class="form-label">Products:</label>
               <Datatable
-                id="group-users"
+                id="group-products"
                 :columns="[
                   { data: 'id', title: '#', style: 'width:5%' },
                   { data: 'code', title: 'Code', style: 'width:20%' },
