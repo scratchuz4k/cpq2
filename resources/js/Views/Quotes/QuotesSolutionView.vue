@@ -19,7 +19,7 @@ const configurations = reactive({
     contract_length: props.modelValue.configs?.contract_length
         ? props.modelValue.configs.contract_length.split(',')
         : [],
-    managed: props.modelValue.configs?.managed ? props.modelValue.configs.managed : 0
+    managed: props.modelValue.configs?.managed ? props.modelValue.configs.managed : '0'
 });
 
 props.modelValue.configurations = configurations;
@@ -335,7 +335,7 @@ watch(addressPostCode, () => {
                         v-model="configurations.contract_length"
                         style="width: 100%"
                         :options="['12', '24', '36', '60']"
-                        placeholder="All"
+                        placeholder="All Terms"
                         class="me-3 custom-multiselect"
                     >
                         <template #option="slotProps">
