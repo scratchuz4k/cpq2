@@ -109,6 +109,7 @@ class ShopBlocksProductsSyncJob implements NotTenantAware, ShouldQueue
         $temp['description'] = $product['description'];
         $temp['stock'] = $product['stock'];
         $temp['primary_image'] = count($child['images']) ? $child['images'][0]['url'] : null;
+        $temp['images'] = count($child['images']) ? $child['images'] : [];
         $temp['updated'] = $product['updated'];
 
         $temp['price'] = [
