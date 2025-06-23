@@ -58,6 +58,7 @@ class RolePermissionSeeder extends Seeder
                 'api' => 'API',
                 'price_plan' => 'Price Plan',
                 'activity' => 'Activity',
+                'export' => 'Export',
                 'group' => 'Groups',
             ],
         ];
@@ -81,7 +82,7 @@ class RolePermissionSeeder extends Seeder
                     'spa', 'user', 'solution_type', 'api', 'price_plan', 'activity', 'email_template', 'email_history',
                     'group',
                 ],
-                'simple_permission' => [],
+                'simple_permission' => ['viewAny export']
             ],
             'Sales Rep' => [
                 'parent' => 'Company Admin',

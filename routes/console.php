@@ -5,5 +5,5 @@ use App\Console\Commands\SyncShopBlocks;
 use Illuminate\Support\Facades\Schedule;
 
 Schedule::command('horizon:snapshot')->everyTenMinutes();
-Schedule::command(DeleteOldFiles::class)->weekly();
-Schedule::command(SyncShopBlocks::class)->dailyAt('06:00');
+Schedule::command(DeleteOldFiles::class)->weekly()->sentryMonitor();
+Schedule::command(SyncShopBlocks::class)->dailyAt('06:00')->sentryMonitor();

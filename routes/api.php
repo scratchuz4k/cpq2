@@ -35,6 +35,8 @@ use App\Http\Controllers\Api\TenantController;
 use App\Http\Controllers\Api\TokenController;
 use App\Http\Controllers\Api\UserController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\DashboardController;
+use App\Http\Controllers\Api\ExportController;
 
 Route::prefix('external')->group(function () {
     Route::post('get-address-by-postcode', [ExternalController::class, 'getAddressesByPostCode']);
@@ -48,6 +50,13 @@ Route::prefix('shop-blocks')->group(callback: function () {
     Route::get('products/{article}', [ShopBlocksProductController::class, 'show']);
     Route::get('product-features', [ProductFeatureController::class, 'index']);
     Route::get('categories', [ShopBlocksCategoryController::class, 'index']);
+});
+
+Route::get('/reporting-data', [DashboardController::class, 'reporting']);
+
+Route::prefix('export')->group(function () {
+    Route::get('/', [ExportController::class, 'export']);
+    Route::get('/columns', [ExportController::class, 'getColumns']);
 });
 
 Route::apiResources([
