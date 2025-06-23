@@ -28,6 +28,7 @@ class RolePermissionSeeder extends Seeder
             'delete' => 'Delete',
             'restore' => 'Restore',
             'forceDelete' => 'Remove',
+            'export' => 'Export',
         ];
 
         // Reset cached roles and permissions
@@ -73,6 +74,7 @@ class RolePermissionSeeder extends Seeder
                 'parent' => 'Super Admin',
                 'permissions' => ['merchant', 'account', 'contact', 'token', 'quote', 'quote_item', 'order', 'order_item', 'activity', 'price_plan'],
                 'simple_permission' => ['viewAny product', 'view product', 'viewAny category', 'view category'],
+                'deny_permission' => ['export']
             ],
             'Company Admin' => [
                 'parent' => 'Super Admin',
@@ -81,13 +83,13 @@ class RolePermissionSeeder extends Seeder
                     'price', 'product', 'category', 'region', 'tenant', 'brand', 'supplier',
                     'spa', 'user', 'solution_type', 'api', 'price_plan', 'activity', 'email_template', 'email_history',
                     'group',
-                ],
-                'simple_permission' => ['viewAny export']
+                ]
             ],
             'Sales Rep' => [
                 'parent' => 'Company Admin',
                 'permissions' => ['quote', 'quote_item', 'account', 'contact', 'brand', 'supplier', 'activity', 'price_plan'],
                 'simple_permission' => ['viewAny product', 'view product', 'viewAny category', 'view category'],
+                'deny_permission' => ['export']
             ],
             'Order Manager' => [
                 'parent' => 'Company Admin',
@@ -106,6 +108,7 @@ class RolePermissionSeeder extends Seeder
                     'viewAny supplier',
                     'view supplier',
                 ],
+                'deny_permission' => ['export']
             ],
         ];
 
@@ -145,6 +148,11 @@ class RolePermissionSeeder extends Seeder
             foreach ($item['permissions'] as $group) {
                 if (array_key_exists($group, $insertPermissions->toArray())) {
                     $permissions = array_merge($permissions, $insertPermissions->toArray()[$group]);
+                }
+                if (array_key_exists('deny_permission', $item) && !empty($item['deny_permission'])) {
+                    $permissions = array_filter($permissions, function($value) use ($group) {
+                        return $value !== Permission::where('name', 'export ' . $group)->first()->id;
+                    });
                 }
             }
             $role->syncPermissions($permissions);

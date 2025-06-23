@@ -7,6 +7,7 @@ import { reactive, ref, watch } from "vue";
 import queryString from "query-string";
 import { usePage } from "@inertiajs/vue3";
 import _ from "lodash";
+import axios from "axios";
 
 const page = usePage();
 const props = defineProps({
@@ -17,6 +18,7 @@ const props = defineProps({
 const visible = ref(false);
 const showGlobal = ref(false);
 const selectedRules = ref([]);
+const emptyData = ref(false);
 
 const form = reactive({
   rule: null,
@@ -153,11 +155,11 @@ const getData = async () => {
     page: meta.page,
     filters: JSON.stringify(temp),
     limit: meta.limit,
-    page: meta.page,
   });
 
   let res = await axios.get("/api/spas?" + string);
   data.value = res.data.data;
+  emptyData.value = !!data.value.length;
   meta.total = res.data.meta?.total ?? res.data.total;
   meta.first = (meta.page - 1) * meta.limit;
 };
@@ -227,6 +229,40 @@ const sortBy = (column) => {
   getData();
 };
 
+const exportData = async () => {
+    try {
+        let res = await axios
+            .post("/spas/export", [], {
+                responseType: "blob",
+            })
+            .then((res) => {
+                if (res.status === 204) {
+                    notyf.open({
+                        type: "warning",
+                        message:
+                            "There's no data to export for these filters. Please redefine your filters.",
+                    });
+                    return;
+                }
+
+                const url = window.URL.createObjectURL(new Blob([res.data]));
+                const link = document.createElement("a");
+                link.href = url;
+                link.setAttribute(
+                    "download",
+                    res.headers["content-disposition"].split("filename=")[1]
+                );
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            });
+        return true;
+    } catch (err) {
+        notyf.error(err?.response?.data?.message ?? "Something went wrong");
+        return false;
+    }
+};
+
 const items = ref([
   { label: "Home", url: "/" },
   { label: "My Account", url: "/myaccount" },
@@ -265,7 +301,9 @@ getData();
             class="p-button p-component me-2"
             ><font-awesome-icon :icon="['fas', 'filter']"
           /></Button>
-
+            <Button v-if="emptyData" type="button" @click="exportData()">
+                <font-awesome-icon :icon="['fas', 'paper-plane']"/>
+            </Button>
           <Button
             v-if="visible"
             type="button"

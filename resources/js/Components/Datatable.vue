@@ -1,6 +1,6 @@
 <script setup>
 import _ from "lodash";
-import { Link } from "@inertiajs/vue3";
+import {Link} from "@inertiajs/vue3";
 
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
@@ -10,7 +10,7 @@ import InputIcon from "primevue/inputicon";
 import InputText from "primevue/inputtext";
 import Button from "primevue/button";
 
-import { reactive, ref, watch, useSlots } from "vue";
+import {reactive, ref, useSlots, watch} from "vue";
 import queryString from "query-string";
 import axios from "axios";
 
@@ -35,7 +35,7 @@ const props = defineProps({
 
 const activeFilters = ref(false);
 const data = ref([]);
-
+const emptyData = ref(true);
 const global = ref(null);
 
 const form = reactive({
@@ -71,6 +71,7 @@ const getData = async () => {
 
   let res = await axios.get("/api" + props.route + "?" + string);
   data.value = res.data.data;
+  emptyData.value = !!data.value.length;
   meta.total = res.data.meta?.total ?? res.data.total;
   meta.first = (meta.page - 1) * form.limit;
 };
@@ -132,6 +133,40 @@ const getValue = (item, key) => {
   return result;
 };
 
+const exportData = async () => {
+    try {
+        let res = await axios
+            .post(props.route + "/export", [], {
+                responseType: "blob",
+            })
+            .then((res) => {
+                if (res.status === 204) {
+                    notyf.open({
+                        type: "warning",
+                        message:
+                            "There's no data to export for these filters. Please redefine your filters.",
+                    });
+                    return;
+                }
+
+                const url = window.URL.createObjectURL(new Blob([res.data]));
+                const link = document.createElement("a");
+                link.href = url;
+                link.setAttribute(
+                    "download",
+                    res.headers["content-disposition"].split("filename=")[1]
+                );
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            });
+        return true;
+    } catch (err) {
+        notyf.error(err?.response?.data?.message ?? "Something went wrong");
+        return false;
+    }
+};
+
 emitter.on("datatable-refresh" + (props.id ? ":" + props.id : ""), () => {
   getData();
 });
@@ -182,6 +217,9 @@ getData();
             @click="clearFilters()"
           >
             <font-awesome-icon :icon="['fas', 'eraser']" />
+          </Button>
+          <Button v-if="emptyData" type="button" @click="exportData()">
+            <font-awesome-icon :icon="['fas', 'paper-plane']"/>
           </Button>
         </div>
         <IconField>
