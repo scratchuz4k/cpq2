@@ -334,7 +334,7 @@ watch(addressPostCode, () => {
                     <MultiSelect
                         v-model="configurations.contract_length"
                         style="width: 100%"
-                        :options="['12', '24', '36', '60']"
+                        :options="['12', '24', '36', '48', '60']"
                         placeholder="All Terms"
                         class="me-3 custom-multiselect"
                     >
