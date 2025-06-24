@@ -106,7 +106,13 @@
                 </div>
             </div>
         </div>
-        <Dialog v-model:visible="showModal" modal :header="proxyValue.model?.name" :style="{ width: '80rem' }">
+        <Dialog
+            v-model:visible="showModal"
+            modal
+            :header="proxyValue.model?.name"
+            :style="{ width: '80rem' }"
+            :draggable="false"
+        >
             <template #header>
                 <h2>Product Information ({{ proxyValue.model?.name }})</h2>
             </template>
