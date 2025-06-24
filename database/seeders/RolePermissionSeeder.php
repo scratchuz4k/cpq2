@@ -83,7 +83,8 @@ class RolePermissionSeeder extends Seeder
                     'price', 'product', 'category', 'region', 'tenant', 'brand', 'supplier',
                     'spa', 'user', 'solution_type', 'api', 'price_plan', 'activity', 'email_template', 'email_history',
                     'group',
-                ]
+                ],
+                'simple_permission' => []
             ],
             'Sales Rep' => [
                 'parent' => 'Company Admin',
@@ -149,12 +150,26 @@ class RolePermissionSeeder extends Seeder
                 if (array_key_exists($group, $insertPermissions->toArray())) {
                     $permissions = array_merge($permissions, $insertPermissions->toArray()[$group]);
                 }
-                if (array_key_exists('deny_permission', $item) && !empty($item['deny_permission'])) {
-                    $permissions = array_filter($permissions, function($value) use ($group) {
-                        return $value !== Permission::where('name', 'export ' . $group)->first()->id;
-                    });
-                }
             }
+
+            if (!empty($item['deny_permission'] ?? [])) {
+                $denyPatterns = array_map(
+                    fn($action) => $action . ' %',
+                    $item['deny_permission']
+                );
+
+                $permissionsToRemove = Permission::whereIn('id', $permissions)
+                    ->where(function ($query) use ($denyPatterns) {
+                        foreach ($denyPatterns as $pattern) {
+                            $query->orWhere('name', 'like', $pattern);
+                        }
+                    })
+                    ->pluck('id')
+                    ->all();
+
+                $permissions = array_diff($permissions, $permissionsToRemove);
+            }
+
             $role->syncPermissions($permissions);
 
             foreach ($item['simple_permission'] as $simplePermission) {

@@ -13,7 +13,9 @@ import Button from "primevue/button";
 import {reactive, ref, useSlots, watch} from "vue";
 import queryString from "query-string";
 import axios from "axios";
-
+import {can, hasRole} from "@/Composables/useAuth.js";
+import pluralize from 'pluralize';
+import {exportData} from "@/Composables/export.js";
 const slots = useSlots();
 const usedSlots = Object.keys(slots);
 
@@ -37,6 +39,8 @@ const activeFilters = ref(false);
 const data = ref([]);
 const emptyData = ref(true);
 const global = ref(null);
+
+const has_export_permission = can(`export ${pluralize.singular(props.route.replace(/^\//, ''))}`) || hasRole('Super Admin');
 
 const form = reactive({
   filters: [],
@@ -133,38 +137,13 @@ const getValue = (item, key) => {
   return result;
 };
 
-const exportData = async () => {
-    try {
-        let res = await axios
-            .post(props.route + "/export", [], {
-                responseType: "blob",
-            })
-            .then((res) => {
-                if (res.status === 204) {
-                    notyf.open({
-                        type: "warning",
-                        message:
-                            "There's no data to export for these filters. Please redefine your filters.",
-                    });
-                    return;
-                }
+const getExportData = async () => {
+    let filters = {
+        filters: JSON.stringify([...form.filters, ...props.query]),
+        search: global.value,
+    };
 
-                const url = window.URL.createObjectURL(new Blob([res.data]));
-                const link = document.createElement("a");
-                link.href = url;
-                link.setAttribute(
-                    "download",
-                    res.headers["content-disposition"].split("filename=")[1]
-                );
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-            });
-        return true;
-    } catch (err) {
-        notyf.error(err?.response?.data?.message ?? "Something went wrong");
-        return false;
-    }
+    exportData(filters, props.route);
 };
 
 emitter.on("datatable-refresh" + (props.id ? ":" + props.id : ""), () => {
@@ -213,12 +192,17 @@ getData();
           <Button
             v-if="activeFilters"
             type="button"
+            :class="['me-2']"
             :severity="form.filters.find((x) => x.value) ? 'primary' : 'secondary'"
             @click="clearFilters()"
           >
             <font-awesome-icon :icon="['fas', 'eraser']" />
           </Button>
-          <Button v-if="emptyData" type="button" @click="exportData()">
+          <Button v-if="emptyData && has_export_permission"
+            type="button"
+            :class="['me-2']"
+            @click="getExportData()"
+          >
             <font-awesome-icon :icon="['fas', 'paper-plane']"/>
           </Button>
         </div>

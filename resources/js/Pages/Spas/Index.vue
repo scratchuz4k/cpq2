@@ -8,6 +8,7 @@ import queryString from "query-string";
 import { usePage } from "@inertiajs/vue3";
 import _ from "lodash";
 import axios from "axios";
+import {exportData} from "@/Composables/export.js";
 
 const page = usePage();
 const props = defineProps({
@@ -101,59 +102,11 @@ const handleFields = () => {
 };
 
 const getData = async () => {
-  let temp = [];
-  if (!showGlobal.value) {
-    let keys = Object.keys(fields).filter((x) => fields[x] != null);
-    selectedRules.value.forEach((x, ruleIndex) => {
-      const splitResult = x.code.split(/(?=[A-Z])/);
-      splitResult.forEach((e, index) => {
-        if (!keys.includes(e.toLowerCase())) {
-          return;
-        }
-
-        temp.push({
-          column: "rule_id",
-          operator: "equals",
-          value: x.id,
-          function: ruleIndex != 0 ? "orWhere" : "where",
-        });
-
-        if (index == 0) {
-          temp.push({
-            column: "field_1",
-            operator: "equals",
-            value: fields[e.toLowerCase()]?.id,
-          });
-        }
-
-        if (index == 1) {
-          temp.push({
-            column: "field_2",
-            operator: "equals",
-            value: fields[e.toLowerCase()]?.id,
-          });
-        }
-      });
-    });
-  } else {
-    temp.push({
-      column: "rule_id",
-      operator: "equals",
-      value: selectedRules.value[0].id,
-    });
-
-    temp.push({
-      column: "field_1",
-      operator: "equals",
-      value: page.props.tenant.id,
-    });
-  }
-
   let string = queryString.stringify({
     orderBy: meta.orderBy,
     order: meta.order,
     page: meta.page,
-    filters: JSON.stringify(temp),
+    filters: JSON.stringify(getFilters()),
     limit: meta.limit,
   });
 
@@ -164,6 +117,57 @@ const getData = async () => {
   meta.first = (meta.page - 1) * meta.limit;
 };
 
+const getFilters = () => {
+    let temp = [];
+    if (!showGlobal.value) {
+        let keys = Object.keys(fields).filter((x) => fields[x] != null);
+        selectedRules.value.forEach((x, ruleIndex) => {
+            const splitResult = x.code.split(/(?=[A-Z])/);
+            splitResult.forEach((e, index) => {
+                if (!keys.includes(e.toLowerCase())) {
+                    return;
+                }
+
+                temp.push({
+                    column: "rule_id",
+                    operator: "equals",
+                    value: x.id,
+                    function: ruleIndex != 0 ? "orWhere" : "where",
+                });
+
+                if (index == 0) {
+                    temp.push({
+                        column: "field_1",
+                        operator: "equals",
+                        value: fields[e.toLowerCase()]?.id,
+                    });
+                }
+
+                if (index == 1) {
+                    temp.push({
+                        column: "field_2",
+                        operator: "equals",
+                        value: fields[e.toLowerCase()]?.id,
+                    });
+                }
+            });
+        });
+    } else {
+        temp.push({
+            column: "rule_id",
+            operator: "equals",
+            value: selectedRules.value[0].id,
+        });
+
+        temp.push({
+            column: "field_1",
+            operator: "equals",
+            value: page.props.tenant.id,
+        });
+    }
+
+    return temp;
+}
 const deleteRecord = async (id) => {
   swal
     .fire({
@@ -229,38 +233,13 @@ const sortBy = (column) => {
   getData();
 };
 
-const exportData = async () => {
-    try {
-        let res = await axios
-            .post("/spas/export", [], {
-                responseType: "blob",
-            })
-            .then((res) => {
-                if (res.status === 204) {
-                    notyf.open({
-                        type: "warning",
-                        message:
-                            "There's no data to export for these filters. Please redefine your filters.",
-                    });
-                    return;
-                }
+const getExportData = async () => {
+    // let filters = {
+    //     filters: ,
+    //     search: global.value,
+    // };
 
-                const url = window.URL.createObjectURL(new Blob([res.data]));
-                const link = document.createElement("a");
-                link.href = url;
-                link.setAttribute(
-                    "download",
-                    res.headers["content-disposition"].split("filename=")[1]
-                );
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-            });
-        return true;
-    } catch (err) {
-        notyf.error(err?.response?.data?.message ?? "Something went wrong");
-        return false;
-    }
+    exportData([], 'spas');
 };
 
 const items = ref([
@@ -301,7 +280,7 @@ getData();
             class="p-button p-component me-2"
             ><font-awesome-icon :icon="['fas', 'filter']"
           /></Button>
-            <Button v-if="emptyData" type="button" @click="exportData()">
+            <Button v-if="emptyData" type="button" @click="getExportData()">
                 <font-awesome-icon :icon="['fas', 'paper-plane']"/>
             </Button>
           <Button
