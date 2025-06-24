@@ -203,7 +203,7 @@ getData();
             :class="['me-2']"
             @click="getExportData()"
           >
-            <font-awesome-icon :icon="['fas', 'paper-plane']"/>
+            <font-awesome-icon :icon="['fas', 'file-export']"/>
           </Button>
         </div>
         <IconField>

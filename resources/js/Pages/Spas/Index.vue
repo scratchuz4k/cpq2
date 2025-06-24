@@ -281,7 +281,7 @@ getData();
             ><font-awesome-icon :icon="['fas', 'filter']"
           /></Button>
             <Button v-if="emptyData" type="button" @click="getExportData()">
-                <font-awesome-icon :icon="['fas', 'paper-plane']"/>
+                <font-awesome-icon :icon="['fas', 'file-export']"/>
             </Button>
           <Button
             v-if="visible"
