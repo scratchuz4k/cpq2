@@ -56,18 +56,16 @@ class ShopBlocksProductsSyncJob implements NotTenantAware, ShouldQueue
                 continue;
             }
             $sku = $product['children'][0]['sku'];
-
             $temp = $this->getProduct($product);
             $temp['price_plan_id'] = $pricePlanId;
             $temp['expire_at'] = $this->expire_at;
-
-            $temp = $this->getBrandAndModel($product, $temp);
-            $category = $this->getCategory($product);
-
             $temp = Product::updateOrCreate(
                 ['sku' => $sku],
-                [...$temp, 'category_id' => $category->id]
+                [...$temp]
             );
+
+            $this->getBrandAndModel($product, $temp);
+            $this->getCategory($product, $temp);
 
             $this->getFeaturesFromContent($temp, $product['tabbed_content'], $this->expire_at);
         }
@@ -123,11 +121,13 @@ class ShopBlocksProductsSyncJob implements NotTenantAware, ShouldQueue
         return $temp;
     }
 
-    private function getCategory($product)
+    private function getCategory($product, $temp)
     {
         $code = $product['category']['id'];
 
-        return Category::updateOrCreate(['code' => $code], $product['category']);
+        unset($product['category']['id']);
+        $category = Category::updateOrCreate(['code' => $code], $product['category']);
+        $category->products()->save($temp);
     }
 
     private function getFeaturesFromContent($product, $contents, $expire_at)
@@ -142,7 +142,8 @@ class ShopBlocksProductsSyncJob implements NotTenantAware, ShouldQueue
         foreach ($contents as $key => $item) {
             $dom = new DOMDocument;
             libxml_use_internal_errors(true); // Suppress warnings for malformed HTML
-            $dom->loadHTML($item['content']);
+            $content = '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">'.$item['content'];
+            $dom->loadHTML($content);
             libxml_clear_errors();
 
             $xpath = new DOMXPath($dom);
@@ -174,12 +175,11 @@ class ShopBlocksProductsSyncJob implements NotTenantAware, ShouldQueue
         if (! is_null($product['brand'])) {
             unset($product['brand']['id']);
             $brand = Brand::updateOrCreate(['code' => $product['brand']['slug']], $product['brand']);
+            $brand->products()->save($temp);
         }
-
-        $temp['brand_id'] = $brand?->id;
         $modelName = (string) Str::of($product['name'])->words(3, '');
         $model = Model::updateOrCreate(['brand_id' => $brand?->id, 'code' => Str::slug($modelName)], ['name' => $modelName]);
-        $temp['model_id'] = $model?->id;
+        $model->products()->save($temp);
 
         return $temp;
     }

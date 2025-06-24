@@ -46,6 +46,7 @@ const filters = reactive({
 });
 
 const currentCategory = ref(null);
+const currentBrand = ref(null);
 
 const filterList = reactive({
     models: [],
@@ -107,6 +108,13 @@ const getProductsShopBlocks = async () => {
             column: 'stock',
             operator: 'greater_than_or_equal_to',
             value: 1
+        });
+    }
+    if (currentBrand.value) {
+        filters.push({
+            column: 'brand.id',
+            operator: 'equals',
+            value: currentBrand.value.id
         });
     }
 
@@ -181,7 +189,7 @@ watch([filters, sort], () => {
 });
 
 watch(
-    currentCategory,
+    [currentCategory, currentBrand],
     _.debounce(() => {
         meta.page = 1;
         getProductsShopBlocks();
@@ -240,8 +248,14 @@ watch(
                         <h2>Search</h2>
                         <input type="search" class="form-control" placeholder="" v-model="search" />
                     </div>
-                    <h2>Categories</h2>
-                    <ShopBlocksCategoriesTree v-model="currentCategory"></ShopBlocksCategoriesTree>
+                    <div class="mb-4">
+                        <h2>Categories</h2>
+                        <ShopBlocksCategoriesTree v-model="currentCategory"></ShopBlocksCategoriesTree>
+                    </div>
+                    <div class="mb-4">
+                        <h2>Brands</h2>
+                        <ShopBlocksBrands v-model="currentBrand" :category="currentCategory"></ShopBlocksBrands>
+                    </div>
                 </div>
             </div>
             <div class="col">
