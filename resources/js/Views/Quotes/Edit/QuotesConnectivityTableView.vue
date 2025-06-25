@@ -896,11 +896,12 @@ getArticles(false, true);
                                     <span
                                         v-else
                                         :data-bs-original-title="
-                                            'Contains Amortisation: ' +
-                                            format.GBP(article.amortisation) +
-                                            ' Initial Setup: ' +
-                                            format.GBP(article.amortisation_install)
+                                            '<b>Initial Setup Cost:</b> ' +
+                                            format.GBP(article.amortisation_install) +
+                                            '<br/><b>Monthly Amortisation:</b> ' +
+                                            format.GBP(article.amortisation)
                                         "
+                                        data-bs-html="true"
                                         v-tooltip
                                     >
                                         {{ format.GBP(article.priceMonthly_spa) }}
