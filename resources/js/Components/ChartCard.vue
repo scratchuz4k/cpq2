@@ -28,32 +28,32 @@ const props = defineProps({
     label: String
 })
 
-const providersColors = {
-    giacom: {
+const providersColors = [
+    {
         borderColor: `rgba(163, 71, 150, 1)`,
         backgroundColor: `rgba(163, 71, 150, 0.1)`
     },
-    its: {
+    {
         borderColor: `rgba(163, 71, 150, 0.2)`,
         backgroundColor: `rgba(163, 71, 150, 0.02)`
     },
-    pxc: {
+    {
         borderColor: `rgba(163, 71, 150, 0.4)`,
         backgroundColor: `rgba(163, 71, 150, 0.03)`
     },
-    vorboss: {
+    {
         borderColor: `rgba(163, 71, 150, 0.6)`,
         backgroundColor: `rgba(163, 71, 150, 0.04)`
     },
-    gamma: {
+    {
         borderColor: `rgba(163, 71, 150, 0.8)`,
         backgroundColor: `rgba(163, 71, 150, 0.05)`
     },
-    ipriver: {
+    {
         borderColor: `rgba(163, 71, 150, 0.9)`,
         backgroundColor: `rgba(163, 71, 150, 0.06)`
     }
-}
+]
 
 let showModal = ref(false);
 const chartData = ref();
@@ -72,13 +72,13 @@ const setChartData = () => {
                     tension: 0.4
                 }
             ]
-            : Object.entries(props.data.data).map(([key, value]) => ({
+            : Object.entries(props.data.data).map(([key, value], index) => ({
                 label: `${value.label} (${value.total})`,
                 data: value.data,
                 fill: true,
                 tension: 0.4,
-                borderColor: providersColors[key]?.borderColor,
-                backgroundColor: providersColors[key]?.backgroundColor
+                borderColor: providersColors[index]?.borderColor,
+                backgroundColor: providersColors[index]?.backgroundColor
             }))
     };
 };
@@ -153,7 +153,7 @@ watch(
                     </div>
                     <div v-else>
                         <div class="d-flex justify-content-between fw-bold px-4 fs-4" v-for="supp in props.data?.data">
-                            <span>{{ supp.label }}</span>
+                            <span class="text-muted fw-normal fst-italic fs-5">{{ supp.label }}</span>
                             <count-up :duration="duration" :endVal='supp.total ?? 0' :startVal='startValue'/>
                         </div>
                     </div>

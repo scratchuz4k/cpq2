@@ -526,7 +526,7 @@ body {
     }
 
     #filters {
-        font-size: 13px;
+        font-size: 12px;
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -540,27 +540,9 @@ body {
             }
         }
 
-        .slider {
-            min-width: 240px;
-            font-size: 10px;
 
-            .noUi-tooltip {
-                padding: 2px 5px;
-            }
-
-            .noUi-value {
-                top: 11px;
-            }
-
-            .noUi-marker-horizontal.noUi-marker-large {
-                height: 8px;
-            }
-
-            &#bearerSlider {
-                min-width: 120px;
-            }
-        }
     }
+
 
     .selectize-dropdown .selected {
         background-color: var(--secondary-light);

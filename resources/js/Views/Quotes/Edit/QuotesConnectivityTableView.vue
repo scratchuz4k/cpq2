@@ -1,15 +1,16 @@
 <script setup>
-import _ from 'lodash';
-import axios from 'axios';
-import Paginator from 'primevue/paginator';
-import { ref, reactive, watch } from 'vue';
-import MultiSelect from 'primevue/multiselect';
-import Dialog from 'primevue/dialog';
-import format from '@/Composables/format.js';
-import Spinner from '@/Components/Spinner.vue';
-import Select from 'primevue/select';
-import ToggleSwitch from 'primevue/toggleswitch';
-import TriStateToggle from '@/Components/TriStateToggle.vue';
+import _ from "lodash";
+import axios from "axios";
+import Paginator from "primevue/paginator";
+import { ref, reactive, watch } from "vue";
+import MultiSelect from "primevue/multiselect";
+import Dialog from "primevue/dialog";
+import format from "@/Composables/format.js";
+import Spinner from "@/Components/Spinner.vue";
+import Select from "primevue/select";
+import ToggleSwitch from "primevue/toggleswitch";
+import TriStateToggle from "@/Components/TriStateToggle.vue";
+import { quote } from "@/Composables/useQuote";
 
 const props = defineProps({
     modelValue: Object
@@ -98,30 +99,34 @@ const getArticles = async (clearCache = false, runTimeout = false) => {
         showLoadingModal.value = true;
     }
 
-    let query = {
-        clearCache: clearCache,
-        connectivityType: 3,
-        postCode: props.modelValue.address_postcode,
-        latitude: props.modelValue.address_position?.lat,
-        longitude: props.modelValue.address_position?.lon,
-        uprn: props.modelValue.address_data?.uprn,
-        street:
-            props.modelValue.address_data?.thoroughfareName ?? props.modelValue.address_data?.dependentThoroughfareName,
-        town:
-            props.modelValue.address_city ??
-            props.modelValue.address_data?.locality ??
-            props.modelValue.address_data?.doubleDependentLocality,
-        addressKey: props.modelValue.address_data?.addressKey,
-        buildingNumber: props.modelValue.address_data?.thoroughfareNumber,
-        buildingName: props.modelValue.address_data?.premisesName ?? props.modelValue.address_data?.organisationName,
-        subPremises: props.modelValue.address_data?.subPremises,
-        page: meta.page,
-        perPage: meta.limit,
-        filters: temp,
-        order: sort.order,
-        orderBy: sort.field,
-        account_id: props.modelValue.account_id
-    };
+  let query = {
+    quote_id: props.modelValue.id,
+    clearCache: clearCache,
+    connectivityType: 3,
+    postCode: props.modelValue.address_postcode,
+    latitude: props.modelValue.address_position?.lat,
+    longitude: props.modelValue.address_position?.lon,
+    uprn: props.modelValue.address_data?.uprn,
+    street:
+      props.modelValue.address_data?.thoroughfareName ??
+      props.modelValue.address_data?.dependentThoroughfareName,
+    town:
+      props.modelValue.address_city ??
+      props.modelValue.address_data?.locality ??
+      props.modelValue.address_data?.doubleDependentLocality,
+    addressKey: props.modelValue.address_data?.addressKey,
+    buildingNumber: props.modelValue.address_data?.thoroughfareNumber,
+    buildingName:
+      props.modelValue.address_data?.premisesName ??
+      props.modelValue.address_data?.organisationName,
+    subPremises: props.modelValue.address_data?.subPremises,
+    page: meta.page,
+    perPage: meta.limit,
+    filters: temp,
+    order: sort.order,
+    orderBy: sort.field,
+    account_id: props.modelValue.account_id,
+  };
 
     try {
         let res = await axios.post('/api/external/get-articles-from-cloud-market', query);

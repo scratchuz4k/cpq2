@@ -29,6 +29,22 @@ class DashboardService
         }
     }
 
+	private function excludeSuperAdmins($query)
+    {
+        return $query->whereDoesntHave('roles', function ($q) {
+            $q->where('name', 'Super Admin');
+        });
+    }
+
+    private function excludeSuperAdminActivities($query)
+    {
+        return $query->whereHas('user', function ($userQuery) {
+            $userQuery->whereDoesntHave('roles', function ($roleQuery) {
+                $roleQuery->where('name', 'Super Admin');
+            });
+        });
+    }
+
     public function getData(array $array)
     {
         if ($this->relation) {
@@ -45,15 +61,49 @@ class DashboardService
         $total_query = $this->model->query();
 
         if ($this->model instanceof $this->user_instance) {
-            $query->where('id', '!=', 1)
+            $query = $this->excludeSuperAdmins($query)
                 ->where('tenant_id', request()->user()->tenant_id);
 
-            $total_query->where('id', '!=', 1)
+            $total_query = $this->excludeSuperAdmins($total_query)
                 ->where('tenant_id', request()->user()->tenant_id);
         }
 
         if ($this->model instanceof $this->quote_instance) {
             $cumulative = false;
+        }
+
+        if (!isset($this->relation) && $this->model instanceof $this->quote_instance) {
+            $results = [];
+            $grouped = collect();
+
+            $solution_types = $this->model->distinct()->pluck('solution_type_id');
+
+            foreach ($solution_types as $key => $solution_type_id) {
+                $solution_type = SolutionType::find($solution_type_id);
+                $quotes_collection = $solution_type->quotes;
+
+                [$data, $labels] = $this->getParsedData(
+                    $date_interval[0],
+                    $date_interval[1],
+                    $quotes_collection,
+					$cumulative
+                );
+
+                $results[$solution_type->name] = [
+                    'data' => $data,
+                    'total' => $quotes_collection->count(),
+                    'label' => $solution_type->name ?? "Unknown",
+                ];
+            }
+
+            uasort($results, function ($a, $b) {
+                return $b['total'] <=> $a['total'];
+            });
+
+            return [
+                'data' => $results ?? collect(),
+                'labels' => $labels ?? []
+            ];
         }
 
         [$data, $labels] = $this->getParsedData(
@@ -140,12 +190,12 @@ class DashboardService
             }
 
             if ($model instanceof $this->user_instance) {
-                $query->where('id', '!=', 1)
+                $query = $this->excludeSuperAdmins($query)
                     ->where('tenant_id', request()->user()->tenant_id);
             }
 
-            if ( $model instanceof $this->activity_instance) {
-                $query->where('user_id', '!=', 1)->distinct('user_id');
+            if ($model instanceof $this->activity_instance) {
+                $query = $this->excludeSuperAdminActivities($query)->distinct('user_id');
             }
 
             return [
@@ -167,16 +217,16 @@ class DashboardService
         $total_query = $this->model->query();
 
         if ($this->model instanceof $this->user_instance) {
-            $query->where('id', '!=', 1)
+            $query = $this->excludeSuperAdmins($query)
                 ->where('tenant_id', request()->user()->tenant_id);
 
-            $total_query->where('id', '!=', 1)
+            $total_query = $this->excludeSuperAdmins($total_query)
                 ->where('tenant_id', request()->user()->tenant_id);
         }
 
         if ($this->model instanceof $this->activity_instance) {
-            $query->where('user_id', '!=', 1);
-            $total_query->where('user_id', '!=', 1);
+            $query = $this->excludeSuperAdminActivities($query);
+            $total_query = $this->excludeSuperAdminActivities($total_query);
         }
 
 
@@ -185,7 +235,12 @@ class DashboardService
             $grouped = collect();
 
             $connectivity_solution_id = SolutionType::where('code', SolutionTypesEnum::ConnectivityEthernet)->value('id');
-            $items = $query->where('solution_type_id', $connectivity_solution_id)->get();
+            $items = $query->where('solution_type_id', $connectivity_solution_id)
+                ->with(['items' => function ($query) {
+                    $query->whereNotNull('data');
+                }])
+                ->get();
+
             $items->each(function ($quote) use (&$grouped) {
                 $providers = $quote->items->map(function ($item) {
                     return data_get($item->data, 'providerKey');
@@ -206,7 +261,7 @@ class DashboardService
                 $results[$key] = [
                     'data' => $data,
                     'total' => $group->count(),
-                    'label' => CloudMarketSuppliersEnum::tryFrom($key)->name ?? "Unknown",
+                    'label' => CloudMarketSuppliersEnum::tryFrom($key)?->name ?? "Unknown",
                 ];
             }
 
@@ -222,6 +277,10 @@ class DashboardService
                     $date_interval[1]->format('Y-m-d')
                 ];
             }
+
+            uasort($results, function ($a, $b) {
+                return $b['total'] <=> $a['total'];
+            });
 
             return [
                 'data' => $results ?? collect(),
