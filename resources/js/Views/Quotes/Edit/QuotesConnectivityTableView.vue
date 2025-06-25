@@ -226,7 +226,7 @@ const setAltImg = (event) => {
 };
 
 const sort = reactive({
-    field: 'priceMonthly',
+    field: 'priceMonthly_spa',
     order: 'asc'
 });
 
@@ -734,7 +734,7 @@ getArticles(false, true);
                                     :style="{
                                         whiteSpace: 'nowrap'
                                     }"
-                                    @click="orderBy('priceInstall')"
+                                    @click="orderBy('priceInstall_spa')"
                                 >
                                     Set Up
                                     <span class="text-center d-inline-block align-middle" style="width: 20px">
@@ -755,7 +755,7 @@ getArticles(false, true);
                                     :style="{
                                         whiteSpace: 'nowrap'
                                     }"
-                                    @click="orderBy('priceMonthly')"
+                                    @click="orderBy('priceMonthly_spa')"
                                 >
                                     Monthly
                                     <span class="text-center d-inline-block align-middle" style="width: 20px">
