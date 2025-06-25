@@ -1,7 +1,7 @@
 <script setup>
 import _ from 'lodash';
 import queryString from 'query-string';
-import { Paginator } from 'primevue';
+import { Paginator, Select } from 'primevue';
 import { quote } from '@/Composables/useQuote';
 import { categories } from '@composables/custom/shopblocks';
 import { computed, onMounted, reactive, ref, watch } from 'vue';
@@ -64,18 +64,38 @@ const filterList = reactive({
 
 const sorts = [
     {
+        label: 'Alphabetical (A-Z)',
+        order: 'asc',
+        orderBy: 'model.name'
+    },
+    {
+        label: 'Alphabetical (Z-A) ',
+        order: 'desc',
+        orderBy: 'model.name'
+    },
+    {
         label: 'Lowest Price',
         order: 'asc',
         orderBy: 'price.net_spa'
     },
     {
         label: 'Highest Price',
-        order: 'asc',
+        order: 'desc',
         orderBy: 'price.net_spa'
+    },
+    {
+        label: 'Lowest Stock',
+        order: 'asc',
+        orderBy: 'stock'
+    },
+    {
+        label: 'Highest Stock',
+        order: 'desc',
+        orderBy: 'stock'
     }
 ];
 
-const sort = ref(sorts[1]);
+const sort = ref(sorts[3]);
 const step = ref(props.modelValue + 1);
 
 let abortController = null;
@@ -221,13 +241,14 @@ watch(
         <div class="row justify-content-end">
             <div class="col-3">
                 <div class="d-flex justify-content-between mb-3">
+                    <p class="bigger text-primary bold">STEP {{ step }}/{{ step }}</p>
                     <div class="d-flex">
                         <h2>Products ({{ meta.total }})</h2>
                     </div>
                 </div>
             </div>
             <div class="col-9">
-                <div class="d-flex justify-content-between mb-3">
+                <div class="d-flex justify-content-between align-items-end mb-3">
                     <div class="d-flex justify-content-end">
                         <button
                             class="btn border"
@@ -246,8 +267,6 @@ watch(
                             <font-awesome-icon :icon="['fas', 'grip-lines']"></font-awesome-icon>
                         </button>
                     </div>
-
-                    <p class="bigger text-primary bold">STEP {{ step }}/{{ step }}</p>
                 </div>
             </div>
         </div>
@@ -282,6 +301,12 @@ watch(
                             </Badge>
                         </li>
                     </ul>
+
+                    <div class="mb-4">
+                        <h2>Sort by</h2>
+                        <Select v-model="sort" :options="sorts" optionLabel="label" placeholder="All" class="w-100">
+                        </Select>
+                    </div>
                     <div class="mb-4">
                         <h2>Categories</h2>
                         <ShopBlocksCategoriesTree v-model="currentCategory"></ShopBlocksCategoriesTree>
