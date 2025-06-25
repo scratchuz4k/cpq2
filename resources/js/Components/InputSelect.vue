@@ -99,7 +99,7 @@ search();
 </script>
 
 <template>
-  <div :id="'input-select-' + props.id" class="position-relative">
+  <div :id="'input-select-' + props.id" class="position-relative px-0">
     <div
       class="form-select w-100 d-flex"
       role="button"

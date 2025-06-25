@@ -2,7 +2,8 @@
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, router } from "@inertiajs/vue3";
-import { ref } from 'vue';
+import {onMounted, reactive, ref} from 'vue';
+import InputSelect from "@/Components/InputSelect.vue";
 
 const props = defineProps({
     region: Object,
@@ -10,9 +11,18 @@ const props = defineProps({
     users: Object
 })
 
+const form = reactive({
+    merchant: props.region.merchant,
+    user: props.region.user,
+    name: props.region.name,
+})
 
 const saveRegion= () => {
-    router.put(`/regions/${props.region.id}`, props.region,
+    router.put(`/regions/${props.region.id}`, {
+            ...form,
+            merchant_id: form.merchant.id,
+            user_id: form.user.id
+        },
         {
             onSuccess: (page) => {
                 notyf.success("Updated with Success")
@@ -51,19 +61,29 @@ const items = ref([
             <div class="col-6">
                 <div class="row mb-3">
                     <label for="merchant-name" class="form-label">Merchant:</label>
-                    <select class="form-select" v-model="region.merchant_id">
-                        <option v-for="merchant in merchants" :value="merchant.id">{{ merchant.name }}</option>
-                    </select>
+                    <InputSelect
+                        id="region-merchant"
+                        url="/merchants"
+                        :fields="['name']"
+                        v-model="form.merchant"
+                        :is-multiple="false"
+                        placeholder="Select an Merchant"
+                    />
                 </div>
                 <div class="row mb-3">
                     <label for="user-name" class="form-label">User:</label>
-                    <select class="form-select" v-model="region.user_id">
-                        <option v-for="user in users" :value="user.id">{{ user.name }}</option>
-                    </select>
+                    <InputSelect
+                        id="region-user"
+                        url="/users"
+                        :fields="['name']"
+                        v-model="form.user"
+                        :is-multiple="false"
+                        placeholder="Select an User"
+                    />
                 </div>
                 <div class="row mb-3">
                     <label for="region-name" class="form-label">Name:</label>
-                    <input id="region-name" class="form-control" v-model="region.name">
+                    <input id="region-name" class="form-control" v-model="form.name">
                 </div>
             </div>
         </div>

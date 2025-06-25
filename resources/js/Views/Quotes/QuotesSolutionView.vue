@@ -1,6 +1,7 @@
 <script setup>
 import _ from "lodash";
-import { ref, watch } from "vue"
+import {ref, watch} from "vue"
+import Select from "primevue/select";
 
 const GOOGLE_MAPS_API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY
 
@@ -116,13 +117,15 @@ watch(addressPostCode, () => {
                         <div class="mb-3">
                             <template v-if="solution_types.length">
                                 <label class="form-label">Solution Type <span class="text-primary fw-bold">*</span></label>
-                                <select :disabled="is_updating_quote" id="solution_id" class="form-select" @change="solutionChange(modelValue)"
-                                        v-model="modelValue.solution_type">
-                                    <option :value="null">Select an option</option>
-                                    <option v-for="(solution, key) in solution_types" :value="solution">
-                                        {{ solution.name }}
-                                    </option>
-                                </select>
+                                <Select v-model="modelValue.solution_type"
+                                        :inputId="'solution_id'"
+                                        :options="solution_types"
+                                        class="w-100"
+                                        editable
+                                        optionLabel="name"
+                                        placeholder="Select an option"
+                                        @change="solutionChange(modelValue)"
+                                />
                             </template>
                             <div v-else class="text-primary fst-italic">
                                 <font-awesome-icon class="me-2" :icon="['fas', 'circle-exclamation']"></font-awesome-icon>
