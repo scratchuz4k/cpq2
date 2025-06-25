@@ -6,6 +6,7 @@ use App\Helpers\Api\CloudMarketAddress;
 use App\Helpers\Api\CloudMarketApi;
 use App\Helpers\Files\CloudMarketFile;
 use App\Helpers\FilterProvider;
+use App\Models\Quote;
 use Exception;
 use GuzzleHttp\Psr7\StreamWrapper;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -39,14 +40,14 @@ class CloudMarketConnectivityProducts implements ShouldQueue, TenantAware
     /**
      * Create a new job instance.
      */
-    public function __construct(protected CloudMarketFile $file, protected $connectivityType, protected CloudMarketAddress $address) {}
+    public function __construct(protected Quote $quote, protected CloudMarketFile $file, protected $connectivityType, protected CloudMarketAddress $address) {}
 
     /**
      * Execute the job.
      */
     public function handle(): void
     {
-        $res = CloudMarketApi::getQuotes($this->connectivityType, $this->address);
+        $res = CloudMarketApi::getQuotes($this->quote, $this->connectivityType, $this->address);
         $this->started_at = now();
         if (! $this->file->exists()) {
             throw new Exception('CloudMarketConnectivityProducts: File was not Found!');
