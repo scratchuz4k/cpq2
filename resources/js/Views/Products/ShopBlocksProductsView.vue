@@ -46,8 +46,8 @@ const filters = reactive({
 });
 
 const currentCategory = ref(null);
-const currentBrand = ref(null);
-const currentModel = ref(null);
+const currentBrand = ref([]);
+const currentModel = ref([]);
 
 const filterList = reactive({
     models: [],
@@ -111,19 +111,19 @@ const getProductsShopBlocks = async () => {
             value: 1
         });
     }
-    if (currentBrand.value) {
+    if (currentBrand.value.length) {
         filters.push({
             column: 'brand.id',
-            operator: 'equals',
-            value: currentBrand.value.id
+            operator: 'in',
+            value: currentBrand.value.map((x) => x.id)
         });
     }
 
-    if (currentModel.value) {
+    if (currentModel.value.length) {
         filters.push({
             column: 'model.id',
-            operator: 'equals',
-            value: currentModel.value.id
+            operator: 'in',
+            value: currentModel.value.map((x) => x.id)
         });
     }
 
@@ -202,7 +202,8 @@ watch(
     _.debounce(() => {
         meta.page = 1;
         getProductsShopBlocks();
-    }, 500)
+    }, 500),
+    { deep: true }
 );
 
 watch(
@@ -257,6 +258,30 @@ watch(
                         <h2>Search</h2>
                         <input type="search" class="form-control" placeholder="" v-model="search" />
                     </div>
+                    <ul class="d-flex list-unstyled">
+                        <li>
+                            <Badge v-for="(brand, index) in currentBrand" :value="brand.name">
+                                <template #close-button>
+                                    <font-awesome-icon
+                                        :icon="['fas', 'x']"
+                                        role="button"
+                                        class="me-1 fs-7"
+                                        @click="() => currentBrand.splice(index, 1)"
+                                    />
+                                </template>
+                            </Badge>
+                            <Badge v-for="(model, index) in currentModel" :value="model.name">
+                                <template #close-button>
+                                    <font-awesome-icon
+                                        :icon="['fas', 'x']"
+                                        role="button"
+                                        class="me-1 fs-7"
+                                        @click="() => currentModel.splice(index, 1)"
+                                    />
+                                </template>
+                            </Badge>
+                        </li>
+                    </ul>
                     <div class="mb-4">
                         <h2>Categories</h2>
                         <ShopBlocksCategoriesTree v-model="currentCategory"></ShopBlocksCategoriesTree>

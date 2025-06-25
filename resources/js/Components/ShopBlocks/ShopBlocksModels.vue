@@ -13,33 +13,6 @@ const proxyValue = computed({
     get: () => props.modelValue,
     set: (value) => emit('update:modelValue', value)
 });
-const meta = reactive({
-    last_page: 0,
-    current: 1
-});
-const models = ref([]);
-const getShopBlocksModels = async () => {
-    let array = props.category ? [props.category] : [];
-    let items = [];
-    if (props.category) {
-        do {
-            let current = array.pop();
-            items.push(current);
-            let temp = categories.value.filter((x) => x.parent_id == current.id);
-            array.push(...temp);
-        } while (array.length != 0);
-    }
-    let string = queryString.stringify({
-        limit: 10,
-        page: meta.current,
-        filters: JSON.stringify(
-            items.length ? [{ column: 'products.category.id', operator: 'in', value: items.map((x) => x.id) }] : []
-        )
-    });
-    let res = await axios.get('/api/shop-blocks/models?' + string);
-    meta.last_page = res.data.meta?.last_page;
-    models.value.push(...res.data.data);
-};
 
 const getFilters = () => {
     let array = props.category ? [props.category] : [];
@@ -54,26 +27,9 @@ const getFilters = () => {
     }
     return items.length ? [{ column: 'products.category.id', operator: 'in', value: items.map((x) => x.id) }] : [];
 };
-
-const nextPage = () => {
-    meta.current++;
-    getShopBlocksModels();
-};
-
-watch(
-    () => props.category,
-    () => {
-        meta.current = 1;
-        meta.last_page = 0;
-        models.value = [];
-        getShopBlocksModels();
-    }
-);
-
-getShopBlocksModels();
 </script>
 <template>
-    <InputSelect
+    <InputSelectMultiple
         id="select-model"
         url="/shop-blocks/models"
         :fields="['name']"
@@ -81,7 +37,7 @@ getShopBlocksModels();
         placeholder="Select a Model"
         :query="getFilters()"
     >
-    </InputSelect>
+    </InputSelectMultiple>
     <!-- <ul style="padding: 0; list-style: none">
         <li v-if="proxyValue">
             <div
