@@ -23,6 +23,15 @@ const configurations = reactive({
 });
 
 const table = reactive(
+    props.solution_type.table
+        ? { ...props.solution_type.table }
+        : {
+              code: 'custom',
+              group: null,
+              group_name: null,
+              columns: []
+          }
+);
 
 const dragOptions = {
     animation: 200,
@@ -38,11 +47,11 @@ props.solution_type.categories.forEach((x) => {
 });
 
 const saveSolutionType = () => {
-  table.columns = table.columns.filter((x) => !!x.value);
-  table.columns.forEach((x) => {
-    let temp = props.available_columns.find((e) => e.value == x.value);
-    x.has_order = !!temp?.has_order;
-  });
+    table.columns = table.columns.filter((x) => !!x.value);
+    table.columns.forEach((x) => {
+        let temp = props.available_columns.find((e) => e.value == x.value);
+        x.has_order = !!temp?.has_order;
+    });
 
     table.code = !table.code ? 'custom' : table.code;
 
@@ -87,10 +96,10 @@ const addColumn = (table) => {
 };
 
 const deleteColumn = (element) => {
-  let index = table.columns.findIndex((x) => x.value == element.value);
-  if (index != -1) {
-    table.columns.splice(index, 1);
-  }
+    let index = table.columns.findIndex((x) => x.value == element.value);
+    if (index != -1) {
+        table.columns.splice(index, 1);
+    }
 };
 
 const clearAllColumns = async (table) => {
@@ -103,18 +112,18 @@ const clearAllColumns = async (table) => {
         return;
     }
 
-  table.columns = [];
+    table.columns = [];
 };
 
 const addCategory = () => {
-  categories.value.push({ category: null, id: uuid() });
+    categories.value.push({ category: null, id: uuid() });
 };
 
 const deleteCategory = (element) => {
-  let index = categories.value.findIndex((x) => x.value == element.value);
-  if (index != -1) {
-    categories.value.splice(index, 1);
-  }
+    let index = categories.value.findIndex((x) => x.value == element.value);
+    if (index != -1) {
+        categories.value.splice(index, 1);
+    }
 };
 
 const clearAllCategories = async () => {
@@ -130,11 +139,11 @@ const clearAllCategories = async () => {
 };
 
 const checkCategories = (index) => {
-  let selected_category = categories.value[index];
+    let selected_category = categories.value[index];
 
-  let duplicated_category = categories.value.findIndex((x, i) => {
-    return i !== index && x?.id === selected_category.id;
-  });
+    let duplicated_category = categories.value.findIndex((x, i) => {
+        return i !== index && x?.id === selected_category.id;
+    });
 
     if (duplicated_category != -1) {
         notyf.error('Category already selected');
