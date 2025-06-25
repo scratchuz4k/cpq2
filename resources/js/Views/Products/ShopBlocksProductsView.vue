@@ -47,6 +47,7 @@ const filters = reactive({
 
 const currentCategory = ref(null);
 const currentBrand = ref(null);
+const currentModel = ref(null);
 
 const filterList = reactive({
     models: [],
@@ -115,6 +116,14 @@ const getProductsShopBlocks = async () => {
             column: 'brand.id',
             operator: 'equals',
             value: currentBrand.value.id
+        });
+    }
+
+    if (currentModel.value) {
+        filters.push({
+            column: 'model.id',
+            operator: 'equals',
+            value: currentModel.value.id
         });
     }
 
@@ -189,7 +198,7 @@ watch([filters, sort], () => {
 });
 
 watch(
-    [currentCategory, currentBrand],
+    [currentCategory, currentBrand, currentModel],
     _.debounce(() => {
         meta.page = 1;
         getProductsShopBlocks();
@@ -255,6 +264,11 @@ watch(
                     <div class="mb-4">
                         <h2>Brands</h2>
                         <ShopBlocksBrands v-model="currentBrand" :category="currentCategory"></ShopBlocksBrands>
+                    </div>
+
+                    <div class="mb-4">
+                        <h2>Models</h2>
+                        <ShopBlocksModels v-model="currentModel" :category="currentCategory"></ShopBlocksModels>
                     </div>
                 </div>
             </div>

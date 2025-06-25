@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref, watch } from 'vue';
+import { computed, reactive, ref, watch } from 'vue';
 import queryString from 'query-string';
 import { categories } from '@composables/custom/shopblocks';
 
@@ -13,9 +13,12 @@ const proxyValue = computed({
     get: () => props.modelValue,
     set: (value) => emit('update:modelValue', value)
 });
+const meta = reactive({
+    last_page: 0,
+    current: 1
+});
 const brands = ref([]);
 const getShopBlocksBrands = async () => {
-    brands.value = [];
     let array = props.category ? [props.category] : [];
     let items = [];
     if (props.category) {
@@ -26,24 +29,33 @@ const getShopBlocksBrands = async () => {
             array.push(...temp);
         } while (array.length != 0);
     }
-    let current_page = 1;
     let string = queryString.stringify({
         limit: 10,
-        page: current_page,
+        page: meta.current,
         filters: JSON.stringify(
             items.length ? [{ column: 'products.category.id', operator: 'in', value: items.map((x) => x.id) }] : []
         )
     });
     let res = await axios.get('/api/shop-blocks/brands?' + string);
+    meta.last_page = res.data.meta?.last_page;
     brands.value.push(...res.data.data);
+};
+
+const nextPage = () => {
+    meta.current++;
+    getShopBlocksBrands();
 };
 
 watch(
     () => props.category,
     () => {
+        meta.current = 1;
+        meta.last_page = 0;
+        brands.value = [];
         getShopBlocksBrands();
     }
 );
+
 getShopBlocksBrands();
 </script>
 <template>
@@ -67,5 +79,10 @@ getShopBlocksBrands();
                 </div>
             </li>
         </template>
+        <li v-if="meta.current != meta.last_page">
+            <div class="btn btn-light d-flex justify-content-between pointer" @click="nextPage()">
+                <p class="m-0 text-left">Load More...</p>
+            </div>
+        </li>
     </ul>
 </template>
