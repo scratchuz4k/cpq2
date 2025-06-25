@@ -41,7 +41,7 @@ class IndexRequest extends FormRequest
             'search' => 'nullable|string',
             'filters' => 'nullable|array',
             'filters.*.column' => 'required|string',
-            'filters.*.operator' => 'required|in:not_equals,equals,not_contains,contains,starts_with,ends_with,greater_than,less_than,greater_than_or_equal_to,less_than_or_equal_to,is_null,in,search',
+            'filters.*.operator' => 'required|in:not_equals,equals,not_contains,contains,starts_with,ends_with,greater_than,less_than,greater_than_or_equal_to,less_than_or_equal_to,is_null,in,search,not_in',
             'filters.*.value' => 'nullable',
             'filters.*.function' => 'nullable|in:where,orWhere',
         ];
