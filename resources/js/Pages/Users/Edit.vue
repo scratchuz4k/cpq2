@@ -4,6 +4,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, router, usePage } from "@inertiajs/vue3";
 import Permissions from "@/Components/Permissions.vue";
 import PrimaryButton from '@/Components/PrimaryButton.vue';
+import Select from "primevue/select";
 
 const props = defineProps({
     user: Object,
@@ -75,9 +76,16 @@ const items = ref([
                     </div>
                     <div class="row mb-3">
                         <label for="supplier-name" class="form-label">Role:</label>
-                        <select class="form-select" v-model="form.role_id"  @change="user.commission_rate = 0">
-                            <option v-for="tempRole in roles" :value="tempRole.id">{{ tempRole.name }}</option>
-                        </select>
+                        <Select v-model="form.role_id"
+                                :inputId="'user-role'"
+                                :options="roles"
+                                class="w-100"
+                                editable
+                                optionLabel="name"
+                                optionValue="id"
+                                placeholder="Select an option"
+                                @change="user.commission_rate = 0"
+                        />
                     </div>
                     <div v-if="roles.find((item) => item.id === form.role_id).name === 'Sales Rep'" class="row mb-3">
                         <label for="user-commission-rate" class="form-label">Commission Rate:</label>
@@ -88,10 +96,15 @@ const items = ref([
                     </div>
                     <div class="row mb-3">
                         <label for="user-name" class="form-label">Manager:</label>
-                        <select class="form-select" v-model="form.parent_id">
-                            <option value="0">No Manager</option>
-                            <option v-for="manager in managers" :value="manager.id">{{ manager.name }}</option>
-                        </select>
+                        <Select v-model="form.parent_id"
+                                :inputId="'user-manager'"
+                                :options="managers"
+                                class="w-100"
+                                editable
+                                optionLabel="name"
+                                optionValue="id"
+                                placeholder="Select an option"
+                        />
                     </div>
                     <div class="row mb-3" v-if="user.group">
                         <label for="user-group" class="form-label">Group:</label>
