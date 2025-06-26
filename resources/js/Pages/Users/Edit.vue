@@ -5,6 +5,7 @@ import { Head, router, usePage } from "@inertiajs/vue3";
 import Permissions from "@/Components/Permissions.vue";
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import Select from "primevue/select";
+import InputSelect from "@/Components/InputSelect.vue";
 
 const props = defineProps({
     user: Object,
@@ -15,7 +16,7 @@ const props = defineProps({
 
 const page = usePage()
 const form = reactive({
-    parent_id: props.user.parent_id ?? 0,
+    parent: props.user.parent ?? {},
     role_id: props.user.roles.length ? props.user.roles[0].id : null
 })
 
@@ -96,14 +97,13 @@ const items = ref([
                     </div>
                     <div class="row mb-3">
                         <label for="user-name" class="form-label">Manager:</label>
-                        <Select v-model="form.parent_id"
-                                :inputId="'user-manager'"
-                                :options="managers"
-                                class="w-100"
-                                editable
-                                optionLabel="name"
-                                optionValue="id"
-                                placeholder="Select an option"
+                        <InputSelect
+                            id="user-manager"
+                            url="/users"
+                            :fields="['name']"
+                            v-model="form.parent"
+                            :is-multiple="false"
+                            placeholder="Select an Manager"
                         />
                     </div>
                     <div class="row mb-3" v-if="user.group">

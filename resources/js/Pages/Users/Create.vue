@@ -4,6 +4,7 @@ import PrimaryButton from '@/Components/PrimaryButton.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, router, useForm, usePage } from "@inertiajs/vue3";
 import Select from "primevue/select";
+import InputSelect from "@/Components/InputSelect.vue";
 
 const page = usePage();
 
@@ -18,7 +19,7 @@ const form = reactive({
     email: null,
     password: null,
     role_id: props.roles.find(role => role.name.toLowerCase() === 'sales rep').id,
-    parent_id: props.parent_id ?? 0,
+    parent: props.parent_id ? props.managers.find(user => user.id === props.parent_id) : {},
     commission_rate: 0,
     sso: false
 })
@@ -29,7 +30,10 @@ const showCommissionRate = computed(() => {
 })
 
 const saveUser = () => {
-    router.post(`/users`, form,
+    router.post(`/users`, {
+            ...form,
+            parent_id: form.parent.id
+        },
         {
             onSuccess: (page) => {
                 notyf.success("Created with Success")
@@ -101,14 +105,13 @@ const items = ref([
                 </div>
                 <div class="row mb-3">
                     <label for="user-manager" class="form-label">Manager:</label>
-                    <Select v-model="form.parent_id"
-                            :inputId="'user-manager'"
-                            :options="managers"
-                            class="w-100"
-                            editable
-                            optionLabel="name"
-                            optionValue="id"
-                            placeholder="Select an option"
+                    <InputSelect
+                        id="user-manager"
+                        url="/users"
+                        :fields="['name']"
+                        v-model="form.parent"
+                        :is-multiple="false"
+                        placeholder="Select an Manager"
                     />
                 </div>
                 <div class="row mb-3">
