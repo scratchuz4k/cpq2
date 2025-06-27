@@ -81,7 +81,6 @@ const items = ref([
                                 :inputId="'item-provider'"
                                 :options="props.providers"
                                 class="w-100"
-                                editable
                                 optionLabel="name"
                                 optionValue="name"
                                 placeholder="Select a Provider"
@@ -92,10 +91,9 @@ const items = ref([
                         <div class="mb-3">
                             <label for="item-subprovider" class="form-label">Subprovider:</label>
                             <Select v-model="blacklisted_item.connectivitySupplierGroup"
-                                    :inputId="'item-provider'"
+                                    :inputId="'item-subprovider'"
                                     :options="props.subproviders"
                                     class="w-100"
-                                    editable
                                     optionLabel="name"
                                     optionValue="name"
                                     placeholder="Select a Subprovider"
@@ -108,7 +106,6 @@ const items = ref([
                                 :inputId="'item-bearer-operator'"
                                 :options="props.operators"
                                 class="w-100"
-                                editable
                                 optionLabel="description"
                                 optionValue="name"
                                 placeholder="Select a Operator"
@@ -128,7 +125,6 @@ const items = ref([
                                         :inputId="'item-bearer-unit'"
                                         :options="props.speed_units"
                                         class="w-100"
-                                        editable
                                         optionLabel="value"
                                         optionValue="value"
                                         placeholder="Select a Unit"
@@ -143,7 +139,6 @@ const items = ref([
                                 :inputId="'item-speed-operator'"
                                 :options="props.operators"
                                 class="w-100"
-                                editable
                                 optionLabel="description"
                                 optionValue="name"
                                 placeholder="Select a Operator"
@@ -161,7 +156,6 @@ const items = ref([
                                         :inputId="'item-speed-unit'"
                                         :options="props.speed_units"
                                         class="w-100"
-                                        editable
                                         optionLabel="value"
                                         optionValue="value"
                                         placeholder="Select a Unit"
@@ -177,7 +171,6 @@ const items = ref([
                                 :inputId="'item-contract_terms'"
                                 :options="props.contract_terms"
                                 class="w-100"
-                                editable
                                 optionLabel="description"
                                 optionValue="value"
                                 placeholder="Select a Contract Term"

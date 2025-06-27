@@ -17,8 +17,8 @@ describe("Blacklist Crud", () => {
         cy.get("#link-products").click();
         cy.get("#blacklist-index-btn").click();
         cy.get("#blacklist-create-btn").click();
-        cy.get("#item-provider").select(provider);
-        cy.get("#item-subprovider").type(provider);
+        cy.selectOption('#item-provider', provider);
+        cy.selectOption('#item-subprovider', provider);
         cy.get("#btn-save-item").click();
         cy.get("#datatable-search").type(provider);
         cy.get(".p-datatable-table").contains(provider);
@@ -37,10 +37,9 @@ describe("Blacklist Crud", () => {
         cy.visit("/");
         cy.get("#create-tab").click();
         cy.selectLazyOption("account_id", account.name);
-
-        cy.get("#solution_id").select("Connectivity");
+        cy.selectOption('#solution_id', 'Connectivity');
         cy.get("#input_address").type("EH32 9NT");
-        cy.get("#select_address").should("be.visible").select(1);
+        cy.selectOption('#select_address', 1);
         cy.get("#btn-create-quote").should("not.be.disabled").click();
 
         // Scroll back to top

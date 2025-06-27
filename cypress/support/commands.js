@@ -75,6 +75,15 @@ Cypress.Commands.add('selectLazyOption', (id, option = null) => {
     scrollToOption();
 })
 
+Cypress.Commands.add('selectOption', (id, option) => {
+    cy.get(id).click();
+    cy.wait(500);
+    cy.get(".p-select-list-container")
+        .within(() => {
+            cy.get(".p-select-option").contains(option).click();
+        });
+})
+
 Cypress.Commands.add('createUser', (role) => {
     cy.visit("/users")
     cy.get("#link-to-create-user").click()

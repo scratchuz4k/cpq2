@@ -121,7 +121,6 @@ watch(addressPostCode, () => {
                                         :inputId="'solution_id'"
                                         :options="solution_types"
                                         class="w-100"
-                                        editable
                                         optionLabel="name"
                                         placeholder="Select an option"
                                         @change="solutionChange(modelValue)"
@@ -153,7 +152,6 @@ watch(addressPostCode, () => {
                                         :inputId="'select_address'"
                                         :options="addresses"
                                         class="w-100"
-                                        editable
                                         optionLabel="label"
                                         placeholder="Select Address"
                                         @change="addressSelect(modelValue)"
