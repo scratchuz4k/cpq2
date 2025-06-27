@@ -189,35 +189,33 @@ watch(addressPostCode, () => {
                     </select>
                 </div>
             </div>
+            <template v-if="proxyValue.address && addresses.length">
+                <InfoBox>
+                    <p id="location_company" class="mb-2">
+                        {{ proxyValue.account?.name }}
+                    </p>
+                    <p class="mb-0" id="location_address">
+                        {{ proxyValue.address.label }}
+                        <br />
+                        <font-awesome-icon :icon="['fas', 'map-pin']" class="me-2"></font-awesome-icon
+                        >{{ proxyValue.position?.lat }}, {{ proxyValue.position?.lon }}
+                    </p>
+                    <p><i class="fa fa-location-dot"></i> <span id="location_geo"></span></p>
+                    <iframe
+                        v-if="proxyValue.position"
+                        class="map"
+                        width="100%"
+                        height="230"
+                        frameborder="0"
+                        style="border: 0"
+                        referrerpolicy="no-referrer-when-downgrade"
+                        :src="`https://www.google.com/maps/embed/v1/place?key=${GOOGLE_MAPS_API_KEY}&q=${modelValue.position.lat}, ${modelValue.position.lon}`"
+                        allowfullscreen
+                    >
+                    </iframe>
+                </InfoBox>
+            </template>
+            <ButtonStep v-model="proxyValue" :disabled="proxyValue.address == null"></ButtonStep>
         </div>
     </div>
-    <div class="row mb-3" v-if="proxyValue.address && addresses.length">
-        <div class="col-lg-6">
-            <InfoBox>
-                <p id="location_company" class="mb-2">
-                    {{ proxyValue.account?.name }}
-                </p>
-                <p class="mb-0" id="location_address">
-                    {{ proxyValue.address.label }}
-                    <br />
-                    <font-awesome-icon :icon="['fas', 'map-pin']" class="me-2"></font-awesome-icon
-                    >{{ proxyValue.position?.lat }}, {{ proxyValue.position?.lon }}
-                </p>
-                <p><i class="fa fa-location-dot"></i> <span id="location_geo"></span></p>
-                <iframe
-                    v-if="proxyValue.position"
-                    class="map"
-                    width="100%"
-                    height="230"
-                    frameborder="0"
-                    style="border: 0"
-                    referrerpolicy="no-referrer-when-downgrade"
-                    :src="`https://www.google.com/maps/embed/v1/place?key=${GOOGLE_MAPS_API_KEY}&q=${modelValue.position.lat}, ${modelValue.position.lon}`"
-                    allowfullscreen
-                >
-                </iframe>
-            </InfoBox>
-        </div>
-    </div>
-    <ButtonStep v-model="proxyValue" :disabled="proxyValue.address == null"></ButtonStep>
 </template>

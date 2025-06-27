@@ -45,7 +45,7 @@ const nextStep = () => {
                     </div>
                 </div>
             </div>
+            <ButtonStep v-model="proxyValue" :disabled="proxyValue.account == null"></ButtonStep>
         </div>
     </div>
-    <ButtonStep v-model="proxyValue" :disabled="proxyValue.account == null"></ButtonStep>
 </template>

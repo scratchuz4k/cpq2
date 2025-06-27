@@ -24,19 +24,23 @@ const icons = {
 
 <template>
     <h5 class="font-bold mb-3">Now, select an solution type</h5>
-    <div class="row row-cols-5 mb-3">
-        <div class="col mb-3" v-for="solution in props.solutionType">
-            <div
-                class="option"
-                @click="() => (proxyValue.solution_type = solution)"
-                :class="[proxyValue.solution_type == solution ? 'active' : '']"
-            >
-                <font-awesome-icon :icon="icons[solution.code]" class="me-3"></font-awesome-icon>
-                {{ solution.name }}
+    <div class="row">
+        <div class="col-8">
+            <div class="row row-cols-4 mb-3">
+                <div class="col mb-3" v-for="solution in props.solutionType">
+                    <div
+                        class="option"
+                        @click="() => (proxyValue.solution_type = solution)"
+                        :class="[proxyValue.solution_type == solution ? 'active' : '']"
+                    >
+                        <font-awesome-icon :icon="icons[solution.code]" class="me-3"></font-awesome-icon>
+                        {{ solution.name }}
+                    </div>
+                </div>
             </div>
+            <ButtonStep v-model="proxyValue" :disabled="proxyValue.solution_type == null"></ButtonStep>
         </div>
     </div>
-    <ButtonStep v-model="proxyValue" :disabled="proxyValue.solution_type == null"></ButtonStep>
 </template>
 
 <style lang="scss" scoped>
