@@ -7,7 +7,12 @@
         >
             <div :class="[!showAsColumn ? 'me-4' : '']">
                 <div class="d-flex justify-content-center align-items-middle">
-                    <a @click="() => (displayBasic = !displayBasic)" :href="proxyValue.url" target="_blank">
+                    <a
+                        @click="() => (displayBasic = !displayBasic)"
+                        :href="proxyValue.url"
+                        target="_blank"
+                        style="cursor: pointer"
+                    >
                         <img
                             :src="proxyValue.primary_image ?? '/images/no_image.png'"
                             style="object-fit: contain"
