@@ -124,8 +124,6 @@ class ShopBlocksProductsSyncJob implements NotTenantAware, ShouldQueue
     private function getCategory($product, $temp)
     {
         $code = $product['category']['id'];
-
-        unset($product['category']['id']);
         $category = Category::updateOrCreate(['code' => $code], $product['category']);
         $category->products()->save($temp);
     }
