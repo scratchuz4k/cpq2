@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Laravel\Sanctum\HasApiTokens;
 use Laravel\Sanctum\NewAccessToken;
 use Spatie\Permission\Traits\HasRoles;
@@ -31,6 +32,17 @@ class User extends Authenticatable
             // Check if tenant_id is not set and the user is authenticated
             if (auth()->check() && ! $model->tenant_id) {
                 $model->tenant_id = auth()->user()->tenant_id;
+            }
+
+            $user = Auth::user();
+            if ($user && $user->group) {
+                try {
+                    $model->group_id = $user->group->id;
+                } catch (\Exception $e) {
+                    if (! env('APP_DEBUG')) {
+                        Log::error($e->getMessage());
+                    }
+                }
             }
         });
 
