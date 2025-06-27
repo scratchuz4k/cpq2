@@ -39,6 +39,7 @@ const setUserGroup = async (user_id, group_id) => {
       notyf.success("Created with Success");
     }
     emitter.emit("datatable-refresh:group-users");
+    emitter.emit("input-select-refresh:select-user");
   } catch (ex) {
     user.value = null;
     notyf.error(ex.response?.data?.message ?? ex.response?.data);
@@ -56,6 +57,7 @@ const addAccount = async () => {
     });
     account.value = null;
     emitter.emit("datatable-refresh:group-accounts");
+    emitter.emit("input-select-refresh:select-account");
     notyf.success("Created with Success");
   } catch (ex) {
     account.value = null;
@@ -180,6 +182,7 @@ const items = ref([
                 :fields="['name']"
                 v-model="account"
                 placeholder="Select an Account"
+                :query="[{ column: 'groups.id', operator: 'is_null', value: '' }]"
               >
               </InputSelect>
             </div>
