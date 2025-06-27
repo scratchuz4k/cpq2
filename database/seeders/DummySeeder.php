@@ -42,6 +42,14 @@ class DummySeeder extends Seeder
             'password' => Hash::make('werwerwer'),
         ]);
 
+        $sales_manager_user = User::updateOrCreate([
+            'email' => 'salesmanager@example.com',
+        ], [
+            'name' => 'Sales Manager',
+            'tenant_id' => $tenant->id,
+            'password' => Hash::make('werwerwer'),
+        ]);
+
         $sales_user = User::updateOrCreate([
             'email' => 'sales@example.com',
         ], [
@@ -59,7 +67,13 @@ class DummySeeder extends Seeder
             'password' => Hash::make('werwerwer'),
         ]);
 
-        $tenant->users()->sync([$support_user->id, $company_admin_user->id,  $sales_user->id, $order_manager_user->id]);
+        $tenant->users()->sync([
+            $support_user->id,
+            $company_admin_user->id,
+            $sales_manager_user->id,
+            $sales_user->id,
+            $order_manager_user->id
+        ]);
 
         $super_user = User::where('email', 'super@example.com')->first();
         $super_user->tenants()->sync([$tenant->id, ...$dummy_tenants->pluck('id')]);
@@ -75,5 +89,8 @@ class DummySeeder extends Seeder
 
         $order_manager = User::where('email', 'orders@example.com')->first();
         $order_manager->assignRole('Order Manager');
+
+        $sales_manager = User::where('email', 'salesmanager@example.com')->first();
+        $sales_manager->assignRole('Sales Manager');
     }
 }
