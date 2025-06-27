@@ -253,7 +253,6 @@ getData();
                             :inputId="`filter-value-${key}`"
                             :options="filters[column.data].options"
                             class="w-100"
-                            editable
                             :placeholder="`Select a ${column.title}`"
                             @show="openSelectIndex = key"
                             @hide="openSelectIndex = null"

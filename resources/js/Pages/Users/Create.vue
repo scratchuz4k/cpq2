@@ -89,7 +89,6 @@ const items = ref([
                             :inputId="'user-role'"
                             :options="roles"
                             class="w-100"
-                            editable
                             optionLabel="name"
                             optionValue="id"
                             placeholder="Select an option"

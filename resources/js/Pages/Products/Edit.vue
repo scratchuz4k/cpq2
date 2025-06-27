@@ -146,7 +146,6 @@ const items = ref([
                                         :inputId="'price_plan'"
                                         :options="props.price_plans"
                                         class="w-100"
-                                        editable
                                         optionLabel="name"
                                         optionValue="id"
                                         placeholder="Select an Price Plan"

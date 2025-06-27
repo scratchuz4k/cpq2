@@ -167,7 +167,6 @@ const icons = {
                   :inputId="'spa-operation'"
                   :options="props.operations"
                   class="w-100"
-                  editable
                   optionLabel="code"
                   optionValue="id"
                   placeholder="Select an Operation"
@@ -203,7 +202,6 @@ const icons = {
                   :inputId="'spa-price_plan'"
                   :options="props.price_plans"
                   class="w-100"
-                  editable
                   optionLabel="name"
                   optionValue="id"
                   placeholder="Select a Price Plan"

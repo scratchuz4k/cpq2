@@ -62,7 +62,6 @@ const items = ref([
                             :inputId="'token-user'"
                             :options="users"
                             class="w-100"
-                            editable
                             optionLabel="description"
                             optionValue="id"
                             placeholder="Select a User"
