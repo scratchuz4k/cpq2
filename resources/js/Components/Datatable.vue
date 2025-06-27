@@ -13,6 +13,7 @@ import Button from "primevue/button";
 import { reactive, ref, watch, useSlots } from "vue";
 import queryString from "query-string";
 import axios from "axios";
+import Select from "primevue/select";
 
 const slots = useSlots();
 const usedSlots = Object.keys(slots);
@@ -50,6 +51,9 @@ const meta = reactive({
   total: 0,
   first: 1,
 });
+
+const openSelectIndex = ref(null);
+
 
 const setFilters = () => {
   props.columns.forEach((el) =>
@@ -228,7 +232,7 @@ getData();
             <button class="btn btn-sm btn-filter">
               <font-awesome-icon :icon="['fas', 'filter']" />
             </button>
-            <div class="filter-content" :class="{ last: key + 1 == columns.length }">
+            <div class="filter-content" :class="{ last: key + 1 == columns.length, open: openSelectIndex === key }">
               <template v-if="Object.keys(props.filters).includes(column.data)">
                 <div class="my-1" v-if="props.filters[column.data].type === 'checkbox'">
                   <div class="form-check p-0">
@@ -245,19 +249,15 @@ getData();
                 </div>
                 <div v-if="props.filters[column.data].type === 'options'" class="mb-3">
                   <label class="form-label" :for="`filter-value-${key}`">Options</label>
-                  <select
-                    :id="`filter-value-${key}`"
-                    class="form-select w-100"
-                    v-model="form.filters[key].value"
-                  >
-                    <option :value="null">All</option>
-                    <option
-                      v-for="option in filters[column.data].options"
-                      :value="typeof option === 'object' ? option.value : option"
-                    >
-                      {{ typeof option === "object" ? option.label : option }}
-                    </option>
-                  </select>
+                    <Select v-model="form.filters[key].value"
+                            :inputId="`filter-value-${key}`"
+                            :options="filters[column.data].options"
+                            class="w-100"
+                            editable
+                            :placeholder="`Select a ${column.title}`"
+                            @show="openSelectIndex = key"
+                            @hide="openSelectIndex = null"
+                    />
                 </div>
               </template>
               <div v-else class="mb-3">
@@ -396,6 +396,12 @@ getData();
   box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
   padding: 0 10px;
   z-index: 9999;
+}
+
+.filter-content.open {
+    max-height: 500px;
+    padding: 10px;
+    border: 1px solid #e2e8f0;
 }
 
 .filter-content.last {

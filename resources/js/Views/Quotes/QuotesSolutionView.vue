@@ -149,12 +149,15 @@ watch(addressPostCode, () => {
                             <div class="mb-3" id="address" v-if="addresses.length">
                                 <label class="form-label" for="select_address">Select address <span
                                         class="text-primary fw-bold">*</span></label>
-                                <select class="form-select" id="select_address" @change="addressSelect(modelValue)"
-                                    v-model="modelValue.address">
-                                    <option :value="null">Select address</option>
-                                    <option v-for="(address, key) in addresses" :value="address">{{ address.label }}
-                                    </option>
-                                </select>
+                                <Select v-model="modelValue.address"
+                                        :inputId="'select_address'"
+                                        :options="addresses"
+                                        class="w-100"
+                                        editable
+                                        optionLabel="label"
+                                        placeholder="Select Address"
+                                        @change="addressSelect(modelValue)"
+                                />
                             </div>
                         </template>
                     </div>

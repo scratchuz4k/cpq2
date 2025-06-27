@@ -560,6 +560,7 @@ getArticles(false, true);
               class="me-3 custom-select"
             >
               <template #option="slotProps">
+                  {{ slotProps}}
                 <div style="font-size: 14px; line-height: 1.5rem">
                   {{ slotProps.option.label }}
                 </div>
