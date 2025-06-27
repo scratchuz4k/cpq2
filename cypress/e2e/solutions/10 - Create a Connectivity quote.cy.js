@@ -22,10 +22,9 @@ describe("Creates a Connectivity quote", () => {
         cy.get("#create-tab").click();
 
         cy.selectLazyOption("account_id", account.name);
-
-        cy.get("#solution_id").select("Connectivity");
+        cy.selectOption('#solution_id', 'Connectivity');
         cy.get("#input_address").type("EH32 9NT");
-        cy.get("#select_address").should("be.visible").select(1);
+        cy.selectOption('#select_address', 1);
         cy.get("#btn-create-quote").should("not.be.disabled").click();
 
         // Scroll back to top
@@ -101,9 +100,9 @@ describe("Creates a Connectivity quote", () => {
         cy.visit("/");
         cy.get("#create-tab").click();
         cy.selectLazyOption("account_id", account.name);
-        cy.get("#solution_id").select("Connectivity");
+        cy.selectOption('#solution_id', 'Connectivity');
         cy.get("#input_address").type("EH32 9NT");
-        cy.get("#select_address").should("be.visible").select(1);
+        cy.selectOption('#select_address', 1);
         cy.get("#btn-create-quote").should("not.be.disabled").click();
 
         cy.scrollTo("top");

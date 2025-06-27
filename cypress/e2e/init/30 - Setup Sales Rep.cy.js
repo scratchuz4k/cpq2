@@ -16,7 +16,7 @@ describe("Setup Sales Rep.cy", () => {
         cy.get("#user-name").type(user.name)
         cy.get("#user-email").type(user.email)
         cy.get("#user-password").type(user.password)
-        cy.get("#user-role").select("Sales Rep")
+        cy.selectOption('#user-role', 'Sales Rep');
         cy.get("#user-commission-rate").type(5)
         cy.get("#btn-save-user").click()
         cy.get("#treetable-search").type(user.name)
@@ -34,7 +34,7 @@ describe("Setup Sales Rep.cy", () => {
         cy.visit("/")
         cy.get("#create-tab").click()
         cy.selectLazyOption('account_id', account.name);
-        cy.get("#solution_id").select("Mobile")
+        cy.selectOption('#solution_id', 'Mobile');
         cy.get("#btn-create-quote").click()
         cy.visit("/")
         cy.get("#datatable-btn-0-show").click()
