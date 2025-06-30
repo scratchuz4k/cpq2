@@ -53,7 +53,7 @@ const speedsliderConfig = {
     start: props.modelValue ?? [100, 1000],
     connect: true,
     range: {
-        min: [0, 10],
+        min: [10, 10],
         '20%': [100, 100],
         '45%': [500, 100],
         '70%': [1000, 1000],

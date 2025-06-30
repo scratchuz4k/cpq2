@@ -56,6 +56,9 @@ class CloudMarketConnectivityProducts implements ShouldQueue, TenantAware
 
         $stream = StreamWrapper::getResource($res->toPsrResponse()->getBody());
         foreach (Items::fromStream($stream) as $key => $value) {
+            if (! is_object($value) && ! is_array($value)) {
+                continue;
+            }
             if ($value->hasErrors && $value->quoteResponseError) {
                 $error = $this->processErrors($value->quoteResponseError->requestInfo->supplier, $value->quoteResponseError->errorMessage);
 
