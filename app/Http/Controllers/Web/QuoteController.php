@@ -4,12 +4,14 @@ namespace App\Http\Controllers\Web;
 
 use App\Enums\EmailTemplatesEnum;
 use App\Enums\QuoteStatusesEnum;
+use App\Enums\SolutionTypesEnum;
 use App\Helpers\DynamicEmail;
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\EmailSendRequest;
 use App\Http\Requests\QuoteCreateRequest;
 use App\Http\Requests\QuoteUpdateRequest;
 use App\Http\Resources\QuoteResource;
+use App\Http\Resources\SolutionTypeResource;
 use App\Models\Account;
 use App\Models\PricePlan;
 use App\Models\Quote;
@@ -39,13 +41,13 @@ class QuoteController extends BaseController
     {
         $user = request()->user();
 
-        if (!$user->hasRole('Sales Rep')) {
+        if (! $user->hasRole('Sales Rep')) {
             $users = User::whereHas('quotes')->get();
         } else {
             $users = $this->descendantsWithQuotes();
         }
 
-        $users = $users->filter(fn($user) => $user->quotes->count() > 0);
+        $users = $users->filter(fn ($user) => $user->quotes->count() > 0);
         $solutionTypes = SolutionType::whereHas('quotes', function ($query) use ($users) {
             return $query->whereIn('user_id', $users->pluck('id'));
         })->get();
@@ -53,7 +55,7 @@ class QuoteController extends BaseController
         return Inertia::render('Quotes/Index', [
             'users' => $users->values(),
             'solutions' => $solutionTypes,
-            'status' => array_map(fn($status) => $status->name, QuoteStatusesEnum::cases()),
+            'status' => array_map(fn ($status) => $status->name, QuoteStatusesEnum::cases()),
         ]);
     }
 
@@ -62,11 +64,10 @@ class QuoteController extends BaseController
      */
     public function create()
     {
-        $tenant = Auth::user()->currentTenant;
-
         return Inertia::render('Quotes/Create', [
             'accounts' => Account::all(),
-            'solution_types' => $tenant->solutionTypes,
+            'solution_types' => (SolutionTypeResource::collection(Auth::user()->currentTenant->solutionTypes))->resolve(),
+            'steps' => SolutionTypesEnum::getSteps(),
         ]);
     }
 
@@ -82,7 +83,7 @@ class QuoteController extends BaseController
                 return $quote;
             });
         } catch (\Exception $e) {
-            if (!env('APP_DEBUG')) {
+            if (! env('APP_DEBUG')) {
                 Log::error($e->getMessage());
             }
             throw new \Exception($e);
@@ -109,7 +110,7 @@ class QuoteController extends BaseController
     {
         return Inertia::render('Quotes/Edit', [
             'accounts' => Account::all(),
-            'solution_types' => Auth::user()->currentTenant->solutionTypes,
+            'solution_types' => (SolutionTypeResource::collection(Auth::user()->currentTenant->solutionTypes))->resolve(),
             'quote' => new QuoteResource($quote->load(['items'])),
         ]);
     }
@@ -124,7 +125,7 @@ class QuoteController extends BaseController
                 return $this->quoteService->update($quote, $request->all());
             });
         } catch (\Exception $e) {
-            if (!env('APP_DEBUG')) {
+            if (! env('APP_DEBUG')) {
                 Log::error($e->getMessage());
             }
             throw new \Exception($e);
@@ -148,7 +149,7 @@ class QuoteController extends BaseController
     {
         return Inertia::render('Quotes/Configure', [
             'accounts' => Account::all(),
-            'solution_types' => Auth::user()->currentTenant->solutionTypes,
+            'solution_types' => (SolutionTypeResource::collection(Auth::user()->currentTenant->solutionTypes))->resolve(),
             'quote' => new QuoteResource($quote->load(['items'])),
         ]);
     }
@@ -156,6 +157,7 @@ class QuoteController extends BaseController
     public function preview(Quote $quote)
     {
         $t = new QuoteResource($quote->load(['items', 'orders']));
+
         return Inertia::render('Quotes/Preview', [
             'pricePlans' => PricePlan::all(),
             'quote' => new QuoteResource($quote->load(['items', 'orders'])),
@@ -170,7 +172,7 @@ class QuoteController extends BaseController
         $pdf = $this->quoteService->generatePdf($request, $quote);
 
         return $pdf
-            ->name('quote-' . $quote['id'] . '.pdf')
+            ->name('quote-'.$quote['id'].'.pdf')
             ->download();
 
     }
@@ -178,7 +180,7 @@ class QuoteController extends BaseController
     public function email(EmailSendRequest $request, Quote $quote)
     {
         $pdf = $this->quoteService->generatePdf($request, $quote);
-        $pdf->save(storage_path('app/temp/quote-' . $quote['id'] . '.pdf'));
+        $pdf->save(storage_path('app/temp/quote-'.$quote['id'].'.pdf'));
 
         Mail::queue(
             new DynamicEmail(
@@ -197,8 +199,8 @@ class QuoteController extends BaseController
                 files: [
                     [
                         'disk' => 'temp',
-                        'path' => 'quote-' . $quote['id'] . '.pdf',
-                        'title' => 'quote-' . $quote['id'] . '.pdf',
+                        'path' => 'quote-'.$quote['id'].'.pdf',
+                        'title' => 'quote-'.$quote['id'].'.pdf',
                         'mimetype' => 'application/pdf',
                     ],
                 ],
