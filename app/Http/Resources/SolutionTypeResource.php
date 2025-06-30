@@ -42,11 +42,11 @@ class SolutionTypeResource extends JsonResource
         if (! array_key_exists('has_custom_table', $this->configs) || ! $this->configs['has_custom_table']) {
             $table['columns'] = (array) $columns;
         }
-        $info = $this->resource->tenant();
+        $info = $this->resource->tenant() ? $this->resource->tenant()->pivot->toArray() : [];
 
         return [
             ...$this->resource->toArray(),
-            ...$info->pivot->toarray(),
+            ...$info,
             'configurations' => $this->configs,
             'table' => $table,
             'categories' => CategoryResource::collection($this->categories)->resolve(),
