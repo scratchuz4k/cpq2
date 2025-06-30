@@ -34,10 +34,10 @@ class CloudMarketApi
             'Address1.Town' => $address->town,
 
             'ManagedOption' => 0,
-			'TermMonths' => [],
-            'ConnectionSpeeds.MinBearer' => 0,
+            'TermMonths' => [],
+            'ConnectionSpeeds.MinBearer' => 100,
             'ConnectionSpeeds.MaxBearer' => 100000,
-            'ConnectionSpeeds.MinSpeed' => 0,
+            'ConnectionSpeeds.MinSpeed' => 10,
             'ConnectionSpeeds.MaxSpeed' => 100000,
         ];
 
