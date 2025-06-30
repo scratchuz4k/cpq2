@@ -21,7 +21,10 @@ const configurations = reactive({
     component: props.solution_type.configurations.component ?? 'DealMaker',
     has_custom_table: props.solution_type.configurations.has_custom_table ?? '0'
 });
-
+const solution = reactive({
+    name: props.solution_type?.name,
+    estimated_time: props.solution_type?.estimated_time
+});
 const table = reactive(
     props.solution_type.table
         ? { ...props.solution_type.table }
@@ -66,6 +69,7 @@ const saveSolutionType = () => {
     router.put(
         `/solution-types/${props.solution_type.id}`,
         {
+            ...solution,
             configurations: {
                 ...configurations,
                 amortisation: JSON.stringify(configurations.amortisation)
@@ -174,15 +178,19 @@ const items = ref([
                 <tabs>
                     <tab title="General" :selected="true">
                         <div class="mt-3">
-                            <div class="mb-5">
+                            <div class="mb-3">
                                 <label for="solution_type-name" class="form-label">Name:</label>
-                                <input
-                                    id="solution_type-name"
-                                    class="form-control"
-                                    v-model="solution_type.name"
-                                    disabled
-                                />
+                                <input id="solution_type-name" class="form-control" v-model="solution.name" disabled />
                             </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="solution_type-estimated_time" class="form-label">Estimated time:</label>
+                            <input
+                                id="solution_type-estimated_time"
+                                class="form-control"
+                                v-model="solution.estimated_time"
+                            />
                         </div>
                     </tab>
                     <tab title="Price" v-if="solution_type.code != 3">

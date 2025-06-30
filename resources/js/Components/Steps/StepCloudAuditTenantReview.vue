@@ -1,0 +1,245 @@
+<script setup>
+import { Checkbox } from 'primevue';
+import { computed, reactive } from 'vue';
+const props = defineProps({
+    solutionType: Array,
+    modelValue: Object
+});
+
+const emit = defineEmits(['update:modelValue', 'nextStep']);
+const proxyValue = computed({
+    get() {
+        return props.modelValue;
+    },
+    set(val) {
+        emit('update:modelValue', val);
+    }
+});
+const configs = reactive({
+    unassigned_licenses: 0,
+    under_500_utilized_licenses: 0,
+    turnoff_100_in_1_month: 0,
+    turnoff_400_in_3_month: 0,
+    duplicate_licenses: 0,
+    wrong_product_plan: 0,
+    optional_saving_inefficient_bundle: 0,
+    optional_saving_under_utilized_bundles: 0,
+    cloud_selected_option: 'none'
+});
+</script>
+
+<template>
+    <div class="row justify-content-between mb-3">
+        <div class="col-lg-8">
+            <div class="mt-3 d-flex justify-content-between align-items-center">
+                <h3>Current Cost</h3>
+                <h3>£3,692.00</h3>
+            </div>
+            <hr class="m-0" />
+            <table id="table-simple " class="table table-dealmaker table-bordered table-hover mt-3">
+                <!-- Headers -->
+                <thead>
+                    <tr>
+                        <th style="width: 70%">Products</th>
+                        <th>Qty</th>
+                        <th>Price</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Microsodt 365 Business Premium</td>
+                        <td>x27</td>
+                        <td>£2370.00</td>
+                    </tr>
+                    <tr>
+                        <td>Microsodt Vision Plan 2</td>
+                        <td>x12</td>
+                        <td>£1322.00</td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="mt-3 d-flex justify-content-between align-items-center">
+                <h3>Recommendations</h3>
+            </div>
+            <hr class="m-0" />
+
+            <InfoBox severity="info" class="mt-3">
+                <small>Optional Savings require a Professional Services call to assess the tenant in more detail</small>
+            </InfoBox>
+
+            <div class="d-flex align-items-center gap-2 mt-3 py-2">
+                <Checkbox
+                    inputId="unassigned_licenses"
+                    v-model="configs.unassigned_licenses"
+                    binary
+                    trueValue="1"
+                    falseValue="0"
+                />
+                <label for="unassigned_licenses" class="font-bold"> Unassigned Licenses </label>
+            </div>
+            <ul class="ms-3">
+                <li>Licenses available in the tenant but not assigned</li>
+            </ul>
+
+            <div class="d-flex align-items-center gap-2 mt-3 py-2">
+                <Checkbox
+                    inputId="under_500_utilized_licenses"
+                    v-model="configs.under_500_utilized_licenses"
+                    binary
+                    trueValue="1"
+                    falseValue="0"
+                />
+                <label for="under_500_utilized_licenses" class="font-bold"> 500 under-utilised licenses</label>
+            </div>
+            <ul class="ms-3">
+                <li>
+                    Vision license assigned, but low or no utilisation in 1 month (100), 3 months(400)<br />
+
+                    <div class="d-flex align-items-center gap-2 py-1 mt-2">
+                        <Checkbox
+                            inputId="turnoff_100_in_1_month"
+                            v-model="configs.turnoff_100_in_1_month"
+                            binary
+                            trueValue="1"
+                            falseValue="0"
+                        />
+                        <label for="turnoff_100_in_1_month">Turn off 100x licences in 1 month</label>
+                    </div>
+                    <div class="d-flex align-items-center gap-2 py-1">
+                        <Checkbox
+                            inputId="turnoff_400_in_3_month"
+                            v-model="configs.turnoff_400_in_3_month"
+                            binary
+                            trueValue="1"
+                            falseValue="0"
+                        />
+                        <label for="turnoff_400_in_3_month">Turn off 400x licences in 3 month</label>
+                    </div>
+                </li>
+            </ul>
+
+            <div class="d-flex align-items-center gap-2 mt-3 py-2">
+                <Checkbox
+                    inputId="duplicate_licenses"
+                    v-model="configs.duplicate_licenses"
+                    binary
+                    trueValue="1"
+                    falseValue="0"
+                />
+                <label for="duplicate_licenses" class="font-bold"> Duplicate licenses assigned to same user </label>
+            </div>
+            <ul class="ms-3">
+                <li>User has an E3 license (which includes Teams) but is also assigned a Teams standalone license</li>
+            </ul>
+
+            <div class="d-flex align-items-center gap-2 mt-3 py-2">
+                <Checkbox
+                    inputId="wrong_product_plan"
+                    v-model="configs.wrong_product_plan"
+                    binary
+                    trueValue="1"
+                    falseValue="0"
+                />
+                <label for="wrong_product_plan" class="font-bold">Wrong product plan assigned </label>
+            </div>
+            <ul class="ms-3">
+                <li>
+                    User has Vision Plan 2 assigned (which includes desktop app) but is using we client (which could
+                    potentially be met by cheaper Vision Plan 1)
+                </li>
+            </ul>
+
+            <div class="d-flex align-items-center gap-2 mt-3 py-2">
+                <Checkbox
+                    inputId="optional_saving_inefficient_bundle"
+                    v-model="configs.optional_saving_inefficient_bundle"
+                    binary
+                    trueValue="1"
+                    falseValue="0"
+                />
+                <label for="optional_saving_inefficient_bundle" class="font-bold"
+                    >Optional saving: Inefficient bundle assignment
+                </label>
+            </div>
+            <ul class="ms-3">
+                <li>
+                    User 1 is assigned an E3 license and uses component product A and B, but User 2 has products C and D
+                    assigned, which are also part of E3 and have a higher cost than A+B
+                </li>
+            </ul>
+
+            <div class="d-flex align-items-center gap-2 mt-3 py-2">
+                <Checkbox
+                    inputId="optional_saving_under_utilized_bundles"
+                    v-model="configs.optional_saving_under_utilized_bundles"
+                    binary
+                    trueValue="1"
+                    falseValue="0"
+                />
+                <label for="optional_saving_under_utilized_bundles" class="font-bold"
+                    >Optional saving: Under-utilised bundles
+                </label>
+            </div>
+            <ul class="ms-3">
+                <li>
+                    User has E5 license but only uses features available in cheaper E3, or the components which are used
+                    would be cheaper to buy separately
+                </li>
+            </ul>
+
+            <div class="mt-3 d-flex justify-content-between align-items-center">
+                <h3>Options</h3>
+            </div>
+            <hr class="m-0" />
+            <div class="row row-cols-1 row-cols-md-3 g-3 mt-3 mb-5">
+                <div class="col">
+                    <RadioCard v-model="configs.cloud_selected_option" :value="'none'" name="cloud-selected-option">
+                        <p class="font-bold mb-2">No Change</p>
+                        <p>Do nothing to the tenant</p>
+                    </RadioCard>
+                </div>
+                <div class="col">
+                    <RadioCard v-model="configs.cloud_selected_option" :value="'move'" name="cloud-selected-option">
+                        <p class="font-bold mb-2">Move to use</p>
+                        <p>
+                            No-risk action<br />
+                            FreePSA review up to £XXXX.XX saving
+                        </p>
+                    </RadioCard>
+                </div>
+                <div class="col">
+                    <RadioCard v-model="configs.cloud_selected_option" :value="'review'" name="cloud-selected-option">
+                        <p class="font-bold mb-2">Paid PSA review</p>
+                        <p>
+                            One-off fee of £XXX.XX<br />
+                            Keep licenses where they are
+                        </p>
+                    </RadioCard>
+                </div>
+            </div>
+
+            <ButtonStep v-model="proxyValue" btnName="Continue with selected option">
+                <a id="btn-save-quote" class="btn btn-outline-primary me-2" type="submit" href="/">Save for later</a>
+            </ButtonStep>
+        </div>
+        <div class="col-lg-3">
+            <InfoBox>
+                <div style="font-size: 14px">
+                    <b style="font-size: 16px"> {{ proxyValue.account?.name }}</b>
+                    <br />
+                    Contact Number: 0124567890<br />
+                    Email: firstname.lastname@gmail.com
+                </div>
+            </InfoBox>
+            <div class="panel mt-3">
+                <div class="row">
+                    <div class="col-12">
+                        <h5 class="font-bold mb-3">Potential Savings</h5>
+                        <p>Your current license toal is <strong>£XXXX.XX</strong></p>
+                        <p>You have a potential savings of up to <strong>£XXXX.XX</strong></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
