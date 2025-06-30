@@ -37,7 +37,7 @@ const proxyValue = computed({
                         <div class="w-20">
                             <input
                                 type="number"
-                                min="0"
+                                min="10"
                                 max="10000"
                                 class="form-control w-100"
                                 @change="(ev) => formatInput(ev, proxyValue.configs.speed, 0)"
@@ -47,13 +47,13 @@ const proxyValue = computed({
                         <div class="px-4 mb-3" style="width: 80%">
                             <SpeedRange
                                 v-model="proxyValue.configs.speed"
-                                :options="[0, 10, 100, 1000, 10000]"
+                                :options="[10, 100, 1000, 10000]"
                             ></SpeedRange>
                         </div>
                         <div class="w-20">
                             <input
                                 type="number"
-                                :min="0"
+                                :min="10"
                                 :max="10000"
                                 @change="(ev) => formatInput(ev, proxyValue.configs.speed, 1)"
                                 class="form-control w-100"
@@ -77,7 +77,7 @@ const proxyValue = computed({
                         <div class="w-20">
                             <input
                                 type="number"
-                                min="0"
+                                min="100"
                                 max="10000"
                                 class="form-control w-100"
                                 @change="(ev) => formatInput(ev, proxyValue.configs.bearer, 0)"
@@ -87,13 +87,13 @@ const proxyValue = computed({
                         <div class="px-4 mb-3" style="width: 80%">
                             <BearerRange
                                 v-model="proxyValue.configs.bearer"
-                                :options="[0, 10, 100, 1000, 10000]"
+                                :options="[100, 1000, 10000]"
                             ></BearerRange>
                         </div>
                         <div class="w-20">
                             <input
                                 type="number"
-                                :min="0"
+                                :min="100"
                                 :max="10000"
                                 @change="(ev) => formatInput(ev, proxyValue.configs.bearer, 1)"
                                 class="form-control w-100"
