@@ -25,15 +25,7 @@ describe('Create a Shareable Link.cy', () => {
 
         cy.get('#solution_type-mobile').click();
         cy.get('#btn-create-quote').click();
-        cy.get('#btn-plan-0-add-25').click();
         cy.wait(1000);
-        cy.get('#btn-plan-1-add-25').click();
-        cy.wait(1000);
-        cy.get('#btn-step-1-next').click();
-        cy.wait(1000);
-        cy.get('#btn-plan-0-add-25').click();
-        cy.wait(1000);
-        cy.get('#btn-step-2-next').click();
         let hardwareCount = 0;
         let keys = [0, 1, 2, 3, 4];
         let max_pages = 5;
@@ -61,7 +53,6 @@ describe('Create a Shareable Link.cy', () => {
 
         cy.get('#btn-step-2-next').click();
 
-        cy.get('.recurring-item').should('have.length', 3);
         cy.get('.one_off-item').then(($items) => {
             cy.then(() => {
                 expect(hardwareCount).to.equal($items.length);

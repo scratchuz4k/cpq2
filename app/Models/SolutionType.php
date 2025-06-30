@@ -25,10 +25,10 @@ class SolutionType extends Model
 
     public function tenant()
     {
-        return $this
+        return request()->user() ? $this
             ->tenants()
             ->where('tenant_id', request()->user()->tenant_id)
-            ->first();
+            ->first() : null;
     }
 
     public function categories(): BelongsToMany
