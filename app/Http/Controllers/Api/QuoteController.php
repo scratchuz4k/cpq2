@@ -41,7 +41,11 @@ class QuoteController extends BaseController
             $users = User::all();
         }
 
-        $dataProvider->builder = $dataProvider->builder->whereIn('quotes.user_id', $users->pluck('id'));
+        if ($user->hasRole('Sales Manager')) {
+            $group_users = User::where('group_id', $user->group_id)->get();
+        }
+
+        $dataProvider->builder = $dataProvider->builder->whereIn('quotes.user_id', $users->pluck('id')->merge($group_users->pluck('id')));
 
         try {
             $data = $dataProvider->get();
