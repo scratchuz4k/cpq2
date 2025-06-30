@@ -110,29 +110,6 @@ const addressSelect = async (form) => {
     }
 };
 
-const formatInput = (ev, field, index) => {
-    if (ev.target.value > 10000) {
-        field[index] = 10000;
-        return;
-    }
-    if (ev.target.value < 0) {
-        field[index] = 0;
-        return;
-    }
-
-    field[index] = format.simpleSpeed(ev.target.value);
-
-    if (Array.isArray(field) && field.length === 2) {
-        if (field[0] > field[1]) {
-            if (index === 0) {
-                field[0] = field[1];
-            } else {
-                field[1] = field[0];
-            }
-        }
-    }
-};
-
 solutionChange(props.modelValue);
 addressSearch({
     postCode: props.modelValue.postCode ?? ''

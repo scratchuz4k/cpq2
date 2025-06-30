@@ -1,6 +1,7 @@
 <script setup>
 import { computed } from 'vue';
 import { MultiSelect } from 'primevue';
+import format from '@/Composables/format';
 
 const props = defineProps({
     solutionType: Array,
@@ -16,6 +17,35 @@ const proxyValue = computed({
         emit('update:modelValue', val);
     }
 });
+
+const formatInput = (ev, field, index) => {
+    if (ev.target.value > 10000) {
+        field[index] = 10000;
+        return;
+    }
+
+    if (field == props.modelValue.configs.speed && ev.target.value < 10) {
+        field[index] = 10;
+        return;
+    }
+
+    if (field == props.modelValue.configs.bearer && ev.target.value < 100) {
+        field[index] = 100;
+        return;
+    }
+
+    field[index] = format.simpleSpeed(ev.target.value);
+
+    if (Array.isArray(field) && field.length === 2) {
+        if (field[0] > field[1]) {
+            if (index === 0) {
+                field[0] = field[1];
+            } else {
+                field[1] = field[0];
+            }
+        }
+    }
+};
 </script>
 
 <template>
