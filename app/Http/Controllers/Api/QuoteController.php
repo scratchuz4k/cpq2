@@ -37,7 +37,7 @@ class QuoteController extends BaseController
 
         $user = request()->user();
         $users = User::descendants();
-        if (! $user->hasRole('Sales Rep')) {
+        if (! $user->hasRole(['Sales Rep', 'Sales Manager'])) {
             $users = User::all();
         }
 
