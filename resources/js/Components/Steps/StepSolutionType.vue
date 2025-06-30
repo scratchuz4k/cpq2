@@ -1,4 +1,5 @@
 <script setup>
+import format from '@/Composables/format';
 import { computed } from 'vue';
 const props = defineProps({
     solutionType: Array,
@@ -29,6 +30,7 @@ const icons = {
             <div class="row row-cols-4 mb-3">
                 <div class="col mb-3" v-for="solution in props.solutionType">
                     <div
+                        :id="'solution_type-' + format.toSnakeCase(solution.name)"
                         class="option"
                         @click="() => (proxyValue.solution_type = solution)"
                         :class="[proxyValue.solution_type == solution ? 'active' : '']"

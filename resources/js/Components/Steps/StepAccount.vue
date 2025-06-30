@@ -1,7 +1,6 @@
 <script setup>
 import { computed } from 'vue';
 const props = defineProps({
-    solutionType: Array,
     modelValue: Object
 });
 
@@ -14,10 +13,6 @@ const proxyValue = computed({
         emit('update:modelValue', val);
     }
 });
-
-const nextStep = () => {
-    emit('nextStep');
-};
 </script>
 
 <template>

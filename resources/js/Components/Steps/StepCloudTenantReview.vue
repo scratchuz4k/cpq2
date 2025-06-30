@@ -218,12 +218,14 @@ const configs = reactive({
                 </div>
             </div>
 
-            <ButtonStep v-model="proxyValue"></ButtonStep>
+            <ButtonStep v-model="proxyValue" btnName="Continue with selected option">
+                <a id="btn-save-quote" class="btn btn-outline-primary me-2" type="submit" href="/">Save for later</a>
+            </ButtonStep>
         </div>
         <div class="col-lg-3">
             <InfoBox>
                 <div style="font-size: 14px">
-                    <b style="font-size: 16px"> {{ proxyValue.account.name }}</b>
+                    <b style="font-size: 16px"> {{ proxyValue.account?.name }}</b>
                     <br />
                     Contact Number: 0124567890<br />
                     Email: firstname.lastname@gmail.com

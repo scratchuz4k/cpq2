@@ -174,7 +174,7 @@ const items = ref([
                 <tabs>
                     <tab title="General" :selected="true">
                         <div class="mt-3">
-                            <div class="mb-5">
+                            <div class="mb-3">
                                 <label for="solution_type-name" class="form-label">Name:</label>
                                 <input
                                     id="solution_type-name"
@@ -183,6 +183,15 @@ const items = ref([
                                     disabled
                                 />
                             </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="solution_type-estimated_time" class="form-label">Estimated time:</label>
+                            <input
+                                id="solution_type-estimated_time"
+                                class="form-control"
+                                v-model="solution_type.estimated_time"
+                            />
                         </div>
                     </tab>
                     <tab title="Price" v-if="solution_type.code != 3">

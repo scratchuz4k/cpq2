@@ -30,15 +30,19 @@ describe('Creates a Mobile Quote', () => {
         cy.visit('/');
         cy.get('#create-tab').click();
         cy.selectLazyOption('account_id');
+        cy.get('#btn-next-step').click();
 
-        cy.get('#solution_id').select('Connectivity');
+        cy.get('#solution_type-connectivity').click();
+        cy.get('#btn-next-step').click();
+
         cy.get('#input_address').type('EH32 9NT');
         cy.get('#select_address').should('be.visible').select(1);
+        cy.get('#btn-next-step').click();
         cy.get('#btn-create-quote').should('not.be.disabled').click();
         // Scroll back to top
         cy.scrollTo('top');
         //Provider filter
-        cy.get("#provider-multiselect").click();
+        cy.get('#provider-multiselect').click();
 
         cy.get('.p-multiselect-list-container')
             .eq(0)
@@ -47,7 +51,7 @@ describe('Creates a Mobile Quote', () => {
             });
 
         //SubProvider filter
-        cy.get("#subprovider-multiselect").click();
+        cy.get('#subprovider-multiselect').click();
         cy.wait(500);
 
         cy.get('.p-multiselect-list-container')
