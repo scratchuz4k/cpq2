@@ -11,6 +11,7 @@ use App\Http\Requests\EmailSendRequest;
 use App\Http\Requests\QuoteCreateRequest;
 use App\Http\Requests\QuoteUpdateRequest;
 use App\Http\Resources\QuoteResource;
+use App\Http\Resources\SolutionTypeResource;
 use App\Models\Account;
 use App\Models\PricePlan;
 use App\Models\Quote;
@@ -63,11 +64,9 @@ class QuoteController extends BaseController
      */
     public function create()
     {
-        $tenant = Auth::user()->currentTenant;
-
         return Inertia::render('Quotes/Create', [
             'accounts' => Account::all(),
-            'solution_types' => $tenant->solutionTypes,
+            'solution_types' => (SolutionTypeResource::collection(Auth::user()->currentTenant->solutionTypes))->resolve(),
             'steps' => SolutionTypesEnum::getSteps(),
         ]);
     }
@@ -111,7 +110,7 @@ class QuoteController extends BaseController
     {
         return Inertia::render('Quotes/Edit', [
             'accounts' => Account::all(),
-            'solution_types' => Auth::user()->currentTenant->solutionTypes,
+            'solution_types' => (SolutionTypeResource::collection(Auth::user()->currentTenant->solutionTypes))->resolve(),
             'quote' => new QuoteResource($quote->load(['items'])),
         ]);
     }
@@ -150,7 +149,7 @@ class QuoteController extends BaseController
     {
         return Inertia::render('Quotes/Configure', [
             'accounts' => Account::all(),
-            'solution_types' => Auth::user()->currentTenant->solutionTypes,
+            'solution_types' => (SolutionTypeResource::collection(Auth::user()->currentTenant->solutionTypes))->resolve(),
             'quote' => new QuoteResource($quote->load(['items'])),
         ]);
     }

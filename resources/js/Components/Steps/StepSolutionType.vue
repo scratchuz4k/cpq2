@@ -40,6 +40,9 @@ const icons = {
                     </div>
                 </div>
             </div>
+            <div v-if="proxyValue.solution_type?.estimated_time">
+                <p class="text-center">Estimated time to price: {{ proxyValue.solution_type?.estimated_time }}</p>
+            </div>
             <ButtonStep v-model="proxyValue" :disabled="proxyValue.solution_type == null"></ButtonStep>
         </div>
     </div>
