@@ -7,7 +7,7 @@ enum SolutionTypesEnum: string
     case ConnectivityEthernet = '3';
     case Mobile = '4';
     case Hardware = '5';
-    case Cloud = '6';
+    case CloudAudit = '6';
 
     public function getName(): string
     {
@@ -15,7 +15,7 @@ enum SolutionTypesEnum: string
             SolutionTypesEnum::ConnectivityEthernet => 'Connectivity',
             SolutionTypesEnum::Mobile => 'Mobile',
             SolutionTypesEnum::Hardware => 'Hardware',
-            SolutionTypesEnum::Cloud => 'Cloud',
+            SolutionTypesEnum::CloudAudit => 'Cloud Audit',
         };
     }
 
@@ -25,7 +25,7 @@ enum SolutionTypesEnum: string
             'Connectivity' => ['StepAddress', 'StepOptionalFilters'],
             'Mobile' => [],
             'Hardware' => [],
-            'Cloud' => ['StepCloudTenant', 'StepCloudTenantReview'],
+            'Cloud Audit' => ['StepCloudAuditTenant', 'StepCloudAuditTenantReview'],
         ];
     }
 }

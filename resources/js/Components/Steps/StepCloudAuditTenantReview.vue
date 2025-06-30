@@ -191,7 +191,7 @@ const configs = reactive({
                 <h3>Options</h3>
             </div>
             <hr class="m-0" />
-            <div class="row row-cols-1 row-cols-md-3 g-3 mt-3">
+            <div class="row row-cols-1 row-cols-md-3 g-3 mt-3 mb-5">
                 <div class="col">
                     <RadioCard v-model="configs.cloud_selected_option" :value="'none'" name="cloud-selected-option">
                         <p class="font-bold mb-2">No Change</p>

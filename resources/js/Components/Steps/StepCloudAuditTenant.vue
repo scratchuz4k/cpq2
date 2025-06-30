@@ -24,13 +24,14 @@ const form = reactive({
 });
 const tenants = ref([]);
 const showModal = ref(false);
+const showLodingLogin = ref(false);
 const tenant = ref(null);
 const tenant_review_active = ref(false);
 const activateTiming = () => {
     tenant_review_active.value = !tenant_review_active.value;
     setTimeout(() => {
         currentStep.value++;
-    }, 3000);
+    }, 50000);
 };
 const extractDomain = (email) => {
     // Split by '@' and take the last part
@@ -39,8 +40,15 @@ const extractDomain = (email) => {
     return parts[parts.length - 1];
 };
 const submit = () => {
-    tenants.value.push({ name: extractDomain(form.email), id: `${uuidv4()}` });
-    showModal.value = false;
+    showLodingLogin.value = true;
+    setTimeout(() => {
+        const newTenant = { name: extractDomain(form.email), id: `${uuidv4()}` };
+        tenants.value.push(newTenant);
+        tenant.value = newTenant.id;
+        showLodingLogin.value = false;
+        showModal.value = false;
+        notyf.success('Connected with Success');
+    }, 3000);
 };
 
 const tenant_reviewed = ref(false);
@@ -60,7 +68,6 @@ const tenant_reviewed = ref(false);
                             <Select
                                 :inputId="'quote-tenants'"
                                 v-model="tenant"
-                                editable
                                 :options="tenants"
                                 optionLabel="name"
                                 optionValue="id"
@@ -105,13 +112,13 @@ const tenant_reviewed = ref(false);
     <div class="row mb-3" v-if="tenant_review_active">
         <div class="col">
             <div class="row">
-                <div class="text-center">
-                    <Spinner class="mt-5 mb-4 d-flex justify-content-center" />
-                    <h4><strong>Reviewing tenant</strong></h4>
-                    <h6>
+                <div class="text-center py-4">
+                    <h1><strong>Reviewing tenant</strong></h1>
+                    <Spinner class="mb-4 d-flex justify-content-center" />
+                    <h4 style="font-weight: normal">
                         We are reviewing the tenant and calculating the potential savings <br />
                         (wont take long!)
-                    </h6>
+                    </h4>
                     <div class="cpq-bar-bg">
                         <div class="cpq-bar"></div>
                     </div>
@@ -123,38 +130,68 @@ const tenant_reviewed = ref(false);
     <Dialog
         v-model:visible="showModal"
         modal
-        :style="{ marginTop: '4rem', minWidth: '60vw' }"
-        :breakpoints="{ '1199px': '75vw', '575px': '90vw' }"
+        :style="{ marginTop: '4rem', minWidth: '25vw' }"
         :draggable="false"
         position="top"
     >
         <template #header>
-            <h2>Login External Service</h2>
+            <h2><font-awesome-icon :icon="['fas', 'globe']"></font-awesome-icon> Login External Service</h2>
         </template>
-        <div class="container m-0 p-0">
+        <div class="container position-relative">
+            <div v-if="showLodingLogin" class="login-loading-container">
+                <Loader class="h-100"></Loader>
+            </div>
             <form @submit.prevent="submit">
-                <div class="mb-3">
+                <div class="mb-2">
                     <label for="email" class="form-label"> Email <span class="text-primary fw-bold">*</span></label>
                     <IconField>
                         <InputIcon>
-                            <font-awesome-icon icon="fas fa-search" />
+                            <font-awesome-icon :icon="['fas', 'envelope']"></font-awesome-icon>
                         </InputIcon>
-                        <InputText id="email" v-model="form.email" placeholder="Search" type="email" />
+                        <InputText
+                            id="email"
+                            class="w-100"
+                            v-model="form.email"
+                            placeholder="Email"
+                            required
+                            type="email"
+                        />
                     </IconField>
                 </div>
-                <div class="mb-3">
+                <div class="mb-5">
                     <label for="password" class="form-label"
                         >Password <span class="text-primary fw-bold">*</span></label
                     >
                     <IconField>
                         <InputIcon>
-                            <font-awesome-icon icon="fas fa-search" />
+                            <font-awesome-icon :icon="['fas', 'lock']"></font-awesome-icon>
                         </InputIcon>
-                        <InputText id="password" v-model="form.password" placeholder="Search" type="password" />
+                        <InputText
+                            id="password"
+                            class="w-100"
+                            v-model="form.password"
+                            placeholder="Password"
+                            required
+                            type="password"
+                        />
                     </IconField>
                 </div>
-                <button class="btn btn-primary">Login</button>
+                <div class="mb-4">
+                    <button class="btn btn-primary w-100">Login</button>
+                </div>
             </form>
         </div>
     </Dialog>
 </template>
+
+<style scoped>
+.login-loading-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    background: rgba(255, 255, 255, 0.75);
+}
+</style>

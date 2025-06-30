@@ -28,7 +28,7 @@ const icons = {
     <div class="row">
         <div class="col-8">
             <div class="row row-cols-4 mb-3">
-                <div class="col mb-3" v-for="solution in props.solutionType">
+                <div class="col mb-2" v-for="solution in props.solutionType">
                     <div
                         :id="'solution_type-' + format.toSnakeCase(solution.name)"
                         class="option"
@@ -36,12 +36,14 @@ const icons = {
                         :class="[proxyValue.solution_type == solution ? 'active' : '']"
                     >
                         <font-awesome-icon :icon="icons[solution.code]" class="me-3"></font-awesome-icon>
-                        {{ solution.name }}
+                        <b>{{ solution.name }}</b>
                     </div>
                 </div>
             </div>
-            <div v-if="proxyValue.solution_type?.estimated_time">
-                <p class="text-center">Estimated time to price: {{ proxyValue.solution_type?.estimated_time }}</p>
+            <div class="pt-2 pb-4">
+                <p class="text-center" v-if="proxyValue.solution_type?.estimated_time">
+                    Estimated time to price: {{ proxyValue.solution_type?.estimated_time }}
+                </p>
             </div>
             <ButtonStep v-model="proxyValue" :disabled="proxyValue.solution_type == null"></ButtonStep>
         </div>
@@ -50,18 +52,21 @@ const icons = {
 
 <style lang="scss" scoped>
 .option {
+    cursor: pointer;
     background-color: var(--white);
     border-radius: var(--radius);
     padding: 20px;
-    margin-bottom: 30px;
+    margin-bottom: 10px;
+    border: 3px solid var(--white);
+    transition: border-color 0.1s ease-in-out, box-shadow 0.1s ease-in-out;
+    box-shadow: 0px 10px 15px -3px var(--light-grey);
 }
-.option:hover {
-    box-shadow: var(--color-purple) 0px 0px 0px 2px, var(--color-purple) 0px 4px 6px -1px,
-        var(--color-purple) 0px 1px 0px inset;
-    cursor: pointer;
+.option:hover,
+.option.active {
+    border: 3px solid var(--color-purple);
 }
-.active {
-    box-shadow: var(--color-purple) 0px 0px 0px 2px, var(--color-purple) 0px 4px 6px -1px,
-        var(--color-purple) 0px 1px 0px inset;
+.option.active {
+    border: 3px solid var(--color-purple);
+    box-shadow: 0px 10px 15px -3px var(--color-purple-light);
 }
 </style>
