@@ -16,6 +16,7 @@ import axios from "axios";
 import {can, hasRole} from "@/Composables/useAuth.js";
 import pluralize from 'pluralize';
 import {exportData} from "@/Composables/export.js";
+
 const slots = useSlots();
 const usedSlots = Object.keys(slots);
 
@@ -75,7 +76,7 @@ const getData = async () => {
 
   let res = await axios.get("/api" + props.route + "?" + string);
   data.value = res.data.data;
-  emptyData.value = !!data.value.length;
+    emptyData.value = !data.value.length;
   meta.total = res.data.meta?.total ?? res.data.total;
   meta.first = (meta.page - 1) * form.limit;
 };
@@ -198,10 +199,12 @@ getData();
           >
             <font-awesome-icon :icon="['fas', 'eraser']" />
           </Button>
-          <Button v-if="emptyData && has_export_permission"
-            type="button"
-            :class="['me-2']"
-            @click="getExportData()"
+            <Button v-if="has_export_permission"
+                :disabled="emptyData"
+                :severity="'secondary'"
+                :class="['me-2']"
+                @click="getExportData()"
+                type="button"
           >
             <font-awesome-icon :icon="['fas', 'file-export']"/>
           </Button>

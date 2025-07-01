@@ -134,10 +134,12 @@ watch(
   <div>
 
       <div class="d-flex justify-content-between">
-          <Button v-if="emptyData && has_export_permission"
-                  :class="['me-2']"
-                  type="button"
-                  @click="getExportData()"
+          <Button v-if="has_export_permission"
+              type="button"
+              :severity="'secondary'"
+              :class="['me-2']"
+              @click="getExportData()"
+              :disabled="emptyData"
           >
               <font-awesome-icon :icon="['fas', 'file-export']"/>
           </Button>

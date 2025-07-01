@@ -9,6 +9,8 @@ import { usePage } from "@inertiajs/vue3";
 import _ from "lodash";
 import axios from "axios";
 import {exportData} from "@/Composables/export.js";
+import {can, hasRole} from "@/Composables/useAuth.js";
+import pluralize from "pluralize";
 
 const page = usePage();
 const props = defineProps({
@@ -19,7 +21,8 @@ const props = defineProps({
 const visible = ref(false);
 const showGlobal = ref(false);
 const selectedRules = ref([]);
-const emptyData = ref(false);
+const emptyData = ref(true);
+const has_export_permission = can(`export ${pluralize.singular(props.route.replace(/^\//, ''))}`) || hasRole('Super Admin');
 
 const form = reactive({
   rule: null,
@@ -112,7 +115,7 @@ const getData = async () => {
 
   let res = await axios.get("/api/spas?" + string);
   data.value = res.data.data;
-  emptyData.value = !!data.value.length;
+  emptyData.value = !data.value.length;
   meta.total = res.data.meta?.total ?? res.data.total;
   meta.first = (meta.page - 1) * meta.limit;
 };
@@ -280,9 +283,7 @@ getData();
             class="p-button p-component me-2"
             ><font-awesome-icon :icon="['fas', 'filter']"
           /></Button>
-            <Button v-if="emptyData" type="button" @click="getExportData()">
-                <font-awesome-icon :icon="['fas', 'file-export']"/>
-            </Button>
+            <Button v-if="has_export_permission" type="button" :severity="'secondary'" @click="getExportData()" :disabled="emptyData">
           <Button
             v-if="visible"
             type="button"
