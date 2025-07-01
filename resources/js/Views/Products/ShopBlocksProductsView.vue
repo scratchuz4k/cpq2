@@ -108,6 +108,14 @@ const getProductsShopBlocks = async () => {
     abortController = new AbortController();
 
     let filters = [];
+
+    //Hide out of stock products
+    filters.push({
+        column: 'stock',
+        operator: 'greater_than_or_equal_to',
+        value: 1
+    });
+
     if (currentCategory.value) {
         let array = [currentCategory.value];
         let items = [];
@@ -124,13 +132,8 @@ const getProductsShopBlocks = async () => {
             operator: 'in',
             value: items.map((x) => x.id)
         });
-    } else {
-        filters.push({
-            column: 'stock',
-            operator: 'greater_than_or_equal_to',
-            value: 1
-        });
     }
+
     if (currentBrand.value.length) {
         filters.push({
             column: 'brand.id',
