@@ -15,6 +15,7 @@ const proxyValue = computed({
         emit('update:modelValue', val);
     }
 });
+const baseSavings = 1467.2;
 const configs = reactive({
     unassigned_licenses: 0,
     under_5_utilized_licenses: 0,
@@ -25,6 +26,16 @@ const configs = reactive({
     optional_saving_inefficient_bundle: 0,
     optional_saving_under_utilized_bundles: 0,
     cloud_selected_option: 'none'
+});
+
+const checkedCount = computed(() => {
+    return Object.entries(configs)
+        .filter(([key, value]) => key !== 'cloud_selected_option')
+        .reduce((sum, [key, value]) => sum + (value == 1 ? 1 : 0), 0);
+});
+
+const dynamicSavings = computed(() => {
+    return baseSavings + baseSavings * 0.05 * checkedCount.value;
 });
 </script>
 
@@ -64,7 +75,10 @@ const configs = reactive({
             <hr class="m-0" />
 
             <InfoBox severity="info" class="mt-3">
-                <small>Optional Savings require a Professional Services call to assess the tenant in more detail</small>
+                <small
+                    >Potential savings require a transfer of the tenant or a Professional Services engagement to assess
+                    the licenses in more detail.</small
+                >
             </InfoBox>
 
             <div class="d-flex align-items-center gap-2 mt-3 py-2">
@@ -203,7 +217,7 @@ const configs = reactive({
                         <p class="font-bold mb-2">Move to us</p>
                         <p>
                             No-risk action<br />
-                            FreePSA review up to £1,467.20 saving
+                            FreePSA review up to {{ format.GBP(dynamicSavings) }} saving
                         </p>
                     </RadioCard>
                 </div>
@@ -236,7 +250,11 @@ const configs = reactive({
                     <div class="col-12">
                         <h5 class="font-bold mb-3">Potential Saving</h5>
                         <p>Your total monthly cost is <strong>£2,528.00</strong></p>
-                        <p>You have a potential saving of up to <strong>£1,467.20</strong></p>
+                        <br />
+                        <p>
+                            You have a potential saving of up to
+                            <strong class="total-savings">{{ format.GBP(dynamicSavings) }}</strong>
+                        </p>
                     </div>
                 </div>
             </div>
