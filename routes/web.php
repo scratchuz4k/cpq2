@@ -22,6 +22,7 @@ use App\Http\Controllers\Web\SupplierController;
 use App\Http\Controllers\Web\TenantController;
 use App\Http\Controllers\Web\TokenController;
 use App\Http\Controllers\Web\UserController;
+use App\Http\Controllers\Web\GroupAccountController;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 
@@ -95,6 +96,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         'solution-types' => SolutionTypeController::class,
         'blacklists' => BlacklistController::class,
         'groups' => GroupController::class,
+        'group-accounts' => GroupAccountController::class,
+
     ]);
 
     Route::middleware('auth')->group(function () {
