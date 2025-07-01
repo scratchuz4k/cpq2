@@ -19,7 +19,7 @@ beforeEach(function () {
     $this->actingAs($this->user);
 });
 
-it('Blacklist CRUD', function () {
+it('Blacklists CRUD', function () {
     $data = [
         'productName' => 'teste',
         'providerName' => null,

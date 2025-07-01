@@ -5,12 +5,12 @@ const provider = "ITS";
 const temp = getCurrentDate();
 const account = { ref: generateHash(temp), name: temp };
 
-describe("Blacklist Crud", () => {
+describe("Blacklists Crud", () => {
     beforeEach(() => {
         cy.login("super@example.com", "werwerwer");
     });
 
-    it("Create a Blacklist Item", () => {
+    it("Create a Blacklists Item", () => {
         // create a new item
         cy.visit("/");
         cy.get("#my-account").click();
@@ -67,7 +67,7 @@ describe("Blacklist Crud", () => {
             .contains("No results match your filters.");
     });
 
-    it("Edit a Blacklist Item", () => {
+    it("Edit a Blacklists Item", () => {
         cy.visit("/blacklist");
         cy.wait(500);
         cy.get("#datatable-btn-0-edit").click();
@@ -79,7 +79,7 @@ describe("Blacklist Crud", () => {
         cy.get(".p-datatable-table").contains(product_name);
     });
 
-    it("Delete a Blacklist Item", () => {
+    it("Delete a Blacklists Item", () => {
         cy.visit("/blacklist");
         cy.get("#datatable-search").type(product_name);
         cy.wait(500);

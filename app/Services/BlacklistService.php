@@ -2,9 +2,11 @@
 
 namespace App\Services;
 
+use App\Enums\ComparisonOperatorsEnum;
 use App\Helpers\Files\BlacklistFile;
 use App\Helpers\FilterProvider;
 use App\Models\Tenant;
+use Illuminate\Database\Eloquent\Collection;
 
 class BlacklistService
 {
@@ -71,6 +73,7 @@ class BlacklistService
         );
     }
 
+
     public function destroy(string $id)
     {
         $blacklist = new BlacklistFile(Tenant::current());
@@ -89,5 +92,45 @@ class BlacklistService
         }
 
         $blacklist->delete();
+    }
+
+    public function export(array $array)
+    {
+        $blacklist = new BlacklistFile(Tenant::current());
+        $data = $blacklist->getContent();
+        $filters = $array['filters'] ?? [];
+        $filters = is_string($filters) ? json_decode($filters, true) : $filters;
+        $data = FilterProvider::get($data['data'], $filters);
+
+        $data = $data->map(function ($item) {
+            $item['speed'] = $this->parseSpeedAndBearer($item['speed']);
+            $item['bearer'] = $this->parseSpeedAndBearer($item['bearer']);
+            return $item;
+        });
+
+        return new Collection($data);
+    }
+
+    public function parseSpeedAndBearer($item)
+    {
+        if (is_null($item['value'])) {
+            return null;
+        }
+
+        if (is_array($item['value'])) {
+            return ComparisonOperatorsEnum::tryFromName($item['operator'])->description()
+                . ' '
+                . $item['value'][0]
+                . ' and '
+                . $item['value'][1]
+                . ' '
+                . $item['unit'];
+        }
+
+        return ComparisonOperatorsEnum::tryFromName($item['operator'])->description()
+            . ' '
+            . $item['value']
+            . ' '
+            . $item['unit'];
     }
 }

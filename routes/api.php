@@ -84,7 +84,7 @@ Route::apiResources([
     'shared-links' => SharedLinkController::class,
     'resources' => ResourceController::class,
     'tenants' => TenantController::class,
-    'blacklist' => BlacklistController::class,
+    'blacklists' => BlacklistController::class,
     'email-templates' => EmailTemplateController::class,
     'email-history' => EmailHistoryController::class,
     'groups' => GroupController::class,

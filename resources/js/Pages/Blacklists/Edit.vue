@@ -24,7 +24,7 @@ const blacklisted_item = useForm(props.blacklisted_item)
 
 const saveItem = () => {
     router.put(
-        `/blacklist/${blacklisted_item.id}`,
+        `/blacklists/${blacklisted_item.id}`,
         blacklisted_item,
         {
             onSuccess: (page) => {
@@ -53,7 +53,7 @@ const items = ref([
     {label: "Home", url: "/"},
     {label: "My Account", url: "/myaccount"},
     {label: "Products", url: "/products"},
-    {label: "Blacklist", url: "/blacklist"},
+    {label: "Blacklists", url: "/blacklists"},
     {label: "Edit Item"},
 ]);
 </script>
@@ -125,7 +125,7 @@ const items = ref([
 
                     <div class="mb-3">
                         <label class="form-label">Speed:</label>
-                        <select id="item-speed-operator" class="form-select" v-model="blacklisted_item.speed.operator" @change="changeValueFormat(blacklisted_item.bearer)">
+                        <select id="item-speed-operator" class="form-select" v-model="blacklisted_item.speed.operator" @change="changeValueFormat(blacklisted_item.speed)">
                             <option :value="null">Select an Operator</option>
                             <option v-for="operator in props.operators" :value="operator.name">
                                 {{ operator.description }}
@@ -134,6 +134,7 @@ const items = ref([
                         <div class="d-flex mt-2">
                             <div v-if="blacklisted_item.speed.operator === 'between' && Array.isArray(blacklisted_item.speed.value)" class="d-flex">
                                 <input id="item-speed-value-0" placeholder="Value" type="number" class="form-control text-center input-qty me-1" v-model="blacklisted_item.speed.value[0]">
+                                <p class="mx-2 pt-1">to</p>
                                 <input id="item-speed-value-1" placeholder="Value" type="number" class="form-control text-center input-qty me-1" v-model="blacklisted_item.speed.value[1]">
                             </div>
                             <div v-else>

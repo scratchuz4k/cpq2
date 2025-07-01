@@ -38,7 +38,7 @@ const blacklisted_item = reactive({
 
 const saveItem = () => {
     router.post(
-        `/blacklist`,
+        `/blacklists`,
         blacklisted_item,
         {
             onSuccess: (page) => {
@@ -67,7 +67,7 @@ const items = ref([
     {label: "Home", url: "/"},
     {label: "My Account", url: "/myaccount"},
     {label: "Products", url: "/products"},
-    {label: "Blacklist", url: "/blacklist"},
+    {label: "Blacklists", url: "/blacklists"},
     {label: "New Item"},
 ]);
 </script>

@@ -7,8 +7,10 @@ use App\Enums\CloudMarketSuppliersEnum;
 use App\Enums\ComparisonOperatorsEnum;
 use App\Enums\ContractTermsEnum;
 use App\Enums\SpeedUnitsEnum;
+use App\Export\Export;
 use App\Http\Requests\BlacklistItemCreateRequest;
 use App\Http\Requests\BlacklistItemUpdateRequest;
+use App\Models\Blacklist;
 use App\Services\BlacklistService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -16,9 +18,12 @@ use Inertia\Response;
 use App\Models\Product;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\BaseController;
+use Maatwebsite\Excel\Facades\Excel;
 
 class BlacklistController extends BaseController
 {
+    protected $model = Blacklist::class;
+
     public function __construct(protected BlacklistService $blacklistService)
     {
         parent::__construct();
@@ -28,7 +33,7 @@ class BlacklistController extends BaseController
      */
     public function index()
     {
-        return Inertia::render('Blacklist/Index', [
+        return Inertia::render('Blacklists/Index', [
             'operators' => ComparisonOperatorsEnum::asArray()
         ]);
     }
@@ -38,7 +43,7 @@ class BlacklistController extends BaseController
      */
     public function create()
     {
-        return Inertia::render('Blacklist/Create', [
+        return Inertia::render('Blacklists/Create', [
             'providers' => array_map(function($item) {
                 if ($item["name"] === "Virtual1") {
                     $item["name"] = "PXC";
@@ -66,7 +71,7 @@ class BlacklistController extends BaseController
             }
             throw new \Exception($e);
         }
-        return redirect()->route('blacklist.index');
+        return redirect()->route('blacklists.index');
     }
 
     /**
@@ -91,7 +96,7 @@ class BlacklistController extends BaseController
             throw new \Exception($e);
         }
 
-        return Inertia::render('Blacklist/Edit', [
+        return Inertia::render('Blacklists/Edit', [
             'blacklisted_item' => $item,
             'providers' => array_map(function($item) {
                 if ($item["name"] === "Virtual1") {
@@ -123,7 +128,7 @@ class BlacklistController extends BaseController
             throw new \Exception($e);
         }
 
-        return redirect()->route('blacklist.index');
+        return redirect()->route('blacklists.index');
     }
 
     /**
@@ -133,4 +138,31 @@ class BlacklistController extends BaseController
     {
         //
     }
+
+    public function export(Request $request)
+    {
+
+
+        try {
+            $data =  $this->blacklistService->export($request->all());
+        } catch(\Exception $e) {
+            Log::debug($e->getMessage());
+            return $e->getMessage();
+        }
+
+        $date = now()->format('Y-m-d');
+        $model_name = class_basename($this->model);
+        $filename = "Export_{$model_name}_{$date}.xlsx";
+
+        try {
+            if (!$data->count()) {
+                throw new \Exception('No data Found!');
+            }
+            return Excel::download(new Export($this->model, $data), $filename);
+        } catch (\Exception $e) {
+            Log::debug($e->getMessage());
+            return response()->json(null, 204);
+        }
+    }
+
 }
