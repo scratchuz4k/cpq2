@@ -17,7 +17,7 @@ const proxyValue = computed({
 });
 const configs = reactive({
     unassigned_licenses: 0,
-    under_500_utilized_licenses: 0,
+    under_5_utilized_licenses: 0,
     turnoff_100_in_1_month: 0,
     turnoff_400_in_3_month: 0,
     duplicate_licenses: 0,
@@ -32,8 +32,8 @@ const configs = reactive({
     <div class="row justify-content-between mb-3">
         <div class="col-lg-8">
             <div class="mt-3 d-flex justify-content-between align-items-center">
-                <h3>Current Cost</h3>
-                <h3>£3,692.00</h3>
+                <h3>Total Monthly Cost</h3>
+                <h3>£2,528.00</h3>
             </div>
             <hr class="m-0" />
             <table id="table-simple " class="table table-dealmaker table-bordered table-hover mt-3">
@@ -41,20 +41,20 @@ const configs = reactive({
                 <thead>
                     <tr>
                         <th style="width: 70%">Products</th>
-                        <th>Qty</th>
-                        <th>Price</th>
+                        <th style="width: 15%">Qty</th>
+                        <th style="width: 15%">Price</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
-                        <td>Microsodt 365 Business Premium</td>
-                        <td>x27</td>
-                        <td>£2370.00</td>
+                        <td>Microsoft 365 Business Premium</td>
+                        <td>x67</td>
+                        <td>£1,206.00</td>
                     </tr>
                     <tr>
-                        <td>Microsodt Vision Plan 2</td>
+                        <td>Microsoft Visio Plan 2</td>
                         <td>x12</td>
-                        <td>£1322.00</td>
+                        <td>£1,322.00</td>
                     </tr>
                 </tbody>
             </table>
@@ -83,17 +83,17 @@ const configs = reactive({
 
             <div class="d-flex align-items-center gap-2 mt-3 py-2">
                 <Checkbox
-                    inputId="under_500_utilized_licenses"
-                    v-model="configs.under_500_utilized_licenses"
+                    inputId="under_5_utilized_licenses"
+                    v-model="configs.under_5_utilized_licenses"
                     binary
                     trueValue="1"
                     falseValue="0"
                 />
-                <label for="under_500_utilized_licenses" class="font-bold"> 500 under-utilised licenses</label>
+                <label for="under_5_utilized_licenses" class="font-bold"> 5 under-utilised licenses</label>
             </div>
             <ul class="ms-3">
                 <li>
-                    Vision license assigned, but low or no utilisation in 1 month (100), 3 months(400)<br />
+                    Visio license assigned, but low or no utilisation in 1 month (1), 3 months(4)<br />
 
                     <div class="d-flex align-items-center gap-2 py-1 mt-2">
                         <Checkbox
@@ -103,7 +103,7 @@ const configs = reactive({
                             trueValue="1"
                             falseValue="0"
                         />
-                        <label for="turnoff_100_in_1_month">Turn off 100x licences in 1 month</label>
+                        <label for="turnoff_100_in_1_month">Turn off 1x licences in 1 month</label>
                     </div>
                     <div class="d-flex align-items-center gap-2 py-1">
                         <Checkbox
@@ -113,7 +113,7 @@ const configs = reactive({
                             trueValue="1"
                             falseValue="0"
                         />
-                        <label for="turnoff_400_in_3_month">Turn off 400x licences in 3 month</label>
+                        <label for="turnoff_400_in_3_month">Turn off 4x licences in 3 month</label>
                     </div>
                 </li>
             </ul>
@@ -144,8 +144,8 @@ const configs = reactive({
             </div>
             <ul class="ms-3">
                 <li>
-                    User has Vision Plan 2 assigned (which includes desktop app) but is using we client (which could
-                    potentially be met by cheaper Vision Plan 1)
+                    User has Visio Plan 2 assigned (which includes desktop app) but is using web client (which could
+                    potentially be met by cheaper Visio Plan 1)
                 </li>
             </ul>
 
@@ -200,10 +200,10 @@ const configs = reactive({
                 </div>
                 <div class="col">
                     <RadioCard v-model="configs.cloud_selected_option" :value="'move'" name="cloud-selected-option">
-                        <p class="font-bold mb-2">Move to use</p>
+                        <p class="font-bold mb-2">Move to us</p>
                         <p>
                             No-risk action<br />
-                            FreePSA review up to £XXXX.XX saving
+                            FreePSA review up to £1,467.20 saving
                         </p>
                     </RadioCard>
                 </div>
@@ -211,7 +211,7 @@ const configs = reactive({
                     <RadioCard v-model="configs.cloud_selected_option" :value="'review'" name="cloud-selected-option">
                         <p class="font-bold mb-2">Paid PSA review</p>
                         <p>
-                            One-off fee of £XXX.XX<br />
+                            One-off fee of £356.00<br />
                             Keep licenses where they are
                         </p>
                     </RadioCard>
@@ -234,9 +234,9 @@ const configs = reactive({
             <div class="panel mt-3">
                 <div class="row">
                     <div class="col-12">
-                        <h5 class="font-bold mb-3">Potential Savings</h5>
-                        <p>Your current license toal is <strong>£XXXX.XX</strong></p>
-                        <p>You have a potential savings of up to <strong>£XXXX.XX</strong></p>
+                        <h5 class="font-bold mb-3">Potential Saving</h5>
+                        <p>Your total monthly cost is <strong>£2,528.00</strong></p>
+                        <p>You have a potential saving of up to <strong>£1,467.20</strong></p>
                     </div>
                 </div>
             </div>
