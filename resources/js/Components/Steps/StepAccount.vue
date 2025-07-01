@@ -21,6 +21,9 @@ const params = new Proxy(urlParams, {
 });
 const account_reference = params['account_reference'] ?? null;
 const getAccount = async () => {
+    if (!account_reference) {
+        return;
+    }
     let string = queryString.stringify({
         filters: JSON.stringify([
             {
