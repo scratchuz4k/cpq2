@@ -141,8 +141,6 @@ class BlacklistController extends BaseController
 
     public function export(Request $request)
     {
-
-
         try {
             $data =  $this->blacklistService->export($request->all());
         } catch(\Exception $e) {
