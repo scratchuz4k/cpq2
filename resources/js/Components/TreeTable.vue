@@ -2,13 +2,17 @@
 import TreeTableItem from "@/Components/TreeTableItem.vue";
 import queryString from "query-string";
 import axios from "axios";
-import { reactive, ref, useSlots, watch } from "vue";
+import {reactive, ref, useSlots, watch} from "vue";
 import Paginator from "primevue/paginator";
 import Dialog from "primevue/dialog";
 import IconField from "primevue/iconfield";
 import InputText from "primevue/inputtext";
 import InputIcon from "primevue/inputicon";
 import _ from "lodash";
+import Button from "primevue/button";
+import {can, hasRole} from "@/Composables/useAuth.js";
+import pluralize from "pluralize";
+import {exportData} from "@/Composables/export.js";
 
 const slots = useSlots();
 const usedSlots = Object.keys(slots);
@@ -42,6 +46,8 @@ let data = ref([]);
 let selectedItem = ref(null);
 let showModal = ref(false);
 const global = ref(null);
+const emptyData = ref(true);
+const has_export_permission = can(`export ${pluralize.singular(props.route.replace(/^\//, ''))}`) || hasRole('Super Admin');
 
 const getData = async () => {
   let filters = !global.value
@@ -88,6 +94,26 @@ const sortBy = (column) => {
   meta.orderBy = column;
 };
 
+const getExportData = async () => {
+    let filters = !global.value
+        ? [
+            {
+                column: "parent_id",
+                operator: "is_null",
+                value: "null",
+            },
+        ]
+        : [];
+
+    let string = queryString.stringify({
+        ...meta,
+        filters: JSON.stringify(filters),
+        search: global.value,
+    });
+
+    exportData(string, props.route);
+};
+
 watch(
   () => [meta.order, meta.orderBy],
   function () {
@@ -106,19 +132,27 @@ watch(
 
 <template>
   <div>
-    <div class="d-flex justify-content-end">
-      <IconField>
-        <InputIcon>
-          <font-awesome-icon :icon="['fas', 'search']" />
-        </InputIcon>
-        <InputText
-          id="treetable-search"
-          v-model="global"
-          type="search"
-          placeholder="Keyword Search"
-        />
-      </IconField>
-    </div>
+
+      <div class="d-flex justify-content-between">
+          <Button v-if="emptyData && has_export_permission"
+                  :class="['me-2']"
+                  type="button"
+                  @click="getExportData()"
+          >
+              <font-awesome-icon :icon="['fas', 'file-export']"/>
+          </Button>
+          <IconField>
+              <InputIcon>
+                  <font-awesome-icon :icon="['fas', 'search']"/>
+              </InputIcon>
+              <InputText
+                  id="treetable-search"
+                  v-model="global"
+                  placeholder="Keyword Search"
+                  type="search"
+              />
+          </IconField>
+      </div>
     <table :id="props.id" class="table w-100">
       <thead>
         <tr>
