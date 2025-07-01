@@ -37,7 +37,7 @@ it('Blacklists CRUD', function () {
         'contractTermMonths' => null
     ];
 
-    $response = $this->post('blacklist', $data);
+    $response = $this->post('blacklists', $data);
     $response->assertRedirect();
 
     $blacklist_file = new BlacklistFile($this->user->currentTenant);
