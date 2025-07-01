@@ -4,13 +4,13 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Requests\Auth\LoginRequest;
 use App\Models\User;
+use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 use Inertia\Controller;
-use PHPUnit\Framework\Exception;
 
 class IntegrateAuthController extends Controller
 {
@@ -18,7 +18,7 @@ class IntegrateAuthController extends Controller
     {
         try {
             $decrypted = Crypt::decrypt($token);
-        } catch (Exception $ex) {
+        } catch (DecryptException $e) {
             abort(403);
         }
 
