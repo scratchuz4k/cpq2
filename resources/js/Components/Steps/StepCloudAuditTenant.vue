@@ -31,7 +31,7 @@ const activateTiming = () => {
     tenant_review_active.value = !tenant_review_active.value;
     setTimeout(() => {
         currentStep.value++;
-    }, 50000);
+    }, 5000);
 };
 const extractDomain = (email) => {
     // Split by '@' and take the last part
