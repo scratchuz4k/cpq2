@@ -1,6 +1,6 @@
 <script setup>
 import { Checkbox } from 'primevue';
-import { computed, reactive } from 'vue';
+import { computed, ref, reactive, watch } from 'vue';
 const props = defineProps({
     solutionType: Array,
     modelValue: Object
@@ -15,12 +15,12 @@ const proxyValue = computed({
         emit('update:modelValue', val);
     }
 });
-const baseSavings = 1467.2;
+
 const configs = reactive({
     unassigned_licenses: 0,
     under_5_utilized_licenses: 0,
-    turnoff_100_in_1_month: 0,
-    turnoff_400_in_3_month: 0,
+    turnoff_1_in_1_month: 0,
+    turnoff_4_in_3_month: 0,
     duplicate_licenses: 0,
     wrong_product_plan: 0,
     optional_saving_inefficient_bundle: 0,
@@ -30,12 +30,37 @@ const configs = reactive({
 
 const checkedCount = computed(() => {
     return Object.entries(configs)
-        .filter(([key, value]) => key !== 'cloud_selected_option')
+        .filter(([key, value]) => key !== 'cloud_selected_option' && key !== 'under_5_utilized_licenses')
         .reduce((sum, [key, value]) => sum + (value == 1 ? 1 : 0), 0);
 });
 
+function handleUnder5UtilizedClick(event) {
+    event.preventDefault();
+
+    if (configs.under_5_utilized_licenses == '0') {
+        configs.turnoff_1_in_1_month = '1';
+        configs.turnoff_4_in_3_month = '1';
+        configs.under_5_utilized_licenses = '1';
+    } else {
+        configs.turnoff_1_in_1_month = '0';
+        configs.turnoff_4_in_3_month = '0';
+        configs.under_5_utilized_licenses = '0';
+    }
+}
+
+watch(
+    () => [configs.turnoff_1_in_1_month, configs.turnoff_4_in_3_month],
+    ([val1, val4]) => {
+        if (val1 == '1' || val4 == '1') {
+            configs.under_5_utilized_licenses = '1';
+        } else {
+            configs.under_5_utilized_licenses = '0';
+        }
+    }
+);
+
 const dynamicSavings = computed(() => {
-    return baseSavings + baseSavings * 0.05 * checkedCount.value;
+    return 1746 * 0.1 * checkedCount.value;
 });
 </script>
 
@@ -44,7 +69,7 @@ const dynamicSavings = computed(() => {
         <div class="col-lg-8">
             <div class="mt-3 d-flex justify-content-between align-items-center">
                 <h3>Total Monthly Cost</h3>
-                <h3>£2,528.00</h3>
+                <h3>£1,746.00</h3>
             </div>
             <hr class="m-0" />
             <table id="table-simple " class="table table-dealmaker table-bordered table-hover mt-3">
@@ -64,8 +89,8 @@ const dynamicSavings = computed(() => {
                     </tr>
                     <tr>
                         <td>Microsoft Visio Plan 2</td>
-                        <td>x12</td>
-                        <td>£1,322.00</td>
+                        <td>x45</td>
+                        <td>£540.00</td>
                     </tr>
                 </tbody>
             </table>
@@ -102,6 +127,7 @@ const dynamicSavings = computed(() => {
                     binary
                     trueValue="1"
                     falseValue="0"
+                    @click="handleUnder5UtilizedClick"
                 />
                 <label for="under_5_utilized_licenses" class="font-bold"> 5 under-utilised licenses</label>
             </div>
@@ -111,23 +137,23 @@ const dynamicSavings = computed(() => {
 
                     <div class="d-flex align-items-center gap-2 py-1 mt-2">
                         <Checkbox
-                            inputId="turnoff_100_in_1_month"
-                            v-model="configs.turnoff_100_in_1_month"
+                            inputId="turnoff_1_in_1_month"
+                            v-model="configs.turnoff_1_in_1_month"
                             binary
                             trueValue="1"
                             falseValue="0"
                         />
-                        <label for="turnoff_100_in_1_month">Turn off 1x licences in 1 month</label>
+                        <label for="turnoff_1_in_1_month">Turn off 1x licences in 1 month</label>
                     </div>
                     <div class="d-flex align-items-center gap-2 py-1">
                         <Checkbox
-                            inputId="turnoff_400_in_3_month"
-                            v-model="configs.turnoff_400_in_3_month"
+                            inputId="turnoff_4_in_3_month"
+                            v-model="configs.turnoff_4_in_3_month"
                             binary
                             trueValue="1"
                             falseValue="0"
                         />
-                        <label for="turnoff_400_in_3_month">Turn off 4x licences in 3 month</label>
+                        <label for="turnoff_4_in_3_month">Turn off 4x licences in 3 month</label>
                     </div>
                 </li>
             </ul>
@@ -249,7 +275,7 @@ const dynamicSavings = computed(() => {
                 <div class="row">
                     <div class="col-12">
                         <h5 class="font-bold mb-3">Potential Saving</h5>
-                        <p>Your total monthly cost is <strong>£2,528.00</strong></p>
+                        <p>Your total monthly cost is <strong>£1,746.00</strong></p>
                         <br />
                         <p>
                             You have a potential saving of up to
