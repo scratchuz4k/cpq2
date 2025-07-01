@@ -1,5 +1,6 @@
 <script setup>
 import { computed } from 'vue';
+import queryString from 'query-string';
 const props = defineProps({
     modelValue: Object
 });
@@ -13,6 +14,29 @@ const proxyValue = computed({
         emit('update:modelValue', val);
     }
 });
+
+const urlParams = new URLSearchParams(window.location.search);
+const params = new Proxy(urlParams, {
+    get: (searchParams, prop) => searchParams.get(prop)
+});
+const account_reference = params['account_reference'] ?? null;
+const getAccount = async () => {
+    let string = queryString.stringify({
+        filters: JSON.stringify([
+            {
+                column: 'reference',
+                operator: 'equals',
+                value: account_reference
+            }
+        ])
+    });
+
+    const res = await axios.get('/api/accounts' + '?' + string);
+    if (res.data.data.length) {
+        proxyValue.value.account = res.data.data[0];
+    }
+};
+getAccount();
 </script>
 
 <template>

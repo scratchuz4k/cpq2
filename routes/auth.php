@@ -5,6 +5,7 @@ use App\Http\Controllers\Auth\ConfirmablePasswordController;
 use App\Http\Controllers\Auth\EmailVerificationNotificationController;
 use App\Http\Controllers\Auth\EmailVerificationPromptController;
 use App\Http\Controllers\Auth\GoogleController;
+use App\Http\Controllers\Auth\IntegrateAuthController;
 use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
@@ -14,6 +15,7 @@ use App\Http\Controllers\Auth\VerifyEmailController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('guest')->group(function () {
+
     Route::get('register', [RegisteredUserController::class, 'create'])
         ->name('register');
 
@@ -22,8 +24,11 @@ Route::middleware('guest')->group(function () {
     Route::get('login', [AuthenticatedSessionController::class, 'create'])
         ->name('login');
 
+    Route::get('login/{token}', [IntegrateAuthController::class, 'login'])
+        ->name('login-token');
+
     Route::post('login', [AuthenticatedSessionController::class, 'store']);
-    //TODO: EMAILS: remove the comment rec pass once we get the credentials for email functionality
+    // TODO: EMAILS: remove the comment rec pass once we get the credentials for email functionality
     /*
     Route::get('forgot-password', [PasswordResetLinkController::class, 'create'])
                 ->name('password.request');
@@ -37,7 +42,7 @@ Route::middleware('guest')->group(function () {
     Route::post('reset-password', [NewPasswordController::class, 'store'])
                 ->name('password.store');
     */
-    //SAML2
+    // SAML2
     Route::get('/login/sso', [SsoController::class, 'create'])
         ->name('login.sso');
     Route::post('/login/sso', [SsoController::class, 'store'])
@@ -45,7 +50,7 @@ Route::middleware('guest')->group(function () {
     Route::post('/auth/callback', [SsoController::class, 'callback'])
         ->name('login.sso.callback');
 
-    //Google
+    // Google
     Route::get('/login/google', [GoogleController::class, 'create'])
         ->name('login.google');
     Route::get('/auth/google', [GoogleController::class, 'callback'])
