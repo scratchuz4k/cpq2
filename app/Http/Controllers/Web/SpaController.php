@@ -129,13 +129,19 @@ class SpaController extends BaseController
             return $e->getMessage();
         }
 
-       $data->map(function ($item) {
-           $item['field_1'] = app($item->rule->entity_1)::where('id', $item->field_1)->first()->name ?? null;
-           $item['field_2'] = $item->rule->entity_2 ? app($item->rule->entity_2)::where('id', $item->field_2)->first()->name : null;
-           $item['operation'] = $item->operation?->code ?? null;
-           $item['rule'] = $item->rule?->name ?? null;
-           unset($item['rule_id'], $item['operation_id']);
-           return $item;
+       $data = $data->map(function ($item) {
+           return [
+               'id' => $item->id,
+               'rule' => $item->rule?->name ?? null,
+               'level_1' => app($item->rule->entity_1)::where('id', $item->field_1)->first()->name ?? null,
+               'level_2' => $item->rule->entity_2 ? app($item->rule->entity_2)::where('id', $item->field_2)->first()->name : null,
+               'price_plan' => $item['price_plan_id'],
+               'operation' => $item->operation?->code ?? null,
+               'value' => $item->value,
+               'percentage' => $item->percentage,
+               'created_at' => $item->created_at,
+               'updated_at' => $item->updated_at,
+           ];
        });
 
         $date = now()->format('Y-m-d');
