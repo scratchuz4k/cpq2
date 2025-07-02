@@ -15,8 +15,8 @@ const props = defineProps({
 });
 
 const configurations = reactive({
-    speed: props.modelValue.configs?.speed ? props.modelValue.configs.speed.split(',') : [0, 10000],
-    bearer: props.modelValue.configs?.bearer ? props.modelValue.configs.bearer.split(',') : [0, 10000],
+    speed: props.modelValue.configs?.speed ? props.modelValue.configs.speed.split(',') : [10, 10000],
+    bearer: props.modelValue.configs?.bearer ? props.modelValue.configs.bearer.split(',') : [100, 10000],
     contract_length: props.modelValue.configs?.contract_length
         ? props.modelValue.configs.contract_length.split(',')
         : [],
@@ -119,8 +119,14 @@ const formatInput = (ev, field, index) => {
         field[index] = 10000;
         return;
     }
-    if (ev.target.value < 0) {
-        field[index] = 0;
+
+    if (field == configurations.speed && ev.target.value < 10) {
+        field[index] = 10;
+        return;
+    }
+
+    if (field == configurations.bearer && ev.target.value < 100) {
+        field[index] = 100;
         return;
     }
 
@@ -256,7 +262,7 @@ watch(addressPostCode, () => {
                         <div class="w-20">
                             <input
                                 type="number"
-                                min="0"
+                                min="10"
                                 max="10000"
                                 class="form-control w-100"
                                 @change="(ev) => formatInput(ev, configurations.speed, 0)"
@@ -264,15 +270,12 @@ watch(addressPostCode, () => {
                             />
                         </div>
                         <div class="px-4 mb-3" style="width: 80%">
-                            <SpeedRange
-                                v-model="configurations.speed"
-                                :options="[0, 10, 100, 1000, 10000]"
-                            ></SpeedRange>
+                            <SpeedRange v-model="configurations.speed" :options="[10, 100, 1000, 10000]"></SpeedRange>
                         </div>
                         <div class="w-20">
                             <input
                                 type="number"
-                                :min="0"
+                                :min="10"
                                 :max="10000"
                                 @change="(ev) => formatInput(ev, configurations.speed, 1)"
                                 class="form-control w-100"
@@ -296,7 +299,7 @@ watch(addressPostCode, () => {
                         <div class="w-20">
                             <input
                                 type="number"
-                                min="0"
+                                min="100"
                                 max="10000"
                                 class="form-control w-100"
                                 @change="(ev) => formatInput(ev, configurations.bearer, 0)"
@@ -304,15 +307,12 @@ watch(addressPostCode, () => {
                             />
                         </div>
                         <div class="px-4 mb-3" style="width: 80%">
-                            <BearerRange
-                                v-model="configurations.bearer"
-                                :options="[0, 10, 100, 1000, 10000]"
-                            ></BearerRange>
+                            <BearerRange v-model="configurations.bearer" :options="[100, 1000, 10000]"></BearerRange>
                         </div>
                         <div class="w-20">
                             <input
                                 type="number"
-                                :min="0"
+                                :min="100"
                                 :max="10000"
                                 @change="(ev) => formatInput(ev, configurations.bearer, 1)"
                                 class="form-control w-100"

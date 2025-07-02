@@ -26,18 +26,23 @@ describe('Creates a Mobile Quote', () => {
         cy.get('.notyf').contains('Updated with Success');
     });
 
-    it("Creates Connectivity quote and has simple Table", () => {
-        cy.visit("/");
-        cy.get("#create-tab").click();
-        cy.selectLazyOption("account_id");
-        cy.selectOption('#solution_id', 'Connectivity');
-        cy.get("#input_address").type("EH32 9NT");
+    it('Creates Connectivity quote and has simple Table', () => {
+        cy.visit('/');
+        cy.get('#create-tab').click();
+        cy.selectLazyOption('account_id');
+        cy.get('#btn-next-step').click();
+
+        cy.get('#solution_type-connectivity').click();
+        cy.get('#btn-next-step').click();
+
+        cy.get('#input_address').type('EH32 9NT');
         cy.selectOption('#select_address', 1);
-        cy.get("#btn-create-quote").should("not.be.disabled").click();
+        cy.get('#btn-next-step').click();
+        cy.get('#btn-create-quote').should('not.be.disabled').click();
         // Scroll back to top
         cy.scrollTo('top');
         //Provider filter
-        cy.get("#provider-multiselect").click();
+        cy.get('#provider-multiselect').click();
 
         cy.get('.p-multiselect-list-container')
             .eq(0)
@@ -46,7 +51,7 @@ describe('Creates a Mobile Quote', () => {
             });
 
         //SubProvider filter
-        cy.get("#subprovider-multiselect").click();
+        cy.get('#subprovider-multiselect').click();
         cy.wait(500);
 
         cy.get('.p-multiselect-list-container')

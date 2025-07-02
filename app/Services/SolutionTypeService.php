@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\SolutionType;
+use App\Models\SolutionTypeTenant;
 use Illuminate\Support\Facades\Auth;
 
 class SolutionTypeService
@@ -23,7 +24,9 @@ class SolutionTypeService
             $solution_type->syncConfigurations($array['configurations']);
         }
 
-        $solution_type->tenants()->updateExistingPivot(Auth::user()->tenant_id, [
+        $solutionTypeTenant = SolutionTypeTenant::where(['tenant_id' => Auth::user()->tenant_id, 'solution_type_id' => $solution_type->id])->first();
+        $solutionTypeTenant->update([
+            'estimated_time' => array_key_exists('estimated_time', $array) ? $array['estimated_time'] : null,
             'updated_at' => now(),
         ]);
 
