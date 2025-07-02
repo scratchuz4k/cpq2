@@ -71,12 +71,6 @@ class RolePermissionSeeder extends Seeder
                 'permissions' => [],
                 'simple_permission' => [],
             ],
-            'Support Agent' => [
-                'parent' => 'Super Admin',
-                'permissions' => ['merchant', 'account', 'contact', 'token', 'quote', 'quote_item', 'order', 'order_item', 'activity', 'price_plan'],
-                'simple_permission' => ['viewAny product', 'view product', 'viewAny category', 'view category'],
-                'deny_permission' => ['export']
-            ],
             'Company Admin' => [
                 'parent' => 'Super Admin',
                 'permissions' => [
@@ -87,8 +81,19 @@ class RolePermissionSeeder extends Seeder
                 ],
                 'simple_permission' => []
             ],
-            'Sales Rep' => [
+            'Support Agent' => [
                 'parent' => 'Company Admin',
+                'permissions' => ['merchant', 'account', 'contact', 'token', 'quote', 'quote_item', 'order', 'order_item', 'activity', 'price_plan'],
+                'simple_permission' => ['viewAny product', 'view product', 'viewAny category', 'view category'],
+                'deny_permission' => ['export']
+            ],
+            'Sales Manager' => [
+                'parent' => 'Company Admin',
+                'permissions' => ['quote', 'quote_item', 'account', 'contact', 'brand', 'supplier', 'activity', 'price_plan', 'user', 'group'],
+                'simple_permission' => ['viewAny product', 'view product', 'viewAny category', 'view category'],
+            ],
+            'Sales Rep' => [
+                'parent' => 'Sales Manager',
                 'permissions' => ['quote', 'quote_item', 'account', 'contact', 'brand', 'supplier', 'activity', 'price_plan'],
                 'simple_permission' => ['viewAny product', 'view product', 'viewAny category', 'view category'],
                 'deny_permission' => ['export']

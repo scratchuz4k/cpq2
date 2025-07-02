@@ -1,94 +1,93 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, router } from '@inertiajs/vue3';
-import { reactive, ref } from 'vue'
-import QuotesSolutionView from "@/Views/Quotes/QuotesSolutionView.vue";
+import { reactive, ref, watch } from 'vue';
+import { currentStep, initSteps, steps } from '@composables/useQuoteSteps';
 
-
-defineProps({
+const props = defineProps({
     accounts: Array,
     solution_types: Object,
+    steps: Object
 });
 
-const form = reactive({
+// const configurations = reactive({
+//     speed: props.modelValue.configs?.speed ? props.modelValue.configs.speed.split(',') : [0, 10000],
+//     bearer: props.modelValue.configs?.bearer ? props.modelValue.configs.bearer.split(',') : [0, 10000],
+//     contract_length: props.modelValue.configs?.contract_length
+//         ? props.modelValue.configs.contract_length.split(',')
+//         : [],
+//     managed: props.modelValue.configs?.managed ? props.modelValue.configs.managed : '0'
+// });
+
+const quote = reactive({
     isLoading: false,
     account: null,
     solution_type: null,
     address: null,
+    configs: {
+        speed: [10, 10000],
+        bearer: [100, 10000],
+        contract_length: [],
+        managed: '0'
+    },
     postCode: null,
     position: null,
     solutionCheck: true
-})
+});
 
 const submit = () => {
-    try {
-        router.post('/quotes',
-            {
-                account_id: form.account?.id,
-                address_position: form.position,
-                address_city: form.address?.postTown,
-                address_data: form.address,
-                address_line1: form.address?.label,
-                address_postcode: form.address?.postCode,
-                solution_type_id: form.solution_type.id
-            })
-    } catch (ex) {
-        alert(ex.response.data.message)
+    let configs = {};
+    if (quote.solution_type?.code == 3) {
+        Object.keys(quote.configs).forEach((key) => {
+            configs[key] = Array.isArray(quote.configs[key]) ? quote.configs[key].join(',') : quote.configs[key];
+        });
     }
-}
-const items = ref([
-    { label: 'Home', url: '/dashboard' },
-    { label: 'Create a quote' },
-]);
 
+    try {
+        router.post('/quotes', {
+            account_id: quote.account?.id,
+            address_position: quote.position,
+            address_city: quote.address?.postTown,
+            address_data: quote.address,
+            address_line1: quote.address?.label,
+            address_postcode: quote.address?.postCode,
+            solution_type_id: quote.solution_type.id,
+            configurations: configs
+        });
+    } catch (ex) {
+        alert(ex.response.data.message);
+    }
+};
 
+watch(
+    () => [quote.solution_type],
+    () => {
+        if (quote.solution_type) {
+            let temp = props.steps;
+            steps.value = [...initSteps, ...temp[quote.solution_type.name]];
+        } else {
+            steps.value = [...initSteps];
+        }
+    }
+);
+const items = ref([{ label: 'Home', url: '/dashboard' }, { label: 'Create a quote' }]);
 </script>
 
 <template>
-
     <Head title="Create a quote" />
-    <AuthenticatedLayout>
 
+    <AuthenticatedLayout>
         <Header title="Create a quote" :breadcrumbs="items"></Header>
-        <h5 class="font-bold my-3">Select an account to start a quote</h5>
 
         <form @submit.prevent="submit">
-            <div class="row mb-3">
-                <div class="col-6">
-                    <div class="panel mb-3 ">
-                        <div class="row">
-                            <div class="col-8">
-                                <h5 class="font-bold mb-3">Select an account to start a quote</h5>
-                                <div class="mb-3">
-                                    <label for="account_id" class="form-label">Account <span
-                                            class="text-primary fw-bold">*</span></label>
-                                    <InputSelect id="account_id" v-model="form.account" url="/accounts"
-                                        :fields="['name', 'reference']" :placeholder="'Select an Account'">
-                                    </InputSelect>
-                                </div>
-                                or create a <a id="link-to-create-account" href="/accounts/create"
-                                    class="text-primary">new account</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <template v-if="form.account">
-                <QuotesSolutionView v-model="form" :solution_types="solution_types"></QuotesSolutionView>
-                <div class="row mb-3 ">
-                    <div class="col-6 d-flex justify-content-end">
-                        <button id="btn-create-quote" class="btn btn-primary" type="submit"
-                            :disabled="form.solutionCheck">
-                            Get prices
-                            <font-awesome-icon :icon="['fas', 'arrow-right']" class="ms-2"></font-awesome-icon>
-                            <div v-if="form.isLoading" class="spinner-border  spinner-border-sm" role="status">
-                                <span class="visually-hidden">Loading...</span>
-                            </div>
-                        </button>
-                    </div>
-                </div>
-            </template>
-
+            <component
+                :is="steps[currentStep]"
+                @nextStep="() => currentStep++"
+                v-bind="{
+                    solutionType: props.solution_types,
+                    modelValue: quote
+                }"
+            ></component>
         </form>
     </AuthenticatedLayout>
 </template>

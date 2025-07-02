@@ -4,6 +4,7 @@ namespace App\Helpers\Api;
 
 use App\Enums\CloudMarketSuppliersEnum;
 use App\Models\Api;
+use App\Models\Quote;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
@@ -11,7 +12,7 @@ class CloudMarketApi
 {
     public function __construct() {}
 
-    public static function getQuotes($connectivityType, CloudMarketAddress $address)
+    public static function getQuotes(Quote $quote, $connectivityType, CloudMarketAddress $address)
     {
 
         $url = env('CLOUDMARKET_CONNECTION_SERVICE_URL', 'https://cpq-poc-uat-api.cloudmarket.com');
@@ -33,7 +34,36 @@ class CloudMarketApi
             'Address1.Town' => $address->town,
 
             'ManagedOption' => 0,
+            'TermMonths' => [],
+            'ConnectionSpeeds.MinBearer' => 100,
+            'ConnectionSpeeds.MaxBearer' => 100000,
+            'ConnectionSpeeds.MinSpeed' => 10,
+            'ConnectionSpeeds.MaxSpeed' => 100000,
         ];
+
+        if (array_key_exists('managed', $quote->configs)) {
+            $quoteAddress['ManagedOption'] = (int) $quote->configs['managed'];
+        }
+
+        if (array_key_exists('contract_length', $quote->configs)) {
+            $quoteAddress['TermMonths'] = (bool) $quote->configs['contract_length'] ? explode(',', $quote->configs['contract_length']) : [];
+        }
+
+        if (array_key_exists('bearer', $quote->configs)) {
+            $temp = explode(',', $quote->configs['bearer']);
+            if (count($temp) == 2) {
+                $quoteAddress['ConnectionSpeeds.MinBearer'] = (int) $temp[0];
+                $quoteAddress['ConnectionSpeeds.MaxBearer'] = (int) $temp[1];
+            }
+        }
+
+        if (array_key_exists('speed', $quote->configs)) {
+            (int) $temp = explode(',', $quote->configs['speed']);
+            if (count($temp) == 2) {
+                $quoteAddress['ConnectionSpeeds.MinSpeed'] = (int) $temp[0];
+                $quoteAddress['ConnectionSpeeds.MaxSpeed'] = (int) $temp[1];
+            }
+        }
 
         Log::debug('CloudMarketApi::getQuotes lookup:', $quoteAddress);
 
