@@ -7,21 +7,31 @@
         >
             <div :class="[!showAsColumn ? 'me-4' : '']">
                 <div class="d-flex justify-content-center align-items-middle">
-                    <a
-                        @click="() => (displayBasic = !displayBasic)"
-                        :href="proxyValue.url"
-                        target="_blank"
-                        style="cursor: pointer"
-                    >
+                    <template v-if="proxyValue.primary_image">
+                        <a class="product-gallery-link" @click="() => (displayBasic = !displayBasic)">
+                            <img
+                                :src="proxyValue.primary_image"
+                                style="object-fit: contain"
+                                :style="{
+                                    width: '140px',
+                                    height: '140px'
+                                }"
+                            />
+                            <span
+                                ><font-awesome-icon :icon="['fas', 'magnifying-glass']" style="font-size: 1.5rem"
+                            /></span>
+                        </a>
+                    </template>
+                    <template v-else>
                         <img
-                            :src="proxyValue.primary_image ?? '/images/no_image.png'"
+                            src="/images/no_image.png"
                             style="object-fit: contain"
                             :style="{
                                 width: '140px',
                                 height: '140px'
                             }"
                         />
-                    </a>
+                    </template>
                 </div>
             </div>
             <div class="w-100">
@@ -209,18 +219,29 @@
                 </div>
             </div>
         </Dialog>
+
         <Galleria
             v-model:visible="displayBasic"
             :value="proxyValue.images"
-            :responsiveOptions="responsiveOptions"
             :fullScreen="true"
+            :numVisible="10"
+            :showItemNavigators="proxyValue.images && proxyValue.images.length > 1 ? true : false"
+            :showThumbnails="proxyValue.images && proxyValue.images.length > 1 ? true : false"
+            style="z-index: 100"
         >
             <template #item="slotProps">
                 <div style="width: 100%; height: 100%; background: white; display: flex; justify-content: center">
                     <img
                         :src="slotProps.item.url"
                         :alt="slotProps.item.alt"
-                        style="max-width: 600px; max-height: 600px; display: block; object-fit: contain"
+                        style="
+                            max-height: 85vh;
+                            height: auto;
+                            width: auto;
+                            object-fit: contain;
+                            display: block;
+                            margin: 0 auto;
+                        "
                     />
                 </div>
             </template>
@@ -228,7 +249,7 @@
                 <img
                     :src="slotProps.item.url"
                     :alt="slotProps.item.alt"
-                    style="display: block; width: 100px; height: 100px"
+                    style="display: block; width: 100px; height: 100px; object-fit: contain; margin: 0 auto"
                 />
             </template>
         </Galleria>
@@ -344,24 +365,27 @@ const openModal = async () => {
     await getFeaturesTable();
     loadingFeatures.value = false;
 };
-const responsiveOptions = ref([
-    {
-        breakpoint: '1500px',
-        numVisible: 5
-    },
-    {
-        breakpoint: '1024px',
-        numVisible: 3
-    },
-    {
-        breakpoint: '768px',
-        numVisible: 2
-    },
-    {
-        breakpoint: '560px',
-        numVisible: 1
+const handleGalleriaKeyUp = (e) => {
+    if (e.key === 'Escape') {
+        displayBasic.value = false;
     }
-]);
+};
+
+const handleGalleriaOverlayClick = (e) => {
+    if (e.target.classList.contains('p-overlay-mask')) {
+        displayBasic.value = false;
+    }
+};
+
+watch(displayBasic, (newVal) => {
+    if (newVal) {
+        document.addEventListener('keyup', handleGalleriaKeyUp);
+        document.addEventListener('click', handleGalleriaOverlayClick, true);
+    } else {
+        document.removeEventListener('keyup', handleGalleriaKeyUp);
+        document.removeEventListener('click', handleGalleriaOverlayClick, true);
+    }
+});
 
 watch(searchInput, () => {
     getFeaturesTable();
@@ -409,5 +433,50 @@ watch(searchInput, () => {
 .shopblock-product:hover {
     cursor: pointer;
     box-shadow: var(--color-purple) 0px 1px 8px 0px;
+}
+
+.product-gallery-link {
+    display: block;
+    cursor: pointer;
+    position: relative;
+    width: 140px;
+    height: 140px;
+}
+.product-gallery-link:after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background: rgba(255, 255, 255, 0);
+    transition: background 0.2s ease-in-out;
+}
+
+.product-gallery-link:hover:after {
+    background: rgba(255, 255, 255, 0.33);
+}
+
+.product-gallery-link span {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    margin: auto;
+    width: 30px;
+    height: 30px;
+    display: block;
+    text-align: center;
+    opacity: 0;
+    transition: opacity 0.2s ease-in-out;
+}
+
+.product-gallery-link:hover span {
+    opacity: 1;
+}
+
+.p-galleria-close-button {
+    z-index: 1000 !important;
 }
 </style>

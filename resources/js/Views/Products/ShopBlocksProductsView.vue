@@ -241,10 +241,15 @@ watch(
 </script>
 <template>
     <div id="mobile_step_shopblocks" class="step">
+        <div class="row">
+            <div class="d-flex justify-content-between mb-3">
+                <h2>Select some products</h2>
+                <p class="bigger text-primary bold">STEP {{ step }}/{{ step }}</p>
+            </div>
+        </div>
         <div class="row justify-content-end">
             <div class="col-3">
                 <div class="d-flex justify-content-between mb-3">
-                    <p class="bigger text-primary bold">STEP {{ step }}/{{ step }}</p>
                     <div class="d-flex">
                         <h2>Products ({{ meta.total }})</h2>
                     </div>
@@ -252,7 +257,7 @@ watch(
             </div>
             <div class="col-9">
                 <div class="d-flex justify-content-between align-items-end mb-3">
-                    <div class="d-flex justify-content-end">
+                    <div class="d-flex flex-fill justify-content-start">
                         <button
                             class="btn border"
                             :class="[showCards ? 'btn-dark' : '']"
@@ -269,6 +274,10 @@ watch(
                         >
                             <font-awesome-icon :icon="['fas', 'grip-lines']"></font-awesome-icon>
                         </button>
+                    </div>
+                    <div class="d-flex justify-content-end">
+                        <span class="me-2 align-self-center">Sort by</span>
+                        <Select v-model="sort" :options="sorts" optionLabel="label" placeholder="All"> </Select>
                     </div>
                 </div>
             </div>
@@ -305,11 +314,6 @@ watch(
                         </li>
                     </ul>
 
-                    <div class="mb-4">
-                        <h2>Sort by</h2>
-                        <Select v-model="sort" :options="sorts" optionLabel="label" placeholder="All" class="w-100">
-                        </Select>
-                    </div>
                     <div class="mb-4">
                         <h2>Categories</h2>
                         <ShopBlocksCategoriesTree v-model="currentCategory"></ShopBlocksCategoriesTree>
