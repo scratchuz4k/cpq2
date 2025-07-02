@@ -95,4 +95,17 @@ class GroupAccountController extends BaseController
             return response()->json(null, 204);
         }
     }
+
+    protected function transformExportData(Collection $data): Collection
+    {
+        return new Collection($data->map(function ($item) {
+            return [
+                'id' => $item->id ?? null,
+                'group' => $item->group?->name ?? null,
+                'account' => $item->account?->name ?? null,
+                'created_at' => $item->created_at ?? null,
+                'updated_at' => $item->updated_at ?? null,
+            ];
+        }));
+    }
 }

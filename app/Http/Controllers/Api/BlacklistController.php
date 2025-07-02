@@ -2,16 +2,12 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Export\Export;
-use App\Helpers\DataProvider;
 use App\Http\Controllers\BaseController;
-use App\Models\Blacklist;
-use App\Models\Tenant;
+use App\Models\General\Blacklist;
 use App\Services\BlacklistService;
 use Dedoc\Scramble\Attributes\ExcludeAllRoutesFromDocs;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
-use Maatwebsite\Excel\Facades\Excel;
 
 #[ExcludeAllRoutesFromDocs]
 class BlacklistController extends BaseController

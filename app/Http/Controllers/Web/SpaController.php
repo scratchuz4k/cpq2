@@ -118,44 +118,22 @@ class SpaController extends BaseController
         //
     }
 
-    public function export(Request $request)
+
+    protected function transformExportData(Collection $data): Collection
     {
-        $dataProvider = new DataProvider($this->model);
-
-        try {
-            $data = $dataProvider->getCollection();
-        } catch(\Exception $e) {
-            Log::debug($e->getMessage());
-            return $e->getMessage();
-        }
-
-       $data = $data->map(function ($item) {
-           return [
-               'id' => $item->id,
-               'rule' => $item->rule?->name ?? null,
-               'level_1' => app($item->rule->entity_1)::where('id', $item->field_1)->first()->name ?? null,
-               'level_2' => $item->rule->entity_2 ? app($item->rule->entity_2)::where('id', $item->field_2)->first()->name : null,
-               'price_plan' => $item['price_plan_id'],
-               'operation' => $item->operation?->code ?? null,
-               'value' => $item->value,
-               'percentage' => $item->percentage,
-               'created_at' => $item->created_at,
-               'updated_at' => $item->updated_at,
-           ];
-       });
-
-        $date = now()->format('Y-m-d');
-        $model_name = class_basename($this->model);
-        $filename = "Export_{$model_name}_{$date}.xlsx";
-
-        try {
-            if (!$data->count()) {
-                throw new \Exception('No data Found!');
-            }
-            return Excel::download(new Export($this->model, new Collection($data)), $filename);
-        } catch (\Exception $e) {
-            Log::debug($e->getMessage());
-            return response()->json(null, 204);
-        }
+        return new Collection($data->map(function ($item) {
+            return [
+                'id' => $item->id,
+                'rule' => $item->rule?->name ?? null,
+                'level_1' => app($item->rule->entity_1)::where('id', $item->field_1)->first()->name ?? null,
+                'level_2' => $item->rule->entity_2 ? app($item->rule->entity_2)::where('id', $item->field_2)->first()->name : null,
+                'price_plan' => $item['price_plan_id'],
+                'operation' => $item->operation?->code ?? null,
+                'value' => $item->value,
+                'percentage' => $item->percentage,
+                'created_at' => $item->created_at,
+                'updated_at' => $item->updated_at,
+            ];
+        }));
     }
 }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Export\Export;
 use App\Helpers\DataProvider;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Foundation\Validation\ValidatesRequests;
@@ -35,6 +36,8 @@ class BaseController extends Controller
             return $e->getMessage();
         }
 
+        $data = $this->transformExportData($data);
+
         $date = now()->format('Y-m-d');
         $model_name = class_basename($this->model);
         $filename = "Export_{$model_name}_{$date}.xlsx";
@@ -48,6 +51,11 @@ class BaseController extends Controller
             Log::debug($e->getMessage());
             return response()->json(null, 204);
         }
+    }
+
+    protected function transformExportData(Collection $data): Collection
+    {
+        return $data;
     }
 
     protected function resourceAbilityMap()

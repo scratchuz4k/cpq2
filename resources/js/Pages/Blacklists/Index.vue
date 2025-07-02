@@ -31,7 +31,6 @@ const items = ref([
                     delete: true,
                     link: false,
                 }" :columns="[
-                    { data: 'id', title: '#', style: 'width:1%' },
                     { data: 'productName', title: 'Name', style: 'width:10%' },
                     { data: 'providerName', title: 'Provider', style: 'width:5%' },
                     { data: 'connectivitySupplierGroup', title: 'Subprovider', style: 'width:5%' },

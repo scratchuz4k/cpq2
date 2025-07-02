@@ -20,7 +20,7 @@ const props = defineProps({
     speed_units: Array
 });
 
-const blacklisted_item = useForm(props.blacklisted_item)
+const blacklisted_item = useForm(props.blacklisted_item?.data)
 
 const saveItem = () => {
     router.put(

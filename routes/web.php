@@ -2,7 +2,7 @@
 
 use App\Http\Controllers\Web\AccountController;
 use App\Http\Controllers\Web\ApiController;
-use App\Http\Controllers\Web\BlacklistController;
+use App\Http\Controllers\Web\General\BlacklistController;
 use App\Http\Controllers\Web\BrandController;
 use App\Http\Controllers\Web\CategoryController;
 use App\Http\Controllers\Web\DashboardController;

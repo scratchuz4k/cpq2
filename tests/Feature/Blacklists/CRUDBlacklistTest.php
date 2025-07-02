@@ -1,10 +1,9 @@
 <?php
 
-use App\Helpers\Files\BlacklistFile;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use App\Models\User;
+use App\Models\General\Blacklist;
 use App\Models\Tenant;
-use App\Models\Merchant;
+use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Auth;
 
 uses(RefreshDatabase::class);
@@ -40,24 +39,19 @@ it('Blacklists CRUD', function () {
     $response = $this->post('blacklists', $data);
     $response->assertRedirect();
 
-    $blacklist_file = new BlacklistFile($this->user->currentTenant);
-    $file_content = $blacklist_file->getContent();
-    expect(count($file_content['data']))->toBe(1);
+    expect(Blacklist::count())->toBe(1);
 
     //Update
-    $blacklistItem = $file_content['data'][1];
-
-
-    $data['id'] = $blacklistItem['id'];
+    $blacklist = Blacklist::first();
     $data['productName'] = 'teste2';
 
-    $response = $this->put('blacklist/' . $blacklistItem['id'], $data);
+    $response = $this->put('blacklists/' . $blacklist->id, $data);
     $response->assertRedirect();
 
-    $blacklistItem = $blacklist_file->getContent()['data'][1];
-    $this->assertEquals($blacklistItem['productName'], 'teste2');
+    $blacklist->refresh();
+    $this->assertEquals($blacklist->productName, 'teste2');
 
-    $response = $this->delete('api/blacklist/' . $blacklistItem['id']);
-    $response->assertOk();
-    expect($blacklist_file->exists())->toBe(false);
+    $response = $this->delete('api/blacklists/' . $blacklist->id);
+    $response->assertSuccessful();
+    expect(Blacklist::count())->toBe(0);
 });

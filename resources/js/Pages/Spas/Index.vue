@@ -6,11 +6,9 @@ import { Button, Paginator } from "primevue";
 import { reactive, ref, watch } from "vue";
 import queryString from "query-string";
 import { usePage } from "@inertiajs/vue3";
-import _ from "lodash";
 import axios from "axios";
 import {exportData} from "@/Composables/export.js";
 import {can, hasRole} from "@/Composables/useAuth.js";
-import pluralize from "pluralize";
 
 const page = usePage();
 const props = defineProps({
@@ -22,7 +20,7 @@ const visible = ref(false);
 const showGlobal = ref(false);
 const selectedRules = ref([]);
 const emptyData = ref(true);
-const has_export_permission = can(`export ${pluralize.singular(props.route.replace(/^\//, ''))}`) || hasRole('Super Admin');
+const has_export_permission = can(`export spa`) || hasRole('Super Admin');
 
 const form = reactive({
   rule: null,
@@ -283,7 +281,14 @@ getData();
             class="p-button p-component me-2"
             ><font-awesome-icon :icon="['fas', 'filter']"
           /></Button>
-            <Button v-if="has_export_permission" type="button" :severity="'secondary'" @click="getExportData()" :disabled="emptyData">
+            <Button v-if="has_export_permission"
+                    type="button"
+                    :severity="'secondary'"
+                    @click="getExportData()"
+                    :disabled="emptyData"
+            >
+                <font-awesome-icon :icon="['fas', 'file-export']"/>
+            </Button>
           <Button
             v-if="visible"
             type="button"

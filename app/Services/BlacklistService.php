@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Enums\ComparisonOperatorsEnum;
 use App\Helpers\Files\BlacklistFile;
 use App\Helpers\FilterProvider;
+use App\Models\General\Blacklist;
 use App\Models\Tenant;
 use Illuminate\Database\Eloquent\Collection;
 
@@ -21,24 +22,11 @@ class BlacklistService
         return FilterProvider::paginate($items);
     }
 
-    public function store(array $array)
+    public function store(array $array): Blacklist
     {
-        $blacklist = new BlacklistFile(Tenant::current());
-        $data = $blacklist->getContent();
-        $id = count($data['data']) > 0 ? intval(max(array_keys($data['data']))) + 1 : 1;
+        $blacklist = Blacklist::create($array);
 
-        $data['data'][$id] = [
-            'id' => $id,
-            ...$array,
-            'created_at' => now(),
-            'updated_at' => now(),
-        ];
-
-        $blacklist->write(
-            $data['data'],
-            $data['created_at'] ?? now(),
-            now()
-        );
+        return $blacklist;
     }
 
     public function edit(string $id)
@@ -49,28 +37,10 @@ class BlacklistService
         return $data['data'][$id];
     }
 
-    public function update(array $array)
+    public function update(Blacklist $blacklist, array $array): Blacklist
     {
-        $blacklist = new BlacklistFile(Tenant::current());
-        $data = $blacklist->getContent();
-        $item = $data['data'][$array['id']];
-
-        $item = array_merge($item, array_intersect_key(
-            [
-                'id' => $array['id'],
-                ...$array,
-                'updated_at' => now(),
-            ],
-            $item
-        ));
-
-        $data['data'][$array['id']] = $item;
-
-        $blacklist->write(
-            $data['data'],
-            $data['created_at'] ?? now(),
-            now()
-        );
+        $blacklist->update($array);
+        return $blacklist;
     }
 
 

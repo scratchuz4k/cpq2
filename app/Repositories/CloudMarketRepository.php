@@ -3,13 +3,12 @@
 namespace App\Repositories;
 
 use App\Enums\PricePlanEnum;
-use App\Helpers\Files\BlacklistFile;
 use App\Helpers\FilterProvider;
 use App\Helpers\Prices\PriceRules;
 use App\Models\Account;
+use App\Models\General\Blacklist;
 use App\Models\PricePlan;
 use App\Models\Supplier;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
 class CloudMarketRepository
@@ -24,8 +23,8 @@ class CloudMarketRepository
 
         $items = FilterProvider::get($file['data'], []);
 
-        $blacklist_file = new BlacklistFile(Auth::user()->currentTenant);
-        $blacklist_items = $blacklist_file->getBlacklistedData($items);
+        $blacklist = new Blacklist;
+        $blacklist_items = $blacklist->getBlacklistedData($items);
 
         $diff_codes = $items->pluck('code')->diff($blacklist_items->pluck('code'));
 

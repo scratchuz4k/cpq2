@@ -8,17 +8,16 @@ use App\Enums\ComparisonOperatorsEnum;
 use App\Enums\ContractTermsEnum;
 use App\Enums\SpeedUnitsEnum;
 use App\Export\Export;
-use App\Http\Requests\BlacklistItemCreateRequest;
-use App\Http\Requests\BlacklistItemUpdateRequest;
-use App\Models\Blacklist;
+use App\Http\Controllers\BaseController;
+use App\Http\Requests\BlacklistCreateRequest;
+use App\Http\Requests\BlacklistUpdateRequest;
+use App\Models\General\Blacklist;
+use App\Models\Product;
 use App\Services\BlacklistService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 use Inertia\Response;
-use App\Models\Product;
-use Illuminate\Support\Facades\Log;
-use App\Http\Controllers\BaseController;
-use Maatwebsite\Excel\Facades\Excel;
 
 class BlacklistController extends BaseController
 {
@@ -61,7 +60,7 @@ class BlacklistController extends BaseController
     /**
      * Store a newly created resource in storage.
      */
-    public function store(BlacklistItemCreateRequest $request)
+    public function store(BlacklistCreateRequest $request)
     {
         try {
             $this->blacklistService->store($request->all());
@@ -85,7 +84,7 @@ class BlacklistController extends BaseController
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Request $request): Response
+    public function edit(Request $request, Blacklist $blacklist): Response
     {
         try {
             $item = $this->blacklistService->edit($request->route('blacklist'));
@@ -115,7 +114,7 @@ class BlacklistController extends BaseController
     /**
      * Update the specified resource in storage.
      */
-    public function update(BlacklistItemUpdateRequest $request)
+    public function update(BlacklistUpdateRequest $request, Blacklist $blacklist)
     {
         try {
             $this->blacklistService->update(
@@ -138,29 +137,4 @@ class BlacklistController extends BaseController
     {
         //
     }
-
-    public function export(Request $request)
-    {
-        try {
-            $data =  $this->blacklistService->export($request->all());
-        } catch(\Exception $e) {
-            Log::debug($e->getMessage());
-            return $e->getMessage();
-        }
-
-        $date = now()->format('Y-m-d');
-        $model_name = class_basename($this->model);
-        $filename = "Export_{$model_name}_{$date}.xlsx";
-
-        try {
-            if (!$data->count()) {
-                throw new \Exception('No data Found!');
-            }
-            return Excel::download(new Export($this->model, $data), $filename);
-        } catch (\Exception $e) {
-            Log::debug($e->getMessage());
-            return response()->json(null, 204);
-        }
-    }
-
 }

@@ -68,7 +68,7 @@ describe("Blacklists Crud", () => {
     });
 
     it("Edit a Blacklists Item", () => {
-        cy.visit("/blacklist");
+        cy.visit("/blacklists");
         cy.wait(500);
         cy.get("#datatable-btn-0-edit").click();
 
@@ -80,7 +80,7 @@ describe("Blacklists Crud", () => {
     });
 
     it("Delete a Blacklists Item", () => {
-        cy.visit("/blacklist");
+        cy.visit("/blacklists");
         cy.get("#datatable-search").type(product_name);
         cy.wait(500);
         cy.get("#datatable-btn-0-delete").click();
