@@ -258,7 +258,7 @@ const dynamicSavings = computed(() => {
                 </div>
             </div>
 
-            <ButtonStep v-model="proxyValue" btnName="Continue with selected option">
+            <ButtonStep v-model="proxyValue" :disabled="true" btnName="Continue with selected option">
                 <a id="btn-save-quote" class="btn btn-outline-primary me-2" type="submit" href="/">Save for later</a>
             </ButtonStep>
         </div>
