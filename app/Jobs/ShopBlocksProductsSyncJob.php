@@ -55,6 +55,9 @@ class ShopBlocksProductsSyncJob implements NotTenantAware, ShouldQueue
             if (count($product['children']) == 0) {
                 continue;
             }
+            if ($product['children'][0]['stock'] == 0) {
+                continue;
+            }
             $sku = $product['children'][0]['sku'];
             $temp = $this->getProduct($product);
             $temp['price_plan_id'] = $pricePlanId;
