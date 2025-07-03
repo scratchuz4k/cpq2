@@ -16,7 +16,7 @@ class ExportShopBlocks extends Command
      *
      * @var string
      */
-    protected $signature = 'export:shopblocks';
+    protected $signature = 'export:shopblocks {category_id?}';
 
     /**
      * The console command description.
@@ -33,21 +33,31 @@ class ExportShopBlocks extends Command
         Log::withContext(['signature' => $this->signature]);
         Log::info('Job Started.');
 
-        $items = Product::where('category_id', '=', 22)->get();
+        $categoryId = $this->argument('category_id');
+
+        $items = Product::when($categoryId, function ($query) use ($categoryId) {
+            return $query->where('category_id', '=', $categoryId);
+        })->get();
         file_put_contents(storage_path('mocks/shopblocks.products.json'), json_encode($items->toArray()));
 
-        $items = Model::whereHas('products', function ($query) {
-            return $query->where('category_id', '=', 22);
+        $items = Model::whereHas('products', function ($query) use ($categoryId) {
+            if ($categoryId) {
+                $query->where('category_id', '=', $categoryId);
+            }
         })->get();
         file_put_contents(storage_path('mocks/shopblocks.models.json'), json_encode($items->toArray()));
 
-        $items = Brand::whereHas('products', function ($query) {
-            return $query->where('category_id', '=', 22);
+        $items = Brand::whereHas('products', function ($query) use ($categoryId) {
+            if ($categoryId) {
+                $query->where('category_id', '=', $categoryId);
+            }
         })->get();
         file_put_contents(storage_path('mocks/shopblocks.brands.json'), json_encode($items->toArray()));
 
-        $items = ProductFeature::whereHas('product', function ($query) {
-            return $query->where('category_id', '=', 22);
+        $items = ProductFeature::whereHas('product', function ($query) use ($categoryId) {
+            if ($categoryId) {
+                $query->where('category_id', '=', $categoryId);
+            }
         })->get();
         file_put_contents(storage_path('mocks/shopblocks.product_features.json'), json_encode($items->toArray()));
 
