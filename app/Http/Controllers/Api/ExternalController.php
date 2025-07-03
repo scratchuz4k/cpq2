@@ -6,6 +6,7 @@ use App\Helpers\Api\CloudMarketAddress;
 use App\Helpers\Api\OpenreachLookupApi;
 use App\Helpers\Api\VirtualOneLookupApi;
 use App\Http\Controllers\Controller;
+use App\Models\Quote;
 use App\Services\External\CloudMarketService;
 use App\Services\External\ShopBlocksService;
 use Illuminate\Http\Request;
@@ -95,6 +96,7 @@ class ExternalController extends Controller
     {
         $request->validate([
             'connectivityType' => 'required',
+            'quote_id' => 'required|exists:quotes,id',
             'postCode' => 'required',
             'uprn' => 'nullable',
             'latitude' => 'nullable',
@@ -102,6 +104,8 @@ class ExternalController extends Controller
             'street' => 'nullable',
             'town' => 'nullable',
         ]);
+
+        $quote = Quote::find($request->get('quote_id'));
 
         $address = new CloudMarketAddress(
             postCode: $request->get('postCode'),
@@ -116,6 +120,6 @@ class ExternalController extends Controller
             town: $request->input('town', null),
         );
 
-        return $this->cloudMarketService->get($request->get('connectivityType'), $address, $request->input('filters', []));
+        return $this->cloudMarketService->get($quote, $request->get('connectivityType'), $address, $request->input('filters', []));
     }
 }

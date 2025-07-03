@@ -63,7 +63,11 @@ const search = _.debounce(async (clearOptions = false) => {
         options.value = [];
     }
     meta.total_pages = res.data.meta?.last_page ?? res.data.last_page;
-    options.value.push(...res.data.data);
+    if (page.value > 1) {
+        options.value.push(...res.data.data);
+    } else {
+        options.value = res.data.data;
+    }
     isLoading.value = false;
 }, 200);
 
@@ -105,6 +109,10 @@ watch(
 );
 
 search();
+
+emitter.on('input-select-refresh' + (props.id ? ':' + props.id : ''), () => {
+    search();
+});
 </script>
 
 <template>
