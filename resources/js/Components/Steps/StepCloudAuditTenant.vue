@@ -116,8 +116,8 @@ const tenant_reviewed = ref(false);
                     <h1><strong>Reviewing tenant</strong></h1>
                     <Spinner class="mb-4 d-flex justify-content-center" />
                     <h4 style="font-weight: normal">
-                        We are reviewing the tenant and calculating the potential savings <br />
-                        (wont take long!)
+                        We are reviewing the tenant and calculating the potential saving <br />
+                        (won't take long!)
                     </h4>
                     <div class="cpq-bar-bg">
                         <div class="cpq-bar"></div>
