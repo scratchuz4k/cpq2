@@ -37,8 +37,7 @@ class Quote extends Model
         'commission_rate',
         'margin',
         'status',
-        'user_id',
-        'is_active',
+        'user_id'
     ];
 
     protected function casts(): array

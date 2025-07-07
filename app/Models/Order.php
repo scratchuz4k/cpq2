@@ -40,8 +40,7 @@ class Order extends Model
         'status',
         'user_id',
         'quote_id',
-        'note',
-        'is_active'
+        'note'
     ];
 
     protected function casts(): array
