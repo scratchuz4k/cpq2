@@ -38,6 +38,7 @@ class Quote extends Model
         'margin',
         'status',
         'user_id',
+        'is_active',
     ];
 
     protected function casts(): array
@@ -143,7 +144,7 @@ class Quote extends Model
             return QuoteStatusesEnum::QUOTE->name;
         }
 
-        if (! empty($quote->address_data)) {
+        if (!empty($quote->address_data)) {
             return QuoteStatusesEnum::PRICE->name;
         }
 

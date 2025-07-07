@@ -1,11 +1,12 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head, Link } from "@inertiajs/vue3";
+import { Head, Link } from '@inertiajs/vue3';
 import { ref } from 'vue';
+
 const items = ref([
     { label: 'Home', url: '/' },
     { label: 'My Account', url: '/myaccount' },
-    { label: 'Products' },
+    { label: 'Products' }
 ]);
 
 </script>
@@ -16,10 +17,12 @@ const items = ref([
             <Header title="Products" :breadcrumbs="items">
                 <template #buttons>
                     <Link href="/blacklist" id="blacklist-index-btn" class="btn btn-primary me-2">
-                        <font-awesome-icon :icon="['fas', 'shop-lock']" /> Blacklisted Items
+                        <font-awesome-icon :icon="['fas', 'shop-lock']" />
+                        Blacklisted Items
                     </Link>
                     <Link href="/products/create" id="product-create-btn" class="btn btn-primary me-2">
-                        <font-awesome-icon :icon="['fas', 'plus']"></font-awesome-icon> New Product
+                        <font-awesome-icon :icon="['fas', 'plus']"></font-awesome-icon>
+                        New Product
                     </Link>
                 </template>
             </Header>
@@ -30,8 +33,9 @@ const items = ref([
                     link: false,
                 }" :columns="[
                     { data: 'id', title: '#', style: 'width:5%' },
+                    { data: 'is_active', title: 'Active', style: 'width:5%' },
                     { data: 'code', title: 'Code', style: 'width:20%' },
-                    { data: 'name', title: 'Name', style: 'width:30%' },
+                    { data: 'name', title: 'Name', style: 'width:25%' },
                     { data: 'supplier.name', title: 'Supplier', style: 'width:12%' },
                     { data: 'brand.name', title: 'Brand', style: 'width:12%' },
                     { data: 'updated_at', title: 'Updated At', style: 'width:15%' },
@@ -41,6 +45,9 @@ const items = ref([
                     </template>
                     <template #created_at="{ value }">
                         {{ format.date(value) }}
+                    </template>
+                    <template #is_active="{ data, value }">
+                        <ToggleActive :data="data" :value="value" route="products" />
                     </template>
                 </Datatable>
             </div>

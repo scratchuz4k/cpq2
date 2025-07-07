@@ -41,6 +41,7 @@ class Order extends Model
         'user_id',
         'quote_id',
         'note',
+        'is_active'
     ];
 
     protected function casts(): array

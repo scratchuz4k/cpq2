@@ -1,11 +1,12 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head, Link } from "@inertiajs/vue3";
+import { Head, Link } from '@inertiajs/vue3';
 import { ref } from 'vue';
+
 const items = ref([
     { label: 'Home', url: '/' },
     { label: 'My Account', url: '/myaccount' },
-    { label: 'Tokens' },
+    { label: 'Tokens' }
 ]);
 </script>
 
@@ -17,7 +18,8 @@ const items = ref([
             <Header title="Tokens" :breadcrumbs="items">
                 <template #buttons>
                     <Link :href="route('tokens.create')" id="token-create-btn" class="btn btn-primary me-2">
-                        <font-awesome-icon :icon="['fas', 'plus']"></font-awesome-icon> New Token
+                        <font-awesome-icon :icon="['fas', 'plus']"></font-awesome-icon>
+                        New Token
                     </Link>
                 </template>
             </Header>
@@ -28,6 +30,7 @@ const items = ref([
                     link: true,
                 }" :columns="[
                     { data: 'id', title: '#' },
+                    { data: 'is_active', title: 'Active'},
                     { data: 'name', title: 'Name' },
                     { data: 'entity.name', title: 'Entity' },
                     { data: 'last_used_at', title: 'Last Used At' },
@@ -42,6 +45,9 @@ const items = ref([
                     </template>
                     <template #created_at="{ value }">
                         {{ format.date(value) }}
+                    </template>
+                    <template #is_active="{ data, value }">
+                        <ToggleActive :data="data" :value="value" route="tokens" />
                     </template>
                 </Datatable>
             </div>

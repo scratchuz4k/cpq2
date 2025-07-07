@@ -11,10 +11,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class Supplier extends Model
 {
     use HasFactory, SetTenantId;
+
     protected $fillable = [
         'name',
         'reference',
-        'tenant_id'
+        'tenant_id',
+        'is_active',
     ];
 
     protected static function booted(): void

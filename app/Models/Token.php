@@ -3,8 +3,8 @@
 namespace App\Models;
 
 use App\Models\Scopes\TenantScope;
-use Laravel\Sanctum\PersonalAccessToken as SanctumPersonalAccessToken;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Laravel\Sanctum\PersonalAccessToken as SanctumPersonalAccessToken;
 
 class Token extends SanctumPersonalAccessToken
 {
@@ -13,6 +13,7 @@ class Token extends SanctumPersonalAccessToken
         'token',
         'abilities',
         'tenant_id',
+        'is_active',
     ];
 
     use HasFactory;

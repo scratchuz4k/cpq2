@@ -2,10 +2,10 @@
 
 namespace App\Models;
 
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Auth;
 
 class EmailTemplate extends Model
 {
@@ -16,7 +16,9 @@ class EmailTemplate extends Model
         'bcc',
         'subject',
         'body',
+        'is_active',
     ];
+
     protected static function booted(): void
     {
 

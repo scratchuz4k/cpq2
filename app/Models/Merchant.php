@@ -11,12 +11,13 @@ class Merchant extends Model
 {
     use HasFactory, SetTenantId;
 
-    protected $fillable = ["name", "tenant_id"];
+    protected $fillable = ["name", "tenant_id", 'is_active'];
 
     protected static function booted(): void
     {
         static::addGlobalScope(new TenantScope);
     }
+
     public function tenant()
     {
         return $this->belongsTo(Tenant::class);

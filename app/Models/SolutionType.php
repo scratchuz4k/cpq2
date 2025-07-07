@@ -13,7 +13,7 @@ class SolutionType extends Model
 {
     use HasConfigurations, HasFactory;
 
-    protected $fillable = ['code', 'name'];
+    protected $fillable = ['code', 'name', 'is_active'];
 
     public function tenants(): BelongsToMany
     {

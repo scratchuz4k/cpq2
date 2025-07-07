@@ -20,6 +20,7 @@ class Spa extends Model
         'operation_id',
         'value',
         'percentage',
+        'is_active'
     ];
 
     protected static function booted(): void

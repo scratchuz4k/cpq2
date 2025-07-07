@@ -17,6 +17,7 @@ class Region extends Model
         'user_id',
         'tenant_id',
         'name',
+        'is_active',
     ];
 
     protected static function booted(): void

@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Trait\SetTenantId;
+use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -30,7 +31,7 @@ class User extends Authenticatable
 
         static::creating(function (Model $model) {
             // Check if tenant_id is not set and the user is authenticated
-            if (auth()->check() && ! $model->tenant_id) {
+            if (auth()->check() && !$model->tenant_id) {
                 $model->tenant_id = auth()->user()->tenant_id;
             }
 
@@ -38,8 +39,8 @@ class User extends Authenticatable
             if ($user && $user->group) {
                 try {
                     $model->group_id = $user->group->id;
-                } catch (\Exception $e) {
-                    if (! env('APP_DEBUG')) {
+                } catch (Exception $e) {
+                    if (!env('APP_DEBUG')) {
                         Log::error($e->getMessage());
                     }
                 }
@@ -108,6 +109,7 @@ class User extends Authenticatable
         'sso', // Add sso to fillable attributes
         'commission_rate',
         'has_children',
+        'is_active',
     ];
 
     /**
@@ -193,7 +195,7 @@ class User extends Authenticatable
         do {
             $current = $userAscendents->pop();
             $users->push($current);
-            if (! $current->parent) {
+            if (!$current->parent) {
                 break;
             }
             $userAscendents->push($current->parent);
@@ -231,6 +233,6 @@ class User extends Authenticatable
             'tenant_id' => $tenantId,
         ]);
 
-        return new NewAccessToken($token, $token->getKey().'|'.$plainTextToken);
+        return new NewAccessToken($token, $token->getKey() . '|' . $plainTextToken);
     }
 }

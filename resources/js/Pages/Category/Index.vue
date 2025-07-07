@@ -1,13 +1,13 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head, Link } from "@inertiajs/vue3";
+import { Head, Link } from '@inertiajs/vue3';
 import { ref } from 'vue';
-import { toggle_is_active } from '@/Composables/handleActive';
+import ToggleActive from '@/Components/ToggleActive.vue';
 
 const items = ref([
     { label: 'Home', url: '/' },
     { label: 'My Account', url: '/myaccount' },
-    { label: 'Categories' },
+    { label: 'Categories' }
 ]);
 
 </script>
@@ -19,7 +19,8 @@ const items = ref([
             <Header title="Categories" :breadcrumbs="items">
                 <template #buttons>
                     <Link href="/categories/create" id="category-create-btn" class="btn btn-primary me-2">
-                    <font-awesome-icon :icon="['fas', 'plus']"></font-awesome-icon> New Category
+                        <font-awesome-icon :icon="['fas', 'plus']"></font-awesome-icon>
+                        New Category
                     </Link>
                 </template>
             </Header>
@@ -43,12 +44,7 @@ const items = ref([
                         {{ format.date(value) }}
                     </template>
                     <template #is_active="{ data, value }">
-                        <div role="button" @click="toggle_is_active('categories', data)">
-                            <font-awesome-icon v-if="value" :icon="['fas', 'circle-check']" style="font-size: 1.125rem"
-                                class="text-primary" />
-                            <font-awesome-icon v-else :icon="['far', 'circle-xmark']" style="font-size: 1.125rem"
-                                class="text-secondary" />
-                        </div>
+                        <ToggleActive :data="data" :value="value" route="categories" />
                     </template>
                 </Datatable>
             </div>

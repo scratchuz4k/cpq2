@@ -1,11 +1,12 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head, Link } from "@inertiajs/vue3";
+import { Head, Link } from '@inertiajs/vue3';
 import { ref } from 'vue';
+
 const items = ref([
     { label: 'Home', url: '/' },
     { label: 'My Account', url: '/myaccount' },
-    { label: 'Regions' },
+    { label: 'Regions' }
 ]);
 
 </script>
@@ -16,7 +17,8 @@ const items = ref([
             <Header title="Regions" :breadcrumbs="items">
                 <template #buttons>
                     <Link href="/regions/create" class="btn btn-primary me-2">
-                    <font-awesome-icon :icon="['fas', 'plus']"></font-awesome-icon> New Region
+                        <font-awesome-icon :icon="['fas', 'plus']"></font-awesome-icon>
+                        New Region
                     </Link>
                 </template>
             </Header>
@@ -27,9 +29,10 @@ const items = ref([
                     link: false,
                 }" :columns="[
                     { data: 'id', title: '#', style: 'width:5%' },
+                    { data: 'is_active', title: 'Active', style: 'width:5%' },
                     { data: 'merchant.name', title: 'Merchant', style: 'width:13%' },
-                    { data: 'user.name', title: 'User', style: 'width:18%' },
-                    { data: 'name', title: 'Name', style: 'width:24%' },
+                    { data: 'user.name', title: 'User', style: 'width:15%' },
+                    { data: 'name', title: 'Name', style: 'width:22%' },
                     { data: 'created_at', title: 'Created At', style: 'width:15%' },
                     { data: 'updated_at', title: 'Updated At', style: 'width:15%' },
                 ]" route="/regions">
@@ -38,6 +41,9 @@ const items = ref([
                     </template>
                     <template #created_at="{ value }">
                         {{ format.date(value) }}
+                    </template>
+                    <template #is_active="{ data, value }">
+                        <ToggleActive :data="data" :value="value" route="regions" />
                     </template>
                 </Datatable>
             </div>
