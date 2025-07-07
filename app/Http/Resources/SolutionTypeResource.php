@@ -2,8 +2,8 @@
 
 namespace App\Http\Resources;
 
-use Illuminate\Http\Request;
 use App\Enums\SolutionTypesEnum;
+use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class SolutionTypeResource extends JsonResource
@@ -19,35 +19,37 @@ class SolutionTypeResource extends JsonResource
             return [];
         }
 
-        $code = "Mobile";
+        $code = 'Mobile';
         foreach (SolutionTypesEnum::cases() as $case) {
             if ($case->value == $this->code) {
                 $code = $case->name;
             }
-            ;
+
         }
 
         $file = app_path("Helpers/Tables/$code.php");
         $columns = [];
         if (file_exists($file)) {
             $data = require $file;
-            if (array_key_exists("component", $this->configs) && array_key_exists($this->configs["component"], $data)) {
-                $columns = $data[$this->configs["component"]];
+            if (array_key_exists('component', $this->configs) && array_key_exists($this->configs['component'], $data)) {
+                $columns = $data[$this->configs['component']];
             } else {
-                $columns = $data["DealMaker"];
+                $columns = $data['DealMaker'];
             }
         }
 
         $table = $this->tables->first() ? $this->tables->first()->toArray() : [];
-        if (!array_key_exists("has_custom_table", $this->configs) || !$this->configs["has_custom_table"]) {
-            $table["columns"] = (array) $columns;
+        if (! array_key_exists('has_custom_table', $this->configs) || ! $this->configs['has_custom_table']) {
+            $table['columns'] = (array) $columns;
         }
+        $info = $this->resource->tenant() ? $this->resource->tenant()->pivot->toArray() : [];
 
         return [
             ...$this->resource->toArray(),
-            "configurations" => $this->configs,
-            "table" => $table,
-            "categories" => CategoryResource::collection($this->categories)->resolve()
+            ...$info,
+            'configurations' => $this->configs,
+            'table' => $table,
+            'categories' => CategoryResource::collection($this->categories)->resolve(),
         ];
     }
 }

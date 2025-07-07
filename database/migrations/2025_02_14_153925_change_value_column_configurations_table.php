@@ -19,10 +19,5 @@ return new class extends Migration
     /**
      * Reverse the migrations.
      */
-    public function down(): void
-    {
-        Schema::table('configurations', function (Blueprint $table) {
-            $table->string('value')->nullable(false)->change();
-        });
-    }
+    public function down(): void {}
 };

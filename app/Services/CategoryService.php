@@ -16,6 +16,10 @@ class CategoryService
     public function update(Category $category, array $array): Category
     {
         $category->update($array);
-        return $category;
+
+        if (array_key_exists('product_id', $array)) {
+            $category->products()->toggle($array['product_id']);
+        }
+        return $category->refresh();
     }
 }
