@@ -40,7 +40,7 @@ describe('Creates a Connectivity quote', () => {
         cy.get('.p-multiselect-list-container')
             .eq(0)
             .within(() => {
-                cy.get('.p-checkbox').eq(1).click();
+                cy.get('.p-checkbox').eq(2).click();
             });
 
         //SubProvider filter
@@ -50,8 +50,9 @@ describe('Creates a Connectivity quote', () => {
         cy.get('.p-multiselect-list-container')
             .eq(0)
             .within(() => {
-                cy.get('.p-checkbox').eq(3).click();
+                cy.get('.p-checkbox').eq(5).click();
             });
+        cy.wait(1000);
 
         //Add products to quote
         let keys = [0, 1, 2, 3, 4];
