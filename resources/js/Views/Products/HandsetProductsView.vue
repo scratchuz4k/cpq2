@@ -69,6 +69,14 @@ const step = ref(props.modelValue + 1);
 const getProductsShopBlocks = async () => {
     meta.isLoading = true;
     let temp = [];
+
+    //Hide out of stock products
+    temp.push({
+        column: 'stock',
+        operator: 'greater_than_or_equal_to',
+        value: 1
+    });
+
     if (filters.brands.length) {
         temp.push({
             column: 'brand_id',
