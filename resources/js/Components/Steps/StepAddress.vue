@@ -2,7 +2,7 @@
 import _ from 'lodash';
 import { computed, reactive, ref, watch } from 'vue';
 import format from '@/Composables/format';
-import Select from "primevue/select";
+import Select from 'primevue/select';
 
 const props = defineProps({
     solutionType: Array,
@@ -154,13 +154,15 @@ watch(addressPostCode, () => {
                     <label class="form-label" for="select_address"
                         >Select address <span class="text-primary fw-bold">*</span></label
                     >
-                    <Select v-model="proxyValue.address"
-                            :inputId="'select_address'"
-                            :options="addresses"
-                            class="w-100"
-                            optionLabel="label"
-                            placeholder="Select Address"
-                            @change="addressSelect(proxyValue)"
+                    <Select
+                        v-model="proxyValue.address"
+                        :inputId="'select_address'"
+                        :options="addresses"
+                        filter
+                        class="w-100"
+                        optionLabel="label"
+                        placeholder="Select Address"
+                        @change="addressSelect(proxyValue)"
                     />
                 </div>
             </div>

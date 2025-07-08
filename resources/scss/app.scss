@@ -539,10 +539,7 @@ body {
                 margin-right: 22px;
             }
         }
-
-
     }
-
 
     .selectize-dropdown .selected {
         background-color: var(--secondary-light);
@@ -878,6 +875,10 @@ body {
             color: black;
         }
     }
+}
+
+.p-select-list-container {
+    max-height: 20rem !important;
 }
 
 .p-multiselect-header {
