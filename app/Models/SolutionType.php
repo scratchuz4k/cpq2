@@ -13,13 +13,20 @@ class SolutionType extends Model
 {
     use HasConfigurations, HasFactory;
 
-    protected $fillable = ['code', 'name', 'is_active'];
+    protected $fillable = ['code', 'name'];
+
+    protected function casts(): array
+    {
+        return [
+            'is_active' => 'boolean'
+        ];
+    }
 
     public function tenants(): BelongsToMany
     {
         return $this
             ->belongsToMany(Tenant::class, 'solution_type_tenant', 'solution_type_id', 'tenant_id')
-            ->withPivot('estimated_time')
+            ->withPivot(['estimated_time', 'is_active'])
             ->withTimestamps();
     }
 

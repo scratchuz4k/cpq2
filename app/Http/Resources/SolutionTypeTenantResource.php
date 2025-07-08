@@ -3,7 +3,6 @@
 namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
-use App\Enums\SolutionTypesEnum;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class SolutionTypeTenantResource extends JsonResource
@@ -18,7 +17,8 @@ class SolutionTypeTenantResource extends JsonResource
 
         return [
             ...$this->resource->toArray(),
-            'solution_type' => (new SolutionTypeResource( $this->solutionType))->resolve()
+            'is_active' => (bool) $this->solutionType->is_active,
+            'solution_type' => (new SolutionTypeResource($this->solutionType))->resolve()
         ];
     }
 }

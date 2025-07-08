@@ -66,7 +66,7 @@ class MerchantController extends BaseController
     {
         try {
             $merchant = DB::transaction(function () use ($merchant, $request) {
-                return $this->accountService->update($merchant, $request->all());
+                return $this->service->update($merchant, $request->all());
             });
         } catch (Exception $e) {
             Log::debug($e->getMessage());

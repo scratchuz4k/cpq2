@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Api;
 use App\Helpers\DataProvider;
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\IndexRequest;
-use App\Http\Resources\SolutionTypeResource;
 use App\Http\Resources\SupplierResource;
 use App\Models\Supplier;
 use App\Services\SuppliersService;
@@ -74,7 +73,7 @@ class SupplierController extends BaseController
             throw new Exception($e);
         }
 
-        return new SolutionTypeResource($supplier);
+        return new SupplierResource($supplier);
     }
 
     /**

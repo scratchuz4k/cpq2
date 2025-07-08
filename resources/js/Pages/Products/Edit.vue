@@ -1,25 +1,26 @@
 <script setup>
-import { reactive, ref } from "vue";
-import { can, hasRole } from "@composables/useAuth";
-import PrimaryButton from "@/Components/PrimaryButton.vue";
-import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
-import { Head, router } from "@inertiajs/vue3";
-import DataTable from "primevue/datatable";
-import Column from "primevue/column";
-import InputText from "primevue/inputtext";
-import Button from "primevue/button";
-import Dialog from "primevue/dialog";
+import { reactive, ref } from 'vue';
+import { can, hasRole } from '@composables/useAuth';
+import PrimaryButton from '@/Components/PrimaryButton.vue';
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import { Head, router } from '@inertiajs/vue3';
+import DataTable from 'primevue/datatable';
+import Column from 'primevue/column';
+import InputText from 'primevue/inputtext';
+import Button from 'primevue/button';
+import Dialog from 'primevue/dialog';
+import ToggleSwitch from 'primevue/toggleswitch';
 
 const props = defineProps({
     product: Object,
-    price_plans: Object,
+    price_plans: Object
 });
 
 const price = reactive({
     code: null,
     tax_rate: 0,
     net: 0,
-    product_id: props.product.id,
+    product_id: props.product.id
 });
 
 const showModal = ref(false);
@@ -34,19 +35,19 @@ const saveProduct = () => {
             ...props.product,
             supplier_id: props.product.supplier?.id,
             brand_id: props.product.brand?.id,
-            categories: categories.value?.id ?? null,
+            categories: categories.value?.id ?? null
         },
         {
             onSuccess: (page) => {
-                notyf.success("Updated with Success");
+                notyf.success('Updated with Success');
             },
             onError: (errors) => {
-                let string = "";
+                let string = '';
                 Object.keys(errors).forEach((key) => {
-                    string += errors[key] + "<br>";
+                    string += errors[key] + '<br>';
                 });
                 notyf.error(string);
-            },
+            }
         }
     );
 };
@@ -63,10 +64,10 @@ const savePrice = async () => {
 
 const deletePrice = async (id) => {
     let result = await swal.fire({
-        title: "Are you sure?",
+        title: 'Are you sure?'
     });
 
-    if (["cancel", "backdrop"].includes(result.dismiss)) {
+    if (['cancel', 'backdrop'].includes(result.dismiss)) {
         return;
     }
 
@@ -84,20 +85,20 @@ const onRowEditSave = async (event) => {
     try {
         let res = await axios.put(`/api/prices/${newData.id}`, {
             tax_rate: newData.tax_rate,
-            net: newData.net,
+            net: newData.net
         });
         prices.value[index] = res.data.data;
-        notyf.success("Updated with success");
+        notyf.success('Updated with success');
     } catch (ex) {
         notyf.error(ex.response.data.message);
     }
 };
 
 const items = ref([
-    { label: "Home", url: "/" },
-    { label: "My Account", url: "/myaccount" },
-    { label: "Products", url: "/products" },
-    { label: "Edit Product" },
+    { label: 'Home', url: '/' },
+    { label: 'My Account', url: '/myaccount' },
+    { label: 'Products', url: '/products' },
+    { label: 'Edit Product' }
 ]);
 </script>
 <template>
@@ -123,6 +124,19 @@ const items = ref([
                     </div>
                     <div class="row my-4">
                         <div class="col-6">
+                            <div class="mb-3 d-flex flex-column">
+                                <label class="form-label" for="active-filter">
+                                    Active:
+                                </label>
+                                <ToggleSwitch id="active-filter" v-model="product.is_active">
+                                    <template #handle>
+                                        <font-awesome-icon
+                                            :icon="product.is_active ? ['fas', 'circle-check'] : ['far', 'circle-xmark']"
+                                            class="text-primary"
+                                        />
+                                    </template>
+                                </ToggleSwitch>
+                            </div>
                             <div class="mb-3">
                                 <label for="product-code" class="form-label">Code:</label>
                                 <input id="product-code" class="form-control" v-model="product.code" />
@@ -191,7 +205,7 @@ const items = ref([
                                             }),
                                         },
                                     }">
-                                    <Column field="code" header="Code" style="width: 10%"> </Column>
+                                    <Column field="code" header="Code" style="width: 10%"></Column>
                                     <Column field="tax_rate" header="Tax Rate" style="width: 20%">
                                         <template #editor="{ data, field }">
                                             <InputText v-model="data[field]" fluid />

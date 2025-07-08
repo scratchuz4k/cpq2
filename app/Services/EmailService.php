@@ -13,10 +13,9 @@ class EmailService
         $tenant_id = Auth::user()->tenant_id;
 
         $emailTemplate->tenants()->sync([
-            $tenant_id => Arr::only($array, ['to', 'cc', 'bcc', 'subject', 'body'])
+            $tenant_id => Arr::only($array, ['to', 'cc', 'bcc', 'subject', 'body', 'is_active'])
         ]);
 
-        $emailTemplate->update($array);
         return $emailTemplate;
     }
 }

@@ -1,26 +1,27 @@
 <script setup>
-import {reactive, ref} from "vue";
+import { reactive, ref } from 'vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head, router, usePage } from "@inertiajs/vue3";
-import Permissions from "@/Components/Permissions.vue";
+import { Head, router, usePage } from '@inertiajs/vue3';
+import Permissions from '@/Components/Permissions.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
+import ToggleSwitch from 'primevue/toggleswitch';
 
 const props = defineProps({
     user: Object,
     roles: Object,
     managers: Object,
-    permissions: Array,
-})
+    permissions: Array
+});
 
-const page = usePage()
+const page = usePage();
 const form = reactive({
     parent_id: props.user.parent_id ?? 0,
     role_id: props.user.roles.length ? props.user.roles[0].id : null
-})
+});
 
-const role_id = ref(props.user.roles.length ? props.user.roles[0].id : { id: null})
+const role_id = ref(props.user.roles.length ? props.user.roles[0].id : { id: null });
 const saveUser = () => {
-    props.user.role = [role_id.value]
+    props.user.role = [role_id.value];
 
     router.put(`/users/${props.user.id}`, {
             ...props.user,
@@ -28,23 +29,23 @@ const saveUser = () => {
         },
         {
             onSuccess: (page) => {
-                notyf.success("Updated with Success")
+                notyf.success('Updated with Success');
             },
             onError: (errors) => {
-                let string = ''
+                let string = '';
                 Object.keys(errors).forEach((key) => {
-                    string += errors[key] + '<br>'
-                })
-                notyf.error(string)
-            },
+                    string += errors[key] + '<br>';
+                });
+                notyf.error(string);
+            }
         }
-    )
-}
+    );
+};
 const items = ref([
     { label: 'Home', url: '/' },
     { label: 'My Account', url: '/myaccount' },
     { label: 'Users', url: '/users' },
-    { label: 'Edit User' },
+    { label: 'Edit User' }
 ]);
 </script>
 <template>
@@ -55,12 +56,26 @@ const items = ref([
             <Header :title="'Edit User #' + user.id" :breadcrumbs="items">
                 <template #buttons>
                     <PrimaryButton @click="saveUser()">
-                        <font-awesome-icon class="me-2" :icon="['fas', 'save']"></font-awesome-icon> Save
+                        <font-awesome-icon class="me-2" :icon="['fas', 'save']"></font-awesome-icon>
+                        Save
                     </PrimaryButton>
                 </template>
             </Header>
             <div class="row mb-3">
                 <div class="col-6">
+                    <div class="mb-3 d-flex flex-column">
+                        <label class="form-label" for="active-filter">
+                            Active:
+                        </label>
+                        <ToggleSwitch id="active-filter" v-model="user.is_active">
+                            <template #handle>
+                                <font-awesome-icon
+                                    :icon="user.is_active ? ['fas', 'circle-check'] : ['far', 'circle-xmark']"
+                                    class="text-primary"
+                                />
+                            </template>
+                        </ToggleSwitch>
+                    </div>
                     <div class="row mb-3">
                         <label for="user-name" class="form-label">Name:</label>
                         <input id="user-name" class="form-control" v-model="user.name" required>
@@ -75,14 +90,15 @@ const items = ref([
                     </div>
                     <div class="row mb-3">
                         <label for="supplier-name" class="form-label">Role:</label>
-                        <select class="form-select" v-model="form.role_id"  @change="user.commission_rate = 0">
+                        <select class="form-select" v-model="form.role_id" @change="user.commission_rate = 0">
                             <option v-for="tempRole in roles" :value="tempRole.id">{{ tempRole.name }}</option>
                         </select>
                     </div>
                     <div v-if="roles.find((item) => item.id === form.role_id).name === 'Sales Rep'" class="row mb-3">
                         <label for="user-commission-rate" class="form-label">Commission Rate:</label>
                         <div class="input-group p-0">
-                            <input id="user-commission-rate" type="number" class="form-control" v-model="user.commission_rate">
+                            <input id="user-commission-rate" type="number" class="form-control"
+                                v-model="user.commission_rate">
                             <span class="input-group-text">%</span>
                         </div>
                     </div>

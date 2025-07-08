@@ -30,7 +30,6 @@ const items = ref([
                     link: true,
                 }" :columns="[
                     { data: 'id', title: '#' },
-                    { data: 'is_active', title: 'Active'},
                     { data: 'name', title: 'Name' },
                     { data: 'entity.name', title: 'Entity' },
                     { data: 'last_used_at', title: 'Last Used At' },
@@ -45,9 +44,6 @@ const items = ref([
                     </template>
                     <template #created_at="{ value }">
                         {{ format.date(value) }}
-                    </template>
-                    <template #is_active="{ data, value }">
-                        <ToggleActive :data="data" :value="value" route="tokens" />
                     </template>
                 </Datatable>
             </div>

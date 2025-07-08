@@ -15,6 +15,13 @@ class SolutionTypeService
 
         $solution_type->tenants()->attach($user->tenant_id);
 
+        $solutionTypeTenant = SolutionTypeTenant::where(['tenant_id' => Auth::user()->tenant_id, 'solution_type_id' => $solution_type->id])->first();
+        $solutionTypeTenant->update([
+            'estimated_time' => array_key_exists('estimated_time', $array) ? $array['estimated_time'] : $solution_type->estimated_time,
+            'is_active' => array_key_exists('is_active', $array) ? $array['is_active'] : $solution_type->is_active,
+            'updated_at' => now(),
+        ]);
+
         return $solution_type;
     }
 
@@ -26,7 +33,8 @@ class SolutionTypeService
 
         $solutionTypeTenant = SolutionTypeTenant::where(['tenant_id' => Auth::user()->tenant_id, 'solution_type_id' => $solution_type->id])->first();
         $solutionTypeTenant->update([
-            'estimated_time' => array_key_exists('estimated_time', $array) ? $array['estimated_time'] : null,
+            'estimated_time' => array_key_exists('estimated_time', $array) ? $array['estimated_time'] : $solution_type->estimated_time,
+            'is_active' => array_key_exists('is_active', $array) ? $array['is_active'] : $solution_type->is_active,
             'updated_at' => now(),
         ]);
 
@@ -57,6 +65,6 @@ class SolutionTypeService
             $solution_type->syncConfigurations($array['configurations']);
         }
 
-        return $solution_type;
+        return $solution_type->refresh();
     }
 }

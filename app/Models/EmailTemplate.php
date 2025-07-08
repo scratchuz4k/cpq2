@@ -18,6 +18,13 @@ class EmailTemplate extends Model
         'body'
     ];
 
+    protected function casts(): array
+    {
+        return [
+            'is_active' => 'boolean'
+        ];
+    }
+
     protected static function booted(): void
     {
 
@@ -53,6 +60,6 @@ class EmailTemplate extends Model
 
     public function tenants(): BelongsToMany
     {
-        return $this->belongsToMany(Tenant::class, 'email_templates_tenant', 'email_template_id')->withPivot('to', 'cc', 'bcc', 'subject', 'body');
+        return $this->belongsToMany(Tenant::class, 'email_templates_tenant', 'email_template_id')->withPivot('to', 'cc', 'bcc', 'subject', 'body', 'is_active');
     }
 }

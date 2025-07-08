@@ -12,8 +12,7 @@ class Token extends SanctumPersonalAccessToken
         'name',
         'token',
         'abilities',
-        'tenant_id',
-        'is_active',
+        'tenant_id'
     ];
 
     use HasFactory;

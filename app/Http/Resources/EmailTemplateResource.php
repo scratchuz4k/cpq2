@@ -16,7 +16,6 @@ class EmailTemplateResource extends JsonResource
     {
         return [
             ...$this->resource->toArray(),
-            'is_active' => (bool) $this->is_active,
             'tokens' => $this->whenLoaded('tokens'),
             'updated_at' => $this->updated_at,
             'created_at' => $this->created_at

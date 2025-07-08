@@ -73,7 +73,7 @@ class RegionController extends BaseController
             throw new Exception($e);
         }
 
-        return new RegionsService($region);
+        return new RegionResource($region);
     }
 
     /**

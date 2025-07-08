@@ -1,16 +1,16 @@
 <script setup>
-import { reactive, ref } from "vue";
-import PrimaryButton from "@/Components/PrimaryButton.vue";
-import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
-import { Head, router } from "@inertiajs/vue3";
-import SpaForm from "@/Views/Spas/SpaForm.vue";
+import { reactive, ref } from 'vue';
+import PrimaryButton from '@/Components/PrimaryButton.vue';
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import { Head, router } from '@inertiajs/vue3';
+import SpaForm from '@/Views/Spas/SpaForm.vue';
 
 const props = defineProps({
     spa: Object,
     suppliers: Object,
     rules: Array,
     operations: Array,
-    price_plans: Array,
+    price_plans: Array
 });
 
 const rules = {};
@@ -37,10 +37,11 @@ const spa = reactive({
     operation_id: props.spa.operation_id,
     value: props.spa.value,
     percentage: props.spa.percentage,
+    is_active: props.spa.is_active
 });
 
 const saveSpa = () => {
-    let rule = props.rules.find((x) => x.code == spa.entity_1 + "" + (spa.entity_2 ?? ""));
+    let rule = props.rules.find((x) => x.code == spa.entity_1 + '' + (spa.entity_2 ?? ''));
 
     let item = {
         rule_id: rule.id,
@@ -50,26 +51,27 @@ const saveSpa = () => {
         operation_id: spa.operation_id,
         value: !spa.value ? 0 : spa.value,
         percentage: !spa.percentage ? 0 : spa.percentage,
+        is_active: spa.is_active
     };
     router.put(`/spas/${props.spa.id}`, item, {
         onSuccess: (page) => {
-            notyf.success("Updated with Success");
+            notyf.success('Updated with Success');
         },
         onError: (errors) => {
-            let string = "";
+            let string = '';
             Object.keys(errors).forEach((key) => {
-                string += errors[key] + "<br>";
+                string += errors[key] + '<br>';
             });
             notyf.error(string);
-        },
+        }
     });
 };
 
 const items = ref([
-    { label: "Home", url: "/" },
-    { label: "My Account", url: "/myaccount" },
-    { label: "SPAs", url: "/spas" },
-    { label: "Edit SPA" },
+    { label: 'Home', url: '/' },
+    { label: 'My Account', url: '/myaccount' },
+    { label: 'SPAs', url: '/spas' },
+    { label: 'Edit SPA' }
 ]);
 </script>
 <template>
@@ -84,6 +86,7 @@ const items = ref([
                 </PrimaryButton>
             </template>
         </Header>
+        {{ spa }}
         <SpaForm v-model="spa" :rules="rules" :operations="props.operations" :price_plans="props.price_plans"></SpaForm>
     </AuthenticatedLayout>
 </template>

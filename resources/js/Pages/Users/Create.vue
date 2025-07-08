@@ -1,8 +1,9 @@
 <script setup>
-import {computed, ref, watch} from "vue";import Button from 'primevue/button';
+import { computed, ref, watch } from 'vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head, router, useForm, usePage } from "@inertiajs/vue3";
+import { Head, router, useForm, usePage } from '@inertiajs/vue3';
+import ToggleSwitch from 'primevue/toggleswitch';
 
 const page = usePage();
 
@@ -10,7 +11,7 @@ const props = defineProps({
     roles: Object,
     managers: Object,
     parent_id: Number
-})
+});
 
 const user = useForm({
     name: null,
@@ -19,35 +20,36 @@ const user = useForm({
     role_id: props.roles.find(role => role.name.toLowerCase() === 'sales rep').id,
     parent_id: props.parent_id ?? 0,
     commission_rate: 0,
-    sso: false
-})
+    sso: false,
+    is_active: true
+});
 
 const showCommissionRate = computed(() => {
-    let temp = props.roles.find((item) => item.name.toLowerCase() === 'sales rep')
+    let temp = props.roles.find((item) => item.name.toLowerCase() === 'sales rep');
     return temp.id === user.role_id;
-})
+});
 
 const saveUser = () => {
     router.post(`/users`, user,
         {
             onSuccess: (page) => {
-                notyf.success("Created with Success")
+                notyf.success('Created with Success');
             },
             onError: (errors) => {
-                let string = ''
+                let string = '';
                 Object.keys(errors).forEach((key) => {
-                    string += errors[key] + '<br>'
-                })
-                notyf.error(string)
-            },
+                    string += errors[key] + '<br>';
+                });
+                notyf.error(string);
+            }
         }
-    )
-}
+    );
+};
 const items = ref([
     { label: 'Home', url: '/' },
     { label: 'My Account', url: '/myaccount' },
     { label: 'Users', url: '/users' },
-    { label: 'New User' },
+    { label: 'New User' }
 ]);
 
 </script>
@@ -58,11 +60,25 @@ const items = ref([
             <Header title="New User" :breadcrumbs="items">
                 <template #buttons>
                     <PrimaryButton id="btn-save-user" @click="saveUser()">
-                        <font-awesome-icon class="me-2" :icon="['fas', 'save']"></font-awesome-icon> Save
+                        <font-awesome-icon class="me-2" :icon="['fas', 'save']"></font-awesome-icon>
+                        Save
                     </PrimaryButton>
                 </template>
             </Header>
             <div class="col-6">
+                <div class="mb-3 d-flex flex-column">
+                    <label class="form-label" for="active-filter">
+                        Active:
+                    </label>
+                    <ToggleSwitch id="active-filter" v-model="user.is_active">
+                        <template #handle>
+                            <font-awesome-icon
+                                :icon="user.is_active ? ['fas', 'circle-check'] : ['far', 'circle-xmark']"
+                                class="text-primary"
+                            />
+                        </template>
+                    </ToggleSwitch>
+                </div>
                 <div class="row mb-3">
                     <label for="user-name" class="form-label">Name:</label>
                     <input id="user-name" class="form-control" v-model="user.name" required>
@@ -87,8 +103,10 @@ const items = ref([
                 <div v-if="showCommissionRate" class="row mb-3">
                     <label for="user-commission-rate" class="form-label">Commission Rate:</label>
                     <div class="input-group p-0">
-                        <input id="user-commission-rate" type="number" class="form-control" v-model="user.commission_rate">
-                        <div class="text-danger" v-if="user.errors.commission_rate">{{ user.errors.commission_rate }}</div>
+                        <input id="user-commission-rate" type="number" class="form-control"
+                            v-model="user.commission_rate">
+                        <div class="text-danger" v-if="user.errors.commission_rate">{{ user.errors.commission_rate }}
+                        </div>
                         <span class="input-group-text">%</span>
                     </div>
                 </div>

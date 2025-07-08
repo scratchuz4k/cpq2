@@ -1,23 +1,24 @@
 <script setup>
-import { reactive, ref } from "vue";
-import { can, hasRole } from "@composables/useAuth";
-import PrimaryButton from "@/Components/PrimaryButton.vue";
-import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
-import { Head, router } from "@inertiajs/vue3";
-import DataTable from "primevue/datatable";
-import Column from "primevue/column";
-import Dialog from "primevue/dialog";
-import InputText from "primevue/inputtext";
-import Button from "primevue/button";
+import { reactive, ref } from 'vue';
+import { can, hasRole } from '@composables/useAuth';
+import PrimaryButton from '@/Components/PrimaryButton.vue';
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import { Head, router } from '@inertiajs/vue3';
+import DataTable from 'primevue/datatable';
+import Column from 'primevue/column';
+import Dialog from 'primevue/dialog';
+import InputText from 'primevue/inputtext';
+import Button from 'primevue/button';
+import ToggleSwitch from 'primevue/toggleswitch';
 
 const props = defineProps({
-    price_plans: Object,
+    price_plans: Object
 });
 
 const price = reactive({
     code: null,
     tax_rate: 0,
-    net: 0,
+    net: 0
 });
 
 const product = reactive({
@@ -28,6 +29,7 @@ const product = reactive({
     code: null,
     description: null,
     prices: [],
+    is_active: true
 });
 
 const editingRows = ref([]);
@@ -41,19 +43,19 @@ const saveProduct = () => {
             ...product,
             supplier_id: product.supplier?.id,
             brand_id: product.brand?.id,
-            categories: categories.value?.id,
+            categories: categories.value?.id
         },
         {
             onSuccess: (page) => {
-                notyf.success("Created with Success");
+                notyf.success('Created with Success');
             },
             onError: (errors) => {
-                let string = "";
+                let string = '';
                 Object.keys(errors).forEach((key) => {
-                    string += errors[key] + "<br>";
+                    string += errors[key] + '<br>';
                 });
                 notyf.error(string);
-            },
+            }
         }
     );
 };
@@ -70,10 +72,10 @@ const savePrice = async () => {
 
 const deletePrice = async (id) => {
     let result = await swal.fire({
-        title: "Are you sure?",
+        title: 'Are you sure?'
     });
 
-    if (["cancel", "backdrop"].includes(result.dismiss)) {
+    if (['cancel', 'backdrop'].includes(result.dismiss)) {
         return;
     }
 
@@ -90,10 +92,10 @@ const onRowEditSave = async (event) => {
 };
 
 const items = ref([
-    { label: "Home", url: "/" },
-    { label: "My Account", url: "/myaccount" },
-    { label: "Products", url: "/products" },
-    { label: "New Product" },
+    { label: 'Home', url: '/' },
+    { label: 'My Account', url: '/myaccount' },
+    { label: 'Products', url: '/products' },
+    { label: 'New Product' }
 ]);
 </script>
 <template>
@@ -118,6 +120,19 @@ const items = ref([
                         </p>
                     </div>
                     <div class="my-3 col-6">
+                        <div class="mb-3 d-flex flex-column">
+                            <label class="form-label" for="active-filter">
+                                Active:
+                            </label>
+                            <ToggleSwitch id="active-filter" v-model="product.is_active">
+                                <template #handle>
+                                    <font-awesome-icon
+                                        :icon="product.is_active ? ['fas', 'circle-check'] : ['far', 'circle-xmark']"
+                                        class="text-primary"
+                                    />
+                                </template>
+                            </ToggleSwitch>
+                        </div>
                         <div class="row mb-3">
                             <label for="product-code" class="form-label">Code:</label>
                             <input id="product-code" class="form-control" v-model="product.code" />
@@ -184,7 +199,7 @@ const items = ref([
                                             }),
                                         },
                                     }">
-                                    <Column field="code" header="Code" style="width: 10%"> </Column>
+                                    <Column field="code" header="Code" style="width: 10%"></Column>
                                     <Column field="tax_rate" header="Tax Rate" style="width: 20%">
                                         <template #editor="{ data, field }">
                                             <InputText v-model="data[field]" fluid />

@@ -1,38 +1,39 @@
 <script setup>
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head, router } from "@inertiajs/vue3";
+import { Head, router } from '@inertiajs/vue3';
 import { ref } from 'vue';
+import ToggleSwitch from 'primevue/toggleswitch';
 
 const props = defineProps({
     region: Object,
     merchants: Object,
     users: Object
-})
+});
 
 
-const saveRegion= () => {
+const saveRegion = () => {
     router.put(`/regions/${props.region.id}`, props.region,
         {
             onSuccess: (page) => {
-                notyf.success("Updated with Success")
+                notyf.success('Updated with Success');
             },
             onError: (errors) => {
-                let string = ''
+                let string = '';
                 Object.keys(errors).forEach((key) => {
-                    string += errors[key] + '<br>'
-                })
-                notyf.error(string)
-            },
+                    string += errors[key] + '<br>';
+                });
+                notyf.error(string);
+            }
         }
-    )
-}
+    );
+};
 
 const items = ref([
     { label: 'Home', url: '/' },
     { label: 'My Account', url: '/myaccount' },
     { label: 'Regions', url: '/regions' },
-    { label: 'Edit Region' },
+    { label: 'Edit Region' }
 ]);
 
 </script>
@@ -44,11 +45,25 @@ const items = ref([
             <Header :title="'Edit Region #' + region.id" :breadcrumbs="items">
                 <template #buttons>
                     <PrimaryButton @click="saveRegion()">
-                        <font-awesome-icon class="me-2" :icon="['fas', 'save']"></font-awesome-icon> Save
+                        <font-awesome-icon class="me-2" :icon="['fas', 'save']"></font-awesome-icon>
+                        Save
                     </PrimaryButton>
                 </template>
             </Header>
             <div class="col-6">
+                <div class="mb-3 d-flex flex-column">
+                    <label class="form-label" for="active-filter">
+                        Active:
+                    </label>
+                    <ToggleSwitch id="active-filter" v-model="region.is_active">
+                        <template #handle>
+                            <font-awesome-icon
+                                :icon="region.is_active ? ['fas', 'circle-check'] : ['far', 'circle-xmark']"
+                                class="text-primary"
+                            />
+                        </template>
+                    </ToggleSwitch>
+                </div>
                 <div class="row mb-3">
                     <label for="merchant-name" class="form-label">Merchant:</label>
                     <select class="form-select" v-model="region.merchant_id">
