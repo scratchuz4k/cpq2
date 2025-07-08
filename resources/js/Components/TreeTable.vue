@@ -96,7 +96,11 @@ const sortBy = (column) => {
     meta.orderBy = column;
 };
 
+const exportDisabled = ref(false);
+
 const getExportData = async () => {
+    if (exportDisabled.value) return;
+    exportDisabled.value = true;
     let filters = !global.value
         ? [
               {
@@ -114,6 +118,10 @@ const getExportData = async () => {
     });
 
     exportData(string, props.route);
+
+    setTimeout(() => {
+        exportDisabled.value = false;
+    }, 5000);
 };
 
 watch(
@@ -141,7 +149,7 @@ watch(
                 :severity="'secondary'"
                 :class="['me-2']"
                 @click="getExportData()"
-                :disabled="emptyData"
+                :disabled="emptyData || exportDisabled"
             >
                 <font-awesome-icon :icon="['fas', 'file-export']" />
             </Button>

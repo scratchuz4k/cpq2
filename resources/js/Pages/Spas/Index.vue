@@ -232,13 +232,20 @@ const sortBy = (column) => {
     getData();
 };
 
+const exportDisabled = ref(false);
+
 const getExportData = async () => {
+    if (exportDisabled.value) return;
+    exportDisabled.value = true;
     // let filters = {
     //     filters: ,
     //     search: global.value,
     // };
 
     exportData([], 'spas');
+    setTimeout(() => {
+        exportDisabled.value = false;
+    }, 5000);
 };
 
 const items = ref([{ label: 'Home', url: '/' }, { label: 'My Account', url: '/myaccount' }, { label: 'SPAs' }]);
@@ -289,7 +296,7 @@ getData();
                         type="button"
                         :severity="'secondary'"
                         @click="getExportData()"
-                        :disabled="emptyData"
+                        :disabled="emptyData || exportDisabled"
                     >
                         <font-awesome-icon :icon="['fas', 'file-export']" />
                     </Button>
