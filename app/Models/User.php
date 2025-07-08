@@ -130,6 +130,7 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
         'sso' => 'boolean',
+        'is_active' => 'boolean',
     ];
 
     /**

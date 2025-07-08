@@ -85,6 +85,10 @@ const saveNewGroup = async () => {
     }
 };
 
+emitter.on('datatable-refresh', () => {
+    emitter.emit('treetable-refresh');
+});
+
 const items = ref([
     { label: 'Home', url: '/' },
     { label: 'My Account', url: '/myaccount' },
@@ -140,13 +144,13 @@ const items = ref([
                                 </p>
                                 <input type="file" accept=".csv" required @input="onFileChange" />
                                 <button type="submit" class="btn btn-primary ms-2" :disabled="isLoading">
-                  <span v-if="isLoading">
-                    <font-awesome-icon
-                        :icon="['fa', 'spinner']"
-                        class="fa-spin"
-                    ></font-awesome-icon>
-                    Uploading...
-                  </span>
+                                    <span v-if="isLoading">
+                                        <font-awesome-icon
+                                            :icon="['fa', 'spinner']"
+                                            class="fa-spin"
+                                        ></font-awesome-icon>
+                                        Uploading...
+                                    </span>
                                     <span v-else>Upload</span>
                                 </button>
                             </form>
@@ -156,22 +160,22 @@ const items = ref([
                         <TreeTable
                             id="users-table"
                             :allow="{
-                update: true,
-                delete: true,
-                link: false,
-                commission: true,
-                create: true,
-              }"
+                                update: true,
+                                delete: true,
+                                link: false,
+                                commission: true,
+                                create: true
+                            }"
                             :columns="[
-                { data: 'id', title: '#' },
-                { data: 'is_active', title: 'Active', style: 'width:5%' },
-                { data: 'sso', title: 'SSO', style: 'width:4%' },
-                { data: 'name', title: 'Name' },
-                { data: 'email', title: 'Email' },
-                { data: 'commission_rate', title: 'Commission' },
-                { data: 'roles.name', title: 'Role' },
-                { data: 'group.name', title: 'Group' },
-              ]"
+                                { data: 'id', title: '#' },
+                                { data: 'is_active', title: 'Active', style: 'width:5%' },
+                                { data: 'sso', title: 'SSO', style: 'width:4%' },
+                                { data: 'name', title: 'Name' },
+                                { data: 'email', title: 'Email' },
+                                { data: 'commission_rate', title: 'Commission' },
+                                { data: 'roles.name', title: 'Role' },
+                                { data: 'group.name', title: 'Group' },
+                            ]"
                             route="/users"
                             v-model="selectedItems"
                         >
