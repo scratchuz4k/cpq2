@@ -159,21 +159,27 @@ const items = ref([
                         <div class="mb-3">
                             <label for="supplier-name" class="form-label">Supplier:</label>
                             <InputSelect id="product-supplier" url="/suppliers" :fields="['name']"
-                                v-model="product.supplier" placeholder="Select a Supplier">
+                                v-model="product.supplier" placeholder="Select a Supplier"
+                                :query="[{ column: 'is_active', operator: 'equals', value: 1 }]"
+                            >
                             </InputSelect>
                         </div>
 
                         <div class="mb-3">
                             <label for="brand-name" class="form-label">Brand:</label>
                             <InputSelect id="product-brand" url="/brands" :fields="['name']" v-model="product.brand"
-                                placeholder="Select a Brand">
+                                placeholder="Select a Brand"
+                                :query="[{ column: 'is_active', operator: 'equals', value: 1 }]"
+                            >
                             </InputSelect>
                         </div>
 
                         <div class="mb-3">
                             <label for="product-categories" class="form-label">Category:</label>
                             <InputSelect id="product-categories" url="/categories" :fields="['name']"
-                                v-model="categories" placeholder="Select a Category">
+                                v-model="categories" placeholder="Select a Category"
+                                :query="[{ column: 'is_active', operator: 'equals', value: 1 }]"
+                            >
                             </InputSelect>
                         </div>
                     </div>

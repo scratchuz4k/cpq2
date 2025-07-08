@@ -126,7 +126,10 @@ const items = ref([
                                 :fields="['name']"
                                 v-model="user"
                                 placeholder="Select an User"
-                                :query="[{ column: 'group_id', operator: 'is_null', value: '' }]"
+                                :query="[
+                                    { column: 'group_id', operator: 'is_null', value: '' },
+                                    { column: 'is_active', operator: 'equals', value: 1 }
+                                ]"
                             >
                             </InputSelect>
                         </div>

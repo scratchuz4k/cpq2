@@ -160,7 +160,9 @@ const items = ref([
                                                     <InputSelect v-model="solution.categories[index]" url="/categories"
                                                         :id="`solution-type-categories-` + index + `-value`"
                                                         :fields="['name']" placeholder="Select a Category"
-                                                        @change="checkCategories(index)">
+                                                        @change="checkCategories(index)"
+                                                        :query="[{ column: 'is_active', operator: 'equals', value: 1 }]"
+                                                    >
                                                     </InputSelect>
                                                 </td>
                                                 <td style="text-align: right; width: 5%;">

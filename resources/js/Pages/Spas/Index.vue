@@ -316,6 +316,7 @@ getData();
                                     v-model="fields.supplier"
                                     @change="handleFields()"
                                     placeholder="Select an Supplier"
+                                    :query="[{ column: 'is_active', operator: 'equals', value: 1 }]"
                                 >
                                 </InputSelect>
                             </div>
@@ -328,6 +329,7 @@ getData();
                                     v-model="fields.product"
                                     @change="handleFields()"
                                     placeholder="Select a Product"
+                                    :query="[{ column: 'is_active', operator: 'equals', value: 1 }]"
                                 >
                                 </InputSelect>
                             </div>
@@ -340,6 +342,7 @@ getData();
                                     v-model="fields.group"
                                     @change="handleFields()"
                                     placeholder="Select a Group"
+                                    :query="[{ column: 'is_active', operator: 'equals', value: 1 }]"
                                 >
                                 </InputSelect>
                             </div>

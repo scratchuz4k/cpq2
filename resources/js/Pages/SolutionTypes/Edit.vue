@@ -250,6 +250,7 @@ const items = ref([
                                                         :fields="['name']"
                                                         placeholder="Select a Category"
                                                         @change="checkCategories(index)"
+                                                        :query="[{ column: 'is_active', operator: 'equals', value: 1 }]"
                                                     >
                                                     </InputSelect>
                                                 </td>
