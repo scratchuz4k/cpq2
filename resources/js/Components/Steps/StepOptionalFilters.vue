@@ -2,6 +2,7 @@
 import { computed } from 'vue';
 import { MultiSelect } from 'primevue';
 import format from '@/Composables/format';
+import Select from 'primevue/select';
 
 const props = defineProps({
     solutionType: Array,
@@ -17,6 +18,21 @@ const proxyValue = computed({
         emit('update:modelValue', val);
     }
 });
+
+const bearers = [
+    { value: 100, label: format.speed(100) },
+    { value: 1000, label: format.speed(1000) },
+    { value: 10000, label: format.speed(10000) }
+];
+const speeds = [
+    { value: 10, label: format.speed(10) },
+    { value: 50, label: format.speed(50) },
+    { value: 100, label: format.speed(100) },
+    { value: 200, label: format.speed(200) },
+    { value: 500, label: format.speed(500) },
+    { value: 1000, label: format.speed(1000) },
+    { value: 10000, label: format.speed(10000) }
+];
 
 const formatInput = (ev, field, index) => {
     if (ev.target.value > 10000) {
@@ -53,85 +69,50 @@ const formatInput = (ev, field, index) => {
         <div class="col-lg-6">
             <div class="panel">
                 <h5 class="font-bold mb-3">Optionally, select some default filters</h5>
-                <div class="mb-5 pb-2">
+                <div class="pb-2">
                     <div class="d-flex justify-content-between mb-2">
-                        <p class="form-label">Speed</p>
+                        <p class="form-label">Min. Speed</p>
                         <span>
                             <span class="badge text-bg-secondary">Min</span>
-                            {{ format.speed(proxyValue.configs.speed[0]) }}
-                            <span class="ms-2 badge text-bg-secondary">Max</span>
-                            {{ format.speed(proxyValue.configs.speed[1]) }}
+                            {{ format.speed(proxyValue.configs.speed) }}
+                            <!-- <span class="ms-2 badge text-bg-secondary">Max</span>
+                            {{ format.speed(proxyValue.configs.speed[1]) }} -->
                         </span>
                     </div>
-                    <div class="d-flex align-items-end">
-                        <div class="w-20">
-                            <input
-                                type="number"
-                                min="10"
-                                max="10000"
-                                class="form-control w-100"
-                                @change="(ev) => formatInput(ev, proxyValue.configs.speed, 0)"
-                                v-model="proxyValue.configs.speed[0]"
-                            />
-                        </div>
-                        <div class="px-4 mb-3" style="width: 80%">
-                            <SpeedRange
-                                v-model="proxyValue.configs.speed"
-                                :options="[10, 100, 1000, 10000]"
-                            ></SpeedRange>
-                        </div>
-                        <div class="w-20">
-                            <input
-                                type="number"
-                                :min="10"
-                                :max="10000"
-                                @change="(ev) => formatInput(ev, proxyValue.configs.speed, 1)"
-                                class="form-control w-100"
-                                v-model="proxyValue.configs.speed[1]"
-                            />
-                        </div>
-                    </div>
+                    <Select
+                        v-model="proxyValue.configs.speed"
+                        style="width: 100%"
+                        :options="speeds"
+                        optionLabel="label"
+                        optionValue="value"
+                        placeholder="All"
+                        class="custom-select"
+                    >
+                    </Select>
                 </div>
                 <hr class="mb-4" />
-                <div class="mb-5 pb-2">
+                <div class="mb-3 pb-2">
                     <div class="d-flex justify-content-between mb-2">
-                        <p class="form-label">Bearer</p>
+                        <p class="form-label">Min. Bearer</p>
                         <span>
                             <span class="badge text-bg-secondary">Min</span>
-                            {{ format.speed(proxyValue.configs.bearer[0]) }}
-                            <span class="ms-2 badge text-bg-secondary">Max</span>
-                            {{ format.speed(proxyValue.configs.bearer[1]) }}
+                            {{ format.speed(proxyValue.configs.bearer) }}
+                            <!-- <span class="ms-2 badge text-bg-secondary">Max</span>
+                            {{ format.speed(proxyValue.configs.bearer[1]) }} -->
                         </span>
                     </div>
-                    <div class="d-flex align-items-end">
-                        <div class="w-20">
-                            <input
-                                type="number"
-                                min="100"
-                                max="10000"
-                                class="form-control w-100"
-                                @change="(ev) => formatInput(ev, proxyValue.configs.bearer, 0)"
-                                v-model="proxyValue.configs.bearer[0]"
-                            />
-                        </div>
-                        <div class="px-4 mb-3" style="width: 80%">
-                            <BearerRange
-                                v-model="proxyValue.configs.bearer"
-                                :options="[100, 1000, 10000]"
-                            ></BearerRange>
-                        </div>
-                        <div class="w-20">
-                            <input
-                                type="number"
-                                :min="100"
-                                :max="10000"
-                                @change="(ev) => formatInput(ev, proxyValue.configs.bearer, 1)"
-                                class="form-control w-100"
-                                v-model="proxyValue.configs.bearer[1]"
-                            />
-                        </div>
-                    </div>
+                    <Select
+                        v-model="proxyValue.configs.bearer"
+                        style="width: 100%"
+                        :options="speeds"
+                        optionLabel="label"
+                        optionValue="value"
+                        placeholder="All"
+                        class="me-3 custom-select"
+                    >
+                    </Select>
                 </div>
+                <hr class="mb-4" />
                 <div class="mb-4 pb-2">
                     <div class="d-flex justify-content-between">
                         <p class="form-label">Contract Length</p>
@@ -148,6 +129,7 @@ const formatInput = (ev, field, index) => {
                         </template>
                     </MultiSelect>
                 </div>
+                <hr class="mb-4" />
                 <div class="mb-3">
                     <p class="form-label mb-2">Managed Products:</p>
                     <div class="row row-cols-1 row-cols-md-3 g-3">
@@ -190,7 +172,7 @@ const formatInput = (ev, field, index) => {
                     </div>
                 </div>
             </div>
-            <ButtonStep v-model="proxyValue" :disabled="proxyValue.account == null"></ButtonStep>
+            <ButtonStep v-model="proxyValue"></ButtonStep>
         </div>
     </div>
 </template>
