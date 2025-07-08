@@ -8,14 +8,19 @@ use App\Http\Requests\IndexRequest;
 use App\Http\Resources\TokenResource;
 use App\Models\Token;
 use Dedoc\Scramble\Attributes\ExcludeRouteFromDocs;
+use Exception;
 use Illuminate\Http\Request;
-use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
-use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class TokenController extends BaseController
 {
     protected $model = Token::class;
+
+    public function __construct(protected Token $service)
+    {
+        parent::__construct();
+    }
 
     /**
      * List of Tokens
@@ -28,7 +33,7 @@ class TokenController extends BaseController
         $dataProvider = new DataProvider(Token::class);
         try {
             $data = $dataProvider->get();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::debug($e->getMessage());
 
             return $e->getMessage();
@@ -61,7 +66,16 @@ class TokenController extends BaseController
     #[ExcludeRouteFromDocs]
     public function update(Request $request, Token $supplier)
     {
-        //
+        try {
+            $token = DB::transaction(function () use ($token, $request) {
+                return $this->service->update($token, $request->all());
+            });
+        } catch (Exception $e) {
+            Log::debug($e->getMessage());
+            throw new Exception($e);
+        }
+
+        return new TokenResource($token);
     }
 
     /**

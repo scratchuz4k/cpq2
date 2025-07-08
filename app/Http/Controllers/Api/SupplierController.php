@@ -2,21 +2,27 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Helpers\DataProvider;
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\IndexRequest;
+use App\Http\Resources\SolutionTypeResource;
 use App\Http\Resources\SupplierResource;
 use App\Models\Supplier;
+use App\Services\SuppliersService;
 use Dedoc\Scramble\Attributes\ExcludeRouteFromDocs;
 use Exception;
 use Illuminate\Http\Request;
-use App\Helpers\DataProvider;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
-use Illuminate\Pagination\LengthAwarePaginator;
 
 class SupplierController extends BaseController
 {
     protected $model = Supplier::class;
+
+    public function __construct(protected SuppliersService $service)
+    {
+        parent::__construct();
+    }
 
     /**
      * List of Suppliers
@@ -59,7 +65,16 @@ class SupplierController extends BaseController
     #[ExcludeRouteFromDocs]
     public function update(Request $request, Supplier $supplier)
     {
-        //
+        try {
+            $supplier = DB::transaction(function () use ($supplier, $request) {
+                return $this->service->update($supplier, $request->all());
+            });
+        } catch (Exception $e) {
+            Log::debug($e->getMessage());
+            throw new Exception($e);
+        }
+
+        return new SolutionTypeResource($supplier);
     }
 
     /**

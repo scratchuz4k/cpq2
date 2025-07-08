@@ -2,19 +2,27 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Helpers\DataProvider;
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\IndexRequest;
+use App\Http\Resources\MerchantResource;
+use App\Models\Merchant;
+use App\Services\MerchantService;
 use Dedoc\Scramble\Attributes\ExcludeRouteFromDocs;
 use Exception;
-use App\Models\Merchant;
 use Illuminate\Http\Request;
-use App\Helpers\DataProvider;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use App\Http\Resources\MerchantResource;
 
 class MerchantController extends BaseController
 {
     protected $model = Merchant::class;
+
+    public function __construct(protected MerchantService $service)
+    {
+        parent::__construct();
+    }
+
     /**
      * List Merchants
      * @response AnonymousResourceCollection<LengthAwarePaginator<MerchantResource>>
@@ -56,7 +64,16 @@ class MerchantController extends BaseController
     #[ExcludeRouteFromDocs]
     public function update(Request $request, Merchant $merchant)
     {
-        //
+        try {
+            $merchant = DB::transaction(function () use ($merchant, $request) {
+                return $this->accountService->update($merchant, $request->all());
+            });
+        } catch (Exception $e) {
+            Log::debug($e->getMessage());
+            throw new Exception($e);
+        }
+
+        return new MerchantResource($merchant);
     }
 
     /**

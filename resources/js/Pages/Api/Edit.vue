@@ -1,63 +1,64 @@
 <script setup>
 import Select from 'primevue/select';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head, router, useForm } from "@inertiajs/vue3";
+import { Head, router, useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
-import ToggleSwitch from "primevue/toggleswitch";
+import ToggleSwitch from 'primevue/toggleswitch';
 
 
 const props = defineProps({
     api: Object,
-    suppliers: Array,
+    suppliers: Array
 });
 
 const auth_types = [
     { value: 'basic', name: 'Basic' },
     { value: 'basic_client', name: 'Basic Client' },
-    { value: 'token', name: 'Token' },
-]
-const data = useForm(props.api)
+    { value: 'token', name: 'Token' }
+];
+const data = useForm(props.api);
 
 const clearAuth = () => {
-    data.username = null
-    data.password = null
-    data.client_id = null
-    data.token = null
-}
+    data.username = null;
+    data.password = null;
+    data.client_id = null;
+    data.token = null;
+};
 
 const saveApi = () => {
     router.put(`/apis/${data.id}`, data,
         {
             onSuccess: (page) => {
-                notyf.success("Updated with Success")
+                notyf.success('Updated with Success');
             },
             onError: (errors) => {
-                let string = ''
+                let string = '';
                 Object.keys(errors).forEach((key) => {
-                    string += errors[key] + '<br>'
-                })
-                notyf.error(string)
-            },
-        })
-}
+                    string += errors[key] + '<br>';
+                });
+                notyf.error(string);
+            }
+        });
+};
 
 const items = ref([
     { label: 'Home', url: '/' },
     { label: 'My Account', url: '/myaccount' },
     { label: 'Apis', url: '/apis' },
-    { label: 'Edit Api' },
+    { label: 'Edit Api' }
 ]);
 
 </script>
 <template>
 
-    <Head :title="'Edit Item #' + data.id"/>
+    <Head :title="'Edit Item #' + data.id" />
     <AuthenticatedLayout>
         <div class="panel">
             <Header :title="'Edit Item #' + data.id" :breadcrumbs="items">
                 <template #buttons>
                     <PrimaryButton id="btn-save-api" @click="saveApi()">
-                        <font-awesome-icon class="me-2" :icon="['fas', 'save']"></font-awesome-icon> Save
+                        <font-awesome-icon class="me-2" :icon="['fas', 'save']"></font-awesome-icon>
+                        Save
                     </PrimaryButton>
                 </template>
             </Header>

@@ -15,8 +15,7 @@ class EmailTemplate extends Model
         'cc',
         'bcc',
         'subject',
-        'body',
-        'is_active',
+        'body'
     ];
 
     protected static function booted(): void
@@ -36,6 +35,7 @@ class EmailTemplate extends Model
                 $model->setAttribute('bcc', $email->pivot->bcc);
                 $model->setAttribute('subject', $email->pivot->subject);
                 $model->setAttribute('body', $email->pivot->body);
+                $model->setAttribute('is_active', $email->pivot->is_active);
             }
         });
     }

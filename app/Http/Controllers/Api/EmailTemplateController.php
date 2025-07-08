@@ -2,18 +2,26 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Helpers\DataProvider;
+use App\Http\Controllers\BaseController;
+use App\Http\Requests\IndexRequest;
+use App\Http\Resources\EmailTemplateResource;
+use App\Models\EmailTemplate;
+use App\Services\EmailService;
 use Exception;
 use Illuminate\Http\Request;
-use App\Helpers\DataProvider;
-use App\Models\EmailTemplate;
-use App\Http\Requests\IndexRequest;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use App\Http\Controllers\BaseController;
-use App\Http\Resources\EmailTemplateResource;
 
 class EmailTemplateController extends BaseController
 {
     protected $model = EmailTemplate::class;
+
+    public function __construct(protected EmailService $emailService)
+    {
+        parent::__construct();
+    }
+
     /**
      * Index
      * @response AnonymousResourceCollection<LengthAwarePaginator<AccountResource>>
@@ -53,7 +61,16 @@ class EmailTemplateController extends BaseController
      */
     public function update(Request $request, EmailTemplate $emailTemplate)
     {
-        //
+        try {
+            $emailTemplate = DB::transaction(function () use ($emailTemplate, $request) {
+                return $this->emailService->update($emailTemplate, $request->all());
+            });
+        } catch (Exception $e) {
+            Log::debug($e->getMessage());
+            throw new Exception($e);
+        }
+
+        return new EmailTemplateResource($emailTemplate);
     }
 
     /**

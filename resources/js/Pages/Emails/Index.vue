@@ -1,6 +1,6 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head, Link } from '@inertiajs/vue3';
+import { Head } from '@inertiajs/vue3';
 import { ref } from 'vue';
 
 const items = ref([
@@ -13,35 +13,35 @@ const items = ref([
     <Head title="Email's" />
     <AuthenticatedLayout>
         <div class="panel">
-            <Header title="Email's" :breadcrumbs="items"></Header>
+            <Header :breadcrumbs="items" title="Email's"></Header>
             <tabs class="mt-3">
-                <tab title="Templates" :selected="true">
+                <tab :selected="true" title="Templates">
                     <div class="mt-3 max-w-7xl mx-auto sm:px-6 lg:px-8">
                         <Datatable
                             :allow="{
-                update: true,
-                delete: false,
-                link: false,
-              }"
+                                update: true,
+                                delete: false,
+                                link: false,
+                            }"
                             :columns="[
-                { data: 'id', title: '#', style: 'width:5%' },
-                { data: 'is_active', title: 'Active', style: 'width:5%' },
-                { data: 'code', title: 'Code', style: 'width:20%' },
-                { data: 'description', title: 'Description', style: 'width:25%' },
-                { data: 'notes', title: 'Notes', style: 'width:5%' },
-                { data: 'created_at', title: 'Created At', style: 'width:15%' },
-                { data: 'updated_at', title: 'Updated At', style: 'width:15%' },
-              ]"
+                                { data: 'id', title: '#', style: 'width:5%' },
+                                { data: 'is_active', title: 'Active', style: 'width:5%' },
+                                { data: 'code', title: 'Code', style: 'width:20%' },
+                                { data: 'description', title: 'Description', style: 'width:25%' },
+                                { data: 'notes', title: 'Notes', style: 'width:5%' },
+                                { data: 'created_at', title: 'Created At', style: 'width:15%' },
+                                { data: 'updated_at', title: 'Updated At', style: 'width:15%' },
+                            ]"
                             route="/email-templates"
                         >
                             <template #code="{ value }">
                                 <span class="badge text-bg-secondary">{{ value }}</span>
                             </template>
                             <template #notes="{ value }">
-                <span class="cpq-tooltip border-0">
-                    <font-awesome-icon :icon="['fas', 'circle-info']" />
-                    <span class="cpq-tooltip-text"><small>{{ value }}</small></span>
-                </span>
+                                <span class="cpq-tooltip border-0">
+                                    <font-awesome-icon :icon="['fas', 'circle-info']" />
+                                    <span class="cpq-tooltip-text"><small>{{ value }}</small></span>
+                                </span>
                             </template>
                             <template #updated_at="{ value }">
                                 {{ format.date(value) }}

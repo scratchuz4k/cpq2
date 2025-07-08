@@ -5,17 +5,26 @@ namespace App\Http\Controllers\Api;
 use App\Helpers\DataProvider;
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\IndexRequest;
+use App\Http\Resources\SolutionTypeResource;
 use App\Http\Resources\SolutionTypeTenantResource;
 use App\Models\SolutionType;
 use App\Models\SolutionTypeTenant;
+use App\Services\SolutionTypeService;
 use Dedoc\Scramble\Attributes\ExcludeRouteFromDocs;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class SolutionTypeController extends BaseController
 {
     protected $model = SolutionType::class;
+
+    public function __construct(protected SolutionTypeService $service)
+    {
+        parent::__construct();
+    }
 
     /**
      * List of Solution Types
@@ -28,7 +37,7 @@ class SolutionTypeController extends BaseController
 
         try {
             $data = $dataProvider->get();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::debug($e->getMessage());
 
             return $e->getMessage();
@@ -61,7 +70,16 @@ class SolutionTypeController extends BaseController
     #[ExcludeRouteFromDocs]
     public function update(Request $request, SolutionType $solutionType)
     {
-        //
+        try {
+            $solutionType = DB::transaction(function () use ($solutionType, $request) {
+                return $this->service->update($solutionType, $request->all());
+            });
+        } catch (Exception $e) {
+            Log::debug($e->getMessage());
+            throw new Exception($e);
+        }
+
+        return new SolutionTypeResource($solutionType);
     }
 
     /**
