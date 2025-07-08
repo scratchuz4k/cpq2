@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers\Web;
 
-use App\Export\Export;
-use App\Helpers\DataProvider;
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\SpaCreateRequest;
 use App\Http\Requests\SpaUpdateRequest;
@@ -15,11 +13,8 @@ use App\Models\SpaRule;
 use App\Models\Supplier;
 use App\Services\SpasService;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
-use Maatwebsite\Excel\Facades\Excel;
 
 class SpaController extends BaseController
 {
@@ -118,7 +113,6 @@ class SpaController extends BaseController
         //
     }
 
-
     protected function transformExportData(Collection $data): Collection
     {
         return new Collection($data->map(function ($item) {
@@ -127,7 +121,7 @@ class SpaController extends BaseController
                 'rule' => $item->rule?->name ?? null,
                 'level_1' => app($item->rule->entity_1)::where('id', $item->field_1)->first()->name ?? null,
                 'level_2' => $item->rule->entity_2 ? app($item->rule->entity_2)::where('id', $item->field_2)->first()->name : null,
-                'price_plan' => $item['price_plan_id'],
+                'price_plan' => $item->pricePlan?->name ?? null,
                 'operation' => $item->operation?->code ?? null,
                 'value' => $item->value,
                 'percentage' => $item->percentage,
