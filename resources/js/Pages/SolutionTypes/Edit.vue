@@ -25,7 +25,7 @@ const configurations = reactive({
 const solution = reactive({
     name: props.solution_type?.name,
     estimated_time: props.solution_type?.estimated_time,
-    is_active: props.solution_type?.is_active
+    is_active: props.solution_type?.is_active === 1
 });
 const table = reactive(
     props.solution_type.table
@@ -184,7 +184,6 @@ const items = ref([
                                 <label class="form-label" for="active-filter">
                                     Active:
                                 </label>
-                                {{ solution }}
                                 <ToggleSwitch id="active-filter" v-model="solution.is_active">
                                     <template #handle>
                                         <font-awesome-icon

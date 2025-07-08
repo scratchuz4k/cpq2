@@ -303,6 +303,7 @@ getData();
                                     v-model="fields.account"
                                     @change="handleFields()"
                                     placeholder="Select an Account"
+                                    :query="[{ column: 'is_active', operator: 'equals', value: 1 }]"
                                 >
                                 </InputSelect>
                             </div>

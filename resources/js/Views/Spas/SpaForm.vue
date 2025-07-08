@@ -75,6 +75,7 @@ const icons = {
                     v-model="modelValue.entity_1_value"
                     :is-multiple="false"
                     placeholder="Select an Account"
+                    :query="[{ column: 'is_active', operator: 'equals', value: 1 }]"
                 >
                 </InputSelect>
             </div>
@@ -146,6 +147,7 @@ const icons = {
                         v-model="modelValue.entity_2_value"
                         :is-multiple="false"
                         placeholder="Select an Account"
+                        :query="[{ column: 'is_active', operator: 'equals', value: 1 }]"
                     >
                     </InputSelect>
                 </div>
