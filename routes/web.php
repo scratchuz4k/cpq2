@@ -2,7 +2,7 @@
 
 use App\Http\Controllers\Web\AccountController;
 use App\Http\Controllers\Web\ApiController;
-use App\Http\Controllers\Web\BlacklistController;
+use App\Http\Controllers\Web\General\BlacklistController;
 use App\Http\Controllers\Web\BrandController;
 use App\Http\Controllers\Web\CategoryController;
 use App\Http\Controllers\Web\DashboardController;
@@ -22,6 +22,7 @@ use App\Http\Controllers\Web\SupplierController;
 use App\Http\Controllers\Web\TenantController;
 use App\Http\Controllers\Web\TokenController;
 use App\Http\Controllers\Web\UserController;
+use App\Http\Controllers\Web\GroupAccountController;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 
@@ -61,7 +62,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/myaccount', [DashboardController::class, 'myAccount'])->name('myaccount');
     Route::get('/reporting', [DashboardController::class, 'reporting'])->name('reporting');
-    
+
     Route::get('/tenant/{tenant}/make-current', [TenantController::class, 'switch'])->name('tenant.make-current');
     Route::get('/quotes/{quote}/preview', [QuoteController::class, 'preview'])->name('quotes.preview');
 
@@ -93,8 +94,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         'users' => UserController::class,
         'tokens' => TokenController::class,
         'solution-types' => SolutionTypeController::class,
-        'blacklist' => BlacklistController::class,
+        'blacklists' => BlacklistController::class,
         'groups' => GroupController::class,
+        'group-accounts' => GroupAccountController::class,
+
     ]);
 
     Route::middleware('auth')->group(function () {

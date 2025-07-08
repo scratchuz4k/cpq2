@@ -93,4 +93,16 @@ class TenantPolicy
         }
         return true;
     }
+
+
+    /**
+     * Determine whether the user can export the model.
+     */
+    public function export(User $user): bool
+    {
+        if (!$user->can("export $this->model")) {
+            return false;
+        }
+        return true;
+    }
 }
