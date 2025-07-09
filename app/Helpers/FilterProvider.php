@@ -141,4 +141,11 @@ class FilterProvider
                 return $data;
         }
     }
+
+    public function getCollection()
+    {
+        $this->process();
+
+        return $this->builder->get();
+    }
 }

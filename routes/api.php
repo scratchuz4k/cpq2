@@ -3,12 +3,14 @@
 use App\Http\Controllers\Api\AccountController;
 use App\Http\Controllers\Api\ActivityController;
 use App\Http\Controllers\Api\ApiController;
-use App\Http\Controllers\Api\BlacklistController;
+use App\Http\Controllers\Api\General\BlacklistController;
 use App\Http\Controllers\Api\BrandController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\ContactController;
+use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\EmailHistoryController;
 use App\Http\Controllers\Api\EmailTemplateController;
+use App\Http\Controllers\Api\ExportController;
 use App\Http\Controllers\Api\ExternalController;
 use App\Http\Controllers\Api\GroupAccountController;
 use App\Http\Controllers\Api\GroupController;
@@ -26,6 +28,7 @@ use App\Http\Controllers\Api\ResourceController;
 use App\Http\Controllers\Api\SharedLinkController;
 use App\Http\Controllers\Api\ShopBlocks\BrandController as ShopBlocksBrandController;
 use App\Http\Controllers\Api\ShopBlocks\CategoryController as ShopBlocksCategoryController;
+use App\Http\Controllers\Api\ShopBlocks\ModelController as ShopBlocksModelController;
 use App\Http\Controllers\Api\ShopBlocks\ProductController as ShopBlocksProductController;
 use App\Http\Controllers\Api\ShopBlocks\ProductFeatureController;
 use App\Http\Controllers\Api\SolutionTypeController;
@@ -35,8 +38,6 @@ use App\Http\Controllers\Api\TenantController;
 use App\Http\Controllers\Api\TokenController;
 use App\Http\Controllers\Api\UserController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Api\DashboardController;
-use App\Http\Controllers\Api\ExportController;
 
 Route::prefix('external')->group(function () {
     Route::post('get-address-by-postcode', [ExternalController::class, 'getAddressesByPostCode']);
@@ -45,6 +46,7 @@ Route::prefix('external')->group(function () {
 });
 
 Route::prefix('shop-blocks')->group(callback: function () {
+    Route::get('models', [ShopBlocksModelController::class, 'index']);
     Route::get('brands', [ShopBlocksBrandController::class, 'index']);
     Route::get('products', [ShopBlocksProductController::class, 'index']);
     Route::get('products/{article}', [ShopBlocksProductController::class, 'show']);
@@ -84,7 +86,7 @@ Route::apiResources([
     'shared-links' => SharedLinkController::class,
     'resources' => ResourceController::class,
     'tenants' => TenantController::class,
-    'blacklist' => BlacklistController::class,
+    'blacklists' => BlacklistController::class,
     'email-templates' => EmailTemplateController::class,
     'email-history' => EmailHistoryController::class,
     'groups' => GroupController::class,

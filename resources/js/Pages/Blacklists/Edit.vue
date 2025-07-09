@@ -24,7 +24,7 @@ const blacklisted_item = reactive(props.blacklisted_item);
 
 const saveItem = () => {
     router.put(
-        `/blacklist/${blacklisted_item.id}`,
+        `/blacklists/${blacklisted_item.id}`,
         blacklisted_item,
         {
             onSuccess: (page) => {
@@ -53,7 +53,7 @@ const items = ref([
     { label: 'Home', url: '/' },
     { label: 'My Account', url: '/myaccount' },
     { label: 'Products', url: '/products' },
-    { label: 'Blacklist', url: '/blacklist' },
+    { label: 'Blacklist', url: '/blacklists' },
     { label: 'Edit Item' }
 ]);
 </script>
@@ -139,6 +139,12 @@ const items = ref([
                                     placeholder="Select a Unit"
                                 />
                             </div>
+                            <select id="item-bearer-unit" class="form-select" v-model="blacklisted_item.bearer.unit" :style="{ width: 'auto' }">
+                                <option :value="null">Units</option>
+                                <option v-for="unit in props.speed_units" :value="unit.value">
+                                    {{ unit.value }}
+                                </option>
+                            </select>
                         </div>
                     </div>
 

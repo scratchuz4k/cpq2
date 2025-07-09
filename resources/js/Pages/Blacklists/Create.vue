@@ -1,9 +1,15 @@
 <script setup>
-import { reactive, ref } from 'vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head, router } from '@inertiajs/vue3';
-import Select from 'primevue/select';
+import {reactive, ref} from "vue";
+import {can, hasRole} from "@composables/useAuth";
+import PrimaryButton from "@/Components/PrimaryButton.vue";
+import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
+import {Head, router} from "@inertiajs/vue3";
+import DataTable from "primevue/datatable";
+import Column from "primevue/column";
+import Dialog from "primevue/dialog";
+import InputText from "primevue/inputtext";
+import Button from "primevue/button";
+import Select from "primevue/select";
 
 const props = defineProps({
     providers: Array,
@@ -32,41 +38,41 @@ const blacklisted_item = reactive({
 
 const saveItem = () => {
     router.post(
-        `/blacklist`,
+        `/blacklists`,
         blacklisted_item,
         {
             onSuccess: (page) => {
-                notyf.success('Created with Success');
+                notyf.success("Created with Success");
             },
             onError: (errors) => {
-                let string = '';
+                let string = "";
                 Object.keys(errors).forEach((key) => {
-                    string += errors[key] + '<br>';
+                    string += errors[key] + "<br>";
                 });
                 notyf.error(string);
-            }
+            },
         }
     );
 };
 
 const changeValueFormat = (item) => {
     if (item.operator === 'between') {
-        item.value = [];
+        item.value = []
     } else {
-        item.value = null;
+        item.value = null
     }
-};
+}
 
 const items = ref([
-    { label: 'Home', url: '/' },
-    { label: 'My Account', url: '/myaccount' },
-    { label: 'Products', url: '/products' },
-    { label: 'Blacklist', url: '/blacklist' },
-    { label: 'New Item' }
+    {label: "Home", url: "/"},
+    {label: "My Account", url: "/myaccount"},
+    {label: "Products", url: "/products"},
+    {label: "Blacklists", url: "/blacklists"},
+    {label: "New Item"},
 ]);
 </script>
 <template>
-    <Head title="New Item" />
+    <Head title="New Item"/>
     <AuthenticatedLayout>
         <div class="panel">
             <Header title="New Item" :breadcrumbs="items">

@@ -10,7 +10,7 @@ const items = ref([
     { label: 'Home', url: '/' },
     { label: 'My Account', url: '/myaccount' },
     { label: "Products", url: "/products" },
-    { label: 'Blacklist' },
+    { label: 'Blacklists' },
 ]);
 
 </script>
@@ -20,7 +20,7 @@ const items = ref([
         <div class="panel">
             <Header title="Blacklist" :breadcrumbs="items">
                 <template #buttons>
-                    <Link href="/blacklist/create" id="blacklist-create-btn" class="btn btn-primary me-2">
+                    <Link href="/blacklists/create" id="blacklist-create-btn" class="btn btn-primary me-2">
                         <font-awesome-icon :icon="['fas', 'plus']"></font-awesome-icon> New Item
                     </Link>
                 </template>
@@ -31,7 +31,6 @@ const items = ref([
                     delete: true,
                     link: false,
                 }" :columns="[
-                    { data: 'id', title: '#', style: 'width:1%' },
                     { data: 'productName', title: 'Name', style: 'width:10%' },
                     { data: 'providerName', title: 'Provider', style: 'width:5%' },
                     { data: 'connectivitySupplierGroup', title: 'Subprovider', style: 'width:5%' },
@@ -40,7 +39,7 @@ const items = ref([
                     { data: 'contractTermMonths', title: 'Contract Term', style: 'width:29%' },
                     { data: 'created_at', title: 'created At', style: 'width:15%' },
                     { data: 'updated_at', title: 'Updated At', style: 'width:15%' }
-                ]" route="/blacklist">
+                ]" route="/blacklists">
                     <template #bearer="{ value }">
                         <span
                             v-if="!Array.isArray(value.value)"

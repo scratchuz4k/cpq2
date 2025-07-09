@@ -28,6 +28,7 @@ class RolePermissionSeeder extends Seeder
             'delete' => 'Delete',
             'restore' => 'Restore',
             'forceDelete' => 'Remove',
+            'export' => 'Export',
         ];
 
         // Reset cached roles and permissions
@@ -60,6 +61,7 @@ class RolePermissionSeeder extends Seeder
                 'activity' => 'Activity',
                 'export' => 'Export',
                 'group' => 'Groups',
+                'blacklist' => 'Blacklists',
             ],
         ];
 
@@ -75,14 +77,15 @@ class RolePermissionSeeder extends Seeder
                     'quote', 'quote_item', 'order', 'order_item', 'merchant', 'account', 'contact',
                     'price', 'product', 'category', 'region', 'tenant', 'brand', 'supplier',
                     'spa', 'user', 'solution_type', 'api', 'price_plan', 'activity', 'email_template', 'email_history',
-                    'group',
+                    'group', 'blacklist'
                 ],
-                'simple_permission' => ['viewAny export']
+                'simple_permission' => []
             ],
             'Support Agent' => [
                 'parent' => 'Company Admin',
                 'permissions' => ['merchant', 'account', 'contact', 'token', 'quote', 'quote_item', 'order', 'order_item', 'activity', 'price_plan'],
                 'simple_permission' => ['viewAny product', 'view product', 'viewAny category', 'view category'],
+                'deny_permission' => ['export']
             ],
             'Sales Manager' => [
                 'parent' => 'Company Admin',
@@ -93,6 +96,7 @@ class RolePermissionSeeder extends Seeder
                 'parent' => 'Sales Manager',
                 'permissions' => ['quote', 'quote_item', 'account', 'contact', 'brand', 'supplier', 'activity', 'price_plan'],
                 'simple_permission' => ['viewAny product', 'view product', 'viewAny category', 'view category'],
+                'deny_permission' => ['export']
             ],
             'Order Manager' => [
                 'parent' => 'Company Admin',
@@ -111,6 +115,7 @@ class RolePermissionSeeder extends Seeder
                     'viewAny supplier',
                     'view supplier',
                 ],
+                'deny_permission' => ['export']
             ],
         ];
 
@@ -152,6 +157,25 @@ class RolePermissionSeeder extends Seeder
                     $permissions = array_merge($permissions, $insertPermissions->toArray()[$group]);
                 }
             }
+
+            if (!empty($item['deny_permission'] ?? [])) {
+                $denyPatterns = array_map(
+                    fn($action) => $action . ' %',
+                    $item['deny_permission']
+                );
+
+                $permissionsToRemove = Permission::whereIn('id', $permissions)
+                    ->where(function ($query) use ($denyPatterns) {
+                        foreach ($denyPatterns as $pattern) {
+                            $query->orWhere('name', 'like', $pattern);
+                        }
+                    })
+                    ->pluck('id')
+                    ->all();
+
+                $permissions = array_diff($permissions, $permissionsToRemove);
+            }
+
             $role->syncPermissions($permissions);
 
             foreach ($item['simple_permission'] as $simplePermission) {
