@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\CheckUserActive;
 use App\Http\Middleware\HandleInertiaRequests;
 use App\Http\Middleware\SetTenantBySession;
 use Illuminate\Foundation\Application;
@@ -21,15 +22,11 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
         using: function () {
             Route::middleware(['api', 'auth:sanctum'])
-
                 ->prefix('api')
-
                 ->name('api.')
-
                 ->group(base_path('routes/api.php'));
 
             Route::middleware('web')
-
                 ->group(base_path('routes/web.php'));
         },
     )
@@ -40,6 +37,7 @@ return Application::configure(basePath: dirname(__DIR__))
             AddLinkHeadersForPreloadedAssets::class,
             SetTenantBySession::class,
             NeedsTenant::class,
+            CheckUserActive::class
             // EnsureValidTenantSession::class
         ]);
         $middleware->api(append: [
@@ -47,17 +45,17 @@ return Application::configure(basePath: dirname(__DIR__))
             SubstituteBindings::class,
             SetTenantBySession::class,
             NeedsTenant::class,
+            CheckUserActive::class
         ]);
 
         $middleware->validateCsrfTokens(except: [
             'auth/callback',
         ]);
     })
-
     ->withExceptions(function (Exceptions $exceptions) {
         Integration::handles($exceptions);
         $exceptions->respond(function (Response $response, Throwable $exception, Request $request) {
-            if (! app()->environment(['local', 'testing']) && in_array($response->getStatusCode(), [500, 503, 404, 403])) {
+            if (!app()->environment(['local', 'testing']) && in_array($response->getStatusCode(), [500, 503, 404, 403])) {
                 return Inertia::render('Error', ['status' => $response->getStatusCode(), 'message' => $exception->getMessage()])
                     ->toResponse($request)
                     ->setStatusCode($response->getStatusCode());
