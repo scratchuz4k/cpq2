@@ -21,8 +21,8 @@ const saveRegion = () => {
         '/regions',
         {
             ...form,
-            merchant_id: form.merchant.id,
-            user_id: form.user.id
+            merchant_id: form.merchant?.id,
+            user_id: form.user?.id
         },
         {
             onSuccess: (page) => {
