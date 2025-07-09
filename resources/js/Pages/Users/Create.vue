@@ -1,10 +1,10 @@
 <script setup>
-import {computed, reactive, ref, watch} from "vue";import Button from 'primevue/button';
+import { computed, reactive, ref, watch } from 'vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head, router, useForm, usePage } from "@inertiajs/vue3";
-import Select from "primevue/select";
-import InputSelect from "@/Components/InputSelect.vue";
+import { Head, router, useForm, usePage } from '@inertiajs/vue3';
+import Select from 'primevue/select';
+import InputSelect from '@/Components/InputSelect.vue';
 
 const page = usePage();
 
@@ -12,22 +12,22 @@ const props = defineProps({
     roles: Object,
     managers: Object,
     parent_id: Number
-})
+});
 
 const form = reactive({
     name: null,
     email: null,
     password: null,
     role_id: props.roles.find(role => role.name.toLowerCase() === 'sales rep').id,
-    parent: props.parent_id ? props.managers.find(user => user.id === props.parent_id) : {},
+    parent: props.parent_id ? props.managers.find(user => user.id === props.parent_id) : null,
     commission_rate: 0,
     sso: false
-})
+});
 
 const showCommissionRate = computed(() => {
-    let temp = props.roles.find((item) => item.name.toLowerCase() === 'sales rep')
+    let temp = props.roles.find((item) => item.name.toLowerCase() === 'sales rep');
     return temp.id === form.role_id;
-})
+});
 
 const saveUser = () => {
     router.post(`/users`, {
@@ -36,23 +36,23 @@ const saveUser = () => {
         },
         {
             onSuccess: (page) => {
-                notyf.success("Created with Success")
+                notyf.success('Created with Success');
             },
             onError: (errors) => {
-                let string = ''
+                let string = '';
                 Object.keys(errors).forEach((key) => {
-                    string += errors[key] + '<br>'
-                })
-                notyf.error(string)
-            },
+                    string += errors[key] + '<br>';
+                });
+                notyf.error(string);
+            }
         }
-    )
-}
+    );
+};
 const items = ref([
     { label: 'Home', url: '/' },
     { label: 'My Account', url: '/myaccount' },
     { label: 'Users', url: '/users' },
-    { label: 'New User' },
+    { label: 'New User' }
 ]);
 
 </script>
@@ -63,7 +63,8 @@ const items = ref([
             <Header title="New User" :breadcrumbs="items">
                 <template #buttons>
                     <PrimaryButton id="btn-save-user" @click="saveUser()">
-                        <font-awesome-icon class="me-2" :icon="['fas', 'save']"></font-awesome-icon> Save
+                        <font-awesome-icon class="me-2" :icon="['fas', 'save']"></font-awesome-icon>
+                        Save
                     </PrimaryButton>
                 </template>
             </Header>
@@ -86,19 +87,22 @@ const items = ref([
                 <div class="row mb-3">
                     <label for="user-role" class="form-label">Role:</label>
                     <Select v-model="form.role_id"
-                            :inputId="'user-role'"
-                            :options="roles"
-                            class="w-100"
-                            optionLabel="name"
-                            optionValue="id"
-                            placeholder="Select an option"
+                        :inputId="'user-role'"
+                        :options="roles"
+                        class="w-100"
+                        optionLabel="name"
+                        optionValue="id"
+                        placeholder="Select an option"
                     />
                 </div>
                 <div v-if="showCommissionRate" class="row mb-3">
                     <label for="user-commission-rate" class="form-label">Commission Rate:</label>
                     <div class="input-group p-0">
-                        <input id="user-commission-rate" type="number" class="form-control" v-model="form.commission_rate">
-                        <div class="text-danger" v-if="form.errors?.commission_rate">{{ form.errors?.commission_rate }}</div>
+                        <input id="user-commission-rate" type="number" class="form-control"
+                            v-model="form.commission_rate">
+                        <div class="text-danger" v-if="form.errors?.commission_rate">{{ form.errors?.commission_rate
+                            }}
+                        </div>
                         <span class="input-group-text">%</span>
                     </div>
                 </div>
@@ -109,7 +113,6 @@ const items = ref([
                         url="/users"
                         :fields="['name']"
                         v-model="form.parent"
-                        :is-multiple="false"
                         placeholder="Select an Manager"
                     />
                 </div>

@@ -1,9 +1,9 @@
 <script setup>
-import {reactive, ref} from "vue";
-import PrimaryButton from "@/Components/PrimaryButton.vue";
-import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
-import {Head, router} from "@inertiajs/vue3";
-import Select from "primevue/select";
+import { reactive, ref } from 'vue';
+import PrimaryButton from '@/Components/PrimaryButton.vue';
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import { Head, router } from '@inertiajs/vue3';
+import Select from 'primevue/select';
 
 const props = defineProps({
     providers: Array,
@@ -36,37 +36,37 @@ const saveItem = () => {
         blacklisted_item,
         {
             onSuccess: (page) => {
-                notyf.success("Created with Success");
+                notyf.success('Created with Success');
             },
             onError: (errors) => {
-                let string = "";
+                let string = '';
                 Object.keys(errors).forEach((key) => {
-                    string += errors[key] + "<br>";
+                    string += errors[key] + '<br>';
                 });
                 notyf.error(string);
-            },
+            }
         }
     );
 };
 
 const changeValueFormat = (item) => {
     if (item.operator === 'between') {
-        item.value = []
+        item.value = [];
     } else {
-        item.value = null
+        item.value = null;
     }
-}
+};
 
 const items = ref([
-    {label: "Home", url: "/"},
-    {label: "My Account", url: "/myaccount"},
-    {label: "Products", url: "/products"},
-    {label: "Blacklist", url: "/blacklist"},
-    {label: "New Item"},
+    { label: 'Home', url: '/' },
+    { label: 'My Account', url: '/myaccount' },
+    { label: 'Products', url: '/products' },
+    { label: 'Blacklist', url: '/blacklist' },
+    { label: 'New Item' }
 ]);
 </script>
 <template>
-    <Head title="New Item"/>
+    <Head title="New Item" />
     <AuthenticatedLayout>
         <div class="panel">
             <Header title="New Item" :breadcrumbs="items">
@@ -81,17 +81,18 @@ const items = ref([
                 <div class="col-6">
                     <div class="mb-3">
                         <label class="form-label">Product Name:</label>
-                        <input id="item-name" placeholder="Product Name" class="form-control" v-model="blacklisted_item.productName"/>
+                        <input id="item-name" placeholder="Product Name" class="form-control"
+                            v-model="blacklisted_item.productName" />
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Provider:</label>
                         <Select v-model="blacklisted_item.providerName"
-                                :inputId="'item-provider'"
-                                :options="props.providers"
-                                class="w-100"
-                                optionLabel="name"
-                                optionValue="name"
-                                placeholder="Select a Provider"
+                            :inputId="'item-provider'"
+                            :options="props.providers"
+                            class="w-100"
+                            optionLabel="name"
+                            optionValue="name"
+                            placeholder="Select a Provider"
                         />
                     </div>
 
@@ -99,42 +100,50 @@ const items = ref([
                         <div class="mb-3">
                             <label for="item-subprovider" class="form-label">Subprovider:</label>
                             <Select v-model="blacklisted_item.connectivitySupplierGroup"
-                                    :inputId="'item-subprovider'"
-                                    :options="props.subproviders"
-                                    class="w-100"
-                                    optionLabel="name"
-                                    optionValue="name"
-                                    placeholder="Select a Subprovider"
+                                :inputId="'item-subprovider'"
+                                :options="props.subproviders"
+                                class="w-100"
+                                optionLabel="value"
+                                optionValue="name"
+                                placeholder="Select a Subprovider"
                             />
                         </div>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Bearer:</label>
                         <Select v-model="blacklisted_item.bearer.operator"
-                                :inputId="'item-bearer-operator'"
-                                :options="props.operators"
-                                class="w-100"
-                                optionLabel="description"
-                                optionValue="name"
-                                placeholder="Select a Operator"
+                            :inputId="'item-bearer-operator'"
+                            :options="props.operators"
+                            class="w-100"
+                            optionLabel="description"
+                            optionValue="name"
+                            placeholder="Select a Operator"
                         />
                         <div class="d-flex mt-2">
                             <div class="d-flex">
-                                <div v-if="blacklisted_item.bearer.operator === 'between' && Array.isArray(blacklisted_item.bearer.value)" class="d-flex">
-                                    <input id="item-bearer-value-0" placeholder="Value" type="number" class="form-control text-center input-qty me-1" v-model="blacklisted_item.bearer.value[0]">
+                                <div
+                                    v-if="blacklisted_item.bearer.operator === 'between' && Array.isArray(blacklisted_item.bearer.value)"
+                                    class="d-flex">
+                                    <input id="item-bearer-value-0" placeholder="Value" type="number"
+                                        class="form-control text-center input-qty me-1"
+                                        v-model="blacklisted_item.bearer.value[0]">
                                     <p class="mx-2 pt-1">to</p>
-                                    <input id="item-bearer-value-1" placeholder="Value" type="number" class="form-control text-center input-qty me-1" v-model="blacklisted_item.bearer.value[1]">
+                                    <input id="item-bearer-value-1" placeholder="Value" type="number"
+                                        class="form-control text-center input-qty me-1"
+                                        v-model="blacklisted_item.bearer.value[1]">
                                 </div>
                                 <div v-else>
-                                    <input id="item-bearer-value" placeholder="Value" type="number" class="form-control text-center input-qty me-1" v-model="blacklisted_item.bearer.value">
+                                    <input id="item-bearer-value" placeholder="Value" type="number"
+                                        class="form-control text-center input-qty me-1"
+                                        v-model="blacklisted_item.bearer.value">
                                 </div>
                                 <Select v-model="blacklisted_item.bearer.unit"
-                                        :inputId="'item-bearer-unit'"
-                                        :options="props.speed_units"
-                                        class="w-100"
-                                        optionLabel="value"
-                                        optionValue="value"
-                                        placeholder="Select a Unit"
+                                    :inputId="'item-bearer-unit'"
+                                    :options="props.speed_units"
+                                    class="w-100"
+                                    optionLabel="value"
+                                    optionValue="value"
+                                    placeholder="Select a Unit"
                                 />
                             </div>
                         </div>
@@ -143,30 +152,38 @@ const items = ref([
                     <div class="mb-3">
                         <label class="form-label">Speed:</label>
                         <Select v-model="blacklisted_item.speed.operator"
-                                :inputId="'item-speed-operator'"
-                                :options="props.operators"
-                                class="w-100"
-                                optionLabel="description"
-                                optionValue="name"
-                                placeholder="Select a Operator"
+                            :inputId="'item-speed-operator'"
+                            :options="props.operators"
+                            class="w-100"
+                            optionLabel="description"
+                            optionValue="name"
+                            placeholder="Select a Operator"
                         />
                         <div class="d-flex mt-2">
                             <div class="d-flex">
-                                <div v-if="blacklisted_item.speed.operator === 'between' && Array.isArray(blacklisted_item.speed.value)" class="d-flex">
-                                    <input id="item-speed-value-0" placeholder="Value" type="number" class="form-control text-center input-qty me-1" v-model="blacklisted_item.speed.value[0]">
+                                <div
+                                    v-if="blacklisted_item.speed.operator === 'between' && Array.isArray(blacklisted_item.speed.value)"
+                                    class="d-flex">
+                                    <input id="item-speed-value-0" placeholder="Value" type="number"
+                                        class="form-control text-center input-qty me-1"
+                                        v-model="blacklisted_item.speed.value[0]">
                                     <p class="mx-2 pt-1">to</p>
-                                    <input id="item-speed-value-1" placeholder="Value" type="number" class="form-control text-center input-qty me-1" v-model="blacklisted_item.speed.value[1]">
+                                    <input id="item-speed-value-1" placeholder="Value" type="number"
+                                        class="form-control text-center input-qty me-1"
+                                        v-model="blacklisted_item.speed.value[1]">
                                 </div>
                                 <div v-else>
-                                    <input id="item-speed-value" placeholder="Value" type="number" class="form-control text-center input-qty me-1" v-model="blacklisted_item.speed.value">
+                                    <input id="item-speed-value" placeholder="Value" type="number"
+                                        class="form-control text-center input-qty me-1"
+                                        v-model="blacklisted_item.speed.value">
                                 </div>
                                 <Select v-model="blacklisted_item.speed.unit"
-                                        :inputId="'item-speed-unit'"
-                                        :options="props.speed_units"
-                                        class="w-100"
-                                        optionLabel="value"
-                                        optionValue="value"
-                                        placeholder="Select a Unit"
+                                    :inputId="'item-speed-unit'"
+                                    :options="props.speed_units"
+                                    class="w-100"
+                                    optionLabel="value"
+                                    optionValue="value"
+                                    placeholder="Select a Unit"
                                 />
                             </div>
                         </div>
@@ -176,12 +193,12 @@ const items = ref([
                     <div class="mb-3">
                         <label class="form-label">Contract Term:</label>
                         <Select v-model="blacklisted_item.contractTermMonths"
-                                :inputId="'item-contract_terms'"
-                                :options="props.contract_terms"
-                                class="w-100"
-                                optionLabel="description"
-                                optionValue="value"
-                                placeholder="Select a Contract Term"
+                            :inputId="'item-contract_terms'"
+                            :options="props.contract_terms"
+                            class="w-100"
+                            optionLabel="description"
+                            optionValue="value"
+                            placeholder="Select a Contract Term"
                         />
                     </div>
                 </div>
