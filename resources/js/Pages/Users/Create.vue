@@ -32,7 +32,7 @@ const showCommissionRate = computed(() => {
 const saveUser = () => {
     router.post(`/users`, {
             ...form,
-            parent_id: form.parent.id
+            parent_id: form.parent?.id
         },
         {
             onSuccess: (page) => {
