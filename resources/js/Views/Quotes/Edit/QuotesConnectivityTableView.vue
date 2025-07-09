@@ -25,6 +25,7 @@ const showContended = ref(null);
 const articles = ref([]);
 const errors = ref([]);
 const selectedFilters = ref([]);
+
 const filters = reactive({
     providerName: {
         operator: 'in',
@@ -38,17 +39,17 @@ const filters = reactive({
     },
     contractTermMonths: {
         operator: 'in',
-        value: null,
+        value: props.modelValue.configs?.contract_length ? props.modelValue.configs.contract_length.split(',') : null,
         name: 'Contract Length'
     },
     bearer: {
         operator: 'greater_than_or_equal_to',
-        value: null,
+        value: props.modelValue.configs?.bearer,
         name: 'Bearer'
     },
     speed: {
         operator: 'greater_than_or_equal_to',
-        value: null,
+        value: props.modelValue.configs?.speed,
         name: 'Speed'
     }
 });

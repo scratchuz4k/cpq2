@@ -74,7 +74,7 @@ const formatInput = (ev, field, index) => {
                         <p class="form-label">Min. Speed</p>
                         <span>
                             <span class="badge text-bg-secondary">Min</span>
-                            {{ format.speed(proxyValue.configs.speed) }}
+                            {{ proxyValue.configs.speed ? format.speed(proxyValue.configs.speed) : 'All' }}
                             <!-- <span class="ms-2 badge text-bg-secondary">Max</span>
                             {{ format.speed(proxyValue.configs.speed[1]) }} -->
                         </span>
@@ -96,7 +96,7 @@ const formatInput = (ev, field, index) => {
                         <p class="form-label">Min. Bearer</p>
                         <span>
                             <span class="badge text-bg-secondary">Min</span>
-                            {{ format.speed(proxyValue.configs.bearer) }}
+                            {{ proxyValue.configs.speed ? format.speed(proxyValue.configs.bearer) : 'All' }}
                             <!-- <span class="ms-2 badge text-bg-secondary">Max</span>
                             {{ format.speed(proxyValue.configs.bearer[1]) }} -->
                         </span>
@@ -104,7 +104,7 @@ const formatInput = (ev, field, index) => {
                     <Select
                         v-model="proxyValue.configs.bearer"
                         style="width: 100%"
-                        :options="speeds"
+                        :options="bearers"
                         optionLabel="label"
                         optionValue="value"
                         placeholder="All"
