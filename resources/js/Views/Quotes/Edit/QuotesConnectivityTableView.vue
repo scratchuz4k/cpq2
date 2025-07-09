@@ -480,6 +480,7 @@ getArticles(false, true);
                             style="width: 100%"
                             :options="Object.keys(filterList.connectivitySupplierGroup)"
                             placeholder="All"
+                            size="small"
                             class="me-3 custom-multiselect"
                         >
                             <template #option="slotProps">
@@ -497,6 +498,7 @@ getArticles(false, true);
                             style="width: 100%"
                             :options="Object.keys(filterList.contractTermMonths)"
                             placeholder="All"
+                            size="small"
                             class="me-3 custom-multiselect"
                         >
                             <template #option="slotProps">
@@ -513,6 +515,7 @@ getArticles(false, true);
                             optionLabel="label"
                             optionValue="value"
                             placeholder="All"
+                            size="small"
                             class="me-3 custom-select"
                         >
                             <template #option="slotProps">
@@ -531,6 +534,7 @@ getArticles(false, true);
                             optionLabel="label"
                             optionValue="value"
                             placeholder="All"
+                            size="small"
                             class="me-3 custom-select"
                         >
                             <template #option="slotProps">
@@ -540,7 +544,10 @@ getArticles(false, true);
                             </template>
                         </Select>
                     </div>
-                    <div class="col-lg-2 col-12 d-flex align-self-end justify-content-around">
+                    <div
+                        class="col-lg-2 col-12 d-flex align-self-end justify-content-around"
+                        style="margin-bottom: 2px"
+                    >
                         <button class="btn btn-secondary btn-sm mt-2 me-2 w-100" @click="resetFilters()">Reset</button>
                         <div class="advanced-settings pt-2 w-100">
                             <button

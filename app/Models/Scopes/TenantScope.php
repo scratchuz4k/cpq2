@@ -20,6 +20,7 @@ class TenantScope implements Scope
         if (! $tenant) {
             return;
         }
-        $builder->where($model->getTable().'.tenant_id', $tenant->id);
+        $column = $model->getConnection()->getDriverName() === 'mongodb' ? 'tenant_id' : $model->getTable().'.tenant_id';
+        $builder->where($column, $tenant->id);
     }
 }

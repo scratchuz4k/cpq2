@@ -75,6 +75,15 @@ Cypress.Commands.add('selectLazyOption', (id, option = null) => {
     scrollToOption();
 })
 
+Cypress.Commands.add('selectOption', (id, option) => {
+    cy.get(id).click();
+    cy.wait(500);
+    cy.get(".p-select-list-container")
+        .within(() => {
+            cy.get(".p-select-option").contains(option).click();
+        });
+})
+
 Cypress.Commands.add('createUser', (role) => {
     cy.visit("/users")
     cy.get("#link-to-create-user").click()
@@ -82,7 +91,7 @@ Cypress.Commands.add('createUser', (role) => {
     cy.get("#user-name").type(user.name)
     cy.get("#user-email").type(user.email)
     cy.get("#user-password").type(user.password)
-    cy.get("#user-role").select(role)
+    cy.selectOption('#user-role', role);
     cy.get("#btn-save-user").click()
     cy.get("#treetable-search").type(user.name)
     cy.get("#users-table").contains(user.name)

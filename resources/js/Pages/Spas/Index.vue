@@ -6,7 +6,9 @@ import { Button, Paginator } from 'primevue';
 import { reactive, ref, watch } from 'vue';
 import queryString from 'query-string';
 import { usePage } from '@inertiajs/vue3';
-import _ from 'lodash';
+import axios from 'axios';
+import { exportData } from '@/Composables/export.js';
+import { can, hasRole } from '@/Composables/useAuth.js';
 
 const page = usePage();
 const props = defineProps({
@@ -17,6 +19,8 @@ const props = defineProps({
 const visible = ref(false);
 const showGlobal = ref(false);
 const selectedRules = ref([]);
+const emptyData = ref(true);
+const has_export_permission = can(`export spa`) || hasRole('Super Admin');
 
 const form = reactive({
     rule: null,
@@ -99,7 +103,22 @@ const handleFields = () => {
 };
 
 const getData = async () => {
-    let temp = [];
+    let string = queryString.stringify({
+        orderBy: meta.orderBy,
+        order: meta.order,
+        page: meta.page,
+        filters: JSON.stringify(getFilters()),
+        limit: meta.limit
+    });
+
+    let res = await axios.get('/api/spas?' + string);
+    data.value = res.data.data;
+    emptyData.value = !data.value.length;
+    meta.total = res.data.meta?.total ?? res.data.total;
+    meta.first = (meta.page - 1) * meta.limit;
+};
+
+const getFilters = () => {let temp = [];
     if (!showGlobal.value) {
         let keys = Object.keys(fields).filter((x) => fields[x] != null);
         selectedRules.value.forEach((x, ruleIndex) => {
@@ -147,26 +166,12 @@ const getData = async () => {
         });
     }
 
-    let string = queryString.stringify({
-        orderBy: meta.orderBy,
-        order: meta.order,
-        page: meta.page,
-        filters: JSON.stringify(temp),
-        limit: meta.limit
-    });
-
-    let res = await axios.get('/api/spas?' + string);
-    data.value = res.data.data;
-    meta.total = res.data.meta?.total ?? res.data.total;
-    meta.first = (meta.page - 1) * meta.limit;
+    return temp;
 };
-
 const deleteRecord = async (id) => {
-    swal
-    .fire({
+    swal.fire({
         title: 'Are you sure?'
-    })
-    .then(async (result) => {
+    }).then(async (result) => {
         if (['cancel', 'backdrop'].includes(result.dismiss)) {
             return;
         }
@@ -174,7 +179,7 @@ const deleteRecord = async (id) => {
             let res = await axios.delete('/api/spas/' + id);
             getData();
             notyf.success('Removed with success');
-
+            return;
         } catch (err) {
             notyf.error(err?.response?.data?.message ?? 'Something went wrong');
         }
@@ -226,7 +231,21 @@ const sortBy = (column) => {
     getData();
 };
 
-const items = ref([
+const exportDisabled = ref(false);
+
+const getExportData = async () => {
+    if (exportDisabled.value) return;
+    exportDisabled.value = true;
+    // let filters = {
+    //     filters: ,
+    //     search: global.value,
+    // };
+
+    exportData([], 'spas');
+    setTimeout(() => {
+        exportDisabled.value = false;
+    }, 5000);
+};const items = ref([
     { label: 'Home', url: '/' },
     { label: 'My Account', url: '/myaccount' },
     { label: 'SPAs' }
@@ -275,11 +294,19 @@ getData();
 
                     <Button
                         v-if="visible"
-                        type="button"
+                        type="button"class="me-2"
                         :severity="form.rule ? 'primary' : 'secondary'"
                         @click="clearFilters()"
                     >
-                        <font-awesome-icon :icon="['fas', 'eraser']" />
+                        <font-awesome-icon :icon="['fas', 'eraser']" /></Button>
+                    <Button
+                        v-if="has_export_permission"
+                        type="button"
+                        :severity="'secondary'"
+                        @click="getExportData()"
+                        :disabled="emptyData || exportDisabled"
+                    >
+                        <font-awesome-icon :icon="['fas', 'file-export']" />
                     </Button>
                     <div v-if="visible" class="mt-3 mb-3">
                         <div class="row row-cols-4 border rounded p-2">
@@ -372,7 +399,7 @@ getData();
                       class="column-title sortable d-inline-flex align-items-center"
                       @click="sortBy(column.data)"
                       :style="{
-                      textDecoration: column.data == meta.orderBy ? 'underline' : 'none',
+                      textDecoration: column.data == meta.orderBy ? 'underline' : 'none'
                     }"
                   >
                     {{ column.name }}

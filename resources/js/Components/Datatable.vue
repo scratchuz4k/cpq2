@@ -10,9 +10,13 @@ import InputIcon from 'primevue/inputicon';
 import InputText from 'primevue/inputtext';
 import Button from 'primevue/button';
 
-import { reactive, ref, watch, useSlots } from 'vue';
+import { reactive, ref, useSlots, watch } from 'vue';
 import queryString from 'query-string';
 import axios from 'axios';
+import { can, hasRole } from '@/Composables/useAuth.js';
+import pluralize from 'pluralize';
+import { exportData } from '@/Composables/export.js';
+import Select from "primevue/select";
 
 const slots = useSlots();
 const usedSlots = Object.keys(slots);
@@ -35,8 +39,11 @@ const props = defineProps({
 
 const activeFilters = ref(false);
 const data = ref([]);
-
+const emptyData = ref(true);
 const global = ref(null);
+
+const has_export_permission =
+    can(`export ${pluralize.singular(props.route.replace(/^\//, ''))}`) || hasRole('Super Admin');
 
 const form = reactive({
     filters: [],
@@ -50,6 +57,9 @@ const meta = reactive({
     total: 0,
     first: 1
 });
+
+const openSelectIndex = ref(null);
+
 
 const setFilters = () => {
     props.columns.forEach((el) =>
@@ -71,7 +81,7 @@ const getData = async () => {
 
     let res = await axios.get('/api' + props.route + '?' + string);
     data.value = res.data.data;
-    meta.total = res.data.meta?.total ?? res.data.total;
+    emptyData.value = !data.value.length;meta.total = res.data.meta?.total ?? res.data.total;
     meta.first = (meta.page - 1) * form.limit;
 };
 
@@ -90,11 +100,9 @@ const clearFilters = () => {
     form.filters.forEach((x) => (x.value = null));
 };
 const deleteRecord = async (id) => {
-    swal
-    .fire({
+    swal.fire({
         title: 'Are you sure?'
-    })
-    .then(async (result) => {
+    }).then(async (result) => {
         if (['cancel', 'backdrop'].includes(result.dismiss)) {
             return;
         }
@@ -102,7 +110,7 @@ const deleteRecord = async (id) => {
             let res = await axios.delete('/api' + props.route + '/' + id);
             getData();
             notyf.success('Removed with success');
-
+            return;
         } catch (err) {
             notyf.error(err?.response?.data?.message ?? 'Something went wrong');
         }
@@ -130,6 +138,24 @@ const getValue = (item, key) => {
     }
 
     return result;
+};
+
+const exportDisabled = ref(false);
+
+const getExportData = async () => {
+    if (exportDisabled.value) return;
+    exportDisabled.value = true;
+
+    let filters = {
+        filters: JSON.stringify([...form.filters, ...props.query]),
+        search: global.value
+    };
+
+    exportData(filters, props.route);
+
+    setTimeout(() => {
+        exportDisabled.value = false;
+    }, 5000);
 };
 
 emitter.on('datatable-refresh' + (props.id ? ':' + props.id : ''), () => {
@@ -178,10 +204,21 @@ getData();
                     <Button
                         v-if="activeFilters"
                         type="button"
+                        :class="['me-2']"
                         :severity="form.filters.find((x) => x.value) ? 'primary' : 'secondary'"
                         @click="clearFilters()"
                     >
                         <font-awesome-icon :icon="['fas', 'eraser']" />
+                    </Button>
+                <Button
+                        v-if="has_export_permission"
+                        :disabled="emptyData || exportDisabled"
+                        :severity="'secondary'"
+                        :class="['me-2']"
+                        @click="getExportData()"
+                        type="button"
+                    >
+                        <font-awesome-icon :icon="['fas', 'file-export']" />
                     </Button>
                 </div>
                 <IconField>
@@ -192,8 +229,8 @@ getData();
                         id="datatable-search"
                         v-model="global"
                         type="search"
-                        placeholder="Keyword Search"
-                    />
+                        placeholder="Keyword Search"/>
+
                 </IconField>
             </div>
         </template>
@@ -204,13 +241,13 @@ getData();
         >
             <template #header v-if="column.data != 'actions'">
                 <div
-                    class="d-flex justify-content-between align-items-center w-100 pe-3 position-relative"
-                >
+                    class="d-flex justify-content-between align-items-center w-100 pe-3 position-relative">
+
                     <b
                         class="column-title sortable d-inline-flex align-items-center"
                         @click="sortBy(column.data)"
                         :style="{
-              textDecoration: column.data == form.orderBy ? 'underline' : 'none',
+              textDecoration: column.data == form.orderBy ? 'underline' : 'none'
             }"
                     >
                         {{ column.title }}

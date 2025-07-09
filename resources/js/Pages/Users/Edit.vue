@@ -5,6 +5,8 @@ import { Head, router, usePage } from '@inertiajs/vue3';
 import Permissions from '@/Components/Permissions.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import ToggleSwitch from 'primevue/toggleswitch';
+import Select from 'primevue/select';
+import InputSelect from '@/Components/InputSelect.vue';
 
 const props = defineProps({
     user: Object,
@@ -15,7 +17,7 @@ const props = defineProps({
 
 const page = usePage();
 const form = reactive({
-    parent_id: props.user.parent_id ?? 0,
+    parent: props.user.parent ?? null,
     role_id: props.user.roles.length ? props.user.roles[0].id : null
 });
 
@@ -23,7 +25,9 @@ const role_id = ref(props.user.roles.length ? props.user.roles[0].id : { id: nul
 const saveUser = () => {
     props.user.role = [role_id.value];
 
-    router.put(`/users/${props.user.id}`, {
+    router.put(
+        `/users/${props.user.id}`,
+        {
             ...props.user,
             ...form
         },
@@ -49,7 +53,6 @@ const items = ref([
 ]);
 </script>
 <template>
-
     <Head :title="'Edit User #' + user.id" />
     <AuthenticatedLayout>
         <div class="panel">
@@ -78,44 +81,66 @@ const items = ref([
                     </div>
                     <div class="row mb-3">
                         <label for="user-name" class="form-label">Name:</label>
-                        <input id="user-name" class="form-control" v-model="user.name" required>
+                        <input id="user-name" class="form-control" v-model="user.name" required />
                     </div>
                     <div class="row mb-3">
                         <label for="user-email" class="form-label">Email:</label>
-                        <input id="user-email" type="email" class="form-control" v-model="user.email" required>
+                        <input id="user-email" type="email" class="form-control" v-model="user.email" required />
                     </div>
                     <div class="row mb-3">
                         <label for="user-password" class="form-label">Password:</label>
-                        <input id="user-password" type="password" class="form-control" v-model="user.password" required>
+                        <input
+                            id="user-password"
+                            type="password"
+                            class="form-control"
+                            v-model="user.password"
+                            required
+                        />
                     </div>
                     <div class="row mb-3">
                         <label for="supplier-name" class="form-label">Role:</label>
-                        <select class="form-select" v-model="form.role_id" @change="user.commission_rate = 0">
-                            <option v-for="tempRole in roles" :value="tempRole.id">{{ tempRole.name }}</option>
-                        </select>
+                        <Select v-model="form.role_id" :inputId="'user-role'"
+                            :options="roles"
+                            class="w-100"
+                            optionLabel="name"
+                            optionValue="id"
+                            placeholder="Select an option"
+                            @change="user.commission_rate = 0"
+                        />
                     </div>
                     <div v-if="roles.find((item) => item.id === form.role_id).name === 'Sales Rep'" class="row mb-3">
                         <label for="user-commission-rate" class="form-label">Commission Rate:</label>
                         <div class="input-group p-0">
-                            <input id="user-commission-rate" type="number" class="form-control"
-                                v-model="user.commission_rate">
+                            <input
+                                id="user-commission-rate"
+                                type="number"
+                                class="form-control"
+                                v-model="user.commission_rate"
+                            />
                             <span class="input-group-text">%</span>
                         </div>
                     </div>
                     <div class="row mb-3">
                         <label for="user-name" class="form-label">Manager:</label>
-                        <select class="form-select" v-model="form.parent_id">
-                            <option value="0">No Manager</option>
-                            <option v-for="manager in managers" :value="manager.id">{{ manager.name }}</option>
-                        </select>
+                        <div class="input-group p-0">
+                            <InputSelect
+                                id="user-manager"
+                                url="/users"
+                                :fields="['name']"
+                                class="w-100"
+                                v-model="form.parent"
+                                :is-multiple="false"
+                                placeholder="Select an Manager"
+                            />
+                        </div>
                     </div>
                     <div class="row mb-3" v-if="user.group">
                         <label for="user-group" class="form-label">Group:</label>
-                        <input id="user-group" disabled class="form-control" v-model="user.group.name">
+                        <input id="user-group" disabled class="form-control" v-model="user.group.name" />
                     </div>
                     <div class="row mb-3">
                         <div class="form-check p-0">
-                            <input id="user-sso " type="checkbox" class="form-check-input" v-model="user.sso">
+                            <input id="user-sso " type="checkbox" class="form-check-input" v-model="user.sso" />
                             <label class="form-check-label ms-2" for="user-sso">
                                 Single sign-on (SSO) login only
                             </label>

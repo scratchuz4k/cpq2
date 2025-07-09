@@ -29,7 +29,7 @@ describe('Creates a Connectivity quote', () => {
         cy.get('#btn-next-step').click();
 
         cy.get('#input_address').type('EH32 9NT');
-        cy.get('#select_address').should('be.visible').select(1);
+        cy.selectOption('#select_address', 1);
         cy.get('#btn-next-step').click();
         cy.get('#btn-create-quote').should('not.be.disabled').click();
 

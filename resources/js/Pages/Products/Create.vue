@@ -10,6 +10,7 @@ import Dialog from 'primevue/dialog';
 import InputText from 'primevue/inputtext';
 import Button from 'primevue/button';
 import ToggleSwitch from 'primevue/toggleswitch';
+import Select from "primevue/select";
 
 const props = defineProps({
     price_plans: Object
@@ -150,11 +151,14 @@ const items = ref([
                         <hr />
                         <div class="mb-3">
                             <label class="form-label">Price Plan</label>
-                            <select class="form-select" v-model="product.price_plan_id">
-                                <option v-for="price_plan in props.price_plans" :value="price_plan.id">
-                                    {{ price_plan.name }}
-                                </option>
-                            </select>
+                            <Select v-model="product.price_plan_id"
+                                    :inputId="'price_plan'"
+                                    :options="props.price_plans"
+                                    class="w-100"
+                                    optionLabel="name"
+                                    optionValue="id"
+                                    placeholder="Select an Price Plan"
+                            />
                         </div>
                         <div class="mb-3">
                             <label for="supplier-name" class="form-label">Supplier:</label>

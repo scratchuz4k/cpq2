@@ -1,4 +1,5 @@
 <script setup>
+import Select from 'primevue/select';
 import { MultiSelect } from 'primevue';
 import _ from 'lodash';
 import { reactive, ref, watch } from 'vue';
@@ -159,18 +160,15 @@ watch(addressPostCode, () => {
                 <div class="mb-3">
                     <template v-if="solution_types.length">
                         <label class="form-label">Solution Type <span class="text-primary fw-bold">*</span></label>
-                        <select
-                            :disabled="is_updating_quote"
-                            id="solution_id"
-                            class="form-select"
-                            @change="solutionChange(modelValue)"
+                        <Select
                             v-model="modelValue.solution_type"
-                        >
-                            <option :value="null">Select an option</option>
-                            <option v-for="(solution, key) in solution_types" :value="solution">
-                                {{ solution.name }}
-                            </option>
-                        </select>
+                            :inputId="'solution_id'"
+                            :options="solution_types"
+                            class="w-100"
+                            optionLabel="name"
+                            placeholder="Select an option"
+                            @change="solutionChange(modelValue)"
+                        />
                     </template>
                     <div v-else class="text-primary fst-italic">
                         <font-awesome-icon class="me-2" :icon="['fas', 'circle-exclamation']"></font-awesome-icon>
@@ -206,17 +204,16 @@ watch(addressPostCode, () => {
                         <label class="form-label" for="select_address"
                             >Select address <span class="text-primary fw-bold">*</span></label
                         >
-                        <select
-                            class="form-select"
-                            id="select_address"
-                            @change="addressSelect(modelValue)"
+                        <Select
                             v-model="modelValue.address"
-                        >
-                            <option :value="null">Select address</option>
-                            <option v-for="(address, key) in addresses" :value="address">
-                                {{ address.label }}
-                            </option>
-                        </select>
+                            :inputId="'select_address'"
+                            :options="addresses"
+                            filter
+                            class="w-100"
+                            optionLabel="label"
+                            placeholder="Select Address"
+                            @change="addressSelect(modelValue)"
+                        />
                     </div>
                 </template>
             </div>

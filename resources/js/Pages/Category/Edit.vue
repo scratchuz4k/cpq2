@@ -55,10 +55,10 @@ const items = ref([
 ]);
 </script>
 <template>
-    <Head title="New Category" />
+    <Head title="New Product" />
     <AuthenticatedLayout>
         <div class="panel">
-            <Header title="New Category" :breadcrumbs="items">
+            <Header title="New Product" :breadcrumbs="items">
                 <template #buttons>
                     <PrimaryButton id="btn-save-product" @click="saveCate()">
                         <font-awesome-icon class="me-2" :icon="['fas', 'save']"></font-awesome-icon>
@@ -94,10 +94,7 @@ const items = ref([
                     </div>
                 </tab>
                 <tab title="Products">
-                    <form
-                        class="mt-3 d-flex"
-                        @submit.prevent="setProductCategory(product?.id, category.id, 'add')"
-                    >
+                    <form class="mt-3 d-flex" @submit.prevent="setProductCategory(product?.id, category.id, 'add')">
                         <div class="me-3" style="width: 100%">
                             <label class="form-label">Add Products:</label>
                             <InputSelect
@@ -105,21 +102,14 @@ const items = ref([
                                 v-model="product"
                                 :fields="['name']"
                                 placeholder="Select a Product"
-                                :query="[
-                  { column: 'categories.id', operator: 'is_null', value: 'category.id' },
-                  { column: 'is_active', operator: 'equals', value: 1 }
-                ]"
+                                :query="[{ column: 'categories.id', operator: 'is_null', value: 'category.id' }]"
                                 url="/products"
                             >
                             </InputSelect>
                         </div>
                         <div class="d-flex align-items-end justify-content-end">
-                            <Button
-                                id="button-add-product-to-category"
-                                class="btn btn-secondary"
-                                type="submit"
-                            >
-                                <font-awesome-icon :icon="['fas', 'plus']"></font-awesome-icon>
+                            <Button id="button-add-product-to-category" class="btn btn-secondary" type="submit">
+                                <font-awesome-icon :icon="['fas', 'plus']"></font-awesome-icon> Add
                             </Button>
                         </div>
                     </form>
@@ -129,17 +119,15 @@ const items = ref([
                             <Datatable
                                 id="group-products"
                                 :columns="[
-                  { data: 'id', title: '#', style: 'width:5%' },
-                  { data: 'code', title: 'Code', style: 'width:20%' },
-                  { data: 'name', title: 'Name', style: 'width:30%' },
-                  { data: 'supplier.name', title: 'Supplier', style: 'width:12%' },
-                  { data: 'brand.name', title: 'Brand', style: 'width:12%' },
-                  { data: 'updated_at', title: 'Updated At', style: 'width:15%' },
-                  { data: 'actions', title: ' At', style: 'width:5%' },
-                ]"
-                                :query="[
-                  { column: 'categories.id', operator: 'equals', value: category.id },
-                ]"
+                                    { data: 'id', title: '#', style: 'width:5%' },
+                                    { data: 'code', title: 'Code', style: 'width:20%' },
+                                    { data: 'name', title: 'Name', style: 'width:30%' },
+                                    { data: 'supplier.name', title: 'Supplier', style: 'width:12%' },
+                                    { data: 'brand.name', title: 'Brand', style: 'width:12%' },
+                                    { data: 'updated_at', title: 'Updated At', style: 'width:15%' },
+                                    { data: 'actions', title: ' At', style: 'width:5%' }
+                                ]"
+                                :query="[{ column: 'categories.id', operator: 'equals', value: category.id }]"
                                 route="/products"
                             >
                                 <template #updated_at="{ value }">

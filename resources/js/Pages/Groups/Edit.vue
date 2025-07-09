@@ -4,7 +4,6 @@ import { Button, InputText, DataTable, Column, Panel } from 'primevue';
 import { reactive, ref } from 'vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, router } from '@inertiajs/vue3';
-
 const props = defineProps({
     group: Object
 });
@@ -139,7 +138,7 @@ const items = ref([
                                 type="submit"
                                 class="btn btn-secondary"
                             >
-                                <font-awesome-icon :icon="['fas', 'plus']"></font-awesome-icon>
+                                <font-awesome-icon :icon="['fas', 'plus']"></font-awesome-icon>Add
                             </Button>
                         </div>
                     </form>
@@ -154,7 +153,7 @@ const items = ref([
                   { data: 'name', title: 'Name', style: 'width:50%' },
                   { data: 'created_at', title: 'Created At', style: 'width:15%' },
                   { data: 'updated_at', title: 'Updated At', style: 'width:15%' },
-                  { data: 'actions', title: ' At', style: 'width:5%' },
+                  { data: 'actions', title: ' At', style: 'width:5%' }
                 ]"
                                 route="/users"
                             >
@@ -199,7 +198,7 @@ const items = ref([
                                 type="submit"
                                 class="btn btn-secondary"
                             >
-                                <font-awesome-icon :icon="['fas', 'plus']"></font-awesome-icon>
+                                <font-awesome-icon :icon="['fas', 'plus']"></font-awesome-icon>Add
                             </Button>
                         </div>
                     </form>
@@ -211,14 +210,14 @@ const items = ref([
                                 :allow="{
                   update: false,
                   delete: true,
-                  link: false,
+                  link: false
                 }"
                                 :query="[{ column: 'group_id', operator: 'equals', value: group.id }]"
                                 :columns="[
                   { data: 'id', title: '#', style: 'width:5%' },
                   { data: 'account.name', title: 'Name', style: 'width:55%' },
                   { data: 'created_at', title: 'Created At', style: 'width:15%' },
-                  { data: 'updated_at', title: 'Updated At', style: 'width:15%' },
+                  { data: 'updated_at', title: 'Updated At', style: 'width:15%' }
                 ]"
                                 route="/group-accounts"
                             >

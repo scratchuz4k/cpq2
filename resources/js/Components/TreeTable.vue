@@ -9,6 +9,10 @@ import IconField from 'primevue/iconfield';
 import InputText from 'primevue/inputtext';
 import InputIcon from 'primevue/inputicon';
 import _ from 'lodash';
+import Button from 'primevue/button';
+import { can, hasRole } from '@/Composables/useAuth.js';
+import pluralize from 'pluralize';
+import { exportData } from '@/Composables/export.js';
 
 const slots = useSlots();
 const usedSlots = Object.keys(slots);
@@ -42,6 +46,9 @@ let data = ref([]);
 let selectedItem = ref(null);
 let showModal = ref(false);
 const global = ref(null);
+const emptyData = ref(true);
+const has_export_permission =
+    can(`export ${pluralize.singular(props.route.replace(/^\//, ''))}`) || hasRole('Super Admin');
 
 const getData = async () => {
     let filters = !global.value
@@ -62,7 +69,7 @@ const getData = async () => {
 
     let res = await axios.get('/api' + props.route + '?' + string);
     data.value = res.data.data;
-    meta.total = res.data.meta?.total ?? res.data.total;
+    emptyData.value = !data.value.length;meta.total = res.data.meta?.total ?? res.data.total;
     meta.first = (meta.page - 1) * meta.limit;
 };
 getData();
@@ -88,6 +95,34 @@ const sortBy = (column) => {
     meta.orderBy = column;
 };
 
+const exportDisabled = ref(false);
+
+const getExportData = async () => {
+    if (exportDisabled.value) return;
+    exportDisabled.value = true;
+    let filters = !global.value
+        ? [
+              {
+                  column: 'parent_id',
+                  operator: 'is_null',
+                  value: 'null'
+              }
+          ]
+        : [];
+
+    let string = queryString.stringify({
+        ...meta,
+        filters: JSON.stringify(filters),
+        search: global.value
+    });
+
+    exportData(string, props.route);
+
+    setTimeout(() => {
+        exportDisabled.value = false;
+    }, 5000);
+};
+
 watch(
     () => [meta.order, meta.orderBy],
     function() {
@@ -106,7 +141,17 @@ watch(
 
 <template>
     <div>
-        <div class="d-flex justify-content-end">
+        <div class="d-flex justify-content-between">
+            <Button
+                v-if="has_export_permission"
+                type="button"
+                :severity="'secondary'"
+                :class="['me-2']"
+                @click="getExportData()"
+                :disabled="emptyData || exportDisabled"
+            >
+                <font-awesome-icon :icon="['fas', 'file-export']" />
+            </Button>
             <IconField>
                 <InputIcon>
                     <font-awesome-icon :icon="['fas', 'search']" />
@@ -114,9 +159,9 @@ watch(
                 <InputText
                     id="treetable-search"
                     v-model="global"
-                    type="search"
+
                     placeholder="Keyword Search"
-                />
+               type="search" />
             </IconField>
         </div>
         <table :id="props.id" class="table w-100">
@@ -128,7 +173,7 @@ watch(
                         @click="sortBy(column.data)"
                         :style="{
                 cursor: 'pointer',
-                textDecoration: column.data == meta.orderBy ? 'underline' : 'none',
+                textDecoration: column.data == meta.orderBy ? 'underline' : 'none'
               }"
                     >
                         {{ column.title }}
@@ -136,8 +181,8 @@ watch(
                 <template v-if="column.data == meta.orderBy">
                   <font-awesome-icon
                       v-if="meta.order == 'desc'"
-                      :icon="['fas', 'sort-down']"
-                  />
+                      :icon="['fas', 'sort-down']"/>
+
                   <font-awesome-icon v-else :icon="['fas', 'sort-up']" />
                 </template>
               </span>
