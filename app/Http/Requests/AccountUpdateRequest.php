@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
@@ -19,7 +20,7 @@ class AccountUpdateRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     * @return array<string, ValidationRule|array<mixed>|string>
      */
     public function rules(): array
     {
@@ -31,14 +32,12 @@ class AccountUpdateRequest extends FormRequest
 
         return [
             'name' => [
-                'required',
                 Rule::unique('accounts')->where(function ($query) use ($user) {
                     return $query->where('tenant_id', $user->tenant_id)
                         ->where('reference', request('reference'));
                 })->ignore($account_id),
             ],
             'reference' => [
-                'required',
                 Rule::unique('accounts')->where(function ($query) use ($user) {
                     return $query->where('tenant_id', $user->tenant_id)
                         ->where('name', request('name'));
@@ -46,6 +45,7 @@ class AccountUpdateRequest extends FormRequest
             ],
             'contacts.*.name' => 'nullable',
             'contacts.*.email' => 'nullable|email',
+            'is_active' => 'boolean',
         ];
 
     }

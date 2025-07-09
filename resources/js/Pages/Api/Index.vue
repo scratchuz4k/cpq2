@@ -1,14 +1,13 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head, Link } from "@inertiajs/vue3";
+import { Head, Link } from '@inertiajs/vue3';
 import { ref } from 'vue';
-import axios from "axios";
-import { toggle_is_active } from '@/Composables/handleActive';
+import axios from 'axios';
 
 const items = ref([
     { label: 'Home', url: '/' },
     { label: 'My Account', url: '/myaccount' },
-    { label: 'Apis' },
+    { label: 'Apis' }
 ]);
 
 </script>
@@ -20,7 +19,8 @@ const items = ref([
             <Header title="Api" :breadcrumbs="items">
                 <template #buttons>
                     <Link href="/apis/create" id="api-create-btn" class="btn btn-primary me-2">
-                    <font-awesome-icon :icon="['fas', 'plus']"></font-awesome-icon> New Api
+                        <font-awesome-icon :icon="['fas', 'plus']"></font-awesome-icon>
+                        New Api
                     </Link>
                 </template>
             </Header>
@@ -52,20 +52,7 @@ const items = ref([
                         {{ format.date(value) }}
                     </template>
                     <template #is_active="{ data, value }">
-                        <div role="button" @click="toggle_is_active('apis', data)">
-                            <font-awesome-icon
-                                v-if="value"
-                                :icon="['fas', 'circle-check']"
-                                style="font-size: 1.125rem"
-                                class="text-primary"
-                            />
-                            <font-awesome-icon
-                                v-else
-                                :icon="['far', 'circle-xmark']"
-                                style="font-size: 1.125rem"
-                                class="text-secondary"
-                            />
-                        </div>
+                        <ToggleActive :data="data" :value="value" route="apis" />
                     </template>
                 </Datatable>
             </div>

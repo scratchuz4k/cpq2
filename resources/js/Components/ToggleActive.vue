@@ -1,11 +1,36 @@
 <script setup>
-import { toggle_is_active } from '@/Composables/handleActive.js';
 
 const props = defineProps({
     data: Object,
     value: Number | Boolean,
-    route: String
+    route: String,
+    eventName: {
+        type: String,
+        default: 'datatable-refresh'
+    }
 });
+
+const toggle_is_active = async (url, data) => {
+
+    let result = await swal.fire({
+        title: 'Do you want to change the active status?'
+    });
+
+    if (['cancel', 'backdrop'].includes(result.dismiss)) {
+        return false;
+    }
+
+    try {
+        let res = await axios.put(`/api/${url}/` + data.id, {
+            is_active: !data.is_active
+        });
+        emitter.emit(props.eventName);
+
+        notyf.success('Updated with Success');
+    } catch (err) {
+        notyf.error(err?.response?.data?.message ?? 'Something went wrong');
+    }
+};
 
 </script>
 <template>

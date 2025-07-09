@@ -85,10 +85,6 @@ const saveNewGroup = async () => {
     }
 };
 
-emitter.on('datatable-refresh', () => {
-    emitter.emit('treetable-refresh');
-});
-
 const items = ref([
     { label: 'Home', url: '/' },
     { label: 'My Account', url: '/myaccount' },
@@ -223,7 +219,8 @@ const items = ref([
                                 />
                             </template>
                             <template #is_active="{ data, value }">
-                                <ToggleActive :data="data" :value="value" route="users" />
+                                <ToggleActive :data="data" :value="value" route="users"
+                                    :eventName="'treetable-refresh'" />
                             </template>
                             <template #group.name="{ value }">
                                 <span class="badge text-bg-secondary">{{ value }}</span>
