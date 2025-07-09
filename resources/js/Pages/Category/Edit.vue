@@ -4,6 +4,7 @@ import PrimaryButton from '@/Components/PrimaryButton.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, router } from '@inertiajs/vue3';
 import { Button } from 'primevue';
+import ToggleSwitch from 'primevue/toggleswitch';
 
 const props = defineProps({
     category: Object
@@ -54,10 +55,10 @@ const items = ref([
 ]);
 </script>
 <template>
-    <Head title="New Product" />
+    <Head title="New Category" />
     <AuthenticatedLayout>
         <div class="panel">
-            <Header title="New Product" :breadcrumbs="items">
+            <Header title="New Category" :breadcrumbs="items">
                 <template #buttons>
                     <PrimaryButton id="btn-save-product" @click="saveCate()">
                         <font-awesome-icon class="me-2" :icon="['fas', 'save']"></font-awesome-icon>
@@ -68,6 +69,20 @@ const items = ref([
             <tabs>
                 <tab :selected="true" title="General">
                     <div class="col-6">
+                        <div class="mb-3 d-flex flex-column">
+                            <label class="form-label" for="active-filter">
+                                Active:
+                            </label>
+                            <ToggleSwitch id="active-filter" v-model="category.is_active">
+                                <template #handle>
+                                    <font-awesome-icon
+                                        :icon="category.is_active ? ['fas', 'circle-check'] : ['far', 'circle-xmark']"
+                                        class="text-primary"
+                                    />
+                                </template>
+                            </ToggleSwitch>
+
+                        </div>
                         <div class="mb-3">
                             <label class="form-label" for="product-code">Code:</label>
                             <input id="product-code" v-model="category.code" class="form-control" />
