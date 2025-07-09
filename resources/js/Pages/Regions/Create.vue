@@ -1,47 +1,49 @@
 <script setup>
-import {reactive, ref} from "vue";
+import { reactive, ref } from 'vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import {Head, router, useForm} from "@inertiajs/vue3";
-import InputSelect from "@/Components/InputSelect.vue";
+import { Head, router, useForm } from '@inertiajs/vue3';
+import InputSelect from '@/Components/InputSelect.vue';
 
 const props = defineProps({
     merchants: Object,
     users: Object
-})
+});
 
 const form = reactive({
     merchant: null,
     user: null,
-    name: null,
-})
+    name: null
+});
 
 const saveRegion = () => {
-    router.post("/regions", {
+    router.post(
+        '/regions',
+        {
             ...form,
             merchant_id: form.merchant.id,
             user_id: form.user.id
         },
         {
             onSuccess: (page) => {
-                notyf.success("Created with Success")
+                notyf.success('Created with Success');
             },
             onError: (errors) => {
-                let string = ''
+                let string = '';
                 Object.keys(errors).forEach((key) => {
-                    string += errors[key] + '<br>'
-                })
-                notyf.error(string)
-            },
-        })
-}
+                    string += errors[key] + '<br>';
+                });
+                notyf.error(string);
+            }
+        }
+    );
+};
 const items = ref([
     { label: 'Home', url: '/' },
     { label: 'My Account', url: '/myaccount' },
     { label: 'Regions', url: '/regions' },
-    { label: 'New Region' },
+    { label: 'New Region' }
 ]);
-
 </script>
 <template>
     <Head title="New Region" />
@@ -79,7 +81,9 @@ const items = ref([
                 </div>
                 <div class="row mb-3">
                     <label for="region-name" class="form-label">Name:</label>
-                    <input id="region-name" class="form-control" v-model="form.name" required>
+                    <div>
+                        <input id="region-name" class="form-control" v-model="form.name" required />
+                    </div>
                     <div class="text-danger" v-if="form.errors?.name">{{ form.errors?.name }}</div>
                 </div>
             </div>

@@ -1,53 +1,53 @@
 <script setup>
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head, router } from "@inertiajs/vue3";
-import {onMounted, reactive, ref} from 'vue';
-import InputSelect from "@/Components/InputSelect.vue";
+import { Head, router } from '@inertiajs/vue3';
+import { onMounted, reactive, ref } from 'vue';
+import InputSelect from '@/Components/InputSelect.vue';
 
 const props = defineProps({
     region: Object,
     merchants: Object,
     users: Object
-})
+});
 
 const form = reactive({
     merchant: props.region.merchant,
     user: props.region.user,
-    name: props.region.name,
-})
+    name: props.region.name
+});
 
-const saveRegion= () => {
-    router.put(`/regions/${props.region.id}`, {
+const saveRegion = () => {
+    router.put(
+        `/regions/${props.region.id}`,
+        {
             ...form,
             merchant_id: form.merchant.id,
             user_id: form.user.id
         },
         {
             onSuccess: (page) => {
-                notyf.success("Updated with Success")
+                notyf.success('Updated with Success');
             },
             onError: (errors) => {
-                let string = ''
+                let string = '';
                 Object.keys(errors).forEach((key) => {
-                    string += errors[key] + '<br>'
-                })
-                notyf.error(string)
-            },
+                    string += errors[key] + '<br>';
+                });
+                notyf.error(string);
+            }
         }
-    )
-}
+    );
+};
 
 const items = ref([
     { label: 'Home', url: '/' },
     { label: 'My Account', url: '/myaccount' },
     { label: 'Regions', url: '/regions' },
-    { label: 'Edit Region' },
+    { label: 'Edit Region' }
 ]);
-
 </script>
 <template>
-
     <Head :title="'Edit Region #' + region.id" />
     <AuthenticatedLayout>
         <div class="panel">
@@ -83,7 +83,9 @@ const items = ref([
                 </div>
                 <div class="row mb-3">
                     <label for="region-name" class="form-label">Name:</label>
-                    <input id="region-name" class="form-control" v-model="form.name">
+                    <div>
+                        <input id="region-name" class="form-control" v-model="form.name" />
+                    </div>
                 </div>
             </div>
         </div>
