@@ -26,13 +26,14 @@ class BlacklistController extends BaseController
     {
         parent::__construct();
     }
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
         return Inertia::render('Blacklists/Index', [
-            'operators' => ComparisonOperatorsEnum::asArray()
+            'operators' => ComparisonOperatorsEnum::asArray(),
         ]);
     }
 
@@ -42,11 +43,12 @@ class BlacklistController extends BaseController
     public function create()
     {
         return Inertia::render('Blacklists/Create', [
-            'providers' => array_map(function($item) {
-                if ($item["name"] === "Virtual1") {
-                    $item["name"] = "PXC";
-                    $item["value"] = "pxc";
+            'providers' => array_map(function ($item) {
+                if ($item['name'] === 'Virtual1') {
+                    $item['name'] = 'PXC';
+                    $item['value'] = 'pxc';
                 }
+
                 return $item;
             }, CloudMarketSuppliersEnum::asArray()),
             'subproviders' => CloudMarketSubprovidersEnum::cases(),
@@ -64,11 +66,12 @@ class BlacklistController extends BaseController
         try {
             $this->blacklistService->store($request->all());
         } catch (\Exception $e) {
-            if (!env('APP_DEBUG')) {
+            if (! env('APP_DEBUG')) {
                 Log::error($e->getMessage());
             }
             throw new \Exception($e);
         }
+
         return redirect()->route('blacklists.index');
     }
 
@@ -86,13 +89,15 @@ class BlacklistController extends BaseController
     public function edit(Blacklist $blacklist): Response
     {
         $temp = new BlacklistResource($blacklist);
+
         return Inertia::render('Blacklists/Edit', [
             'blacklisted_item' => $temp,
-            'providers' => array_map(function($temp) {
-                if ($temp["name"] === "Virtual1") {
-                    $temp["name"] = "PXC";
-                    $temp["value"] = "pxc";
+            'providers' => array_map(function ($temp) {
+                if ($temp['name'] === 'Virtual1') {
+                    $temp['name'] = 'PXC';
+                    $temp['value'] = 'pxc';
                 }
+
                 return $temp;
             }, CloudMarketSuppliersEnum::asArray()),
             'subproviders' => CloudMarketSubprovidersEnum::cases(),
@@ -112,7 +117,7 @@ class BlacklistController extends BaseController
                 return $this->blacklistService->update($blacklist, $request->all());
             });
         } catch (\Exception $e) {
-            if (!env('APP_DEBUG')) {
+            if (! env('APP_DEBUG')) {
                 Log::error($e->getMessage());
             }
             throw new \Exception($e);
@@ -126,6 +131,8 @@ class BlacklistController extends BaseController
      */
     public function destroy(Blacklist $blacklist)
     {
-        //
+        $blacklist->delete();
+
+        return redirect()->route('blacklists.index');
     }
 }
