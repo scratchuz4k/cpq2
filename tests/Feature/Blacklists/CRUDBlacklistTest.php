@@ -51,7 +51,7 @@ it('Blacklists CRUD', function () {
     $blacklist->refresh();
     $this->assertEquals($blacklist->productName, 'teste2');
 
-    $response = $this->delete('blacklists/'.$blacklist->id);
+    $response = $this->delete('api/blacklists/'.$blacklist->id);
     $response->assertSuccessful();
     expect(Blacklist::count())->toBe(0);
 });
