@@ -50,7 +50,7 @@ class BlacklistController extends BaseController
                 }
                 return $item;
             }, CloudMarketSuppliersEnum::asArray()),
-            'subproviders' => CloudMarketSubprovidersEnum::cases(),
+            'subproviders' => CloudMarketSubprovidersEnum::asArray(),
             'operators' => ComparisonOperatorsEnum::asArray(),
             'contract_terms' => ContractTermsEnum::asArray(),
             'speed_units' => SpeedUnitsEnum::asArray(),
@@ -104,7 +104,7 @@ class BlacklistController extends BaseController
                 }
                 return $item;
             }, CloudMarketSuppliersEnum::asArray()),
-            'subproviders' => CloudMarketSubprovidersEnum::cases(),
+            'subproviders' => CloudMarketSubprovidersEnum::asArray(),
             'operators' => ComparisonOperatorsEnum::asArray(),
             'contract_terms' => ContractTermsEnum::asArray(),
             'speed_units' => SpeedUnitsEnum::asArray(),

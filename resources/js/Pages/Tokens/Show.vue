@@ -3,6 +3,7 @@ import { reactive, ref } from "vue";
 import Button from 'primevue/button';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link } from "@inertiajs/vue3";
+import Select from "primevue/select";
 
 const props = defineProps({
     plainTextToken: String,
@@ -41,12 +42,15 @@ const items = ref([
                 </div>
                 <div class="mb-3">
                     <label class="form-label">User:</label>
-                    <select class="form-select" v-model="token.tokenable_id" disabled>
-                        <option v-for="user in users" :value="user.id">
-                            {{ user.name }}
-                            ({{ user.roles.map(x => x.name).join(',') }})
-                        </option>
-                    </select>
+                    <Select v-model="token.tokenable_id"
+                            :inputId="'token-user'"
+                            :options="users"
+                            class="w-100"
+                            optionLabel="description"
+                            optionValue="id"
+                            placeholder="Select a User"
+                            disabled
+                    />
                 </div>
             </div>
 

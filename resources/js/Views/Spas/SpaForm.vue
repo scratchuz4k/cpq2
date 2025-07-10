@@ -1,6 +1,7 @@
 <script setup>
 import InputSelect from "@/Components/InputSelect.vue";
-import { usePage } from "@inertiajs/vue3";
+import {usePage} from "@inertiajs/vue3";
+import Select from "primevue/select";
 
 const page = usePage();
 
@@ -162,11 +163,14 @@ const icons = {
       <h5 class="mt-5">Apply the Operation</h5>
       <div class="mb-3">
         <label class="form-label">Operation:</label>
-        <select class="form-select" v-model="modelValue.operation_id" required>
-          <option v-for="operation in props.operations" :value="operation.id">
-            {{ operation.code }}
-          </option>
-        </select>
+          <Select v-model="modelValue.operation_id"
+                  :inputId="'spa-operation'"
+                  :options="props.operations"
+                  class="w-100"
+                  optionLabel="code"
+                  optionValue="id"
+                  placeholder="Select an Operation"
+          />
       </div>
       <div class="row g-3 mb-3">
         <div class="col">
@@ -194,12 +198,14 @@ const icons = {
       </div>
       <div class="mb-3">
         <label class="form-label">Price Plan (Optional):</label>
-        <select class="form-select" v-model="modelValue.price_plan_id" required>
-          <option :value="null">None</option>
-          <option v-for="price_plan in props.price_plans" :value="price_plan.id">
-            {{ price_plan.name }}
-          </option>
-        </select>
+          <Select v-model="modelValue.price_plan_id"
+                  :inputId="'spa-price_plan'"
+                  :options="props.price_plans"
+                  class="w-100"
+                  optionLabel="name"
+                  optionValue="id"
+                  placeholder="Select a Price Plan"
+          />
       </div>
     </div>
   </div>
