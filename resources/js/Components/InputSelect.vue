@@ -99,6 +99,15 @@ watch(inputSearch, () => {
     search(true);
 });
 
+watch(
+    () => props.query,
+    () => {
+        page.value = 1;
+        search(true);
+    },
+    { deep: true }
+);
+
 search();
 
 emitter.on('input-select-refresh' + (props.id ? ':' + props.id : ''), () => {
@@ -159,7 +168,7 @@ emitter.on('input-select-refresh' + (props.id ? ':' + props.id : ''), () => {
                     v-else
                     v-for="option in options"
                     class="option"
-                    :class="{ selected: proxyValue && proxyValue.id == option.id }"
+                    :class="{ selected: proxyValue === option }"
                     @click="
                         () => {
                             proxyValue = option;

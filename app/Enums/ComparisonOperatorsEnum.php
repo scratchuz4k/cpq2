@@ -2,8 +2,12 @@
 
 namespace App\Enums;
 
+use App\Trait\EnumHelpers;
+
 enum ComparisonOperatorsEnum: string
 {
+    use EnumHelpers;
+
     case equals = '=';
     case greater_than = '>';
     case less_than = '<';

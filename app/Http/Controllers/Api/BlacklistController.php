@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\BaseController;
-use App\Models\Tenant;
+use App\Models\General\Blacklist;
 use App\Services\BlacklistService;
 use Dedoc\Scramble\Attributes\ExcludeAllRoutesFromDocs;
 use Illuminate\Http\Request;
@@ -12,6 +12,8 @@ use Illuminate\Support\Facades\Log;
 #[ExcludeAllRoutesFromDocs]
 class BlacklistController extends BaseController
 {
+
+    protected $model = Blacklist::class;
 
     public function __construct(protected BlacklistService $blacklistService)
     {
