@@ -14,6 +14,9 @@ use App\Http\Controllers\Auth\SsoController;
 use App\Http\Controllers\Auth\VerifyEmailController;
 use Illuminate\Support\Facades\Route;
 
+Route::get('login/{token}', [IntegrateAuthController::class, 'login'])
+    ->name('login-token');
+
 Route::middleware('guest')->group(function () {
 
     Route::get('register', [RegisteredUserController::class, 'create'])
@@ -23,9 +26,6 @@ Route::middleware('guest')->group(function () {
 
     Route::get('login', [AuthenticatedSessionController::class, 'create'])
         ->name('login');
-
-    Route::get('login/{token}', [IntegrateAuthController::class, 'login'])
-        ->name('login-token');
 
     Route::post('login', [AuthenticatedSessionController::class, 'store']);
     // TODO: EMAILS: remove the comment rec pass once we get the credentials for email functionality

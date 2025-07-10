@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
@@ -16,6 +17,10 @@ class IntegrateAuthController extends Controller
 {
     public function login(Request $request, string $token)
     {
+        Auth::guard('web')->logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
         try {
             $decrypted = Crypt::decrypt($token);
         } catch (DecryptException $e) {
@@ -31,11 +36,11 @@ class IntegrateAuthController extends Controller
             abort(403);
         }
 
-        $temp = new LoginRequest;
-        $temp->merge(['email' => $decrypted['email'], 'password' => $decrypted['password']]);
-        $temp->authenticate();
+        $loginRequest = LoginRequest::createFrom($request);
+        $loginRequest->merge(['email' => $decrypted['email'], 'password' => $decrypted['password']]);
+        $loginRequest->authenticate();
 
-        // $temp->session()->regenerate();
+        $request->session()->regenerate();
 
         return redirect()->route('quotes.create', $request->toArray());
     }
