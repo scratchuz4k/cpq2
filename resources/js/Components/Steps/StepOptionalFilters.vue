@@ -22,7 +22,9 @@ const proxyValue = computed({
 const bearers = [
     { value: 100, label: format.speed(100) },
     { value: 1000, label: format.speed(1000) },
-    { value: 10000, label: format.speed(10000) }
+    { value: 10000, label: format.speed(10000) },
+    { value: 25000, label: format.speed(25000) },
+    { value: 100000, label: format.speed(100000) }
 ];
 const speeds = [
     { value: 10, label: format.speed(10) },
@@ -31,7 +33,17 @@ const speeds = [
     { value: 200, label: format.speed(200) },
     { value: 500, label: format.speed(500) },
     { value: 1000, label: format.speed(1000) },
-    { value: 10000, label: format.speed(10000) }
+    { value: 2000, label: format.speed(2000) },
+    { value: 3000, label: format.speed(3000) },
+    { value: 4000, label: format.speed(4000) },
+    { value: 5000, label: format.speed(5000) },
+    { value: 6000, label: format.speed(6000) },
+    { value: 7000, label: format.speed(7000) },
+    { value: 8000, label: format.speed(8000) },
+    { value: 9000, label: format.speed(9000) },
+    { value: 10000, label: format.speed(10000) },
+    { value: 25000, label: format.speed(25000) },
+    { value: 100000, label: format.speed(100000) }
 ];
 
 const formatInput = (ev, field, index) => {
@@ -69,8 +81,8 @@ const formatInput = (ev, field, index) => {
         <div class="col-lg-6">
             <div class="panel">
                 <h5 class="font-bold mb-3">Optionally, select some default filters</h5>
-                <div class="pb-2">
-                    <div class="d-flex justify-content-between mb-2">
+                <div class="mb-4 pb-2">
+                    <div class="d-flex justify-content-between">
                         <p class="form-label">Min. Speed</p>
                         <span>
                             <span class="badge text-bg-secondary">Min</span>
@@ -90,13 +102,12 @@ const formatInput = (ev, field, index) => {
                     >
                     </Select>
                 </div>
-                <hr class="mb-4" />
-                <div class="mb-3 pb-2">
-                    <div class="d-flex justify-content-between mb-2">
+                <div class="mb-4 pb-2">
+                    <div class="d-flex justify-content-between">
                         <p class="form-label">Min. Bearer</p>
                         <span>
                             <span class="badge text-bg-secondary">Min</span>
-                            {{ proxyValue.configs.speed ? format.speed(proxyValue.configs.bearer) : 'All' }}
+                            {{ proxyValue.configs.bearer ? format.speed(proxyValue.configs.bearer) : 'All' }}
                             <!-- <span class="ms-2 badge text-bg-secondary">Max</span>
                             {{ format.speed(proxyValue.configs.bearer[1]) }} -->
                         </span>
@@ -112,7 +123,6 @@ const formatInput = (ev, field, index) => {
                     >
                     </Select>
                 </div>
-                <hr class="mb-4" />
                 <div class="mb-4 pb-2">
                     <div class="d-flex justify-content-between">
                         <p class="form-label">Contract Length</p>
@@ -129,7 +139,6 @@ const formatInput = (ev, field, index) => {
                         </template>
                     </MultiSelect>
                 </div>
-                <hr class="mb-4" />
                 <div class="mb-3">
                     <p class="form-label mb-2">Managed Products:</p>
                     <div class="row row-cols-1 row-cols-md-3 g-3">
