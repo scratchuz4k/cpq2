@@ -112,7 +112,7 @@ const items = ref([
                                 :options="props.subproviders"
                                 class="w-100"
                                 optionLabel="value"
-                                optionValue="name"
+                                optionValue="value"
                                 placeholder="Select a Subprovider"
                             />
                         </div>
