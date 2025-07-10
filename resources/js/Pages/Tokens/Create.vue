@@ -1,8 +1,8 @@
 <script setup>
 import { reactive, ref } from "vue";
-import Button from 'primevue/button';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, router } from "@inertiajs/vue3";
+import Select from "primevue/select";
 
 const props = defineProps({
     users: Object,
@@ -57,12 +57,15 @@ const items = ref([
                 </div>
                 <div class="row mb-3">
                     <label for="token-user" class="form-label">User:</label>
-                    <select id="token-user" class="form-select" v-model="token.user_id">
-                        <option v-for="user in users" :value="user.id">
-                            {{ user.name }}
-                            ({{ user.roles.map(x => x.name).join(',') }})
-                        </option>
-                    </select>
+
+                    <Select v-model="token.user_id"
+                            :inputId="'token-user'"
+                            :options="users"
+                            class="w-100"
+                            optionLabel="description"
+                            optionValue="id"
+                            placeholder="Select a User"
+                    />
                 </div>
             </div>
 

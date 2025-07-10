@@ -117,7 +117,7 @@ emitter.on('input-select-refresh' + (props.id ? ':' + props.id : ''), () => {
 
 <template>
     <div :id="'input-select-' + props.id" class="position-relative">
-        <div class="form-select w-100 d-flex" role="button" @click="() => (showOptions = !showOptions)">
+        <div class="form-select w-100 d-flex cursor-pointer" @click="() => (showOptions = !showOptions)">
             <template v-if="!proxyValue || Object.values(proxyValue).every((value) => !value)">
                 {{ props.placeholder }}
             </template>

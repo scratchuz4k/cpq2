@@ -16,6 +16,7 @@ import axios from 'axios';
 import { can, hasRole } from '@/Composables/useAuth.js';
 import pluralize from 'pluralize';
 import { exportData } from '@/Composables/export.js';
+import Select from "primevue/select";
 
 const slots = useSlots();
 const usedSlots = Object.keys(slots);
@@ -56,6 +57,9 @@ const meta = reactive({
     total: 0,
     first: 1
 });
+
+const openSelectIndex = ref(null);
+
 
 const setFilters = () => {
     props.columns.forEach((el) => form.filters.push({ column: el.data, value: null, operator: 'contains' }));

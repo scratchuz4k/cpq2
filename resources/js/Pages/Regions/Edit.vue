@@ -1,43 +1,53 @@
 <script setup>
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head, router } from "@inertiajs/vue3";
-import { ref } from 'vue';
+import { Head, router } from '@inertiajs/vue3';
+import { onMounted, reactive, ref } from 'vue';
+import InputSelect from '@/Components/InputSelect.vue';
 
 const props = defineProps({
     region: Object,
     merchants: Object,
     users: Object
-})
+});
 
+const form = reactive({
+    merchant: props.region.merchant,
+    user: props.region.user,
+    name: props.region.name
+});
 
-const saveRegion= () => {
-    router.put(`/regions/${props.region.id}`, props.region,
+const saveRegion = () => {
+    router.put(
+        `/regions/${props.region.id}`,
+        {
+            ...form,
+            merchant_id: form.merchant.id,
+            user_id: form.user.id
+        },
         {
             onSuccess: (page) => {
-                notyf.success("Updated with Success")
+                notyf.success('Updated with Success');
             },
             onError: (errors) => {
-                let string = ''
+                let string = '';
                 Object.keys(errors).forEach((key) => {
-                    string += errors[key] + '<br>'
-                })
-                notyf.error(string)
-            },
+                    string += errors[key] + '<br>';
+                });
+                notyf.error(string);
+            }
         }
-    )
-}
+    );
+};
 
 const items = ref([
     { label: 'Home', url: '/' },
     { label: 'My Account', url: '/myaccount' },
     { label: 'Regions', url: '/regions' },
-    { label: 'Edit Region' },
+    { label: 'Edit Region' }
 ]);
-
 </script>
 <template>
-
     <Head :title="'Edit Region #' + region.id" />
     <AuthenticatedLayout>
         <div class="panel">
@@ -51,19 +61,31 @@ const items = ref([
             <div class="col-6">
                 <div class="row mb-3">
                     <label for="merchant-name" class="form-label">Merchant:</label>
-                    <select class="form-select" v-model="region.merchant_id">
-                        <option v-for="merchant in merchants" :value="merchant.id">{{ merchant.name }}</option>
-                    </select>
+                    <InputSelect
+                        id="region-merchant"
+                        url="/merchants"
+                        :fields="['name']"
+                        v-model="form.merchant"
+                        :is-multiple="false"
+                        placeholder="Select an Merchant"
+                    />
                 </div>
                 <div class="row mb-3">
                     <label for="user-name" class="form-label">User:</label>
-                    <select class="form-select" v-model="region.user_id">
-                        <option v-for="user in users" :value="user.id">{{ user.name }}</option>
-                    </select>
+                    <InputSelect
+                        id="region-user"
+                        url="/users"
+                        :fields="['name']"
+                        v-model="form.user"
+                        :is-multiple="false"
+                        placeholder="Select an User"
+                    />
                 </div>
                 <div class="row mb-3">
                     <label for="region-name" class="form-label">Name:</label>
-                    <input id="region-name" class="form-control" v-model="region.name">
+                    <div>
+                        <input id="region-name" class="form-control" v-model="form.name" />
+                    </div>
                 </div>
             </div>
         </div>

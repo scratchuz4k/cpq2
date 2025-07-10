@@ -45,7 +45,7 @@ describe("Group Testing", () => {
         cy.get("#user-name").type(sales_manager.name)
         cy.get("#user-email").type(sales_manager.email)
         cy.get("#user-password").type(sales_manager.password)
-        cy.get("#user-role").select(sales_manager.role)
+        cy.selectOption('#user-role', sales_manager.role);
         cy.get("#btn-save-user").click()
         cy.get("#treetable-search").type(sales_manager.name)
         cy.get("#users-table").contains(sales_manager.name)
@@ -115,7 +115,7 @@ describe("Group Testing", () => {
         cy.get("#user-name").type(group_user.name)
         cy.get("#user-email").type(group_user.email)
         cy.get("#user-password").type(group_user.password)
-        cy.get("#user-role").select(group_user.role)
+        cy.selectOption('#user-role', group_user.role);
         cy.get("#btn-save-user").click()
         cy.get("#treetable-search").type(group_user.name)
         cy.get("#users-table").contains(group_user.name)
