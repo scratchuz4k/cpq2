@@ -1,5 +1,4 @@
 <script setup>
-
 const props = defineProps({
     data: Object,
     value: Number | Boolean,
@@ -11,7 +10,6 @@ const props = defineProps({
 });
 
 const toggle_is_active = async (url, data) => {
-
     let result = await swal.fire({
         title: 'Do you want to change the active status?'
     });
@@ -31,13 +29,15 @@ const toggle_is_active = async (url, data) => {
         notyf.error(err?.response?.data?.message ?? 'Something went wrong');
     }
 };
-
 </script>
 <template>
     <div role="button" @click="toggle_is_active(props.route, props.data)">
-        <font-awesome-icon v-if="props.value" :icon="['fas', 'circle-check']" style="font-size: 1.125rem"
-            class="text-primary" />
-        <font-awesome-icon v-else :icon="['far', 'circle-xmark']" style="font-size: 1.125rem"
-            class="text-secondary" />
+        <font-awesome-icon
+            v-if="props.value"
+            :icon="['fas', 'circle-check']"
+            style="font-size: 1.125rem"
+            class="text-primary"
+        />
+        <font-awesome-icon v-else :icon="['far', 'circle-xmark']" style="font-size: 1.125rem" class="text-secondary" />
     </div>
 </template>

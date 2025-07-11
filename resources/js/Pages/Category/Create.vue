@@ -14,20 +14,18 @@ const category = reactive({
 });
 
 const saveCate = () => {
-    router.post(`/categories`, category,
-        {
-            onSuccess: (page) => {
-                notyf.success('Created with Success');
-            },
-            onError: (errors) => {
-                let string = '';
-                Object.keys(errors).forEach((key) => {
-                    string += errors[key] + '<br>';
-                });
-                notyf.error(string);
-            }
+    router.post(`/categories`, category, {
+        onSuccess: (page) => {
+            notyf.success('Created with Success');
+        },
+        onError: (errors) => {
+            let string = '';
+            Object.keys(errors).forEach((key) => {
+                string += errors[key] + '<br>';
+            });
+            notyf.error(string);
         }
-    );
+    });
 };
 const items = ref([
     { label: 'Home', url: '/' },
@@ -35,7 +33,6 @@ const items = ref([
     { label: 'Categories', url: '/categories' },
     { label: 'New Category' }
 ]);
-
 </script>
 <template>
     <Head title="New Category" />
@@ -51,9 +48,7 @@ const items = ref([
             </Header>
             <div class="col-6">
                 <div class="mb-3 d-flex flex-column">
-                    <label class="form-label" for="active-filter">
-                        Active:
-                    </label>
+                    <label class="form-label" for="active-filter"> Active: </label>
                     <ToggleSwitch id="active-filter" v-model="category.is_active">
                         <template #handle>
                             <font-awesome-icon
@@ -62,19 +57,16 @@ const items = ref([
                             />
                         </template>
                     </ToggleSwitch>
-
                 </div>
                 <div class="mb-3">
                     <label for="category-code" class="form-label">Code:</label>
-                    <input id="category-code" class="form-control" v-model="category.code">
+                    <input id="category-code" class="form-control" v-model="category.code" />
                 </div>
                 <div class="mb-3">
                     <label for="category-name" class="form-label">Name:</label>
-                    <input id="category-name" class="form-control" v-model="category.name">
+                    <input id="category-name" class="form-control" v-model="category.name" />
                 </div>
-
             </div>
-
         </div>
     </AuthenticatedLayout>
 </template>

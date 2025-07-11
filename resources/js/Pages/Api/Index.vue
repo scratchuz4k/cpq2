@@ -2,17 +2,10 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link } from '@inertiajs/vue3';
 import { ref } from 'vue';
-import axios from 'axios';
 
-const items = ref([
-    { label: 'Home', url: '/' },
-    { label: 'My Account', url: '/myaccount' },
-    { label: 'Apis' }
-]);
-
+const items = ref([{ label: 'Home', url: '/' }, { label: 'My Account', url: '/myaccount' }, { label: 'Apis' }]);
 </script>
 <template>
-
     <Head title="Api" />
     <AuthenticatedLayout>
         <div class="panel">
@@ -29,19 +22,19 @@ const items = ref([
                     :allow="{
                         update: true,
                         delete: true,
-                        link: false,
+                        link: false
                     }"
                     :columns="[
                         { data: 'id', title: '#', style: 'width:5%' },
-                        { data: 'is_active', title: 'Active', style: 'width:5%'},
-                        { data: 'code', title: 'Code', style: 'width:15%'},
-                        { data: 'name', title: 'Name', style: 'width:20%'},
-                        { data: 'auth_type', title: 'Auth Type', style: 'width:15%'},
+                        { data: 'is_active', title: 'Active', style: 'width:5%' },
+                        { data: 'code', title: 'Code', style: 'width:15%' },
+                        { data: 'name', title: 'Name', style: 'width:20%' },
+                        { data: 'auth_type', title: 'Auth Type', style: 'width:15%' },
                         { data: 'created_at', title: 'Created At', style: 'width:15%' },
-                        { data: 'updated_at', title: 'Updated At', style: 'width:15%' },
+                        { data: 'updated_at', title: 'Updated At', style: 'width:15%' }
                     ]"
                     :filters="{
-                        'is_active': { type: 'checkbox' },
+                        is_active: { type: 'checkbox' }
                     }"
                     route="/apis"
                 >

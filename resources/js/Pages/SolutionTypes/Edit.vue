@@ -31,11 +31,11 @@ const table = reactive(
     props.solution_type.table
         ? { ...props.solution_type.table }
         : {
-            code: 'custom',
-            group: null,
-            group_name: null,
-            columns: []
-        }
+              code: 'custom',
+              group: null,
+              group_name: null,
+              columns: []
+          }
 );
 
 const dragOptions = {
@@ -181,13 +181,13 @@ const items = ref([
                     <tab title="General" :selected="true">
                         <div class="mt-3">
                             <div class="mb-3 d-flex flex-column">
-                                <label class="form-label" for="active-filter">
-                                    Active:
-                                </label>
+                                <label class="form-label" for="active-filter"> Active: </label>
                                 <ToggleSwitch id="active-filter" v-model="solution.is_active">
                                     <template #handle>
                                         <font-awesome-icon
-                                            :icon="solution.is_active ? ['fas', 'circle-check'] : ['far', 'circle-xmark']"
+                                            :icon="
+                                                solution.is_active ? ['fas', 'circle-check'] : ['far', 'circle-xmark']
+                                            "
                                             class="text-primary"
                                         />
                                     </template>
@@ -214,19 +214,19 @@ const items = ref([
                                 <label class="form-label">Choose Categories:</label>
                                 <table class="table">
                                     <thead>
-                                    <tr>
-                                        <th style="width: 5%"></th>
-                                        <th style="text-align: left">Category</th>
-                                        <th style="text-align: right; width: 5%">
-                                            <button
-                                                id="solution-type-categories-remove-columns"
-                                                class="btn p-2 mx-1 border-0"
-                                                @click="clearAllCategories()"
-                                            >
-                                                <font-awesome-icon :icon="['fas', 'trash-alt']"></font-awesome-icon>
-                                            </button>
-                                        </th>
-                                    </tr>
+                                        <tr>
+                                            <th style="width: 5%"></th>
+                                            <th style="text-align: left">Category</th>
+                                            <th style="text-align: right; width: 5%">
+                                                <button
+                                                    id="solution-type-categories-remove-columns"
+                                                    class="btn p-2 mx-1 border-0"
+                                                    @click="clearAllCategories()"
+                                                >
+                                                    <font-awesome-icon :icon="['fas', 'trash-alt']"></font-awesome-icon>
+                                                </button>
+                                            </th>
+                                        </tr>
                                     </thead>
                                     <draggable
                                         v-model="categories"
@@ -266,19 +266,19 @@ const items = ref([
                                         </template>
                                     </draggable>
                                     <tfoot>
-                                    <tr>
-                                        <th colspan="4">
-                                            <div class="d-flex justify-content-end">
-                                                <button
-                                                    id="solution-type-table-add-category"
-                                                    class="btn btn-sm"
-                                                    @click="addCategory()"
-                                                >
-                                                    <font-awesome-icon :icon="['fas', 'plus']"></font-awesome-icon>
-                                                </button>
-                                            </div>
-                                        </th>
-                                    </tr>
+                                        <tr>
+                                            <th colspan="4">
+                                                <div class="d-flex justify-content-end">
+                                                    <button
+                                                        id="solution-type-table-add-category"
+                                                        class="btn btn-sm"
+                                                        @click="addCategory()"
+                                                    >
+                                                        <font-awesome-icon :icon="['fas', 'plus']"></font-awesome-icon>
+                                                    </button>
+                                                </div>
+                                            </th>
+                                        </tr>
                                     </tfoot>
                                 </table>
                             </div>
@@ -290,34 +290,34 @@ const items = ref([
                                 <label class="form-label">Choose months to use amortisation:</label>
                                 <table class="table">
                                     <thead>
-                                    <tr>
-                                        <th style="text-align: left; width: 40%">Supplier</th>
-                                        <th style="text-align: center">Months</th>
-                                    </tr>
+                                        <tr>
+                                            <th style="text-align: left; width: 40%">Supplier</th>
+                                            <th style="text-align: center">Months</th>
+                                        </tr>
                                     </thead>
                                     <tbody>
-                                    <tr style="text-align: center" v-for="supplier in props.suppliers">
-                                        <td style="text-align: left">{{ supplier.name }}</td>
-                                        <td>
-                                            <MultiSelect
-                                                v-model="configurations.amortisation[supplier.value]"
-                                                style="width: 100%"
-                                                :options="['12', '24', '36', '48', '60']"
-                                                placeholder="Select Months"
-                                            >
-                                                <template #option="slotProps">
-                                                    <div style="font-size: 14px; line-height: 1.5rem">
-                                                        {{ slotProps.option }} Months
-                                                    </div>
-                                                </template>
-                                            </MultiSelect>
-                                        </td>
-                                    </tr>
+                                        <tr style="text-align: center" v-for="supplier in props.suppliers">
+                                            <td style="text-align: left">{{ supplier.name }}</td>
+                                            <td>
+                                                <MultiSelect
+                                                    v-model="configurations.amortisation[supplier.value]"
+                                                    style="width: 100%"
+                                                    :options="['12', '24', '36', '48', '60']"
+                                                    placeholder="Select Months"
+                                                >
+                                                    <template #option="slotProps">
+                                                        <div style="font-size: 14px; line-height: 1.5rem">
+                                                            {{ slotProps.option }} Months
+                                                        </div>
+                                                    </template>
+                                                </MultiSelect>
+                                            </td>
+                                        </tr>
                                     </tbody>
                                     <tfoot>
-                                    <tr>
-                                        <th colspan="5"></th>
-                                    </tr>
+                                        <tr>
+                                            <th colspan="5"></th>
+                                        </tr>
                                     </tfoot>
                                 </table>
                             </div>
@@ -388,22 +388,22 @@ const items = ref([
                                     <label class="form-label">Choose and order the table columns:</label>
                                     <table class="table">
                                         <thead>
-                                        <tr>
-                                            <th></th>
-                                            <th style="width: 50%">Field</th>
-                                            <th style="width: 50%">Name</th>
-                                            <th>
-                                                <button
-                                                    id="solution-type-table-remove-columns"
-                                                    class="btn p-2 mx-1 border-0"
-                                                    @click="clearAllColumns(table)"
-                                                >
-                                                    <font-awesome-icon
-                                                        :icon="['fas', 'trash-alt']"
-                                                    ></font-awesome-icon>
-                                                </button>
-                                            </th>
-                                        </tr>
+                                            <tr>
+                                                <th></th>
+                                                <th style="width: 50%">Field</th>
+                                                <th style="width: 50%">Name</th>
+                                                <th>
+                                                    <button
+                                                        id="solution-type-table-remove-columns"
+                                                        class="btn p-2 mx-1 border-0"
+                                                        @click="clearAllColumns(table)"
+                                                    >
+                                                        <font-awesome-icon
+                                                            :icon="['fas', 'trash-alt']"
+                                                        ></font-awesome-icon>
+                                                    </button>
+                                                </th>
+                                            </tr>
                                         </thead>
                                         <draggable
                                             v-model="table.columns"
@@ -452,21 +452,21 @@ const items = ref([
                                             </template>
                                         </draggable>
                                         <tfoot>
-                                        <tr>
-                                            <th colspan="4">
-                                                <div class="d-flex justify-content-end">
-                                                    <button
-                                                        id="solution-type-table-add-column"
-                                                        class="btn btn-sm"
-                                                        @click="addColumn(table)"
-                                                    >
-                                                        <font-awesome-icon
-                                                            :icon="['fas', 'plus']"
-                                                        ></font-awesome-icon>
-                                                    </button>
-                                                </div>
-                                            </th>
-                                        </tr>
+                                            <tr>
+                                                <th colspan="4">
+                                                    <div class="d-flex justify-content-end">
+                                                        <button
+                                                            id="solution-type-table-add-column"
+                                                            class="btn btn-sm"
+                                                            @click="addColumn(table)"
+                                                        >
+                                                            <font-awesome-icon
+                                                                :icon="['fas', 'plus']"
+                                                            ></font-awesome-icon>
+                                                        </button>
+                                                    </div>
+                                                </th>
+                                            </tr>
                                         </tfoot>
                                     </table>
                                 </div>

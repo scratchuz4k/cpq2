@@ -34,11 +34,9 @@ const createOrderAndRefresh = async (id) => {
 };
 
 const deleteRecord = (id) => {
-    swal
-    .fire({
+    swal.fire({
         title: 'Are you sure?'
-    })
-    .then(async (result) => {
+    }).then(async (result) => {
         if (['cancel', 'backdrop'].includes(result.dismiss)) {
             return;
         }
@@ -48,7 +46,6 @@ const deleteRecord = (id) => {
                 emitter.emit('datatable-refresh');
             }
             notyf.success('Removed with success');
-
         } catch (err) {
             notyf.error(err?.response?.data?.message ?? 'Something went wrong');
         }
@@ -78,15 +75,15 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Quotes' }]);
                         { data: 'items.data', title: 'Data', hide: true },
                         { data: 'items.name', title: 'Name', hide: true },
                         { data: 'address_data', title: 'Address', hide: true },
-                        { data: 'account.contacts.email', title: 'Email', hide: true },
+                        { data: 'account.contacts.email', title: 'Email', hide: true }
                     ]"
                     :filters="{
                         'user.name': { type: 'options', options: users.map((x) => x.name) },
                         'solution_type.name': {
                             type: 'options',
-                            options: solutions.map((x) => x.name),
+                            options: solutions.map((x) => x.name)
                         },
-                        status: { type: 'options', options: status },
+                        status: { type: 'options', options: status }
                     }"
                     :tableProps="{ id: 'dashboard-table' }"
                     route="/quotes"
@@ -98,10 +95,7 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Quotes' }]);
                         {{ format.date(value) }}
                     </template>
                     <template #actions="{ data, value, index }">
-                        <div
-                            v-if="!['REGISTRY', 'SUBMITTED'].includes(data.status)"
-                            class="d-flex justify-content-end"
-                        >
+                        <div v-if="!['REGISTRY', 'SUBMITTED'].includes(data.status)" class="d-flex justify-content-end">
                             <button
                                 :id="'datatable-btn-' + index + '-crete-order'"
                                 :hidden="!(tenant.configurations.orders_flow_is_active === '1')"

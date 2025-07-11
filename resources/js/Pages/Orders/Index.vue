@@ -42,7 +42,7 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Orders' }]);
                 <Datatable
                     :tableProps="{ id: 'dashboard-table' }"
                     :allow="{
-                        link: true,
+                        link: true
                     }"
                     :columns="[
                         { data: 'id', title: '#', style: 'width:5%' },
@@ -56,15 +56,15 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Orders' }]);
                         { data: 'items.data', title: 'Data', hide: true },
                         { data: 'items.name', title: 'Name', hide: true },
                         { data: 'address_data', title: 'Address', hide: true },
-                        { data: 'account.contacts.email', title: 'Email', hide: true },
+                        { data: 'account.contacts.email', title: 'Email', hide: true }
                     ]"
                     :filters="{
                         'user.name': { type: 'options', options: users.map((x) => x.name) },
                         'solution_type.name': {
                             type: 'options',
-                            options: solutions.map((x) => x.name),
+                            options: solutions.map((x) => x.name)
                         },
-                        status: { type: 'options', options: status },
+                        status: { type: 'options', options: status }
                     }"
                     route="/orders"
                 >

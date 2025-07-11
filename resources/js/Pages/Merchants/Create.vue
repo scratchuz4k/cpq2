@@ -11,19 +11,18 @@ const merchant = useForm({
 });
 
 const saveMerchant = () => {
-    router.post('/merchants', merchant,
-        {
-            onSuccess: (page) => {
-                notyf.success('Created with Success');
-            },
-            onError: (errors) => {
-                let string = '';
-                Object.keys(errors).forEach((key) => {
-                    string += errors[key] + '<br>';
-                });
-                notyf.error(string);
-            }
-        });
+    router.post('/merchants', merchant, {
+        onSuccess: (page) => {
+            notyf.success('Created with Success');
+        },
+        onError: (errors) => {
+            let string = '';
+            Object.keys(errors).forEach((key) => {
+                string += errors[key] + '<br>';
+            });
+            notyf.error(string);
+        }
+    });
 };
 const items = ref([
     { label: 'Home', url: '/' },
@@ -31,7 +30,6 @@ const items = ref([
     { label: 'Merchants', url: '/merchants' },
     { label: 'New Merchant' }
 ]);
-
 </script>
 <template>
     <Head title="new Merchant" />
@@ -47,9 +45,7 @@ const items = ref([
             </Header>
             <div class="row mb-3">
                 <div class="mb-3 d-flex flex-column">
-                    <label class="form-label" for="active-filter">
-                        Active:
-                    </label>
+                    <label class="form-label" for="active-filter"> Active: </label>
                     <ToggleSwitch id="active-filter" v-model="merchant.is_active">
                         <template #handle>
                             <font-awesome-icon
@@ -58,11 +54,10 @@ const items = ref([
                             />
                         </template>
                     </ToggleSwitch>
-
                 </div>
                 <div class="col-6">
                     <label for="merchant-name" class="form-label">Name:</label>
-                    <input id="merchant-name" class="form-control" v-model="merchant.name">
+                    <input id="merchant-name" class="form-control" v-model="merchant.name" />
                     <div class="text-danger" v-if="merchant.errors.name">{{ merchant.errors.name }}</div>
                 </div>
             </div>

@@ -53,12 +53,12 @@ const has_export_permission =
 const getData = async () => {
     let filters = !global.value
         ? [
-            {
-                column: 'parent_id',
-                operator: 'is_null',
-                value: 'null'
-            }
-        ]
+              {
+                  column: 'parent_id',
+                  operator: 'is_null',
+                  value: 'null'
+              }
+          ]
         : [];
 
     let string = queryString.stringify({
@@ -69,7 +69,8 @@ const getData = async () => {
 
     let res = await axios.get('/api' + props.route + '?' + string);
     data.value = res.data.data;
-    emptyData.value = !data.value.length;meta.total = res.data.meta?.total ?? res.data.total;
+    emptyData.value = !data.value.length;
+    meta.total = res.data.meta?.total ?? res.data.total;
     meta.first = (meta.page - 1) * meta.limit;
 };
 getData();
@@ -125,14 +126,14 @@ const getExportData = async () => {
 
 watch(
     () => [meta.order, meta.orderBy],
-    function() {
+    function () {
         emitter.emit('reset-items');
         getData();
     }
 );
 watch(
     () => [global.value],
-    _.debounce(function() {
+    _.debounce(function () {
         emitter.emit('reset-items');
         getData();
     }, 500)
@@ -156,68 +157,61 @@ watch(
                 <InputIcon>
                     <font-awesome-icon :icon="['fas', 'search']" />
                 </InputIcon>
-                <InputText
-                    id="treetable-search"
-                    v-model="global"
-
-                    placeholder="Keyword Search"
-               type="search" />
+                <InputText id="treetable-search" v-model="global" placeholder="Keyword Search" type="search" />
             </IconField>
         </div>
         <table :id="props.id" class="table w-100">
             <thead>
-            <tr>
-                <th style="width: 5%"></th>
-                <th v-for="(column, key) in columns" :key="key">
-                    <p
-                        @click="sortBy(column.data)"
-                        :style="{
-                cursor: 'pointer',
-                textDecoration: column.data == meta.orderBy ? 'underline' : 'none'
-              }"
-                    >
-                        {{ column.title }}
-                        <span class="text-center" style="width: 20px">
-                <template v-if="column.data == meta.orderBy">
-                  <font-awesome-icon
-                      v-if="meta.order == 'desc'"
-                      :icon="['fas', 'sort-down']"/>
+                <tr>
+                    <th style="width: 5%"></th>
+                    <th v-for="(column, key) in columns" :key="key">
+                        <p
+                            @click="sortBy(column.data)"
+                            :style="{
+                                cursor: 'pointer',
+                                textDecoration: column.data == meta.orderBy ? 'underline' : 'none'
+                            }"
+                        >
+                            {{ column.title }}
+                            <span class="text-center" style="width: 20px">
+                                <template v-if="column.data == meta.orderBy">
+                                    <font-awesome-icon v-if="meta.order == 'desc'" :icon="['fas', 'sort-down']" />
 
-                  <font-awesome-icon v-else :icon="['fas', 'sort-up']" />
-                </template>
-              </span>
-                    </p>
-                </th>
-                <th></th>
-            </tr>
+                                    <font-awesome-icon v-else :icon="['fas', 'sort-up']" />
+                                </template>
+                            </span>
+                        </p>
+                    </th>
+                    <th></th>
+                </tr>
             </thead>
             <tbody>
-            <TreeTableItem
-                v-for="(item, key) in data"
-                :key="item.id"
-                :item="item"
-                :index="key"
-                :route="route"
-                :allow="allow"
-                :columns="columns"
-                :usedSlots="usedSlots"
-                v-model="props.modelValue"
-            >
-                <template v-for="column in columns" #[column.data]="{ value }">
-                    <slot
-                        v-if="usedSlots.includes(column.data)"
-                        :name="column.data"
-                        :value="value"
-                        :data="item"
-                    ></slot>
-                    <template v-else>{{ value }}</template>
-                </template>
-            </TreeTableItem>
-            <tr v-if="!data.length">
-                <td :colspan="columns.length + 2">
-                    <div class="text-center my-1">No records found</div>
-                </td>
-            </tr>
+                <TreeTableItem
+                    v-for="(item, key) in data"
+                    :key="item.id"
+                    :item="item"
+                    :index="key"
+                    :route="route"
+                    :allow="allow"
+                    :columns="columns"
+                    :usedSlots="usedSlots"
+                    v-model="props.modelValue"
+                >
+                    <template v-for="column in columns" #[column.data]="{ value }">
+                        <slot
+                            v-if="usedSlots.includes(column.data)"
+                            :name="column.data"
+                            :value="value"
+                            :data="item"
+                        ></slot>
+                        <template v-else>{{ value }}</template>
+                    </template>
+                </TreeTableItem>
+                <tr v-if="!data.length">
+                    <td :colspan="columns.length + 2">
+                        <div class="text-center my-1">No records found</div>
+                    </td>
+                </tr>
             </tbody>
         </table>
         <Paginator
@@ -237,11 +231,7 @@ watch(
             position="top"
         >
             <template #header></template>
-            <slot
-                name="dialog_content"
-                :data="selectedItem"
-                :toggleModal="() => (showModal = !showModal)"
-            />
+            <slot name="dialog_content" :data="selectedItem" :toggleModal="() => (showModal = !showModal)" />
         </Dialog>
     </div>
 </template>

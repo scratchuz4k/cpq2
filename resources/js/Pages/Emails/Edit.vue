@@ -39,7 +39,7 @@ const copyToClipboard = async (msg) => {
 const items = ref([
     { label: 'Home', url: '/' },
     { label: 'My Account', url: '/myaccount' },
-    { label: 'Email\'s', url: '/email-templates' },
+    { label: "Email's", url: '/email-templates' },
     { label: 'Edit Email' }
 ]);
 </script>
@@ -56,9 +56,7 @@ const items = ref([
                 </template>
             </Header>
             <div class="mb-3 d-flex flex-column">
-                <label class="form-label" for="active-filter">
-                    Active:
-                </label>
+                <label class="form-label" for="active-filter"> Active: </label>
                 <ToggleSwitch id="active-filter" v-model="email.is_active">
                     <template #handle>
                         <font-awesome-icon
@@ -118,7 +116,9 @@ const items = ref([
 </template>
 <style scoped>
 .token-card:hover {
-    box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px, rgb(51, 51, 51) 0px 0px 0px 1px;
+    box-shadow:
+        rgba(0, 0, 0, 0.16) 0px 1px 4px,
+        rgb(51, 51, 51) 0px 0px 0px 1px;
     cursor: pointer;
 }
 </style>

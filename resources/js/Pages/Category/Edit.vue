@@ -70,9 +70,7 @@ const items = ref([
                 <tab :selected="true" title="General">
                     <div class="col-6">
                         <div class="mb-3 d-flex flex-column">
-                            <label class="form-label" for="active-filter">
-                                Active:
-                            </label>
+                            <label class="form-label" for="active-filter"> Active: </label>
                             <ToggleSwitch id="active-filter" v-model="category.is_active">
                                 <template #handle>
                                     <font-awesome-icon
@@ -81,7 +79,6 @@ const items = ref([
                                     />
                                 </template>
                             </ToggleSwitch>
-
                         </div>
                         <div class="mb-3">
                             <label class="form-label" for="product-code">Code:</label>
@@ -109,7 +106,8 @@ const items = ref([
                         </div>
                         <div class="d-flex align-items-end justify-content-end">
                             <Button id="button-add-product-to-category" class="btn btn-secondary" type="submit">
-                                <font-awesome-icon :icon="['fas', 'plus']"></font-awesome-icon> Add
+                                <font-awesome-icon :icon="['fas', 'plus']"></font-awesome-icon>
+                                Add
                             </Button>
                         </div>
                     </form>

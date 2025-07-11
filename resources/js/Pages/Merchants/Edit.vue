@@ -9,22 +9,19 @@ const props = defineProps({
     merchant: Object
 });
 
-
 const saveMerchant = () => {
-    router.put(`/merchants/${props.merchant.id}`, props.merchant,
-        {
-            onSuccess: (page) => {
-                notyf.success('Updated with Success');
-            },
-            onError: (errors) => {
-                let string = '';
-                Object.keys(errors).forEach((key) => {
-                    string += errors[key] + '<br>';
-                });
-                notyf.error(string);
-            }
+    router.put(`/merchants/${props.merchant.id}`, props.merchant, {
+        onSuccess: (page) => {
+            notyf.success('Updated with Success');
+        },
+        onError: (errors) => {
+            let string = '';
+            Object.keys(errors).forEach((key) => {
+                string += errors[key] + '<br>';
+            });
+            notyf.error(string);
         }
-    );
+    });
 };
 
 const items = ref([
@@ -33,10 +30,8 @@ const items = ref([
     { label: 'Merchants', url: '/merchants' },
     { label: 'Edit Merchant' }
 ]);
-
 </script>
 <template>
-
     <Head :title="'Edit Merchant #' + merchant.id" />
     <AuthenticatedLayout>
         <div class="panel">
@@ -50,9 +45,7 @@ const items = ref([
             </Header>
             <div class="row mb-3">
                 <div class="mb-3 d-flex flex-column">
-                    <label class="form-label" for="active-filter">
-                        Active:
-                    </label>
+                    <label class="form-label" for="active-filter"> Active: </label>
                     <ToggleSwitch id="active-filter" v-model="merchant.is_active">
                         <template #handle>
                             <font-awesome-icon
@@ -61,14 +54,12 @@ const items = ref([
                             />
                         </template>
                     </ToggleSwitch>
-
                 </div>
                 <div class="col-6">
                     <label for="merchant-name" class="form-label">Name:</label>
-                    <input id="merchant-name" class="form-control" v-model="merchant.name">
+                    <input id="merchant-name" class="form-control" v-model="merchant.name" />
                 </div>
             </div>
-
         </div>
     </AuthenticatedLayout>
 </template>

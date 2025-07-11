@@ -83,12 +83,7 @@ const items = ref([
                 </PrimaryButton>
             </template>
         </Header>
-        <SpaForm
-            v-model="spa"
-            :rules="rules"
-            :operations="props.operations"
-            :price_plans="props.price_plans"
-        ></SpaForm>
+        <SpaForm v-model="spa" :rules="rules" :operations="props.operations" :price_plans="props.price_plans"></SpaForm>
     </AuthenticatedLayout>
 </template>
 <style scoped>

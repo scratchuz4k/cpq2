@@ -10,7 +10,7 @@ import Dialog from 'primevue/dialog';
 import InputText from 'primevue/inputtext';
 import Button from 'primevue/button';
 import ToggleSwitch from 'primevue/toggleswitch';
-import Select from "primevue/select";
+import Select from 'primevue/select';
 
 const props = defineProps({
     price_plans: Object
@@ -100,7 +100,6 @@ const items = ref([
 ]);
 </script>
 <template>
-
     <Head title="New Product" />
     <AuthenticatedLayout>
         <div class="panel">
@@ -116,15 +115,13 @@ const items = ref([
                 <tab title="General" :selected="true">
                     <div class="my-3">
                         <p>
-                            This section provides an overview of the product, including general
-                            information, associated brands, and suppliers.
+                            This section provides an overview of the product, including general information, associated
+                            brands, and suppliers.
                         </p>
                     </div>
                     <div class="my-3 col-6">
                         <div class="mb-3 d-flex flex-column">
-                            <label class="form-label" for="active-filter">
-                                Active:
-                            </label>
+                            <label class="form-label" for="active-filter"> Active: </label>
                             <ToggleSwitch id="active-filter" v-model="product.is_active">
                                 <template #handle>
                                     <font-awesome-icon
@@ -144,26 +141,34 @@ const items = ref([
                         </div>
                         <div class="row mb-3">
                             <label for="product-description" class="form-label">Description:</label>
-                            <textarea id="product-description" class="form-control"
-                                v-model="product.description"></textarea>
+                            <textarea
+                                id="product-description"
+                                class="form-control"
+                                v-model="product.description"
+                            ></textarea>
                         </div>
                         <h4>Relations</h4>
                         <hr />
                         <div class="mb-3">
                             <label class="form-label">Price Plan</label>
-                            <Select v-model="product.price_plan_id"
-                                    :inputId="'price_plan'"
-                                    :options="props.price_plans"
-                                    class="w-100"
-                                    optionLabel="name"
-                                    optionValue="id"
-                                    placeholder="Select an Price Plan"
+                            <Select
+                                v-model="product.price_plan_id"
+                                :inputId="'price_plan'"
+                                :options="props.price_plans"
+                                class="w-100"
+                                optionLabel="name"
+                                optionValue="id"
+                                placeholder="Select an Price Plan"
                             />
                         </div>
                         <div class="mb-3">
                             <label for="supplier-name" class="form-label">Supplier:</label>
-                            <InputSelect id="product-supplier" url="/suppliers" :fields="['name']"
-                                v-model="product.supplier" placeholder="Select a Supplier"
+                            <InputSelect
+                                id="product-supplier"
+                                url="/suppliers"
+                                :fields="['name']"
+                                v-model="product.supplier"
+                                placeholder="Select a Supplier"
                                 :query="[{ column: 'is_active', operator: 'equals', value: 1 }]"
                             >
                             </InputSelect>
@@ -171,7 +176,11 @@ const items = ref([
 
                         <div class="mb-3">
                             <label for="brand-name" class="form-label">Brand:</label>
-                            <InputSelect id="product-brand" url="/brands" :fields="['name']" v-model="product.brand"
+                            <InputSelect
+                                id="product-brand"
+                                url="/brands"
+                                :fields="['name']"
+                                v-model="product.brand"
                                 placeholder="Select a Brand"
                                 :query="[{ column: 'is_active', operator: 'equals', value: 1 }]"
                             >
@@ -180,8 +189,12 @@ const items = ref([
 
                         <div class="mb-3">
                             <label for="product-categories" class="form-label">Category:</label>
-                            <InputSelect id="product-categories" url="/categories" :fields="['name']"
-                                v-model="categories" placeholder="Select a Category"
+                            <InputSelect
+                                id="product-categories"
+                                url="/categories"
+                                :fields="['name']"
+                                v-model="categories"
+                                placeholder="Select a Category"
                                 :query="[{ column: 'is_active', operator: 'equals', value: 1 }]"
                             >
                             </InputSelect>
@@ -191,24 +204,29 @@ const items = ref([
                 <tab title="Prices" v-if="hasRole('Super Admin') || can('viewAny price')">
                     <div class="my-3">
                         <p>
-                            Here are the available prices for this product, including details like tax
-                            and gross value.
+                            Here are the available prices for this product, including details like tax and gross value.
                         </p>
                     </div>
                     <div class="row my-4">
                         <div class="col-8">
                             <div class="mb-3">
-                                <DataTable v-model:editingRows="editingRows" :value="product.prices" editMode="row"
-                                    dataKey="id" @row-edit-save="onRowEditSave" :pt="{
+                                <DataTable
+                                    v-model:editingRows="editingRows"
+                                    :value="product.prices"
+                                    editMode="row"
+                                    dataKey="id"
+                                    @row-edit-save="onRowEditSave"
+                                    :pt="{
                                         table: { style: 'min-width: 50rem' },
                                         column: {
                                             bodycell: ({ state }) => ({
                                                 style:
                                                     state['d_editing'] &&
-                                                    'padding-top: 0.75rem; padding-bottom: 0.75rem',
-                                            }),
-                                        },
-                                    }">
+                                                    'padding-top: 0.75rem; padding-bottom: 0.75rem'
+                                            })
+                                        }
+                                    }"
+                                >
                                     <Column field="code" header="Code" style="width: 10%"></Column>
                                     <Column field="tax_rate" header="Tax Rate" style="width: 20%">
                                         <template #editor="{ data, field }">
@@ -225,30 +243,45 @@ const items = ref([
 
                                     <Column :rowEditor="true" v-if="hasRole('Super Admin') || can('update price')">
                                     </Column>
-                                    <Column bodyStyle="text-align:center"
-                                        v-if="hasRole('Super Admin') || can('delete price')">
+                                    <Column
+                                        bodyStyle="text-align:center"
+                                        v-if="hasRole('Super Admin') || can('delete price')"
+                                    >
                                         <template #body="{ data }">
-                                            <Button @click="deletePrice(data.id)"
+                                            <Button
+                                                @click="deletePrice(data.id)"
                                                 class="p-button p-component p-button-icon-only p-button-secondary p-button-rounded p-button-text p-datatable-row-editor-init"
-                                                label="Button">
+                                                label="Button"
+                                            >
                                                 <font-awesome-icon :icon="['far', 'trash-can']" />
                                             </Button>
                                         </template>
                                     </Column>
                                 </DataTable>
                             </div>
-                            <div class="mb-3 d-flex justify-content-end"
-                                v-if="hasRole('Super Admin') || can('create price')">
-                                <button class="btn btn-primary" @click="() => (showModal = !showModal)"
-                                    v-if="product.prices.length == 0">
+                            <div
+                                class="mb-3 d-flex justify-content-end"
+                                v-if="hasRole('Super Admin') || can('create price')"
+                            >
+                                <button
+                                    class="btn btn-primary"
+                                    @click="() => (showModal = !showModal)"
+                                    v-if="product.prices.length == 0"
+                                >
                                     Add Price
                                 </button>
                             </div>
-                            <Dialog v-model:visible="showModal" modal :style="{ width: '50rem', marginTop: '4rem' }"
+                            <Dialog
+                                v-model:visible="showModal"
+                                modal
+                                :style="{ width: '50rem', marginTop: '4rem' }"
                                 :breakpoints="{
                                     '1199px': '75vw',
-                                    '575px': '90vw',
-                                }" :draggable="false" position="top">
+                                    '575px': '90vw'
+                                }"
+                                :draggable="false"
+                                position="top"
+                            >
                                 <template #header>
                                     <h3>Add new Price</h3>
                                 </template>

@@ -85,11 +85,7 @@ const saveNewGroup = async () => {
     }
 };
 
-const items = ref([
-    { label: 'Home', url: '/' },
-    { label: 'My Account', url: '/myaccount' },
-    { label: 'Users' }
-]);
+const items = ref([{ label: 'Home', url: '/' }, { label: 'My Account', url: '/myaccount' }, { label: 'Users' }]);
 </script>
 <template>
     <Head title="Users" />
@@ -105,19 +101,13 @@ const items = ref([
                             class="btn btn-secondary me-2"
                             @click="showModal = true"
                             :disabled="!(selectedItems.length > 0)"
-                        >Add Commission
-                        </Button
-                        >
+                            >Add Commission
+                        </Button>
                         <div class="btn btn-secondary me-2" @click.prevent="showForm = !showForm">
                             <font-awesome-icon :icon="['fas', 'file']"></font-awesome-icon>
-                            Import from
-                            CSV
+                            Import from CSV
                         </div>
-                        <Link
-                            id="link-to-create-user"
-                            :href="route('users.create')"
-                            class="btn btn-primary me-2"
-                        >
+                        <Link id="link-to-create-user" :href="route('users.create')" class="btn btn-primary me-2">
                             <font-awesome-icon :icon="['fas', 'plus']"></font-awesome-icon>
                             New User
                         </Link>
@@ -135,8 +125,8 @@ const items = ref([
                             <form @submit.prevent="submitFileForm" enctype="multipart/form-data">
                                 <h4>Import Users from CSV</h4>
                                 <p>
-                                    Your CSV must contain the following columns: name*, email*, password,
-                                    sso, managername. * must not be blank
+                                    Your CSV must contain the following columns: name*, email*, password, sso,
+                                    managername. * must not be blank
                                 </p>
                                 <input type="file" accept=".csv" required @input="onFileChange" />
                                 <button type="submit" class="btn btn-primary ms-2" :disabled="isLoading">
@@ -170,7 +160,7 @@ const items = ref([
                                 { data: 'email', title: 'Email' },
                                 { data: 'commission_rate', title: 'Commission' },
                                 { data: 'roles.name', title: 'Role' },
-                                { data: 'group.name', title: 'Group' },
+                                { data: 'group.name', title: 'Group' }
                             ]"
                             route="/users"
                             v-model="selectedItems"
@@ -178,9 +168,7 @@ const items = ref([
                             <template #dialog_content="{ data, toggleModal }">
                                 <div class="panel">
                                     <div class="row">
-                                        <label for="user-commission-rate" class="form-label"
-                                        >Commission Rate:</label
-                                        >
+                                        <label for="user-commission-rate" class="form-label">Commission Rate:</label>
                                         <div class="input-group">
                                             <input
                                                 id="user-commission-rate"
@@ -191,9 +179,7 @@ const items = ref([
                                             <span class="input-group-text">%</span>
                                         </div>
                                         <div class="d-flex justify-content-end mt-3">
-                                            <div class="btn btn-secondary me-2" @click="toggleModal()">
-                                                Cancel
-                                            </div>
+                                            <div class="btn btn-secondary me-2" @click="toggleModal()">Cancel</div>
                                             <Button
                                                 class="btn btn-primary"
                                                 @click="saveCommissionBulk([data], toggleModal)"
@@ -219,8 +205,12 @@ const items = ref([
                                 />
                             </template>
                             <template #is_active="{ data, value }">
-                                <ToggleActive :data="data" :value="value" route="users"
-                                    :eventName="'treetable-refresh'" />
+                                <ToggleActive
+                                    :data="data"
+                                    :value="value"
+                                    route="users"
+                                    :eventName="'treetable-refresh'"
+                                />
                             </template>
                             <template #group.name="{ value }">
                                 <span class="badge text-bg-secondary">{{ value }}</span>
@@ -238,9 +228,7 @@ const items = ref([
                     >
                         <div class="panel">
                             <div class="row">
-                                <label for="user-bulk-commission-rate" class="form-label"
-                                >Commission Rate:</label
-                                >
+                                <label for="user-bulk-commission-rate" class="form-label">Commission Rate:</label>
                                 <div class="input-group">
                                     <input
                                         id="user-bulk-commission-rate"
@@ -251,9 +239,7 @@ const items = ref([
                                     <span class="input-group-text">%</span>
                                 </div>
                                 <div class="d-flex justify-content-end mt-3">
-                                    <div class="btn btn-secondary me-2" @click="showModal = false">
-                                        Cancel
-                                    </div>
+                                    <div class="btn btn-secondary me-2" @click="showModal = false">Cancel</div>
                                     <Button
                                         class="btn btn-primary"
                                         @click="saveCommissionBulk(selectedItems)"
@@ -279,16 +265,16 @@ const items = ref([
                     </div>
                     <Datatable
                         :allow="{
-              update: true,
-              delete: true,
-              link: false,
-            }"
+                            update: true,
+                            delete: true,
+                            link: false
+                        }"
                         :columns="[
-              { data: 'id', title: '#', style: 'width:5%' },
-              { data: 'name', title: 'Name', style: 'width:55%' },
-              { data: 'created_at', title: 'Created At', style: 'width:15%' },
-              { data: 'updated_at', title: 'Updated At', style: 'width:15%' },
-            ]"
+                            { data: 'id', title: '#', style: 'width:5%' },
+                            { data: 'name', title: 'Name', style: 'width:55%' },
+                            { data: 'created_at', title: 'Created At', style: 'width:15%' },
+                            { data: 'updated_at', title: 'Updated At', style: 'width:15%' }
+                        ]"
                         route="/groups"
                     >
                         <template #updated_at="{ value }">
@@ -312,17 +298,10 @@ const items = ref([
                             <form class="row" @submit.prevent="saveNewGroup()">
                                 <div class="col">
                                     <label for="group-create-name" class="form-label">Name:</label>
-                                    <InputText
-                                        id="group-create-name"
-                                        type="text"
-                                        class="w-100"
-                                        v-model="newGroup"
-                                    />
+                                    <InputText id="group-create-name" type="text" class="w-100" v-model="newGroup" />
                                 </div>
                                 <div class="d-flex justify-content-end mt-3">
-                                    <div class="btn btn-secondary me-2" @click="showGroupModel = false">
-                                        Cancel
-                                    </div>
+                                    <div class="btn btn-secondary me-2" @click="showGroupModel = false">Cancel</div>
                                     <Button id="group-create-submit" class="btn btn-primary" type="submit">
                                         Save
                                     </Button>

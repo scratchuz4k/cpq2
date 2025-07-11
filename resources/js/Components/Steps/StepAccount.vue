@@ -24,8 +24,8 @@ const proxyValue = computed({
                     <div class="col-12">
                         <h5 class="font-bold mb-3">Select an account to start a quote</h5>
                         <div class="mb-3">
-                            <label for="account_id" class="form-label"
-                            >Account <span class="text-primary fw-bold">*</span></label
+                            <label for="account_id" class="form-label">
+                                Account <span class="text-primary fw-bold">*</span></label
                             >
                             <InputSelect
                                 id="account_id"

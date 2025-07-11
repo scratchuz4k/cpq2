@@ -9,22 +9,19 @@ const props = defineProps({
     supplier: Object
 });
 
-
 const saveSupplier = () => {
-    router.put(`/suppliers/${props.supplier.id}`, props.supplier,
-        {
-            onSuccess: (page) => {
-                notyf.success('Updated with Success');
-            },
-            onError: (errors) => {
-                let string = '';
-                Object.keys(errors).forEach((key) => {
-                    string += errors[key] + '<br>';
-                });
-                notyf.error(string);
-            }
+    router.put(`/suppliers/${props.supplier.id}`, props.supplier, {
+        onSuccess: (page) => {
+            notyf.success('Updated with Success');
+        },
+        onError: (errors) => {
+            let string = '';
+            Object.keys(errors).forEach((key) => {
+                string += errors[key] + '<br>';
+            });
+            notyf.error(string);
         }
-    );
+    });
 };
 
 const items = ref([
@@ -33,10 +30,8 @@ const items = ref([
     { label: 'Suppliers', url: '/suppliers' },
     { label: 'Edit Supplier' }
 ]);
-
 </script>
 <template>
-
     <Head :title="'Edit Supplier #' + supplier.id" />
     <AuthenticatedLayout>
         <div class="panel">
@@ -49,9 +44,7 @@ const items = ref([
                 </template>
             </Header>
             <div class="mb-3 d-flex flex-column">
-                <label class="form-label" for="active-filter">
-                    Active:
-                </label>
+                <label class="form-label" for="active-filter"> Active: </label>
                 <ToggleSwitch id="active-filter" v-model="supplier.is_active">
                     <template #handle>
                         <font-awesome-icon
@@ -64,16 +57,15 @@ const items = ref([
             <div class="row mb-3">
                 <div class="col">
                     <label for="supplier-name" class="form-label">Name:</label>
-                    <input id="supplier-name" class="form-control" v-model="supplier.name">
+                    <input id="supplier-name" class="form-control" v-model="supplier.name" />
                 </div>
             </div>
             <div class="row mb-3">
                 <div class="col">
                     <label for="supplier-reference" class="form-label">Reference:</label>
-                    <input id="supplier-reference" class="form-control" v-model="supplier.reference">
+                    <input id="supplier-reference" class="form-control" v-model="supplier.reference" />
                 </div>
             </div>
-
         </div>
     </AuthenticatedLayout>
 </template>

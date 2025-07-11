@@ -118,7 +118,8 @@ const getData = async () => {
     meta.first = (meta.page - 1) * meta.limit;
 };
 
-const getFilters = () => {let temp = [];
+const getFilters = () => {
+    let temp = [];
     if (!showGlobal.value) {
         let keys = Object.keys(fields).filter((x) => fields[x] != null);
         selectedRules.value.forEach((x, ruleIndex) => {
@@ -179,7 +180,6 @@ const deleteRecord = async (id) => {
             let res = await axios.delete('/api/spas/' + id);
             getData();
             notyf.success('Removed with success');
-            return;
         } catch (err) {
             notyf.error(err?.response?.data?.message ?? 'Something went wrong');
         }
@@ -245,11 +245,8 @@ const getExportData = async () => {
     setTimeout(() => {
         exportDisabled.value = false;
     }, 5000);
-};const items = ref([
-    { label: 'Home', url: '/' },
-    { label: 'My Account', url: '/myaccount' },
-    { label: 'SPAs' }
-]);
+};
+const items = ref([{ label: 'Home', url: '/' }, { label: 'My Account', url: '/myaccount' }, { label: 'SPAs' }]);
 
 const columns = [
     { name: '#', data: 'id' },
@@ -288,17 +285,18 @@ getData();
                         @click="visible = !visible"
                         class="p-button p-component me-2"
                     >
-                        <font-awesome-icon :icon="['fas', 'filter']"
-                        />
+                        <font-awesome-icon :icon="['fas', 'filter']" />
                     </Button>
 
                     <Button
                         v-if="visible"
-                        type="button"class="me-2"
+                        type="button"
+                        class="me-2"
                         :severity="form.rule ? 'primary' : 'secondary'"
                         @click="clearFilters()"
                     >
-                        <font-awesome-icon :icon="['fas', 'eraser']" /></Button>
+                        <font-awesome-icon :icon="['fas', 'eraser']" />
+                    </Button>
                     <Button
                         v-if="has_export_permission"
                         type="button"
@@ -379,11 +377,11 @@ getData();
                                 <p>
                                     <b class="me-2">Selected Rules:</b>
                                     <template v-for="(rule, index) in selectedRules">
-                    <span
-                        class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm"
-                    >
-                      {{ rule.name }}
-                    </span>
+                                        <span
+                                            class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm"
+                                        >
+                                            {{ rule.name }}
+                                        </span>
                                     </template>
                                 </p>
                             </div>
@@ -393,77 +391,81 @@ getData();
                 <div>
                     <table class="table">
                         <thead>
-                        <tr>
-                            <th v-for="column in columns">
-                  <span
-                      class="column-title sortable d-inline-flex align-items-center"
-                      @click="sortBy(column.data)"
-                      :style="{
-                      textDecoration: column.data == meta.orderBy ? 'underline' : 'none'
-                    }"
-                  >
-                    {{ column.name }}
-                    <span class="text-center" style="width: 20px">
-                      <template v-if="column.data == meta.orderBy">
-                        <font-awesome-icon
-                            v-if="meta.order == 'desc'"
-                            :icon="['fas', 'sort-down']"
-                        />
-                        <font-awesome-icon v-else :icon="['fas', 'sort-up']" />
-                      </template>
-                    </span>
-                  </span>
-                            </th>
-                            <th></th>
-                        </tr>
+                            <tr>
+                                <th v-for="column in columns">
+                                    <span
+                                        class="column-title sortable d-inline-flex align-items-center"
+                                        @click="sortBy(column.data)"
+                                        :style="{
+                                            textDecoration: column.data == meta.orderBy ? 'underline' : 'none'
+                                        }"
+                                    >
+                                        {{ column.name }}
+                                        <span class="text-center" style="width: 20px">
+                                            <template v-if="column.data == meta.orderBy">
+                                                <font-awesome-icon
+                                                    v-if="meta.order == 'desc'"
+                                                    :icon="['fas', 'sort-down']"
+                                                />
+                                                <font-awesome-icon v-else :icon="['fas', 'sort-up']" />
+                                            </template>
+                                        </span>
+                                    </span>
+                                </th>
+                                <th></th>
+                            </tr>
                         </thead>
                         <tbody>
-                        <tr v-for="(item, index) in data">
-                            <td>{{ item.id }}</td>
-                            <td>
-                                <ToggleActive :data="{
-                                    ...item,
-                                    field_1: item.field_1?.id,
-                                    field_2: item.field_2?.id,
-                                }" :value="item.is_active" route="spas" />
-                            </td>
-                            <td>{{ item.rule.name }}</td>
-                            <td>{{ item.field_1?.name }}</td>
-                            <td>{{ item.field_2?.name }}</td>
-                            <td>{{ item.price_plan?.name }}</td>
-                            <td>{{ item.operation.code }}</td>
-                            <td>{{ item.value }}</td>
-                            <td>{{ item.percentage }}</td>
-                            <td>
-                                <div class="d-flex justify-content-center">
-                                    <button
-                                        :id="'datatable-btn-' + index + '-clone'"
-                                        class="btn p-2 py-0 mx-1 border-0"
-                                        @click="cloneSpa(item)"
-                                    >
-                                        <font-awesome-icon :icon="['fas', 'copy']" />
-                                    </button>
-                                    <Link
-                                        :id="'datatable-btn-' + index + '-edit'"
-                                        :href="'/spas/' + item.id + '/edit'"
-                                        class="btn p-2 py-0 mx-1 border-0"
-                                    >
-                                        <font-awesome-icon :icon="['fas', 'edit']" />
-                                    </Link>
+                            <tr v-for="(item, index) in data">
+                                <td>{{ item.id }}</td>
+                                <td>
+                                    <ToggleActive
+                                        :data="{
+                                            ...item,
+                                            field_1: item.field_1?.id,
+                                            field_2: item.field_2?.id
+                                        }"
+                                        :value="item.is_active"
+                                        route="spas"
+                                    />
+                                </td>
+                                <td>{{ item.rule.name }}</td>
+                                <td>{{ item.field_1?.name }}</td>
+                                <td>{{ item.field_2?.name }}</td>
+                                <td>{{ item.price_plan?.name }}</td>
+                                <td>{{ item.operation.code }}</td>
+                                <td>{{ item.value }}</td>
+                                <td>{{ item.percentage }}</td>
+                                <td>
+                                    <div class="d-flex justify-content-center">
+                                        <button
+                                            :id="'datatable-btn-' + index + '-clone'"
+                                            class="btn p-2 py-0 mx-1 border-0"
+                                            @click="cloneSpa(item)"
+                                        >
+                                            <font-awesome-icon :icon="['fas', 'copy']" />
+                                        </button>
+                                        <Link
+                                            :id="'datatable-btn-' + index + '-edit'"
+                                            :href="'/spas/' + item.id + '/edit'"
+                                            class="btn p-2 py-0 mx-1 border-0"
+                                        >
+                                            <font-awesome-icon :icon="['fas', 'edit']" />
+                                        </Link>
 
-                                    <button
-                                        :id="'datatable-btn-' + index + '-delete'"
-                                        class="btn p-2 py-0 mx-1 border-0"
-                                        @click="deleteRecord(item.id)"
-                                    >
-                                        <font-awesome-icon icon="fas fa-trash-alt" />
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr v-if="!data.length" class="text-center">
-                            <td colspan="9">No Results Found</td>
-                        </tr>
+                                        <button
+                                            :id="'datatable-btn-' + index + '-delete'"
+                                            class="btn p-2 py-0 mx-1 border-0"
+                                            @click="deleteRecord(item.id)"
+                                        >
+                                            <font-awesome-icon icon="fas fa-trash-alt" />
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr v-if="!data.length" class="text-center">
+                                <td colspan="9">No Results Found</td>
+                            </tr>
                         </tbody>
                     </table>
                     <Paginator

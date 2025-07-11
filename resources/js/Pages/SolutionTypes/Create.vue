@@ -46,7 +46,6 @@ const saveSolution = () => {
     });
 };
 
-
 const addCategory = () => {
     solution.categories.push({ name: null, id: null });
 };
@@ -83,17 +82,14 @@ const checkCategories = (index) => {
     }
 };
 
-
 const items = ref([
     { label: 'Home', url: '/' },
     { label: 'My Account', url: '/myaccount' },
     { label: 'Solution Types', url: '/solution-types' },
     { label: 'New Solution Type' }
 ]);
-
 </script>
 <template>
-
     <Head title="Solution Type" />
     <AuthenticatedLayout>
         <div class="panel">
@@ -110,13 +106,13 @@ const items = ref([
                     <tab title="General" id="tab-general" :selected="true">
                         <div class="mt-3">
                             <div class="mb-3 d-flex flex-column">
-                                <label class="form-label" for="active-filter">
-                                    Active:
-                                </label>
+                                <label class="form-label" for="active-filter"> Active: </label>
                                 <ToggleSwitch id="active-filter" v-model="solution.is_active">
                                     <template #handle>
                                         <font-awesome-icon
-                                            :icon="solution.is_active ? ['fas', 'circle-check'] : ['far', 'circle-xmark']"
+                                            :icon="
+                                                solution.is_active ? ['fas', 'circle-check'] : ['far', 'circle-xmark']
+                                            "
                                             class="text-primary"
                                         />
                                     </template>
@@ -124,9 +120,16 @@ const items = ref([
                             </div>
                             <div class="mb-5">
                                 <label for="solution_type-name" class="form-label">Name:</label>
-                                <Select required inputId="solution_type" v-model="solution.solution_type_id"
-                                    :options="solutions" optionLabel="name" optionValue="id"
-                                    placeholder="Select Solution type" class="w-100" />
+                                <Select
+                                    required
+                                    inputId="solution_type"
+                                    v-model="solution.solution_type_id"
+                                    :options="solutions"
+                                    optionLabel="name"
+                                    optionValue="id"
+                                    placeholder="Select Solution type"
+                                    class="w-100"
+                                />
                             </div>
                         </div>
                     </tab>
@@ -136,38 +139,51 @@ const items = ref([
                                 <label class="form-label">Choose Categories:</label>
                                 <table class="table">
                                     <thead>
-                                    <tr>
-                                        <th style="width: 5%;"></th>
-                                        <th style="text-align: left;">Category</th>
-                                        <th style="text-align: right;width: 5%;">
-                                            <button id="solution-type-categories-remove-columns"
-                                                class="btn p-2 mx-1 border-0" @click="clearAllCategories()">
-                                                <font-awesome-icon :icon="['fas', 'trash-alt']"></font-awesome-icon>
-                                            </button>
-                                        </th>
-                                    </tr>
+                                        <tr>
+                                            <th style="width: 5%"></th>
+                                            <th style="text-align: left">Category</th>
+                                            <th style="text-align: right; width: 5%">
+                                                <button
+                                                    id="solution-type-categories-remove-columns"
+                                                    class="btn p-2 mx-1 border-0"
+                                                    @click="clearAllCategories()"
+                                                >
+                                                    <font-awesome-icon :icon="['fas', 'trash-alt']"></font-awesome-icon>
+                                                </button>
+                                            </th>
+                                        </tr>
                                     </thead>
-                                    <draggable v-model="solution.categories" item-key="id" tag="tbody"
-                                        v-bind="dragOptions" handle=".handle">
+                                    <draggable
+                                        v-model="solution.categories"
+                                        item-key="id"
+                                        tag="tbody"
+                                        v-bind="dragOptions"
+                                        handle=".handle"
+                                    >
                                         <template #item="{ element, index }">
                                             <tr>
-                                                <td style="width: 5%;">
+                                                <td style="width: 5%">
                                                     <button class="btn p-1 border-0 handle">
                                                         <font-awesome-icon icon="fas fa-bars" />
                                                     </button>
                                                 </td>
-                                                <td style="text-align: left;">
-                                                    <InputSelect v-model="solution.categories[index]" url="/categories"
+                                                <td style="text-align: left">
+                                                    <InputSelect
+                                                        v-model="solution.categories[index]"
+                                                        url="/categories"
                                                         :id="`solution-type-categories-` + index + `-value`"
-                                                        :fields="['name']" placeholder="Select a Category"
+                                                        :fields="['name']"
+                                                        placeholder="Select a Category"
                                                         @change="checkCategories(index)"
                                                         :query="[{ column: 'is_active', operator: 'equals', value: 1 }]"
                                                     >
                                                     </InputSelect>
                                                 </td>
-                                                <td style="text-align: right; width: 5%;">
-                                                    <button class="btn p-2 mx-1 border-0"
-                                                        @click="deleteCategory(element)">
+                                                <td style="text-align: right; width: 5%">
+                                                    <button
+                                                        class="btn p-2 mx-1 border-0"
+                                                        @click="deleteCategory(element)"
+                                                    >
                                                         <font-awesome-icon icon="fas fa-trash-alt" />
                                                     </button>
                                                 </td>
@@ -175,16 +191,19 @@ const items = ref([
                                         </template>
                                     </draggable>
                                     <tfoot>
-                                    <tr>
-                                        <th colspan="4">
-                                            <div class="d-flex justify-content-end">
-                                                <button id="solution-type-table-add-category" class="btn btn-sm"
-                                                    @click="addCategory()">
-                                                    <font-awesome-icon :icon="['fas', 'plus']"></font-awesome-icon>
-                                                </button>
-                                            </div>
-                                        </th>
-                                    </tr>
+                                        <tr>
+                                            <th colspan="4">
+                                                <div class="d-flex justify-content-end">
+                                                    <button
+                                                        id="solution-type-table-add-category"
+                                                        class="btn btn-sm"
+                                                        @click="addCategory()"
+                                                    >
+                                                        <font-awesome-icon :icon="['fas', 'plus']"></font-awesome-icon>
+                                                    </button>
+                                                </div>
+                                            </th>
+                                        </tr>
                                     </tfoot>
                                 </table>
                             </div>
@@ -192,14 +211,19 @@ const items = ref([
                     </tab>
                     <tab title="Quote" id="tab-quotes">
                         <p class="my-3">
-                            This section contains all the customizations for the appearance of the
-                            solution type to match specific preferences within the quote.
+                            This section contains all the customizations for the appearance of the solution type to
+                            match specific preferences within the quote.
                         </p>
                         <div class="my-3">
                             <p for="solution_type-component" class="form-label">Choose the view:</p>
-                            <Select required inputId="solution_type-component"
-                                v-model="solution.configurations.component" :options="available_tables"
-                                placeholder="Select a View" class="w-100" />
+                            <Select
+                                required
+                                inputId="solution_type-component"
+                                v-model="solution.configurations.component"
+                                :options="available_tables"
+                                placeholder="Select a View"
+                                class="w-100"
+                            />
                         </div>
                     </tab>
                 </tabs>

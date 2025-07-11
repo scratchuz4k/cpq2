@@ -9,22 +9,19 @@ const props = defineProps({
     brand: Object
 });
 
-
 const saveBrand = () => {
-    router.put(`/brands/${props.brand.id}`, props.brand,
-        {
-            onSuccess: (page) => {
-                notyf.success('Updated with Success');
-            },
-            onError: (errors) => {
-                let string = '';
-                Object.keys(errors).forEach((key) => {
-                    string += errors[key] + '<br>';
-                });
-                notyf.error(string);
-            }
+    router.put(`/brands/${props.brand.id}`, props.brand, {
+        onSuccess: (page) => {
+            notyf.success('Updated with Success');
+        },
+        onError: (errors) => {
+            let string = '';
+            Object.keys(errors).forEach((key) => {
+                string += errors[key] + '<br>';
+            });
+            notyf.error(string);
         }
-    );
+    });
 };
 
 const items = ref([
@@ -33,10 +30,8 @@ const items = ref([
     { label: 'Brands', url: '/brands' },
     { label: 'Edit Brand' }
 ]);
-
 </script>
 <template>
-
     <Head :title="'Edit Brand #' + brand.id" />
     <AuthenticatedLayout>
         <div class="panel">
@@ -50,9 +45,7 @@ const items = ref([
             </Header>
             <div class="row mb-3">
                 <div class="mb-3 d-flex flex-column">
-                    <label class="form-label" for="active-filter">
-                        Active:
-                    </label>
+                    <label class="form-label" for="active-filter"> Active: </label>
                     <ToggleSwitch id="active-filter" v-model="brand.is_active">
                         <template #handle>
                             <font-awesome-icon
@@ -64,10 +57,9 @@ const items = ref([
                 </div>
                 <div class="col-6">
                     <label for="brand-name" class="form-label">Name:</label>
-                    <input id="brand-name" class="form-control" v-model="brand.name">
+                    <input id="brand-name" class="form-control" v-model="brand.name" />
                 </div>
             </div>
-
         </div>
     </AuthenticatedLayout>
 </template>

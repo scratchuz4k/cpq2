@@ -75,7 +75,6 @@ const items = ref([
 ]);
 </script>
 <template>
-
     <Head title="New SPA" />
     <AuthenticatedLayout>
         <Header title="Edit SPA" :breadcrumbs="items">

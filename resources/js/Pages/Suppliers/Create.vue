@@ -12,19 +12,18 @@ const supplier = useForm({
 });
 
 const saveSupplier = () => {
-    router.post('/suppliers', supplier,
-        {
-            onSuccess: (page) => {
-                notyf.success('Created with Success');
-            },
-            onError: (errors) => {
-                let string = '';
-                Object.keys(errors).forEach((key) => {
-                    string += errors[key] + '<br>';
-                });
-                notyf.error(string);
-            }
-        });
+    router.post('/suppliers', supplier, {
+        onSuccess: (page) => {
+            notyf.success('Created with Success');
+        },
+        onError: (errors) => {
+            let string = '';
+            Object.keys(errors).forEach((key) => {
+                string += errors[key] + '<br>';
+            });
+            notyf.error(string);
+        }
+    });
 };
 const items = ref([
     { label: 'Home', url: '/' },
@@ -32,10 +31,8 @@ const items = ref([
     { label: 'Suppliers', url: '/suppliers' },
     { label: 'New Supplier' }
 ]);
-
 </script>
 <template>
-
     <Head title="New Supplier" />
     <AuthenticatedLayout>
         <div class="panel">
@@ -48,9 +45,7 @@ const items = ref([
                 </template>
             </Header>
             <div class="mb-3 d-flex flex-column">
-                <label class="form-label" for="active-filter">
-                    Active:
-                </label>
+                <label class="form-label" for="active-filter"> Active: </label>
                 <ToggleSwitch id="active-filter" v-model="supplier.is_active">
                     <template #handle>
                         <font-awesome-icon
@@ -63,14 +58,14 @@ const items = ref([
             <div class="row mb-3">
                 <div class="col-6">
                     <label for="supplier-name" class="form-label">Name:</label>
-                    <input id="supplier-name" class="form-control" v-model="supplier.name" required>
+                    <input id="supplier-name" class="form-control" v-model="supplier.name" required />
                     <div class="text-danger" v-if="supplier.errors.name">{{ supplier.errors.name }}</div>
                 </div>
             </div>
             <div class="row mb-3">
                 <div class="col-6">
                     <label for="supplier-reference" class="form-label">Reference:</label>
-                    <input id="supplier-reference" class="form-control" v-model="supplier.reference">
+                    <input id="supplier-reference" class="form-control" v-model="supplier.reference" />
                     <div class="text-danger" v-if="supplier.errors.reference">{{ supplier.errors.reference }}</div>
                 </div>
             </div>

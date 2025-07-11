@@ -4,6 +4,7 @@ import { Button, InputText, DataTable, Column, Panel } from 'primevue';
 import { reactive, ref } from 'vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, router } from '@inertiajs/vue3';
+
 const props = defineProps({
     group: Object
 });
@@ -94,22 +95,14 @@ const items = ref([
                     <div class="row mt-3">
                         <div class="col">
                             <label for="user-group-name" class="form-label">Name:</label>
-                            <InputText
-                                id="user-group-name"
-                                type="text"
-                                class="w-100"
-                                v-model="group.name"
-                            />
+                            <InputText id="user-group-name" type="text" class="w-100" v-model="group.name" />
                         </div>
                     </div>
 
                     <div class="row mt-3">
                         <div class="col d-flex justify-content-end">
                             <Button class="btn btn-primary" @click="saveGroup()">
-                                <font-awesome-icon
-                                    class="me-2"
-                                    :icon="['fas', 'save']"
-                                ></font-awesome-icon>
+                                <font-awesome-icon class="me-2" :icon="['fas', 'save']"></font-awesome-icon>
                                 Save
                             </Button>
                         </div>
@@ -133,12 +126,9 @@ const items = ref([
                             </InputSelect>
                         </div>
                         <div class="d-flex align-items-end justify-content-end">
-                            <Button
-                                id="button-add-user-to-group"
-                                type="submit"
-                                class="btn btn-secondary"
-                            >
-                                <font-awesome-icon :icon="['fas', 'plus']"></font-awesome-icon>Add
+                            <Button id="button-add-user-to-group" type="submit" class="btn btn-secondary">
+                                <font-awesome-icon :icon="['fas', 'plus']"></font-awesome-icon>
+                                Add
                             </Button>
                         </div>
                     </form>
@@ -149,12 +139,12 @@ const items = ref([
                                 id="group-users"
                                 :query="[{ column: 'group_id', operator: 'equals', value: group.id }]"
                                 :columns="[
-                  { data: 'id', title: '#', style: 'width:5%' },
-                  { data: 'name', title: 'Name', style: 'width:50%' },
-                  { data: 'created_at', title: 'Created At', style: 'width:15%' },
-                  { data: 'updated_at', title: 'Updated At', style: 'width:15%' },
-                  { data: 'actions', title: ' At', style: 'width:5%' }
-                ]"
+                                    { data: 'id', title: '#', style: 'width:5%' },
+                                    { data: 'name', title: 'Name', style: 'width:50%' },
+                                    { data: 'created_at', title: 'Created At', style: 'width:15%' },
+                                    { data: 'updated_at', title: 'Updated At', style: 'width:15%' },
+                                    { data: 'actions', title: ' At', style: 'width:5%' }
+                                ]"
                                 route="/users"
                             >
                                 <template #updated_at="{ value }">
@@ -164,10 +154,7 @@ const items = ref([
                                     {{ format.date(value) }}
                                 </template>
                                 <template #actions="{ data, value, index }">
-                                    <button
-                                        class="btn px-2 py-0 mx-1 border-0"
-                                        @click="setUserGroup(data.id, null)"
-                                    >
+                                    <button class="btn px-2 py-0 mx-1 border-0" @click="setUserGroup(data.id, null)">
                                         <font-awesome-icon :icon="['fas', 'trash-alt']"></font-awesome-icon>
                                     </button>
                                 </template>
@@ -193,12 +180,9 @@ const items = ref([
                             </InputSelect>
                         </div>
                         <div class="d-flex align-items-end justify-content-end">
-                            <Button
-                                id="button-add-account-to-group"
-                                type="submit"
-                                class="btn btn-secondary"
-                            >
-                                <font-awesome-icon :icon="['fas', 'plus']"></font-awesome-icon>Add
+                            <Button id="button-add-account-to-group" type="submit" class="btn btn-secondary">
+                                <font-awesome-icon :icon="['fas', 'plus']"></font-awesome-icon>
+                                Add
                             </Button>
                         </div>
                     </form>
@@ -208,17 +192,17 @@ const items = ref([
                             <Datatable
                                 id="group-accounts"
                                 :allow="{
-                  update: false,
-                  delete: true,
-                  link: false
-                }"
+                                    update: false,
+                                    delete: true,
+                                    link: false
+                                }"
                                 :query="[{ column: 'group_id', operator: 'equals', value: group.id }]"
                                 :columns="[
-                  { data: 'id', title: '#', style: 'width:5%' },
-                  { data: 'account.name', title: 'Name', style: 'width:55%' },
-                  { data: 'created_at', title: 'Created At', style: 'width:15%' },
-                  { data: 'updated_at', title: 'Updated At', style: 'width:15%' }
-                ]"
+                                    { data: 'id', title: '#', style: 'width:5%' },
+                                    { data: 'account.name', title: 'Name', style: 'width:55%' },
+                                    { data: 'created_at', title: 'Created At', style: 'width:15%' },
+                                    { data: 'updated_at', title: 'Updated At', style: 'width:15%' }
+                                ]"
                                 route="/group-accounts"
                             >
                                 <template #updated_at="{ value }">
