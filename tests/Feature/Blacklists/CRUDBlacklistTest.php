@@ -33,7 +33,8 @@ it('Blacklists CRUD', function () {
             'value' => null,
             'unit' => null
         ],
-        'contractTermMonths' => null
+        'contractTermMonths' => null,
+        'is_active' => true,
     ];
 
     $response = $this->post('blacklists', $data);

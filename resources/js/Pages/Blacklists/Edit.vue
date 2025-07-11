@@ -10,6 +10,7 @@ import Dialog from 'primevue/dialog';
 import InputText from 'primevue/inputtext';
 import Button from 'primevue/button';
 import Select from 'primevue/select';
+import ToggleSwitch from 'primevue/toggleswitch';
 
 const props = defineProps({
     blacklisted_item: Object,
@@ -67,6 +68,19 @@ const items = ref([
             </Header>
             <div class="row">
                 <div class="col-6">
+                    <div class="mb-3 d-flex flex-column">
+                        <label class="form-label" for="active-filter"> Active: </label>
+                        <ToggleSwitch id="active-filter" v-model="blacklisted_item.is_active">
+                            <template #handle>
+                                <font-awesome-icon
+                                    :icon="
+                                        blacklisted_item.is_active ? ['fas', 'circle-check'] : ['far', 'circle-xmark']
+                                    "
+                                    class="text-primary"
+                                />
+                            </template>
+                        </ToggleSwitch>
+                    </div>
                     <div class="mb-3">
                         <label class="form-label">Product Name:</label>
                         <input

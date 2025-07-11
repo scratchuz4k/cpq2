@@ -14,7 +14,7 @@ const props = defineProps({
 const form = reactive({
     merchant: null,
     user: null,
-    name: null
+    name: null,
     is_active: true
 });
 
@@ -61,13 +61,11 @@ const items = ref([
             </Header>
             <div class="col-6">
                 <div class="mb-3 d-flex flex-column">
-                    <label class="form-label" for="active-filter">
-                        Active:
-                    </label>
-                    <ToggleSwitch id="active-filter" v-model="region.is_active">
+                    <label class="form-label" for="active-filter"> Active: </label>
+                    <ToggleSwitch id="active-filter" v-model="form.is_active">
                         <template #handle>
                             <font-awesome-icon
-                                :icon="region.is_active ? ['fas', 'circle-check'] : ['far', 'circle-xmark']"
+                                :icon="form.is_active ? ['fas', 'circle-check'] : ['far', 'circle-xmark']"
                                 class="text-primary"
                             />
                         </template>
@@ -80,8 +78,8 @@ const items = ref([
                         url="/merchants"
                         :fields="['name']"
                         v-model="form.merchant"
-                        :is-multiple="false"
                         placeholder="Select an Merchant"
+                        :query="[{ column: 'is_active', operator: 'equals', value: 1 }]"
                     />
                 </div>
                 <div class="row mb-3">
@@ -93,6 +91,7 @@ const items = ref([
                         v-model="form.user"
                         :is-multiple="false"
                         placeholder="Select an User"
+                        :query="[{ column: 'is_active', operator: 'equals', value: 1 }]"
                     />
                 </div>
                 <div class="row mb-3">

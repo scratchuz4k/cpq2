@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Api;
 use App\Helpers\DataProvider;
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\IndexRequest;
-use App\Http\Resources\SolutionTypeResource;
 use App\Http\Resources\SolutionTypeTenantResource;
 use App\Models\SolutionType;
 use App\Models\SolutionTypeTenant;
@@ -79,7 +78,7 @@ class SolutionTypeController extends BaseController
             throw new Exception($e);
         }
 
-        return new SolutionTypeResource($solutionType);
+        return new SolutionTypeTenantResource($solutionType);
     }
 
     /**

@@ -67,9 +67,7 @@ const items = ref([
             <div class="row mb-3">
                 <div class="col-6">
                     <div class="mb-3 d-flex flex-column">
-                        <label class="form-label" for="active-filter">
-                            Active:
-                        </label>
+                        <label class="form-label" for="active-filter"> Active: </label>
                         <ToggleSwitch id="active-filter" v-model="user.is_active">
                             <template #handle>
                                 <font-awesome-icon
@@ -99,7 +97,9 @@ const items = ref([
                     </div>
                     <div class="row mb-3">
                         <label for="supplier-name" class="form-label">Role:</label>
-                        <Select v-model="form.role_id" :inputId="'user-role'"
+                        <Select
+                            v-model="form.role_id"
+                            :inputId="'user-role'"
                             :options="roles"
                             class="w-100"
                             optionLabel="name"
@@ -129,8 +129,8 @@ const items = ref([
                                 :fields="['name']"
                                 class="w-100"
                                 v-model="form.parent"
-                                :is-multiple="false"
                                 placeholder="Select an Manager"
+                                :query="[{ column: 'is_active', operator: 'equals', value: 1 }]"
                             />
                         </div>
                     </div>

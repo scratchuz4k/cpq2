@@ -16,7 +16,7 @@ import axios from 'axios';
 import { can, hasRole } from '@/Composables/useAuth.js';
 import pluralize from 'pluralize';
 import { exportData } from '@/Composables/export.js';
-import Select from "primevue/select";
+import Select from 'primevue/select';
 
 const slots = useSlots();
 const usedSlots = Object.keys(slots);
@@ -60,11 +60,8 @@ const meta = reactive({
 
 const openSelectIndex = ref(null);
 
-
 const setFilters = () => {
-    props.columns.forEach((el) =>
-        form.filters.push({ column: el.data, value: null, operator: 'contains' })
-    );
+    props.columns.forEach((el) => form.filters.push({ column: el.data, value: null, operator: 'contains' }));
 };
 
 const getData = async () => {
@@ -72,16 +69,17 @@ const getData = async () => {
         ...form,
         page: meta.page,
         columns: props.columns
-        .filter((column) => column.data !== 'actions')
-        .map((x) => x.data)
-        .join(','),
+            .filter((column) => column.data !== 'actions')
+            .map((x) => x.data)
+            .join(','),
         filters: JSON.stringify([...form.filters, ...props.query]),
         search: global.value
     });
 
     let res = await axios.get('/api' + props.route + '?' + string);
     data.value = res.data.data;
-    emptyData.value = !data.value.length;meta.total = res.data.meta?.total ?? res.data.total;
+    emptyData.value = !data.value.length;
+    meta.total = res.data.meta?.total ?? res.data.total;
     meta.first = (meta.page - 1) * form.limit;
 };
 
@@ -110,7 +108,6 @@ const deleteRecord = async (id) => {
             let res = await axios.delete('/api' + props.route + '/' + id);
             getData();
             notyf.success('Removed with success');
-            return;
         } catch (err) {
             notyf.error(err?.response?.data?.message ?? 'Something went wrong');
         }
@@ -166,7 +163,7 @@ setFilters();
 
 watch(
     () => [form.order, form.orderBy],
-    function() {
+    function () {
         meta.page = 1;
         getData();
     }
@@ -174,7 +171,7 @@ watch(
 
 watch(
     [global, form.filters],
-    _.debounce(function() {
+    _.debounce(function () {
         meta.page = 1;
         getData();
     }, 200)
@@ -183,13 +180,7 @@ watch(
 getData();
 </script>
 <template>
-    <DataTable
-        :tableProps="props.tableProps"
-        :value="data"
-        :rows="form.limit"
-        stripedRows
-        :reorderableColumns="false"
-    >
+    <DataTable :tableProps="props.tableProps" :value="data" :rows="form.limit" stripedRows :reorderableColumns="false">
         <template #header>
             <div class="d-flex justify-content-between">
                 <div>
@@ -210,7 +201,7 @@ getData();
                     >
                         <font-awesome-icon :icon="['fas', 'eraser']" />
                     </Button>
-                <Button
+                    <Button
                         v-if="has_export_permission"
                         :disabled="emptyData || exportDisabled"
                         :severity="'secondary'"
@@ -225,41 +216,27 @@ getData();
                     <InputIcon>
                         <font-awesome-icon :icon="['fas', 'search']" />
                     </InputIcon>
-                    <InputText
-                        id="datatable-search"
-                        v-model="global"
-                        type="search"
-                        placeholder="Keyword Search"/>
-
+                    <InputText id="datatable-search" v-model="global" type="search" placeholder="Keyword Search" />
                 </IconField>
             </div>
         </template>
-        <Column
-            v-for="(column, key) in columns.filter((x) => !x.hide)"
-            :field="column.data"
-            :style="column.style"
-        >
+        <Column v-for="(column, key) in columns.filter((x) => !x.hide)" :field="column.data" :style="column.style">
             <template #header v-if="column.data != 'actions'">
-                <div
-                    class="d-flex justify-content-between align-items-center w-100 pe-3 position-relative">
-
+                <div class="d-flex justify-content-between align-items-center w-100 pe-3 position-relative">
                     <b
                         class="column-title sortable d-inline-flex align-items-center"
                         @click="sortBy(column.data)"
                         :style="{
-              textDecoration: column.data == form.orderBy ? 'underline' : 'none'
-            }"
+                            textDecoration: column.data == form.orderBy ? 'underline' : 'none'
+                        }"
                     >
                         {{ column.title }}
                         <span class="text-center" style="width: 20px">
-              <template v-if="column.data == form.orderBy">
-                <font-awesome-icon
-                    v-if="form.order == 'desc'"
-                    :icon="['fas', 'sort-down']"
-                />
-                <font-awesome-icon v-else :icon="['fas', 'sort-up']" />
-              </template>
-            </span>
+                            <template v-if="column.data == form.orderBy">
+                                <font-awesome-icon v-if="form.order == 'desc'" :icon="['fas', 'sort-down']" />
+                                <font-awesome-icon v-else :icon="['fas', 'sort-up']" />
+                            </template>
+                        </span>
                     </b>
                     <div v-if="activeFilters" style="position: absolute; right: 0; z-index: 10">
                         <button class="btn btn-sm btn-filter">
@@ -275,9 +252,7 @@ getData();
                                             v-model="form.filters[key].value"
                                             :checked="!!form.filters[key].value"
                                         />
-                                        <label class="form-check-label ms-2" for="active-filter">
-                                            Active
-                                        </label>
+                                        <label class="form-check-label ms-2" for="active-filter"> Active </label>
                                     </div>
                                 </div>
                                 <div v-if="props.filters[column.data].type === 'options'" class="mb-3">
@@ -322,11 +297,7 @@ getData();
                 <template v-else>{{ getValue(data, field) }}</template>
             </template>
         </Column>
-        <Column
-            v-if="allow?.update || allow?.link || allow?.delete"
-            :class="['p-0']"
-            style="width: auto"
-        >
+        <Column v-if="allow?.update || allow?.link || allow?.delete" :class="['p-0']" style="width: auto">
             <template #body="{ data, index }">
                 <div class="d-flex justify-content-center">
                     <template v-if="allow.update">

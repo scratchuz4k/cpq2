@@ -65,6 +65,6 @@ class SolutionTypeService
             $solution_type->syncConfigurations($array['configurations']);
         }
 
-        return $solution_type->refresh();
+        return $solution_type;
     }
 }

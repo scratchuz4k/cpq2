@@ -73,13 +73,11 @@ const items = ref([
             </Header>
             <div class="col-6">
                 <div class="mb-3 d-flex flex-column">
-                    <label class="form-label" for="active-filter">
-                        Active:
-                    </label>
-                    <ToggleSwitch id="active-filter" v-model="user.is_active">
+                    <label class="form-label" for="active-filter"> Active: </label>
+                    <ToggleSwitch id="active-filter" v-model="form.is_active">
                         <template #handle>
                             <font-awesome-icon
-                                :icon="user.is_active ? ['fas', 'circle-check'] : ['far', 'circle-xmark']"
+                                :icon="form.is_active ? ['fas', 'circle-check'] : ['far', 'circle-xmark']"
                                 class="text-primary"
                             />
                         </template>
@@ -137,6 +135,7 @@ const items = ref([
                             class="w-100"
                             v-model="form.parent"
                             placeholder="Select an Manager"
+                            :query="[{ column: 'is_active', operator: 'equals', value: 1 }]"
                         />
                     </div>
                 </div>

@@ -18,7 +18,6 @@ const deleteRecord = async (id) => {
                 emitter.emit('datatable-refresh');
             }
             notyf.success('Removed with success');
-
         } catch (err) {
             notyf.error(err?.response?.data?.message ?? 'Something went wrong');
         }
@@ -49,7 +48,7 @@ const items = ref([
                     :allow="{}"
                     :columns="[
                         { data: 'id', title: '#', style: 'width:5%' },
-                        { data: 'solution_type.is_active', title: 'Active', style: 'width:5%' },
+                        { data: 'is_active', title: 'Active', style: 'width:5%' },
                         { data: 'solution_type.code', title: 'Code', style: 'width:10%' },
                         { data: 'solution_type.name', title: 'Name', style: 'width:40%' },
                         { data: 'created_at', title: 'Created At', style: 'width:15%' },
@@ -83,8 +82,8 @@ const items = ref([
                             </button>
                         </div>
                     </template>
-                    <template #solution_type.is_active="{ data, value }">
-                        <ToggleActive :data="data.solution_type" :value="value" route="solution-types" />
+                    <template #is_active="{ data, value }">
+                        <ToggleActive :data="data.is_active" :value="value" route="solution-types" />
                     </template>
                 </Datatable>
             </div>

@@ -1,8 +1,8 @@
 <script setup>
 import InputSelect from '@/Components/InputSelect.vue';
-import {usePage} from '@inertiajs/vue3';
+import { usePage } from '@inertiajs/vue3';
 import ToggleSwitch from 'primevue/toggleswitch';
-import Select from "primevue/select";
+import Select from 'primevue/select';
 
 const page = usePage();
 
@@ -35,12 +35,9 @@ const icons = {
 <template>
     <div class="col-6">
         <div class="panel">
-            {{ modelValue }}
             <h5>Choose the first Level</h5>
             <div class="mb-3 d-flex flex-column">
-                <label class="form-label" for="active-filter">
-                    Active:
-                </label>
+                <label class="form-label" for="active-filter"> Active: </label>
                 <ToggleSwitch id="active-filter" v-model="modelValue.is_active">
                     <template #handle>
                         <font-awesome-icon
@@ -58,11 +55,7 @@ const icons = {
                         class="rule d-flex flex-column p-2"
                         @click="changeEntity1(index)"
                     >
-                        <font-awesome-icon
-                            class="p-2"
-                            :icon="icons[index]"
-                            size="2x"
-                        ></font-awesome-icon>
+                        <font-awesome-icon class="p-2" :icon="icons[index]" size="2x"></font-awesome-icon>
                         <p>{{ index }}</p>
                     </div>
                 </li>
@@ -125,17 +118,13 @@ const icons = {
                         :class="{ active: modelValue.entity_2 === rule }"
                         class="rule d-flex flex-column p-2"
                         @click="
-              () => {
-                modelValue.entity_2 = rule;
-                modelValue.entity_2_value = null;
-              }
-            "
+                            () => {
+                                modelValue.entity_2 = rule;
+                                modelValue.entity_2_value = null;
+                            }
+                        "
                     >
-                        <font-awesome-icon
-                            class="p-2"
-                            :icon="icons[rule]"
-                            size="2x"
-                        ></font-awesome-icon>
+                        <font-awesome-icon class="p-2" :icon="icons[rule]" size="2x"></font-awesome-icon>
                         <p>{{ rule ?? 'None' }}</p>
                     </div>
                 </li>
@@ -184,13 +173,14 @@ const icons = {
             <h5 class="mt-5">Apply the Operation</h5>
             <div class="mb-3">
                 <label class="form-label">Operation:</label>
-                <Select v-model="modelValue.operation_id"
+                <Select
+                    v-model="modelValue.operation_id"
                     :inputId="'spa-operation'"
-                  :options="props.operations"
-                        class="w-100"
-                  optionLabel="code"
+                    :options="props.operations"
+                    class="w-100"
+                    optionLabel="code"
                     optionValue="id"
-                  placeholder="Select an Operation"
+                    placeholder="Select an Operation"
                 />
             </div>
             <div class="row g-3 mb-3">
@@ -219,13 +209,14 @@ const icons = {
             </div>
             <div class="mb-3">
                 <label class="form-label">Price Plan (Optional):</label>
-                <Select v-model="modelValue.price_plan_id"
+                <Select
+                    v-model="modelValue.price_plan_id"
                     :inputId="'spa-price_plan'"
-                  :options="props.price_plans"
-                        class="w-100"
-                  optionLabel="name"
+                    :options="props.price_plans"
+                    class="w-100"
+                    optionLabel="name"
                     optionValue="id"
-                  placeholder="Select a Price Plan"
+                    placeholder="Select a Price Plan"
                 />
             </div>
         </div>

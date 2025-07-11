@@ -62,9 +62,7 @@ const items = ref([
             </Header>
             <div class="col-6">
                 <div class="mb-3 d-flex flex-column">
-                    <label class="form-label" for="active-filter">
-                        Active:
-                    </label>
+                    <label class="form-label" for="active-filter"> Active: </label>
                     <ToggleSwitch id="active-filter" v-model="region.is_active">
                         <template #handle>
                             <font-awesome-icon
@@ -81,8 +79,8 @@ const items = ref([
                         url="/merchants"
                         :fields="['name']"
                         v-model="form.merchant"
-                        :is-multiple="false"
                         placeholder="Select an Merchant"
+                        :query="[{ column: 'is_active', operator: 'equals', value: 1 }]"
                     />
                 </div>
                 <div class="row mb-3">
@@ -92,8 +90,8 @@ const items = ref([
                         url="/users"
                         :fields="['name']"
                         v-model="form.user"
-                        :is-multiple="false"
                         placeholder="Select an User"
+                        :query="[{ column: 'is_active', operator: 'equals', value: 1 }]"
                     />
                 </div>
                 <div class="row mb-3">
