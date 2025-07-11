@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use App\Trait\SetTenantId;
-use Illuminate\Support\Collection;
 use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -13,6 +12,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Laravel\Sanctum\HasApiTokens;
@@ -224,7 +224,7 @@ class User extends Authenticatable
     /**
      * Override createToken method from Sanctum
      */
-    public function createTokenWithTenant(string $name, int $tenantId, array $abilities = ['*'])
+    public function createTokenWithTenant(string $name, int $tenantId, bool $is_active = true, array $abilities = ['*'])
     {
         $plainTextToken = $this->generateTokenString();
         $token = $this->tokens()->create([
@@ -232,12 +232,26 @@ class User extends Authenticatable
             'token' => hash('sha256', $plainTextToken),
             'abilities' => $abilities,
             'tenant_id' => $tenantId,
+            'is_active' => $is_active
         ]);
 
         return new NewAccessToken($token, $token->getKey() . '|' . $plainTextToken);
     }
 
-    public static function getUserWithRoles(Collection $users) {
+    /**
+     * Override updateToken method from Sanctum
+     */
+    public function updateTokenWithTenant(Token $token, bool $is_active)
+    {
+        $token->update([
+            'is_active' => $is_active,
+        ]);
+
+        return $token;
+    }
+
+    public static function getUserWithRoles(Collection $users)
+    {
         return $users->map(function ($user) {
             $roleName = $user->roles->pluck('name')->join(', ');
             $user->description = "{$user->name} ({$roleName})";

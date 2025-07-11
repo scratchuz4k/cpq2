@@ -4,9 +4,10 @@ namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\TokenCreateRequest;
-use App\Models\Role;
 use App\Models\Token;
 use App\Models\User;
+use Exception;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
@@ -41,15 +42,15 @@ class TokenController extends BaseController
     /**
      * Login api
      *
-     * @return \Illuminate\Http\RedirectResponse
+     * @return RedirectResponse
      */
     public function store(TokenCreateRequest $request)
     {
         try {
             $user = User::find($request->user_id);
-            $token = $user->createTokenWithTenant($request->name, Auth::user()->tenant_id);
-        } catch (\Exception $e) {
-            throw new \Exception($e);
+            $token = $user->createTokenWithTenant($request->name, Auth::user()->tenant_id, $request->is_active);
+        } catch (Exception $e) {
+            throw new Exception($e);
         }
 
         return redirect()->route('tokens.show', ['token' => $token->accessToken->id, 'plain-text-token' => $token->plainTextToken]);

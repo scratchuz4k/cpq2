@@ -5,12 +5,13 @@ namespace App\Http\Controllers\Api;
 use App\Helpers\DataProvider;
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\IndexRequest;
+use App\Http\Requests\TokenUpdateRequest;
 use App\Http\Resources\TokenResource;
 use App\Models\Token;
 use Dedoc\Scramble\Attributes\ExcludeRouteFromDocs;
 use Exception;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
 class TokenController extends BaseController
@@ -64,12 +65,10 @@ class TokenController extends BaseController
      * Update Token
      */
     #[ExcludeRouteFromDocs]
-    public function update(Request $request, Token $supplier)
+    public function update(TokenUpdateRequest $request, Token $token)
     {
         try {
-            $token = DB::transaction(function () use ($token, $request) {
-                return $this->service->update($token, $request->all());
-            });
+            $token = Auth::user()->updateTokenWithTenant($token, $request->is_active);
         } catch (Exception $e) {
             Log::debug($e->getMessage());
             throw new Exception($e);

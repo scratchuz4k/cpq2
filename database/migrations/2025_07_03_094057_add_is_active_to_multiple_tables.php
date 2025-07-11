@@ -13,6 +13,7 @@ return new class extends Migration {
         'App\Models\Region',
         'App\Models\Spa',
         'App\Models\Supplier',
+        'App\Models\Token',
         'App\Models\User',
     ];
 
