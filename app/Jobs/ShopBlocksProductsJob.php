@@ -9,6 +9,7 @@ use Exception;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Queue\Middleware\WithoutOverlapping;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Spatie\Multitenancy\Jobs\NotTenantAware;
@@ -49,13 +50,12 @@ class ShopBlocksProductsJob implements NotTenantAware, ShouldQueue
         $filters = ['updatedAfter' => $product?->updated];
 
         $time = Carbon::now()->addSeconds(86400);
-
         $res = (new ShopBlocksApi)->getArticles(200, $page, $filters);
         if (! array_key_exists('data', $res)) {
             return;
         }
-
-        $last_page = array_key_exists('meta', $res) ? $res['meta']['last_page'] : 1;
+        $last_page = 10; // array_key_exists('meta', $res) ? $res['meta']['last_page'] : 1;
+        Cache::put('shopblocks-sync-status', ['synced' => [], 'last_page' => $last_page, 'started_at' => now()], 60);
 
         Log::info("ShopBlocksProductsJob | Total pages to sync:  $last_page ");
         do {
