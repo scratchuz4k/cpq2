@@ -1,6 +1,5 @@
 <?php
 
-use App\Models\Token;
 use App\Models\Tenant;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -27,7 +26,8 @@ it('Create Token for first Tenant', function () {
 
     $data = [
         'name' => 'test',
-        'user_id' => $this->user->id
+        'user_id' => $this->user->id,
+        'is_active' => true
     ];
 
     $response = $this->post('/tokens', $data);
@@ -43,7 +43,8 @@ it('Create Token for second Tenant', function () {
 
     $data = [
         'name' => 'test',
-        'user_id' => $this->second_tenant_user->id
+        'user_id' => $this->second_tenant_user->id,
+        'is_active' => true
     ];
 
     $response = $this->post('/tokens', $data);
