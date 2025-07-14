@@ -6,7 +6,6 @@ use App\Enums\CloudMarketSuppliersEnum;
 use App\Enums\SolutionTypesEnum;
 use App\Models\QuoteItem;
 use App\Models\SolutionType;
-use App\Models\User;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Illuminate\Support\Collection;
@@ -29,7 +28,7 @@ class DashboardService
         }
     }
 
-	private function excludeSuperAdmins($query)
+    private function excludeSuperAdmins($query)
     {
         return $query->whereDoesntHave('roles', function ($q) {
             $q->where('name', 'Super Admin');
@@ -53,7 +52,7 @@ class DashboardService
         return $this->getFilteredData($array);
     }
 
-    public function getFilteredData(Array $array): array
+    public function getFilteredData(array $array): array
     {
         $cumulative = true;
         $date_interval = formated_date_range($array, get_class($this->model));
@@ -86,7 +85,7 @@ class DashboardService
                     $date_interval[0],
                     $date_interval[1],
                     $quotes_collection,
-					$cumulative
+                    $cumulative
                 );
 
                 $results[$solution_type->name] = [
@@ -123,7 +122,7 @@ class DashboardService
 
     public function getParsedData(Carbon $start_date, Carbon $end_date, Collection $collection = null, bool $cumulative = true): array
     {
-        $diffInDays  = $start_date->diffInDays($end_date);
+        $diffInDays = $start_date->diffInDays($end_date);
         $diffInMonths = $start_date->diffInMonths($end_date);
 
         switch ($diffInMonths) {
@@ -225,8 +224,13 @@ class DashboardService
         }
 
         if ($this->model instanceof $this->activity_instance) {
-            $query = $this->excludeSuperAdminActivities($query);
-            $total_query = $this->excludeSuperAdminActivities($total_query);
+            $query = $this->excludeSuperAdminActivities($query)
+                ->where('operation', 'user_login')
+                ->where('activitable_type', $this->user_instance);
+
+            $total_query = $this->excludeSuperAdminActivities($total_query)
+                ->where('operation', 'user_login')
+                ->where('activitable_type', $this->user_instance);
         }
 
 
