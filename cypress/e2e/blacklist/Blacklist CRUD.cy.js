@@ -2,7 +2,7 @@ import { generateHash, getCurrentDate } from '../../support/utils.js';
 
 const product_name = 'Software Defined FTTP';
 const provider = 'Giacom';
-const subprovider = 'Virgin';
+const subprovider = 'BT';
 const temp = getCurrentDate();
 const account = { ref: generateHash(temp), name: temp };
 
@@ -19,7 +19,7 @@ describe('Blacklist Crud', () => {
         cy.get('#blacklist-index-btn').click();
         cy.get('#blacklist-create-btn').click();
         cy.selectOption('#item-provider', provider);
-        cy.selectOption('#item-subprovider', provider);
+        cy.selectOption('#item-subprovider', subprovider);
         cy.get('#btn-save-item').click();
         cy.get('#datatable-search').type(provider);
         cy.get('.p-datatable-table').contains(provider);

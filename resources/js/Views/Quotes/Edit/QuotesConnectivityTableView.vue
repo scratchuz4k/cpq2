@@ -738,6 +738,7 @@ getArticles(false, true);
                                     </span>
                                 </th>
                                 <th
+                                    id="table-header-setup"
                                     class="text-center"
                                     :style="{
                                         whiteSpace: 'nowrap'
