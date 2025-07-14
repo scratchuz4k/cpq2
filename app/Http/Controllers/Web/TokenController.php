@@ -28,11 +28,13 @@ class TokenController extends BaseController
      */
     public function create()
     {
+        $users = User::where('tenant_id', Auth::user()->tenant_id)
+            ->with('roles')
+            ->permission(['view token', 'viewAny token', 'create token'])
+            ->get();
+
         return Inertia::render('Tokens/Create', [
-            'users' => User::where('tenant_id', Auth::user()->tenant_id)
-                ->with('roles')
-                ->permission(['view token', 'viewAny token', 'create token'])
-                ->get()
+            'users' => User::getUserWithRoles($users)
         ]);
     }
 
@@ -58,9 +60,16 @@ class TokenController extends BaseController
      */
     public function show(Request $request, Token $token)
     {
+        $user = collect([User::with('roles')
+            ->find($token->tokenable_id)])
+            ->map(function ($user) {
+                $roleName = $user->roles->pluck('name')->join(', ');
+                $user->description = "{$user->name} ({$roleName})";
+                return $user;
+            });
         return Inertia::render('Tokens/Show', [
             'plainTextToken' => $request->input('plain-text-token', null),
-            'users' => collect([User::with('roles')->find($token->tokenable_id)]),
+            'users' => User::getUserWithRoles($user),
             'token' => $token,
         ]);
     }

@@ -43,8 +43,8 @@ class Quote extends Model
     protected function casts(): array
     {
         return [
-            'address_position' => 'object',
-            'address_data' => 'object',
+            'address_position' => 'array',
+            'address_data' => 'array',
         ];
     }
 

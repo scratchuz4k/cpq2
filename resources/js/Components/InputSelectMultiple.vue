@@ -105,6 +105,15 @@ watch(inputSearch, () => {
     search(true);
 });
 
+watch(
+    () => props.query,
+    () => {
+        page.value = 1;
+        search(true);
+    },
+    { deep: true }
+);
+
 search();
 </script>
 

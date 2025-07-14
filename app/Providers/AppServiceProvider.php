@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Helpers\Routing\ResourceRegistrar;
 use App\Models\Token;
 use App\Policies\ExportPolicy;
 use Dedoc\Scramble\Scramble;
@@ -47,6 +48,10 @@ class AppServiceProvider extends ServiceProvider
 
         Event::listen(function (\SocialiteProviders\Manager\SocialiteWasCalled $event) {
             $event->extendSocialite('saml2', \SocialiteProviders\Saml2\Provider::class);
+        });
+
+        $this->app->bind('Illuminate\Routing\ResourceRegistrar', function () {
+            return new ResourceRegistrar($this->app['router']);
         });
 
         Scramble::routes(function (Route $route) {

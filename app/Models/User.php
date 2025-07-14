@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Trait\SetTenantId;
+use Illuminate\Support\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -232,5 +232,13 @@ class User extends Authenticatable
         ]);
 
         return new NewAccessToken($token, $token->getKey().'|'.$plainTextToken);
+    }
+
+    public static function getUserWithRoles(Collection $users) {
+        return $users->map(function ($user) {
+            $roleName = $user->roles->pluck('name')->join(', ');
+            $user->description = "{$user->name} ({$roleName})";
+            return $user;
+        });
     }
 }

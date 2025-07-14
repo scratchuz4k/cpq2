@@ -1,7 +1,7 @@
 <script setup>
 import _ from 'lodash';
 import queryString from 'query-string';
-import { Paginator } from 'primevue';
+import { Paginator, Select } from 'primevue';
 import { quote } from '@/Composables/useQuote';
 import { categories } from '@composables/custom/shopblocks';
 import { computed, onMounted, reactive, ref, watch } from 'vue';
@@ -46,6 +46,8 @@ const filters = reactive({
 });
 
 const currentCategory = ref(null);
+const currentBrand = ref([]);
+const currentModel = ref([]);
 
 const filterList = reactive({
     models: [],
@@ -62,18 +64,38 @@ const filterList = reactive({
 
 const sorts = [
     {
+        label: 'Alphabetical (A-Z)',
+        order: 'asc',
+        orderBy: 'model.name'
+    },
+    {
+        label: 'Alphabetical (Z-A) ',
+        order: 'desc',
+        orderBy: 'model.name'
+    },
+    {
         label: 'Lowest Price',
         order: 'asc',
         orderBy: 'price.net_spa'
     },
     {
         label: 'Highest Price',
-        order: 'asc',
+        order: 'desc',
         orderBy: 'price.net_spa'
+    },
+    {
+        label: 'Lowest Stock',
+        order: 'asc',
+        orderBy: 'stock'
+    },
+    {
+        label: 'Highest Stock',
+        order: 'desc',
+        orderBy: 'stock'
     }
 ];
 
-const sort = ref(sorts[1]);
+const sort = ref(sorts[3]);
 const step = ref(props.modelValue + 1);
 
 let abortController = null;
@@ -86,6 +108,14 @@ const getProductsShopBlocks = async () => {
     abortController = new AbortController();
 
     let filters = [];
+
+    //Hide out of stock products
+    filters.push({
+        column: 'stock',
+        operator: 'greater_than_or_equal_to',
+        value: 1
+    });
+
     if (currentCategory.value) {
         let array = [currentCategory.value];
         let items = [];
@@ -102,11 +132,21 @@ const getProductsShopBlocks = async () => {
             operator: 'in',
             value: items.map((x) => x.id)
         });
-    } else {
+    }
+
+    if (currentBrand.value.length) {
         filters.push({
-            column: 'stock',
-            operator: 'greater_than_or_equal_to',
-            value: 1
+            column: 'brand.id',
+            operator: 'in',
+            value: currentBrand.value.map((x) => x.id)
+        });
+    }
+
+    if (currentModel.value.length) {
+        filters.push({
+            column: 'model.id',
+            operator: 'in',
+            value: currentModel.value.map((x) => x.id)
         });
     }
 
@@ -181,11 +221,12 @@ watch([filters, sort], () => {
 });
 
 watch(
-    currentCategory,
+    [currentCategory, currentBrand, currentModel],
     _.debounce(() => {
         meta.page = 1;
         getProductsShopBlocks();
-    }, 500)
+    }, 500),
+    { deep: true }
 );
 
 watch(
@@ -200,6 +241,12 @@ watch(
 </script>
 <template>
     <div id="mobile_step_shopblocks" class="step">
+        <div class="row">
+            <div class="d-flex justify-content-between mb-3">
+                <h2>Select some products</h2>
+                <p class="bigger text-primary bold">STEP {{ step }}/{{ step }}</p>
+            </div>
+        </div>
         <div class="row justify-content-end">
             <div class="col-3">
                 <div class="d-flex justify-content-between mb-3">
@@ -209,8 +256,8 @@ watch(
                 </div>
             </div>
             <div class="col-9">
-                <div class="d-flex justify-content-between mb-3">
-                    <div class="d-flex justify-content-end">
+                <div class="d-flex justify-content-between align-items-end mb-3">
+                    <div class="d-flex flex-fill justify-content-start">
                         <button
                             class="btn border"
                             :class="[showCards ? 'btn-dark' : '']"
@@ -228,8 +275,10 @@ watch(
                             <font-awesome-icon :icon="['fas', 'grip-lines']"></font-awesome-icon>
                         </button>
                     </div>
-
-                    <p class="bigger text-primary bold">STEP {{ step }}/{{ step }}</p>
+                    <div class="d-flex justify-content-end">
+                        <span class="me-2 align-self-center">Sort by</span>
+                        <Select v-model="sort" :options="sorts" optionLabel="label" placeholder="All"> </Select>
+                    </div>
                 </div>
             </div>
         </div>
@@ -240,8 +289,44 @@ watch(
                         <h2>Search</h2>
                         <input type="search" class="form-control" placeholder="" v-model="search" />
                     </div>
-                    <h2>Categories</h2>
-                    <ShopBlocksCategoriesTree v-model="currentCategory"></ShopBlocksCategoriesTree>
+                    <ul class="d-flex list-unstyled">
+                        <li>
+                            <Badge v-for="(brand, index) in currentBrand" :value="brand.name">
+                                <template #close-button>
+                                    <font-awesome-icon
+                                        :icon="['fas', 'x']"
+                                        role="button"
+                                        class="me-1 fs-7"
+                                        @click="() => currentBrand.splice(index, 1)"
+                                    />
+                                </template>
+                            </Badge>
+                            <Badge v-for="(model, index) in currentModel" :value="model.name">
+                                <template #close-button>
+                                    <font-awesome-icon
+                                        :icon="['fas', 'x']"
+                                        role="button"
+                                        class="me-1 fs-7"
+                                        @click="() => currentModel.splice(index, 1)"
+                                    />
+                                </template>
+                            </Badge>
+                        </li>
+                    </ul>
+
+                    <div class="mb-4">
+                        <h2>Categories</h2>
+                        <ShopBlocksCategoriesTree v-model="currentCategory"></ShopBlocksCategoriesTree>
+                    </div>
+                    <div class="mb-4">
+                        <h2>Brands</h2>
+                        <ShopBlocksBrands v-model="currentBrand" :category="currentCategory"></ShopBlocksBrands>
+                    </div>
+
+                    <div class="mb-4">
+                        <h2>Models</h2>
+                        <ShopBlocksModels v-model="currentModel" :category="currentCategory"></ShopBlocksModels>
+                    </div>
                 </div>
             </div>
             <div class="col">

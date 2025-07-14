@@ -15,7 +15,7 @@ describe('Setup Sales Rep.cy', () => {
         cy.get('#user-name').type(user.name);
         cy.get('#user-email').type(user.email);
         cy.get('#user-password').type(user.password);
-        cy.get('#user-role').select('Sales Rep');
+        cy.selectOption('#user-role', 'Sales Rep');
         cy.get('#user-commission-rate').type(5);
         cy.get('#btn-save-user').click();
         cy.get('#treetable-search').type(user.name);

@@ -18,8 +18,8 @@ describe('Blacklist Crud', () => {
         cy.get('#link-products').click();
         cy.get('#blacklist-index-btn').click();
         cy.get('#blacklist-create-btn').click();
-        cy.get('#item-provider').select(provider);
-        cy.get('#item-subprovider').type(subprovider);
+        cy.selectOption('#item-provider', provider);
+        cy.selectOption('#item-subprovider', provider);
         cy.get('#btn-save-item').click();
         cy.get('#datatable-search').type(provider);
         cy.get('.p-datatable-table').contains(provider);
@@ -45,7 +45,7 @@ describe('Blacklist Crud', () => {
 
         cy.get('#input_address').type('EH32 9NT');
         cy.wait(1000);
-        cy.get('#select_address').should('be.visible').select(1);
+        cy.selectOption('#select_address', 1);
         cy.get('#btn-next-step').click();
         cy.get('#btn-create-quote').should('not.be.disabled').click();
         // Scroll back to top
@@ -72,7 +72,7 @@ describe('Blacklist Crud', () => {
     });
 
     it('Edit a Blacklist Item', () => {
-        cy.visit('/blacklist');
+        cy.visit('/blacklists');
         cy.wait(500);
         cy.get('#datatable-btn-0-edit').click();
 
@@ -84,7 +84,7 @@ describe('Blacklist Crud', () => {
     });
 
     it('Delete a Blacklist Item', () => {
-        cy.visit('/blacklist');
+        cy.visit('/blacklists');
         cy.get('#datatable-search').type(product_name);
         cy.wait(500);
         cy.get('#datatable-btn-0-delete').click();
