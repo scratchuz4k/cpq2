@@ -51,7 +51,6 @@ class ShopBlocksProductsSyncJob implements NotTenantAware, ShouldQueue
         if (! array_key_exists('data', $res)) {
             return;
         }
-
         $pricePlanId = PricePlan::where('code', PricePlanEnum::SINGLE->name)->value('id');
         foreach ($res['data'] as $key => $product) {
             if (count($product['children']) == 0) {
@@ -82,15 +81,16 @@ class ShopBlocksProductsSyncJob implements NotTenantAware, ShouldQueue
             $allPages = range(1, $temp['last_page']);
             $missingPages = array_diff($allPages, $temp['synced']);
 
-            $res = ! count($missingPages) ? 'All Pages Synced' : 'Missing Pages: '.json_encode(array_values($missingPages));
+            if (count($missingPages)) {
+                $res = 'Missing Pages: '.json_encode(array_values($missingPages));
+                $date1 = Carbon::parse($temp['started_at']);
+                $date2 = Carbon::parse(now());
+                $interval = $date1->diff($date2);
+                $timeDiff = sprintf('%02d:%02d:%02d', ($interval->d * 24) + $interval->h, $interval->i, $interval->s);
 
-            $date1 = Carbon::parse($temp['started_at']);
-            $date2 = Carbon::parse(now());
-            $interval = $date1->diff($date2);
-            $timeDiff = sprintf('%02d:%02d:%02d', ($interval->d * 24) + $interval->h, $interval->i, $interval->s);
-
-            $message = '['.strtoupper(env('APP_ENV')).'] ShopBlocksProducts Finished: '.$res.' ( Duration: '.$timeDiff.')';
-            Http::post(env('DISCORD_SHOPBLOCKS_JOBS'), ['content' => $message]);
+                $message = '['.strtoupper(env('APP_ENV')).'] ShopBlocksProducts Finished: '.$res.' ( Duration: '.$timeDiff.')';
+                Http::post(env('DISCORD_SHOPBLOCKS_JOBS'), ['content' => $message]);
+            }
         }
     }
 
