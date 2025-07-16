@@ -60,13 +60,18 @@ const submit = () => {
 };
 
 watch(
-    () => [quote.solution_type],
+    () => [quote.solution_type, quote.account],
     () => {
+        let temp = props.steps;
+        steps.value = [...initSteps];
+
+        if (props.solution_types.length === 1) {
+            steps.value = steps.value.filter((step) => step !== 'StepSolutionType');
+            quote.solution_type = props.solution_types[0];
+        }
+
         if (quote.solution_type) {
-            let temp = props.steps;
-            steps.value = [...initSteps, ...temp[quote.solution_type.name]];
-        } else {
-            steps.value = [...initSteps];
+            steps.value = [...steps.value, ...temp[quote.solution_type.name]];
         }
     }
 );

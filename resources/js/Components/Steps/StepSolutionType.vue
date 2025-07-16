@@ -1,6 +1,7 @@
 <script setup>
 import format from '@/Composables/format';
 import { computed } from 'vue';
+
 const props = defineProps({
     solutionType: Array,
     modelValue: Object
@@ -27,23 +28,29 @@ const icons = {
     <h5 class="font-bold mb-3">Now, select an solution type</h5>
     <div class="row">
         <div class="col-8">
-            <div class="row row-cols-4 mb-3">
-                <div class="col mb-2" v-for="solution in props.solutionType">
-                    <div
-                        :id="'solution_type-' + format.toSnakeCase(solution.name)"
-                        class="option"
-                        @click="() => (proxyValue.solution_type = solution)"
-                        :class="[proxyValue.solution_type == solution ? 'active' : '']"
-                    >
-                        <font-awesome-icon :icon="icons[solution.code]" class="me-3"></font-awesome-icon>
-                        <b>{{ solution.name }}</b>
+            <template v-if="props.solutionType?.length">
+                <div class="row row-cols-4 mb-3">
+                    <div class="col mb-2" v-for="solution in props.solutionType">
+                        <div
+                            :id="'solution_type-' + format.toSnakeCase(solution.name)"
+                            class="option"
+                            @click="() => (proxyValue.solution_type = solution)"
+                            :class="[proxyValue.solution_type == solution ? 'active' : '']"
+                        >
+                            <font-awesome-icon :icon="icons[solution.code]" class="me-3"></font-awesome-icon>
+                            <b>{{ solution.name }}</b>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="pt-2 pb-4">
-                <p class="text-center" v-if="proxyValue.solution_type?.estimated_time">
-                    Estimated time to price: {{ proxyValue.solution_type?.estimated_time }}
-                </p>
+                <div class="pt-2 pb-4">
+                    <p class="text-center" v-if="proxyValue.solution_type?.estimated_time">
+                        Estimated time to price: {{ proxyValue.solution_type?.estimated_time }}
+                    </p>
+                </div>
+            </template>
+            <div v-else class="text-primary fst-italic">
+                <font-awesome-icon class="me-2" :icon="['fas', 'circle-exclamation']"></font-awesome-icon>
+                No solution types available
             </div>
             <ButtonStep v-model="proxyValue" :disabled="proxyValue.solution_type == null"></ButtonStep>
         </div>
@@ -58,7 +65,9 @@ const icons = {
     padding: 20px;
     margin-bottom: 10px;
     border: 3px solid var(--white);
-    transition: border-color 0.1s ease-in-out, box-shadow 0.1s ease-in-out;
+    transition:
+        border-color 0.1s ease-in-out,
+        box-shadow 0.1s ease-in-out;
     box-shadow: 0px 10px 15px -3px var(--light-grey);
 }
 .option:hover,
