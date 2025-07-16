@@ -55,13 +55,13 @@ const items = ref([
                 </ToggleSwitch>
             </div>
             <div class="row mb-3">
-                <div class="col">
+                <div class="col-6">
                     <label for="supplier-name" class="form-label">Name:</label>
                     <input id="supplier-name" class="form-control" v-model="supplier.name" />
                 </div>
             </div>
             <div class="row mb-3">
-                <div class="col">
+                <div class="col-6">
                     <label for="supplier-reference" class="form-label">Reference:</label>
                     <input id="supplier-reference" class="form-control" v-model="supplier.reference" />
                 </div>

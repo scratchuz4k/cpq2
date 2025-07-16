@@ -83,7 +83,7 @@ const items = ref([
                         </div>
                     </template>
                     <template #is_active="{ data, value }">
-                        <ToggleActive :data="data.is_active" :value="value" route="solution-types" />
+                        <ToggleActive :data="data" :value="value" route="solution-types" />
                     </template>
                 </Datatable>
             </div>

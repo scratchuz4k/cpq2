@@ -1,6 +1,5 @@
 <script setup>
-import { reactive, ref } from 'vue';
-import Button from 'primevue/button';
+import { ref } from 'vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link } from '@inertiajs/vue3';
 import Select from 'primevue/select';
@@ -51,7 +50,6 @@ const items = ref([
                 </template>
             </Header>
             <div class="col-6">
-                {{ props.token.is_active }}
                 <div class="mb-3 d-flex flex-column">
                     <label class="form-label" for="active-filter"> Active: </label>
                     <ToggleSwitch id="active-filter" v-model="token.is_active" @change="toggleIsActive">

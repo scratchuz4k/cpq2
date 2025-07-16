@@ -61,11 +61,11 @@ const items = ref([
                         </template>
                     </ToggleSwitch>
                 </div>
-                <div class="row mb-3">
+                <div class="mb-3">
                     <label for="token-name" class="form-label">Name:</label>
                     <input id="token-name" class="form-control" v-model="token.name" />
                 </div>
-                <div class="row mb-3">
+                <div class="mb-3">
                     <label for="token-user" class="form-label">User:</label>
 
                     <Select

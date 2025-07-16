@@ -2,7 +2,7 @@
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, router } from '@inertiajs/vue3';
-import { onMounted, reactive, ref } from 'vue';
+import { reactive, ref } from 'vue';
 import InputSelect from '@/Components/InputSelect.vue';
 import ToggleSwitch from 'primevue/toggleswitch';
 
@@ -15,7 +15,8 @@ const props = defineProps({
 const form = reactive({
     merchant: props.region.merchant,
     user: props.region.user,
-    name: props.region.name
+    name: props.region.name,
+    is_active: props.region.is_active
 });
 
 const saveRegion = () => {
@@ -63,10 +64,10 @@ const items = ref([
             <div class="col-6">
                 <div class="mb-3 d-flex flex-column">
                     <label class="form-label" for="active-filter"> Active: </label>
-                    <ToggleSwitch id="active-filter" v-model="region.is_active">
+                    <ToggleSwitch id="active-filter" v-model="form.is_active">
                         <template #handle>
                             <font-awesome-icon
-                                :icon="region.is_active ? ['fas', 'circle-check'] : ['far', 'circle-xmark']"
+                                :icon="form.is_active ? ['fas', 'circle-check'] : ['far', 'circle-xmark']"
                                 class="text-primary"
                             />
                         </template>

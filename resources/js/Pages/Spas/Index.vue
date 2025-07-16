@@ -1,11 +1,10 @@
 <script setup>
 import format from '@composables/format';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head, Link } from '@inertiajs/vue3';
+import { Head, Link, usePage } from '@inertiajs/vue3';
 import { Button, Paginator } from 'primevue';
-import { reactive, ref, watch } from 'vue';
+import { reactive, ref } from 'vue';
 import queryString from 'query-string';
-import { usePage } from '@inertiajs/vue3';
 import axios from 'axios';
 import { exportData } from '@/Composables/export.js';
 import { can, hasRole } from '@/Composables/useAuth.js';
@@ -202,7 +201,8 @@ const cloneSpa = async (item) => {
             operation_id: item.operation_id ?? 0,
             price_plan_id: item.price_plan_id ?? null,
             value: item.value ?? 0,
-            percentage: item.percentage ?? 0
+            percentage: item.percentage ?? 0,
+            is_active: item.is_active ?? true
         });
         notyf.success('Clone with success');
         getData();
