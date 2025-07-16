@@ -25,8 +25,8 @@ const quote = reactive({
     solution_type: null,
     address: null,
     configs: {
-        speed: [10, 10000],
-        bearer: [100, 10000],
+        speed: null,
+        bearer: null,
         contract_length: [],
         managed: '0'
     },
@@ -36,6 +36,9 @@ const quote = reactive({
 });
 
 const submit = () => {
+    if (!quote.account || !quote.solution_type) {
+        return;
+    }
     let configs = {};
     if (quote.solution_type?.code == 3) {
         Object.keys(quote.configs).forEach((key) => {
@@ -60,13 +63,18 @@ const submit = () => {
 };
 
 watch(
-    () => [quote.solution_type],
+    () => [quote.solution_type, quote.account],
     () => {
+        let temp = props.steps;
+        steps.value = [...initSteps];
+
+        if (props.solution_types.length === 1) {
+            steps.value = steps.value.filter((step) => step !== 'StepSolutionType');
+            quote.solution_type = props.solution_types[0];
+        }
+
         if (quote.solution_type) {
-            let temp = props.steps;
-            steps.value = [...initSteps, ...temp[quote.solution_type.name]];
-        } else {
-            steps.value = [...initSteps];
+            steps.value = [...steps.value, ...temp[quote.solution_type.name]];
         }
     }
 );

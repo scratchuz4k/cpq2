@@ -34,24 +34,10 @@ describe('Creates a Connectivity quote', () => {
 
         // Scroll back to top
         cy.scrollTo('top');
-        //Provider filter
-        cy.get('#provider-multiselect').click();
-
-        cy.get('.p-multiselect-list-container')
-            .eq(0)
-            .within(() => {
-                cy.get('.p-checkbox').eq(0).click();
-            });
-
-        //SubProvider filter
-        cy.get('#subprovider-multiselect').click();
-        cy.wait(500);
-
-        cy.get('.p-multiselect-list-container')
-            .eq(0)
-            .within(() => {
-                cy.get('.p-checkbox').eq(1).click();
-            });
+        cy.get('#table-header-setup').click();
+        cy.wait(1000);
+        cy.get('#table-header-setup').click();
+        cy.wait(1000);
 
         //Add products to quote
         let keys = [0, 1, 2, 3, 4];

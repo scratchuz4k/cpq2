@@ -26,12 +26,12 @@ it('Blacklists CRUD', function () {
         'bearer' => [
             'operator' => null,
             'value' => null,
-            'unit' => null
+            'unit' => null,
         ],
         'speed' => [
             'operator' => null,
             'value' => null,
-            'unit' => null
+            'unit' => null,
         ],
         'contractTermMonths' => null,
         'is_active' => true,
@@ -42,17 +42,17 @@ it('Blacklists CRUD', function () {
 
     expect(Blacklist::count())->toBe(1);
 
-    //Update
+    // Update
     $blacklist = Blacklist::first();
     $data['productName'] = 'teste2';
 
-    $response = $this->put('blacklists/' . $blacklist->id, $data);
+    $response = $this->put('blacklists/'.$blacklist->id, $data);
     $response->assertRedirect();
 
     $blacklist->refresh();
     $this->assertEquals($blacklist->productName, 'teste2');
 
-    $response = $this->delete('api/blacklists/' . $blacklist->id);
+    $response = $this->delete('api/blacklists/'.$blacklist->id);
     $response->assertSuccessful();
     expect(Blacklist::count())->toBe(0);
 });

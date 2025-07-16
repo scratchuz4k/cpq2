@@ -18,11 +18,10 @@ use Symfony\Component\HttpFoundation\Response;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
-        commands: __DIR__ . '/../routes/console.php',
+        commands: __DIR__.'/../routes/console.php',
         health: '/up',
         using: function () {
-            Route::middleware(['api', 'auth:sanctum'])
-                ->prefix('api')
+            Route::prefix('api')
                 ->name('api.')
                 ->group(base_path('routes/api.php'));
 
@@ -37,7 +36,7 @@ return Application::configure(basePath: dirname(__DIR__))
             AddLinkHeadersForPreloadedAssets::class,
             SetTenantBySession::class,
             NeedsTenant::class,
-            CheckUserActive::class
+            CheckUserActive::class,
             // EnsureValidTenantSession::class
         ]);
         $middleware->api(append: [
@@ -45,7 +44,7 @@ return Application::configure(basePath: dirname(__DIR__))
             SubstituteBindings::class,
             SetTenantBySession::class,
             NeedsTenant::class,
-            CheckUserActive::class
+            CheckUserActive::class,
         ]);
 
         $middleware->validateCsrfTokens(except: [
@@ -55,7 +54,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withExceptions(function (Exceptions $exceptions) {
         Integration::handles($exceptions);
         $exceptions->respond(function (Response $response, Throwable $exception, Request $request) {
-            if (!app()->environment(['local', 'testing']) && in_array($response->getStatusCode(), [500, 503, 404, 403])) {
+            if (! app()->environment(['local', 'testing']) && in_array($response->getStatusCode(), [500, 503, 404, 403])) {
                 return Inertia::render('Error', ['status' => $response->getStatusCode(), 'message' => $exception->getMessage()])
                     ->toResponse($request)
                     ->setStatusCode($response->getStatusCode());

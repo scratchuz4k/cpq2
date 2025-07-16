@@ -1,7 +1,8 @@
 import { generateHash, getCurrentDate } from '../../support/utils.js';
 
 const product_name = 'Software Defined FTTP';
-const provider = 'ITS';
+const provider = 'Giacom';
+const subprovider = 'BT';
 const temp = getCurrentDate();
 const account = { ref: generateHash(temp), name: temp };
 
@@ -18,7 +19,7 @@ describe('Blacklist Crud', () => {
         cy.get('#blacklist-index-btn').click();
         cy.get('#blacklist-create-btn').click();
         cy.selectOption('#item-provider', provider);
-        cy.selectOption('#item-subprovider', provider);
+        cy.selectOption('#item-subprovider', subprovider);
         cy.get('#btn-save-item').click();
         cy.get('#datatable-search').type(provider);
         cy.get('.p-datatable-table').contains(provider);
@@ -64,7 +65,7 @@ describe('Blacklist Crud', () => {
         cy.get('.p-multiselect-list-container')
             .eq(0)
             .within(() => {
-                cy.get('.p-multiselect-option').contains(provider).click();
+                cy.get('.p-multiselect-option').contains(subprovider).click();
             });
 
         cy.get('#no-results').should('exist').contains('No results match your filters.');
