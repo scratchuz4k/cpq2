@@ -34,7 +34,7 @@ class BlacklistController extends BaseController
     public function index()
     {
         return Inertia::render('Blacklists/Index', [
-            'operators' => ComparisonOperatorsEnum::asArray()
+            'operators' => ComparisonOperatorsEnum::asArray(),
         ]);
     }
 
@@ -49,6 +49,7 @@ class BlacklistController extends BaseController
                     $item["name"] = "PXC";
                     $item["value"] = "pxc";
                 }
+
                 return $item;
             }, CloudMarketSuppliersEnum::asArray()),
             'subproviders' => CloudMarketSubprovidersEnum::asArray(),
@@ -71,6 +72,7 @@ class BlacklistController extends BaseController
             }
             throw new Exception($e);
         }
+
         return redirect()->route('blacklists.index');
     }
 
@@ -88,6 +90,7 @@ class BlacklistController extends BaseController
     public function edit(Blacklist $blacklist): Response
     {
         $temp = new BlacklistResource($blacklist);
+
         return Inertia::render('Blacklists/Edit', [
             'blacklisted_item' => $temp,
             'providers' => array_map(function ($temp) {
@@ -95,6 +98,7 @@ class BlacklistController extends BaseController
                     $temp["name"] = "PXC";
                     $temp["value"] = "pxc";
                 }
+
                 return $temp;
             }, CloudMarketSuppliersEnum::asArray()),
             'subproviders' => CloudMarketSubprovidersEnum::asArray(),
@@ -128,6 +132,8 @@ class BlacklistController extends BaseController
      */
     public function destroy(Blacklist $blacklist)
     {
-        //
+        $blacklist->delete();
+
+        return redirect()->route('blacklists.index');
     }
 }
