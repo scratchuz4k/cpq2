@@ -18,6 +18,7 @@ class Spa extends Model
         'field_2',
         'price_plan_id',
         'operation_id',
+        'group_id',
         'value',
         'percentage',
     ];
