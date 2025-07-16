@@ -48,6 +48,11 @@ class Spa extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function group(): BelongsTo
+    {
+        return $this->belongsTo(Group::class);
+    }
+
     public function pricePlan(): BelongsTo
     {
         return $this->belongsTo(PricePlan::class);

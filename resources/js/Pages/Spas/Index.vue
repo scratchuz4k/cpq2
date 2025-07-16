@@ -257,6 +257,7 @@ const columns = [
     { name: 'Level 2', data: 'field_2' },
     { name: 'Price Plan', data: 'price_plan_id' },
     { name: 'Operation', data: 'operation_id' },
+    { name: 'Group', data: 'group_id' },
     { name: 'Value', data: 'value' },
     { name: 'Percentage', data: 'percentage' }
 ];
@@ -349,18 +350,6 @@ getData();
                                 >
                                 </InputSelect>
                             </div>
-                            <div class="col">
-                                <label class="form-label">Group</label>
-                                <InputSelect
-                                    id="filter-group"
-                                    url="/groups"
-                                    :fields="['name']"
-                                    v-model="fields.group"
-                                    @change="handleFields()"
-                                    placeholder="Select a Group"
-                                >
-                                </InputSelect>
-                            </div>
                         </div>
                         <div v-if="selectedRules.length" class="row mt-3">
                             <div class="col">
@@ -413,6 +402,7 @@ getData();
                                 <td>{{ item.field_2?.name }}</td>
                                 <td>{{ item.price_plan?.name }}</td>
                                 <td>{{ item.operation.code }}</td>
+                                <td>{{ item.group?.name }}</td>
                                 <td>{{ item.value }}</td>
                                 <td>{{ item.percentage }}</td>
                                 <td>

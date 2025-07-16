@@ -3,8 +3,6 @@
 namespace App\Http\Requests;
 
 use App\Enums\SpaRulesEnum;
-use App\Models\SpaRule;
-use Illuminate\Validation\Rule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class SpaUpdateRequest extends FormRequest
@@ -17,7 +15,7 @@ class SpaUpdateRequest extends FormRequest
         return true;
     }
 
-    private $requiredEntity2 = [SpaRulesEnum::AccountProduct->value, SpaRulesEnum::AccountSupplier->value, SpaRulesEnum::SupplierProduct->value,];
+    private $requiredEntity2 = [SpaRulesEnum::AccountProduct->value, SpaRulesEnum::AccountSupplier->value, SpaRulesEnum::SupplierProduct->value];
 
     /**
      * Get the validation rules that apply to the request.
@@ -28,22 +26,24 @@ class SpaUpdateRequest extends FormRequest
     {
 
         return [
-            "rule_id" => "exists:spa_rules,id",
-            "field_1" => ["required", "numeric"],
-            "field_2" => "numeric",
-            "operation_id" => "exists:spa_operations,id",
+            'rule_id' => 'exists:spa_rules,id',
+            'field_1' => ['required', 'numeric'],
+            'field_2' => 'numeric',
+            'operation_id' => 'exists:spa_operations,id',
             'price_plan_id' => 'nullable|exists:price_plans,id',
-            "value" => "numeric",
-            "percentage" => "numeric|min:0|max:100",
+            'group_id' => 'nullable|exists:groups,id',
+            'value' => 'numeric',
+            'percentage' => 'numeric|min:0|max:100',
         ];
     }
+
     public function messages()
     {
         return [
-            "field_1.required" => "The first Entity is required",
-            "field_2.required" => "The second Entity is required",
-            "field_1.unique" => "There is already a SPA for that entity",
-            "field_2.unique" => "There is already a SPA for the combination of that entities",
+            'field_1.required' => 'The first Entity is required',
+            'field_2.required' => 'The second Entity is required',
+            'field_1.unique' => 'There is already a SPA for that entity',
+            'field_2.unique' => 'There is already a SPA for the combination of that entities',
         ];
     }
 }
