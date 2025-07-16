@@ -5,7 +5,7 @@ import format from '@/Composables/format';
 import Select from 'primevue/select';
 
 const props = defineProps({
-    solutionType: Array,
+    showButton: { type: Boolean, default: true },
     modelValue: Object
 });
 
@@ -18,6 +18,13 @@ const proxyValue = computed({
         emit('update:modelValue', val);
     }
 });
+
+if (Array.isArray(proxyValue.value.configs.speed)) {
+    proxyValue.value.configs.speed = Number(proxyValue.value.configs.speed[0]);
+}
+if (Array.isArray(proxyValue.value.configs.bearer)) {
+    proxyValue.value.configs.bearer = Number(proxyValue.value.configs.bearer[0]);
+}
 
 const bearers = [
     { value: 100, label: format.speed(100) },
@@ -181,7 +188,7 @@ const formatInput = (ev, field, index) => {
                     </div>
                 </div>
             </div>
-            <ButtonStep v-model="proxyValue"></ButtonStep>
+            <ButtonStep v-if="showButton" v-model="proxyValue"></ButtonStep>
         </div>
     </div>
 </template>
