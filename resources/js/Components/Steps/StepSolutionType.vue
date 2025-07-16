@@ -48,7 +48,7 @@ const icons = {
                     </p>
                 </div>
             </template>
-            <div v-else class="text-primary fst-italic">
+            <div v-else class="py-5 text-primary fst-italic">
                 <font-awesome-icon class="me-2" :icon="['fas', 'circle-exclamation']"></font-awesome-icon>
                 No solution types available
             </div>
@@ -65,9 +65,7 @@ const icons = {
     padding: 20px;
     margin-bottom: 10px;
     border: 3px solid var(--white);
-    transition:
-        border-color 0.1s ease-in-out,
-        box-shadow 0.1s ease-in-out;
+    transition: border-color 0.1s ease-in-out, box-shadow 0.1s ease-in-out;
     box-shadow: 0px 10px 15px -3px var(--light-grey);
 }
 .option:hover,
