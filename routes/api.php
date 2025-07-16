@@ -3,7 +3,6 @@
 use App\Http\Controllers\Api\AccountController;
 use App\Http\Controllers\Api\ActivityController;
 use App\Http\Controllers\Api\ApiController;
-use App\Http\Controllers\Api\General\BlacklistController;
 use App\Http\Controllers\Api\BrandController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\ContactController;
@@ -12,6 +11,7 @@ use App\Http\Controllers\Api\EmailHistoryController;
 use App\Http\Controllers\Api\EmailTemplateController;
 use App\Http\Controllers\Api\ExportController;
 use App\Http\Controllers\Api\ExternalController;
+use App\Http\Controllers\Api\General\BlacklistController;
 use App\Http\Controllers\Api\GroupAccountController;
 use App\Http\Controllers\Api\GroupController;
 use App\Http\Controllers\Api\MerchantController;
@@ -37,58 +37,71 @@ use App\Http\Controllers\Api\SupplierController;
 use App\Http\Controllers\Api\TenantController;
 use App\Http\Controllers\Api\TokenController;
 use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\Auth\IntegrateAuthController;
 use Illuminate\Support\Facades\Route;
 
-Route::prefix('external')->group(function () {
-    Route::post('get-address-by-postcode', [ExternalController::class, 'getAddressesByPostCode']);
-    Route::post('get-position-by-address', [ExternalController::class, 'getPositionByAddress']);
-    Route::post('get-articles-from-cloud-market', [ExternalController::class, 'getArticlesFromCloudMarket']);
+Route::post('generate-auth-token', [IntegrateAuthController::class, 'createToken']);
+
+Route::middleware(['api', 'auth:sanctum'])->group(function () {
+    Route::prefix('shop-blocks')->group(callback: function () {
+        Route::get('models', [ShopBlocksModelController::class, 'index']);
+        Route::get('brands', [ShopBlocksBrandController::class, 'index']);
+        Route::get('products', [ShopBlocksProductController::class, 'index']);
+        Route::get('products/{article}', [ShopBlocksProductController::class, 'show']);
+        Route::get('product-features', [ProductFeatureController::class, 'index']);
+        Route::get('categories', [ShopBlocksCategoryController::class, 'index']);
+    });
+
+    Route::prefix('external')->group(function () {
+        Route::post('get-address-by-postcode', [ExternalController::class, 'getAddressesByPostCode']);
+        Route::post('get-position-by-address', [ExternalController::class, 'getPositionByAddress']);
+        Route::post('get-articles-from-cloud-market', [ExternalController::class, 'getArticlesFromCloudMarket']);
+    });
+
+    Route::prefix('shop-blocks')->group(callback: function () {
+        Route::get('brands', [ShopBlocksBrandController::class, 'index']);
+        Route::get('products', [ShopBlocksProductController::class, 'index']);
+        Route::get('products/{article}', [ShopBlocksProductController::class, 'show']);
+        Route::get('product-features', [ProductFeatureController::class, 'index']);
+        Route::get('categories', [ShopBlocksCategoryController::class, 'index']);
+    });
+
+    Route::get('/reporting-data', [DashboardController::class, 'reporting']);
+
+    Route::prefix('export')->group(function () {
+        Route::get('/', [ExportController::class, 'export']);
+        Route::get('/columns', [ExportController::class, 'getColumns']);
+    });
+
+    Route::apiResources([
+        'apis' => ApiController::class,
+        'activity' => ActivityController::class,
+        'price-plans' => PricePlanController::class,
+        'accounts' => AccountController::class,
+        'contacts' => ContactController::class,
+        'categories' => CategoryController::class,
+        'products' => ProductController::class,
+        'quotes' => QuoteController::class,
+        'quote-items' => QuoteItemController::class,
+        'orders' => OrderController::class,
+        'order-items' => OrderItemController::class,
+        'solution-types' => SolutionTypeController::class,
+        'permissions' => PermissionController::class,
+        'brands' => BrandController::class,
+        'merchants' => MerchantController::class,
+        'prices' => PriceController::class,
+        'suppliers' => SupplierController::class,
+        'regions' => RegionController::class,
+        'spas' => SpaController::class,
+        'users' => UserController::class,
+        'tokens' => TokenController::class,
+        'shared-links' => SharedLinkController::class,
+        'resources' => ResourceController::class,
+        'tenants' => TenantController::class,
+        'blacklists' => BlacklistController::class,
+        'email-templates' => EmailTemplateController::class,
+        'email-history' => EmailHistoryController::class,
+        'groups' => GroupController::class,
+        'group-accounts' => GroupAccountController::class,
+    ]);
 });
-
-Route::prefix('shop-blocks')->group(callback: function () {
-    Route::get('models', [ShopBlocksModelController::class, 'index']);
-    Route::get('brands', [ShopBlocksBrandController::class, 'index']);
-    Route::get('products', [ShopBlocksProductController::class, 'index']);
-    Route::get('products/{article}', [ShopBlocksProductController::class, 'show']);
-    Route::get('product-features', [ProductFeatureController::class, 'index']);
-    Route::get('categories', [ShopBlocksCategoryController::class, 'index']);
-});
-
-Route::get('/reporting-data', [DashboardController::class, 'reporting']);
-
-Route::prefix('export')->group(function () {
-    Route::get('/', [ExportController::class, 'export']);
-    Route::get('/columns', [ExportController::class, 'getColumns']);
-});
-
-Route::apiResources([
-    'apis' => ApiController::class,
-    'activity' => ActivityController::class,
-    'price-plans' => PricePlanController::class,
-    'accounts' => AccountController::class,
-    'contacts' => ContactController::class,
-    'categories' => CategoryController::class,
-    'products' => ProductController::class,
-    'quotes' => QuoteController::class,
-    'quote-items' => QuoteItemController::class,
-    'orders' => OrderController::class,
-    'order-items' => OrderItemController::class,
-    'solution-types' => SolutionTypeController::class,
-    'permissions' => PermissionController::class,
-    'brands' => BrandController::class,
-    'merchants' => MerchantController::class,
-    'prices' => PriceController::class,
-    'suppliers' => SupplierController::class,
-    'regions' => RegionController::class,
-    'spas' => SpaController::class,
-    'users' => UserController::class,
-    'tokens' => TokenController::class,
-    'shared-links' => SharedLinkController::class,
-    'resources' => ResourceController::class,
-    'tenants' => TenantController::class,
-    'blacklists' => BlacklistController::class,
-    'email-templates' => EmailTemplateController::class,
-    'email-history' => EmailHistoryController::class,
-    'groups' => GroupController::class,
-    'group-accounts' => GroupAccountController::class,
-]);
