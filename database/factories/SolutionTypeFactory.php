@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use Str;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory
+ * @extends Factory
  */
 class SolutionTypeFactory extends Factory
 {
@@ -22,7 +22,8 @@ class SolutionTypeFactory extends Factory
             'solution_type_id' => 1,
             'configurations' => [
                 'component' => null
-            ]
+            ],
+            'is_active' => true
         ];
     }
 }

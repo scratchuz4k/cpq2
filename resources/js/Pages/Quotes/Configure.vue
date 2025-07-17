@@ -23,12 +23,11 @@ const form = reactive({
 const submit = () => {
     let configs = {};
     if (form.solution_type?.code == 3) {
-        Object.keys(form.configurations).forEach((key) => {
-            configs[key] = Array.isArray(form.configurations[key])
-                ? form.configurations[key].join(',')
-                : form.configurations[key];
+        Object.keys(form.configs).forEach((key) => {
+            configs[key] = Array.isArray(form.configs[key]) ? form.configs[key].join(',') : form.configs[key];
         });
     }
+
     try {
         router.put(`/quotes/${props.quote.id}`, {
             address_line1: form.address?.label,

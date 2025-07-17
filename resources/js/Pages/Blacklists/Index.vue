@@ -1,18 +1,17 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head, Link } from "@inertiajs/vue3";
+import { Head, Link } from '@inertiajs/vue3';
 import { ref } from 'vue';
 
 const props = defineProps({
     operators: Array
-})
+});
 const items = ref([
     { label: 'Home', url: '/' },
     { label: 'My Account', url: '/myaccount' },
-    { label: "Products", url: "/products" },
-    { label: 'Blacklists' },
+    { label: 'Products', url: '/products' },
+    { label: 'Blacklists' }
 ]);
-
 </script>
 <template>
     <Head title="Blacklist" />
@@ -21,33 +20,43 @@ const items = ref([
             <Header title="Blacklist" :breadcrumbs="items">
                 <template #buttons>
                     <Link href="/blacklists/create" id="blacklist-create-btn" class="btn btn-primary me-2">
-                        <font-awesome-icon :icon="['fas', 'plus']"></font-awesome-icon> New Item
+                        <font-awesome-icon :icon="['fas', 'plus']"></font-awesome-icon>
+                        New Item
                     </Link>
                 </template>
             </Header>
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                <Datatable :allow="{
-                    update: true,
-                    delete: true,
-                    link: false,
-                }" :columns="[
-                    { data: 'productName', title: 'Name', style: 'width:10%' },
-                    { data: 'providerName', title: 'Provider', style: 'width:5%' },
-                    { data: 'connectivitySupplierGroup', title: 'Subprovider', style: 'width:5%' },
-                    { data: 'bearer', title: 'Bearer', style: 'width:5%' },
-                    { data: 'speed', title: 'Speed', style: 'width:5%' },
-                    { data: 'contractTermMonths', title: 'Contract Term', style: 'width:29%' },
-                    { data: 'created_at', title: 'created At', style: 'width:15%' },
-                    { data: 'updated_at', title: 'Updated At', style: 'width:15%' }
-                ]" route="/blacklists">
+                <Datatable
+                    :allow="{
+                        update: true,
+                        delete: true,
+                        link: false
+                    }"
+                    :columns="[
+                        { data: 'is_active', title: 'Active', style: 'width:5%' },
+                        { data: 'productName', title: 'Name', style: 'width:10%' },
+                        { data: 'providerName', title: 'Provider', style: 'width:5%' },
+                        { data: 'connectivitySupplierGroup', title: 'Subprovider', style: 'width:5%' },
+                        { data: 'bearer', title: 'Bearer', style: 'width:5%' },
+                        { data: 'speed', title: 'Speed', style: 'width:5%' },
+                        { data: 'contractTermMonths', title: 'Contract Term', style: 'width:24%' },
+                        { data: 'created_at', title: 'created At', style: 'width:15%' },
+                        { data: 'updated_at', title: 'Updated At', style: 'width:15%' }
+                    ]"
+                    route="/blacklists"
+                >
                     <template #bearer="{ value }">
                         <span
                             v-if="!Array.isArray(value.value)"
                             v-tooltip
                             data-bs-toggle="tooltip"
                             data-bs-placement="top"
-                            :title="operators.find(op => op.name === value?.operator)
-                                ?.description + ' ' + value.value + ' ' + value.unit
+                            :title="
+                                operators.find((op) => op.name === value?.operator)?.description +
+                                ' ' +
+                                value.value +
+                                ' ' +
+                                value.unit
                             "
                         >
                             {{ value.value }} {{ value.unit }}
@@ -58,13 +67,18 @@ const items = ref([
                             v-tooltip
                             data-bs-toggle="tooltip"
                             data-bs-placement="top"
-                            :title="operators.find(op => op.name === value?.operator)
-                                ?.description + ' ' + value.value[0] + ' and ' + value.value[1] + ' ' + value.unit
+                            :title="
+                                operators.find((op) => op.name === value?.operator)?.description +
+                                ' ' +
+                                value.value[0] +
+                                ' and ' +
+                                value.value[1] +
+                                ' ' +
+                                value.unit
                             "
                         >
                             {{ value.value[0] }} to {{ value.value[1] }} {{ value.unit }}
                         </span>
-
                     </template>
                     <template #speed="{ value }">
                         <span
@@ -72,8 +86,12 @@ const items = ref([
                             v-tooltip
                             data-bs-toggle="tooltip"
                             data-bs-placement="top"
-                            :title="operators.find(op => op.name === value?.operator)
-                                ?.description + ' ' + value.value + ' ' + value.unit
+                            :title="
+                                operators.find((op) => op.name === value?.operator)?.description +
+                                ' ' +
+                                value.value +
+                                ' ' +
+                                value.unit
                             "
                         >
                             {{ value.value }} {{ value.unit }}
@@ -84,13 +102,18 @@ const items = ref([
                             v-tooltip
                             data-bs-toggle="tooltip"
                             data-bs-placement="top"
-                            :title="operators.find(op => op.name === value?.operator)
-                                ?.description + ' ' + value.value[0] + ' and ' + value.value[1] + ' ' + value.unit
+                            :title="
+                                operators.find((op) => op.name === value?.operator)?.description +
+                                ' ' +
+                                value.value[0] +
+                                ' and ' +
+                                value.value[1] +
+                                ' ' +
+                                value.unit
                             "
                         >
                             {{ value.value[0] }} to {{ value.value[1] }} {{ value.unit }}
                         </span>
-
                     </template>
                     <template #contractTermMonths="{ value }">
                         {{ value ? value + ' months' : '' }}
@@ -100,6 +123,9 @@ const items = ref([
                     </template>
                     <template #created_at="{ value }">
                         {{ format.date(value) }}
+                    </template>
+                    <template #is_active="{ data, value }">
+                        <ToggleActive :data="data" :value="value" route="blacklists" />
                     </template>
                 </Datatable>
             </div>

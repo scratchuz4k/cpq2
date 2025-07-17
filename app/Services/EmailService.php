@@ -2,9 +2,8 @@
 
 namespace App\Services;
 
-use Illuminate\Support\Arr;
 use App\Models\EmailTemplate;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 
 class EmailService
@@ -14,7 +13,10 @@ class EmailService
         $tenant_id = Auth::user()->tenant_id;
 
         $emailTemplate->tenants()->sync([
-            $tenant_id => Arr::only($array, ['to', 'cc', 'bcc', 'subject', 'body'])
+            $tenant_id => Arr::only(
+                [...$emailTemplate->toArray(), ...$array],
+                ['to', 'cc', 'bcc', 'subject', 'body', 'is_active']
+            ),
         ]);
 
         return $emailTemplate;

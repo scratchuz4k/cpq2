@@ -176,6 +176,7 @@ watch(
                             <span class="text-center" style="width: 20px">
                                 <template v-if="column.data == meta.orderBy">
                                     <font-awesome-icon v-if="meta.order == 'desc'" :icon="['fas', 'sort-down']" />
+
                                     <font-awesome-icon v-else :icon="['fas', 'sort-up']" />
                                 </template>
                             </span>
@@ -197,7 +198,12 @@ watch(
                     v-model="props.modelValue"
                 >
                     <template v-for="column in columns" #[column.data]="{ value }">
-                        <slot v-if="usedSlots.includes(column.data)" :name="column.data" :value="value"></slot>
+                        <slot
+                            v-if="usedSlots.includes(column.data)"
+                            :name="column.data"
+                            :value="value"
+                            :data="item"
+                        ></slot>
                         <template v-else>{{ value }}</template>
                     </template>
                 </TreeTableItem>
@@ -224,7 +230,7 @@ watch(
             :draggable="false"
             position="top"
         >
-            <template #header> </template>
+            <template #header></template>
             <slot name="dialog_content" :data="selectedItem" :toggleModal="() => (showModal = !showModal)" />
         </Dialog>
     </div>

@@ -2,7 +2,6 @@
 
 namespace App\Models\General;
 
-use App\Helpers\DataProvider;
 use App\Helpers\FilterProvider;
 use App\Models\Scopes\TenantScope;
 use App\Trait\SetTenantId;
@@ -28,6 +27,9 @@ class Blacklist extends Model
         'contractTermMonths',
     ];
 
+    protected $casts = [
+        'is_active' => 'boolean'
+    ];
 
     protected static function booted(): void
     {
@@ -40,21 +42,22 @@ class Blacklist extends Model
         $blacklisted_items = collect();
 
         foreach ($this->getBlacklistFilters() as $item) {
-            $blacklisted_items = $blacklisted_items->merge(FilterProvider::get($data->toArray(), $item));        }
+            $blacklisted_items = $blacklisted_items->merge(FilterProvider::get($data->toArray(), $item));
+        }
 
         return $blacklisted_items;
     }
 
     public function getBlacklistFilters(): array
     {
-        $blacklist_items = $this::all()->toArray();
+        $blacklist_items = $this::where('is_active', true)->get()->toArray();
         $blacklist_filters = [];
 
         foreach ($blacklist_items as $blacklist_item) {
             foreach ($blacklist_item as $column => $value) {
                 if ($value && in_array($column, $this->filterable_columns)) {
                     if (is_array($value)) {
-                        if (! is_null($value['value'])) {
+                        if (!is_null($value['value'])) {
                             $blacklist_filters[$blacklist_item['id']][] = [
                                 'column' => $column,
                                 'operator' => $value['operator'],
@@ -62,7 +65,7 @@ class Blacklist extends Model
                                     ? $value['value']
                                     : (
                                     is_array($value['value'])
-                                        ? array_map(fn ($item) => $item * 1000, $value['value'])
+                                        ? array_map(fn($item) => $item * 1000, $value['value'])
                                         : $value['value'] * 1000
                                     ),
                             ];

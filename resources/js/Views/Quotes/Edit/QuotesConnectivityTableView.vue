@@ -25,6 +25,7 @@ const showContended = ref(null);
 const articles = ref([]);
 const errors = ref([]);
 const selectedFilters = ref([]);
+
 const filters = reactive({
     providerName: {
         operator: 'in',
@@ -38,17 +39,17 @@ const filters = reactive({
     },
     contractTermMonths: {
         operator: 'in',
-        value: null,
+        value: props.modelValue.configs?.contract_length ? props.modelValue.configs.contract_length.split(',') : null,
         name: 'Contract Length'
     },
     bearer: {
         operator: 'greater_than_or_equal_to',
-        value: null,
+        value: props.modelValue.configs?.bearer,
         name: 'Bearer'
     },
     speed: {
         operator: 'greater_than_or_equal_to',
-        value: null,
+        value: props.modelValue.configs?.speed,
         name: 'Speed'
     }
 });
@@ -144,7 +145,7 @@ const getArticles = async (clearCache = false, runTimeout = false) => {
             'Address not found in cache': 'No results were found for this address.'
         };
         if (res.data.errors) {
-            errors.value = res.data.errors
+            const mappedErrors = res.data.errors
                 .filter((error) => error.provider !== 'gamma')
                 .map((error) => {
                     for (const [key, message] of Object.entries(errorMessages)) {
@@ -157,6 +158,9 @@ const getArticles = async (clearCache = false, runTimeout = false) => {
                         response: 'An error occurred, resulting in partial or no results'
                     };
                 });
+            errors.value = mappedErrors.filter(
+                (e, i, arr) => arr.findIndex((x) => x.provider === e.provider && x.response === e.response) === i
+            );
         }
         articles.value = res.data.data ?? [];
         articles.value = articles.value.map((article) => {
@@ -182,6 +186,25 @@ const getArticles = async (clearCache = false, runTimeout = false) => {
         meta.isRequestCompleted = !!res.data.finished_at;
 
         Object.assign(filterList, res.data.filters);
+
+        const configSpeed = props.modelValue.configs?.speed;
+        if (configSpeed && !Object.prototype.hasOwnProperty.call(filterList.speed, configSpeed)) {
+            filterList.speed[configSpeed] = 0;
+        }
+
+        const configBearer = props.modelValue.configs?.bearer;
+        if (configBearer && !Object.prototype.hasOwnProperty.call(filterList.bearer, configBearer)) {
+            filterList.bearer[configBearer] = 0;
+        }
+
+        const contractLengths = props.modelValue.configs?.contract_length
+            ? props.modelValue.configs.contract_length.split(',')
+            : [];
+        contractLengths.forEach((length) => {
+            if (length && !Object.prototype.hasOwnProperty.call(filterList.contractTermMonths, length)) {
+                filterList.contractTermMonths[length] = 0;
+            }
+        });
 
         let bearerFilters = [];
         Object.keys(filterList.bearer).forEach((key) => {
@@ -428,7 +451,7 @@ getArticles(false, true);
                                                   ).filter((v) => v !== null)"
                                             :value="
                                                 ['speed', 'bearer'].includes(column)
-                                                    ? 'Min. ' + format.speed(value)
+                                                    ? 'Min. ' + _.capitalize(column) + ': ' + format.speed(value)
                                                     : ['contractTermMonths'].includes(column)
                                                     ? value + ' Months'
                                                     : value
@@ -449,7 +472,38 @@ getArticles(false, true);
                                         </Badge>
                                     </template>
                                 </li>
+                                <li v-if="props.modelValue.configs?.managed && props.modelValue.configs?.managed != 0">
+                                    <Badge
+                                        :value="
+                                            props.modelValue.configs?.managed == 1
+                                                ? 'Managed Only'
+                                                : props.modelValue.configs?.managed == 2
+                                                ? 'Unmanaged Only'
+                                                : 'Managed and Unmanaged'
+                                        "
+                                        class="px-3 py-1"
+                                    >
+                                        <font-awesome-icon
+                                            :icon="['fas', 'shield-alt']"
+                                            class="ms-1 fs-7"
+                                        ></font-awesome-icon>
+                                    </Badge>
+                                </li>
                             </ul>
+                            <div
+                                v-if="
+                                    props.modelValue.configs?.speed ||
+                                    props.modelValue.configs?.bearer ||
+                                    props.modelValue.configs?.contract_length ||
+                                    props.modelValue.configs?.managed !== '0'
+                                "
+                                class="d-flex align-self-end justify-content-around mb-2"
+                            >
+                                <tooltip-with-icon
+                                    class="ms-2 mt-1"
+                                    :info_text="'The current results are based on predefined filters. For a more complete view, please go back and select a broader filter selection.'"
+                                />
+                            </div>
                         </div>
                     </div>
                 </div>

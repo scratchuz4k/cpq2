@@ -2,23 +2,19 @@
 
 namespace App\Models;
 
-use App\Models\Brand;
-use App\Models\Price;
-use App\Models\Category;
-use App\Models\Supplier;
-use App\Models\PricePlan;
-use App\Trait\SetTenantId;
 use App\Models\Scopes\TenantScope;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Trait\SetTenantId;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Product extends Model
 {
     use HasFactory, SetTenantId;
+
     protected $fillable = [
         'code',
         'name',
@@ -26,21 +22,32 @@ class Product extends Model
         'supplier_id',
         'brand_id',
         "price_plan_id",
-        'tenant_id'
+        'tenant_id',
+        'is_active',
     ];
 
+    protected function casts(): array
+    {
+        return [
+            'is_active' => 'boolean'
+        ];
+    }
+    
     protected static function booted(): void
     {
         static::addGlobalScope(new TenantScope);
     }
+
     public function activePrice(): ?Price
     {
         return $this->prices()->first();
     }
+
     public function prices(): HasMany
     {
         return $this->hasMany(Price::class);
     }
+
     public function pricePlan(): BelongsTo
     {
         return $this->belongsTo(PricePlan::class);

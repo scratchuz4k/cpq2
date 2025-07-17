@@ -1,6 +1,7 @@
 <script setup>
 import { computed } from 'vue';
 import queryString from 'query-string';
+
 const props = defineProps({
     modelValue: Object
 });
@@ -50,8 +51,8 @@ getAccount();
                     <div class="col-12">
                         <h5 class="font-bold mb-3">Select an account to start a quote</h5>
                         <div class="mb-3">
-                            <label for="account_id" class="form-label"
-                                >Account <span class="text-primary fw-bold">*</span></label
+                            <label for="account_id" class="form-label">
+                                Account <span class="text-primary fw-bold">*</span></label
                             >
                             <InputSelect
                                 id="account_id"
@@ -59,6 +60,7 @@ getAccount();
                                 url="/accounts"
                                 :fields="['name', 'reference']"
                                 :placeholder="'Select an Account'"
+                                :query="[{ column: 'is_active', operator: 'equals', value: 1 }]"
                             >
                             </InputSelect>
                         </div>
