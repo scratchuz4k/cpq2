@@ -50,7 +50,8 @@ const saveSpa = () => {
         price_plan_id: spa.price_plan_id,
         operation_id: spa.operation_id,
         value: !spa.value ? 0 : spa.value,
-        percentage: !spa.percentage ? 0 : spa.percentage
+        percentage: !spa.percentage ? 0 : spa.percentage,
+        group_id: spa.group?.id
     };
     router.put(`/spas/${props.spa.id}`, item, {
         onSuccess: (page) => {
