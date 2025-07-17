@@ -184,6 +184,25 @@ const getArticles = async (clearCache = false, runTimeout = false) => {
 
         Object.assign(filterList, res.data.filters);
 
+        const configSpeed = props.modelValue.configs?.speed;
+        if (configSpeed && !Object.prototype.hasOwnProperty.call(filterList.speed, configSpeed)) {
+            filterList.speed[configSpeed] = 0;
+        }
+
+        const configBearer = props.modelValue.configs?.bearer;
+        if (configBearer && !Object.prototype.hasOwnProperty.call(filterList.bearer, configBearer)) {
+            filterList.bearer[configBearer] = 0;
+        }
+
+        const contractLengths = props.modelValue.configs?.contract_length
+            ? props.modelValue.configs.contract_length.split(',')
+            : [];
+        contractLengths.forEach((length) => {
+            if (length && !Object.prototype.hasOwnProperty.call(filterList.contractTermMonths, length)) {
+                filterList.contractTermMonths[length] = 0;
+            }
+        });
+
         let bearerFilters = [];
         Object.keys(filterList.bearer).forEach((key) => {
             bearerFilters.push({
