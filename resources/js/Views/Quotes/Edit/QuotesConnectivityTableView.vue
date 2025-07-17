@@ -145,7 +145,7 @@ const getArticles = async (clearCache = false, runTimeout = false) => {
             'Address not found in cache': 'No results were found for this address.'
         };
         if (res.data.errors) {
-            errors.value = res.data.errors
+            const mappedErrors = res.data.errors
                 .filter((error) => error.provider !== 'gamma')
                 .map((error) => {
                     for (const [key, message] of Object.entries(errorMessages)) {
@@ -158,6 +158,9 @@ const getArticles = async (clearCache = false, runTimeout = false) => {
                         response: 'An error occurred, resulting in partial or no results'
                     };
                 });
+            errors.value = mappedErrors.filter(
+                (e, i, arr) => arr.findIndex((x) => x.provider === e.provider && x.response === e.response) === i
+            );
         }
         articles.value = res.data.data ?? [];
         articles.value = articles.value.map((article) => {
