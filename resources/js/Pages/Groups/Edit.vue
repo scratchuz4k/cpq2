@@ -4,6 +4,7 @@ import { Button, InputText, DataTable, Column, Panel } from 'primevue';
 import { reactive, ref } from 'vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, router } from '@inertiajs/vue3';
+
 const props = defineProps({
     group: Object
 });
@@ -76,7 +77,7 @@ const items = ref([
     <Head :title="'Edit Group #' + group.id" />
     <AuthenticatedLayout>
         <div class="panel">
-            <Header :title="'Edit Group #' + group.id" :breadcrumbs="items"> </Header>
+            <Header :title="'Edit Group #' + group.id" :breadcrumbs="items"></Header>
             <tabs>
                 <tab title="General" :selected="true">
                     <div class="row mt-3">
@@ -117,13 +118,17 @@ const items = ref([
                                 :fields="['name']"
                                 v-model="user"
                                 placeholder="Select an User"
-                                :query="[{ column: 'group_id', operator: 'is_null', value: '' }]"
+                                :query="[
+                                    { column: 'group_id', operator: 'is_null', value: '' },
+                                    { column: 'is_active', operator: 'equals', value: 1 }
+                                ]"
                             >
                             </InputSelect>
                         </div>
                         <div class="d-flex align-items-end justify-content-end">
                             <Button id="button-add-user-to-group" type="submit" class="btn btn-secondary">
-                                <font-awesome-icon :icon="['fas', 'plus']"></font-awesome-icon> Add
+                                <font-awesome-icon :icon="['fas', 'plus']"></font-awesome-icon>
+                                Add
                             </Button>
                         </div>
                     </form>
@@ -167,13 +172,17 @@ const items = ref([
                                 :fields="['name']"
                                 v-model="account"
                                 placeholder="Select an Account"
-                                :query="[{ column: 'groups.id', operator: 'is_null', value: '' }]"
+                                :query="[
+                                    { column: 'groups.id', operator: 'is_null', value: '' },
+                                    { column: 'is_active', operator: 'equals', value: 1 }
+                                ]"
                             >
                             </InputSelect>
                         </div>
                         <div class="d-flex align-items-end justify-content-end">
                             <Button id="button-add-account-to-group" type="submit" class="btn btn-secondary">
-                                <font-awesome-icon :icon="['fas', 'plus']"></font-awesome-icon> Add
+                                <font-awesome-icon :icon="['fas', 'plus']"></font-awesome-icon>
+                                Add
                             </Button>
                         </div>
                     </form>

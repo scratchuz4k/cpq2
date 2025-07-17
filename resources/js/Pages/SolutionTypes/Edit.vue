@@ -6,6 +6,7 @@ import { Head, router } from '@inertiajs/vue3';
 import { reactive, ref } from 'vue';
 import InputSelect from '@/Components/InputSelect.vue';
 import { v4 as uuid } from 'uuid';
+import ToggleSwitch from 'primevue/toggleswitch';
 
 const props = defineProps({
     suppliers: Object,
@@ -23,7 +24,8 @@ const configurations = reactive({
 });
 const solution = reactive({
     name: props.solution_type?.name,
-    estimated_time: props.solution_type?.estimated_time
+    estimated_time: props.solution_type?.estimated_time,
+    is_active: props.solution_type?.is_active === 1
 });
 const table = reactive(
     props.solution_type.table
@@ -178,6 +180,19 @@ const items = ref([
                 <tabs>
                     <tab title="General" :selected="true">
                         <div class="mt-3">
+                            <div class="mb-3 d-flex flex-column">
+                                <label class="form-label" for="active-filter"> Active: </label>
+                                <ToggleSwitch id="active-filter" v-model="solution.is_active">
+                                    <template #handle>
+                                        <font-awesome-icon
+                                            :icon="
+                                                solution.is_active ? ['fas', 'circle-check'] : ['far', 'circle-xmark']
+                                            "
+                                            class="text-primary"
+                                        />
+                                    </template>
+                                </ToggleSwitch>
+                            </div>
                             <div class="mb-3">
                                 <label for="solution_type-name" class="form-label">Name:</label>
                                 <input id="solution_type-name" class="form-control" v-model="solution.name" disabled />
@@ -235,6 +250,7 @@ const items = ref([
                                                         :fields="['name']"
                                                         placeholder="Select a Category"
                                                         @change="checkCategories(index)"
+                                                        :query="[{ column: 'is_active', operator: 'equals', value: 1 }]"
                                                     >
                                                     </InputSelect>
                                                 </td>

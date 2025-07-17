@@ -2,25 +2,31 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Requests\IndexRequest;
-use Dedoc\Scramble\Attributes\ExcludeRouteFromDocs;
-use Exception;
-use App\Models\Account;
-use App\Models\Product;
-use App\Models\Supplier;
-use Illuminate\Http\Request;
 use App\Helpers\DataProvider;
 use App\Helpers\FilterProvider;
 use App\Helpers\Prices\PriceRules;
-use Illuminate\Support\Facades\Log;
-use App\Http\Resources\ProductResource;
 use App\Http\Controllers\BaseController;
-use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use App\Http\Requests\IndexRequest;
+use App\Http\Resources\ProductResource;
+use App\Models\Account;
+use App\Models\Product;
+use App\Services\ProductsService;
+use Dedoc\Scramble\Attributes\ExcludeRouteFromDocs;
+use Exception;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class ProductController extends BaseController
 {
     protected $model = Product::class;
+
+
+    public function __construct(protected ProductsService $service)
+    {
+        parent::__construct();
+    }
+
     /**
      * List of Products
      * @response AnonymousResourceCollection<LengthAwarePaginator<ProductResource>>
@@ -84,7 +90,16 @@ class ProductController extends BaseController
     #[ExcludeRouteFromDocs]
     public function update(Request $request, Product $product)
     {
-        //
+        try {
+            $product = DB::transaction(function () use ($product, $request) {
+                return $this->service->update($product, $request->all());
+            });
+        } catch (Exception $e) {
+            Log::debug($e->getMessage());
+            throw new Exception($e);
+        }
+
+        return new ProductResource($product);
     }
 
     /**

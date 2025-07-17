@@ -1,11 +1,10 @@
 <script setup>
 import format from '@composables/format';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head, Link } from '@inertiajs/vue3';
+import { Head, Link, usePage } from '@inertiajs/vue3';
 import { Button, Paginator } from 'primevue';
-import { reactive, ref, watch } from 'vue';
+import { reactive, ref } from 'vue';
 import queryString from 'query-string';
-import { usePage } from '@inertiajs/vue3';
 import axios from 'axios';
 import { exportData } from '@/Composables/export.js';
 import { can, hasRole } from '@/Composables/useAuth.js';
@@ -180,7 +179,6 @@ const deleteRecord = async (id) => {
             let res = await axios.delete('/api/spas/' + id);
             getData();
             notyf.success('Removed with success');
-            return;
         } catch (err) {
             notyf.error(err?.response?.data?.message ?? 'Something went wrong');
         }
@@ -203,7 +201,8 @@ const cloneSpa = async (item) => {
             operation_id: item.operation_id ?? 0,
             price_plan_id: item.price_plan_id ?? null,
             value: item.value ?? 0,
-            percentage: item.percentage ?? 0
+            percentage: item.percentage ?? 0,
+            is_active: item.is_active ?? true
         });
         notyf.success('Clone with success');
         getData();
@@ -247,11 +246,11 @@ const getExportData = async () => {
         exportDisabled.value = false;
     }, 5000);
 };
-
 const items = ref([{ label: 'Home', url: '/' }, { label: 'My Account', url: '/myaccount' }, { label: 'SPAs' }]);
 
 const columns = [
     { name: '#', data: 'id' },
+    { name: 'Active', data: 'is_active' },
     { name: 'Rule', data: 'rule_id' },
     { name: 'Level 1', data: 'field_1' },
     { name: 'Level 2', data: 'field_2' },
@@ -260,6 +259,10 @@ const columns = [
     { name: 'Value', data: 'value' },
     { name: 'Percentage', data: 'percentage' }
 ];
+
+emitter.on('datatable-refresh' + (props.id ? ':' + props.id : ''), () => {
+    getData();
+});
 
 getData();
 </script>
@@ -270,7 +273,8 @@ getData();
             <Header title="SPAs" :breadcrumbs="items">
                 <template #buttons>
                     <Link id="create-spa" href="/spas/create" class="btn btn-primary me-2">
-                        <font-awesome-icon :icon="['fas', 'plus']"></font-awesome-icon> New SPA
+                        <font-awesome-icon :icon="['fas', 'plus']"></font-awesome-icon>
+                        New SPA
                     </Link>
                 </template>
             </Header>
@@ -280,8 +284,10 @@ getData();
                         :class="{ 'p-button-secondary': !visible, 'p-button-primary': visible }"
                         @click="visible = !visible"
                         class="p-button p-component me-2"
-                        ><font-awesome-icon :icon="['fas', 'filter']"
-                    /></Button>
+                    >
+                        <font-awesome-icon :icon="['fas', 'filter']" />
+                    </Button>
+
                     <Button
                         v-if="visible"
                         type="button"
@@ -322,6 +328,7 @@ getData();
                                     v-model="fields.account"
                                     @change="handleFields()"
                                     placeholder="Select an Account"
+                                    :query="[{ column: 'is_active', operator: 'equals', value: 1 }]"
                                 >
                                 </InputSelect>
                             </div>
@@ -334,6 +341,7 @@ getData();
                                     v-model="fields.supplier"
                                     @change="handleFields()"
                                     placeholder="Select an Supplier"
+                                    :query="[{ column: 'is_active', operator: 'equals', value: 1 }]"
                                 >
                                 </InputSelect>
                             </div>
@@ -346,6 +354,7 @@ getData();
                                     v-model="fields.product"
                                     @change="handleFields()"
                                     placeholder="Select a Product"
+                                    :query="[{ column: 'is_active', operator: 'equals', value: 1 }]"
                                 >
                                 </InputSelect>
                             </div>
@@ -358,6 +367,7 @@ getData();
                                     v-model="fields.group"
                                     @change="handleFields()"
                                     placeholder="Select a Group"
+                                    :query="[{ column: 'is_active', operator: 'equals', value: 1 }]"
                                 >
                                 </InputSelect>
                             </div>
@@ -408,6 +418,17 @@ getData();
                         <tbody>
                             <tr v-for="(item, index) in data">
                                 <td>{{ item.id }}</td>
+                                <td>
+                                    <ToggleActive
+                                        :data="{
+                                            ...item,
+                                            field_1: item.field_1?.id,
+                                            field_2: item.field_2?.id
+                                        }"
+                                        :value="item.is_active"
+                                        route="spas"
+                                    />
+                                </td>
                                 <td>{{ item.rule.name }}</td>
                                 <td>{{ item.field_1?.name }}</td>
                                 <td>{{ item.field_2?.name }}</td>

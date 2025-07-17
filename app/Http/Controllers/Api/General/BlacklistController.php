@@ -9,6 +9,9 @@ use App\Http\Resources\General\BlacklistResource;
 use App\Models\General\Blacklist;
 use App\Services\BlacklistService;
 use Dedoc\Scramble\Attributes\ExcludeRouteFromDocs;
+use Exception;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class BlacklistController extends BaseController
@@ -30,15 +33,30 @@ class BlacklistController extends BaseController
         $dataProvider = new DataProvider(Blacklist::class);
         try {
             $data = $dataProvider->get();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             if (!env('APP_DEBUG')) {
                 Log::error($e->getMessage());
             }
-            throw new \Exception($e);
+            throw new Exception($e);
         }
         return BlacklistResource::collection($data);
     }
 
+    public function update(Request $request, Blacklist $blacklist)
+    {
+        try {
+            $blacklist = DB::transaction(function () use ($blacklist, $request) {
+                return $this->blacklistService->update($blacklist, $request->all());
+            });
+        } catch (Exception $e) {
+            if (!env('APP_DEBUG')) {
+                Log::error($e->getMessage());
+            }
+            throw new Exception($e);
+        }
+
+        return new BlacklistResource($blacklist);
+    }
 
     /**
      * Remove the specified resource from storage.

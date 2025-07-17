@@ -12,8 +12,15 @@ class SolutionTypeTenant extends Model
 
     protected $table = 'solution_type_tenant';
 
-    protected $fillable = ['solution_type_id', 'tenant_id', 'estimated_time'];
+    protected $fillable = ['solution_type_id', 'tenant_id', 'estimated_time', 'is_active'];
 
+    protected function casts(): array
+    {
+        return [
+            'is_active' => 'boolean'
+        ];
+    }
+    
     protected static function booted(): void
     {
         static::addGlobalScope(new TenantScope);

@@ -16,7 +16,7 @@ import axios from 'axios';
 import { can, hasRole } from '@/Composables/useAuth.js';
 import pluralize from 'pluralize';
 import { exportData } from '@/Composables/export.js';
-import Select from "primevue/select";
+import Select from 'primevue/select';
 
 const slots = useSlots();
 const usedSlots = Object.keys(slots);
@@ -59,7 +59,6 @@ const meta = reactive({
 });
 
 const openSelectIndex = ref(null);
-
 
 const setFilters = () => {
     props.columns.forEach((el) => form.filters.push({ column: el.data, value: null, operator: 'contains' }));
@@ -109,7 +108,6 @@ const deleteRecord = async (id) => {
             let res = await axios.delete('/api' + props.route + '/' + id);
             getData();
             notyf.success('Removed with success');
-            return;
         } catch (err) {
             notyf.error(err?.response?.data?.message ?? 'Something went wrong');
         }

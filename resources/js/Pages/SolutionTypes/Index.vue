@@ -18,7 +18,6 @@ const deleteRecord = async (id) => {
                 emitter.emit('datatable-refresh');
             }
             notyf.success('Removed with success');
-            return;
         } catch (err) {
             notyf.error(err?.response?.data?.message ?? 'Something went wrong');
         }
@@ -38,7 +37,8 @@ const items = ref([
             <Header title="Solution Types" :breadcrumbs="items">
                 <template #buttons>
                     <Link href="/solution-types/create" id="solution-create-btn" class="btn btn-primary me-2">
-                        <font-awesome-icon :icon="['fas', 'plus']"></font-awesome-icon> New Solution Type
+                        <font-awesome-icon :icon="['fas', 'plus']"></font-awesome-icon>
+                        New Solution Type
                     </Link>
                 </template>
             </Header>
@@ -48,8 +48,9 @@ const items = ref([
                     :allow="{}"
                     :columns="[
                         { data: 'id', title: '#', style: 'width:5%' },
+                        { data: 'is_active', title: 'Active', style: 'width:5%' },
                         { data: 'solution_type.code', title: 'Code', style: 'width:10%' },
-                        { data: 'solution_type.name', title: 'Name', style: 'width:45%' },
+                        { data: 'solution_type.name', title: 'Name', style: 'width:40%' },
                         { data: 'created_at', title: 'Created At', style: 'width:15%' },
                         { data: 'updated_at', title: 'Updated At', style: 'width:15%' },
                         { data: 'actions', title: '', style: 'width:13%' },
@@ -80,6 +81,9 @@ const items = ref([
                                 <font-awesome-icon icon="fas fa-trash-alt" />
                             </button>
                         </div>
+                    </template>
+                    <template #is_active="{ data, value }">
+                        <ToggleActive :data="data" :value="value" route="solution-types" />
                     </template>
                 </Datatable>
             </div>

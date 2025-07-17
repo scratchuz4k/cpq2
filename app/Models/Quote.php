@@ -37,7 +37,7 @@ class Quote extends Model
         'commission_rate',
         'margin',
         'status',
-        'user_id',
+        'user_id'
     ];
 
     protected function casts(): array
@@ -143,7 +143,7 @@ class Quote extends Model
             return QuoteStatusesEnum::QUOTE->name;
         }
 
-        if (! empty($quote->address_data)) {
+        if (!empty($quote->address_data)) {
             return QuoteStatusesEnum::PRICE->name;
         }
 
