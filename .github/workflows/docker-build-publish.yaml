@@ -1,192 +1,192 @@
 name: Docker Build & Publish
 
 on:
-  pull_request:
-    types: [opened, synchronize]
+    pull_request:
+        types: [opened, synchronize]
 
 env:
-  REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
-  GITHUB_WORKSPACE: ${{ github.workspace }}
+    REGISTRY: ghcr.io
+    IMAGE_NAME: ${{ github.repository }}
+    GITHUB_WORKSPACE: ${{ github.workspace }}
 
 jobs:
-  tests:
-    name: Run Pest and Cypress Tests
-    runs-on: ubuntu-24.04
-    environment: testing
+    tests:
+        name: Run Pest and Cypress Tests
+        runs-on: ubuntu-24.04
+        environment: testing
 
-    permissions:
-      contents: read
-      packages: write
-      id-token: write
+        permissions:
+            contents: read
+            packages: write
+            id-token: write
 
-    steps:
-      - uses: actions/checkout@v4
+        steps:
+            - uses: actions/checkout@v4
 
-      - uses: shivammathur/setup-php@v2
-        with:
-          php-version: 8.3
-          extensions: json, dom, libxml, mbstring, bcmath, curl, sqlite3, fileinfo, pcntl, redis, bcmath, gd, zip, mongodb
-          coverage: none
+            - uses: shivammathur/setup-php@v2
+              with:
+                  php-version: 8.4
+                  extensions: json, dom, libxml, mbstring, bcmath, curl, sqlite3, fileinfo, pcntl, redis, bcmath, gd, zip, mongodb
+                  coverage: none
 
-      - name: Setup NodeJS
-        uses: actions/setup-node@v4
+            - name: Setup NodeJS
+              uses: actions/setup-node@v4
 
-      - name: Copy .env
-        run: cp .env.testing .env
+            - name: Copy .env
+              run: cp .env.testing .env
 
-      - name: Add .env secrets
-        run: |
-          echo "SHOPBLOCKS_API_KEY=${{ secrets.SHOPBLOCKS_API_KEY }}" >> .env
-          echo "TOMTOM_API_KEY=${{ secrets.TOMTOM_API_KEY }}" >> .env
-          echo "VIRTUAL1_ADDRESS_PASSWORD=${{ secrets.VIRTUAL1_ADDRESS_PASSWORD }}" >> .env
-          echo "VIRTUAL1_ADDRESS_USERNAME=${{ secrets.VIRTUAL1_ADDRESS_USERNAME }}" >> .env
-          echo "VITE_GOOGLE_MAPS_API_KEY=${{ secrets.VITE_GOOGLE_MAPS_API_KEY }}" >> .env
+            - name: Add .env secrets
+              run: |
+                  echo "SHOPBLOCKS_API_KEY=${{ secrets.SHOPBLOCKS_API_KEY }}" >> .env
+                  echo "TOMTOM_API_KEY=${{ secrets.TOMTOM_API_KEY }}" >> .env
+                  echo "VIRTUAL1_ADDRESS_PASSWORD=${{ secrets.VIRTUAL1_ADDRESS_PASSWORD }}" >> .env
+                  echo "VIRTUAL1_ADDRESS_USERNAME=${{ secrets.VIRTUAL1_ADDRESS_USERNAME }}" >> .env
+                  echo "VITE_GOOGLE_MAPS_API_KEY=${{ secrets.VITE_GOOGLE_MAPS_API_KEY }}" >> .env
 
-      - name: Install Composer Dependencies
-        run: composer install --prefer-dist --optimize-autoloader --no-scripts --no-progress --no-interaction && composer dump-autoload --optimize -q
+            - name: Install Composer Dependencies
+              run: composer install --prefer-dist --optimize-autoloader --no-scripts --no-progress --no-interaction && composer dump-autoload --optimize -q
 
-      - name: Install Node Dependencies
-        run: |
-          npm install
-          npm run build
+            - name: Install Node Dependencies
+              run: |
+                  npm install
+                  npm run build
 
-      - name: Start MongoDB
-        uses: supercharge/mongodb-github-action@1.12.0
-        with:
-          mongodb-version: "6.0"
-          mongodb-username: user
-          mongodb-password: user
+            - name: Start MongoDB
+              uses: supercharge/mongodb-github-action@1.12.0
+              with:
+                  mongodb-version: '6.0'
+                  mongodb-username: user
+                  mongodb-password: user
 
-      - name: Create Database
-        run: |
-          sudo systemctl start mysql
-          mysql --user="root" --password="root" -e "CREATE DATABASE cypress character set UTF8mb4 collate utf8mb4_bin;"
-          mysql --user="root" --password="root" -e "ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'root'";
+            - name: Create Database
+              run: |
+                  sudo systemctl start mysql
+                  mysql --user="root" --password="root" -e "CREATE DATABASE cypress character set UTF8mb4 collate utf8mb4_bin;"
+                  mysql --user="root" --password="root" -e "ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'root'";
 
-      - name: Generate App Key
-        run: |
-          php artisan key:generate
-          php artisan migrate:fresh --seed
-          php artisan db:seed CategoryProductsSeeder
+            - name: Generate App Key
+              run: |
+                  php artisan key:generate
+                  php artisan migrate:fresh --seed
+                  php artisan db:seed CategoryProductsSeeder
 
-      - name: Run Laravel Server
-        run: php artisan serve --host=0.0.0.0 --port=8000 &
+            - name: Run Laravel Server
+              run: php artisan serve --host=0.0.0.0 --port=8000 &
 
-      - name: Laravel Tests and sqlite
-        run: |
-          touch database/database.sqlite
-          php artisan test
+            - name: Laravel Tests and sqlite
+              run: |
+                  touch database/database.sqlite
+                  php artisan test
 
-      - name: Check laravel local server
-        run: curl http://localhost:8000/health
+            - name: Check laravel local server
+              run: curl http://localhost:8000/health
 
-      - name: Execute cypress tests
-        id: execute-cypress-tests
-        run: npm run cy:run
+            - name: Execute cypress tests
+              id: execute-cypress-tests
+              run: npm run cy:run
 
-      - name: Check for failed Cypress tests and send screenshot to Discord
-        if: steps.execute-cypress-tests.outcome == 'failure' && failure()
-        run: |
-          # Zip the screenshot file
-          zip -r screenshot.zip cypress/output/*
-          COMMIT_OWNER="${GITHUB_ACTOR}"
-          BRANCH_NAME="${GITHUB_REF#refs/heads/}"
-          REPO_OWNER="${GITHUB_REPOSITORY%/*}"
+            - name: Check for failed Cypress tests and send screenshot to Discord
+              if: steps.execute-cypress-tests.outcome == 'failure' && failure()
+              run: |
+                  # Zip the screenshot file
+                  zip -r screenshot.zip cypress/output/*
+                  COMMIT_OWNER="${GITHUB_ACTOR}"
+                  BRANCH_NAME="${GITHUB_REF#refs/heads/}"
+                  REPO_OWNER="${GITHUB_REPOSITORY%/*}"
 
-          # Define a list of users and their IDs
-          declare -A users
-          users[${{ secrets.USER_GITHUB_MARCOS }}]=${{ secrets.ID_DISCORD_MARCOS }}
-          users[${{ secrets.USER_GITHUB_STEVE }}]=${{ secrets.ID_DISCORD_STEVE }}
-          users[${{ secrets.USER_GITHUB_CRIS }}]=${{ secrets.ID_DISCORD_CRIS }}
+                  # Define a list of users and their IDs
+                  declare -A users
+                  users[${{ secrets.USER_GITHUB_MARCOS }}]=${{ secrets.ID_DISCORD_MARCOS }}
+                  users[${{ secrets.USER_GITHUB_STEVE }}]=${{ secrets.ID_DISCORD_STEVE }}
+                  users[${{ secrets.USER_GITHUB_CRIS }}]=${{ secrets.ID_DISCORD_CRIS }}
 
-          # Define the target username
-          TARGET_USER="$COMMIT_OWNER"
+                  # Define the target username
+                  TARGET_USER="$COMMIT_OWNER"
 
-          # Get the user ID from the array using the target username
-          USER_ID="${users[$TARGET_USER]}"
+                  # Get the user ID from the array using the target username
+                  USER_ID="${users[$TARGET_USER]}"
 
-          # Check if the user ID exists
-          if [ -z "$USER_ID" ]; then
-            echo "User $TARGET_USER not found!"
-            exit 1
-          fi
+                  # Check if the user ID exists
+                  if [ -z "$USER_ID" ]; then
+                    echo "User $TARGET_USER not found!"
+                    exit 1
+                  fi
 
-          # Send the screenshot to Discord
-          curl -X POST "${{ secrets.DISCORD_WEBHOOK_URL }}" \
-            -H "Content-Type: multipart/form-data" \
-            -F "file=@screenshot.zip" \
-            -F "payload_json={\"content\": \"<@$USER_ID> Tests failed on commit:  ${GITHUB_EVENT_HEAD_COMMIT_MESSAGE} ($BRANCH_NAME @ $REPO_OWNER)! Here are the screenshots:\"}"
-        env:
-          GITHUB_EVENT_HEAD_COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
+                  # Send the screenshot to Discord
+                  curl -X POST "${{ secrets.DISCORD_WEBHOOK_URL }}" \
+                    -H "Content-Type: multipart/form-data" \
+                    -F "file=@screenshot.zip" \
+                    -F "payload_json={\"content\": \"<@$USER_ID> Tests failed on commit:  ${GITHUB_EVENT_HEAD_COMMIT_MESSAGE} ($BRANCH_NAME @ $REPO_OWNER)! Here are the screenshots:\"}"
+              env:
+                  GITHUB_EVENT_HEAD_COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
 
-      - name: Rollback Laravel DB
-        run: |
-          php artisan migrate:rollback
+            - name: Rollback Laravel DB
+              run: |
+                  php artisan migrate:rollback
 
-  # build:
-  #   name: Build & Publish Docker Image
-  #   needs: tests
-  #   runs-on: ubuntu-24.04
-  #   environment: staging
+    # build:
+    #   name: Build & Publish Docker Image
+    #   needs: tests
+    #   runs-on: ubuntu-24.04
+    #   environment: staging
 
-  #   permissions:
-  #     contents: read
-  #     packages: write
-  #     id-token: write
+    #   permissions:
+    #     contents: read
+    #     packages: write
+    #     id-token: write
 
-  #   steps:
-  #     - name: Checkout repository
-  #       uses: actions/checkout@v4
+    #   steps:
+    #     - name: Checkout repository
+    #       uses: actions/checkout@v4
 
-  #     - uses: shivammathur/setup-php@v2
-  #       with:
-  #         php-version: 8.3
-  #         extensions: json, dom, libxml, mbstring, bcmath, curl, sqlite3, fileinfo, pcntl, redis, bcmath, gd, zip
+    #     - uses: shivammathur/setup-php@v2
+    #       with:
+    #         php-version: 8.3
+    #         extensions: json, dom, libxml, mbstring, bcmath, curl, sqlite3, fileinfo, pcntl, redis, bcmath, gd, zip
 
-  #     - name: Install Composer Dependencies
-  #       run: composer install --prefer-dist --optimize-autoloader --no-scripts --no-progress --no-interaction --no-dev && composer dump-autoload --optimize -q --no-dev
+    #     - name: Install Composer Dependencies
+    #       run: composer install --prefer-dist --optimize-autoloader --no-scripts --no-progress --no-interaction --no-dev && composer dump-autoload --optimize -q --no-dev
 
-  #     - name: Setup NodeJS
-  #       uses: actions/setup-node@v4
+    #     - name: Setup NodeJS
+    #       uses: actions/setup-node@v4
 
-  #     - name: Install NPM Packages
-  #       run: npm install
+    #     - name: Install NPM Packages
+    #       run: npm install
 
-  #     - name: Compile frontend assets in prod mode
-  #       run: npm run build
+    #     - name: Compile frontend assets in prod mode
+    #       run: npm run build
 
-  #     - name: Set up QEMU
-  #       uses: docker/setup-qemu-action@v3
+    #     - name: Set up QEMU
+    #       uses: docker/setup-qemu-action@v3
 
-  #     - name: Setup Docker buildx
-  #       uses: docker/setup-buildx-action@v3
+    #     - name: Setup Docker buildx
+    #       uses: docker/setup-buildx-action@v3
 
-  #     - name: Log in to the Container registry
-  #       uses: docker/login-action@v3
-  #       with:
-  #         registry: ${{ env.REGISTRY }}
-  #         username: ${{ github.actor }}
-  #         password: ${{ secrets.GITHUB_TOKEN }}
+    #     - name: Log in to the Container registry
+    #       uses: docker/login-action@v3
+    #       with:
+    #         registry: ${{ env.REGISTRY }}
+    #         username: ${{ github.actor }}
+    #         password: ${{ secrets.GITHUB_TOKEN }}
 
-  #     - name: Extract metadata (tags, labels) for Docker
-  #       id: meta
-  #       uses: docker/metadata-action@v5
-  #       with:
-  #         images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-  #         tags: |
-  #           type=ref,event=branch
-  #           type=ref,event=pr
-  #           type=semver,pattern={{version}}
-  #           type=semver,pattern={{major}}.{{minor}}
-  #           type=semver,pattern={{major}}
-  #           type=sha
+    #     - name: Extract metadata (tags, labels) for Docker
+    #       id: meta
+    #       uses: docker/metadata-action@v5
+    #       with:
+    #         images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+    #         tags: |
+    #           type=ref,event=branch
+    #           type=ref,event=pr
+    #           type=semver,pattern={{version}}
+    #           type=semver,pattern={{major}}.{{minor}}
+    #           type=semver,pattern={{major}}
+    #           type=sha
 
-  #     - name: Build and push Docker image
-  #       uses: docker/build-push-action@v5
-  #       with:
-  #         context: .
-  #         file: docker/prod/Dockerfile
-  #         push: true
-  #         tags: ${{ steps.meta.outputs.tags }}
-  #         labels: ${{ steps.meta.outputs.labels }}
+    #     - name: Build and push Docker image
+    #       uses: docker/build-push-action@v5
+    #       with:
+    #         context: .
+    #         file: docker/prod/Dockerfile
+    #         push: true
+    #         tags: ${{ steps.meta.outputs.tags }}
+    #         labels: ${{ steps.meta.outputs.labels }}
