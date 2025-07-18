@@ -36,7 +36,7 @@ class VirtualOneLookupApi
 
     public function normalisePostcode($postcode)
     {
-        $postcode = strtoupper(trim(urldecode($postcode)));
+        $postcode = strtoupper(trim(urldecode((string) $postcode)));
         $postcode = str_replace(' ', '', $postcode);
 
         $regex = "/^([Gg][Ii][Rr] 0[Aa]{2})|((([A-Za-z][0-9]{1,2})|(([A-Za-z][A-Ha-hJ-Yj-y][0-9]{1,2})|(([A-Za-z][0-9][A-Za-z])|([A-Za-z][A-Ha-hJ-Yj-y][0-9]?[A-Za-z]))))\s?[0-9][A-Za-z]{2})$/";
@@ -90,6 +90,7 @@ class VirtualOneLookupApi
             foreach ($response["address"] as $address) {
 
                 $virtualOneAddress = new AddressLookup(
+                    postCode : $address["postcode"] ?? null,
                     addressKey : $address['addressReferenceNum'] ?? null,
                     type : $address["addressQualifier"] ?? null,
                     uprn : $address["uprn"] ?? null,
@@ -108,7 +109,6 @@ class VirtualOneLookupApi
                     doubleDependentLocality : $address["doubleDependentLocality"] ?? null,
                     locality : $address["locality"] ?? null,
                     postTown : $address["postTown"] ?? null,
-                    postCode : $address["postcode"] ?? null,
                     county : $address["county"] ?? null,
                     country : $address["country"] ?? null,
                 );

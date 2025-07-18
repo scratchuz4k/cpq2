@@ -20,9 +20,7 @@ trait HasConfigurations
                 ['key' => $key],
                 ['value' => $value],
             );
-            $oldKeys = $oldKeys->reject(function ($old) use ($item) {
-                return $old->id === $item->id;
-            });
+            $oldKeys = $oldKeys->reject(fn($old) => $old->id === $item->id);
         }
 
         foreach ($oldKeys as $old) {

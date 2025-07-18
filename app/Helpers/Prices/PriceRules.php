@@ -21,20 +21,16 @@ class PriceRules
         static::$spas = collect([]);
     }
 
-    public function find(Product $product = null, Supplier $supplier = null, Account $account = null, PricePlan $pricePlan = null)
+    public function find(?Product $product = null, ?Supplier $supplier = null, ?Account $account = null, ?PricePlan $pricePlan = null)
     {
         $this->object = new PriceRulesObject($product, Auth::user(), $supplier, $account,);
         $cases = array_map(fn($case) => $case->value, SpaRulesEnum::cases());
 
         $this->object = app(Pipeline::class)->send($this->object)->through($cases)->thenReturn();
         if ($pricePlan) {
-            static::$spas = $this->object->spas->filter(function ($spa) use ($pricePlan) {
-                return is_null($spa->price_plan_id) || $spa->price_plan_id == $pricePlan->id;
-            });
+            static::$spas = $this->object->spas->filter(fn($spa) => is_null($spa->price_plan_id) || $spa->price_plan_id == $pricePlan->id);
         } else {
-            static::$spas = $this->object->spas->filter(function ($spa) {
-                return is_null($spa->price_plan_id);
-            });
+            static::$spas = $this->object->spas->filter(fn($spa) => is_null($spa->price_plan_id));
         }
     }
 
@@ -47,7 +43,7 @@ class PriceRules
         return $price;
     }
 
-    public function calculate(float $price, Product $product = null, Supplier $supplier = null, Account $account = null, PricePlan $pricePlan = null): float
+    public function calculate(float $price, ?Product $product = null, ?Supplier $supplier = null, ?Account $account = null, ?PricePlan $pricePlan = null): float
     {
         $this->find($product,  $supplier,  $account, $pricePlan);
         return $this->apply($price);

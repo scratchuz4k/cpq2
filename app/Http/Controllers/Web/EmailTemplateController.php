@@ -65,9 +65,7 @@ class EmailTemplateController extends BaseController
     public function update(Request $request, EmailTemplate $emailTemplate)
     {
         try {
-            $emailTemplate = DB::transaction(function () use ($emailTemplate, $request) {
-                return $this->emailService->update($emailTemplate, $request->all());
-            });
+            $emailTemplate = DB::transaction(fn() => $this->emailService->update($emailTemplate, $request->all()));
         } catch (\Exception $e) {
             throw new \Exception($e);
         }

@@ -8,13 +8,8 @@ use Illuminate\View\Component;
 
 class TableItemCustom extends Component
 {
-    public $component;
-    public $item;
-
-    public function __construct($component = null, $item = null)
+    public function __construct(public $component = null, public $item = null)
     {
-        $this->component = $component;
-        $this->item = $item;
     }
 
     /**

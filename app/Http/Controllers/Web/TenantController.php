@@ -72,9 +72,7 @@ class TenantController extends BaseController
     public function update(TenantUpdateRequest $request, Tenant $tenant)
     {
         try {
-            $tenant = DB::transaction(function () use ($tenant, $request) {
-                return $this->tenantService->update($tenant, $request->all());
-            });
+            $tenant = DB::transaction(fn() => $this->tenantService->update($tenant, $request->all()));
         } catch (\Exception $e) {
             if (! env('APP_DEBUG')) {
                 Log::error($e->getMessage());

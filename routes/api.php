@@ -44,8 +44,8 @@ Route::post('generate-auth-token', [IntegrateAuthController::class, 'createToken
 
 Route::middleware(['api', 'auth:sanctum'])->group(function () {
     Route::prefix('shop-blocks')->group(callback: function () {
-        Route::get('models', [ShopBlocksModelController::class, 'index']);
-        Route::get('brands', [ShopBlocksBrandController::class, 'index']);
+        Route::get('models', (new ShopBlocksModelController())->index(...));
+        Route::get('brands', (new ShopBlocksBrandController())->index(...));
         Route::get('products', [ShopBlocksProductController::class, 'index']);
         Route::get('products/{article}', [ShopBlocksProductController::class, 'show']);
         Route::get('product-features', [ProductFeatureController::class, 'index']);
@@ -59,7 +59,7 @@ Route::middleware(['api', 'auth:sanctum'])->group(function () {
     });
 
     Route::prefix('shop-blocks')->group(callback: function () {
-        Route::get('brands', [ShopBlocksBrandController::class, 'index']);
+        Route::get('brands', (new ShopBlocksBrandController())->index(...));
         Route::get('products', [ShopBlocksProductController::class, 'index']);
         Route::get('products/{article}', [ShopBlocksProductController::class, 'show']);
         Route::get('product-features', [ProductFeatureController::class, 'index']);

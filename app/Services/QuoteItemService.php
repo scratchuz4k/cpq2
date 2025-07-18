@@ -18,7 +18,7 @@ class QuoteItemService
 
         $quoteItem = QuoteItem::create([
             ...$array,
-            'original_price' => isset($array['price']) ? $array['price'] : 0,
+            'original_price' => $array['price'] ?? 0,
         ]);
 
         return $quoteItem;

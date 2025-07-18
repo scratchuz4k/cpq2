@@ -59,7 +59,7 @@ class PriceRulesConnectivity
         if (is_null($spa) || !$spa->data) {
             return $product;
         }
-        $operation = strtolower($spa->data->operation);
+        $operation = strtolower((string) $spa->data->operation);
         $spaValue = $this->moneyParser->parse($spa->data->value, fallbackCurrency: $this->currency);
         if (!in_array($operation, ['add', 'subtract', 'multiply', 'divide'])) {
             return $product;

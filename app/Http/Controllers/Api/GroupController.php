@@ -40,9 +40,7 @@ class GroupController extends BaseController
     public function store(Request $request)
     {
         try {
-            $group = DB::transaction(function () use ($request) {
-                return $this->groupService->store($request->all());
-            });
+            $group = DB::transaction(fn() => $this->groupService->store($request->all()));
         } catch (Exception $e) {
             return response($e->getMessage(), 500);
         }
@@ -64,9 +62,7 @@ class GroupController extends BaseController
     public function update(Request $request, Group $group)
     {
         try {
-            $group = DB::transaction(function () use ($request, $group) {
-                return $this->groupService->update($group, $request->all());
-            });
+            $group = DB::transaction(fn() => $this->groupService->update($group, $request->all()));
         } catch (Exception $e) {
             if (! env('APP_DEBUG')) {
                 Log::error($e->getMessage());

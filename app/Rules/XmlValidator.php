@@ -21,7 +21,7 @@ class XmlValidator implements ValidationRule
             return;
         }
 
-        if (!simplexml_load_string($value, null, LIBXML_NOERROR)) {
+        if (!simplexml_load_string((string) $value, null, LIBXML_NOERROR)) {
             $fail('The :attribute must contain a valid XML.');
         }
     }

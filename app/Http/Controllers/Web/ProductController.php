@@ -48,9 +48,7 @@ class ProductController extends BaseController
     public function store(ProductCreateRequest $request)
     {
         try {
-            $product = DB::transaction(function () use ($request) {
-                return $this->productsService->store($request->all());
-            });
+            $product = DB::transaction(fn() => $this->productsService->store($request->all()));
         } catch (\Exception $e) {
             if (!env('APP_DEBUG')) {
                 Log::error($e->getMessage());
@@ -86,9 +84,7 @@ class ProductController extends BaseController
     public function update(ProductUpdateRequest $request, Product $product)
     {
         try {
-            $product = DB::transaction(function () use ($product, $request) {
-                return $this->productsService->update($product, $request->all());
-            });
+            $product = DB::transaction(fn() => $this->productsService->update($product, $request->all()));
         } catch (\Exception $e) {
             if (!env('APP_DEBUG')) {
                 Log::error($e->getMessage());

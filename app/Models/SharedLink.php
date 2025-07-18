@@ -29,7 +29,7 @@ class SharedLink extends Model
     {
         parent::boot();
         static::creating(function ($model) {
-            $model->token = $model->token ?? Str::uuid(); // Generate token if not provided
+            $model->token ??= Str::uuid(); // Generate token if not provided
         });
     }
 

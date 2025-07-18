@@ -64,14 +64,12 @@ class SharedLinkController extends Controller
 
     private function getResource($component, $item)
     {
-        switch ($component) {
-            case 'Quotes':
-                return [
-                    'pricePlans' => PricePlan::all(),
-                    'model' => new QuoteResource($item->load(['items', 'tenant.logo'])),
-                ];
-            default:
-                return $item;
-        }
+        return match ($component) {
+            'Quotes' => [
+                'pricePlans' => PricePlan::all(),
+                'model' => new QuoteResource($item->load(['items', 'tenant.logo'])),
+            ],
+            default => $item,
+        };
     }
 }

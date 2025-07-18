@@ -71,15 +71,13 @@ class GroupAccountController extends BaseController
             return $e->getMessage();
         }
 
-        $data = $data->map(function ($item) {
-            return [
-                'id' => $item->id ?? null,
-                'group' => $item->group?->name ?? null,
-                'account' => $item->account?->name ?? null,
-                'created_at' => $item->created_at ?? null,
-                'updated_at' => $item->updated_at ?? null,
-            ];
-        });
+        $data = $data->map(fn($item) => [
+            'id' => $item->id ?? null,
+            'group' => $item->group?->name ?? null,
+            'account' => $item->account?->name ?? null,
+            'created_at' => $item->created_at ?? null,
+            'updated_at' => $item->updated_at ?? null,
+        ]);
 
         $date = now()->format('Y-m-d');
         $model_name = class_basename($this->model);
@@ -98,14 +96,12 @@ class GroupAccountController extends BaseController
 
     protected function transformExportData(Collection $data): Collection
     {
-        return new Collection($data->map(function ($item) {
-            return [
-                'id' => $item->id ?? null,
-                'group' => $item->group?->name ?? null,
-                'account' => $item->account?->name ?? null,
-                'created_at' => $item->created_at ?? null,
-                'updated_at' => $item->updated_at ?? null,
-            ];
-        }));
+        return new Collection($data->map(fn($item) => [
+            'id' => $item->id ?? null,
+            'group' => $item->group?->name ?? null,
+            'account' => $item->account?->name ?? null,
+            'created_at' => $item->created_at ?? null,
+            'updated_at' => $item->updated_at ?? null,
+        ]));
     }
 }

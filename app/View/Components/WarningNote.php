@@ -8,14 +8,11 @@ use Illuminate\View\Component;
 
 class WarningNote extends Component
 {
-    public $warnings;
-
     /**
      * Create a new component instance.
      */
-    public function __construct($warnings = [])
+    public function __construct(public $warnings = [])
     {
-        $this->warnings = $warnings;
     }
 
     /**

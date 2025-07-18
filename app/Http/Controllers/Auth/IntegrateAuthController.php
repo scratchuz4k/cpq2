@@ -23,7 +23,7 @@ class IntegrateAuthController extends Controller
 
         try {
             $decrypted = Crypt::decrypt($token);
-        } catch (DecryptException $e) {
+        } catch (DecryptException) {
             abort(403);
         }
 

@@ -8,9 +8,6 @@ use Illuminate\Contracts\Validation\ValidationRule;
 
 class ExistsInDatabase implements ValidationRule
 {
-    protected $table;
-    protected $column;
-
     /**
      * Create a new rule instance.
      *
@@ -18,10 +15,8 @@ class ExistsInDatabase implements ValidationRule
      * @param  string  $column The column to check against
      * @return void
      */
-    public function __construct($table, $column)
+    public function __construct(protected $table, protected $column)
     {
-        $this->table = $table;
-        $this->column = $column;
     }
 
     /**

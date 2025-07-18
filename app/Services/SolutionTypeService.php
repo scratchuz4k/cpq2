@@ -48,13 +48,11 @@ class SolutionTypeService
                 $table = $solution_type->tables()->updateOrCreate([
                     'code' => $table['code'],
                 ], [
-                    'group' => isset($table['group']) ? $table['group'] : null,
-                    'group_name' => isset($table['group_name']) ? $table['group_name'] : null,
+                    'group' => $table['group'] ?? null,
+                    'group_name' => $table['group_name'] ?? null,
                     'columns' => $table['columns'],
                 ]);
-                $olderItems = $olderItems->reject(function ($temp) use ($table) {
-                    return $temp->id === $table->id;
-                });
+                $olderItems = $olderItems->reject(fn($temp) => $temp->id === $table->id);
             }
         }
 

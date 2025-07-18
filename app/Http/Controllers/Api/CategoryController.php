@@ -64,9 +64,7 @@ class CategoryController extends BaseController
     public function update(Request $request, Category $category)
     {
         try {
-            $api = DB::transaction(function () use ($category, $request) {
-                return $this->categoryService->update($category, $request->all());
-            });
+            $api = DB::transaction(fn() => $this->categoryService->update($category, $request->all()));
         } catch (\Exception $e) {
             throw new \Exception($e);
         }

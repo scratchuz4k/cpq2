@@ -51,9 +51,7 @@ class SpaController extends BaseController
     public function store(SpaCreateRequest $request)
     {
         try {
-            $spa = DB::transaction(function () use ($request) {
-                return $this->spasService->store($request->all());
-            });
+            $spa = DB::transaction(fn() => $this->spasService->store($request->all()));
         } catch (\Exception $e) {
             throw new \Exception($e);
         }
@@ -77,9 +75,7 @@ class SpaController extends BaseController
     public function update(SpaUpdateRequest $request, Spa $spa)
     {
         try {
-            $spa = DB::transaction(function () use ($spa, $request) {
-                return $this->spasService->update($spa, $request->all());
-            });
+            $spa = DB::transaction(fn() => $this->spasService->update($spa, $request->all()));
         } catch (\Exception $e) {
             throw new \Exception($e);
         }

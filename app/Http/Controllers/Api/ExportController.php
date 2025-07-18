@@ -20,17 +20,15 @@ class ExportController extends BaseController
             return response()->json(['error' => 'Export parameter is required'], 400);
         }
 
-        $export_class = 'App\\Export\\Export' . $export;
+        $export_class = \App\Export\Export::class . $export;
         if (!class_exists($export_class)) {
             return response()->json(['error' => 'Export Class not found'], 404);
         }
 
         return response()->json([
-            'columns' => array_map(function ($col) {
-                return [
-                    'id' => $col,
-                    'title' => Str::title(str_replace('_', ' ', $col))];
-            }, $export_class::getColumns()),
+            'columns' => array_map(fn($col) => [
+                'id' => $col,
+                'title' => Str::title(str_replace('_', ' ', $col))], $export_class::getColumns()),
         ]);
     }
 
@@ -38,7 +36,7 @@ class ExportController extends BaseController
     {
         $this->authorize('viewAny export', ExportPolicy::class);
         $export = $request->input('export');
-        $export_class = 'App\\Export\\Export' . $export;
+        $export_class = \App\Export\Export::class . $export;
 
         if (!class_exists($export_class)) {
             return response()->json(['error' => 'Export Class not found'], 404);
@@ -49,11 +47,11 @@ class ExportController extends BaseController
             array_key_exists('date_interval', $request->all())
             && !empty($request->date_interval)
         ) {
-            $date_range = json_decode($request->date_interval, true);
+            $date_range = json_decode((string) $request->date_interval, true);
         }
 
         $columns = $request->input('columns')
-            ? explode(',', $request->input('columns'))
+            ? explode(',', (string) $request->input('columns'))
             : $export_class::getColumns();
 
         $date = now()->format('Y-m-d');
@@ -61,7 +59,7 @@ class ExportController extends BaseController
 
         try {
             return Excel::download(new $export_class($date_range, $columns), $filename);
-        } catch (\Exception $e) {
+        } catch (\Exception) {
             return response()->json(null, 204);
         }
     }
