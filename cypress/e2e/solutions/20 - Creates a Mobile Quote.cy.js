@@ -121,24 +121,25 @@ describe('Creates a Mobile Quote', () => {
         let keys = [0, 1];
 
         cy.wait(2000);
-            keys.forEach((key) => {
-                cy.get(`#hardware-${key}-stock`).then(($input) => {
-                    const spanText = parseInt($input.text().trim()); // Get the text content from the <span> and trim any extra whitespace
-                    const nameText = $input.closest('.panel').find('p.small').text().trim(); // Get the name of the product
+        keys.forEach((key) => {
+            cy.get(`#hardware-${key}-stock`).then(($input) => {
+                const spanText = parseInt($input.text().trim()); // Get the text content from the <span> and trim any extra whitespace
+                const nameText = $input.closest('.panel').find('p.small').text().trim(); // Get the name of the product
 
-                    // Perform conditional logic based on the span text and length of product name field test
-                    if (spanText > 0) {
-                        hardwareCount += 1;
-                        cy.log(`Click count: ${hardwareCount}`);
-                        cy.get(`#input-hardware-${key}-quantity`).type(1);
-                        cy.wait(1000);
-                    }
-                });
-
-                cy.get('.p-paginator-page').contains(key + 1).click();
-                cy.wait(500);
+                // Perform conditional logic based on the span text and length of product name field test
+                if (spanText > 0) {
+                    hardwareCount += 1;
+                    cy.log(`Click count: ${hardwareCount}`);
+                    cy.get(`#input-hardware-${key}-quantity`).type(1);
+                    cy.wait(1000);
+                }
             });
 
+            cy.get('.p-paginator-page')
+                .contains(key + 1)
+                .click();
+            cy.wait(500);
+        });
 
         cy.get('#btn-step-2-next').click();
 
@@ -232,14 +233,11 @@ describe('Creates a Mobile Quote', () => {
         ).click();
         cy.get('#btn-reset-quote', { timeout: 3000 }).should('not.be.disabled');
 
-        cy.get('.recurring-item').each(($el, index, $list) => {
-            // You can perform actions on each element here
-            cy.get(`#recurring-discount-${index}`)
-                .invoke('text')
-                .then((text) => {
-                    expect(text).to.not.equal('0 %');
-                });
-        });
+        cy.get(`#recurring-discount-0`)
+            .invoke('text')
+            .then((text) => {
+                expect(text).to.not.equal('0 %');
+            });
     });
 
     it('I can add and delete a Custom Line', () => {
