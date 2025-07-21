@@ -1,16 +1,17 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head, router } from "@inertiajs/vue3";
+import { Head, router } from '@inertiajs/vue3';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import Accordion from 'primevue/accordion';
 import AccordionPanel from 'primevue/accordionpanel';
 import AccordionHeader from 'primevue/accordionheader';
 import AccordionContent from 'primevue/accordioncontent';
 import { ref, reactive } from 'vue';
+import ToggleSwitch from 'primevue/toggleswitch';
 
 const props = defineProps({
     account: Object
-})
+});
 
 const activePanel = reactive({
     value: 0
@@ -19,65 +20,72 @@ const activePanel = reactive({
 const addContact = () => {
     props.account.contacts.push({});
     activePanel.value = props.account.contacts.length - 1;
-}
+};
 const removeContact = (key) => {
     swal.fire({
         title: 'Are you sure?'
     }).then(async (result) => {
         if (['cancel', 'backdrop'].includes(result.dismiss)) {
             //bulkOperation.value = ''
-            return
+            return;
         }
-        props.account.contacts.splice(key, 1)
-    })
-}
+        props.account.contacts.splice(key, 1);
+    });
+};
 
 const saveAccount = () => {
-    router.put(`/accounts/${props.account.id}`, props.account,
-        {
-            onSuccess: (page) => {
-                notyf.success("Updated with Success")
-            },
-            onError: (errors) => {
-                let string = ''
-                Object.keys(errors).forEach((key) => {
-                    string += errors[key] + '<br>'
-                })
-                notyf.error(string)
-            },
+    router.put(`/accounts/${props.account.id}`, props.account, {
+        onSuccess: (page) => {
+            notyf.success('Updated with Success');
+        },
+        onError: (errors) => {
+            let string = '';
+            Object.keys(errors).forEach((key) => {
+                string += errors[key] + '<br>';
+            });
+            notyf.error(string);
         }
-    )
-}
+    });
+};
 const items = ref([
     { label: 'Home', url: '/' },
     { label: 'My Account', url: '/myaccount' },
     { label: 'Accounts', url: '/accounts' },
-    { label: 'Edit Account' },
+    { label: 'Edit Account' }
 ]);
-
 </script>
 
 <template>
-
     <Head :title="'Edit Account #' + account.id" />
     <AuthenticatedLayout>
         <div class="panel">
-
             <Header :title="'Edit Account #' + account.id" :breadcrumbs="items">
                 <template #buttons>
                     <PrimaryButton id="btn-update-account" @click="saveAccount()">
-                        <font-awesome-icon class="me-2" :icon="['fas', 'save']"></font-awesome-icon> Save
+                        <font-awesome-icon class="me-2" :icon="['fas', 'save']"></font-awesome-icon>
+                        Save
                     </PrimaryButton>
                 </template>
             </Header>
             <div class="row mb-3">
+                <div class="mb-3 d-flex flex-column">
+                    <label class="form-label" for="active-filter"> Active: </label>
+                    <ToggleSwitch id="active-filter" v-model="account.is_active">
+                        <template #handle>
+                            <font-awesome-icon
+                                :icon="account.is_active ? ['fas', 'circle-check'] : ['far', 'circle-xmark']"
+                                class="text-primary"
+                            />
+                        </template>
+                    </ToggleSwitch>
+                </div>
                 <div class="col">
                     <label for="account-name" class="form-label">Name:</label>
-                    <input id="account-name" class="form-control" v-model="account.name">
+                    <input id="account-name" class="form-control" v-model="account.name" />
                 </div>
                 <div class="col">
                     <label for="account-reference" class="form-label">Reference:</label>
-                    <input id="account-reference" class="form-control" v-model="account.reference">
+                    <input id="account-reference" class="form-control" v-model="account.reference" />
                 </div>
             </div>
             <h2>Contacts</h2>
@@ -88,45 +96,60 @@ const items = ref([
                             <p class="m-0">
                                 Contact #{{ contact.id }}
                                 {{ contact.primary_contact_name ? ' - ' + contact.primary_contact_name : '' }}
-
                             </p>
-                            <PrimaryButton class="btn-sm btn-secondary" @click.stop="removeContact(key)">Delete</PrimaryButton>
+                            <PrimaryButton class="btn-sm btn-secondary" @click.stop="removeContact(key)"
+                                >Delete
+                            </PrimaryButton>
                         </div>
                     </AccordionHeader>
                     <AccordionContent>
                         <div class="row">
                             <div class="col-6 mb-3">
-                                <label :for="'contact-name-' + key" class="form-label">
-                                    Primary Contact Name:
-                                </label>
-                                <input :id="'contact-name-' + key" class="form-control"
-                                    v-model="contact.primary_contact_name" required>
+                                <label :for="'contact-name-' + key" class="form-label"> Primary Contact Name: </label>
+                                <input
+                                    :id="'contact-name-' + key"
+                                    class="form-control"
+                                    v-model="contact.primary_contact_name"
+                                    required
+                                />
                             </div>
                             <div class="col-6 mb-3">
                                 <label :for="'contact-email-' + key" class="form-label">Email:</label>
-                                <input type="email" :id="'contact-email-' + key" class="form-control"
-                                       v-model="contact.email">
+                                <input
+                                    type="email"
+                                    :id="'contact-email-' + key"
+                                    class="form-control"
+                                    v-model="contact.email"
+                                />
                             </div>
                             <div class="col-6 mb-3">
                                 <label :for="'contact-address-' + key" class="form-label">Address:</label>
-                                <input :id="'contact-address-' + key" class="form-control"
-                                    v-model="contact.address_1" required>
+                                <input
+                                    :id="'contact-address-' + key"
+                                    class="form-control"
+                                    v-model="contact.address_1"
+                                    required
+                                />
                             </div>
                             <div class="col-6 mb-3">
                                 <label :for="'contact-city-' + key" class="form-label">City:</label>
-                                <input :id="'contact-city-' + key" class="form-control" v-model="contact.city">
+                                <input :id="'contact-city-' + key" class="form-control" v-model="contact.city" />
                             </div>
                             <div class="col-6 mb-3">
                                 <label :for="'contact-post-code-' + key" class="form-label">Post Code:</label>
-                                <input :id="'contact-post-code-' + key" class="form-control"
-                                       v-model="contact.postcode">
+                                <input
+                                    :id="'contact-post-code-' + key"
+                                    class="form-control"
+                                    v-model="contact.postcode"
+                                />
                             </div>
                         </div>
                     </AccordionContent>
                 </AccordionPanel>
             </Accordion>
             <button class="add-contact" @click="addContact()">
-                Add new <font-awesome-icon :icon="['fas', 'plus']"></font-awesome-icon>
+                Add new
+                <font-awesome-icon :icon="['fas', 'plus']"></font-awesome-icon>
             </button>
         </div>
     </AuthenticatedLayout>
@@ -139,6 +162,6 @@ const items = ref([
     text-align: center;
     border-radius: 0 0 5px 5px;
     border: 0;
-    padding: 10px 0
+    padding: 10px 0;
 }
 </style>

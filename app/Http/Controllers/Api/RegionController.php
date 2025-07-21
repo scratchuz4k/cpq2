@@ -7,15 +7,21 @@ use App\Http\Controllers\BaseController;
 use App\Http\Requests\IndexRequest;
 use App\Http\Resources\RegionResource;
 use App\Models\Region;
+use App\Services\RegionsService;
 use Dedoc\Scramble\Attributes\ExcludeRouteFromDocs;
+use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
-use Illuminate\Pagination\LengthAwarePaginator;
 
 class RegionController extends BaseController
 {
     protected $model = Region::class;
+
+    public function __construct(protected RegionsService $service)
+    {
+        parent::__construct();
+    }
 
     /**
      * List of Regions
@@ -26,7 +32,7 @@ class RegionController extends BaseController
         $dataProvider = new DataProvider(Region::class);
         try {
             $data = $dataProvider->get();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::debug($e->getMessage());
             return $e->getMessage();
         }
@@ -58,7 +64,16 @@ class RegionController extends BaseController
     #[ExcludeRouteFromDocs]
     public function update(Request $request, Region $region)
     {
-        //
+        try {
+            $region = DB::transaction(function () use ($region, $request) {
+                return $this->service->update($region, $request->all());
+            });
+        } catch (Exception $e) {
+            Log::debug($e->getMessage());
+            throw new Exception($e);
+        }
+
+        return new RegionResource($region);
     }
 
     /**

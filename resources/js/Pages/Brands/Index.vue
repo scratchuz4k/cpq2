@@ -2,6 +2,7 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link } from '@inertiajs/vue3';
 import { ref } from 'vue';
+
 const items = ref([{ label: 'Home', url: '/' }, { label: 'My Account', url: '/myaccount' }, { label: 'Brands' }]);
 </script>
 <template>
@@ -24,7 +25,8 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'My Account', url: '/my
                     }"
                     :columns="[
                         { data: 'id', title: '#', style: 'width:5%' },
-                        { data: 'name', title: 'Name', style: 'width:55%' },
+                        { data: 'is_active', title: 'Active', style: 'width:5%' },
+                        { data: 'name', title: 'Name', style: 'width:50%' },
                         { data: 'created_at', title: 'Created At', style: 'width:15%' },
                         { data: 'updated_at', title: 'Updated At', style: 'width:15%' }
                     ]"
@@ -35,6 +37,9 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'My Account', url: '/my
                     </template>
                     <template #created_at="{ value }">
                         {{ format.date(value) }}
+                    </template>
+                    <template #is_active="{ data, value }">
+                        <ToggleActive :data="data" :value="value" route="brands" />
                     </template>
                 </Datatable>
             </div>

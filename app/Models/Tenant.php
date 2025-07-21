@@ -33,6 +33,7 @@ class Tenant extends \Spatie\Multitenancy\Models\Tenant
     {
         return $this
             ->belongsToMany(SolutionType::class, 'solution_type_tenant', 'tenant_id', 'solution_type_id')
+            ->withPivot('estimated_time', 'is_active')
             ->withTimestamps();
     }
 

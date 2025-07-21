@@ -2,8 +2,9 @@
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, router } from '@inertiajs/vue3';
-import { onMounted, reactive, ref } from 'vue';
+import { reactive, ref } from 'vue';
 import InputSelect from '@/Components/InputSelect.vue';
+import ToggleSwitch from 'primevue/toggleswitch';
 
 const props = defineProps({
     region: Object,
@@ -14,7 +15,8 @@ const props = defineProps({
 const form = reactive({
     merchant: props.region.merchant,
     user: props.region.user,
-    name: props.region.name
+    name: props.region.name,
+    is_active: props.region.is_active
 });
 
 const saveRegion = () => {
@@ -54,11 +56,23 @@ const items = ref([
             <Header :title="'Edit Region #' + region.id" :breadcrumbs="items">
                 <template #buttons>
                     <PrimaryButton @click="saveRegion()">
-                        <font-awesome-icon class="me-2" :icon="['fas', 'save']"></font-awesome-icon> Save
+                        <font-awesome-icon class="me-2" :icon="['fas', 'save']"></font-awesome-icon>
+                        Save
                     </PrimaryButton>
                 </template>
             </Header>
             <div class="col-6">
+                <div class="mb-3 d-flex flex-column">
+                    <label class="form-label" for="active-filter"> Active: </label>
+                    <ToggleSwitch id="active-filter" v-model="form.is_active">
+                        <template #handle>
+                            <font-awesome-icon
+                                :icon="form.is_active ? ['fas', 'circle-check'] : ['far', 'circle-xmark']"
+                                class="text-primary"
+                            />
+                        </template>
+                    </ToggleSwitch>
+                </div>
                 <div class="row mb-3">
                     <label for="merchant-name" class="form-label">Merchant:</label>
                     <InputSelect
@@ -66,8 +80,8 @@ const items = ref([
                         url="/merchants"
                         :fields="['name']"
                         v-model="form.merchant"
-                        :is-multiple="false"
                         placeholder="Select an Merchant"
+                        :query="[{ column: 'is_active', operator: 'equals', value: 1 }]"
                     />
                 </div>
                 <div class="row mb-3">
@@ -77,8 +91,8 @@ const items = ref([
                         url="/users"
                         :fields="['name']"
                         v-model="form.user"
-                        :is-multiple="false"
                         placeholder="Select an User"
+                        :query="[{ column: 'is_active', operator: 'equals', value: 1 }]"
                     />
                 </div>
                 <div class="row mb-3">

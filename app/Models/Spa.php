@@ -20,7 +20,15 @@ class Spa extends Model
         'operation_id',
         'value',
         'percentage',
+        'is_active'
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'is_active' => 'boolean'
+        ];
+    }
 
     protected static function booted(): void
     {

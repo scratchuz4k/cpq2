@@ -22,6 +22,7 @@ it('CRUD if setting is disable', function () {
     $data = [
         'name' => 'name',
         'reference' => 'ref',
+        'is_active' => true,
     ];
 
     $response = $this->post('accounts', $data);
@@ -36,13 +37,13 @@ it('CRUD if setting is disable', function () {
         'reference' => 'ref',
     ];
 
-    $response = $this->put('accounts/'.$account->id, $data);
+    $response = $this->put('accounts/' . $account->id, $data);
     $response->assertRedirect();
 
     $account->refresh();
     $this->assertEquals($account->name, $data['name']);
 
-    $response = $this->delete('api/accounts/'.$account->id);
+    $response = $this->delete('api/accounts/' . $account->id);
     $response->assertSuccessful();
     expect(Account::count())->toBe(0);
 });
@@ -69,12 +70,12 @@ it('CRUD if setting is enabled', function () {
         'name' => 'updated_name',
         'reference' => 'ref',
     ];
-    $response = $this->put('accounts/'.$account->id, $new_data);
+    $response = $this->put('accounts/' . $account->id, $new_data);
     $response->assertForbidden();
 
     $this->assertEquals($account->name, $account->name);
 
-    $response = $this->delete('api/accounts/'.$account->id);
+    $response = $this->delete('api/accounts/' . $account->id);
     $response->assertForbidden();
     expect(Account::count())->toBe(1);
 });
@@ -114,13 +115,13 @@ it('Check API access to accounts if setting is enabled for user with token permi
         'reference' => 'ref',
     ];
 
-    $response = $this->putJson('api/accounts/'.$account->id, $data);
+    $response = $this->putJson('api/accounts/' . $account->id, $data);
     $response->assertSuccessful();
 
     $account->refresh();
     $this->assertEquals($account->name, $data['name']);
 
-    $response = $this->deleteJson('api/accounts/'.$account->id);
+    $response = $this->deleteJson('api/accounts/' . $account->id);
     $response->assertSuccessful();
     expect(Account::count())->toBe(0);
 });

@@ -1,26 +1,19 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head, Link } from "@inertiajs/vue3";
+import { Head, Link } from '@inertiajs/vue3';
 import { ref } from 'vue';
-import axios from "axios";
-import { toggle_is_active } from '@/Composables/handleActive';
 
-const items = ref([
-    { label: 'Home', url: '/' },
-    { label: 'My Account', url: '/myaccount' },
-    { label: 'Apis' },
-]);
-
+const items = ref([{ label: 'Home', url: '/' }, { label: 'My Account', url: '/myaccount' }, { label: 'Apis' }]);
 </script>
 <template>
-
     <Head title="Api" />
     <AuthenticatedLayout>
         <div class="panel">
             <Header title="Api" :breadcrumbs="items">
                 <template #buttons>
                     <Link href="/apis/create" id="api-create-btn" class="btn btn-primary me-2">
-                    <font-awesome-icon :icon="['fas', 'plus']"></font-awesome-icon> New Api
+                        <font-awesome-icon :icon="['fas', 'plus']"></font-awesome-icon>
+                        New Api
                     </Link>
                 </template>
             </Header>
@@ -29,19 +22,19 @@ const items = ref([
                     :allow="{
                         update: true,
                         delete: true,
-                        link: false,
+                        link: false
                     }"
                     :columns="[
                         { data: 'id', title: '#', style: 'width:5%' },
-                        { data: 'is_active', title: 'Active', style: 'width:5%'},
-                        { data: 'code', title: 'Code', style: 'width:15%'},
-                        { data: 'name', title: 'Name', style: 'width:20%'},
-                        { data: 'auth_type', title: 'Auth Type', style: 'width:15%'},
+                        { data: 'is_active', title: 'Active', style: 'width:5%' },
+                        { data: 'code', title: 'Code', style: 'width:15%' },
+                        { data: 'name', title: 'Name', style: 'width:20%' },
+                        { data: 'auth_type', title: 'Auth Type', style: 'width:15%' },
                         { data: 'created_at', title: 'Created At', style: 'width:15%' },
-                        { data: 'updated_at', title: 'Updated At', style: 'width:15%' },
+                        { data: 'updated_at', title: 'Updated At', style: 'width:15%' }
                     ]"
                     :filters="{
-                        'is_active': { type: 'checkbox' },
+                        is_active: { type: 'checkbox' }
                     }"
                     route="/apis"
                 >
@@ -52,20 +45,7 @@ const items = ref([
                         {{ format.date(value) }}
                     </template>
                     <template #is_active="{ data, value }">
-                        <div role="button" @click="toggle_is_active('apis', data)">
-                            <font-awesome-icon
-                                v-if="value"
-                                :icon="['fas', 'circle-check']"
-                                style="font-size: 1.125rem"
-                                class="text-primary"
-                            />
-                            <font-awesome-icon
-                                v-else
-                                :icon="['far', 'circle-xmark']"
-                                style="font-size: 1.125rem"
-                                class="text-secondary"
-                            />
-                        </div>
+                        <ToggleActive :data="data" :value="value" route="apis" />
                     </template>
                 </Datatable>
             </div>
