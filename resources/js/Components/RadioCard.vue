@@ -39,6 +39,9 @@ const proxyValue = computed({
 .border-primary {
     background-color: var(--color-purple-light) !important;
     border-color: var(--color-purple) !important;
-    box-shadow: inset 0 0 1px #fff, inset 0 1px 7px #ebebeb, 0 3px 6px -3px #bbb;
+    box-shadow:
+        inset 0 0 1px #fff,
+        inset 0 1px 7px #ebebeb,
+        0 3px 6px -3px #bbb;
 }
 </style>

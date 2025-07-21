@@ -2,13 +2,14 @@
 
 namespace App\Models;
 
-use App\Trait\SetTenantId;
 use App\Models\Scopes\TenantScope;
+use App\Trait\SetTenantId;
 use Illuminate\Database\Eloquent\Model;
 
 class EmailHistory extends Model
 {
-    use  SetTenantId;
+    use SetTenantId;
+
     protected $fillable = [
         'from',
         'to',
@@ -18,7 +19,7 @@ class EmailHistory extends Model
         'body',
         'user_id',
         'email_template_id',
-        'tenant_id'
+        'tenant_id',
     ];
 
     protected static function booted(): void
@@ -30,6 +31,7 @@ class EmailHistory extends Model
     {
         return $this->belongsTo(User::class);
     }
+
     public function email()
     {
         return $this->belongsTo(EmailTemplate::class, 'email_template_id', 'id');

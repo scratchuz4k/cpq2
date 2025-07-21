@@ -2,8 +2,8 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Validation\Rule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class PriceCreateRequest extends FormRequest
 {
@@ -23,17 +23,17 @@ class PriceCreateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "code" => [
-                "required",
-                "numeric",
-                Rule::unique("prices")
+            'code' => [
+                'required',
+                'numeric',
+                Rule::unique('prices')
                     ->where(function ($query) {
-                        return $query->where("product_id", $this->input("product_id"));
+                        return $query->where('product_id', $this->input('product_id'));
                     }),
             ],
-            "tax_rate" => "required|numeric",
-            "net" => "required|numeric",
-            "product_id" => "required|exists:products,id",
+            'tax_rate' => 'required|numeric',
+            'net' => 'required|numeric',
+            'product_id' => 'required|exists:products,id',
         ];
     }
 }

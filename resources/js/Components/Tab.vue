@@ -1,4 +1,3 @@
-
 <template>
     <div v-show="is_active" class="container-fluid">
         <slot />
@@ -6,9 +5,8 @@
 </template>
 
 <script>
-
-import { defineComponent, toRef, reactive } from 'vue'
-import { useTab } from '@composables/tabs'
+import { defineComponent, toRef, reactive } from 'vue';
+import { useTab } from '@composables/tabs';
 
 export default defineComponent({
     name: 'Tab',
@@ -29,16 +27,15 @@ export default defineComponent({
         }
     },
     setup(props) {
-        const name = toRef(props, 'title')
-        const style = toRef(props, 'style')
+        const name = toRef(props, 'title');
+        const style = toRef(props, 'style');
 
-        const tabData = reactive({ name, style })
-        const { is_active } = useTab(tabData, props.selected)
+        const tabData = reactive({ name, style });
+        const { is_active } = useTab(tabData, props.selected);
 
         return {
             is_active
-        }
+        };
     }
-})
-
+});
 </script>

@@ -11,6 +11,7 @@ trait EnumHelpers
                 return $case;
             }
         }
+
         return null;
     }
 }

@@ -2,16 +2,16 @@
 
 namespace App\Http\Controllers\Web;
 
-use App\Models\Role;
-use App\Models\User;
-use Inertia\Inertia;
-use App\Services\UsersService;
-use Illuminate\Support\Facades\DB;
-use App\Http\Resources\UserResource;
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\UserCreateRequest;
 use App\Http\Requests\UserImportRequest;
 use App\Http\Requests\UserUpdateRequest;
+use App\Http\Resources\UserResource;
+use App\Models\Role;
+use App\Models\User;
+use App\Services\UsersService;
+use Illuminate\Support\Facades\DB;
+use Inertia\Inertia;
 
 class UserController extends BaseController
 {
@@ -21,6 +21,7 @@ class UserController extends BaseController
     {
         parent::__construct();
     }
+
     /**
      * Display a listing of the resource.
      */
@@ -40,13 +41,14 @@ class UserController extends BaseController
             [
                 'id' => 0,
                 'name' => 'No manager',
-                'parent_id' => null
+                'parent_id' => null,
             ],
         ]);
+
         return Inertia::render('Users/Create', [
-            'roles'     => Role::descendants(),
-            'managers'  => $noManagerOptions->merge($users->get()),
-            'parent_id' => $users->where('id', request('parent_id'))->first() ?  intval(request('parent_id')) : null
+            'roles' => Role::descendants(),
+            'managers' => $noManagerOptions->merge($users->get()),
+            'parent_id' => $users->where('id', request('parent_id'))->first() ? intval(request('parent_id')) : null,
         ]);
     }
 
@@ -86,15 +88,15 @@ class UserController extends BaseController
             [
                 'id' => 0,
                 'name' => 'No manager',
-                'parent_id' => null
+                'parent_id' => null,
             ],
         ]);
 
         return Inertia::render('Users/Edit', [
-            'user'          => (new UserResource($user->load(['tenants', 'parent'])))->toArray(request()),
-            'roles'         => Role::descendants(),
-            'managers'      => $noManagerOptions->merge($users->get()),
-            'permissions'   => $user->getAllPermissions(),
+            'user' => (new UserResource($user->load(['tenants', 'parent'])))->toArray(request()),
+            'roles' => Role::descendants(),
+            'managers' => $noManagerOptions->merge($users->get()),
+            'permissions' => $user->getAllPermissions(),
         ]);
     }
 
@@ -136,7 +138,7 @@ class UserController extends BaseController
         }
 
         return Inertia::render('Users/Import', [
-            'results' => $results
+            'results' => $results,
         ]);
     }
 }

@@ -25,6 +25,7 @@ class SupplierController extends BaseController
 
     /**
      * List of Suppliers
+     *
      * @response AnonymousResourceCollection<LengthAwarePaginator<SupplierResource>>
      */
     public function index(IndexRequest $request)
@@ -34,6 +35,7 @@ class SupplierController extends BaseController
             $data = $dataProvider->get();
         } catch (Exception $e) {
             Log::debug($e->getMessage());
+
             return $e->getMessage();
         }
 

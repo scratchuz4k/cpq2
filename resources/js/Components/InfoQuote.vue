@@ -2,8 +2,8 @@
 import { Link } from '@inertiajs/vue3';
 
 const props = defineProps({
-    quote: Object,
-})
+    quote: Object
+});
 </script>
 <template>
     <div class="info-box-primary d-flex mb-4">
@@ -13,17 +13,13 @@ const props = defineProps({
         <div class="py-3">
             <h4>Customer Details</h4>
             <p class="mb-0">
-                <b>Name:</b> {{ quote.account?.name }}<br>
+                <b>Name:</b> {{ quote.account?.name }}<br />
 
-                <template v-if="quote?.address_line1">
-                    <b>Address:</b> {{ quote?.address_line1 }}<br>
-                </template>
+                <template v-if="quote?.address_line1"> <b>Address:</b> {{ quote?.address_line1 }}<br /> </template>
                 <template v-if="quote.account?.primary_contact_name">
-                    <b>Primary Contact:</b> {{ quote.account?.primary_contact_name }}<br>
+                    <b>Primary Contact:</b> {{ quote.account?.primary_contact_name }}<br />
                 </template>
-                <template v-if="quote.account?.email">
-                    <b>Email:</b> {{ quote.account?.email }}<br>
-                </template>
+                <template v-if="quote.account?.email"> <b>Email:</b> {{ quote.account?.email }}<br /> </template>
             </p>
         </div>
     </div>

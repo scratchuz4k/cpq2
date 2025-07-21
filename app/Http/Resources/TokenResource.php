@@ -19,7 +19,7 @@ class TokenResource extends JsonResource
             'entity' => $this->tokenable,
             'last_used_at' => $this->last_used_at,
             'expires_at' => $this->expires_at,
-            'created_at' => $this->created_at
+            'created_at' => $this->created_at,
         ];
     }
 }

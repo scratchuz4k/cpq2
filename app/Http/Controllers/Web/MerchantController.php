@@ -2,18 +2,19 @@
 
 namespace App\Http\Controllers\Web;
 
-use App\Models\Merchant;
-use App\Services\MerchantService;
-use Inertia\Inertia;
-use Illuminate\Support\Facades\DB;
-use App\Http\Resources\MerchantResource;
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\MerchantCreateRequest;
 use App\Http\Requests\MerchantUpdateRequest;
+use App\Http\Resources\MerchantResource;
+use App\Models\Merchant;
+use App\Services\MerchantService;
+use Illuminate\Support\Facades\DB;
+use Inertia\Inertia;
 
 class MerchantController extends BaseController
 {
     protected $model = Merchant::class;
+
     public function __construct(protected MerchantService $merchantService)
     {
         parent::__construct();
@@ -47,6 +48,7 @@ class MerchantController extends BaseController
         } catch (\Exception $e) {
             throw new \Exception($e);
         }
+
         return redirect()->route('merchants.index');
     }
 
@@ -64,8 +66,9 @@ class MerchantController extends BaseController
     public function edit(Merchant $merchant)
     {
         $temp = new MerchantResource($merchant);
+
         return Inertia::render('Merchants/Edit', [
-            "merchant" => $temp->toArray(request())
+            'merchant' => $temp->toArray(request()),
         ]);
     }
 
@@ -81,6 +84,7 @@ class MerchantController extends BaseController
         } catch (\Exception $e) {
             throw new \Exception($e);
         }
+
         return redirect()->route('merchants.index');
     }
 

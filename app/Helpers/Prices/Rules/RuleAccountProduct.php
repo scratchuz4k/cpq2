@@ -2,10 +2,10 @@
 
 namespace App\Helpers\Prices\Rules;
 
+use App\Enums\SpaRulesEnum;
+use App\Helpers\Prices\PriceRulesObject;
 use App\Models\Spa;
 use App\Models\SpaRule;
-use App\Helpers\Prices\PriceRulesObject;
-use App\Enums\SpaRulesEnum;
 
 class RuleAccountProduct
 {
@@ -14,11 +14,11 @@ class RuleAccountProduct
         if (is_null($object->account) || is_null($object->product)) {
             return $next($object);
         }
-        $rule = SpaRule::where("code", SpaRulesEnum::AccountProduct->name)->first();
+        $rule = SpaRule::where('code', SpaRulesEnum::AccountProduct->name)->first();
         $object->spas->push(
             ...Spa::where('field_1', $object->account->id)
                 ->where('field_2', $object->product->id)
-                ->where('rule_id',  $rule->id)
+                ->where('rule_id', $rule->id)
                 ->get()
         );
 

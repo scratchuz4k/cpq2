@@ -34,8 +34,9 @@ class DeleteOldFiles extends Command
         $directories = [storage_path('app/products'), storage_path('app/temp')];
 
         foreach ($directories as $directory) {
-            if (!File::exists($directory)) {
+            if (! File::exists($directory)) {
                 $this->warn("Directory does not exist: $directory");
+
                 return;
             }
 

@@ -62,7 +62,7 @@ class DynamicEmail extends Mailable
         bool $isPreview = false,
         ?User $user = null,
     ) {
-        //TODO: EMAILS: remove the return once we get the credentials for email functionality
+        // TODO: EMAILS: remove the return once we get the credentials for email functionality
         return;
         $this->files = $files;
         $this->isPreview = $isPreview;

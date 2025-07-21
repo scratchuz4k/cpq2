@@ -2,21 +2,22 @@
 
 namespace App\Http\Controllers\Api;
 
-use Exception;
-use App\Models\Activity;
-use Illuminate\Http\Request;
 use App\Helpers\DataProvider;
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\IndexRequest;
-use Illuminate\Support\Facades\Log;
 use App\Http\Resources\ActivityResource;
-use Illuminate\Support\Facades\File;
+use App\Models\Activity;
+use Exception;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class ActivityController extends BaseController
 {
     protected $model = Activity::class;
+
     /**
      * Index
+     *
      * @response AnonymousResourceCollection<LengthAwarePaginator<ActivityResource>>
      */
     public function index(IndexRequest $request)
@@ -26,6 +27,7 @@ class ActivityController extends BaseController
             $data = $dataProvider->get();
         } catch (Exception $e) {
             Log::debug($e->getMessage());
+
             return $e->getMessage();
         }
 

@@ -9,9 +9,9 @@ enum SpeedUnitsEnum: string
 
     public static function asArray(): array
     {
-        return array_map(fn($case) => [
+        return array_map(fn ($case) => [
             'name' => $case->name,
-            'value' => $case->value
+            'value' => $case->value,
         ], self::cases());
     }
 }

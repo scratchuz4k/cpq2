@@ -19,7 +19,7 @@ class RegionResource extends JsonResource
             'merchant' => $this->merchant,
             'user' => $this->user,
             'updated_at' => $this->updated_at,
-            'created_at' => $this->created_at
+            'created_at' => $this->created_at,
         ];
     }
 }

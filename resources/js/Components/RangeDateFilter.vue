@@ -1,12 +1,11 @@
 <script setup>
-import {ref} from "vue";
-import DatePicker from "primevue/datepicker";
-import {DateTime} from "luxon";
+import { ref } from 'vue';
+import DatePicker from 'primevue/datepicker';
+import { DateTime } from 'luxon';
 
-
-const emit = defineEmits(['dateRangeChange'])
+const emit = defineEmits(['dateRangeChange']);
 const dateNow = DateTime.now();
-const minDate = DateTime.fromISO('2024-01-01')
+const minDate = DateTime.fromISO('2024-01-01');
 
 const rangeDate = ref({
     start: null,
@@ -19,14 +18,14 @@ const filterData = () => {
         rangeDate.value.start = rangeDate.value.end;
         rangeDate.value.end = temp;
     }
-    emit('dateRangeChange', {...rangeDate.value})
-}
+    emit('dateRangeChange', { ...rangeDate.value });
+};
 
 const resetFilters = () => {
-    rangeDate.value.start = null
-    rangeDate.value.end = null
-    emit('dateRangeChange', {...rangeDate.value})
-}
+    rangeDate.value.start = null;
+    rangeDate.value.end = null;
+    emit('dateRangeChange', { ...rangeDate.value });
+};
 </script>
 
 <template>
@@ -62,12 +61,13 @@ const resetFilters = () => {
                 </div>
                 <div class="col-2 d-flex gap-2">
                     <button id="filter-data-btn" class="btn btn-primary w-100" @click="filterData">Filter</button>
-                    <button id="reset-data-btn" class="btn btn-outline-primary w-100" @click="resetFilters">Reset</button>
+                    <button id="reset-data-btn" class="btn btn-outline-primary w-100" @click="resetFilters">
+                        Reset
+                    </button>
                 </div>
             </div>
         </div>
     </div>
 </template>
 
-<style scoped>
-</style>
+<style scoped></style>

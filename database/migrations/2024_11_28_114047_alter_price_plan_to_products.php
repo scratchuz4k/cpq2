@@ -1,10 +1,10 @@
 <?php
 
-use App\Models\PricePlan;
 use App\Enums\PricePlanEnum;
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
+use App\Models\PricePlan;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        $pricePlanId = PricePlan::where('code', PricePlanEnum::SINGLE->name)->value('id')  ?? 2;
+        $pricePlanId = PricePlan::where('code', PricePlanEnum::SINGLE->name)->value('id') ?? 2;
         Schema::table('products', function (Blueprint $table) use ($pricePlanId) {
             $table->foreignId('price_plan_id')->after('brand_id')->default($pricePlanId)->nullable()->constrained()->nullOnDelete();
         });

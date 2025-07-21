@@ -2,19 +2,17 @@
 
 namespace App\Http\Controllers\Web;
 
-use Inertia\Inertia;
-use App\Models\Brand;
-use Inertia\Response;
-use App\Models\Product;
-use App\Models\Supplier;
-use App\Services\ProductsService;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
-use App\Http\Resources\ProductResource;
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\ProductCreateRequest;
 use App\Http\Requests\ProductUpdateRequest;
+use App\Http\Resources\ProductResource;
 use App\Models\PricePlan;
+use App\Models\Product;
+use App\Services\ProductsService;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Inertia\Inertia;
+use Inertia\Response;
 
 class ProductController extends BaseController
 {
@@ -24,6 +22,7 @@ class ProductController extends BaseController
     {
         parent::__construct();
     }
+
     /**
      * Display a listing of the resource.
      */
@@ -52,11 +51,12 @@ class ProductController extends BaseController
                 return $this->productsService->store($request->all());
             });
         } catch (\Exception $e) {
-            if (!env('APP_DEBUG')) {
+            if (! env('APP_DEBUG')) {
                 Log::error($e->getMessage());
             }
             throw new \Exception($e);
         }
+
         return redirect()->route('products.index');
     }
 
@@ -75,7 +75,7 @@ class ProductController extends BaseController
     {
 
         return Inertia::render('Products/Edit', [
-            'product' => ProductResource::make($product->load(['prices','categories']))->resolve(),
+            'product' => ProductResource::make($product->load(['prices', 'categories']))->resolve(),
             'price_plans' => PricePlan::all(),
         ]);
     }
@@ -90,11 +90,12 @@ class ProductController extends BaseController
                 return $this->productsService->update($product, $request->all());
             });
         } catch (\Exception $e) {
-            if (!env('APP_DEBUG')) {
+            if (! env('APP_DEBUG')) {
                 Log::error($e->getMessage());
             }
             throw new \Exception($e);
         }
+
         return redirect()->route('products.index');
     }
 

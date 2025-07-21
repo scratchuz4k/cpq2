@@ -24,7 +24,7 @@ class ShareLinkCreateRequest extends FormRequest
         return [
             'shareable_type' => ['required', 'in:quotes'],
             'shareable_id' => ['required', 'numeric'],
-            'expires_at' => ['nullable', 'date']
+            'expires_at' => ['nullable', 'date'],
         ];
     }
 }

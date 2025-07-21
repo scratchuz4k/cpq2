@@ -11,7 +11,7 @@ use Laravel\Socialite\Facades\Socialite;
 
 class GoogleController extends Controller
 {
-    //Google Login
+    // Google Login
     public function create()
     {
         try {
@@ -25,7 +25,7 @@ class GoogleController extends Controller
         }
     }
 
-    //Google Callback
+    // Google Callback
     public function callback()
     {
         try {

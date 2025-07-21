@@ -5,7 +5,6 @@ namespace App\Http\Requests;
 use App\Enums\SpaRulesEnum;
 use App\Models\SpaRule;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
 class SpaCreateRequest extends FormRequest
 {

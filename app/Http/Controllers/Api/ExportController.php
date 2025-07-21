@@ -16,12 +16,12 @@ class ExportController extends BaseController
 
         $export = $request->input('export');
 
-        if (!$export) {
+        if (! $export) {
             return response()->json(['error' => 'Export parameter is required'], 400);
         }
 
-        $export_class = 'App\\Export\\Export' . $export;
-        if (!class_exists($export_class)) {
+        $export_class = 'App\\Export\\Export'.$export;
+        if (! class_exists($export_class)) {
             return response()->json(['error' => 'Export Class not found'], 404);
         }
 
@@ -38,16 +38,16 @@ class ExportController extends BaseController
     {
         $this->authorize('viewAny export', ExportPolicy::class);
         $export = $request->input('export');
-        $export_class = 'App\\Export\\Export' . $export;
+        $export_class = 'App\\Export\\Export'.$export;
 
-        if (!class_exists($export_class)) {
+        if (! class_exists($export_class)) {
             return response()->json(['error' => 'Export Class not found'], 404);
         }
 
         $date_range = [];
         if (
             array_key_exists('date_interval', $request->all())
-            && !empty($request->date_interval)
+            && ! empty($request->date_interval)
         ) {
             $date_range = json_decode($request->date_interval, true);
         }

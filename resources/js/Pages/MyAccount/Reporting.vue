@@ -1,54 +1,49 @@
 <script setup>
-
-import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
-import {Head} from "@inertiajs/vue3";
-import {reactive, ref} from "vue";
-import RangeDateFilter from "@/Components/RangeDateFilter.vue"
-import ChartCard from "@/Components/ChartCard.vue";
-import format from "@/Composables/format.js";
-import queryString from "query-string";
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import { Head } from '@inertiajs/vue3';
+import { reactive, ref } from 'vue';
+import RangeDateFilter from '@/Components/RangeDateFilter.vue';
+import ChartCard from '@/Components/ChartCard.vue';
+import format from '@/Composables/format.js';
+import queryString from 'query-string';
 
 const props = defineProps({
     registered_users: Array,
     total_quotes: Array
-})
+});
 
 const data = ref([]);
 
-const dateRange = ref({})
+const dateRange = ref({});
 
 const updateDateRange = (rangeDate) => {
-    dateRange.value = format.parsedDateRange(rangeDate)
-    getData()
-}
+    dateRange.value = format.parsedDateRange(rangeDate);
+    getData();
+};
 
 const getData = async () => {
     let query = queryString.stringify(dateRange.value);
 
     try {
-        let res = await axios.get('api/reporting-data?' + query)
-        data.value = res.data
+        let res = await axios.get('api/reporting-data?' + query);
+        data.value = res.data;
     } catch (err) {
-        notyf.error(err?.response?.data?.message ?? "Something went wrong");
+        notyf.error(err?.response?.data?.message ?? 'Something went wrong');
     }
-}
+};
 
-const items = ref([
-    {label: "Home", url: "/"},
-    {label: 'My Account', url: '/myaccount'},
-    {label: 'Reporting'},
-]);
+const items = ref([{ label: 'Home', url: '/' }, { label: 'My Account', url: '/myaccount' }, { label: 'Reporting' }]);
 
-getData()
+getData();
 </script>
 
 <template>
-    <Head title="Reporting"/>
+    <Head title="Reporting" />
     <AuthenticatedLayout>
         <div class="panel">
-            <Header title="Reporting" :breadcrumbs="items"/>
+            <Header title="Reporting" :breadcrumbs="items" />
 
-            <range-date-filter @date-range-change="updateDateRange"/>
+            <range-date-filter @date-range-change="updateDateRange" />
             <chart-card
                 :title="'Users Registered'"
                 :showButton="true"
@@ -92,5 +87,4 @@ getData()
     </AuthenticatedLayout>
 </template>
 
-<style scoped>
-</style>
+<style scoped></style>
