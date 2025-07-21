@@ -77,7 +77,7 @@ class ShopBlocksProductsSyncJob implements NotTenantAware, ShouldQueue
         array_push($temp['synced'], $this->page);
         Cache::put('shopblocks-sync-status', ['synced' => $temp['synced'], 'last_page' => $temp['last_page'], 'started_at' => $temp['started_at']], 30);
 
-        if ($this->page == $temp['last_page'] && env('DISCORD_SHOPBLOCKS_JOBS')) {
+        if (($this->page == $temp['last_page'] || count($temp['synced']) == $temp['last_page']) && env('DISCORD_SHOPBLOCKS_JOBS')) {
             $allPages = range(1, $temp['last_page']);
             $missingPages = array_diff($allPages, $temp['synced']);
 
