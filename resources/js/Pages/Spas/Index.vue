@@ -25,14 +25,14 @@ const form = reactive({
     rule: null,
     rule_id: [],
     field_1: null,
-    field_2: null
+    field_2: null,
+    group: null
 });
 
 const fields = reactive({
     account: null,
     supplier: null,
-    product: null,
-    group: null
+    product: null
 });
 
 const data = ref([]);
@@ -166,8 +166,17 @@ const getFilters = () => {
         });
     }
 
+    if (!!form.group) {
+        temp.push({
+            column: 'group_id',
+            operator: 'equals',
+            value: form.group?.id
+        });
+    }
+
     return temp;
 };
+
 const deleteRecord = async (id) => {
     swal.fire({
         title: 'Are you sure?'
@@ -202,7 +211,8 @@ const cloneSpa = async (item) => {
             price_plan_id: item.price_plan_id ?? null,
             value: item.value ?? 0,
             percentage: item.percentage ?? 0,
-            is_active: item.is_active ?? true
+            is_active: item.is_active ?? true,
+            group_id: item.group_id ?? null
         });
         notyf.success('Clone with success');
         getData();
@@ -221,6 +231,7 @@ const clearFilters = () => {
     showGlobal.value = false;
     Object.keys(fields).forEach((x) => (fields[x] = null));
     selectedRules.value = [];
+    form.group = null;
     getData();
 };
 
@@ -236,10 +247,6 @@ const exportDisabled = ref(false);
 const getExportData = async () => {
     if (exportDisabled.value) return;
     exportDisabled.value = true;
-    // let filters = {
-    //     filters: ,
-    //     search: global.value,
-    // };
 
     exportData([], 'spas');
     setTimeout(() => {
@@ -359,6 +366,18 @@ getData();
                                 >
                                 </InputSelect>
                             </div>
+                            <div class="col">
+                                <label class="form-label">Group</label>
+                                <InputSelect
+                                    id="filter-group"
+                                    url="/groups"
+                                    :fields="['name']"
+                                    v-model="form.group"
+                                    @change="handleFields()"
+                                    placeholder="Select a Group"
+                                >
+                                </InputSelect>
+                            </div>
                         </div>
                         <div v-if="selectedRules.length" class="row mt-3">
                             <div class="col">
@@ -453,7 +472,7 @@ getData();
                                 </td>
                             </tr>
                             <tr v-if="!data.length" class="text-center">
-                                <td colspan="9">No Results Found</td>
+                                <td colspan="11">No Results Found</td>
                             </tr>
                         </tbody>
                     </table>

@@ -51,8 +51,9 @@ const saveSpa = () => {
         operation_id: spa.operation_id,
         value: !spa.value ? 0 : spa.value,
         percentage: !spa.percentage ? 0 : spa.percentage,
-        group_id: spa.group?.id
+        group_id: spa.group?.id ?? null
     };
+
     router.put(`/spas/${props.spa.id}`, item, {
         onSuccess: (page) => {
             notyf.success('Updated with Success');
