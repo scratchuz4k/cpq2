@@ -58,6 +58,10 @@ window.swal = Swal.mixin({
         cancelButton: 'btn btn-outline-primary border-light-purple btn-lg fs-6',
         loader: 'custom-loader',
         title: 'h3'
+    },
+    didOpen: () => {
+        document.querySelector('.swal2-confirm').id = 'swal-btn-confirm';
+        document.querySelector('.swal2-cancel').id = 'swal-btn-cancel';
     }
 });
 
