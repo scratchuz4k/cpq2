@@ -379,19 +379,23 @@ getData();
                                 </InputSelect>
                             </div>
                         </div>
-                        <div v-if="selectedRules.length" class="row mt-3">
-                            <div class="col">
-                                <p>
-                                    <b class="me-2">Selected Rules:</b>
-                                    <template v-for="(rule, index) in selectedRules">
-                                        <span
-                                            class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm"
-                                        >
-                                            {{ rule.name }}
-                                        </span>
-                                    </template>
-                                </p>
-                            </div>
+                    </div>
+                    <div v-if="selectedRules.length" class="row mt-3">
+                        <div class="col d-flex">
+                            <p>
+                                <b class="me-2">Selected filters:</b>
+                                <template v-for="(rule, index) in selectedRules">
+                                    <span class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm">
+                                        {{ rule.name }}
+                                    </span>
+                                </template>
+                                <span
+                                    v-if="form.group"
+                                    class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm"
+                                >
+                                    {{ form.group.name }}
+                                </span>
+                            </p>
                         </div>
                     </div>
                 </div>
