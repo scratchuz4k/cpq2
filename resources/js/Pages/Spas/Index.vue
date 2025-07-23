@@ -380,7 +380,7 @@ getData();
                             </div>
                         </div>
                     </div>
-                    <div v-if="selectedRules.length" class="row mt-3">
+                    <div v-if="selectedRules.length || form.group" class="row mt-3">
                         <div class="col d-flex">
                             <p>
                                 <b class="me-2">Selected filters:</b>

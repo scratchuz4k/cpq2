@@ -1,10 +1,7 @@
 <script setup>
 import InputSelect from '@/Components/InputSelect.vue';
-import { usePage } from '@inertiajs/vue3';
 import Select from 'primevue/select';
-import { watch, computed } from 'vue';
-
-const page = usePage();
+import { computed } from 'vue';
 
 const props = defineProps({
     operations: Array,
@@ -111,7 +108,7 @@ const icons = {
             <h5 class="mt-5">Choose the second Level (if needed)</h5>
             <ul class="d-flex flex-wrap p-0 m-0 mb-3" style="list-style: none">
                 <li v-for="rule in rules[proxyValue.entity_1]" class="me-1">
-                    <RadioCard v-model="proxyValue.entity_2" :value="rule ?? 'None'" name="spa-entity_2">
+                    <RadioCard v-model="proxyValue.entity_2" :value="rule" name="spa-entity_2">
                         <div class="text-center">
                             <font-awesome-icon :icon="icons[rule]" size="2x"></font-awesome-icon>
                             <p>{{ rule ?? 'None' }}</p>
