@@ -1,7 +1,10 @@
 <script setup>
 import InputSelect from '@/Components/InputSelect.vue';
+import { usePage } from '@inertiajs/vue3';
 import Select from 'primevue/select';
-import { computed } from 'vue';
+import { computed, watch } from 'vue';
+
+const page = usePage();
 
 const props = defineProps({
     operations: Array,
@@ -24,6 +27,16 @@ const check = (value) => {
     return !!value;
 };
 
+const changeEntity = () => {
+    if (proxyValue.value.entity_1 == 'Global') {
+        proxyValue.value.entity_1_value = page.props.tenant;
+    } else {
+        proxyValue.value.entity_1_value = null;
+    }
+    proxyValue.value.entity_2 = null;
+    proxyValue.value.entity_2_value = null;
+};
+
 const icons = {
     Product: ['far', 'rectangle-list'],
     Account: ['far', 'address-card'],
@@ -32,6 +45,13 @@ const icons = {
     Group: ['fas', 'users'],
     null: ['fas', 'fa-slash']
 };
+
+watch(
+    () => proxyValue.value.entity_1,
+    () => {
+        changeEntity();
+    }
+);
 </script>
 <template>
     <div class="col-6">
@@ -39,17 +59,7 @@ const icons = {
             <h5>Choose the first Level</h5>
             <ul class="d-flex flex-wrap p-0 m-0 mb-3" style="list-style: none">
                 <li v-for="(rule, index) in rules" class="me-1">
-                    <RadioCard
-                        v-model="proxyValue.entity_1"
-                        :value="index"
-                        name="spa-entity_1"
-                        @click="
-                            () => {
-                                proxyValue.entity_2 = null;
-                                proxyValue.entity_2_value = null;
-                            }
-                        "
-                    >
+                    <RadioCard v-model="proxyValue.entity_1" :value="index" name="spa-entity_1">
                         <div class="text-center">
                             <font-awesome-icon :icon="icons[index]" size="2x"></font-awesome-icon>
                             <p>{{ index }}</p>
