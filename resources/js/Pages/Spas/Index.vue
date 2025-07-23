@@ -315,7 +315,7 @@ getData();
                         <font-awesome-icon :icon="['fas', 'file-export']" />
                     </Button>
                     <div v-if="visible" class="mt-3 mb-3">
-                        <div class="row row-cols-4 border rounded p-2">
+                        <div class="row row-cols-5 border rounded p-2">
                             <div class="col">
                                 <label class="form-label">Global</label>
                                 <Button

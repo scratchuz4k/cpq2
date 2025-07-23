@@ -113,7 +113,7 @@ const icons = {
                 <li v-for="rule in rules[proxyValue.entity_1]" class="me-1">
                     <RadioCard v-model="proxyValue.entity_2" :value="rule ?? 'None'" name="spa-entity_2">
                         <div class="text-center">
-                            <font-awesome-icon class="p-2" :icon="icons[rule]" size="2x"></font-awesome-icon>
+                            <font-awesome-icon :icon="icons[rule]" size="2x"></font-awesome-icon>
                             <p>{{ rule ?? 'None' }}</p>
                         </div>
                     </RadioCard>

@@ -31,7 +31,7 @@ class PriceRules
         $this->object = app(Pipeline::class)->send($this->object)->through($cases)->thenReturn();
 
         static::$spas = $this->object->spas->filter(function ($spa) use ($user) {
-            return is_null($spa->group_id) || $spa->id == $user->group_id;
+            return is_null($spa->group_id) || $spa->group_id == $user->group_id;
         });
 
         if ($pricePlan) {

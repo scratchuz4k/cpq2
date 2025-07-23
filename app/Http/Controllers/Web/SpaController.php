@@ -125,9 +125,9 @@ class SpaController extends BaseController
                 'operation' => $item->operation?->code ?? null,
                 'value' => $item->value,
                 'percentage' => $item->percentage,
+                'group' => $item->group?->name,
                 'created_at' => $item->created_at,
                 'updated_at' => $item->updated_at,
-                'group' => $item->group?->name,
             ];
         }));
     }
