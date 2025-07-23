@@ -24,16 +24,22 @@ class PriceRules
 
     public function find(?Product $product = null, ?Supplier $supplier = null, ?Account $account = null, ?PricePlan $pricePlan = null)
     {
-        $this->object = new PriceRulesObject($product, Auth::user(), $supplier, $account);
+        $user = Auth::user();
+        $this->object = new PriceRulesObject($product, $user, $supplier, $account);
         $cases = array_map(fn ($case) => $case->value, SpaRulesEnum::cases());
 
         $this->object = app(Pipeline::class)->send($this->object)->through($cases)->thenReturn();
+
+        static::$spas = $this->object->spas->filter(function ($spa) use ($user) {
+            return is_null($spa->group_id) || $spa->group_id == $user->group_id;
+        });
+
         if ($pricePlan) {
-            static::$spas = $this->object->spas->filter(function ($spa) use ($pricePlan) {
+            static::$spas = static::$spas->filter(function ($spa) use ($pricePlan) {
                 return is_null($spa->price_plan_id) || $spa->price_plan_id == $pricePlan->id;
             });
         } else {
-            static::$spas = $this->object->spas->filter(function ($spa) {
+            static::$spas = static::$spas->filter(function ($spa) {
                 return is_null($spa->price_plan_id);
             });
         }

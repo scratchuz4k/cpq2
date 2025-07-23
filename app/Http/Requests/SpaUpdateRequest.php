@@ -3,7 +3,6 @@
 namespace App\Http\Requests;
 
 use App\Enums\SpaRulesEnum;
-use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class SpaUpdateRequest extends FormRequest
@@ -32,6 +31,7 @@ class SpaUpdateRequest extends FormRequest
             'field_2' => 'numeric',
             'operation_id' => 'exists:spa_operations,id',
             'price_plan_id' => 'nullable|exists:price_plans,id',
+            'group_id' => 'nullable|exists:groups,id',
             'value' => 'numeric',
             'percentage' => 'numeric|min:0|max:100',
         ];
