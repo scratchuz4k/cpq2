@@ -7,10 +7,11 @@ use App\Trait\RegisterActivity;
 use App\Trait\SetTenantId;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class QuoteDiscount extends Model
 {
-    use RegisterActivity, SetTenantId;
+    use RegisterActivity, SetTenantId, SoftDeletes;
 
     protected $fillable = ['discountable_type', 'discountable_id', 'discount', 'tenant_id'];
 
