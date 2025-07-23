@@ -1,8 +1,8 @@
 <script setup>
 import InputSelect from '@/Components/InputSelect.vue';
 import { usePage } from '@inertiajs/vue3';
-import ToggleSwitch from 'primevue/toggleswitch';
 import Select from 'primevue/select';
+import { computed, watch } from 'vue';
 
 const page = usePage();
 
@@ -12,15 +12,29 @@ const props = defineProps({
     price_plans: Array,
     modelValue: Object
 });
+
+const emit = defineEmits(['update:modelValue']);
+const proxyValue = computed({
+    get() {
+        return props.modelValue;
+    },
+    set(val) {
+        emit('update:modelValue', val);
+    }
+});
+
 const check = (value) => {
     return !!value;
 };
 
-const changeEntity1 = (index) => {
-    props.modelValue.entity_1 = index;
-    props.modelValue.entity_1_value = index == 'Global' ? page.props.tenant : null;
-    props.modelValue.entity_2 = null;
-    props.modelValue.entity_2_value = null;
+const changeEntity = () => {
+    if (proxyValue.value.entity_1 == 'Global') {
+        proxyValue.value.entity_1_value = page.props.tenant;
+    } else {
+        proxyValue.value.entity_1_value = null;
+    }
+    proxyValue.value.entity_2 = null;
+    proxyValue.value.entity_2_value = null;
 };
 
 const icons = {
@@ -31,141 +45,134 @@ const icons = {
     Group: ['fas', 'users'],
     null: ['fas', 'fa-slash']
 };
+
+watch(
+    () => proxyValue.value.entity_1,
+    () => {
+        changeEntity();
+    }
+);
 </script>
 <template>
     <div class="col-6">
         <div class="panel">
             <h5>Choose the first Level</h5>
-            <div class="mb-3 d-flex flex-column">
-                <label class="form-label" for="active-filter"> Active: </label>
-                <ToggleSwitch id="active-filter" v-model="modelValue.is_active">
-                    <template #handle>
-                        <font-awesome-icon
-                            :icon="modelValue.is_active ? ['fas', 'circle-check'] : ['far', 'circle-xmark']"
-                            class="text-primary"
-                        />
-                    </template>
-                </ToggleSwitch>
-            </div>
             <ul class="d-flex flex-wrap p-0 m-0 mb-3" style="list-style: none">
-                <li v-for="(rule, index) in rules">
-                    <div
-                        :id="'spa-entity-' + index"
-                        :class="{ active: modelValue.entity_1 === index }"
-                        class="rule d-flex flex-column p-2"
-                        @click="changeEntity1(index)"
-                    >
-                        <font-awesome-icon class="p-2" :icon="icons[index]" size="2x"></font-awesome-icon>
-                        <p>{{ index }}</p>
-                    </div>
+                <li v-for="(rule, index) in rules" class="me-1">
+                    <RadioCard v-model="proxyValue.entity_1" :value="index" name="spa-entity_1">
+                        <div class="text-center">
+                            <font-awesome-icon :icon="icons[index]" size="2x"></font-awesome-icon>
+                            <p>{{ index }}</p>
+                        </div>
+                    </RadioCard>
                 </li>
             </ul>
-            <div class="mb-3" v-if="modelValue.entity_1 == 'Account'">
+            <div class="mb-3" v-if="proxyValue.entity_1 == 'Account'">
                 <label class="form-label">Select the Account</label>
                 <InputSelect
                     id="Account1"
                     url="/accounts"
                     :fields="['name', 'reference']"
-                    v-model="modelValue.entity_1_value"
+                    v-model="proxyValue.entity_1_value"
                     :is-multiple="false"
                     placeholder="Select an Account"
-                    :query="[{ column: 'is_active', operator: 'equals', value: 1 }]"
                 >
                 </InputSelect>
             </div>
-            <div class="mb-3" v-if="modelValue.entity_1 == 'Supplier'">
+            <div class="mb-3" v-if="proxyValue.entity_1 == 'Supplier'">
                 <label class="form-label">Select the Supplier</label>
                 <InputSelect
                     id="Supplier1"
                     url="/suppliers"
                     :fields="['name']"
-                    v-model="modelValue.entity_1_value"
+                    v-model="proxyValue.entity_1_value"
                     :is-multiple="false"
                     placeholder="Select a Supplier"
-                    :query="[{ column: 'is_active', operator: 'equals', value: 1 }]"
                 >
                 </InputSelect>
             </div>
-            <div class="mb-3" v-if="modelValue.entity_1 == 'Product'">
+            <div class="mb-3" v-if="proxyValue.entity_1 == 'Product'">
                 <label class="form-label">Select the Product</label>
                 <InputSelect
                     id="Product1"
                     url="/products"
                     :fields="['name']"
-                    v-model="modelValue.entity_1_value"
+                    v-model="proxyValue.entity_1_value"
                     :is-multiple="false"
                     placeholder="Select a Product"
-                    :query="[{ column: 'is_active', operator: 'equals', value: 1 }]"
                 >
                 </InputSelect>
             </div>
-            <div class="mb-3" v-if="modelValue.entity_1 == 'Group'">
+            <div class="mb-3" v-if="proxyValue.entity_1 == 'Group'">
                 <label class="form-label">Select a Group</label>
                 <InputSelect
                     id="Group1"
                     url="/groups"
                     :fields="['name']"
-                    v-model="modelValue.entity_1_value"
+                    v-model="proxyValue.entity_1_value"
                     :is-multiple="false"
                     placeholder="Select a Group"
                 >
                 </InputSelect>
             </div>
             <h5 class="mt-5">Choose the second Level (if needed)</h5>
-            <ul class="d-flex flex-wrap p-0 mb-3" style="list-style: none">
-                <li v-for="rule in rules[modelValue.entity_1]">
-                    <div
-                        :class="{ active: modelValue.entity_2 === rule }"
+            <ul class="d-flex flex-wrap p-0 m-0 mb-3" style="list-style: none">
+                <li v-for="rule in rules[proxyValue.entity_1]" class="me-1">
+                    <RadioCard v-model="proxyValue.entity_2" :value="rule" name="spa-entity_2">
+                        <div class="text-center">
+                            <font-awesome-icon :icon="icons[rule]" size="2x"></font-awesome-icon>
+                            <p>{{ rule ?? 'None' }}</p>
+                        </div>
+                    </RadioCard>
+                    <!-- <div
+                        :class="{ active: proxyValue.entity_2 === rule }"
                         class="rule d-flex flex-column p-2"
                         @click="
                             () => {
-                                modelValue.entity_2 = rule;
-                                modelValue.entity_2_value = null;
+                                proxyValue.entity_2 = rule;
+                                proxyValue.entity_2_value = null;
                             }
                         "
                     >
                         <font-awesome-icon class="p-2" :icon="icons[rule]" size="2x"></font-awesome-icon>
                         <p>{{ rule ?? 'None' }}</p>
-                    </div>
+                    </div> -->
                 </li>
             </ul>
-            <template v-if="modelValue.entity_2">
-                <div class="mb-3" v-if="modelValue.entity_2 == 'Account'">
+            <template v-if="proxyValue.entity_2">
+                <div class="mb-3" v-if="proxyValue.entity_2 == 'Account'">
                     <label class="form-label">Select the Account</label>
                     <InputSelect
                         id="Account2"
                         url="/accounts"
                         :fields="['name', 'reference']"
-                        v-model="modelValue.entity_2_value"
+                        v-model="proxyValue.entity_2_value"
                         :is-multiple="false"
                         placeholder="Select an Account"
-                        :query="[{ column: 'is_active', operator: 'equals', value: 1 }]"
                     >
                     </InputSelect>
                 </div>
-                <div class="mb-3" v-if="modelValue.entity_2 == 'Supplier'">
+                <div class="mb-3" v-if="proxyValue.entity_2 == 'Supplier'">
                     <label class="form-label">Select the Supplier</label>
                     <InputSelect
                         id="Supplier2"
                         url="/suppliers"
                         :fields="['name']"
-                        v-model="modelValue.entity_2_value"
+                        v-model="proxyValue.entity_2_value"
                         :is-multiple="false"
                         placeholder="Select a Supplier"
-                        :query="[{ column: 'is_active', operator: 'equals', value: 1 }]"
                     >
                     </InputSelect>
                 </div>
-                <div class="mb-3" v-if="modelValue.entity_2 == 'Product'">
+                <div class="mb-3" v-if="proxyValue.entity_2 == 'Product'">
                     <label class="form-label">Select the Product</label>
                     <InputSelect
                         id="Product2"
                         url="/products"
                         :fields="['name']"
-                        v-model="modelValue.entity_2_value"
+                        v-model="proxyValue.entity_2_value"
                         :is-multiple="false"
                         placeholder="Select a Product"
-                        :query="[{ column: 'is_active', operator: 'equals', value: 1 }]"
                     >
                     </InputSelect>
                 </div>
@@ -174,7 +181,7 @@ const icons = {
             <div class="mb-3">
                 <label class="form-label">Operation:</label>
                 <Select
-                    v-model="modelValue.operation_id"
+                    v-model="proxyValue.operation_id"
                     :inputId="'spa-operation'"
                     :options="props.operations"
                     class="w-100"
@@ -190,8 +197,8 @@ const icons = {
                         id="spa-percentage"
                         type="number"
                         class="form-control"
-                        v-model="modelValue.percentage"
-                        :disabled="check(modelValue.value)"
+                        v-model="proxyValue.percentage"
+                        :disabled="check(proxyValue.value)"
                         min="0"
                         max="100"
                     />
@@ -202,15 +209,27 @@ const icons = {
                         id="spa-value"
                         type="number"
                         class="form-control"
-                        v-model="modelValue.value"
-                        :disabled="check(modelValue.percentage)"
+                        v-model="proxyValue.value"
+                        :disabled="check(proxyValue.percentage)"
                     />
                 </div>
             </div>
+            <hr class="my-4" />
             <div class="mb-3">
-                <label class="form-label">Price Plan (Optional):</label>
+                <label class="form-label">Group: </label>
+                <InputSelect
+                    id="spa-roup"
+                    url="/groups"
+                    :fields="['name']"
+                    v-model="proxyValue.group"
+                    placeholder="Select a Group"
+                >
+                </InputSelect>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Price Plan:</label>
                 <Select
-                    v-model="modelValue.price_plan_id"
+                    v-model="proxyValue.price_plan_id"
                     :inputId="'spa-price_plan'"
                     :options="props.price_plans"
                     class="w-100"
