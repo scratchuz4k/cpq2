@@ -13,10 +13,15 @@ use Illuminate\Support\Collection;
 class DashboardService
 {
     public $model;
+
     public $relation;
+
     protected $user_instance = 'App\\Models\\User';
+
     protected $activity_instance = 'App\\Models\\Activity';
+
     protected $supplier_instance = 'App\\Models\\Supplier';
+
     protected $quote_instance = 'App\\Models\\Quote';
 
     public function __construct($model, $relation = null)
