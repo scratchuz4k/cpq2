@@ -37,7 +37,7 @@ class Quote extends Model
         'commission_rate',
         'margin',
         'status',
-        'user_id'
+        'user_id',
     ];
 
     protected function casts(): array
@@ -45,6 +45,14 @@ class Quote extends Model
         return [
             'address_position' => 'array',
             'address_data' => 'array',
+            'margin' => 'float',
+            'total' => 'float',
+            'total_tax' => 'float',
+            'total_gross' => 'float',
+            'commission_value' => 'float',
+            'commission_rate ' => 'float',
+            'created_at' => 'datetime:y-m-d H:i:s',
+            'updated_at' => 'datetime:y-m-d H:i:s',
         ];
     }
 
@@ -119,6 +127,9 @@ class Quote extends Model
             $this->total_tax += $item->total_tax;
             $this->total_gross += $item->total_gross;
         }
+        $this->total = format_currency($this->total);
+        $this->total_tax = format_currency($this->total_tax);
+        $this->total_gross = format_currency($this->total_gross);
 
         $total_cost = $raw_total;
         $margin_value = $this->total - $total_cost;
@@ -143,7 +154,7 @@ class Quote extends Model
             return QuoteStatusesEnum::QUOTE->name;
         }
 
-        if (!empty($quote->address_data)) {
+        if (! empty($quote->address_data)) {
             return QuoteStatusesEnum::PRICE->name;
         }
 
