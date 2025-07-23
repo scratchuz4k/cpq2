@@ -85,7 +85,7 @@
                         <p class="bold">{{ slotProps.item.activitable_type }} {{ slotProps.item.operation }}</p>
                         <p class="small">
                             <p v-for="item in slotProps.item.data">
-                                <p class="small">{{ item.field }}: {{ item.from ?? 'null' }} -> {{ item.to ?? 'null' }}</p>
+                                <span class="small">{{ item.field }}: {{ item.from ?? 'null' }}  {{ item.to ?? 'null' }}</span>
                             </p>
                         </p>
                     </div>
