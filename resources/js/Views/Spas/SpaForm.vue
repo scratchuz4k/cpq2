@@ -59,7 +59,12 @@ watch(
             <h5>Choose the first Level</h5>
             <ul class="d-flex flex-wrap p-0 m-0 mb-3" style="list-style: none">
                 <li v-for="(rule, index) in rules" class="me-1">
-                    <RadioCard v-model="proxyValue.entity_1" :value="index" name="spa-entity_1">
+                    <RadioCard
+                        v-model="proxyValue.entity_1"
+                        :value="index"
+                        name="spa-entity_1"
+                        :id="'spa-entity-' + index"
+                    >
                         <div class="text-center">
                             <font-awesome-icon :icon="icons[index]" size="2x"></font-awesome-icon>
                             <p>{{ index }}</p>
