@@ -1,7 +1,7 @@
 .swal2-confirm.btn {
     font-weight: 600;
-    padding-left:2rem;
-    padding-right:2rem;
+    padding-left: 2rem;
+    padding-right: 2rem;
 }
 
 .swal2-cancel.border-light-purple {
@@ -11,7 +11,8 @@
     color: var(--color-purple);
     font-weight: 600;
 
-    &:hover, &:active{
+    &:hover,
+    &:active {
         border-color: var(--color-purple);
         background-color: white;
         color: var(--color-purple);
