@@ -27,6 +27,9 @@ export default defineConfig({
     build: {
         minify: true,
         cssCodeSplit: true,
-        modulePreload: false
+        modulePreload: false,
+        commonjsOptions: {
+            transformMixedEsModules: true
+        }
     }
 });
