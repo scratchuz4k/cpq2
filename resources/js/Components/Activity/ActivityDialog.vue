@@ -8,7 +8,14 @@
         <font-awesome-icon :icon="['fas', 'clock-rotate-left']"></font-awesome-icon>
         Activity
     </button>
-    <Dialog v-model:visible="visible" modal :style="{ width: '60rem' }" position="top" :draggable="false">
+    <Dialog
+        v-model:visible="visible"
+        modal
+        :style="{ width: '60rem' }"
+        position="top"
+        :draggable="false"
+        :maximizable="true"
+    >
         <template #header>
             <div>
                 <h2>Activity</h2>
@@ -23,50 +30,7 @@
                     </MultiSelect>
                 </div>
             </div>
-            <!-- <table class="table w-100">
-                <thead>
-                    <tr style="position: sticky; top: 0">
-                        <th style="width: 40%">Field</th>
-                        <th style="width: 30%">From</th>
-                        <th>To</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <template v-for="activity in activityLog">
-                        <tr @click="toggle(activity)" style="cursor: pointer">
-                            <td colspan="2">
-                                <p>
-                                    <span class="me-3">{{ activity.user.name }}</span>
-                                    <span class="smaller badge bg-secondary text-white">
-                                        {{ activity.activitable_type }}
-                                    </span>
-                                </p>
-                            </td>
-                            <td>
-                                <p class="text-end">
-                                    {{ format.date(activity.created_at) }}
-                                    <span
-                                        class="badge text-white ms-2"
-                                        :class="[activity.operation == 'created' ? 'bg-success' : 'bg-primary']"
-                                        >{{ activity.operation }}</span
-                                    >
-                                </p>
-                            </td>
-                        </tr>
-                        <tr v-for="item in activity.data" v-if="activity.show_data" class="field-info">
-                            <td>
-                                <p class="small">{{ item.field }}</p>
-                            </td>
-                            <td>
-                                <p class="small">{{ item.from ?? 'null' }}</p>
-                            </td>
-                            <td>
-                                <p class="small">{{ item.to ?? 'null' }}</p>
-                            </td>
-                        </tr>
-                    </template>
-                </tbody>
-            </table> -->
+
             <Timeline :value="activityLog">
                 <template #opposite="slotProps">
                     <small class="text-surface-500 dark:text-surface-400">{{
@@ -76,19 +40,55 @@
                 <template #marker="slotProps">
                     <span
                         class="p-timeline-event-marker text-white"
-                        :class="[slotProps.item.operation == 'deleted' ? 'bg-danger' : slotProps.item.operation == 'created' ? 'bg-success' : 'bg-primary']"
+                        :class="[
+                            slotProps.item.operation == 'deleted'
+                                ? 'bg-danger'
+                                : slotProps.item.operation == 'created'
+                                ? 'bg-success'
+                                : 'bg-primary'
+                        ]"
                     >
                     </span>
                 </template>
                 <template #content="slotProps">
                     <div class="mb-3">
-                        <p >
-                        <b>{{slotProps.item.user.name}}</b> {{ slotProps.item.operation }} {{ slotProps.item.activitable_type }} {{ slotProps.item.activitable_id }}</p>
-                        <p class="small">
-                            <p v-for="item in slotProps.item.data">
-                                <span class="small">{{ item.field }}: {{ item.from ?? 'null' }}  {{ item.to ?? 'null' }}</span>
-                            </p>
+                        <p>
+                            <b>{{ slotProps.item.user.name }}</b> {{ slotProps.item.operation }}
+                            {{ slotProps.item.activitable_type }}
+                            {{ slotProps.item.activitable_id }}
                         </p>
+                        <p class="small">{{ slotProps.item.activity?.name }}</p>
+                        <table v-if="slotProps.item.readmore" class="table table-activity mt-3">
+                            <thead>
+                                <tr>
+                                    <th style="width: 30%">Field</th>
+                                    <th style="width: 35%">From</th>
+                                    <th style="width: 35%">To</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="item in slotProps.item.data" class="field-info">
+                                    <td class="">
+                                        <p class="small">{{ item.field }}</p>
+                                    </td>
+                                    <td>
+                                        <p class="small">{{ item.from ?? 'null' }}</p>
+                                    </td>
+                                    <td>
+                                        <p class="small">{{ item.to ?? 'null' }}</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <a
+                            class="text-secondary"
+                            v-if="slotProps.item.data?.length"
+                            href="#"
+                            @click="() => (slotProps.item.readmore = !slotProps.item.readmore)"
+                        >
+                            Show {{ !slotProps.item.readmore ? 'more' : 'less' }}...
+                        </a>
+                        <a v-else class="text-secondary m-0 p-0">Nothing to show</a>
                     </div>
                 </template>
             </Timeline>
@@ -165,9 +165,6 @@ const getActivity = async () => {
     meta.first = (meta.page - 1) * meta.limit;
 };
 
-const toggle = (activity) => {
-    activity.show_data = !activity.show_data;
-};
 onMounted(() => {
     getActivity();
 });
@@ -189,5 +186,10 @@ const handlePaginator = (ev) => {
 <style scope>
 .field-info > td {
     background-color: whitesmoke;
+}
+.table-activity thead tr th,
+.table-activity tbody tr td {
+    padding: 0;
+    font-size: 12px;
 }
 </style>

@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Models\Scopes\TenantScope;
 use App\Trait\SetTenantId;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 class Activity extends Model
 {
@@ -29,6 +30,11 @@ class Activity extends Model
         return [
             'data' => 'object',
         ];
+    }
+
+    public function activitable(): MorphTo
+    {
+        return $this->morphTo();
     }
 
     public function user()
