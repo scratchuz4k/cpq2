@@ -51,7 +51,6 @@ import Swal from 'sweetalert2';
 window.swal = Swal.mixin({
     buttonsStyling: true,
     showCancelButton: true,
-    confirmButtonColor: '#67236a',
     width: '20em',
     customClass: {
         confirmButton: 'btn text-light btn-lg mr-2 fs-6',
