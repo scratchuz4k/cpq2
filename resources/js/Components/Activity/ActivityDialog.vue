@@ -53,42 +53,19 @@
                 <template #content="slotProps">
                     <div class="mb-3">
                         <p>
-                            <b>{{ slotProps.item.user.name }}</b> {{ slotProps.item.operation }}
-                            {{ slotProps.item.activitable_type }}
-                            {{ slotProps.item.activitable_id }}
+                            <span class="smaller badge bg-secondary text-white">
+                                {{ slotProps.item.activitable_type }} #{{ slotProps.item.activitable_id }}
+                            </span>
+                            {{ slotProps.item.operation }} by <b>{{ slotProps.item.user.name }}</b>
                         </p>
-                        <p class="small">{{ slotProps.item.activity?.name }}</p>
-                        <table v-if="slotProps.item.readmore" class="table table-activity mt-3">
-                            <thead>
-                                <tr>
-                                    <th style="width: 30%">Field</th>
-                                    <th style="width: 35%">From</th>
-                                    <th style="width: 35%">To</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr v-for="item in slotProps.item.data" class="field-info">
-                                    <td class="">
-                                        <p class="small">{{ item.field }}</p>
-                                    </td>
-                                    <td>
-                                        <p class="small">{{ item.from ?? 'null' }}</p>
-                                    </td>
-                                    <td>
-                                        <p class="small">{{ item.to ?? 'null' }}</p>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                        <a
-                            class="text-secondary"
-                            v-if="slotProps.item.data?.length"
-                            href="#"
-                            @click="() => (slotProps.item.readmore = !slotProps.item.readmore)"
-                        >
-                            Show {{ !slotProps.item.readmore ? 'more' : 'less' }}...
-                        </a>
-                        <a v-else class="text-secondary m-0 p-0">Nothing to show</a>
+                        <DefaultActivity
+                            v-if="!customActivities.includes(slotProps.item.activitable_type)"
+                            :item="slotProps.item"
+                        ></DefaultActivity>
+                        <component
+                            :is="slotProps.item.activitable_type + 'Activity'"
+                            :item="slotProps.item"
+                        ></component>
                     </div>
                 </template>
             </Timeline>
@@ -117,6 +94,7 @@ const page = usePage();
 const tenant = page.props.tenant;
 const options = props.filters.map((x) => x.entity);
 const entities = ref(props.filters.map((x) => x.entity));
+const customActivities = ['QuoteItem', 'QuoteDiscount'];
 const meta = reactive({
     page: 1,
     total: 0,
