@@ -37,7 +37,7 @@ const spa = reactive({
     operation_id: props.spa.operation_id,
     value: props.spa.value,
     percentage: props.spa.percentage,
-    is_active: props.spa.is_active
+    group: props.spa.group
 });
 
 const saveSpa = () => {
@@ -51,8 +51,9 @@ const saveSpa = () => {
         operation_id: spa.operation_id,
         value: !spa.value ? 0 : spa.value,
         percentage: !spa.percentage ? 0 : spa.percentage,
-        is_active: spa.is_active
+        group_id: spa.group?.id ?? null
     };
+
     router.put(`/spas/${props.spa.id}`, item, {
         onSuccess: (page) => {
             notyf.success('Updated with Success');

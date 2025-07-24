@@ -5,7 +5,6 @@ namespace App\Http\Requests;
 use App\Enums\SpaRulesEnum;
 use App\Models\SpaRule;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
 class SpaCreateRequest extends FormRequest
 {
@@ -38,6 +37,7 @@ class SpaCreateRequest extends FormRequest
             'field_2' => 'numeric',
             'operation_id' => 'required|exists:spa_operations,id',
             'price_plan_id' => 'nullable|exists:price_plans,id',
+            'group_id' => 'nullable|exists:groups,id',
             'value' => 'numeric',
             'percentage' => 'numeric|min:0|max:100',
         ];

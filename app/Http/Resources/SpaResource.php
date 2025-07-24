@@ -25,6 +25,7 @@ class SpaResource extends JsonResource
             'percentage' => round((float) $this->percentage, 2),
             'price_plan' => $this->pricePlan,
             'rule' => $this->rule,
+            'group' => $this->group,
             'operation' => $this->operation,
             'user' => $this->user,
         ];
