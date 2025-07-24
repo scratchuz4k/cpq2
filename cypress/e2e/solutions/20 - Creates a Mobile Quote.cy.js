@@ -228,9 +228,7 @@ describe('Creates a Mobile Quote', () => {
             });
 
         cy.get('#btn-reset-quote').click();
-        cy.get(
-            'body > div.swal2-container.swal2-center.swal2-backdrop-show > div > div.swal2-actions > button.swal2-confirm.btn.text-light.btn-lg.mr-2.fs-6.swal2-styled.swal2-default-outline'
-        ).click();
+        cy.get('#swal-btn-confirm').click();
         cy.get('#btn-reset-quote', { timeout: 3000 }).should('not.be.disabled');
 
         cy.get(`#recurring-discount-0`)
@@ -265,17 +263,13 @@ describe('Creates a Mobile Quote', () => {
                 cy.get(`#btn-recurring-${count - 1}-remove`).click();
             });
 
-        cy.get(
-            'body > div.swal2-container.swal2-center.swal2-backdrop-show > div > div.swal2-actions > button.swal2-confirm.btn.text-light.btn-lg.mr-2.fs-6.swal2-styled.swal2-default-outline'
-        ).click();
+        cy.get('#swal-btn-confirm').click();
         cy.get('.one_off-item')
             .its('length')
             .then((count) => {
                 cy.get(`#btn-one_off-${count - 1}-remove`).click();
             });
-        cy.get(
-            'body > div.swal2-container.swal2-center.swal2-backdrop-show > div > div.swal2-actions > button.swal2-confirm.btn.text-light.btn-lg.mr-2.fs-6.swal2-styled.swal2-default-outline'
-        ).click();
+        cy.get('#swal-btn-confirm').click();
     });
 
     it('I can Create an order from a quote', () => {
