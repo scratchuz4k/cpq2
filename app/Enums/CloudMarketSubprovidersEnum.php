@@ -21,6 +21,14 @@ enum CloudMarketSubprovidersEnum: string
     case VIRGIN = "Virgin";
     case VODAFONE = "Vodafone";
     case VIRTUAL1 = "Virtual1";
+
+    public static function asArray(): array
+    {
+        return array_map(fn ($case) => [
+            'name' => $case->name,   // Enum case value
+            'value' => $case->value, // Custom value
+        ], self::cases());
+    }
 }
 
 

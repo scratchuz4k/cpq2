@@ -40,14 +40,14 @@ class Order extends Model
         'status',
         'user_id',
         'quote_id',
-        'note',
+        'note'
     ];
 
     protected function casts(): array
     {
         return [
-            'address_position' => 'object',
-            'address_data' => 'object',
+            'address_position' => 'array',
+            'address_data' => 'array',
         ];
     }
 

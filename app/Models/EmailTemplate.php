@@ -2,10 +2,10 @@
 
 namespace App\Models;
 
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Auth;
 
 class EmailTemplate extends Model
 {
@@ -15,8 +15,16 @@ class EmailTemplate extends Model
         'cc',
         'bcc',
         'subject',
-        'body',
+        'body'
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'is_active' => 'boolean'
+        ];
+    }
+
     protected static function booted(): void
     {
 
@@ -34,6 +42,7 @@ class EmailTemplate extends Model
                 $model->setAttribute('bcc', $email->pivot->bcc);
                 $model->setAttribute('subject', $email->pivot->subject);
                 $model->setAttribute('body', $email->pivot->body);
+                $model->setAttribute('is_active', $email->pivot->is_active);
             }
         });
     }
@@ -51,6 +60,6 @@ class EmailTemplate extends Model
 
     public function tenants(): BelongsToMany
     {
-        return $this->belongsToMany(Tenant::class, 'email_templates_tenant', 'email_template_id')->withPivot('to', 'cc', 'bcc', 'subject', 'body');
+        return $this->belongsToMany(Tenant::class, 'email_templates_tenant', 'email_template_id')->withPivot('to', 'cc', 'bcc', 'subject', 'body', 'is_active');
     }
 }

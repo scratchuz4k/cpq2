@@ -13,6 +13,7 @@ use Inertia\Response;
 
 class GroupController extends BaseController
 {
+    protected $model = Group::class;
     public function __construct(protected GroupService $groupService)
     {
         parent::__construct();

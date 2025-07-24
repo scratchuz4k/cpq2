@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Models\Scopes\TenantScope;
 use App\Trait\SetTenantId;
+use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -19,7 +20,14 @@ class Account extends Model
 
     protected $dateFormat = 'Y-m-d H:i:s.u';
 
-    protected $fillable = ['name',  'reference', 'tenant_id'];
+    protected $fillable = ['name', 'reference', 'tenant_id', 'is_active'];
+
+    protected function casts(): array
+    {
+        return [
+            'is_active' => 'boolean'
+        ];
+    }
 
     protected static function booted(): void
     {
@@ -33,8 +41,8 @@ class Account extends Model
                         'account_id' => $account->id,
                         'group_id' => $user->group->id,
                     ]);
-                } catch (\Exception $e) {
-                    if (! env('APP_DEBUG')) {
+                } catch (Exception $e) {
+                    if (!env('APP_DEBUG')) {
                         Log::error($e->getMessage());
                     }
                 }

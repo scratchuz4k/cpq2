@@ -1,5 +1,7 @@
 <script setup>
 import { computed } from 'vue';
+import queryString from 'query-string';
+
 const props = defineProps({
     modelValue: Object
 });
@@ -13,6 +15,32 @@ const proxyValue = computed({
         emit('update:modelValue', val);
     }
 });
+
+const urlParams = new URLSearchParams(window.location.search);
+const params = new Proxy(urlParams, {
+    get: (searchParams, prop) => searchParams.get(prop)
+});
+const account_reference = params['account_reference'] ?? null;
+const getAccount = async () => {
+    if (!account_reference) {
+        return;
+    }
+    let string = queryString.stringify({
+        filters: JSON.stringify([
+            {
+                column: 'reference',
+                operator: 'equals',
+                value: account_reference
+            }
+        ])
+    });
+
+    const res = await axios.get('/api/accounts' + '?' + string);
+    if (res.data.data.length) {
+        proxyValue.value.account = res.data.data[0];
+    }
+};
+getAccount();
 </script>
 
 <template>
@@ -23,8 +51,8 @@ const proxyValue = computed({
                     <div class="col-12">
                         <h5 class="font-bold mb-3">Select an account to start a quote</h5>
                         <div class="mb-3">
-                            <label for="account_id" class="form-label"
-                                >Account <span class="text-primary fw-bold">*</span></label
+                            <label for="account_id" class="form-label">
+                                Account <span class="text-primary fw-bold">*</span></label
                             >
                             <InputSelect
                                 id="account_id"
@@ -32,6 +60,7 @@ const proxyValue = computed({
                                 url="/accounts"
                                 :fields="['name', 'reference']"
                                 :placeholder="'Select an Account'"
+                                :query="[{ column: 'is_active', operator: 'equals', value: 1 }]"
                             >
                             </InputSelect>
                         </div>

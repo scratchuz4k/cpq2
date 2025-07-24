@@ -13,7 +13,8 @@ enum ContractTermsEnum: string
     {
         return array_map(fn($case) => [
             'name' => $case->name,
-            'value' => $case->value
+            'value' => $case->value,
+            'description' => $case->value . ' months'
         ], self::cases());
     }
 }

@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Trait\SetTenantId;
+use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Laravel\Sanctum\HasApiTokens;
@@ -30,7 +31,7 @@ class User extends Authenticatable
 
         static::creating(function (Model $model) {
             // Check if tenant_id is not set and the user is authenticated
-            if (auth()->check() && ! $model->tenant_id) {
+            if (auth()->check() && !$model->tenant_id) {
                 $model->tenant_id = auth()->user()->tenant_id;
             }
 
@@ -38,8 +39,8 @@ class User extends Authenticatable
             if ($user && $user->group) {
                 try {
                     $model->group_id = $user->group->id;
-                } catch (\Exception $e) {
-                    if (! env('APP_DEBUG')) {
+                } catch (Exception $e) {
+                    if (!env('APP_DEBUG')) {
                         Log::error($e->getMessage());
                     }
                 }
@@ -108,6 +109,7 @@ class User extends Authenticatable
         'sso', // Add sso to fillable attributes
         'commission_rate',
         'has_children',
+        'is_active',
     ];
 
     /**
@@ -128,6 +130,7 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
         'sso' => 'boolean',
+        'is_active' => 'boolean',
     ];
 
     /**
@@ -193,7 +196,7 @@ class User extends Authenticatable
         do {
             $current = $userAscendents->pop();
             $users->push($current);
-            if (! $current->parent) {
+            if (!$current->parent) {
                 break;
             }
             $userAscendents->push($current->parent);
@@ -221,7 +224,7 @@ class User extends Authenticatable
     /**
      * Override createToken method from Sanctum
      */
-    public function createTokenWithTenant(string $name, int $tenantId, array $abilities = ['*'])
+    public function createTokenWithTenant(string $name, int $tenantId, bool $is_active = true, array $abilities = ['*'])
     {
         $plainTextToken = $this->generateTokenString();
         $token = $this->tokens()->create([
@@ -229,8 +232,30 @@ class User extends Authenticatable
             'token' => hash('sha256', $plainTextToken),
             'abilities' => $abilities,
             'tenant_id' => $tenantId,
+            'is_active' => $is_active
         ]);
 
-        return new NewAccessToken($token, $token->getKey().'|'.$plainTextToken);
+        return new NewAccessToken($token, $token->getKey() . '|' . $plainTextToken);
+    }
+
+    /**
+     * Override updateToken method from Sanctum
+     */
+    public function updateTokenWithTenant(Token $token, bool $is_active)
+    {
+        $token->update([
+            'is_active' => $is_active,
+        ]);
+
+        return $token;
+    }
+
+    public static function getUserWithRoles(Collection $users)
+    {
+        return $users->map(function ($user) {
+            $roleName = $user->roles->pluck('name')->join(', ');
+            $user->description = "{$user->name} ({$roleName})";
+            return $user;
+        });
     }
 }

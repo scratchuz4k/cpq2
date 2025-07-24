@@ -104,4 +104,15 @@ class AccountPolicy
     {
         return $this->hasPermission($user, 'forceDelete') && $this->userCanManageAccount($user, $account);
     }
+
+    /**
+     * Determine whether the user can export the model.
+     */
+    public function export(User $user): bool
+    {
+        if (!$user->can("export $this->model")) {
+            return false;
+        }
+        return true;
+    }
 }
