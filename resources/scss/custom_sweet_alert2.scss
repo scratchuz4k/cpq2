@@ -2,6 +2,13 @@
     font-weight: 600;
     padding-left: 2rem;
     padding-right: 2rem;
+    background-color: var(--color-purple-dark) !important;
+    border-color: var(--color-purple-dark) !important;
+    color: white;
+}
+.swal2-confirm.btn:active,
+.swal2-confirm.btn:hover {
+    background-image: linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1));
 }
 
 .swal2-cancel.border-light-purple {

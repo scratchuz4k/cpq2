@@ -7,13 +7,14 @@ use App\Models\User;
 
 class TenantPolicy
 {
-    private string $model = "tenant";
+    private string $model = 'tenant';
+
     /**
      * Determine whether the user can view any models.
      */
     public function viewAny(User $user): bool
     {
-        if (!$user->can("viewAny $this->model")) {
+        if (! $user->can("viewAny $this->model")) {
             return false;
         }
 
@@ -25,17 +26,18 @@ class TenantPolicy
      */
     public function view(User $user, Tenant $tenant): bool
     {
-        if ($user->hasRole("Super Admin")) {
+        if ($user->hasRole('Super Admin')) {
             return true;
         }
 
-        if ($tenant->id !=  $user->currentTenant->id) {
+        if ($tenant->id != $user->currentTenant->id) {
             return false;
         }
 
-        if (!$user->can("view $this->model")) {
+        if (! $user->can("view $this->model")) {
             return false;
         }
+
         return true;
     }
 
@@ -44,9 +46,10 @@ class TenantPolicy
      */
     public function create(User $user): bool
     {
-        if (!$user->can("create $this->model")) {
+        if (! $user->can("create $this->model")) {
             return false;
         }
+
         return true;
     }
 
@@ -55,9 +58,10 @@ class TenantPolicy
      */
     public function update(User $user, Tenant $tenant): bool
     {
-        if (!$user->can("update $this->model")) {
+        if (! $user->can("update $this->model")) {
             return false;
         }
+
         return true;
     }
 
@@ -66,9 +70,10 @@ class TenantPolicy
      */
     public function delete(User $user, Tenant $tenant): bool
     {
-        if (!$user->can(abilities: "delete $this->model")) {
+        if (! $user->can(abilities: "delete $this->model")) {
             return false;
         }
+
         return true;
     }
 
@@ -77,9 +82,10 @@ class TenantPolicy
      */
     public function restore(User $user, Tenant $tenant): bool
     {
-        if (!$user->can("restore $this->model")) {
+        if (! $user->can("restore $this->model")) {
             return false;
         }
+
         return true;
     }
 
@@ -88,21 +94,22 @@ class TenantPolicy
      */
     public function forceDelete(User $user, Tenant $tenant): bool
     {
-        if (!$user->can("forceDelete $this->model")) {
+        if (! $user->can("forceDelete $this->model")) {
             return false;
         }
+
         return true;
     }
-
 
     /**
      * Determine whether the user can export the model.
      */
     public function export(User $user): bool
     {
-        if (!$user->can("export $this->model")) {
+        if (! $user->can("export $this->model")) {
             return false;
         }
+
         return true;
     }
 }

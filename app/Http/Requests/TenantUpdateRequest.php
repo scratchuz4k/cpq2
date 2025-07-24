@@ -5,7 +5,6 @@ namespace App\Http\Requests;
 use App\Rules\FileValidator;
 use App\Rules\XmlValidator;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rules\File;
 
 class TenantUpdateRequest extends FormRequest
 {

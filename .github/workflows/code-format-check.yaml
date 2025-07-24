@@ -1,0 +1,120 @@
+name: Check code format Prettier & Pint
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+  GITHUB_WORKSPACE: ${{ github.workspace }}
+
+jobs:
+  formatting:
+    name: Check Code Format
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+
+      - name: Install JS dependencies
+        run: npm ci
+
+      - name: Install PHP dependencies
+        run: composer install --no-progress --prefer-dist --no-scripts
+
+      - name: Run Format check
+        id: format_error
+        shell: bash
+        run: |
+          set +e  # Don't exit on error
+
+          echo -e "▶ Running Prettier check... \n"
+          PRETTIER_OUTPUT=$(npx prettier --check "**/*.{js,vue,css,scss}" 2>&1)
+          PRETTIER_EXIT_CODE=$?
+
+          echo -e "$PRETTIER_OUTPUT \n 🔍 Parsing Prettier result..."
+
+          # Clean and extract list of files from Prettier output 
+          CLEANED_PRETTIER_OUTPUT=$(echo -e "$PRETTIER_OUTPUT" | sed 's/\x1b\[[0-9;]*m//g')
+          PRETTIER_FILES=$(echo -e "$CLEANED_PRETTIER_OUTPUT" | grep -E '^\[warn\] .+\.(js|vue|css|scss)' | awk '{print $2}' || true)
+
+          echo -e "\n ▶ Running Laravel Pint check..."
+          PINT_OUTPUT=$(vendor/bin/pint --test 2>&1)
+          PINT_EXIT_CODE=$?
+
+          echo -e "$PINT_OUTPUT \n 🔍 Parsing Pint result..."
+
+          # Extract file paths from Pint output
+          PINT_FILES=$(echo -e "$PINT_OUTPUT" | grep -Eo '⨯ [^ ]+\.php' | awk '{print $2}' || true)
+
+          # Write results to error_files.txt to send to discord
+          {
+            if [ "$PRETTIER_EXIT_CODE" -ne 0 ]; then
+              echo -e "❌ Prettier found issues in:"
+              if [ -n "$PRETTIER_FILES" ]; then
+                echo -e "$PRETTIER_FILES \n"
+              else
+                echo -e "(Could not parse file list. Raw output below:) \n $CLEANED_PRETTIER_OUTPUT \n"
+              fi
+            fi
+
+            if [ "$PINT_EXIT_CODE" -ne 0 ]; then
+              echo -e "❌ Pint found issues in:"
+              if [ -n "$PINT_FILES" ]; then
+                echo -e "$PINT_FILES"
+              else
+                echo -e "(Could not parse file list. Raw output below:) \n $PINT_OUTPUT"
+              fi
+            fi
+          } > error_files.txt
+
+          echo -e "\n🔍 Contents of error_files.txt:"
+          cat error_files.txt
+
+          if [ "$PRETTIER_EXIT_CODE" -ne 0 ] || [ "$PINT_EXIT_CODE" -ne 0 ]; then
+            echo -e "\n❗ Code formatting issues detected."
+            exit 1
+          else
+            echo -e "\n✅ All files are properly formatted."
+          fi
+
+      - name: Check for files and send list to Discord
+        if: failure()
+        run: |
+          COMMIT_OWNER="${GITHUB_ACTOR}"
+          BRANCH_NAME="${GITHUB_REF#refs/heads/}"
+          REPO_OWNER="${GITHUB_REPOSITORY%/*}"
+
+          # Define a list of users and their IDs
+          declare -A users
+          users[${{ secrets.USER_GITHUB_MARCOS }}]=${{ secrets.ID_DISCORD_MARCOS }}
+          users[${{ secrets.USER_GITHUB_STEVE }}]=${{ secrets.ID_DISCORD_STEVE }}
+          users[${{ secrets.USER_GITHUB_CRIS }}]=${{ secrets.ID_DISCORD_CRIS }}
+
+          # Define the target username
+          TARGET_USER="$COMMIT_OWNER"
+
+          # Get the user ID from the array using the target username
+          USER_ID="${{ secrets.ID_DISCORD_CRIS }}"
+          # Check if the user ID exists
+          if [ -z "$USER_ID" ]; then
+            echo -e "User $TARGET_USER not found!"
+            exit 1
+          fi
+          # Send the screenshot to Discord
+          curl -X POST "${{ secrets.DISCORD_WEBHOOK_URL }}" \
+            -H "Content-Type: multipart/form-data" \
+            -F "file=@error_files.txt" \
+            -F "payload_json={\"content\": \"<@$USER_ID> Tests failed on commit:  ${GITHUB_EVENT_HEAD_COMMIT_MESSAGE} ($BRANCH_NAME @ $REPO_OWNER)! Here is the list of files:\"}"

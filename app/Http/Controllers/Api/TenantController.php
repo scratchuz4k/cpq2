@@ -19,10 +19,12 @@ use Illuminate\Support\Facades\Log;
 class TenantController extends BaseController
 {
     protected $model = Tenant::class;
+
     public function __construct(protected TenantService $tenantService)
     {
         parent::__construct();
     }
+
     /**
      * List of Tenants
      */
@@ -67,10 +69,11 @@ class TenantController extends BaseController
         try {
             $tenant = DB::transaction(function () use ($tenant, $request) {
                 $tenant = $this->tenantService->update($tenant, $request->all());
+
                 return $tenant;
             });
         } catch (\Exception $e) {
-            if (!env('APP_DEBUG')) {
+            if (! env('APP_DEBUG')) {
                 Log::error($e->getMessage());
             }
             throw new \Exception($e);

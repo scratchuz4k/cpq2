@@ -25,6 +25,7 @@ class MerchantController extends BaseController
 
     /**
      * List Merchants
+     *
      * @response AnonymousResourceCollection<LengthAwarePaginator<MerchantResource>>
      */
     public function index(IndexRequest $request)
@@ -34,6 +35,7 @@ class MerchantController extends BaseController
             $data = $dataProvider->get();
         } catch (Exception $e) {
             Log::debug($e->getMessage());
+
             return $e->getMessage();
         }
 

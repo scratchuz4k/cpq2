@@ -2,30 +2,32 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Requests\IndexRequest;
-use Exception;
-use App\Models\Price;
-use Illuminate\Http\Request;
 use App\Helpers\DataProvider;
-use App\Services\PriceService;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
-use App\Http\Resources\PriceResource;
 use App\Http\Controllers\BaseController;
+use App\Http\Requests\IndexRequest;
 use App\Http\Requests\PriceCreateRequest;
 use App\Http\Requests\PriceUpdateRequest;
-use Illuminate\Pagination\LengthAwarePaginator;
+use App\Http\Resources\PriceResource;
+use App\Models\Price;
+use App\Services\PriceService;
+use Exception;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class PriceController extends BaseController
 {
     protected $model = Price::class;
+
     public function __construct(protected PriceService $priceService)
     {
         parent::__construct();
     }
+
     /**
      * List of Prices
+     *
      * @response AnonymousResourceCollection<LengthAwarePaginator<PriceResource>>
      */
     public function index(IndexRequest $request)
@@ -35,6 +37,7 @@ class PriceController extends BaseController
             $data = $dataProvider->get();
         } catch (Exception $e) {
             Log::debug($e->getMessage());
+
             return $e->getMessage();
         }
 
@@ -51,11 +54,12 @@ class PriceController extends BaseController
                 return $this->priceService->store($request->all());
             });
         } catch (Exception $e) {
-            if (!env('APP_DEBUG')) {
+            if (! env('APP_DEBUG')) {
                 Log::error($e->getMessage());
             }
             throw new Exception($e);
         }
+
         return new PriceResource($price->refresh());
     }
 
@@ -77,11 +81,12 @@ class PriceController extends BaseController
                 return $this->priceService->update($price, $request->all());
             });
         } catch (Exception $e) {
-            if (!env('APP_DEBUG')) {
+            if (! env('APP_DEBUG')) {
                 Log::error($e->getMessage());
             }
             throw new Exception($e);
         }
+
         return new PriceResource($price->refresh());
     }
 

@@ -55,17 +55,20 @@ class AppServiceProvider extends ServiceProvider
         });
 
         Scramble::routes(function (Route $route) {
-            if (!isset($route->action['as']))
+            if (! isset($route->action['as'])) {
                 return false;
+            }
 
-            $action = explode( '.', $route->action['as']);
+            $action = explode('.', $route->action['as']);
 
-            if (!Str::startsWith($route->uri, 'api/') || count($action) < 3)
+            if (! Str::startsWith($route->uri, 'api/') || count($action) < 3) {
                 return false;
+            }
 
             $model = str_replace('-', '_', Str::singular($action[1]));
 
             $ability = $this->abilities[$action[2]];
+
             return auth()->user()->can("$ability $model");
         });
 

@@ -6,11 +6,11 @@ const emit = defineEmits(['update:checked']);
 const props = defineProps({
     checked: {
         type: [Array, Boolean, Number],
-        required: true,
+        required: true
     },
     value: {
-        default: null,
-    },
+        default: null
+    }
 });
 
 const proxyChecked = computed({
@@ -28,7 +28,7 @@ const proxyChecked = computed({
         } else {
             emit('update:checked', val);
         }
-    },
+    }
 });
 </script>
 

@@ -26,10 +26,10 @@ class SpaUpdateRequest extends FormRequest
     {
 
         return [
-            "rule_id" => "exists:spa_rules,id",
-            "field_1" => ["numeric"],
-            "field_2" => "numeric",
-            "operation_id" => "exists:spa_operations,id",
+            'rule_id' => 'exists:spa_rules,id',
+            'field_1' => ['numeric'],
+            'field_2' => 'numeric',
+            'operation_id' => 'exists:spa_operations,id',
             'price_plan_id' => 'nullable|exists:price_plans,id',
             'group_id' => 'nullable|exists:groups,id',
             'value' => 'numeric',

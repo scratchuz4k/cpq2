@@ -46,7 +46,6 @@ return new class extends Migration
             $table->dropConstrainedForeignId('user_id');
         });
 
-
         Schema::dropIfExists('orders');
     }
 };

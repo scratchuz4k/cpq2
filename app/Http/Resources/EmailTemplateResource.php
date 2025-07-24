@@ -18,7 +18,7 @@ class EmailTemplateResource extends JsonResource
             ...$this->resource->toArray(),
             'tokens' => $this->whenLoaded('tokens'),
             'updated_at' => $this->updated_at,
-            'created_at' => $this->created_at
+            'created_at' => $this->created_at,
         ];
     }
 }

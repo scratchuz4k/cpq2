@@ -123,7 +123,7 @@ emitter.on('input-select-refresh' + (props.id ? ':' + props.id : ''), () => {
             </template>
             <span v-else>
                 <template v-for="(field, index) in fields">
-                    {{ index !== 0 ? ` (${proxyValue?.[field] ?? ''})` : proxyValue?.[field] ?? '' }}
+                    {{ index !== 0 ? ` (${proxyValue?.[field] ?? ''})` : (proxyValue?.[field] ?? '') }}
                 </template>
             </span>
 
@@ -178,7 +178,7 @@ emitter.on('input-select-refresh' + (props.id ? ':' + props.id : ''), () => {
                     style="cursor: pointer"
                 >
                     <template v-for="(field, index) in props.fields">
-                        {{ index !== 0 ? ` (${option?.[field] ?? ''})` : option?.[field] ?? '' }}
+                        {{ index !== 0 ? ` (${option?.[field] ?? ''})` : (option?.[field] ?? '') }}
                     </template>
                 </div>
                 <div class="m-auto" v-if="page < meta.total_pages">

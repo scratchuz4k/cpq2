@@ -30,7 +30,7 @@ class TenantController extends BaseController
 
         return Inertia::render('Tenant/Index', [
             'isSuperAdmin' => $user->hasRole('Super Admin'),
-            'tenant' => (new TenantResource($user->currentTenant))->resolve()
+            'tenant' => (new TenantResource($user->currentTenant))->resolve(),
         ]);
     }
 

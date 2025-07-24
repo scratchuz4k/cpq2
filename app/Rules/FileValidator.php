@@ -11,17 +11,18 @@ class FileValidator implements ValidationRule
     private $allowed_logo_formats = [
         'xml' => [
             'text/xml',
-            'application/xml'
+            'application/xml',
         ],
         'image' => [
             'image/jpeg',
             'image/jpg',
             'image/png',
-            'image/gif'
+            'image/gif',
         ],
     ];
 
     public function __construct(private $filetype) {}
+
     /**
      * Run the validation rule.
      *
@@ -31,7 +32,7 @@ class FileValidator implements ValidationRule
     {
         $res = Resource::find(id: $value);
 
-        if (!$res) {
+        if (! $res) {
             return;
         }
 
@@ -41,10 +42,10 @@ class FileValidator implements ValidationRule
 
         if (! in_array($res->mime_type, $this->allowed_logo_formats[$this->filetype])) {
             $extensions = implode(', ', array_unique(array_map(
-                fn($mime) => '.' . explode('/', $mime)[1] ?? '',
+                fn ($mime) => '.'.explode('/', $mime)[1] ?? '',
                 $this->allowed_logo_formats[$this->filetype]
             )));
-            $fail('The file must be of type ' . $extensions . '.');
+            $fail('The file must be of type '.$extensions.'.');
         }
     }
 }

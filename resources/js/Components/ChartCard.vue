@@ -1,9 +1,9 @@
 <script setup>
-import Chart from "primevue/chart";
-import {onMounted, ref, watch} from "vue";
-import CountUp from "vue-countup-v3";
-import Dialog from "primevue/dialog";
-import ExportData from "@/Components/ExportData.vue";
+import Chart from 'primevue/chart';
+import { onMounted, ref, watch } from 'vue';
+import CountUp from 'vue-countup-v3';
+import Dialog from 'primevue/dialog';
+import ExportData from '@/Components/ExportData.vue';
 
 const props = defineProps({
     title: String,
@@ -15,7 +15,7 @@ const props = defineProps({
     },
     endValue: {
         type: [Number, String, null],
-        default: 6543,
+        default: 6543
     },
     duration: {
         type: Number,
@@ -26,7 +26,7 @@ const props = defineProps({
     dateRange: Object,
     export: String,
     label: String
-})
+});
 
 const providersColors = [
     {
@@ -53,7 +53,7 @@ const providersColors = [
         borderColor: `rgba(163, 71, 150, 0.9)`,
         backgroundColor: `rgba(163, 71, 150, 0.06)`
     }
-]
+];
 
 let showModal = ref(false);
 const chartData = ref();
@@ -65,21 +65,21 @@ const setChartData = () => {
         labels: props.data?.labels,
         datasets: Array.isArray(props.data?.data)
             ? [
-                {
-                    data: props.data?.data,
-                    fill: true,
-                    borderColor: documentStyle.getPropertyValue('--color-purple'),
-                    tension: 0.4
-                }
-            ]
+                  {
+                      data: props.data?.data,
+                      fill: true,
+                      borderColor: documentStyle.getPropertyValue('--color-purple'),
+                      tension: 0.4
+                  }
+              ]
             : Object.entries(props.data.data).map(([key, value], index) => ({
-                label: `${value.label} (${value.total})`,
-                data: value.data,
-                fill: true,
-                tension: 0.4,
-                borderColor: providersColors[index]?.borderColor,
-                backgroundColor: providersColors[index]?.backgroundColor
-            }))
+                  label: `${value.label} (${value.total})`,
+                  data: value.data,
+                  fill: true,
+                  tension: 0.4,
+                  borderColor: providersColors[index]?.borderColor,
+                  backgroundColor: providersColors[index]?.backgroundColor
+              }))
     };
 };
 const setChartOptions = () => {
@@ -87,7 +87,7 @@ const setChartOptions = () => {
         maintainAspectRatio: false,
         plugins: {
             legend: {
-                display: !Array.isArray(props.data?.data),
+                display: !Array.isArray(props.data?.data)
             }
         },
         scales: {
@@ -98,12 +98,12 @@ const setChartOptions = () => {
                         if (Number.isInteger(value)) {
                             return value;
                         }
-                    },
+                    }
                 }
             }
         }
     };
-}
+};
 
 onMounted(() => {
     if (props.data) {
@@ -120,7 +120,7 @@ watch(
             chartOptions.value = setChartOptions();
         }
     }
-)
+);
 </script>
 
 <template>
@@ -131,7 +131,7 @@ watch(
                     <font-awesome-icon :icon="icon" class="me-2 text-primary"></font-awesome-icon>
                     {{ title }}
                 </h4>
-                <button v-if="showButton" class="export-btn btn btn-sm btn-outline-primary" @click="showModal = true" >
+                <button v-if="showButton" class="export-btn btn btn-sm btn-outline-primary" @click="showModal = true">
                     {{ buttonTitle }}
                 </button>
             </div>
@@ -139,27 +139,36 @@ watch(
                 <div class="col-md-3 text-center">
                     <div v-if="Array.isArray(props.data?.data)" class="totals">
                         <div class="partial mb-5">
-                            <count-up v-if="!isNaN(endValue)" :duration="duration" :endVal='props.data?.partial ?? 0' :startVal='startValue'/>
-                        </div>
-                        <div v-if="props.data?.partial !== props.data?.total" class="total d-flex justify-content-center">
-                            <span v-if="props.label" class="px-1">( </span>
-                            <count-up v-if="!isNaN(endValue)"
-                                      :duration="duration"
-                                      :endVal='props.data?.total ?? 0'
-                                      :startVal='startValue'
+                            <count-up
+                                v-if="!isNaN(endValue)"
+                                :duration="duration"
+                                :endVal="props.data?.partial ?? 0"
+                                :startVal="startValue"
                             />
-                            <span v-if="props.label" class="px-1"> {{ props.label}} )</span>
+                        </div>
+                        <div
+                            v-if="props.data?.partial !== props.data?.total"
+                            class="total d-flex justify-content-center"
+                        >
+                            <span v-if="props.label" class="px-1">( </span>
+                            <count-up
+                                v-if="!isNaN(endValue)"
+                                :duration="duration"
+                                :endVal="props.data?.total ?? 0"
+                                :startVal="startValue"
+                            />
+                            <span v-if="props.label" class="px-1"> {{ props.label }} )</span>
                         </div>
                     </div>
                     <div v-else>
                         <div class="d-flex justify-content-between fw-bold px-4 fs-4" v-for="supp in props.data?.data">
                             <span class="text-muted fw-normal fst-italic fs-5">{{ supp.label }}</span>
-                            <count-up :duration="duration" :endVal='supp.total ?? 0' :startVal='startValue'/>
+                            <count-up :duration="duration" :endVal="supp.total ?? 0" :startVal="startValue" />
                         </div>
                     </div>
                 </div>
-                <div class="col-md-9" style="height:250px;">
-                    <Chart :data="chartData" :options="chartOptions" type="line"/>
+                <div class="col-md-9" style="height: 250px">
+                    <Chart :data="chartData" :options="chartOptions" type="line" />
                 </div>
             </div>
         </div>
@@ -176,7 +185,7 @@ watch(
             <h2>Export Report</h2>
         </template>
         <div class="container m-0 p-0">
-            <export-data :export="props.export" :dateRange="dateRange"  @close-dialog="showModal = false"/>
+            <export-data :export="props.export" :dateRange="dateRange" @close-dialog="showModal = false" />
         </div>
     </Dialog>
 </template>

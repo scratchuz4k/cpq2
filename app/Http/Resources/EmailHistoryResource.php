@@ -19,7 +19,7 @@ class EmailHistoryResource extends JsonResource
             'user' => $this->user,
             'email' => $this->email,
             'updated_at' => $this->updated_at,
-            'created_at' => $this->created_at
+            'created_at' => $this->created_at,
         ];
     }
 }

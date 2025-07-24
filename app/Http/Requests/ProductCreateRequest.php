@@ -2,8 +2,8 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Validation\Rule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class ProductCreateRequest extends FormRequest
 {
@@ -23,21 +23,21 @@ class ProductCreateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "code" => ["required", "string", "max:255", Rule::unique('products')],
-            "name" => "required|string|max:255",
-            "supplier_id" => "nullable|exists:suppliers,id",
-            "brand_id" => "nullable|exists:brands,id",
-            "price_plan_id" => "required|exists:price_plans,id",
-            "prices.*.code" => [
-                "required",
-                "numeric",
-                Rule::unique("prices")
+            'code' => ['required', 'string', 'max:255', Rule::unique('products')],
+            'name' => 'required|string|max:255',
+            'supplier_id' => 'nullable|exists:suppliers,id',
+            'brand_id' => 'nullable|exists:brands,id',
+            'price_plan_id' => 'required|exists:price_plans,id',
+            'prices.*.code' => [
+                'required',
+                'numeric',
+                Rule::unique('prices')
                     ->where(function ($query) {
-                        return $query->where("product_id", $this->input("product_id"));
+                        return $query->where('product_id', $this->input('product_id'));
                     }),
             ],
-            "prices.*.tax_rate" => "required|numeric",
-            "prices.*.net" => "required|numeric",
+            'prices.*.tax_rate' => 'required|numeric',
+            'prices.*.net' => 'required|numeric',
         ];
     }
 }

@@ -1,16 +1,15 @@
 <?php
 
-use App\Models\Spa;
-use App\Models\User;
-use App\Models\Tenant;
+use App\Enums\SpaOperationsEnum;
+use App\Enums\SpaRulesEnum;
+use App\Helpers\Prices\PriceRules;
 use App\Models\Product;
+use App\Models\Spa;
+use App\Models\SpaOperation;
 use App\Models\SpaRule;
 use App\Models\Supplier;
-use App\Models\SpaOperation;
-use App\Helpers\Prices\PriceRules;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
-use App\Enums\SpaRulesEnum;
-use App\Enums\SpaOperationsEnum;
 
 beforeEach(function () {
     // Declaration of values
@@ -25,25 +24,24 @@ beforeEach(function () {
 });
 
 test('SupplierProduct without Spa', function () {
-    $prices = new PriceRules();
+    $prices = new PriceRules;
     $value = $prices->calculate(1, supplier: $this->supplier);
 
     expect($value)->toBe(1.0);
     expect(count($prices->getAppliedSpas()))->toBe(0);
 });
 
-
 test('SupplierProduct with OperationMargin Spa', function () {
-    $spa = new Spa();
+    $spa = new Spa;
     $spa->tenant_id = 1;
     $spa->rule_id = SpaRule::where('code', SpaRulesEnum::SupplierProduct->name)->value('id');
     $spa->field_1 = $this->supplier->id;
     $spa->field_2 = $this->product->id;
-    $spa->operation_id = SpaOperation::where('code',  SpaOperationsEnum::Margin->name)->value('id');
+    $spa->operation_id = SpaOperation::where('code', SpaOperationsEnum::Margin->name)->value('id');
     $spa->value = 10;
     $spa->save();
 
-    $prices = new PriceRules();
+    $prices = new PriceRules;
     $value = $prices->calculate(10, supplier: $this->supplier, product: $this->product);
     expect($value)->toBe(20.0);
     expect(count($prices->getAppliedSpas()))->toBe(1);
@@ -56,18 +54,17 @@ test('SupplierProduct with OperationMargin Spa', function () {
     expect(count($prices->getAppliedSpas()))->toBe(1);
 });
 
-
 test('SupplierProduct with OperationDiscount Spa', function () {
-    $spa = new Spa();
+    $spa = new Spa;
     $spa->tenant_id = 1;
     $spa->rule_id = SpaRule::where('code', SpaRulesEnum::SupplierProduct->name)->value('id');
     $spa->field_1 = $this->supplier->id;
     $spa->field_2 = $this->product->id;
-    $spa->operation_id = SpaOperation::where('code',  SpaOperationsEnum::Discount->name)->value('id');
+    $spa->operation_id = SpaOperation::where('code', SpaOperationsEnum::Discount->name)->value('id');
     $spa->value = 10;
     $spa->save();
 
-    $prices = new PriceRules();
+    $prices = new PriceRules;
     $value = $prices->calculate(10, supplier: $this->supplier, product: $this->product);
     expect($value)->toBe(0.0);
     expect(count($prices->getAppliedSpas()))->toBe(1);

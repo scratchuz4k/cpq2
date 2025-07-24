@@ -1,28 +1,26 @@
 <script setup>
-import { reactive, ref } from "vue";
-import WarningNote from "@/Components/WarningNote.vue";
-import { setOrder, order } from "@composables/useOrders";
+import { reactive, ref } from 'vue';
+import WarningNote from '@/Components/WarningNote.vue';
+import { setOrder, order } from '@composables/useOrders';
 
 const props = defineProps({
     modelValue: Object,
-    pricePlans: Object,
+    pricePlans: Object
 });
 
 setOrder(props.modelValue);
 
 const warningProviders = ref([
-    { its: order.items.some((item) => item.data?.providerName === "ITS") },
-    { pxc: order.items.some((item) => item.data?.providerName === "PXC") },
+    { its: order.items.some((item) => item.data?.providerName === 'ITS') },
+    { pxc: order.items.some((item) => item.data?.providerName === 'PXC') }
 ]);
 
 const showDate = (days = 0) => {
     const dateObj = new Date();
     dateObj.setDate(dateObj.getDate() + days);
-    const currentDate =
-        dateObj.getDate() + "/" + (dateObj.getMonth() + 1) + "/" + dateObj.getFullYear();
+    const currentDate = dateObj.getDate() + '/' + (dateObj.getMonth() + 1) + '/' + dateObj.getFullYear();
     return currentDate;
 };
-
 </script>
 <template>
     <div class="panel d-flex justify-content-center">
@@ -60,10 +58,12 @@ const showDate = (days = 0) => {
                         </div>
                     </div>
                     <div>
-                        <TableSimpleOrders v-bind="{
-                            pricePlans: props.pricePlans,
-                            preview: true,
-                        }">
+                        <TableSimpleOrders
+                            v-bind="{
+                                pricePlans: props.pricePlans,
+                                preview: true
+                            }"
+                        >
                         </TableSimpleOrders>
                         <TableTotalOrders :order="order"></TableTotalOrders>
                     </div>

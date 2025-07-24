@@ -5,8 +5,8 @@ defineProps({
     isGroup: Boolean,
     preview: Boolean,
     index: Number
-})
-const item = defineModel()
+});
+const item = defineModel();
 </script>
 <template>
     <p class="small">{{ item.supplier?.name }}</p>

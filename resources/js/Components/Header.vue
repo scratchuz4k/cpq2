@@ -1,8 +1,9 @@
 <template>
     <div class="d-flex justify-content-between align-items-center pb-1">
         <!--style="border-bottom: 1px solid lightgray; " -->
-        <div class="d-flex justify-content-between " style="justify-content: space-between;;">
-            <h1 id="page-title" class="m-0 font-bold">{{ title }} </h1> <!--<span>.</span>-->
+        <div class="d-flex justify-content-between" style="justify-content: space-between">
+            <h1 id="page-title" class="m-0 font-bold">{{ title }}</h1>
+            <!--<span>.</span>-->
         </div>
         <div>
             <slot name="buttons"></slot>
@@ -27,10 +28,10 @@ import Breadcrumb from 'primevue/breadcrumb';
 defineProps({
     title: String,
     breadcrumbs: Array
-})
+});
 </script>
 <style>
 .font-bold {
-    font-weight: bold
+    font-weight: bold;
 }
 </style>

@@ -1,16 +1,6 @@
 <?php
 
-use App\Models\Account;
-use App\Models\Api;
-use App\Models\Brand;
-use App\Models\Price;
-use App\Models\Product;
-use App\Models\Quote;
-use App\Models\QuoteItem;
-use App\Models\Spa;
-use App\Models\Supplier;
 use App\Models\Tenant;
-use App\Models\Token;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Auth;

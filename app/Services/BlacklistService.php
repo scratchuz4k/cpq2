@@ -40,9 +40,9 @@ class BlacklistService
     public function update(Blacklist $blacklist, array $array): Blacklist
     {
         $blacklist->update($array);
+
         return $blacklist;
     }
-
 
     public function destroy(string $id)
     {
@@ -75,6 +75,7 @@ class BlacklistService
         $data = $data->map(function ($item) {
             $item['speed'] = $this->parseSpeedAndBearer($item['speed']);
             $item['bearer'] = $this->parseSpeedAndBearer($item['bearer']);
+
             return $item;
         });
 
@@ -89,18 +90,18 @@ class BlacklistService
 
         if (is_array($item['value'])) {
             return ComparisonOperatorsEnum::tryFromName($item['operator'])->description()
-                . ' '
-                . $item['value'][0]
-                . ' and '
-                . $item['value'][1]
-                . ' '
-                . $item['unit'];
+                .' '
+                .$item['value'][0]
+                .' and '
+                .$item['value'][1]
+                .' '
+                .$item['unit'];
         }
 
         return ComparisonOperatorsEnum::tryFromName($item['operator'])->description()
-            . ' '
-            . $item['value']
-            . ' '
-            . $item['unit'];
+            .' '
+            .$item['value']
+            .' '
+            .$item['unit'];
     }
 }

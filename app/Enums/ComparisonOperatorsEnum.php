@@ -16,8 +16,9 @@ enum ComparisonOperatorsEnum: string
 
     case between = '>=|<=';
 
-    public function description(): string {
-        return match($this) {
+    public function description(): string
+    {
+        return match ($this) {
             self::equals => 'Equals',
             self::greater_than => 'Greater than',
             self::less_than => 'Lesser than',
@@ -26,12 +27,13 @@ enum ComparisonOperatorsEnum: string
             self::between => 'Between',
         };
     }
+
     public static function asArray(): array
     {
-        return array_map(fn($case) => [
+        return array_map(fn ($case) => [
             'name' => $case->name,
             'value' => $case->value,
-            'description' => $case->description()
+            'description' => $case->description(),
         ], self::cases());
     }
 }

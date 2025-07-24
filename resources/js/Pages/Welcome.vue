@@ -3,19 +3,19 @@ import { Head, Link } from '@inertiajs/vue3';
 
 defineProps({
     canLogin: {
-        type: Boolean,
+        type: Boolean
     },
     canRegister: {
-        type: Boolean,
+        type: Boolean
     },
     laravelVersion: {
         type: String,
-        required: true,
+        required: true
     },
     phpVersion: {
         type: String,
-        required: true,
-    },
+        required: true
+    }
 });
 
 function handleImageError() {

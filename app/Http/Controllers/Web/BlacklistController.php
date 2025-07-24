@@ -7,7 +7,6 @@ use App\Enums\CloudMarketSuppliersEnum;
 use App\Enums\ComparisonOperatorsEnum;
 use App\Enums\ContractTermsEnum;
 use App\Enums\SpeedUnitsEnum;
-use App\Export\Export;
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\BlacklistCreateRequest;
 use App\Http\Requests\BlacklistUpdateRequest;
@@ -27,13 +26,14 @@ class BlacklistController extends BaseController
     {
         parent::__construct();
     }
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
         return Inertia::render('Blacklists/Index', [
-            'operators' => ComparisonOperatorsEnum::asArray()
+            'operators' => ComparisonOperatorsEnum::asArray(),
         ]);
     }
 
@@ -43,11 +43,12 @@ class BlacklistController extends BaseController
     public function create()
     {
         return Inertia::render('Blacklists/Create', [
-            'providers' => array_map(function($item) {
-                if ($item["name"] === "Virtual1") {
-                    $item["name"] = "PXC";
-                    $item["value"] = "pxc";
+            'providers' => array_map(function ($item) {
+                if ($item['name'] === 'Virtual1') {
+                    $item['name'] = 'PXC';
+                    $item['value'] = 'pxc';
                 }
+
                 return $item;
             }, CloudMarketSuppliersEnum::asArray()),
             'subproviders' => CloudMarketSubprovidersEnum::asArray(),
@@ -65,11 +66,12 @@ class BlacklistController extends BaseController
         try {
             $this->blacklistService->store($request->all());
         } catch (\Exception $e) {
-            if (!env('APP_DEBUG')) {
+            if (! env('APP_DEBUG')) {
                 Log::error($e->getMessage());
             }
             throw new \Exception($e);
         }
+
         return redirect()->route('blacklists.index');
     }
 
@@ -89,7 +91,7 @@ class BlacklistController extends BaseController
         try {
             $item = $this->blacklistService->edit($request->route('blacklist'));
         } catch (\Exception $e) {
-            if (!env('APP_DEBUG')) {
+            if (! env('APP_DEBUG')) {
                 Log::error($e->getMessage());
             }
             throw new \Exception($e);
@@ -97,11 +99,12 @@ class BlacklistController extends BaseController
 
         return Inertia::render('Blacklists/Edit', [
             'blacklisted_item' => $item,
-            'providers' => array_map(function($item) {
-                if ($item["name"] === "Virtual1") {
-                    $item["name"] = "PXC";
-                    $item["value"] = "pxc";
+            'providers' => array_map(function ($item) {
+                if ($item['name'] === 'Virtual1') {
+                    $item['name'] = 'PXC';
+                    $item['value'] = 'pxc';
                 }
+
                 return $item;
             }, CloudMarketSuppliersEnum::asArray()),
             'subproviders' => CloudMarketSubprovidersEnum::asArray(),
@@ -121,7 +124,7 @@ class BlacklistController extends BaseController
                 $request->all()
             );
         } catch (\Exception $e) {
-            if (!env('APP_DEBUG')) {
+            if (! env('APP_DEBUG')) {
                 Log::error($e->getMessage());
             }
             throw new \Exception($e);

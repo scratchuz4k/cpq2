@@ -20,6 +20,7 @@ class SharedLinkResource extends JsonResource
         }
 
         $date = Carbon::parse($this->expires_at);
+
         return [
             'id' => $this->id,
             'token' => $this->token,

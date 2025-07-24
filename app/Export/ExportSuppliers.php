@@ -51,7 +51,7 @@ class ExportSuppliers implements WithMultipleSheets
             }
         }
 
-        if (is_array($sheets) && !count($sheets)) {
+        if (is_array($sheets) && ! count($sheets)) {
             throw new \Exception('No data Found!');
         }
 

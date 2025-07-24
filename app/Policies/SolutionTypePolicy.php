@@ -7,8 +7,8 @@ use App\Models\User;
 
 class SolutionTypePolicy
 {
+    private string $model = 'solution_type';
 
-    private string $model = "solution_type";
     /**
      * Determine whether the user can view any models.
      */
@@ -17,6 +17,7 @@ class SolutionTypePolicy
         if ($user->can("viewAny $this->model")) {
             return true;
         }
+
         return false;
     }
 
@@ -28,6 +29,7 @@ class SolutionTypePolicy
         if ($user->can("view $this->model")) {
             return true;
         }
+
         return false;
     }
 
@@ -39,6 +41,7 @@ class SolutionTypePolicy
         if ($user->can("create $this->model")) {
             return true;
         }
+
         return false;
     }
 
@@ -54,6 +57,7 @@ class SolutionTypePolicy
         ) {
             return true;
         }
+
         return false;
     }
 
@@ -69,6 +73,7 @@ class SolutionTypePolicy
         ) {
             return true;
         }
+
         return false;
     }
 
@@ -80,6 +85,7 @@ class SolutionTypePolicy
         if ($user->can("restore $this->model")) {
             return true;
         }
+
         return false;
     }
 
@@ -91,18 +97,19 @@ class SolutionTypePolicy
         if ($user->can("forceDelete $this->model")) {
             return true;
         }
+
         return false;
     }
-
 
     /**
      * Determine whether the user can export the model.
      */
     public function export(User $user): bool
     {
-        if (!$user->can("export $this->model")) {
+        if (! $user->can("export $this->model")) {
             return false;
         }
+
         return true;
     }
 }
