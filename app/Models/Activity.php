@@ -34,7 +34,7 @@ class Activity extends Model
 
     public function activitable(): MorphTo
     {
-        return $this->morphTo();
+        return $this->morphTo()->withTrashed();
     }
 
     public function user()

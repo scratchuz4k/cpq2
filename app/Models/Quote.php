@@ -94,7 +94,12 @@ class Quote extends Model
 
     public function items(): HasMany
     {
-        return $this->hasMany(QuoteItem::class)->withTrashed();
+        return $this->hasMany(QuoteItem::class);
+    }
+
+    public function itemsTrashed(): HasMany
+    {
+        return $this->hasMany(QuoteItem::class)->withTrashed()->whereNotNull('deleted_at');
     }
 
     public function orders(): HasMany

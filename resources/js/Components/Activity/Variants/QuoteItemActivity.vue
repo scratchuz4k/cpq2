@@ -30,7 +30,6 @@
     >
         Show {{ !props.item.readmore ? 'more' : 'less' }}...
     </a>
-    <a v-else class="text-secondary small m-0 p-0">Nothing to show</a>
 </template>
 <script setup>
 const props = defineProps({
