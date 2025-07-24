@@ -94,7 +94,7 @@ class Quote extends Model
 
     public function items(): HasMany
     {
-        return $this->hasMany(QuoteItem::class);
+        return $this->hasMany(QuoteItem::class)->withTrashed();
     }
 
     public function orders(): HasMany

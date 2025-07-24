@@ -76,13 +76,14 @@
                 <template #marker="slotProps">
                     <span
                         class="p-timeline-event-marker text-white"
-                        :class="[slotProps.item.operation == 'created' ? 'bg-success' : 'bg-primary']"
+                        :class="[slotProps.item.operation == 'deleted' ? 'bg-danger' : slotProps.item.operation == 'created' ? 'bg-success' : 'bg-primary']"
                     >
                     </span>
                 </template>
                 <template #content="slotProps">
                     <div class="mb-3">
-                        <p class="bold">{{ slotProps.item.activitable_type }} {{ slotProps.item.operation }}</p>
+                        <p >
+                        <b>{{slotProps.item.user.name}}</b> {{ slotProps.item.operation }} {{ slotProps.item.activitable_type }} {{ slotProps.item.activitable_id }}</p>
                         <p class="small">
                             <p v-for="item in slotProps.item.data">
                                 <span class="small">{{ item.field }}: {{ item.from ?? 'null' }}  {{ item.to ?? 'null' }}</span>
