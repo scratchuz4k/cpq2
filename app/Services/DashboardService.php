@@ -66,11 +66,9 @@ class DashboardService
         $total_query = $this->model->query();
 
         if ($this->model instanceof $this->user_instance) {
-            $query = $this->excludeSuperAdmins($query)
-                ->where('tenant_id', request()->user()->tenant_id);
+            $query = $this->excludeSuperAdmins($query)->where('tenant_id', request()->user()->tenant_id);
 
-            $total_query = $this->excludeSuperAdmins($total_query)
-                ->where('tenant_id', request()->user()->tenant_id);
+            $total_query = $this->excludeSuperAdmins($total_query)->where('tenant_id', request()->user()->tenant_id);
         }
 
         if ($this->model instanceof $this->quote_instance) {
