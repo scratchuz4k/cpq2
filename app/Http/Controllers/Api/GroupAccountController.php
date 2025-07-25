@@ -39,9 +39,7 @@ class GroupAccountController extends BaseController
     public function store(GroupAccountCreateRequest $request)
     {
         try {
-            $groupAccount = DB::transaction(function () use ($request) {
-                return GroupAccount::create($request->all());
-            });
+            $groupAccount = DB::transaction(fn () => GroupAccount::create($request->all()));
         } catch (Exception $e) {
             return response($e->getMessage(), 500);
         }
@@ -63,9 +61,7 @@ class GroupAccountController extends BaseController
     public function update(Request $request, GroupAccount $groupAccount)
     {
         try {
-            $groupAccount = DB::transaction(function () use ($request, $groupAccount) {
-                return $groupAccount->update($request->all());
-            });
+            $groupAccount = DB::transaction(fn () => $groupAccount->update($request->all()));
         } catch (Exception $e) {
             if (! env('APP_DEBUG')) {
                 Log::error($e->getMessage());

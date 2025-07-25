@@ -74,9 +74,7 @@ class UsersService
         $query = User::query();
         $superUsers = collect([]);
         if (! request()->user()->hasRole('Super Admin')) {
-            $superUsers = User::whereHas('roles', function ($query) {
-                return $query->whereIn('name', ['Super Admin']);
-            })->get();
+            $superUsers = User::whereHas('roles', fn ($query) => $query->whereIn('name', ['Super Admin']))->get();
         }
         $query = $query->whereNotIn('id', $superUsers->pluck('id'));
 

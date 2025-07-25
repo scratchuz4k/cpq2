@@ -67,9 +67,7 @@ class SupplierController extends BaseController
     public function update(Request $request, Supplier $supplier)
     {
         try {
-            $supplier = DB::transaction(function () use ($supplier, $request) {
-                return $this->service->update($supplier, $request->all());
-            });
+            $supplier = DB::transaction(fn () => $this->service->update($supplier, $request->all()));
         } catch (Exception $e) {
             Log::debug($e->getMessage());
             throw new Exception($e);

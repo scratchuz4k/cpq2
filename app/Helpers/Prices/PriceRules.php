@@ -35,13 +35,9 @@ class PriceRules
         });
 
         if ($pricePlan) {
-            static::$spas = static::$spas->filter(function ($spa) use ($pricePlan) {
-                return is_null($spa->price_plan_id) || $spa->price_plan_id == $pricePlan->id;
-            });
+            static::$spas = $this->object->spas->filter(fn ($spa) => is_null($spa->price_plan_id) || $spa->price_plan_id == $pricePlan->id);
         } else {
-            static::$spas = static::$spas->filter(function ($spa) {
-                return is_null($spa->price_plan_id);
-            });
+            static::$spas = $this->object->spas->filter(fn ($spa) => is_null($spa->price_plan_id));
         }
     }
 

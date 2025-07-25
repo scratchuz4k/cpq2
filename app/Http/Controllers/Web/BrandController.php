@@ -42,9 +42,7 @@ class BrandController extends BaseController
     public function store(BrandCreateRequest $request)
     {
         try {
-            $brand = DB::transaction(function () use ($request) {
-                return $this->brandService->store($request->all());
-            });
+            $brand = DB::transaction(fn () => $this->brandService->store($request->all()));
         } catch (\Exception $e) {
             throw new \Exception($e);
         }
@@ -78,9 +76,7 @@ class BrandController extends BaseController
     public function update(BrandUpdateRequest $request, Brand $brand)
     {
         try {
-            $brand = DB::transaction(function () use ($brand, $request) {
-                return $this->brandService->update($brand, $request->all());
-            });
+            $brand = DB::transaction(fn () => $this->brandService->update($brand, $request->all()));
         } catch (\Exception $e) {
             throw new \Exception($e);
         }

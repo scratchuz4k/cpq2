@@ -60,7 +60,7 @@ class DataProvider
             return $resource::collection($items);
         }
 
-        $group = explode('.', $group);
+        $group = explode('.', (string) $group);
         if (count($group) == 2) {
             foreach ($group as $key => $item) {
                 $group[$key] = Str::camel($item);
@@ -94,7 +94,7 @@ class DataProvider
         $group = request()->input('group', null);
         if ($group) {
             $groupOrder = request()->input('groupOrder', 'asc');
-            $groupBy = explode('.', $group);
+            $groupBy = explode('.', (string) $group);
 
             if (count($groupBy) == 2) {
                 $table = $this->builder->getModel()->getTable();
@@ -107,9 +107,9 @@ class DataProvider
 
         $order = request()->input('order', 'asc');
         $orderBy = request()->input('orderBy', 'id');
-        $orderByArray = explode('.', $orderBy);
+        $orderByArray = explode('.', (string) $orderBy);
 
-        $relations = explode('.', $orderBy);
+        $relations = explode('.', (string) $orderBy);
         if (count($relations) > 1 && ! $this->checkModelRelationships($relations[0])) {
             return;
         }
@@ -130,7 +130,7 @@ class DataProvider
         $filters = is_string($filters) ? json_decode($filters, true) : $filters;
 
         if ($search) {
-            $columns = request()->get(key: 'columns') ? explode(',', request()->get('columns')) : $this->builder->getModel()->getFillable();
+            $columns = request()->get(key: 'columns') ? explode(',', (string) request()->get('columns')) : $this->builder->getModel()->getFillable();
             $hidden = $this->builder->getModel()->getHidden();
 
             $columns = array_filter($columns, function ($column) use ($hidden) {
@@ -139,9 +139,7 @@ class DataProvider
                 return ! in_array($firstPart, $hidden);
             });
 
-            $this->builder = $this->builder->where(function ($query) use ($columns, $search) {
-                return $this->searchModel($query, $columns, $search);
-            });
+            $this->builder = $this->builder->where(fn ($query) => $this->searchModel($query, $columns, $search));
         }
 
         foreach ($filters as $filter) {
@@ -162,14 +160,14 @@ class DataProvider
 
     public function buildSearch($builder, $column, $operator, $value, $func)
     {
-        $relations = explode('.', $column);
+        $relations = explode('.', (string) $column);
         $relation = Str::camel($relations[0]);
 
         if (! $this->checkModelRelationships($relation)) {
             return $this->basicQuery($builder, $column, $operator, $value, $func);
         }
 
-        $relations = explode('.', string: $column);
+        $relations = explode('.', string: (string) $column);
         $column = array_pop($relations);
 
         return $this->relatedQuery(
@@ -190,35 +188,29 @@ class DataProvider
 
         $func = $this->getFunction($function, $operator);
 
-        switch ($operator) {
-            case 'in':
-                return $query->whereIn($column, $value);
-            case 'not_in':
-                return $query->whereNotIn($column, $value);
-            case 'is_null':
-                return $query->whereNull($column);
-            default:
-                return $query->{$func}($column, $operator, $value);
-        }
+        return match ($operator) {
+            'in' => $query->whereIn($column, $value),
+            'not_in' => $query->whereNotIn($column, $value),
+            'is_null' => $query->whereNull($column),
+            default => $query->{$func}($column, $operator, $value),
+        };
     }
 
     protected function relatedQuery($query, $relation, $column, $operator, $value, $function)
     {
         $temp = $function == 'orWhere' ? 'orWhereHas' : 'whereHas';
 
-        switch ($operator) {
-            case 'is_null':
-                return $query->whereDoesntHave($relation);
-            default:
-                return $query->{$temp}($relation, function ($query) use ($column, $operator, $value) {
-                    $this->basicQuery($query, $column, $operator, $value, 'where');
-                });
-        }
+        return match ($operator) {
+            'is_null' => $query->whereDoesntHave($relation),
+            default => $query->{$temp}($relation, function ($query) use ($column, $operator, $value) {
+                $this->basicQuery($query, $column, $operator, $value, 'where');
+            }),
+        };
     }
 
     protected function searchModel($query, $columns, $searchTerm)
     {
-        foreach ($columns as $key => $column) {
+        foreach ($columns as $column) {
             $queryParts = $this->resolveQueryParts('contains', $searchTerm);
             $query = $this->buildSearch(
                 $query,
@@ -249,80 +241,65 @@ class DataProvider
 
     protected function resolveQueryParts($operator, $value)
     {
-        switch (Str::snake($operator)) {
-            case 'not_equals':
-                return [
-                    'operator' => '!=',
-                    'value' => $value,
-                ];
-            case 'equals':
-                return [
-                    'operator' => '=',
-                    'value' => $value,
-                ];
-            case 'not_contains':
-                return [
-                    'operator' => 'NOT LIKE',
-                    'value' => "%{$value}%",
-                ];
-            case 'contains':
-                return [
-                    'operator' => 'LIKE',
-                    'value' => "%{$value}%",
-                ];
-            case 'starts_with':
-                return [
-                    'operator' => 'LIKE',
-                    'value' => "{$value}%",
-                ];
-            case 'ends_with':
-                return [
-                    'operator' => 'LIKE',
-                    'value' => "%{$value}",
-                ];
-            case 'greater_than':
-                return [
-                    'operator' => '>',
-                    'value' => $value,
-                ];
-            case 'less_than':
-                return [
-                    'operator' => '<',
-                    'value' => $value,
-                ];
-            case 'greater_than_or_equal_to':
-                return [
-                    'operator' => '>=',
-                    'value' => $value,
-                ];
-            case 'less_than_or_equal_to':
-                return [
-                    'operator' => '<=',
-                    'value' => $value,
-                ];
-            case 'is_null':
-                return [
-                    'operator' => 'is_null',
-                    'value' => '',
-                ];
-            case 'in':
-                return [
-                    'operator' => 'in',
-                    'value' => is_array($value) ? $value : explode(',', $value),
-                ];
-            case 'not_in':
-                return [
-                    'operator' => 'not_in',
-                    'value' => is_array($value) ? $value : explode(',', $value),
-                ];
-            case 'search':
-                return [
-                    'operator' => 'search',
-                    'value' => $value,
-                ];
-            default:
-                return null; // or throw an exception, or handle as needed
-        }
+        return match (Str::snake($operator)) {
+            'not_equals' => [
+                'operator' => '!=',
+                'value' => $value,
+            ],
+            'equals' => [
+                'operator' => '=',
+                'value' => $value,
+            ],
+            'not_contains' => [
+                'operator' => 'NOT LIKE',
+                'value' => "%{$value}%",
+            ],
+            'contains' => [
+                'operator' => 'LIKE',
+                'value' => "%{$value}%",
+            ],
+            'starts_with' => [
+                'operator' => 'LIKE',
+                'value' => "{$value}%",
+            ],
+            'ends_with' => [
+                'operator' => 'LIKE',
+                'value' => "%{$value}",
+            ],
+            'greater_than' => [
+                'operator' => '>',
+                'value' => $value,
+            ],
+            'less_than' => [
+                'operator' => '<',
+                'value' => $value,
+            ],
+            'greater_than_or_equal_to' => [
+                'operator' => '>=',
+                'value' => $value,
+            ],
+            'less_than_or_equal_to' => [
+                'operator' => '<=',
+                'value' => $value,
+            ],
+            'is_null' => [
+                'operator' => 'is_null',
+                'value' => '',
+            ],
+            'in' => [
+                'operator' => 'in',
+                'value' => is_array($value) ? $value : explode(',', (string) $value),
+            ],
+            'not_in' => [
+                'operator' => 'not_in',
+                'value' => is_array($value) ? $value : explode(',', (string) $value),
+            ],
+            'search' => [
+                'operator' => 'search',
+                'value' => $value,
+            ],
+            default => null,
+        };
 
     }
 
@@ -335,7 +312,7 @@ class DataProvider
         foreach ($methods as $method) {
             // Skip inherited methods and methods with required parameters
             if (
-                $method->class != get_class($this->model) ||
+                $method->class != $this->model::class ||
                 $method->getNumberOfRequiredParameters() > 0
             ) {
                 continue;
@@ -346,7 +323,7 @@ class DataProvider
                 if ($result instanceof Relation) {
                     $relationships[] = $method->getName();
                 }
-            } catch (\Throwable $e) {
+            } catch (\Throwable) {
                 // Ignore methods that throw exceptions
             }
         }

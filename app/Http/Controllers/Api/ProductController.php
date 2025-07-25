@@ -93,9 +93,7 @@ class ProductController extends BaseController
     public function update(Request $request, Product $product)
     {
         try {
-            $product = DB::transaction(function () use ($product, $request) {
-                return $this->service->update($product, $request->all());
-            });
+            $product = DB::transaction(fn () => $this->service->update($product, $request->all()));
         } catch (Exception $e) {
             Log::debug($e->getMessage());
             throw new Exception($e);

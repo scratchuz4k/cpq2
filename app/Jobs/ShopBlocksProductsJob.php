@@ -82,7 +82,7 @@ class ShopBlocksProductsJob implements NotTenantAware, ShouldQueue
     public function failed(Exception $exception)
     {
         // Handle the failure, log exception details, etc.
-        $message = '['.strtoupper(env('APP_ENV')).'] ShopBlocksProducts failed with error: '.$exception->getMessage();
+        $message = '['.strtoupper((string) env('APP_ENV')).'] ShopBlocksProducts failed with error: '.$exception->getMessage();
 
         $error = [
             'provider' => 'ShopBlocks',
@@ -90,7 +90,7 @@ class ShopBlocksProductsJob implements NotTenantAware, ShouldQueue
         ];
 
         // Handle the failure, log exception details, etc.
-        $message = '['.strtoupper(env('APP_ENV')).'] ShopBlocksProducts failed with error: '.json_encode($error);
+        $message = '['.strtoupper((string) env('APP_ENV')).'] ShopBlocksProducts failed with error: '.json_encode($error);
 
         Log::error($message);
         if (env('DISCORD_CLOUDMARKET_JOBS')) {

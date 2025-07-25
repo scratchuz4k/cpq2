@@ -58,9 +58,7 @@ class UserController extends BaseController
     public function store(UserCreateRequest $request)
     {
         try {
-            $user = DB::transaction(function () use ($request) {
-                return $this->usersService->store($request->all());
-            });
+            $user = DB::transaction(fn () => $this->usersService->store($request->all()));
         } catch (\Exception $e) {
             throw new \Exception($e);
         }
@@ -106,9 +104,7 @@ class UserController extends BaseController
     public function update(UserUpdateRequest $request, User $user)
     {
         try {
-            $user = DB::transaction(function () use ($request, $user) {
-                return $this->usersService->update($user, $request->all());
-            });
+            $user = DB::transaction(fn () => $this->usersService->update($user, $request->all()));
         } catch (\Exception $e) {
             throw new \Exception($e);
         }
@@ -130,9 +126,7 @@ class UserController extends BaseController
     public function importUsers(UserImportRequest $request)
     {
         try {
-            $results = DB::transaction(function () use ($request) {
-                return $this->usersService->import($request->all());
-            });
+            $results = DB::transaction(fn () => $this->usersService->import($request->all()));
         } catch (\Exception $e) {
             throw new \Exception($e);
         }

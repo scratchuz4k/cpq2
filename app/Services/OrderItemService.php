@@ -21,7 +21,7 @@ class OrderItemService
                         ...$array,
                         ...$child,
                         'parent_id' => $orderItem->id,
-                        'original_price' => isset($child['price']) ? $child['price'] : 0,
+                        'original_price' => $child['price'] ?? 0,
                     ]);
 
                 }

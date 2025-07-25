@@ -43,9 +43,7 @@ class AccountController extends BaseController
     public function store(AccountCreateRequest $request)
     {
         try {
-            $account = DB::transaction(function () use ($request) {
-                return $this->accountService->store($request->all());
-            });
+            $account = DB::transaction(fn () => $this->accountService->store($request->all()));
         } catch (\Exception $e) {
             if (! env('APP_DEBUG')) {
                 Log::error($e->getMessage());
@@ -80,9 +78,7 @@ class AccountController extends BaseController
     public function update(AccountUpdateRequest $request, Account $account)
     {
         try {
-            $account = DB::transaction(function () use ($account, $request) {
-                return $this->accountService->update($account, $request->all());
-            });
+            $account = DB::transaction(fn () => $this->accountService->update($account, $request->all()));
         } catch (\Exception $e) {
             if (! env(key: 'APP_DEBUG')) {
                 Log::error($e->getMessage());
