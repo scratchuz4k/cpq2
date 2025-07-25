@@ -262,7 +262,6 @@ describe('Creates a Mobile Quote', () => {
             .then((count) => {
                 cy.get(`#btn-recurring-${count - 1}-remove`).click();
             });
-
         cy.get('#swal-btn-confirm').click();
         cy.get('.one_off-item')
             .its('length')

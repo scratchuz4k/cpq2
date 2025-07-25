@@ -11,7 +11,7 @@
         "php": "^8.4",
         "dedoc/scramble": "^0.12.23",
         "halaxa/json-machine": "^1.1",
-        "inertiajs/inertia-laravel": "^1.0",
+        "inertiajs/inertia-laravel": "^2.0",
         "laravel/framework": "^12.20",
         "laravel/horizon": "^5.29",
         "laravel/sanctum": "^4.0",
@@ -73,7 +73,8 @@
             "@php artisan key:generate --ansi",
             "@php -r \"file_exists('database/database.sqlite') || touch('database/database.sqlite');\"",
             "@php artisan migrate --graceful --ansi"
-        ]
+        ],
+        "format": "pint"
     },
     "extra": {
         "laravel": {

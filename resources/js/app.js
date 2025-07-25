@@ -53,7 +53,7 @@ window.swal = Swal.mixin({
     showCancelButton: true,
     width: '20em',
     customClass: {
-        confirmButton: 'btn text-light btn-lg mr-2 fs-6',
+        confirmButton: 'btn btn-lg mr-2 fs-6',
         cancelButton: 'btn btn-outline-primary border-light-purple btn-lg fs-6',
         loader: 'custom-loader',
         title: 'h3'
