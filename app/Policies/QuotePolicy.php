@@ -11,16 +11,20 @@ class QuotePolicy
     /**
      * Determine whether the user can view any models.
      */
-    private string $model = "quote";
+    private string $model = 'quote';
+
     private array $statusToBlockQuotes = [
         QuoteStatusesEnum::REGISTRY->name,
-        QuoteStatusesEnum::SUBMITTED->name
+        QuoteStatusesEnum::SUBMITTED->name,
+        QuoteStatusesEnum::EXPIRED->name,
     ];
+
     public function viewAny(User $user): bool
     {
         if ($user->can("viewAny $this->model")) {
             return true;
         }
+
         return false;
     }
 
@@ -29,16 +33,17 @@ class QuotePolicy
      */
     public function view(User $user, Quote $quote): bool
     {
-        if (!$this->canManageQuote($user, $quote)) {
+        if (! $this->canManageQuote($user, $quote)) {
             return false;
         }
 
-        if (!$user->can("view $this->model")) {
+        if (! $user->can("view $this->model")) {
             return false;
         }
         if (in_array($quote->status, $this->statusToBlockQuotes)) {
             return false;
         }
+
         return true;
     }
 
@@ -50,6 +55,7 @@ class QuotePolicy
         if ($user->can("create $this->model")) {
             return true;
         }
+
         return false;
     }
 
@@ -58,17 +64,18 @@ class QuotePolicy
      */
     public function update(User $user, Quote $quote): bool
     {
-        if (!$this->canManageQuote($user, $quote)) {
+        if (! $this->canManageQuote($user, $quote)) {
             return false;
         }
 
-        if (!$user->can("update $this->model")) {
+        if (! $user->can("update $this->model")) {
             return false;
         }
 
         if (in_array($quote->status, $this->statusToBlockQuotes)) {
             return false;
         }
+
         return true;
     }
 
@@ -77,16 +84,17 @@ class QuotePolicy
      */
     public function delete(User $user, Quote $quote): bool
     {
-        if (!$this->canManageQuote($user, $quote)) {
+        if (! $this->canManageQuote($user, $quote)) {
             return false;
         }
 
-        if (!$user->can("delete $this->model")) {
+        if (! $user->can("delete $this->model")) {
             return false;
         }
         if (in_array($quote->status, $this->statusToBlockQuotes)) {
             return false;
         }
+
         return true;
     }
 
@@ -95,12 +103,13 @@ class QuotePolicy
      */
     public function restore(User $user, Quote $quote): bool
     {
-        if (!$user->can("restore $this->model")) {
+        if (! $user->can("restore $this->model")) {
             return false;
         }
         if (in_array($quote->status, $this->statusToBlockQuotes)) {
             return false;
         }
+
         return true;
     }
 
@@ -109,24 +118,25 @@ class QuotePolicy
      */
     public function forceDelete(User $user, Quote $quote): bool
     {
-        if (!$user->can("forceDelete $this->model")) {
+        if (! $user->can("forceDelete $this->model")) {
             return false;
         }
         if (in_array($quote->status, $this->statusToBlockQuotes)) {
             return false;
         }
+
         return true;
     }
-
 
     /**
      * Determine whether the user can export the model.
      */
     public function export(User $user): bool
     {
-        if (!$user->can("export $this->model")) {
+        if (! $user->can("export $this->model")) {
             return false;
         }
+
         return true;
     }
 

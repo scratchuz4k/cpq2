@@ -5,7 +5,6 @@ namespace App\Http\Requests;
 use App\Rules\FileValidator;
 use App\Rules\XmlValidator;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rules\File;
 
 class TenantUpdateRequest extends FormRequest
 {
@@ -28,6 +27,7 @@ class TenantUpdateRequest extends FormRequest
             'sso_id' => ['nullable', new FileValidator('xml')],
             'sso_text_area' => ['nullable', new XmlValidator],
             'logo_id' => ['nullable', new FileValidator('image')],
+            'configurations.quote_expiration_days' => ['required', 'integer', 'min:1', 'max:365'],
         ];
     }
 }

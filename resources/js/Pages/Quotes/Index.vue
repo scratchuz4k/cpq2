@@ -95,7 +95,10 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Quotes' }]);
                         {{ format.date(value) }}
                     </template>
                     <template #actions="{ data, value, index }">
-                        <div v-if="!['REGISTRY', 'SUBMITTED'].includes(data.status)" class="d-flex justify-content-end">
+                        <div
+                            v-if="!['REGISTRY', 'SUBMITTED', 'EXPIRED'].includes(data.status)"
+                            class="d-flex justify-content-end"
+                        >
                             <button
                                 :id="'datatable-btn-' + index + '-crete-order'"
                                 :hidden="!(tenant.configurations.orders_flow_is_active === '1')"
@@ -114,6 +117,7 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Quotes' }]);
                                 <font-awesome-icon :icon="['fas', 'edit']" />
                             </Link>
                             <Link
+                                v-if="data.status !== ''"
                                 :id="'datatable-btn-' + index + '-show'"
                                 :href="'quotes/' + data.id"
                                 class="btn px-2 py-0 mx-1 border-0"

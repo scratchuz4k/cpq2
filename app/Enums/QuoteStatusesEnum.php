@@ -2,7 +2,7 @@
 
 namespace App\Enums;
 
-enum QuoteStatusesEnum:string
+enum QuoteStatusesEnum: string
 {
     case QUOTE = 'quote';
     case PRICE = 'price';
@@ -17,6 +17,7 @@ enum QuoteStatusesEnum:string
     case CANCELLED = 'cancelled';
     case FAILED = 'failed';
     case ON_HOLD = 'on hold';
+    case EXPIRED = 'expired';
 
     public static function names(): array
     {
