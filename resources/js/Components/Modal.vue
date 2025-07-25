@@ -12,7 +12,7 @@
 </template>
 
 <script setup>
-import { watch } from 'vue'
+import { watch } from 'vue';
 
 const props = defineProps({
     modelValue: {
@@ -21,14 +21,13 @@ const props = defineProps({
     title: {
         required: false,
         default: null
-    },
-})
-const emits = defineEmits(['update:modelValue'])
-
+    }
+});
+const emits = defineEmits(['update:modelValue']);
 
 const toggleModal = () => {
-    emits('update:modelValue', false)
-}
+    emits('update:modelValue', false);
+};
 </script>
 
 <style scoped>
@@ -82,7 +81,7 @@ const toggleModal = () => {
 }
 
 .body {
-    padding:20px ;
+    padding: 20px;
 }
 
 .footer {

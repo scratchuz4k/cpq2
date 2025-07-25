@@ -6,7 +6,8 @@ use App\Models\User;
 
 class UserPolicy
 {
-    private string $model = "user";
+    private string $model = 'user';
+
     /**
      * Determine whether the user can view any models.
      */
@@ -15,6 +16,7 @@ class UserPolicy
         if ($user->can("viewAny $this->model")) {
             return true;
         }
+
         return false;
     }
 
@@ -26,6 +28,7 @@ class UserPolicy
         if ($user->can("view $this->model")) {
             return true;
         }
+
         return false;
     }
 
@@ -37,6 +40,7 @@ class UserPolicy
         if ($user->can("create $this->model")) {
             return true;
         }
+
         return false;
     }
 
@@ -48,6 +52,7 @@ class UserPolicy
         if ($user->can("update $this->model")) {
             return true;
         }
+
         return false;
     }
 
@@ -59,6 +64,7 @@ class UserPolicy
         if ($user->can("delete $this->model")) {
             return true;
         }
+
         return false;
     }
 
@@ -70,6 +76,7 @@ class UserPolicy
         if ($user->can("restore $this->model")) {
             return true;
         }
+
         return false;
     }
 
@@ -81,7 +88,7 @@ class UserPolicy
         if ($user->can("forceDelete $this->model")) {
             return true;
         }
+
         return false;
     }
-
 }

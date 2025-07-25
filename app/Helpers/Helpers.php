@@ -60,11 +60,11 @@ if (! function_exists('formated_date_range')) {
         $end_date = Carbon::parse($array['end'] ?? Carbon::now());
 
         if ($start_date->greaterThan($end_date)) {
-            [ $start_date, $end_date ] = [ $end_date, $start_date ];
+            [$start_date, $end_date] = [$end_date, $start_date];
         }
 
         return $start_date->greaterThan($end_date)
-            ? [ $end_date, $start_date ]
-            : [ $start_date, $end_date ];
+            ? [$end_date, $start_date]
+            : [$start_date, $end_date];
     }
 }

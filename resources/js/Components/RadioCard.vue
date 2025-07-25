@@ -10,7 +10,8 @@ const props = defineProps({
     value: {
         default: null
     },
-    name: String
+    name: String,
+    id: String
 });
 
 const proxyValue = computed({
@@ -26,7 +27,7 @@ const proxyValue = computed({
 <template>
     <label class="card bg-light w-100" :class="{ 'border-primary': proxyValue === value }">
         <input type="radio" class="d-none" :name="name" :value="value" v-model="proxyValue" />
-        <div class="card-body p-3 text-decoration-none">
+        <div class="card-body p-3 text-decoration-none" :id="props.id">
             <slot />
         </div>
     </label>
@@ -39,6 +40,9 @@ const proxyValue = computed({
 .border-primary {
     background-color: var(--color-purple-light) !important;
     border-color: var(--color-purple) !important;
-    box-shadow: inset 0 0 1px #fff, inset 0 1px 7px #ebebeb, 0 3px 6px -3px #bbb;
+    box-shadow:
+        inset 0 0 1px #fff,
+        inset 0 1px 7px #ebebeb,
+        0 3px 6px -3px #bbb;
 }
 </style>

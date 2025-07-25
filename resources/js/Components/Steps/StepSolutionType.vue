@@ -65,7 +65,9 @@ const icons = {
     padding: 20px;
     margin-bottom: 10px;
     border: 3px solid var(--white);
-    transition: border-color 0.1s ease-in-out, box-shadow 0.1s ease-in-out;
+    transition:
+        border-color 0.1s ease-in-out,
+        box-shadow 0.1s ease-in-out;
     box-shadow: 0px 10px 15px -3px var(--light-grey);
 }
 .option:hover,

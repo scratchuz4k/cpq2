@@ -2,21 +2,20 @@
 
 namespace App\Http\Controllers\Web;
 
-use Exception;
-use Inertia\Inertia;
+use App\Http\Controllers\BaseController;
+use App\Http\Requests\IndexRequest;
+use App\Http\Resources\EmailHistoryResource;
 use App\Models\EmailHistory;
 use Illuminate\Http\Request;
-use App\Helpers\DataProvider;
-use App\Http\Requests\IndexRequest;
-use Illuminate\Support\Facades\Log;
-use App\Http\Controllers\BaseController;
-use App\Http\Resources\EmailHistoryResource;
+use Inertia\Inertia;
 
 class EmailHistoryController extends BaseController
 {
     protected $model = EmailHistory::class;
+
     /**
      * Index
+     *
      * @response AnonymousResourceCollection<LengthAwarePaginator<AccountResource>>
      */
     public function index(IndexRequest $request)
@@ -38,7 +37,8 @@ class EmailHistoryController extends BaseController
     public function show(EmailHistory $emailHistory)
     {
         $temp = (new EmailHistoryResource($emailHistory))->resolve();
-        return Inertia::render('Emails/Show', ["email" => $temp]);
+
+        return Inertia::render('Emails/Show', ['email' => $temp]);
     }
 
     /**

@@ -2,8 +2,8 @@
 
 namespace Database\Factories;
 
-use App\Models\Tenant;
 use App\Models\Contact;
+use App\Models\Tenant;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -21,7 +21,7 @@ class ContactFactory extends Factory
     public function definition(): array
     {
         return [
-            'tenant_id' => Tenant::where("name", "CloudMarket")->value('id'),
+            'tenant_id' => Tenant::where('name', 'CloudMarket')->value('id'),
             'account_id' => \App\Models\Account::factory(),
             'primary_contact_name' => $this->faker->name,
             'email' => $this->faker->unique()->safeEmail,

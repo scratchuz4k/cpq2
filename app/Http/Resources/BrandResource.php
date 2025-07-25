@@ -17,7 +17,7 @@ class BrandResource extends JsonResource
         return [
             ...$this->resource->toArray(),
             'updated_at' => $this->updated_at,
-            'created_at' => $this->created_at
+            'created_at' => $this->created_at,
         ];
     }
 }

@@ -2,14 +2,8 @@
 
 use App\Models\Account;
 use App\Models\Brand;
-use App\Models\Price;
-use App\Models\Product;
-use App\Models\Quote;
-use App\Models\QuoteItem;
-use App\Models\Spa;
 use App\Models\Supplier;
 use App\Models\Tenant;
-use App\Models\Token;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Auth;
@@ -33,16 +27,16 @@ it('Run Permissions for Order Manager', function () {
     $modelsData = generateModelsData();
 
     $permissions = [
-        'tenant' =>         ['index' => false, 'create' => false, 'show' => false, 'store' => false, 'edit' => false, 'update' => false, 'destroy' => false],
-        'api/accounts' =>   ['index' => true, 'create' => false, 'show' => true, 'store' => false, 'edit' => false, 'update' => false, 'destroy' => false],
-        'api/prices' =>     ['index' => false, 'create' => false, 'show' => false, 'store' => false, 'edit' => false, 'update' => false, 'destroy' => false],
-        'products' =>       ['index' => true, 'create' => false, 'show' => true, 'store' => false, 'edit' => false, 'update' => false, 'destroy' => false],
-        'brands' =>         ['index' => true, 'create' => false, 'show' => true, 'store' => false, 'edit' => false, 'update' => false, 'destroy' => false],
-        'suppliers' =>      ['index' => true, 'create' => false, 'show' => true, 'store' => false, 'edit' => false, 'update' => false, 'destroy' => false],
-        'spas' =>           ['index' => false, 'create' => false, 'show' => false, 'store' => false, 'edit' => false, 'update' => false, 'destroy' => false],
-        'users' =>          ['index' => false, 'create' => false, 'show' => false, 'store' => false, 'edit' => false, 'update' => false, 'destroy' => false],
-        'tokens' =>         ['index' => false, 'create' => false, 'show' => false, 'store' => false, 'edit' => false, 'update' => false, 'destroy' => false],
-        'quotes' =>         ['index' => false, 'create' => false, 'show' => false, 'store' => false, 'edit' => false, 'update' => false, 'destroy' => false],
+        'tenant' => ['index' => false, 'create' => false, 'show' => false, 'store' => false, 'edit' => false, 'update' => false, 'destroy' => false],
+        'api/accounts' => ['index' => true, 'create' => false, 'show' => true, 'store' => false, 'edit' => false, 'update' => false, 'destroy' => false],
+        'api/prices' => ['index' => false, 'create' => false, 'show' => false, 'store' => false, 'edit' => false, 'update' => false, 'destroy' => false],
+        'products' => ['index' => true, 'create' => false, 'show' => true, 'store' => false, 'edit' => false, 'update' => false, 'destroy' => false],
+        'brands' => ['index' => true, 'create' => false, 'show' => true, 'store' => false, 'edit' => false, 'update' => false, 'destroy' => false],
+        'suppliers' => ['index' => true, 'create' => false, 'show' => true, 'store' => false, 'edit' => false, 'update' => false, 'destroy' => false],
+        'spas' => ['index' => false, 'create' => false, 'show' => false, 'store' => false, 'edit' => false, 'update' => false, 'destroy' => false],
+        'users' => ['index' => false, 'create' => false, 'show' => false, 'store' => false, 'edit' => false, 'update' => false, 'destroy' => false],
+        'tokens' => ['index' => false, 'create' => false, 'show' => false, 'store' => false, 'edit' => false, 'update' => false, 'destroy' => false],
+        'quotes' => ['index' => false, 'create' => false, 'show' => false, 'store' => false, 'edit' => false, 'update' => false, 'destroy' => false],
         'api/quote-items' => ['index' => false, 'create' => false, 'show' => false, 'store' => false, 'edit' => false, 'update' => false, 'destroy' => false],
         'solution-types' => ['index' => false, 'create' => false, 'show' => false, 'store' => false, 'edit' => false, 'update' => false, 'destroy' => false],
     ];

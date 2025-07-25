@@ -453,8 +453,8 @@ getArticles(false, true);
                                                 ['speed', 'bearer'].includes(column)
                                                     ? 'Min. ' + _.capitalize(column) + ': ' + format.speed(value)
                                                     : ['contractTermMonths'].includes(column)
-                                                    ? value + ' Months'
-                                                    : value
+                                                      ? value + ' Months'
+                                                      : value
                                             "
                                             class="px-3 py-1"
                                             data-toggle="tooltip"
@@ -478,8 +478,8 @@ getArticles(false, true);
                                             props.modelValue.configs?.managed == 1
                                                 ? 'Managed Only'
                                                 : props.modelValue.configs?.managed == 2
-                                                ? 'Unmanaged Only'
-                                                : 'Managed and Unmanaged'
+                                                  ? 'Unmanaged Only'
+                                                  : 'Managed and Unmanaged'
                                         "
                                         class="px-3 py-1"
                                     >
@@ -656,8 +656,8 @@ getArticles(false, true);
                                                         showContended === true
                                                             ? ['fas', 'circle-check']
                                                             : showContended === false
-                                                            ? ['far', 'circle-xmark']
-                                                            : ['far', 'circle']
+                                                              ? ['far', 'circle-xmark']
+                                                              : ['far', 'circle']
                                                     "
                                                     class="text-primary"
                                                 />

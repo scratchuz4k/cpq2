@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('field');
             $table->string('description');
-            
+
             $table->foreignId('email_template_id')->constrained()->cascadeOnDelete();
             $table->unique(['email_template_id', 'field']);
 

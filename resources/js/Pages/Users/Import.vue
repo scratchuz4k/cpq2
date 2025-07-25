@@ -1,22 +1,21 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import {Head, Link} from "@inertiajs/vue3";
-import {ref} from 'vue';
+import { Head, Link } from '@inertiajs/vue3';
+import { ref } from 'vue';
 
 const props = defineProps({
     results: {
         type: Object,
         default: null
     }
-})
+});
 
 const items = ref([
     { label: 'Home', url: '/' },
     { label: 'My Account', url: '/myaccount' },
     { label: 'Users', url: '/users' },
-    { label: 'Import Users' },
+    { label: 'Import Users' }
 ]);
-
 </script>
 <template>
     <Head title="Users" />
@@ -34,7 +33,7 @@ const items = ref([
                 <p><b>Rows Processed:</b> {{ results.processed }}</p>
                 <p><b>Rows successfully imported:</b> {{ results.success }}</p>
                 <p><b>Rows Skipped:</b> {{ results.skipped }}</p>
-                <br/>
+                <br />
                 <h4>Errors</h4>
                 <ul v-if="results?.errors?.length > 0">
                     <li v-for="(row, index) in results.errors" :key="index">
@@ -49,23 +48,22 @@ const items = ref([
 </template>
 
 <style scoped>
-
- li {
-   counter-increment: item;
-   margin-bottom: 5px;
- }
- li:before {
-   margin-right: 10px;
-   content: counter(item);
-   background: var(--color-purple-light);
-   border-radius: 100%;
-   color: var(--dark-purple);
-   width: 25px;
-   height: 25px;
-   line-height: 24px;
-   font-size: 14px;
-   font-weight: bold;
-   text-align: center;
-   display: inline-block;
- }
+li {
+    counter-increment: item;
+    margin-bottom: 5px;
+}
+li:before {
+    margin-right: 10px;
+    content: counter(item);
+    background: var(--color-purple-light);
+    border-radius: 100%;
+    color: var(--dark-purple);
+    width: 25px;
+    height: 25px;
+    line-height: 24px;
+    font-size: 14px;
+    font-weight: bold;
+    text-align: center;
+    display: inline-block;
+}
 </style>

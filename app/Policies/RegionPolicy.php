@@ -7,7 +7,8 @@ use App\Models\User;
 
 class RegionPolicy
 {
-    private string $model = "region";
+    private string $model = 'region';
+
     /**
      * Determine whether the user can view any models.
      */
@@ -16,6 +17,7 @@ class RegionPolicy
         if ($user->can("viewAny $this->model")) {
             return true;
         }
+
         return false;
     }
 
@@ -27,6 +29,7 @@ class RegionPolicy
         if ($user->can("view $this->model")) {
             return true;
         }
+
         return false;
     }
 
@@ -38,6 +41,7 @@ class RegionPolicy
         if ($user->can("create $this->model")) {
             return true;
         }
+
         return false;
     }
 
@@ -49,6 +53,7 @@ class RegionPolicy
         if ($user->can("update $this->model")) {
             return true;
         }
+
         return false;
     }
 
@@ -60,6 +65,7 @@ class RegionPolicy
         if ($user->can("delete $this->model")) {
             return true;
         }
+
         return false;
     }
 
@@ -71,6 +77,7 @@ class RegionPolicy
         if ($user->can("restore $this->model")) {
             return true;
         }
+
         return false;
     }
 
@@ -82,18 +89,19 @@ class RegionPolicy
         if ($user->can("forceDelete $this->model")) {
             return true;
         }
+
         return false;
     }
-
 
     /**
      * Determine whether the user can export the model.
      */
     public function export(User $user): bool
     {
-        if (!$user->can("export $this->model")) {
+        if (! $user->can("export $this->model")) {
             return false;
         }
+
         return true;
     }
 }

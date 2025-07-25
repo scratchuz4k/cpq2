@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Models\Scopes\TenantScope;
 use App\Trait\SetTenantId;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -19,7 +18,7 @@ class Resource extends Model
         'mime_type',
         'alt_text',
         'size',
-        'tenant_id'
+        'tenant_id',
     ];
 
     protected $appends = ['full_route'];
@@ -39,6 +38,7 @@ class Resource extends Model
     {
         return $this->mime_type === 'application/xml' || $this->mime_type === 'text/xml';
     }
+
     public function getFileContentAttribute()
     {
         return $this->getContent();
@@ -51,12 +51,12 @@ class Resource extends Model
 
     public function getRouteAttribute(): string
     {
-        return 'storage/' . $this->attributes['route'];
+        return 'storage/'.$this->attributes['route'];
     }
 
     public function getFullRouteAttribute(): string
     {
-        return asset('storage/' . $this->attributes['route']);
+        return asset('storage/'.$this->attributes['route']);
     }
 
     public function getRouteValue(): string

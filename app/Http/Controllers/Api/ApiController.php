@@ -2,17 +2,17 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Helpers\DataProvider;
+use App\Http\Controllers\BaseController;
 use App\Http\Requests\IndexRequest;
+use App\Http\Resources\ApiResource;
+use App\Models\Api;
 use App\Services\ApiService;
 use Dedoc\Scramble\Attributes\ExcludeRouteFromDocs;
 use Exception;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
-use App\Helpers\DataProvider;
-use App\Models\Api;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use App\Http\Controllers\BaseController;
-use App\Http\Resources\ApiResource;
 
 class ApiController extends BaseController
 {
@@ -33,6 +33,7 @@ class ApiController extends BaseController
             $data = $dataProvider->get();
         } catch (Exception $e) {
             Log::debug($e->getMessage());
+
             return $e->getMessage();
         }
 
@@ -69,6 +70,7 @@ class ApiController extends BaseController
         } catch (\Exception $e) {
             throw new \Exception($e);
         }
+
         return new ApiResource($api);
     }
 

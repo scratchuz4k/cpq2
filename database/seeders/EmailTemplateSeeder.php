@@ -2,9 +2,9 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
 use Database\Seeders\EmailTemplate\QuoteAccountUser;
 use Database\Seeders\EmailTemplate\UserRecoveryPassword;
+use Illuminate\Database\Seeder;
 
 class EmailTemplateSeeder extends Seeder
 {
@@ -17,7 +17,7 @@ class EmailTemplateSeeder extends Seeder
     {
         $this->call([
             UserRecoveryPassword::class,
-            QuoteAccountUser::class
+            QuoteAccountUser::class,
         ]);
     }
 }

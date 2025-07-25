@@ -70,7 +70,8 @@ function createUser()
     return $user;
 }
 
-function resolve_request(string $entity, string $method, array $content) {
+function resolve_request(string $entity, string $method, array $content)
+{
     $id = array_key_exists('id', $content) ? $content['id'] : 1;
     switch ($method) {
         case 'index':
@@ -90,7 +91,8 @@ function resolve_request(string $entity, string $method, array $content) {
     }
 }
 
-function generateModelsData() {
+function generateModelsData()
+{
     return [
         'tenants' => Tenant::factory()->make()->toArray(),
         'products' => Product::factory()->make()->toArray(),
@@ -108,7 +110,8 @@ function generateModelsData() {
     ];
 }
 
-function runPermissionTest(array $permissions, array &$modelsData) {
+function runPermissionTest(array $permissions, array &$modelsData)
+{
     foreach ($permissions as $entity => $routes) {
         foreach ($routes as $key => $hasPermission) {
 
@@ -149,7 +152,8 @@ function runPermissionTest(array $permissions, array &$modelsData) {
     }
 }
 
-function createQuoteWithItems($testInstance){
+function createQuoteWithItems($testInstance)
+{
     $response = $testInstance->post('api/quotes', $testInstance->quote_data);
     $response->assertSuccessful();
     $quote = $response->json();
@@ -157,5 +161,5 @@ function createQuoteWithItems($testInstance){
     $response = $testInstance->post('api/quote-items', [...$testInstance->quote_item, 'quote_id' => $quote['id']]);
     $response->assertSuccessful();
 
-    return $testInstance->get('api/quotes/' . $quote['id']);
+    return $testInstance->get('api/quotes/'.$quote['id']);
 }

@@ -2,11 +2,11 @@
 
 use App\Enums\OrderStatusesEnum;
 use App\Enums\QuoteStatusesEnum;
+use App\Models\Account;
 use App\Models\Order;
 use App\Models\Quote;
-use App\Models\User;
 use App\Models\Tenant;
-use App\Models\Account;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 
 beforeEach(function () {
@@ -106,7 +106,7 @@ it('Assign Order', function () {
 
     $order = Order::first();
 
-    $response = $this->put('api/orders/'. $order->id, ['user_id' => $this->order_manager->id]);
+    $response = $this->put('api/orders/'.$order->id, ['user_id' => $this->order_manager->id]);
     $updated_order = $response->json();
 
     $this->assertEquals($updated_order['user_id'], $this->order_manager->id);
@@ -121,7 +121,7 @@ it('Assert Order and Quote status equals rejected on Order reject', function () 
         'status' => OrderStatusesEnum::REJECTED->name,
         'user_id' => $this->order_manager->id,
     ];
-    $response = $this->put('api/orders/'. $order->id, $data);
+    $response = $this->put('api/orders/'.$order->id, $data);
     $updated_order = $response->json();
 
     $this->assertEquals($updated_order['user_id'], $this->order_manager->id);
@@ -140,7 +140,7 @@ it('Assert Order and Quote status equals ordered on Order Approval', function ()
         'status' => OrderStatusesEnum::SUBMITTED->name,
         'user_id' => $this->order_manager->id,
     ];
-    $response = $this->put('api/orders/'. $order->id, $data);
+    $response = $this->put('api/orders/'.$order->id, $data);
     $updated_order = $response->json();
 
     $this->assertEquals($updated_order['user_id'], $this->order_manager->id);

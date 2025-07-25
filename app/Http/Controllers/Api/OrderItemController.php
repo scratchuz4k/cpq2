@@ -50,7 +50,7 @@ class OrderItemController extends BaseController
                 return $this->orderItemService->store($request->all());
             });
         } catch (\Exception $e) {
-            if (!env('APP_DEBUG')) {
+            if (! env('APP_DEBUG')) {
                 Log::error($e->getMessage());
             }
             throw new \Exception($e);
@@ -77,7 +77,7 @@ class OrderItemController extends BaseController
                 return $this->orderItemService->update($orderItem, $request->all());
             });
         } catch (\Exception $e) {
-            if (!env('APP_DEBUG')) {
+            if (! env('APP_DEBUG')) {
                 Log::error($e->getMessage());
             }
             throw new \Exception($e);

@@ -2,19 +2,20 @@
 
 namespace App\Http\Controllers\Web;
 
-use Inertia\Inertia;
+use App\Http\Controllers\BaseController;
+use App\Http\Requests\AccountCreateRequest;
+use App\Http\Requests\AccountUpdateRequest;
+use App\Http\Resources\AccountResource;
 use App\Models\Account;
 use App\Services\AccountService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use App\Http\Resources\AccountResource;
-use App\Http\Controllers\BaseController;
-use App\Http\Requests\AccountCreateRequest;
-use App\Http\Requests\AccountUpdateRequest;
+use Inertia\Inertia;
 
 class AccountController extends BaseController
 {
     protected $model = Account::class;
+
     public function __construct(protected AccountService $accountService)
     {
         parent::__construct();
@@ -46,11 +47,12 @@ class AccountController extends BaseController
                 return $this->accountService->store($request->all());
             });
         } catch (\Exception $e) {
-            if (!env('APP_DEBUG')) {
+            if (! env('APP_DEBUG')) {
                 Log::error($e->getMessage());
             }
             throw new \Exception($e);
         }
+
         return redirect()->route('accounts.index');
     }
 
@@ -68,7 +70,7 @@ class AccountController extends BaseController
     public function edit(Account $account)
     {
         return Inertia::render('Accounts/Edit', [
-            "account" => (new AccountResource($account))->resolve()
+            'account' => (new AccountResource($account))->resolve(),
         ]);
     }
 
@@ -82,11 +84,12 @@ class AccountController extends BaseController
                 return $this->accountService->update($account, $request->all());
             });
         } catch (\Exception $e) {
-            if (!env(key: 'APP_DEBUG')) {
+            if (! env(key: 'APP_DEBUG')) {
                 Log::error($e->getMessage());
             }
             throw new \Exception($e);
         }
+
         return redirect()->route('accounts.index');
     }
 

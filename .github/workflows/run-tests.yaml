@@ -12,7 +12,7 @@ env:
 jobs:
   tests:
     name: Run Pest and Cypress Tests
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-22.04
     environment: testing
 
     permissions:
@@ -37,11 +37,11 @@ jobs:
 
       - name: Add .env secrets
         run: |
-          echo "SHOPBLOCKS_API_KEY=${{ secrets.SHOPBLOCKS_API_KEY }}" >> .env
-          echo "TOMTOM_API_KEY=${{ secrets.TOMTOM_API_KEY }}" >> .env
-          echo "VIRTUAL1_ADDRESS_PASSWORD=${{ secrets.VIRTUAL1_ADDRESS_PASSWORD }}" >> .env
-          echo "VIRTUAL1_ADDRESS_USERNAME=${{ secrets.VIRTUAL1_ADDRESS_USERNAME }}" >> .env
-          echo "VITE_GOOGLE_MAPS_API_KEY=${{ secrets.VITE_GOOGLE_MAPS_API_KEY }}" >> .env
+          echo -e "SHOPBLOCKS_API_KEY=${{ secrets.SHOPBLOCKS_API_KEY }}" >> .env
+          echo -e "TOMTOM_API_KEY=${{ secrets.TOMTOM_API_KEY }}" >> .env
+          echo -e "VIRTUAL1_ADDRESS_PASSWORD=${{ secrets.VIRTUAL1_ADDRESS_PASSWORD }}" >> .env
+          echo -e "VIRTUAL1_ADDRESS_USERNAME=${{ secrets.VIRTUAL1_ADDRESS_USERNAME }}" >> .env
+          echo -e "VITE_GOOGLE_MAPS_API_KEY=${{ secrets.VITE_GOOGLE_MAPS_API_KEY }}" >> .env
 
       - name: Install Composer Dependencies
         run: composer install --prefer-dist --optimize-autoloader --no-scripts --no-progress --no-interaction && composer dump-autoload --optimize -q
@@ -108,7 +108,7 @@ jobs:
 
           # Check if the user ID exists
           if [ -z "$USER_ID" ]; then
-            echo "User $TARGET_USER not found!"
+            echo -e "User $TARGET_USER not found!"
             exit 1
           fi
 

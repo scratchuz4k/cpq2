@@ -18,15 +18,16 @@ class Spa extends Model
         'field_2',
         'price_plan_id',
         'operation_id',
+        'group_id',
         'value',
         'percentage',
-        'is_active'
+        'is_active',
     ];
 
     protected function casts(): array
     {
         return [
-            'is_active' => 'boolean'
+            'is_active' => 'boolean',
         ];
     }
 
@@ -53,6 +54,11 @@ class Spa extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function group(): BelongsTo
+    {
+        return $this->belongsTo(Group::class);
     }
 
     public function pricePlan(): BelongsTo

@@ -5,9 +5,9 @@ defineProps({
     isGroup: Boolean,
     preview: Boolean,
     index: Number
-})
-const item = defineModel()
+});
+const item = defineModel();
 </script>
 <template>
-        <p class="small" v-if="!isGroup">{{ format.GBP(item.price) }}</p>
+    <p class="small" v-if="!isGroup">{{ format.GBP(item.price) }}</p>
 </template>

@@ -2,7 +2,6 @@
 
 namespace App\Http\Requests;
 
-use App\Models\PricePlan;
 use Illuminate\Foundation\Http\FormRequest;
 
 class QuoteItemUpdateRequest extends FormRequest
@@ -23,14 +22,14 @@ class QuoteItemUpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "name" => "nullable",
-            "quantity" => "required|numeric",
+            'name' => 'nullable',
+            'quantity' => 'required|numeric',
             'group' => 'numeric',
-            "raw_price" => "numeric",
-            "price" => "numeric",
-            "discount" => "numeric|min:0|max:100",
-            "price_plan_id" => "numeric|exists:price_plans,id",
-            "contract_length" => "numeric|min:1",
+            'raw_price' => 'numeric',
+            'price' => 'numeric',
+            'discount' => 'numeric|min:0|max:100',
+            'price_plan_id' => 'numeric|exists:price_plans,id',
+            'contract_length' => 'numeric|min:1',
         ];
     }
 }

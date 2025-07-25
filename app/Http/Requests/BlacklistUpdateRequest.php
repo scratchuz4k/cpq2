@@ -31,7 +31,7 @@ class BlacklistUpdateRequest extends FormRequest
         ]);
 
         $flattenedData = collect($data)
-            ->map(fn($value) => is_array($value) && array_filter($value) == [] ? null : $value) // Remove empty array values
+            ->map(fn ($value) => is_array($value) && array_filter($value) == [] ? null : $value) // Remove empty array values
             ->all();
 
         if (empty(array_filter($flattenedData))) {
@@ -53,7 +53,7 @@ class BlacklistUpdateRequest extends FormRequest
             'speed.value' => 'nullable|required_with:speed.operator,speed.unit',
             'speed.unit' => 'nullable|required_with:speed.operator,speed.value',
 
-            'contractTermMonths' => 'nullable'
+            'contractTermMonths' => 'nullable',
         ];
     }
 

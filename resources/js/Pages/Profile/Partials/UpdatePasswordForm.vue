@@ -11,22 +11,22 @@ const currentPasswordInput = ref(null);
 const form = useForm({
     current_password: '',
     password: '',
-    password_confirmation: '',
+    password_confirmation: ''
 });
 
 const updatePassword = () => {
     form.put(route('password.update'), {
         preserveScroll: true,
         onSuccess: () => {
-            notyf.success("Password updated with Success")
-            form.reset()
+            notyf.success('Password updated with Success');
+            form.reset();
         },
         onError: () => {
-            let string = ''
+            let string = '';
             Object.keys(form.errors).forEach((key) => {
-                string += form.errors[key] + '<br>'
-            })
-            notyf.error(string)
+                string += form.errors[key] + '<br>';
+            });
+            notyf.error(string);
             /*
             if (form.errors.password) {
                 form.reset('password', 'password_confirmation');
@@ -37,7 +37,7 @@ const updatePassword = () => {
                 currentPasswordInput.value.focus();
             }
             */
-        },
+        }
     });
 };
 </script>

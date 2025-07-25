@@ -11,12 +11,12 @@ class Merchant extends Model
 {
     use HasFactory, SetTenantId;
 
-    protected $fillable = ["name", "tenant_id", 'is_active'];
+    protected $fillable = ['name', 'tenant_id', 'is_active'];
 
     protected function casts(): array
     {
         return [
-            'is_active' => 'boolean'
+            'is_active' => 'boolean',
         ];
     }
 

@@ -17,10 +17,10 @@ class SolutionTypeTenant extends Model
     protected function casts(): array
     {
         return [
-            'is_active' => 'boolean'
+            'is_active' => 'boolean',
         ];
     }
-    
+
     protected static function booted(): void
     {
         static::addGlobalScope(new TenantScope);

@@ -13,7 +13,7 @@ uses(RefreshDatabase::class);
 beforeEach(function () {
     $this->artisan('db:seed');
 });
-//TODO: EMAILS: add the tests once we get the credentials
+// TODO: EMAILS: add the tests once we get the credentials
 test('reset password link screen can be rendered', function () {
     $response = $this->get('/forgot-password');
 

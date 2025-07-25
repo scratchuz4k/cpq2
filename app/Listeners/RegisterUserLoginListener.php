@@ -24,7 +24,7 @@ class RegisterUserLoginListener
             'cityName',
             'zipCode',
             'latitude',
-            'longitude'
+            'longitude',
         ];
 
         Activity::create([

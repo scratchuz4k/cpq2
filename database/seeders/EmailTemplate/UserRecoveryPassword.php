@@ -2,10 +2,10 @@
 
 namespace Database\Seeders\EmailTemplate;
 
-use App\Models\EmailToken;
-use App\Models\EmailTemplate;
-use Illuminate\Database\Seeder;
 use App\Enums\EmailTemplatesEnum;
+use App\Models\EmailTemplate;
+use App\Models\EmailToken;
+use Illuminate\Database\Seeder;
 
 class UserRecoveryPassword extends Seeder
 {
@@ -31,10 +31,10 @@ class UserRecoveryPassword extends Seeder
         EmailToken::updateOrCreate(
             [
                 'field' => 'reset_link',
-                'email_template_id' => $passwordResetEmail->id
+                'email_template_id' => $passwordResetEmail->id,
             ],
             [
-                'description' => 'Password recovery link'
+                'description' => 'Password recovery link',
             ],
         );
     }
