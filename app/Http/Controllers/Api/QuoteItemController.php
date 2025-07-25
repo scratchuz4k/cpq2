@@ -44,9 +44,9 @@ class QuoteItemController extends BaseController
     public function store(QuoteItemCreateRequest $request)
     {
         try {
-            $quoteItem = DB::transaction(fn() => $this->quoteItemService->store($request->all()), 2);
+            $quoteItem = DB::transaction(fn () => $this->quoteItemService->store($request->all()), 2);
         } catch (\Exception $e) {
-            if (!env('APP_DEBUG')) {
+            if (! env('APP_DEBUG')) {
                 Log::error($e->getMessage());
             }
 
@@ -70,9 +70,9 @@ class QuoteItemController extends BaseController
     public function update(QuoteItemUpdateRequest $request, QuoteItem $quoteItem)
     {
         try {
-            $quoteItem = DB::transaction(fn() => $this->quoteItemService->update($quoteItem, $request->all()));
+            $quoteItem = DB::transaction(fn () => $this->quoteItemService->update($quoteItem, $request->all()));
         } catch (\Exception $e) {
-            if (!env('APP_DEBUG')) {
+            if (! env('APP_DEBUG')) {
                 Log::error($e->getMessage());
             }
             throw new \Exception($e);

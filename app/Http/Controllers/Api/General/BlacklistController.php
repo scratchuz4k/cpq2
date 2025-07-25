@@ -16,7 +16,6 @@ use Illuminate\Support\Facades\Log;
 
 class BlacklistController extends BaseController
 {
-
     public function __construct(protected BlacklistService $blacklistService)
     {
         parent::__construct();
@@ -34,20 +33,21 @@ class BlacklistController extends BaseController
         try {
             $data = $dataProvider->get();
         } catch (Exception $e) {
-            if (!env('APP_DEBUG')) {
+            if (! env('APP_DEBUG')) {
                 Log::error($e->getMessage());
             }
             throw new Exception($e);
         }
+
         return BlacklistResource::collection($data);
     }
 
     public function update(Request $request, Blacklist $blacklist)
     {
         try {
-            $blacklist = DB::transaction(fn() => $this->blacklistService->update($blacklist, $request->all()));
+            $blacklist = DB::transaction(fn () => $this->blacklistService->update($blacklist, $request->all()));
         } catch (Exception $e) {
-            if (!env('APP_DEBUG')) {
+            if (! env('APP_DEBUG')) {
                 Log::error($e->getMessage());
             }
             throw new Exception($e);

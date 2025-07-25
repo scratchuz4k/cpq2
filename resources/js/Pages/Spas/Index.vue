@@ -25,14 +25,14 @@ const form = reactive({
     rule: null,
     rule_id: [],
     field_1: null,
-    field_2: null
+    field_2: null,
+    group: null
 });
 
 const fields = reactive({
     account: null,
     supplier: null,
-    product: null,
-    group: null
+    product: null
 });
 
 const data = ref([]);
@@ -166,8 +166,17 @@ const getFilters = () => {
         });
     }
 
+    if (!!form.group) {
+        temp.push({
+            column: 'group_id',
+            operator: 'equals',
+            value: form.group?.id
+        });
+    }
+
     return temp;
 };
+
 const deleteRecord = async (id) => {
     swal.fire({
         title: 'Are you sure?'
@@ -202,7 +211,8 @@ const cloneSpa = async (item) => {
             price_plan_id: item.price_plan_id ?? null,
             value: item.value ?? 0,
             percentage: item.percentage ?? 0,
-            is_active: item.is_active ?? true
+            is_active: item.is_active ?? true,
+            group_id: item.group_id ?? null
         });
         notyf.success('Clone with success');
         getData();
@@ -221,6 +231,7 @@ const clearFilters = () => {
     showGlobal.value = false;
     Object.keys(fields).forEach((x) => (fields[x] = null));
     selectedRules.value = [];
+    form.group = null;
     getData();
 };
 
@@ -236,10 +247,6 @@ const exportDisabled = ref(false);
 const getExportData = async () => {
     if (exportDisabled.value) return;
     exportDisabled.value = true;
-    // let filters = {
-    //     filters: ,
-    //     search: global.value,
-    // };
 
     exportData([], 'spas');
     setTimeout(() => {
@@ -256,6 +263,7 @@ const columns = [
     { name: 'Level 2', data: 'field_2' },
     { name: 'Price Plan', data: 'price_plan_id' },
     { name: 'Operation', data: 'operation_id' },
+    { name: 'Group', data: 'group_id' },
     { name: 'Value', data: 'value' },
     { name: 'Percentage', data: 'percentage' }
 ];
@@ -307,7 +315,7 @@ getData();
                         <font-awesome-icon :icon="['fas', 'file-export']" />
                     </Button>
                     <div v-if="visible" class="mt-3 mb-3">
-                        <div class="row row-cols-4 border rounded p-2">
+                        <div class="row row-cols-5 border rounded p-2">
                             <div class="col">
                                 <label class="form-label">Global</label>
                                 <Button
@@ -364,27 +372,30 @@ getData();
                                     id="filter-group"
                                     url="/groups"
                                     :fields="['name']"
-                                    v-model="fields.group"
+                                    v-model="form.group"
                                     @change="handleFields()"
                                     placeholder="Select a Group"
-                                    :query="[{ column: 'is_active', operator: 'equals', value: 1 }]"
                                 >
                                 </InputSelect>
                             </div>
                         </div>
-                        <div v-if="selectedRules.length" class="row mt-3">
-                            <div class="col">
-                                <p>
-                                    <b class="me-2">Selected Rules:</b>
-                                    <template v-for="(rule, index) in selectedRules">
-                                        <span
-                                            class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm"
-                                        >
-                                            {{ rule.name }}
-                                        </span>
-                                    </template>
-                                </p>
-                            </div>
+                    </div>
+                    <div v-if="selectedRules.length || form.group" class="row mt-3">
+                        <div class="col d-flex">
+                            <p>
+                                <b class="me-2">Selected filters:</b>
+                                <template v-for="(rule, index) in selectedRules">
+                                    <span class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm">
+                                        {{ rule.name }}
+                                    </span>
+                                </template>
+                                <span
+                                    v-if="form.group"
+                                    class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm"
+                                >
+                                    {{ form.group.name }}
+                                </span>
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -434,6 +445,7 @@ getData();
                                 <td>{{ item.field_2?.name }}</td>
                                 <td>{{ item.price_plan?.name }}</td>
                                 <td>{{ item.operation.code }}</td>
+                                <td>{{ item.group?.name }}</td>
                                 <td>{{ item.value }}</td>
                                 <td>{{ item.percentage }}</td>
                                 <td>
@@ -464,7 +476,7 @@ getData();
                                 </td>
                             </tr>
                             <tr v-if="!data.length" class="text-center">
-                                <td colspan="9">No Results Found</td>
+                                <td colspan="11">No Results Found</td>
                             </tr>
                         </tbody>
                     </table>

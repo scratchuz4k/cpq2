@@ -1,9 +1,9 @@
 <?php
 
 use App\Models\Account;
+use App\Models\Group;
 use App\Models\Tenant;
 use App\Models\User;
-use App\Models\Group;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Auth;
 
@@ -24,14 +24,13 @@ beforeEach(function () {
 });
 
 it('Relate Account and User with Group, ', function () {
-    //relate User
-    $response = $this->put('api/users/' . $this->user->id, [
+    // relate User
+    $response = $this->put('api/users/'.$this->user->id, [
         'group_id' => $this->group->id,
     ]);
     $response->assertSuccessful();
     $this->user->refresh();
     expect($this->user->group()->count())->toBe(1);
-
 
     $response = $this->post('api/group-accounts/', [
         'account_id' => $this->account->id,
@@ -44,7 +43,7 @@ it('Relate Account and User with Group, ', function () {
 });
 
 it('Add user to Group and create new Account and User ', function () {
-    $response = $this->put('api/users/' . $this->user->id, [
+    $response = $this->put('api/users/'.$this->user->id, [
         'group_id' => $this->group->id,
     ]);
     $response->assertSuccessful();
@@ -74,8 +73,7 @@ it('Add user to Group and create new Account and User ', function () {
     $user = User::where('email', $user_data['email'])->first();
     expect($user->name)->toBe($user_data['name']);
 
-    //Check relations
+    // Check relations
     expect($this->group->accounts()->count())->toBe(1);
     expect($user->group()->count())->toBe(1);
 });
-

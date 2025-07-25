@@ -7,6 +7,7 @@ use App\Models\Product;
 class ProductsService
 {
     public function __construct(protected PriceService $priceService) {}
+
     public function store(array $array): Product
     {
         $product = Product::create($array);
@@ -29,6 +30,7 @@ class ProductsService
         if (array_key_exists('categories', $array)) {
             $product->categories()->sync($array['categories']);
         }
+
         return $product->refresh();
     }
 }

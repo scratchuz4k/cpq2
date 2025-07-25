@@ -3,7 +3,6 @@
 namespace App\Services;
 
 use App\Models\Spa;
-use Illuminate\Support\Facades\DB;
 
 class SpasService
 {

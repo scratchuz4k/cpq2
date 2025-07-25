@@ -77,15 +77,15 @@ class RolePermissionSeeder extends Seeder
                     'quote', 'quote_item', 'order', 'order_item', 'merchant', 'account', 'contact',
                     'price', 'product', 'category', 'region', 'tenant', 'brand', 'supplier',
                     'spa', 'user', 'solution_type', 'api', 'price_plan', 'activity', 'email_template', 'email_history',
-                    'group', 'blacklist'
+                    'group', 'blacklist',
                 ],
-                'simple_permission' => []
+                'simple_permission' => [],
             ],
             'Support Agent' => [
                 'parent' => 'Company Admin',
                 'permissions' => ['merchant', 'account', 'contact', 'token', 'quote', 'quote_item', 'order', 'order_item', 'activity', 'price_plan'],
                 'simple_permission' => ['viewAny product', 'view product', 'viewAny category', 'view category'],
-                'deny_permission' => ['export']
+                'deny_permission' => ['export'],
             ],
             'Sales Manager' => [
                 'parent' => 'Company Admin',
@@ -96,7 +96,7 @@ class RolePermissionSeeder extends Seeder
                 'parent' => 'Sales Manager',
                 'permissions' => ['quote', 'quote_item', 'account', 'contact', 'brand', 'supplier', 'activity', 'price_plan'],
                 'simple_permission' => ['viewAny product', 'view product', 'viewAny category', 'view category'],
-                'deny_permission' => ['export']
+                'deny_permission' => ['export'],
             ],
             'Order Manager' => [
                 'parent' => 'Company Admin',
@@ -115,7 +115,7 @@ class RolePermissionSeeder extends Seeder
                     'viewAny supplier',
                     'view supplier',
                 ],
-                'deny_permission' => ['export']
+                'deny_permission' => ['export'],
             ],
         ];
 
@@ -158,9 +158,9 @@ class RolePermissionSeeder extends Seeder
                 }
             }
 
-            if (!empty($item['deny_permission'] ?? [])) {
+            if (! empty($item['deny_permission'] ?? [])) {
                 $denyPatterns = array_map(
-                    fn($action) => $action . ' %',
+                    fn ($action) => $action.' %',
                     $item['deny_permission']
                 );
 

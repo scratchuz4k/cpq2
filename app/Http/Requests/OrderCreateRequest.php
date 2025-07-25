@@ -3,7 +3,6 @@
 namespace App\Http\Requests;
 
 use App\Enums\OrderStatusesEnum;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Foundation\Http\FormRequest;
 
 class OrderCreateRequest extends FormRequest
@@ -20,10 +19,7 @@ class OrderCreateRequest extends FormRequest
         return true;
     }
 
-
-    public function prepareForValidation()
-    {
-    }
+    public function prepareForValidation() {}
 
     /**
      * Get the validation rules that apply to the request.
@@ -47,7 +43,7 @@ class OrderCreateRequest extends FormRequest
             'items.*.price_monthly' => 'numeric',
             'items.*.margin' => 'numeric|min:0|max:100',
             'items.*.discount' => 'numeric|min:0|max:100',
-            'status' => 'in:' . implode(',', $this->authorized_statues),
+            'status' => 'in:'.implode(',', $this->authorized_statues),
         ];
     }
 }

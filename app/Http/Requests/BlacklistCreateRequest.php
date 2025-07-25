@@ -24,11 +24,11 @@ class BlacklistCreateRequest extends FormRequest
     {
         $array = [
             ...request()->all(),
-            'is_active' => null
+            'is_active' => null,
         ];
 
         $flattenedData = collect($array)
-            ->map(fn($value) => is_array($value) && array_filter($value) == [] ? null : $value) // Remove empty array values
+            ->map(fn ($value) => is_array($value) && array_filter($value) == [] ? null : $value) // Remove empty array values
             ->all();
 
         if (empty(array_filter($flattenedData))) {
@@ -44,7 +44,7 @@ class BlacklistCreateRequest extends FormRequest
 
             'bearer.operator' => 'nullable|required_with:bearer.value,bearer.unit',
             'bearer.value' => ['nullable', 'required_with:bearer.operator,bearer.unit', function ($attribute, $value, $fail) {
-                if (is_array($value) && collect($value)->contains(fn($item) => (empty($item) && !($item >= 0)))) {
+                if (is_array($value) && collect($value)->contains(fn ($item) => (empty($item) && ! ($item >= 0)))) {
                     $fail('All items in the Bearer must be filled.');
                 }
             }],
@@ -52,7 +52,7 @@ class BlacklistCreateRequest extends FormRequest
 
             'speed.operator' => 'nullable|required_with:speed.value,speed.unit',
             'speed.value' => ['nullable', 'required_with:speed.operator,speed.unit', function ($attribute, $value, $fail) {
-                if (is_array($value) && collect($value)->contains(fn($item) => (empty($item) && !($item >= 0)))) {
+                if (is_array($value) && collect($value)->contains(fn ($item) => (empty($item) && ! ($item >= 0)))) {
                     $fail('All items in the Bearer must be filled.');
                 }
             }],
@@ -75,7 +75,6 @@ class BlacklistCreateRequest extends FormRequest
             'bearer.operator.required_with' => 'The bearer operator field is required when bearer unit and value are filled.',
             'bearer.unit.required_with' => 'The bearer unit field is required when bearer operator and value are filled.',
             'bearer.value.required_with' => 'The bearer value field is required when bearer operator and unit are filled.',
-
 
             'speed.operator.required_with' => 'The speed operator field is required when speed unit and value are filled.',
             'speed.unit.required_with' => 'The speed unit field is required when speed operator and value are filled.',

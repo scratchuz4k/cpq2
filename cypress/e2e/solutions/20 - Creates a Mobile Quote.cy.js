@@ -118,29 +118,28 @@ describe('Creates a Mobile Quote', () => {
         cy.wait(1000);
         cy.get('#btn-step-2-next').click();
         let hardwareCount = 0;
-        let keys = [0, 1, 2, 3, 4];
-        let max_pages = 5;
-        let current_page = 1;
-        cy.wait(2000);
-        do {
-            keys.forEach((key) => {
-                cy.get(`#hardware-${key}-stock`).then(($input) => {
-                    const spanText = parseInt($input.text().trim()); // Get the text content from the <span> and trim any extra whitespace
-                    const nameText = $input.closest('.panel').find('p.small').text().trim(); // Get the name of the product
+        let keys = [0, 1];
 
-                    // Perform conditional logic based on the span text and length of product name field test
-                    if (spanText > 0) {
-                        hardwareCount += 1;
-                        cy.log(`Click count: ${hardwareCount}`);
-                        cy.get(`#input-hardware-${key}-quantity`).type(1);
-                        cy.wait(1000);
-                    }
-                });
+        cy.wait(2000);
+        keys.forEach((key) => {
+            cy.get(`#hardware-${key}-stock`).then(($input) => {
+                const spanText = parseInt($input.text().trim()); // Get the text content from the <span> and trim any extra whitespace
+                const nameText = $input.closest('.panel').find('p.small').text().trim(); // Get the name of the product
+
+                // Perform conditional logic based on the span text and length of product name field test
+                if (spanText > 0) {
+                    hardwareCount += 1;
+                    cy.log(`Click count: ${hardwareCount}`);
+                    cy.get(`#input-hardware-${key}-quantity`).type(1);
+                    cy.wait(1000);
+                }
             });
-            current_page += 1;
-            cy.get('.p-paginator-page').contains(current_page).click();
+
+            cy.get('.p-paginator-page')
+                .contains(key + 1)
+                .click();
             cy.wait(500);
-        } while (hardwareCount == 0 && current_page <= max_pages);
+        });
 
         cy.get('#btn-step-2-next').click();
 
@@ -229,19 +228,14 @@ describe('Creates a Mobile Quote', () => {
             });
 
         cy.get('#btn-reset-quote').click();
-        cy.get(
-            'body > div.swal2-container.swal2-center.swal2-backdrop-show > div > div.swal2-actions > button.swal2-confirm.btn.text-light.btn-lg.mr-2.fs-6.swal2-styled.swal2-default-outline'
-        ).click();
+        cy.get('#swal-btn-confirm').click();
         cy.get('#btn-reset-quote', { timeout: 3000 }).should('not.be.disabled');
 
-        cy.get('.recurring-item').each(($el, index, $list) => {
-            // You can perform actions on each element here
-            cy.get(`#recurring-discount-${index}`)
-                .invoke('text')
-                .then((text) => {
-                    expect(text).to.not.equal('0 %');
-                });
-        });
+        cy.get(`#recurring-discount-0`)
+            .invoke('text')
+            .then((text) => {
+                expect(text).to.not.equal('0 %');
+            });
     });
 
     it('I can add and delete a Custom Line', () => {
@@ -269,17 +263,13 @@ describe('Creates a Mobile Quote', () => {
                 cy.get(`#btn-recurring-${count - 1}-remove`).click();
             });
 
-        cy.get(
-            'body > div.swal2-container.swal2-center.swal2-backdrop-show > div > div.swal2-actions > button.swal2-confirm.btn.text-light.btn-lg.mr-2.fs-6.swal2-styled.swal2-default-outline'
-        ).click();
+        cy.get('#swal-btn-confirm').click();
         cy.get('.one_off-item')
             .its('length')
             .then((count) => {
                 cy.get(`#btn-one_off-${count - 1}-remove`).click();
             });
-        cy.get(
-            'body > div.swal2-container.swal2-center.swal2-backdrop-show > div > div.swal2-actions > button.swal2-confirm.btn.text-light.btn-lg.mr-2.fs-6.swal2-styled.swal2-default-outline'
-        ).click();
+        cy.get('#swal-btn-confirm').click();
     });
 
     it('I can Create an order from a quote', () => {

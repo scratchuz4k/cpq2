@@ -25,6 +25,7 @@ class RegionController extends BaseController
 
     /**
      * List of Regions
+     *
      * @response AnonymousResourceCollection<LengthAwarePaginator<RegionResource>>
      */
     public function index(IndexRequest $request)
@@ -34,6 +35,7 @@ class RegionController extends BaseController
             $data = $dataProvider->get();
         } catch (Exception $e) {
             Log::debug($e->getMessage());
+
             return $e->getMessage();
         }
 
@@ -65,7 +67,7 @@ class RegionController extends BaseController
     public function update(Request $request, Region $region)
     {
         try {
-            $region = DB::transaction(fn() => $this->service->update($region, $request->all()));
+            $region = DB::transaction(fn () => $this->service->update($region, $request->all()));
         } catch (Exception $e) {
             Log::debug($e->getMessage());
             throw new Exception($e);

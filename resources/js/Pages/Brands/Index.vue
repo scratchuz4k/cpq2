@@ -12,8 +12,7 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'My Account', url: '/my
             <Header title="Brands" :breadcrumbs="items">
                 <template #buttons>
                     <Link href="/brands/create" id="brand-create-btn" class="btn btn-primary me-2">
-                        <font-awesome-icon :icon="['fas', 'plus']"></font-awesome-icon>
-                        New Brand
+                        <font-awesome-icon :icon="['fas', 'plus']"></font-awesome-icon> New Brand
                     </Link>
                 </template>
             </Header>

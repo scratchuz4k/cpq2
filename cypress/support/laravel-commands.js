@@ -1,4 +1,3 @@
-
 /**
  * Fetch the currently authenticated user object.
  *
@@ -11,7 +10,7 @@ Cypress.Commands.add('currentUser', () => {
                 method: 'POST',
                 url: '/__cypress__/current-user',
                 body: { _token: token },
-                log: false,
+                log: false
             })
             .then((response) => {
                 if (!response.body) {
@@ -24,7 +23,6 @@ Cypress.Commands.add('currentUser', () => {
             });
     });
 });
-
 
 /**
  * Logout the current user.
@@ -39,7 +37,7 @@ Cypress.Commands.add('logout', () => {
                 method: 'POST',
                 url: '/__cypress__/logout',
                 body: { _token: token },
-                log: false,
+                log: false
             });
         })
         .then(() => {
@@ -57,7 +55,7 @@ Cypress.Commands.add('csrfToken', () => {
         .request({
             method: 'GET',
             url: '/__cypress__/csrf_token',
-            log: false,
+            log: false
         })
         .its('body', { log: false });
 });
@@ -74,12 +72,12 @@ Cypress.Commands.add('refreshRoutes', () => {
                 method: 'POST',
                 url: '/__cypress__/routes',
                 body: { _token: token },
-                log: false,
+                log: false
             })
             .its('body', { log: false })
             .then((routes) => {
                 cy.writeFile(Cypress.config().supportFolder + '/routes.json', routes, {
-                    log: false,
+                    log: false
                 });
 
                 Cypress.Laravel.routes = routes;
@@ -156,14 +154,14 @@ Cypress.Commands.add('create', (model, count = 1, attributes = {}, load = [], st
                 method: 'POST',
                 url: '/__cypress__/factory',
                 body: { ...requestBody, _token: token },
-                log: false,
+                log: false
             });
         })
         .then((response) => {
             Cypress.log({
                 name: 'create',
                 message: requestBody.model + (requestBody.count > 1 ? ` (${requestBody.count} times)` : ''),
-                consoleProps: () => ({ [model]: response.body }),
+                consoleProps: () => ({ [model]: response.body })
             });
         })
         .its('body', { log: false });
@@ -223,7 +221,7 @@ Cypress.Commands.add('artisan', (command, parameters = {}, options = {}) => {
 
                 return message;
             })(),
-            consoleProps: () => ({ command, parameters }),
+            consoleProps: () => ({ command, parameters })
         });
     }
 
@@ -232,7 +230,7 @@ Cypress.Commands.add('artisan', (command, parameters = {}, options = {}) => {
             method: 'POST',
             url: '/__cypress__/artisan',
             body: { command: command, parameters: parameters, _token: token },
-            log: false,
+            log: false
         });
     });
 });
@@ -253,14 +251,14 @@ Cypress.Commands.add('php', (command) => {
                 method: 'POST',
                 url: '/__cypress__/run-php',
                 body: { command: command, _token: token },
-                log: false,
+                log: false
             });
         })
         .then((response) => {
             Cypress.log({
                 name: 'php',
                 message: command,
-                consoleProps: () => ({ result: response.body.result }),
+                consoleProps: () => ({ result: response.body.result })
             });
         })
         .its('body.result', { log: false });

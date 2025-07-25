@@ -3,9 +3,9 @@
 namespace App\Helpers\Api;
 
 use GuzzleHttp\Client;
-use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 class OpenreachLookupApi
 {
@@ -14,7 +14,7 @@ class OpenreachLookupApi
         $default_options = [
             'headers' => [
                 'Referer' => 'https://www.openreach.com/',
-            ]
+            ],
         ];
 
         $options += $default_options;
@@ -24,7 +24,7 @@ class OpenreachLookupApi
             $response = $client->get($endpoint, $options);
             $json = $response->getBody()->getContents();
 
-            if (!$json) {
+            if (! $json) {
                 throw new \Exception('No data Found!');
             }
 
@@ -48,7 +48,7 @@ class OpenreachLookupApi
             $outcode = str_replace($incode, '', $postcode);
         } else {
             // attempt Republic of Ireland validation if UK hasn't
-            $regex = "/^((?:^[AC-FHKNPRTV-Y][0-9]{2}|D6W))[ -]?([0-9A-FHKNPRTV-Y]{4})$/";
+            $regex = '/^((?:^[AC-FHKNPRTV-Y][0-9]{2}|D6W))[ -]?([0-9A-FHKNPRTV-Y]{4})$/';
             if (preg_match($regex, $postcode, $match)) {
                 $outcode = $match[1];
                 $incode = $match[2];
@@ -64,9 +64,9 @@ class OpenreachLookupApi
     public function findAddresses($string)
     {
         $parsedPostcode = $this->normalisePostcode($string);
-        $postcode = $parsedPostcode['outcode'] . $parsedPostcode['incode'];
+        $postcode = $parsedPostcode['outcode'].$parsedPostcode['incode'];
 
-        $cache_key = 'openreach_lookup_' . Str::slug($postcode);
+        $cache_key = 'openreach_lookup_'.Str::slug($postcode);
 
         if (Cache::has($cache_key)) {
             Log::debug("Getting openreach lookup from cache for {$cache_key}");
@@ -81,42 +81,43 @@ class OpenreachLookupApi
                 ],
                 'query' => [
                     'postcode' => $postcode,
-                ]
+                ],
             ]);
 
             Cache::put($cache_key, $response);
         }
 
         $addresses = [];
-        if (!is_null($response) &&array_key_exists("body", $response) && array_key_exists("addresses", $response["body"]) && !empty($response["body"]["addresses"])) {
-            foreach ($response["body"]["addresses"] as $address) {
+        if (! is_null($response) && array_key_exists('body', $response) && array_key_exists('addresses', $response['body']) && ! empty($response['body']['addresses'])) {
+            foreach ($response['body']['addresses'] as $address) {
                 $openReachAddress = new AddressLookup(
-                    postCode : $address["addressparts"]["PostCode"] ?? null,
-                    addressKey : $address["value"] ?? null,
-                    type : $address["type"] ?? null,
-                    uprn : $address["uprn"] ?? null,
-                    districtCode : $address["district"] ?? null,
-                    coordinatesEasting : $address["addressparts"]["CoordinatesEasting"] ?? null,
-                    coordinatesNorthing : $address["addressparts"]["CoordinatesNorthing"] ?? null,
-                    latitude : array_key_exists("Latitude", $address["addressparts"]) ? (float)$address["addressparts"]["Latitude"] : null,
-                    longitude : array_key_exists("Longitude", $address["addressparts"]) ? (float)$address["addressparts"]["Longitude"] : null,
-                    label : $address["label"] ?? null,
-                    organisationName : $address["addressparts"]["OrganisationName"] ?? null,
-                    subPremises : $address["addressparts"]["SubPremises"] ?? null,
-                    premisesName : $address["addressparts"]["PremisesName"] ?? null,
-                    dependentThoroughfareName : $address["addressparts"]["DependentThoroughfareName"] ?? null,
-                    thoroughfareNumber : $address["addressparts"]["ThoroughfareNumber"] ?? null,
-                    thoroughfareName : $address["addressparts"]["ThoroughfareName"] ?? null,
-                    doubleDependentLocality : $address["addressparts"]["DoubleDependentLocality"] ?? null,
-                    locality : $address["addressparts"]["Locality"] ?? null,
-                    postTown : $address["addressparts"]["PostTown"] ?? null,
-                    county : $address["addressparts"]["County"] ?? null,
-                    country : $address["addressparts"]["Country"] ?? null,
+                    postCode : $address['addressparts']['PostCode'] ?? null,
+                    addressKey : $address['value'] ?? null,
+                    type : $address['type'] ?? null,
+                    uprn : $address['uprn'] ?? null,
+                    districtCode : $address['district'] ?? null,
+                    coordinatesEasting : $address['addressparts']['CoordinatesEasting'] ?? null,
+                    coordinatesNorthing : $address['addressparts']['CoordinatesNorthing'] ?? null,
+                    latitude : array_key_exists('Latitude', $address['addressparts']) ? (float) $address['addressparts']['Latitude'] : null,
+                    longitude : array_key_exists('Longitude', $address['addressparts']) ? (float) $address['addressparts']['Longitude'] : null,
+                    label : $address['label'] ?? null,
+                    organisationName : $address['addressparts']['OrganisationName'] ?? null,
+                    subPremises : $address['addressparts']['SubPremises'] ?? null,
+                    premisesName : $address['addressparts']['PremisesName'] ?? null,
+                    dependentThoroughfareName : $address['addressparts']['DependentThoroughfareName'] ?? null,
+                    thoroughfareNumber : $address['addressparts']['ThoroughfareNumber'] ?? null,
+                    thoroughfareName : $address['addressparts']['ThoroughfareName'] ?? null,
+                    doubleDependentLocality : $address['addressparts']['DoubleDependentLocality'] ?? null,
+                    locality : $address['addressparts']['Locality'] ?? null,
+                    postTown : $address['addressparts']['PostTown'] ?? null,
+                    county : $address['addressparts']['County'] ?? null,
+                    country : $address['addressparts']['Country'] ?? null,
                 );
 
                 $addresses[] = $openReachAddress;
             }
         }
+
         return $addresses;
     }
 }

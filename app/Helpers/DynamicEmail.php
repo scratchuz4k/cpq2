@@ -48,8 +48,8 @@ class DynamicEmail extends Mailable
         private bool $isPreview = false,
         private ?User $user = null,
     ) {
-        //TODO: EMAILS: remove the return once we get the credentials for email functionality
-        return;
+        // TODO: EMAILS: remove the return once we get the credentials for email functionality
+
     }
 
     public function build()

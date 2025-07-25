@@ -40,7 +40,7 @@ class DashboardController extends BaseController
      */
     public function reporting()
     {
-//        $this->authorize('viewAny export', ExportPolicy::class);
+        //        $this->authorize('viewAny export', ExportPolicy::class);
 
         return Inertia::render('MyAccount/Reporting');
     }

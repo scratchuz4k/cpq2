@@ -1,22 +1,20 @@
-
-import { usePage } from "@inertiajs/vue3";
-
+import { usePage } from '@inertiajs/vue3';
 
 const page = usePage();
 
 export const can = (permission) => {
-    if (page.props.auth.roles.find(x => x.name == 'Super Admin')) {
-        return true
+    if (page.props.auth.roles.find((x) => x.name == 'Super Admin')) {
+        return true;
     }
-    if (page.props.auth.permissions.find(x => x.name == permission)) {
-        return true
+    if (page.props.auth.permissions.find((x) => x.name == permission)) {
+        return true;
     }
-    return false
-}
+    return false;
+};
 
 export const hasRole = (role) => {
-    if (page.props.auth.roles.find(x => x == role)) {
-        return true
+    if (page.props.auth.roles.find((x) => x == role)) {
+        return true;
     }
-    return false
-}
+    return false;
+};

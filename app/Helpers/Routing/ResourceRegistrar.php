@@ -2,7 +2,7 @@
 
 namespace App\Helpers\Routing;
 
-use \Illuminate\Routing\ResourceRegistrar as OriginalRegistrar;
+use Illuminate\Routing\ResourceRegistrar as OriginalRegistrar;
 
 class ResourceRegistrar extends OriginalRegistrar
 {
@@ -12,7 +12,6 @@ class ResourceRegistrar extends OriginalRegistrar
      * @var string[]
      */
     protected $resourceDefaults = ['index', 'create', 'store', 'show', 'edit', 'update', 'destroy', 'export'];
-
 
     /**
      * Add the export method for a resourceful route.
@@ -31,5 +30,4 @@ class ResourceRegistrar extends OriginalRegistrar
 
         return $this->router->post($uri, $action);
     }
-
 }

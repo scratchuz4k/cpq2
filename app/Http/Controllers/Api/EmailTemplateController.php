@@ -24,6 +24,7 @@ class EmailTemplateController extends BaseController
 
     /**
      * Index
+     *
      * @response AnonymousResourceCollection<LengthAwarePaginator<AccountResource>>
      */
     public function index(IndexRequest $request)
@@ -34,6 +35,7 @@ class EmailTemplateController extends BaseController
             $data = $dataProvider->get();
         } catch (Exception $e) {
             Log::debug($e->getMessage());
+
             return $e->getMessage();
         }
 
@@ -62,7 +64,7 @@ class EmailTemplateController extends BaseController
     public function update(Request $request, EmailTemplate $emailTemplate)
     {
         try {
-            $emailTemplate = DB::transaction(fn() => $this->emailService->update($emailTemplate, $request->all()));
+            $emailTemplate = DB::transaction(fn () => $this->emailService->update($emailTemplate, $request->all()));
         } catch (Exception $e) {
             Log::debug($e->getMessage());
             throw new Exception($e);

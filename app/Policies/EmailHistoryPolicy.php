@@ -4,11 +4,11 @@ namespace App\Policies;
 
 use App\Models\EmailHistory;
 use App\Models\User;
-use Illuminate\Auth\Access\Response;
 
 class EmailHistoryPolicy
 {
-    private string $model = "email_history";
+    private string $model = 'email_history';
+
     /**
      * Determine whether the user can view any models.
      */
@@ -18,6 +18,7 @@ class EmailHistoryPolicy
         if ($user->can("viewAny $this->model")) {
             return true;
         }
+
         return false;
     }
 
@@ -30,6 +31,7 @@ class EmailHistoryPolicy
         if ($user->can("view $this->model")) {
             return true;
         }
+
         return false;
     }
 
@@ -42,6 +44,7 @@ class EmailHistoryPolicy
         if ($user->can("create $this->model")) {
             return true;
         }
+
         return false;
     }
 
@@ -54,6 +57,7 @@ class EmailHistoryPolicy
         if ($user->can("update $this->model")) {
             return true;
         }
+
         return false;
     }
 
@@ -66,6 +70,7 @@ class EmailHistoryPolicy
         if ($user->can("delete $this->model")) {
             return true;
         }
+
         return false;
     }
 
@@ -78,6 +83,7 @@ class EmailHistoryPolicy
         if ($user->can("restore $this->model")) {
             return true;
         }
+
         return false;
     }
 
@@ -90,18 +96,19 @@ class EmailHistoryPolicy
         if ($user->can("forceDelete $this->model")) {
             return true;
         }
+
         return false;
     }
-
 
     /**
      * Determine whether the user can export the model.
      */
     public function export(User $user): bool
     {
-        if (!$user->can("export $this->model")) {
+        if (! $user->can("export $this->model")) {
             return false;
         }
+
         return true;
     }
 }

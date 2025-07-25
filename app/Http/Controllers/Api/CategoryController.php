@@ -2,19 +2,19 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Helpers\DataProvider;
+use App\Http\Controllers\BaseController;
+use App\Http\Requests\IndexRequest;
+use App\Http\Resources\CategoryResource;
+use App\Models\Category;
 use App\Services\CategoryService;
 use Dedoc\Scramble\Attributes\ExcludeRouteFromDocs;
 use Exception;
-use App\Models\Category;
 use Illuminate\Http\Request;
-use App\Helpers\DataProvider;
-use Illuminate\Support\Facades\DB;
-use App\Http\Requests\IndexRequest;
-use Illuminate\Support\Facades\Log;
-use App\Http\Controllers\BaseController;
-use App\Http\Resources\CategoryResource;
-use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class CategoryController extends BaseController
 {
@@ -27,6 +27,7 @@ class CategoryController extends BaseController
 
     /**
      * List Categories
+     *
      * @response AnonymousResourceCollection<LengthAwarePaginator<CategoryResource>>
      */
     public function index(IndexRequest $request)
@@ -36,6 +37,7 @@ class CategoryController extends BaseController
             $data = $dataProvider->get();
         } catch (Exception $e) {
             Log::debug($e->getMessage());
+
             return $e->getMessage();
         }
 
@@ -46,17 +48,13 @@ class CategoryController extends BaseController
      * Store a new Category
      */
     #[ExcludeRouteFromDocs]
-    public function store(Request $request)
-    {
-    }
+    public function store(Request $request) {}
 
     /**
      * Show Category
      */
     #[ExcludeRouteFromDocs]
-    public function show(Category $category)
-    {
-    }
+    public function show(Category $category) {}
 
     /**
      * Update Category
@@ -64,10 +62,11 @@ class CategoryController extends BaseController
     public function update(Request $request, Category $category)
     {
         try {
-            $api = DB::transaction(fn() => $this->categoryService->update($category, $request->all()));
+            $api = DB::transaction(fn () => $this->categoryService->update($category, $request->all()));
         } catch (\Exception $e) {
             throw new \Exception($e);
         }
+
         return new CategoryResource($category);
     }
 

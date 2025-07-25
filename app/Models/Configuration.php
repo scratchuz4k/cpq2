@@ -2,12 +2,12 @@
 
 namespace App\Models;
 
-use App\Trait\SetTenantId;
 use App\Models\Scopes\TenantScope;
-use Illuminate\Database\Eloquent\Model;
+use App\Trait\SetTenantId;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
-class Configuration  extends Model
+class Configuration extends Model
 {
     use HasFactory, SetTenantId;
 
@@ -17,10 +17,12 @@ class Configuration  extends Model
         'key',
         'value',
     ];
+
     protected static function booted(): void
     {
         static::addGlobalScope(new TenantScope);
     }
+
     public function configurable()
     {
         return $this->morphTo('configurable');

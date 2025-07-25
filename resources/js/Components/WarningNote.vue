@@ -1,12 +1,11 @@
 <!-- This component also exists as a blade component, any changes made here should also be made in the blade compoenent as wel (resources/views/components/warning-note.blade.php) -->
 <script setup>
-import { ref } from "vue";
+import { ref } from 'vue';
 
 const props = defineProps({
-    warnings: Array,
-})
-const warnings = ref(props.warnings)
-
+    warnings: Array
+});
+const warnings = ref(props.warnings);
 </script>
 
 <template>
@@ -19,9 +18,8 @@ const warnings = ref(props.warnings)
                 </span>
                 <i>
                     Please note, quote references for
-                    {{ Object.keys(provider)[0].toUpperCase() }} quotes cannot
-                    currently be used to place an order. To obtain a valid quote for
-                    ordering please generate the quote directly on the
+                    {{ Object.keys(provider)[0].toUpperCase() }} quotes cannot currently be used to place an order. To
+                    obtain a valid quote for ordering please generate the quote directly on the
                     {{ Object.keys(provider)[0].toUpperCase() }}
                     portal.
                 </i>

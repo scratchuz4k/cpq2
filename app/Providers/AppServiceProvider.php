@@ -40,7 +40,7 @@ class AppServiceProvider extends ServiceProvider
     {
         // Implicitly grant "Super Admin" role all permissions
         // This works in the app by using gate-related functions like auth()->user->can() and @can()
-        Gate::before(fn($user, $ability) => $user->hasRole('Super Admin') ? true : null);
+        Gate::before(fn ($user, $ability) => $user->hasRole('Super Admin') ? true : null);
 
         Gate::policy('export', ExportPolicy::class);
 
@@ -48,20 +48,23 @@ class AppServiceProvider extends ServiceProvider
             $event->extendSocialite('saml2', \SocialiteProviders\Saml2\Provider::class);
         });
 
-        $this->app->bind(\Illuminate\Routing\ResourceRegistrar::class, fn() => new ResourceRegistrar($this->app['router']));
+        $this->app->bind(\Illuminate\Routing\ResourceRegistrar::class, fn () => new ResourceRegistrar($this->app['router']));
 
         Scramble::routes(function (Route $route) {
-            if (!isset($route->action['as']))
+            if (! isset($route->action['as'])) {
                 return false;
+            }
 
-            $action = explode( '.', (string) $route->action['as']);
+            $action = explode('.', (string) $route->action['as']);
 
-            if (!Str::startsWith($route->uri, 'api/') || count($action) < 3)
+            if (! Str::startsWith($route->uri, 'api/') || count($action) < 3) {
                 return false;
+            }
 
             $model = str_replace('-', '_', Str::singular($action[1]));
 
             $ability = $this->abilities[$action[2]];
+
             return auth()->user()->can("$ability $model");
         });
 

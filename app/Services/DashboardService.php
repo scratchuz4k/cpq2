@@ -13,10 +13,15 @@ use Illuminate\Support\Collection;
 class DashboardService
 {
     public $model;
+
     public $relation;
+
     protected $user_instance = \App\Models\User::class;
+
     protected $activity_instance = \App\Models\Activity::class;
+
     protected $supplier_instance = \App\Models\Supplier::class;
+
     protected $quote_instance = \App\Models\Quote::class;
 
     public function __construct($model, $relation = null)
@@ -49,6 +54,7 @@ class DashboardService
         if ($this->relation) {
             return $this->getRelationFilteredData($array);
         }
+
         return $this->getFilteredData($array);
     }
 
@@ -60,18 +66,16 @@ class DashboardService
         $total_query = $this->model->query();
 
         if ($this->model instanceof $this->user_instance) {
-            $query = $this->excludeSuperAdmins($query)
-                ->where('tenant_id', request()->user()->tenant_id);
+            $query = $this->excludeSuperAdmins($query)->where('tenant_id', request()->user()->tenant_id);
 
-            $total_query = $this->excludeSuperAdmins($total_query)
-                ->where('tenant_id', request()->user()->tenant_id);
+            $total_query = $this->excludeSuperAdmins($total_query)->where('tenant_id', request()->user()->tenant_id);
         }
 
         if ($this->model instanceof $this->quote_instance) {
             $cumulative = false;
         }
 
-        if (!isset($this->relation) && $this->model instanceof $this->quote_instance) {
+        if (! isset($this->relation) && $this->model instanceof $this->quote_instance) {
             $results = [];
             $grouped = collect();
 
@@ -91,15 +95,15 @@ class DashboardService
                 $results[$solution_type->name] = [
                     'data' => $data,
                     'total' => $quotes_collection->count(),
-                    'label' => $solution_type->name ?? "Unknown",
+                    'label' => $solution_type->name ?? 'Unknown',
                 ];
             }
 
-            uasort($results, fn($a, $b) => $b['total'] <=> $a['total']);
+            uasort($results, fn ($a, $b) => $b['total'] <=> $a['total']);
 
             return [
                 'data' => $results ?? collect(),
-                'labels' => $labels ?? []
+                'labels' => $labels ?? [],
             ];
         }
 
@@ -124,20 +128,20 @@ class DashboardService
         $diffInMonths = $start_date->diffInMonths($end_date);
 
         switch ($diffInMonths) {
-            case ($diffInDays < 1):
+            case $diffInDays < 1:
                 $adjustedStartDate = (clone $start_date)->subDay()->startOfDay();
                 $unit = 'day';
                 $period = CarbonPeriod::create($adjustedStartDate, '1 day', $end_date);
                 break;
-            case ($diffInMonths < 1):
+            case $diffInMonths < 1:
                 $unit = 'day';
                 $period = CarbonPeriod::create($start_date, '1 day', $end_date);
                 break;
-            case ($diffInMonths < 6):
+            case $diffInMonths < 6:
                 $unit = 'week';
                 $period = CarbonPeriod::create($start_date, '1 week', $end_date);
                 break;
-            case ($diffInMonths < 12):
+            case $diffInMonths < 12:
                 $unit = 'month';
                 $period = CarbonPeriod::create($start_date, '1 month', $end_date);
                 break;
@@ -156,7 +160,7 @@ class DashboardService
             } elseif ($unit === 'week') {
                 $startDate = $date->copy()->startOfWeek();
                 $endDate = $date->copy()->endOfWeek();
-                $label = 'Week of ' . $date->format('Y-m-d');
+                $label = 'Week of '.$date->format('Y-m-d');
             } elseif ($unit === 'month') {
                 $startDate = $date->copy()->startOfMonth();
                 $endDate = $date->copy()->endOfMonth();
@@ -169,21 +173,21 @@ class DashboardService
 
             if ($collection) {
                 if ($cumulative) {
-                    $count = $collection->where("created_at", "<=", $endDate)->count();
+                    $count = $collection->where('created_at', '<=', $endDate)->count();
                 } else {
-                    $count = $collection->whereBetween("created_at", [$startDate, $endDate])->count();
+                    $count = $collection->whereBetween('created_at', [$startDate, $endDate])->count();
                 }
 
                 return [
                     'count' => $count,
-                    $unit => $label
+                    $unit => $label,
                 ];
             }
 
             if ($cumulative) {
-                $query = $model->where("created_at", "<=", $endDate);
+                $query = $model->where('created_at', '<=', $endDate);
             } else {
-                $query = $model->whereBetween("created_at", [$startDate, $endDate]);
+                $query = $model->whereBetween('created_at', [$startDate, $endDate]);
             }
 
             if ($model instanceof $this->user_instance) {
@@ -196,14 +200,14 @@ class DashboardService
             }
 
             return [
-                "count" => $query->count(),
-                $unit => $label
+                'count' => $query->count(),
+                $unit => $label,
             ];
         });
 
         return [
-            $items->pluck("count")->toArray(),
-            $items->pluck($unit)->toArray()
+            $items->pluck('count')->toArray(),
+            $items->pluck($unit)->toArray(),
         ];
     }
 
@@ -231,7 +235,6 @@ class DashboardService
                 ->where('activitable_type', $this->user_instance);
         }
 
-
         if ($this->relation instanceof $this->supplier_instance) {
             $results = [];
             $grouped = collect();
@@ -244,7 +247,7 @@ class DashboardService
                 ->get();
 
             $items->each(function ($quote) use (&$grouped) {
-                $providers = $quote->items->map(fn($item) => data_get($item->data, 'providerKey'))->unique();
+                $providers = $quote->items->map(fn ($item) => data_get($item->data, 'providerKey'))->unique();
 
                 foreach ($providers as $provider) {
                     $grouped[$provider] = $grouped->get($provider, collect())->push($quote);
@@ -261,7 +264,7 @@ class DashboardService
                 $results[$key] = [
                     'data' => $data,
                     'total' => $group->count(),
-                    'label' => CloudMarketSuppliersEnum::tryFrom($key)?->name ?? "Unknown",
+                    'label' => CloudMarketSuppliersEnum::tryFrom($key)?->name ?? 'Unknown',
                 ];
             }
 
@@ -269,22 +272,22 @@ class DashboardService
                 ->whereBetween('created_at', $date_interval)
                 ->value('provider_count');
 
-            if (!isset($labels)) {
+            if (! isset($labels)) {
                 $labels = [
                     ($date_interval[0]->diffInDays($date_interval[1]) < 1)
                         ? $date_interval[0]->subDay()->format('Y-m-d')
                         : $date_interval[0]->format('Y-m-d'),
-                    $date_interval[1]->format('Y-m-d')
+                    $date_interval[1]->format('Y-m-d'),
                 ];
             }
 
-            uasort($results, fn($a, $b) => $b['total'] <=> $a['total']);
+            uasort($results, fn ($a, $b) => $b['total'] <=> $a['total']);
 
             return [
                 'data' => $results ?? collect(),
                 'total' => $total,
                 'partial' => $grouped->count(),
-                'labels' => $labels ?? []
+                'labels' => $labels ?? [],
             ];
         }
 

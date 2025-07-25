@@ -3,7 +3,6 @@
 namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Str;
 
 /**
  * @extends Factory
@@ -21,9 +20,9 @@ class SolutionTypeFactory extends Factory
             'tenant_id' => 1,
             'solution_type_id' => 1,
             'configurations' => [
-                'component' => null
+                'component' => null,
             ],
-            'is_active' => true
+            'is_active' => true,
         ];
     }
 }

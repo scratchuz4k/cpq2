@@ -6,36 +6,35 @@ import { Link, useForm, usePage } from '@inertiajs/vue3';
 
 defineProps({
     mustVerifyEmail: {
-        type: Boolean,
+        type: Boolean
     },
     status: {
-        type: String,
-    },
+        type: String
+    }
 });
 
 const user = usePage().props.auth.user;
 
 const form = useForm({
     name: user.name,
-    email: user.email,
+    email: user.email
 });
 
 const updateProfile = () => {
     form.patch(route('profile.update'), {
         preserveScroll: true,
         onSuccess: () => {
-            notyf.success("Profile updated with Success")
+            notyf.success('Profile updated with Success');
         },
         onError: () => {
-            let string = ''
+            let string = '';
             Object.keys(form.errors).forEach((key) => {
-                string += form.errors[key] + '<br>'
-            })
-            notyf.error(string)
-        },
+                string += form.errors[key] + '<br>';
+            });
+            notyf.error(string);
+        }
     });
 };
-
 </script>
 
 <template>
@@ -43,9 +42,7 @@ const updateProfile = () => {
         <header>
             <h2 class="text-lg font-medium text-gray-900">Profile Information</h2>
 
-            <p class="mt-1 text-sm text-gray-600">
-                Update your account's profile information and email address.
-            </p>
+            <p class="mt-1 text-sm text-gray-600">Update your account's profile information and email address.</p>
         </header>
 
         <form @submit.prevent="updateProfile" class="mt-6 space-y-6">
@@ -61,7 +58,6 @@ const updateProfile = () => {
                     autofocus
                     autocomplete="name"
                 />
-
             </div>
 
             <div class="mt-2">
@@ -91,10 +87,7 @@ const updateProfile = () => {
                     </Link>
                 </p>
 
-                <div
-                    v-show="status === 'verification-link-sent'"
-                    class="mt-2 font-medium text-sm text-green-600"
-                >
+                <div v-show="status === 'verification-link-sent'" class="mt-2 font-medium text-sm text-green-600">
                     A new verification link has been sent to your email address.
                 </div>
             </div>

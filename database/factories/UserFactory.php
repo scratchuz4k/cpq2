@@ -26,7 +26,7 @@ class UserFactory extends Factory
             'tenant_id' => 1,
             'commission_rate' => 0,
             'parent_id' => null,
-            'is_active' => true
+            'is_active' => true,
         ];
     }
 
@@ -37,7 +37,7 @@ class UserFactory extends Factory
      */
     public function unverified()
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'email_verified_at' => null,
         ]);
     }

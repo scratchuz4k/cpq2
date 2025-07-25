@@ -7,7 +7,8 @@ use App\Models\User;
 
 class CategoryPolicy
 {
-    private string $model = "category";
+    private string $model = 'category';
+
     /**
      * Determine whether the user can view any models.
      */
@@ -16,6 +17,7 @@ class CategoryPolicy
         if ($user->can("viewAny $this->model")) {
             return true;
         }
+
         return false;
     }
 
@@ -27,6 +29,7 @@ class CategoryPolicy
         if ($user->can("view $this->model")) {
             return true;
         }
+
         return false;
     }
 
@@ -38,6 +41,7 @@ class CategoryPolicy
         if ($user->can("create $this->model")) {
             return true;
         }
+
         return false;
     }
 
@@ -49,6 +53,7 @@ class CategoryPolicy
         if ($user->can("update $this->model")) {
             return true;
         }
+
         return false;
     }
 
@@ -57,13 +62,14 @@ class CategoryPolicy
      */
     public function delete(User $user, Category $category): bool
     {
-        if (!$user->can("delete $this->model")) {
+        if (! $user->can("delete $this->model")) {
             return false;
         }
 
         if (count($category->products)) {
             return false;
         }
+
         return true;
     }
 
@@ -75,6 +81,7 @@ class CategoryPolicy
         if ($user->can("restore $this->model")) {
             return true;
         }
+
         return false;
     }
 
@@ -83,22 +90,22 @@ class CategoryPolicy
      */
     public function forceDelete(User $user, Category $category): bool
     {
-        if (!$user->can("forceDelete $this->model")) {
+        if (! $user->can("forceDelete $this->model")) {
             return false;
         }
 
         return true;
     }
 
-
     /**
      * Determine whether the user can export the model.
      */
     public function export(User $user): bool
     {
-        if (!$user->can("export $this->model")) {
+        if (! $user->can("export $this->model")) {
             return false;
         }
+
         return true;
     }
 }

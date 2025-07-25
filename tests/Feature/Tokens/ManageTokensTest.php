@@ -27,7 +27,7 @@ it('Create Token for first Tenant', function () {
     $data = [
         'name' => 'test',
         'user_id' => $this->user->id,
-        'is_active' => true
+        'is_active' => true,
     ];
 
     $response = $this->post('/tokens', $data);
@@ -44,7 +44,7 @@ it('Create Token for second Tenant', function () {
     $data = [
         'name' => 'test',
         'user_id' => $this->second_tenant_user->id,
-        'is_active' => true
+        'is_active' => true,
     ];
 
     $response = $this->post('/tokens', $data);

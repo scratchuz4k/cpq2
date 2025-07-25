@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class PricePlan extends Model
 {
     protected $fillable = [
-        "code",
-        "name"
+        'code',
+        'name',
     ];
 }

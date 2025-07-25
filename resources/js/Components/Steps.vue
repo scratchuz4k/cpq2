@@ -1,15 +1,21 @@
 <template>
     <div class="content">
         <div class="progress-container">
-            <div class="progress" id="progress"
-                :style="{ width: ((props.modelValue ) / (steps.length - 1)) * 100 + '%' }"></div>
-            <div class="circle" :class="{ 'active': props.modelValue >= key }" v-for="(step, key) in steps"
-                @click="() => props.modelValue = key">
+            <div
+                class="progress"
+                id="progress"
+                :style="{ width: (props.modelValue / (steps.length - 1)) * 100 + '%' }"
+            ></div>
+            <div
+                class="circle"
+                :class="{ active: props.modelValue >= key }"
+                v-for="(step, key) in steps"
+                @click="() => (props.modelValue = key)"
+            >
                 <div class="caption">{{ step }}</div>
             </div>
         </div>
     </div>
-
 </template>
 
 <script setup>
@@ -17,13 +23,10 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 const props = defineProps({
     steps: Array,
     modelValue: Number
-})
-
-
+});
 </script>
 
 <style scoped>
-
 .content {
     text-align: center;
 }
@@ -38,7 +41,7 @@ const props = defineProps({
 }
 
 .progress-container::before {
-    content: "";
+    content: '';
     background-color: #c4c1c1;
     position: absolute;
     top: 50%;

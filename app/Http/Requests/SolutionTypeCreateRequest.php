@@ -8,7 +8,6 @@ use Illuminate\Validation\Rule;
 
 class SolutionTypeCreateRequest extends FormRequest
 {
-
     use ValidationMessages;
 
     /**
@@ -35,7 +34,7 @@ class SolutionTypeCreateRequest extends FormRequest
                     ->where(
                         'tenant_id',
                         $this->input('tenant_id')
-                    )
+                    ),
             ],
             'configurations' => 'nullable|array',
         ];

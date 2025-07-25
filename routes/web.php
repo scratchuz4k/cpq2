@@ -2,12 +2,13 @@
 
 use App\Http\Controllers\Web\AccountController;
 use App\Http\Controllers\Web\ApiController;
-use App\Http\Controllers\Web\General\BlacklistController;
 use App\Http\Controllers\Web\BrandController;
 use App\Http\Controllers\Web\CategoryController;
 use App\Http\Controllers\Web\DashboardController;
 use App\Http\Controllers\Web\EmailHistoryController;
 use App\Http\Controllers\Web\EmailTemplateController;
+use App\Http\Controllers\Web\General\BlacklistController;
+use App\Http\Controllers\Web\GroupAccountController;
 use App\Http\Controllers\Web\GroupController;
 use App\Http\Controllers\Web\MerchantController;
 use App\Http\Controllers\Web\OrderController;
@@ -22,7 +23,6 @@ use App\Http\Controllers\Web\SupplierController;
 use App\Http\Controllers\Web\TenantController;
 use App\Http\Controllers\Web\TokenController;
 use App\Http\Controllers\Web\UserController;
-use App\Http\Controllers\Web\GroupAccountController;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 

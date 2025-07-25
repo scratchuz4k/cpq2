@@ -2,23 +2,25 @@
 
 namespace App\Http\Controllers\Web;
 
-use App\Http\Requests\ApiCreateRequest;
-use Inertia\Inertia;
-use Illuminate\Http\Request;
-use App\Models\Api;
-use Illuminate\Support\Facades\DB;
 use App\Enums\CloudMarketSuppliersEnum;
 use App\Http\Controllers\BaseController;
+use App\Http\Requests\ApiCreateRequest;
 use App\Http\Resources\ApiResource;
+use App\Models\Api;
 use App\Services\ApiService;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Inertia\Inertia;
 
 class ApiController extends BaseController
 {
     protected $model = Api::class;
+
     public function __construct(protected ApiService $apiService)
     {
         parent::__construct();
     }
+
     /**
      * Display a listing of the resource.
      */
@@ -33,7 +35,7 @@ class ApiController extends BaseController
     public function create()
     {
         return Inertia::render('Api/Create', [
-            'suppliers' => CloudMarketSuppliersEnum::asArray()
+            'suppliers' => CloudMarketSuppliersEnum::asArray(),
         ]);
     }
 
@@ -43,10 +45,11 @@ class ApiController extends BaseController
     public function store(ApiCreateRequest $request)
     {
         try {
-            $api = DB::transaction(fn() => $this->apiService->store($request->all()));
+            $api = DB::transaction(fn () => $this->apiService->store($request->all()));
         } catch (\Exception $e) {
             throw new \Exception($e);
         }
+
         return redirect()->route('apis.index');
     }
 
@@ -65,7 +68,7 @@ class ApiController extends BaseController
     {
         return Inertia::render('Api/Edit', [
             'api' => (new ApiResource($api))->resolve(),
-            'suppliers' => CloudMarketSuppliersEnum::asArray()
+            'suppliers' => CloudMarketSuppliersEnum::asArray(),
         ]);
     }
 
@@ -75,10 +78,11 @@ class ApiController extends BaseController
     public function update(Request $request, Api $api)
     {
         try {
-            $api = DB::transaction(fn() => $this->apiService->update($api, $request->all()));
+            $api = DB::transaction(fn () => $this->apiService->update($api, $request->all()));
         } catch (\Exception $e) {
             throw new \Exception($e);
         }
+
         return redirect()->route('apis.index');
     }
 
@@ -88,6 +92,7 @@ class ApiController extends BaseController
     public function destroy(Api $api)
     {
         $api->delete();
+
         return redirect()->route('apis.index');
     }
 }

@@ -10,10 +10,10 @@ env:
     GITHUB_WORKSPACE: ${{ github.workspace }}
 
 jobs:
-    tests:
-        name: Run Pest and Cypress Tests
-        runs-on: ubuntu-24.04
-        environment: testing
+  tests:
+    name: Run Pest and Cypress Tests
+    runs-on: ubuntu-22.04
+    environment: testing
 
         permissions:
             contents: read
@@ -35,13 +35,13 @@ jobs:
             - name: Copy .env
               run: cp .env.testing .env
 
-            - name: Add .env secrets
-              run: |
-                  echo "SHOPBLOCKS_API_KEY=${{ secrets.SHOPBLOCKS_API_KEY }}" >> .env
-                  echo "TOMTOM_API_KEY=${{ secrets.TOMTOM_API_KEY }}" >> .env
-                  echo "VIRTUAL1_ADDRESS_PASSWORD=${{ secrets.VIRTUAL1_ADDRESS_PASSWORD }}" >> .env
-                  echo "VIRTUAL1_ADDRESS_USERNAME=${{ secrets.VIRTUAL1_ADDRESS_USERNAME }}" >> .env
-                  echo "VITE_GOOGLE_MAPS_API_KEY=${{ secrets.VITE_GOOGLE_MAPS_API_KEY }}" >> .env
+      - name: Add .env secrets
+        run: |
+          echo -e "SHOPBLOCKS_API_KEY=${{ secrets.SHOPBLOCKS_API_KEY }}" >> .env
+          echo -e "TOMTOM_API_KEY=${{ secrets.TOMTOM_API_KEY }}" >> .env
+          echo -e "VIRTUAL1_ADDRESS_PASSWORD=${{ secrets.VIRTUAL1_ADDRESS_PASSWORD }}" >> .env
+          echo -e "VIRTUAL1_ADDRESS_USERNAME=${{ secrets.VIRTUAL1_ADDRESS_USERNAME }}" >> .env
+          echo -e "VITE_GOOGLE_MAPS_API_KEY=${{ secrets.VITE_GOOGLE_MAPS_API_KEY }}" >> .env
 
             - name: Install Composer Dependencies
               run: composer install --prefer-dist --optimize-autoloader --no-scripts --no-progress --no-interaction && composer dump-autoload --optimize -q
@@ -106,11 +106,11 @@ jobs:
                   # Get the user ID from the array using the target username
                   USER_ID="${users[$TARGET_USER]}"
 
-                  # Check if the user ID exists
-                  if [ -z "$USER_ID" ]; then
-                    echo "User $TARGET_USER not found!"
-                    exit 1
-                  fi
+          # Check if the user ID exists
+          if [ -z "$USER_ID" ]; then
+            echo -e "User $TARGET_USER not found!"
+            exit 1
+          fi
 
                   # Send the screenshot to Discord
                   curl -X POST "${{ secrets.DISCORD_WEBHOOK_URL }}" \

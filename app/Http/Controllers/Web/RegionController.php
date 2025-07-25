@@ -2,16 +2,16 @@
 
 namespace App\Http\Controllers\Web;
 
-use App\Models\User;
-use Inertia\Inertia;
-use App\Models\Region;
-use App\Models\Merchant;
-use App\Services\RegionsService;
-use Illuminate\Support\Facades\DB;
-use App\Http\Resources\RegionResource;
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\RegionCreateRequest;
 use App\Http\Requests\RegionUpdateRequest;
+use App\Http\Resources\RegionResource;
+use App\Models\Merchant;
+use App\Models\Region;
+use App\Models\User;
+use App\Services\RegionsService;
+use Illuminate\Support\Facades\DB;
+use Inertia\Inertia;
 
 class RegionController extends BaseController
 {
@@ -47,10 +47,11 @@ class RegionController extends BaseController
     public function store(RegionCreateRequest $request)
     {
         try {
-            $region = DB::transaction(fn() => $this->regionsService->store($request->all()));
+            $region = DB::transaction(fn () => $this->regionsService->store($request->all()));
         } catch (\Exception $e) {
             throw new \Exception($e);
         }
+
         return redirect()->route('regions.index');
     }
 
@@ -68,6 +69,7 @@ class RegionController extends BaseController
     public function edit(Region $region)
     {
         $temp = new RegionResource($region);
+
         return Inertia::render('Regions/Edit', [
             'region' => $temp->toArray(request()),
             'users' => User::all(),
@@ -81,10 +83,11 @@ class RegionController extends BaseController
     public function update(RegionUpdateRequest $request, Region $region)
     {
         try {
-            $region = DB::transaction(fn() => $this->regionsService->update($region, $request->all()));
+            $region = DB::transaction(fn () => $this->regionsService->update($region, $request->all()));
         } catch (\Exception $e) {
             throw new \Exception($e);
         }
+
         return redirect()->route('regions.index');
     }
 

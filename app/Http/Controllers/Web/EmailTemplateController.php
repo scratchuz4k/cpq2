@@ -2,17 +2,18 @@
 
 namespace App\Http\Controllers\Web;
 
-use Inertia\Inertia;
-use Illuminate\Http\Request;
-use App\Models\EmailTemplate;
-use App\Services\EmailService;
-use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\BaseController;
 use App\Http\Resources\EmailTemplateResource;
+use App\Models\EmailTemplate;
+use App\Services\EmailService;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Inertia\Inertia;
 
 class EmailTemplateController extends BaseController
 {
     protected $model = EmailTemplate::class;
+
     public function __construct(protected EmailService $emailService)
     {
         parent::__construct();
@@ -56,7 +57,8 @@ class EmailTemplateController extends BaseController
     public function edit(EmailTemplate $emailTemplate)
     {
         $email = (new EmailTemplateResource($emailTemplate->load(['tokens'])))->resolve();
-        return Inertia::render('Emails/Edit', ["email" => $email]);
+
+        return Inertia::render('Emails/Edit', ['email' => $email]);
     }
 
     /**
@@ -65,10 +67,11 @@ class EmailTemplateController extends BaseController
     public function update(Request $request, EmailTemplate $emailTemplate)
     {
         try {
-            $emailTemplate = DB::transaction(fn() => $this->emailService->update($emailTemplate, $request->all()));
+            $emailTemplate = DB::transaction(fn () => $this->emailService->update($emailTemplate, $request->all()));
         } catch (\Exception $e) {
             throw new \Exception($e);
         }
+
         return redirect()->route('email-templates.index');
     }
 

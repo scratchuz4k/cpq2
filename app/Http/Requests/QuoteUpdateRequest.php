@@ -3,7 +3,6 @@
 namespace App\Http\Requests;
 
 use App\Enums\QuoteStatusesEnum;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Foundation\Http\FormRequest;
 
 class QuoteUpdateRequest extends FormRequest
@@ -24,22 +23,22 @@ class QuoteUpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "user_id" => "exists:users,id",
-            "account_id" => "exists:accounts,id",
-            "solution_type_id" => "exists:solution_types,id",
-            "discounts" => "array|nullable",
-            "discounts.*.code" => "required",
-            "discounts.*.entity" => "required|in:price_plans",
-            "discounts.*.value" => "required|numeric",
-            "items" => "array",
-            "items.*.quantity" => "required|numeric",
-            "items.*.name" => "string",
-            "items.*.raw_price" => "numeric",
-            "items.*.price" => "numeric",
-            "items.*.discount" => "numeric|min:0|max:100",
-            "items.*.price_plan_id" => "numeric|exists:price_plans,id",
-            "items.*.contract_length" => "numeric|min:1",
-            'status' => 'in:' . implode(',', QuoteStatusesEnum::names()),
+            'user_id' => 'exists:users,id',
+            'account_id' => 'exists:accounts,id',
+            'solution_type_id' => 'exists:solution_types,id',
+            'discounts' => 'array|nullable',
+            'discounts.*.code' => 'required',
+            'discounts.*.entity' => 'required|in:price_plans',
+            'discounts.*.value' => 'required|numeric',
+            'items' => 'array',
+            'items.*.quantity' => 'required|numeric',
+            'items.*.name' => 'string',
+            'items.*.raw_price' => 'numeric',
+            'items.*.price' => 'numeric',
+            'items.*.discount' => 'numeric|min:0|max:100',
+            'items.*.price_plan_id' => 'numeric|exists:price_plans,id',
+            'items.*.contract_length' => 'numeric|min:1',
+            'status' => 'in:'.implode(',', QuoteStatusesEnum::names()),
         ];
     }
 }

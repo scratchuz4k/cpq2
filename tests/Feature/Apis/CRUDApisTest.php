@@ -33,7 +33,7 @@ it('Apis CRUD', function () {
     $response->assertRedirect();
     expect(Api::count())->toBe(1)->and(Api::active()->count())->toBe(0);
 
-    //Update Api
+    // Update Api
     $api = Api::find(1);
 
     $data = [
@@ -46,7 +46,7 @@ it('Apis CRUD', function () {
     $api->refresh();
     $this->assertTrue($api->is_active);
 
-    //Delete Api
+    // Delete Api
     $response = $this->delete('api/apis/'.$api->id);
     $response->assertOk();
     expect(Api::count())->toBe(0);

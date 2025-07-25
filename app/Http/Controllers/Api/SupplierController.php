@@ -25,6 +25,7 @@ class SupplierController extends BaseController
 
     /**
      * List of Suppliers
+     *
      * @response AnonymousResourceCollection<LengthAwarePaginator<SupplierResource>>
      */
     public function index(IndexRequest $request)
@@ -34,6 +35,7 @@ class SupplierController extends BaseController
             $data = $dataProvider->get();
         } catch (Exception $e) {
             Log::debug($e->getMessage());
+
             return $e->getMessage();
         }
 
@@ -65,7 +67,7 @@ class SupplierController extends BaseController
     public function update(Request $request, Supplier $supplier)
     {
         try {
-            $supplier = DB::transaction(fn() => $this->service->update($supplier, $request->all()));
+            $supplier = DB::transaction(fn () => $this->service->update($supplier, $request->all()));
         } catch (Exception $e) {
             Log::debug($e->getMessage());
             throw new Exception($e);
