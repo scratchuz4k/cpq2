@@ -23,7 +23,7 @@
             </div>
         </template>
         <div style="position: relative">
-            <div class="d-flex mb-3">
+            <div class="d-flex justify-content-between mb-3">
                 <div class="me-2">
                     <label class="form-label">Entities:</label>
                     <MultiSelect v-model="entities" :options="options" class="form-select p-0" :maxSelectedLabels="1">
@@ -170,6 +170,7 @@ watch(visible, () => {
     }
 });
 watch(entities, () => {
+    meta.page = 1;
     getActivity();
 });
 

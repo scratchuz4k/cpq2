@@ -39,6 +39,7 @@ class QuoteItem extends Model
     protected function casts(): array
     {
         return [
+            'data' => 'object',
             'raw_price' => 'float',
             'original_price' => 'float',
             'price' => 'float',
