@@ -47,9 +47,7 @@ class RegionController extends BaseController
     public function store(RegionCreateRequest $request)
     {
         try {
-            $region = DB::transaction(function () use ($request) {
-                return $this->regionsService->store($request->all());
-            });
+            $region = DB::transaction(fn () => $this->regionsService->store($request->all()));
         } catch (\Exception $e) {
             throw new \Exception($e);
         }
@@ -85,9 +83,7 @@ class RegionController extends BaseController
     public function update(RegionUpdateRequest $request, Region $region)
     {
         try {
-            $region = DB::transaction(function () use ($region, $request) {
-                return $this->regionsService->update($region, $request->all());
-            });
+            $region = DB::transaction(fn () => $this->regionsService->update($region, $request->all()));
         } catch (\Exception $e) {
             throw new \Exception($e);
         }

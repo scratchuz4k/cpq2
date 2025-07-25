@@ -36,7 +36,7 @@ class OpenreachLookupApi
 
     public function normalisePostcode($postcode)
     {
-        $postcode = strtoupper(trim(urldecode($postcode)));
+        $postcode = strtoupper(trim(urldecode((string) $postcode)));
         $postcode = str_replace(' ', '', $postcode);
 
         $regex = "/^([Gg][Ii][Rr] 0[Aa]{2})|((([A-Za-z][0-9]{1,2})|(([A-Za-z][A-Ha-hJ-Yj-y][0-9]{1,2})|(([A-Za-z][0-9][A-Za-z])|([A-Za-z][A-Ha-hJ-Yj-y][0-9]?[A-Za-z]))))\s?[0-9][A-Za-z]{2})$/";
@@ -91,6 +91,7 @@ class OpenreachLookupApi
         if (! is_null($response) && array_key_exists('body', $response) && array_key_exists('addresses', $response['body']) && ! empty($response['body']['addresses'])) {
             foreach ($response['body']['addresses'] as $address) {
                 $openReachAddress = new AddressLookup(
+                    postCode : $address['addressparts']['PostCode'] ?? null,
                     addressKey : $address['value'] ?? null,
                     type : $address['type'] ?? null,
                     uprn : $address['uprn'] ?? null,
@@ -109,7 +110,6 @@ class OpenreachLookupApi
                     doubleDependentLocality : $address['addressparts']['DoubleDependentLocality'] ?? null,
                     locality : $address['addressparts']['Locality'] ?? null,
                     postTown : $address['addressparts']['PostTown'] ?? null,
-                    postCode : $address['addressparts']['PostCode'] ?? null,
                     county : $address['addressparts']['County'] ?? null,
                     country : $address['addressparts']['Country'] ?? null,
                 );

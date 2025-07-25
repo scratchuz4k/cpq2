@@ -69,9 +69,7 @@ class QuoteController extends BaseController
     public function store(QuoteCreateRequest $request)
     {
         try {
-            $quote = DB::transaction(function () use ($request) {
-                return $this->quoteService->store($request->all());
-            });
+            $quote = DB::transaction(fn () => $this->quoteService->store($request->all()));
         } catch (Exception $e) {
             return response($e->getMessage(), 500);
         }

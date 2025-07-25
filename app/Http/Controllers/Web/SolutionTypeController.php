@@ -48,9 +48,7 @@ class SolutionTypeController extends BaseController
     public function store(SolutionTypeCreateRequest $request)
     {
         try {
-            $solutionType = DB::transaction(function () use ($request) {
-                return $this->solutionTypeService->store($request->all());
-            });
+            $solutionType = DB::transaction(fn () => $this->solutionTypeService->store($request->all()));
         } catch (\Exception $e) {
             if (! env('APP_DEBUG')) {
                 Log::error($e->getMessage());
@@ -91,9 +89,7 @@ class SolutionTypeController extends BaseController
     public function update(SolutionTypeUpdateRequest $request, SolutionType $solutionType)
     {
         try {
-            $solutionType = DB::transaction(function () use ($solutionType, $request) {
-                return $this->solutionTypeService->update($solutionType, $request->all());
-            });
+            $solutionType = DB::transaction(fn () => $this->solutionTypeService->update($solutionType, $request->all()));
         } catch (\Exception $e) {
             throw new \Exception($e);
         }

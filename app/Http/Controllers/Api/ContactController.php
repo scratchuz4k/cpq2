@@ -48,9 +48,7 @@ class ContactController extends BaseController
     public function store(ContactCreateRequest $request)
     {
         try {
-            $contact = DB::transaction(function () use ($request) {
-                return $this->contactService->store($request->all());
-            });
+            $contact = DB::transaction(fn () => $this->contactService->store($request->all()));
         } catch (Exception $e) {
             Log::debug($e->getMessage());
             throw new Exception($e);
@@ -73,9 +71,7 @@ class ContactController extends BaseController
     public function update(Request $request, Contact $contact)
     {
         try {
-            $contact = DB::transaction(function () use ($contact, $request) {
-                return $this->contactService->update($contact, $request->all());
-            });
+            $contact = DB::transaction(fn () => $this->contactService->update($contact, $request->all()));
         } catch (Exception $e) {
             Log::debug($e->getMessage());
             throw new Exception($e);

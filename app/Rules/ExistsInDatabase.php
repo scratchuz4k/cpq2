@@ -8,10 +8,6 @@ use Illuminate\Support\Facades\DB;
 
 class ExistsInDatabase implements ValidationRule
 {
-    protected $table;
-
-    protected $column;
-
     /**
      * Create a new rule instance.
      *
@@ -19,11 +15,7 @@ class ExistsInDatabase implements ValidationRule
      * @param  string  $column  The column to check against
      * @return void
      */
-    public function __construct($table, $column)
-    {
-        $this->table = $table;
-        $this->column = $column;
-    }
+    public function __construct(protected $table, protected $column) {}
 
     /**
      * Run the validation rule.

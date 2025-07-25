@@ -90,9 +90,7 @@ class CloudMarketService
 
         $diff_codes = $items->pluck('code')->diff($blacklist_items->pluck('code'));
 
-        $items = $items->filter(function ($item) use ($diff_codes) {
-            return $diff_codes->contains($item['code']);
-        });
+        $items = $items->filter(fn ($item) => $diff_codes->contains($item['code']));
 
         $items = FilterProvider::get($items->toArray(), $filters);
 
@@ -101,7 +99,7 @@ class CloudMarketService
         }
 
         $solutionType = SolutionType::where('code', $connectivityType)->first();
-        $amortisation = array_key_exists('amortisation', $solutionType->configs) ? json_decode($solutionType->configs['amortisation'], true) : [];
+        $amortisation = array_key_exists('amortisation', $solutionType->configs) ? json_decode((string) $solutionType->configs['amortisation'], true) : [];
         $priceRules = new PriceRules;
 
         $account = Account::where('id', request()->input('account_id', null))->first();

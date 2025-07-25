@@ -50,9 +50,7 @@ class PriceController extends BaseController
     public function store(PriceCreateRequest $request)
     {
         try {
-            $price = DB::transaction(function () use ($request) {
-                return $this->priceService->store($request->all());
-            });
+            $price = DB::transaction(fn () => $this->priceService->store($request->all()));
         } catch (Exception $e) {
             if (! env('APP_DEBUG')) {
                 Log::error($e->getMessage());
@@ -77,9 +75,7 @@ class PriceController extends BaseController
     public function update(PriceUpdateRequest $request, Price $price)
     {
         try {
-            $price = DB::transaction(function () use ($price, $request) {
-                return $this->priceService->update($price, $request->all());
-            });
+            $price = DB::transaction(fn () => $this->priceService->update($price, $request->all()));
         } catch (Exception $e) {
             if (! env('APP_DEBUG')) {
                 Log::error($e->getMessage());
