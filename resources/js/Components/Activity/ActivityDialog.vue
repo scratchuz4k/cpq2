@@ -23,11 +23,24 @@
             </div>
         </template>
         <div style="position: relative">
-            <div class="d-flex">
-                <div class="mb-3">
+            <div class="d-flex mb-3">
+                <div class="me-2">
                     <label class="form-label">Entities:</label>
                     <MultiSelect v-model="entities" :options="options" class="form-select p-0" :maxSelectedLabels="1">
                     </MultiSelect>
+                </div>
+                <div class="d-flex justify-content-end align-items-end" v-if="has_export_permission">
+                    <div>
+                        <Button
+                            :disabled="!activityLog.length || exportDisabled"
+                            :severity="'secondary'"
+                            :class="['me-2']"
+                            @click="getExportData()"
+                            type="button"
+                        >
+                            <font-awesome-icon :icon="['fas', 'file-export']" />
+                        </Button>
+                    </div>
                 </div>
             </div>
 
@@ -81,9 +94,12 @@
     </Dialog>
 </template>
 <script setup>
+import Button from 'primevue/button';
+import { can, hasRole } from '@/Composables/useAuth.js';
 import { ref, onMounted, watch, reactive } from 'vue';
 import { usePage } from '@inertiajs/vue3';
 import queryString from 'query-string';
+import { exportData } from '@/Composables/export.js';
 import { Dialog, Timeline, MultiSelect, Paginator, Card } from 'primevue';
 const props = defineProps({
     model: String,
@@ -95,6 +111,7 @@ const tenant = page.props.tenant;
 const options = props.filters.map((x) => x.entity);
 const entities = ref(props.filters.map((x) => x.entity));
 const customActivities = ['QuoteItem', 'QuoteDiscount'];
+const has_export_permission = can(`export activity`) || hasRole('Super Admin');
 const meta = reactive({
     page: 1,
     total: 0,
@@ -155,6 +172,23 @@ watch(visible, () => {
 watch(entities, () => {
     getActivity();
 });
+
+const exportDisabled = ref(false);
+const getExportData = async () => {
+    if (exportDisabled.value) return;
+    exportDisabled.value = true;
+
+    let filters = {
+        filters: JSON.stringify(getFilters())
+    };
+
+    exportData(filters, '/activities');
+
+    setTimeout(() => {
+        exportDisabled.value = false;
+    }, 5000);
+};
+
 const handlePaginator = (ev) => {
     meta.limit = ev.rows;
     meta.page = ev.page + 1;

@@ -18,7 +18,6 @@ const props = defineProps({
 const visible = ref(false);
 const showGlobal = ref(false);
 const selectedRules = ref([]);
-const emptyData = ref(true);
 const has_export_permission = can(`export spa`) || hasRole('Super Admin');
 
 const form = reactive({
@@ -112,7 +111,6 @@ const getData = async () => {
 
     let res = await axios.get('/api/spas?' + string);
     data.value = res.data.data;
-    emptyData.value = !data.value.length;
     meta.total = res.data.meta?.total ?? res.data.total;
     meta.first = (meta.page - 1) * meta.limit;
 };
@@ -310,7 +308,7 @@ getData();
                         type="button"
                         :severity="'secondary'"
                         @click="getExportData()"
-                        :disabled="emptyData || exportDisabled"
+                        :disabled="!data.value.length || exportDisabled"
                     >
                         <font-awesome-icon :icon="['fas', 'file-export']" />
                     </Button>
