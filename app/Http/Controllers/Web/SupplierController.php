@@ -2,18 +2,19 @@
 
 namespace App\Http\Controllers\Web;
 
-use Inertia\Inertia;
+use App\Http\Controllers\BaseController;
+use App\Http\Requests\SupplierCreateRequest;
+use App\Http\Requests\SupplierUpdateRequest;
+use App\Http\Resources\SupplierResource;
 use App\Models\Supplier;
 use App\Services\SuppliersService;
 use Illuminate\Support\Facades\DB;
-use App\Http\Controllers\BaseController;
-use App\Http\Resources\SupplierResource;
-use App\Http\Requests\SupplierCreateRequest;
-use App\Http\Requests\SupplierUpdateRequest;
+use Inertia\Inertia;
 
 class SupplierController extends BaseController
 {
     protected $model = Supplier::class;
+
     public function __construct(protected SuppliersService $suppliersService)
     {
         parent::__construct();
@@ -47,6 +48,7 @@ class SupplierController extends BaseController
         } catch (\Exception $e) {
             throw new \Exception($e);
         }
+
         return redirect()->route('suppliers.index');
     }
 
@@ -64,8 +66,9 @@ class SupplierController extends BaseController
     public function edit(Supplier $supplier)
     {
         $temp = new SupplierResource($supplier);
+
         return Inertia::render('Suppliers/Edit', [
-            "supplier" => $temp->toArray(request())
+            'supplier' => $temp->toArray(request()),
         ]);
     }
 
@@ -81,6 +84,7 @@ class SupplierController extends BaseController
         } catch (\Exception $e) {
             throw new \Exception($e);
         }
+
         return redirect()->route('suppliers.index');
     }
 

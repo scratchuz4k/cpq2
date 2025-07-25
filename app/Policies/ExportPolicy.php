@@ -8,9 +8,10 @@ class ExportPolicy
 {
     public function export(User $user): bool
     {
-        if ($user->can("viewAny export")) {
+        if ($user->can('viewAny export')) {
             return true;
         }
+
         return false;
     }
 }

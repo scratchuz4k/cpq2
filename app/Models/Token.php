@@ -15,7 +15,7 @@ class Token extends SanctumPersonalAccessToken
         'token',
         'abilities',
         'tenant_id',
-        'is_active'
+        'is_active',
     ];
 
     protected $table = 'personal_access_tokens';

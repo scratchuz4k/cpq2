@@ -25,6 +25,7 @@ return new class extends Migration
             $table->primary(['merchant_id', 'brand_id'], 'brand_has_merchants_merchant_id_brand_id_primary');
         });
     }
+
     public function down(): void
     {
 

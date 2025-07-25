@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class SpaOperation extends Model
 {
-    protected $table = "spa_operations";
-    protected $fillable = ["code", "class"];
+    protected $table = 'spa_operations';
+
+    protected $fillable = ['code', 'class'];
 }

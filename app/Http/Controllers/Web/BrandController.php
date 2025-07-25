@@ -2,18 +2,19 @@
 
 namespace App\Http\Controllers\Web;
 
-use Inertia\Inertia;
-use App\Models\Brand;
-use App\Services\BrandService;
-use Illuminate\Support\Facades\DB;
-use App\Http\Resources\BrandResource;
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\BrandCreateRequest;
 use App\Http\Requests\BrandUpdateRequest;
+use App\Http\Resources\BrandResource;
+use App\Models\Brand;
+use App\Services\BrandService;
+use Illuminate\Support\Facades\DB;
+use Inertia\Inertia;
 
 class BrandController extends BaseController
 {
     protected $model = Brand::class;
+
     public function __construct(protected BrandService $brandService)
     {
         parent::__construct();
@@ -47,6 +48,7 @@ class BrandController extends BaseController
         } catch (\Exception $e) {
             throw new \Exception($e);
         }
+
         return redirect()->route('brands.index');
     }
 
@@ -64,8 +66,9 @@ class BrandController extends BaseController
     public function edit(Brand $brand)
     {
         $temp = new BrandResource($brand);
+
         return Inertia::render('Brands/Edit', [
-            "brand" => $temp->toArray(request())
+            'brand' => $temp->toArray(request()),
         ]);
     }
 
@@ -81,6 +84,7 @@ class BrandController extends BaseController
         } catch (\Exception $e) {
             throw new \Exception($e);
         }
+
         return redirect()->route('brands.index');
     }
 

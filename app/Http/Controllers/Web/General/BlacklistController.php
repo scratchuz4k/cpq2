@@ -45,9 +45,9 @@ class BlacklistController extends BaseController
     {
         return Inertia::render('Blacklists/Create', [
             'providers' => array_map(function ($item) {
-                if ($item["name"] === "Virtual1") {
-                    $item["name"] = "PXC";
-                    $item["value"] = "pxc";
+                if ($item['name'] === 'Virtual1') {
+                    $item['name'] = 'PXC';
+                    $item['value'] = 'pxc';
                 }
 
                 return $item;
@@ -67,7 +67,7 @@ class BlacklistController extends BaseController
         try {
             $this->blacklistService->store($request->all());
         } catch (Exception $e) {
-            if (!env('APP_DEBUG')) {
+            if (! env('APP_DEBUG')) {
                 Log::error($e->getMessage());
             }
             throw new Exception($e);
@@ -94,9 +94,9 @@ class BlacklistController extends BaseController
         return Inertia::render('Blacklists/Edit', [
             'blacklisted_item' => $temp,
             'providers' => array_map(function ($temp) {
-                if ($temp["name"] === "Virtual1") {
-                    $temp["name"] = "PXC";
-                    $temp["value"] = "pxc";
+                if ($temp['name'] === 'Virtual1') {
+                    $temp['name'] = 'PXC';
+                    $temp['value'] = 'pxc';
                 }
 
                 return $temp;
@@ -118,7 +118,7 @@ class BlacklistController extends BaseController
                 return $this->blacklistService->update($blacklist, $request->all());
             });
         } catch (Exception $e) {
-            if (!env('APP_DEBUG')) {
+            if (! env('APP_DEBUG')) {
                 Log::error($e->getMessage());
             }
             throw new Exception($e);

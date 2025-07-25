@@ -36,11 +36,11 @@ return new class extends Migration
     {
         Schema::table('quote_items', function (Blueprint $table) {
             $table->dropColumn('contract_length');
-            $table->decimal('quantity',12,2)->default(0)->change();
+            $table->decimal('quantity', 12, 2)->default(0)->change();
         });
         Schema::table('order_items', function (Blueprint $table) {
             $table->dropColumn('contract_length');
-            $table->decimal('quantity',12,2)->default(0)->change();
+            $table->decimal('quantity', 12, 2)->default(0)->change();
         });
 
         Schema::table('quotes', function (Blueprint $table) {

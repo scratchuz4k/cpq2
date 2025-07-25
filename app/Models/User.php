@@ -31,7 +31,7 @@ class User extends Authenticatable
 
         static::creating(function (Model $model) {
             // Check if tenant_id is not set and the user is authenticated
-            if (auth()->check() && !$model->tenant_id) {
+            if (auth()->check() && ! $model->tenant_id) {
                 $model->tenant_id = auth()->user()->tenant_id;
             }
 
@@ -40,7 +40,7 @@ class User extends Authenticatable
                 try {
                     $model->group_id = $user->group->id;
                 } catch (Exception $e) {
-                    if (!env('APP_DEBUG')) {
+                    if (! env('APP_DEBUG')) {
                         Log::error($e->getMessage());
                     }
                 }
@@ -196,7 +196,7 @@ class User extends Authenticatable
         do {
             $current = $userAscendents->pop();
             $users->push($current);
-            if (!$current->parent) {
+            if (! $current->parent) {
                 break;
             }
             $userAscendents->push($current->parent);
@@ -232,10 +232,10 @@ class User extends Authenticatable
             'token' => hash('sha256', $plainTextToken),
             'abilities' => $abilities,
             'tenant_id' => $tenantId,
-            'is_active' => $is_active
+            'is_active' => $is_active,
         ]);
 
-        return new NewAccessToken($token, $token->getKey() . '|' . $plainTextToken);
+        return new NewAccessToken($token, $token->getKey().'|'.$plainTextToken);
     }
 
     /**
@@ -255,6 +255,7 @@ class User extends Authenticatable
         return $users->map(function ($user) {
             $roleName = $user->roles->pluck('name')->join(', ');
             $user->description = "{$user->name} ({$roleName})";
+
             return $user;
         });
     }

@@ -3,14 +3,15 @@
 namespace App\Http\Requests;
 
 use App\Enums\QuoteStatusesEnum;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
 
 class QuoteCreateRequest extends FormRequest
 {
     protected $authorized_statues = [
-        QuoteStatusesEnum::CONFIGURE->name
+        QuoteStatusesEnum::CONFIGURE->name,
     ];
+
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -19,11 +20,10 @@ class QuoteCreateRequest extends FormRequest
         return true;
     }
 
-
     public function prepareForValidation()
     {
-        $this->merge(["user_id" => Auth::id()]);
-        $this->merge(["commission_rate" => Auth::user()->commission_rate]);
+        $this->merge(['user_id' => Auth::id()]);
+        $this->merge(['commission_rate' => Auth::user()->commission_rate]);
     }
 
     /**
@@ -34,18 +34,18 @@ class QuoteCreateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "user_id" => "required|exists:users,id",
-            "account_id" => "required|exists:accounts,id",
-            "solution_type_id" => "required|exists:solution_types,id",
-            "items" => "nullable|array",
-            "items.*.quantity" => "required|numeric",
-            "items.*.name" => "string",
-            "items.*.raw_price" => "numeric",
-            "items.*.price" => "numeric",
-            "items.*.discount" => "numeric|min:0|max:100",
-            "items.*.price_plan_id" => "nullable|numeric|exists:price_plans,id",
-            "items.*.contract_length" => "numeric|min:1",
-            'status' => 'in:' . implode(',', $this->authorized_statues),
+            'user_id' => 'required|exists:users,id',
+            'account_id' => 'required|exists:accounts,id',
+            'solution_type_id' => 'required|exists:solution_types,id',
+            'items' => 'nullable|array',
+            'items.*.quantity' => 'required|numeric',
+            'items.*.name' => 'string',
+            'items.*.raw_price' => 'numeric',
+            'items.*.price' => 'numeric',
+            'items.*.discount' => 'numeric|min:0|max:100',
+            'items.*.price_plan_id' => 'nullable|numeric|exists:price_plans,id',
+            'items.*.contract_length' => 'numeric|min:1',
+            'status' => 'in:'.implode(',', $this->authorized_statues),
         ];
     }
 }

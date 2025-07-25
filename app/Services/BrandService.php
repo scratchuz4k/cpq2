@@ -3,7 +3,6 @@
 namespace App\Services;
 
 use App\Models\Brand;
-use Illuminate\Support\Facades\DB;
 
 class BrandService
 {

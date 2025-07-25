@@ -21,7 +21,6 @@ class ProductController extends BaseController
 {
     protected $model = Product::class;
 
-
     public function __construct(protected ProductsService $service)
     {
         parent::__construct();
@@ -29,6 +28,7 @@ class ProductController extends BaseController
 
     /**
      * List of Products
+     *
      * @response AnonymousResourceCollection<LengthAwarePaginator<ProductResource>>
      */
     public function index(IndexRequest $request)
@@ -39,20 +39,21 @@ class ProductController extends BaseController
             $data = $dataProvider->getCollection();
         } catch (Exception $e) {
             Log::debug($e->getMessage());
+
             return $e->getMessage();
         }
 
         $suppliers = [];
-        $priceRules = new PriceRules();
+        $priceRules = new PriceRules;
         $account = Account::where('id', request()->input('account_id', null))->first();
 
         $data = $data->map(function ($product) use ($priceRules, $account, $suppliers) {
 
-            if (array_key_exists($product?->supplier?->id . $product->pricePlan->code, $suppliers)) {
+            if (array_key_exists($product?->supplier?->id.$product->pricePlan->code, $suppliers)) {
                 $priceRules->setAppliedSpas($suppliers[$product?->supplier?->id]);
             } else {
                 $priceRules->find(supplier: $product?->supplier, account: $account, pricePlan: $product->pricePlan);
-                $suppliers[$product?->supplier?->id . $product->pricePlan->code] = $priceRules->getAppliedSpas();
+                $suppliers[$product?->supplier?->id.$product->pricePlan->code] = $priceRules->getAppliedSpas();
             }
 
             $product->prices->map(function ($price) use ($priceRules) {
@@ -63,6 +64,7 @@ class ProductController extends BaseController
             return $product;
         });
         $data = ProductResource::collection($data)->toArray(request());
+
         return FilterProvider::paginate(collect($data));
     }
 

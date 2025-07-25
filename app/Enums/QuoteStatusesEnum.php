@@ -2,7 +2,7 @@
 
 namespace App\Enums;
 
-enum QuoteStatusesEnum:string
+enum QuoteStatusesEnum: string
 {
     case QUOTE = 'quote';
     case PRICE = 'price';

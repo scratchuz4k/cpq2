@@ -5,11 +5,11 @@ namespace App\Policies;
 use App\Models\Quote;
 use App\Models\QuoteItem;
 use App\Models\User;
-use Illuminate\Auth\Access\Response;
 
 class QuoteItemPolicy
 {
-    private string $model = "quote_item";
+    private string $model = 'quote_item';
+
     /**
      * Determine whether the user can view any models.
      */
@@ -18,6 +18,7 @@ class QuoteItemPolicy
         if ($user->can("viewAny $this->model")) {
             return true;
         }
+
         return false;
     }
 
@@ -29,6 +30,7 @@ class QuoteItemPolicy
         if ($user->can("view $this->model")) {
             return true;
         }
+
         return false;
     }
 
@@ -37,18 +39,20 @@ class QuoteItemPolicy
      */
     public function create(User $user): bool
     {
-        if (!request()->has('quote_id')) {
+        if (! request()->has('quote_id')) {
             return false;
         }
 
         $quote = Quote::find(request('quote_id'));
 
-        if (!$this->canManageQuoteItem($user, $quote))
-            return false;
-
-        if (!$user->can("create $this->model")) {
+        if (! $this->canManageQuoteItem($user, $quote)) {
             return false;
         }
+
+        if (! $user->can("create $this->model")) {
+            return false;
+        }
+
         return true;
     }
 
@@ -57,10 +61,11 @@ class QuoteItemPolicy
      */
     public function update(User $user, QuoteItem $quoteItem): bool
     {
-        if (!$this->canManageQuoteItem($user, $quoteItem->quote))
+        if (! $this->canManageQuoteItem($user, $quoteItem->quote)) {
             return false;
+        }
 
-        if (!$user->can("update $this->model")) {
+        if (! $user->can("update $this->model")) {
             return false;
         }
 
@@ -72,10 +77,11 @@ class QuoteItemPolicy
      */
     public function delete(User $user, QuoteItem $quoteItem): bool
     {
-        if (!$this->canManageQuoteItem($user, $quoteItem->quote))
+        if (! $this->canManageQuoteItem($user, $quoteItem->quote)) {
             return false;
+        }
 
-        if (!$user->can("delete $this->model")) {
+        if (! $user->can("delete $this->model")) {
             return false;
         }
 
@@ -90,6 +96,7 @@ class QuoteItemPolicy
         if ($user->can("restore $this->model")) {
             return true;
         }
+
         return false;
     }
 
@@ -101,18 +108,19 @@ class QuoteItemPolicy
         if ($user->can("forceDelete $this->model")) {
             return true;
         }
+
         return false;
     }
-
 
     /**
      * Determine whether the user can export the model.
      */
     public function export(User $user): bool
     {
-        if (!$user->can("export $this->model")) {
+        if (! $user->can("export $this->model")) {
             return false;
         }
+
         return true;
     }
 

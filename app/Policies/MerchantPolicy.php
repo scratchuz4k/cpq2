@@ -4,12 +4,11 @@ namespace App\Policies;
 
 use App\Models\Merchant;
 use App\Models\User;
-use Illuminate\Auth\Access\Response;
 
 class MerchantPolicy
 {
+    private string $model = 'merchant';
 
-    private string $model = "merchant";
     /**
      * Determine whether the user can view any models.
      */
@@ -18,6 +17,7 @@ class MerchantPolicy
         if ($user->can("viewAny $this->model")) {
             return true;
         }
+
         return false;
     }
 
@@ -29,6 +29,7 @@ class MerchantPolicy
         if ($user->can("view $this->model")) {
             return true;
         }
+
         return false;
     }
 
@@ -40,6 +41,7 @@ class MerchantPolicy
         if ($user->can("create $this->model")) {
             return true;
         }
+
         return false;
     }
 
@@ -51,6 +53,7 @@ class MerchantPolicy
         if ($user->can("update $this->model")) {
             return true;
         }
+
         return false;
     }
 
@@ -62,6 +65,7 @@ class MerchantPolicy
         if ($user->can("delete $this->model")) {
             return true;
         }
+
         return false;
     }
 
@@ -73,6 +77,7 @@ class MerchantPolicy
         if ($user->can("restore $this->model")) {
             return true;
         }
+
         return false;
     }
 
@@ -84,18 +89,19 @@ class MerchantPolicy
         if ($user->can("forceDelete $this->model")) {
             return true;
         }
+
         return false;
     }
-
 
     /**
      * Determine whether the user can export the model.
      */
     public function export(User $user): bool
     {
-        if (!$user->can("export $this->model")) {
+        if (! $user->can("export $this->model")) {
             return false;
         }
+
         return true;
     }
 }

@@ -6,7 +6,6 @@ use App\Models\Spa;
 
 class OperationDiscount implements _OperationInterface
 {
-
     public function apply(float $value, Spa $spa): float
     {
         if ($spa->percentage > 0) {

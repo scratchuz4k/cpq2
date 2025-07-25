@@ -24,6 +24,7 @@ class EmailTemplateController extends BaseController
 
     /**
      * Index
+     *
      * @response AnonymousResourceCollection<LengthAwarePaginator<AccountResource>>
      */
     public function index(IndexRequest $request)
@@ -34,6 +35,7 @@ class EmailTemplateController extends BaseController
             $data = $dataProvider->get();
         } catch (Exception $e) {
             Log::debug($e->getMessage());
+
             return $e->getMessage();
         }
 

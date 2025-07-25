@@ -2,20 +2,19 @@
 
 namespace App\Http\Controllers\Web;
 
-use Inertia\Inertia;
-use App\Models\Category;
-use Illuminate\Http\Request;
-use App\Services\CategoryService;
-use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\CategoryCreateRequest;
 use App\Http\Requests\CategoryUpdateRequest;
 use App\Http\Resources\CategoryResource;
+use App\Models\Category;
+use App\Services\CategoryService;
+use Illuminate\Support\Facades\DB;
+use Inertia\Inertia;
 
 class CategoryController extends BaseController
 {
-
     protected $model = Category::class;
+
     public function __construct(protected CategoryService $categoryService)
     {
         parent::__construct();
@@ -49,6 +48,7 @@ class CategoryController extends BaseController
         } catch (\Exception $e) {
             throw new \Exception($e);
         }
+
         return redirect()->route('categories.index');
     }
 
@@ -57,7 +57,7 @@ class CategoryController extends BaseController
      */
     public function show(Category $category)
     {
-       //
+        //
     }
 
     /**
@@ -66,7 +66,7 @@ class CategoryController extends BaseController
     public function edit(Category $category)
     {
         return Inertia::render('Category/Edit', [
-            "category" => (new CategoryResource($category))->resolve()
+            'category' => (new CategoryResource($category))->resolve(),
         ]);
     }
 
@@ -82,13 +82,12 @@ class CategoryController extends BaseController
         } catch (\Exception $e) {
             throw new \Exception($e);
         }
+
         return redirect()->route('categories.index');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Category $category)
-    {
-    }
+    public function destroy(Category $category) {}
 }

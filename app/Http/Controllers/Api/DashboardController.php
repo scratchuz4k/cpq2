@@ -23,7 +23,7 @@ class DashboardController extends BaseController
             'users' => (new DashboardService(User::class))->getData($request->all()),
             'active_users' => (new DashboardService(Activity::class, User::class))->getData($request->all()),
             'quotes' => (new DashboardService(Quote::class))->getData($request->all()),
-            'quotes_suppliers' => (new DashboardService(Quote::class, Supplier::class))->getData($request->all())
+            'quotes_suppliers' => (new DashboardService(Quote::class, Supplier::class))->getData($request->all()),
         ];
 
         return response()->json($data);

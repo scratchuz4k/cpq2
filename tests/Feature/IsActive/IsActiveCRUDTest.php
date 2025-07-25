@@ -32,7 +32,7 @@ it('Create active Account ', function () {
 
     $account = Account::find(1);
 
-    //Check accounts index
+    // Check accounts index
     $response = $this->get('api/accounts/');
     $accounts = $response->json('data');
 
@@ -43,7 +43,7 @@ it('Create active Account ', function () {
         'is_active' => false,
     ];
 
-    $response = $this->put('accounts/' . $account->id, $data);
+    $response = $this->put('accounts/'.$account->id, $data);
     $response->assertRedirect();
     $account->refresh();
     expect($account->is_active)->toBe(false);
@@ -52,17 +52,16 @@ it('Create active Account ', function () {
         [
             'column' => 'is_active',
             'operator' => 'equals',
-            'value' => 1
-        ]
+            'value' => 1,
+        ],
     ]));
 
-    $response = $this->get('api/accounts?filters=' . $string);
+    $response = $this->get('api/accounts?filters='.$string);
     $accounts = $response->json('data');
 
     expect(count($accounts))->toBe(0);
 
-    $response = $this->delete('api/accounts/' . $account->id);
+    $response = $this->delete('api/accounts/'.$account->id);
     $response->assertSuccessful();
     expect(Account::count())->toBe(0);
 });
-

@@ -41,31 +41,23 @@ class PricePlanController extends BaseController
      * Create a new Price Plan
      */
     #[ExcludeRouteFromDocs]
-    public function store(Request $request)
-    {
-    }
+    public function store(Request $request) {}
 
     /**
      * Show Price Plan
      */
     #[ExcludeRouteFromDocs]
-    public function show(PricePlan $pricePlan)
-    {
-    }
+    public function show(PricePlan $pricePlan) {}
 
     /**
      * Update Price Plan
      */
     #[ExcludeRouteFromDocs]
-    public function update(Request $request, PricePlan $pricePlan)
-    {
-    }
+    public function update(Request $request, PricePlan $pricePlan) {}
 
     /**
      * Remove Price Plan
      */
     #[ExcludeRouteFromDocs]
-    public function destroy(PricePlan $pricePlan)
-    {
-    }
+    public function destroy(PricePlan $pricePlan) {}
 }

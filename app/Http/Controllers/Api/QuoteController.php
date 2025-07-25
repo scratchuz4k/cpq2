@@ -42,8 +42,8 @@ class QuoteController extends BaseController
             $users = $user->descendants();
 
             if ($user->hasRole('Sales Manager') && $user->group) {
-                $group_users = User::with("roles")->whereHas("roles", function($q) use ($user) {
-                    $q->where("name", $user->roles->first()->children->first()->name);
+                $group_users = User::with('roles')->whereHas('roles', function ($q) use ($user) {
+                    $q->where('name', $user->roles->first()->children->first()->name);
                 })->where('group_id', $user->group_id)->get();
 
                 $users = $users->merge($group_users);

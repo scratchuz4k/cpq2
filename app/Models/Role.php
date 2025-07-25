@@ -2,14 +2,10 @@
 
 namespace App\Models;
 
-use App\Traits\RegisterActivity;
-use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Spatie\Permission\Models\Role as ModelsRole;
 
 class Role extends ModelsRole
 {
-
     protected $fillable = [
         'name',
         'guard_name',
@@ -45,6 +41,7 @@ class Role extends ModelsRole
             $roles->push($current);
             $temp_roles->push(...$current->children);
         } while (count($temp_roles));
+
         return $roles;
     }
 }

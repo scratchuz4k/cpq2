@@ -1,9 +1,9 @@
 <?php
 
 use App\Http\Resources\TenantResource;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use App\Models\User;
 use App\Models\Tenant;
+use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -32,10 +32,10 @@ it('Upload a tenant logo', function () {
         ->json();
 
     $data = [
-        'logo_id' => $resource['file']['id']
+        'logo_id' => $resource['file']['id'],
     ];
 
-    $response = $this->put('api/tenants/' . $this->user->currentTenant->id, $data);
+    $response = $this->put('api/tenants/'.$this->user->currentTenant->id, $data);
     $tenant = $response->json();
     expect($tenant['logo_id'])
         ->toBe($resource['file']['id'])
@@ -46,10 +46,10 @@ it('Upload a tenant logo', function () {
 
 it('Remove tenant logo', function () {
     $data = [
-        'logo_id' => null
+        'logo_id' => null,
     ];
 
-    $response = $this->put('api/tenants/' . $this->user->currentTenant->id, $data);
+    $response = $this->put('api/tenants/'.$this->user->currentTenant->id, $data);
     $tenant = $response->json();
     expect($tenant['logo_id'])
         ->toBeNull()
@@ -75,10 +75,10 @@ it('Upload a tenant SSO File with valid XML', function () {
         ->json();
 
     $data = [
-        'sso_id' => $resource['file']['id']
+        'sso_id' => $resource['file']['id'],
     ];
 
-    $response = $this->put('api/tenants/' . $this->user->currentTenant->id, $data);
+    $response = $this->put('api/tenants/'.$this->user->currentTenant->id, $data);
     $tenant = $response->json();
 
     $response->assertStatus(200);
@@ -105,19 +105,19 @@ it('Upload a tenant SSO File with invalid XML', function () {
 });
 
 it('Update Order flow setting', function () {
-    //Activate setting
+    // Activate setting
     $tenant = (new TenantResource($this->user->currentTenant))->resolve();
     $tenant['configurations']['orders_flow_is_active'] = '1';
 
-    $response = $this->put('api/tenants/' . $this->user->currentTenant->id, $tenant);
+    $response = $this->put('api/tenants/'.$this->user->currentTenant->id, $tenant);
     $tenant = $response->json();
 
     $response->assertStatus(200);
     expect($tenant['configurations']['orders_flow_is_active'])->toBe('1');
 
-    //Deactivate setting
+    // Deactivate setting
     $tenant['configurations']['orders_flow_is_active'] = '0';
-    $response = $this->put('api/tenants/' . $this->user->currentTenant->id, $tenant);
+    $response = $this->put('api/tenants/'.$this->user->currentTenant->id, $tenant);
     $tenant = $response->json();
     $response->assertStatus(200);
     expect($tenant['configurations']['orders_flow_is_active'])->toBe('0');

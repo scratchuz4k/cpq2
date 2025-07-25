@@ -35,7 +35,7 @@ class TokenController extends BaseController
             ->get();
 
         return Inertia::render('Tokens/Create', [
-            'users' => User::getUserWithRoles($users)
+            'users' => User::getUserWithRoles($users),
         ]);
     }
 
@@ -66,8 +66,10 @@ class TokenController extends BaseController
             ->map(function ($user) {
                 $roleName = $user->roles->pluck('name')->join(', ');
                 $user->description = "{$user->name} ({$roleName})";
+
                 return $user;
             });
+
         return Inertia::render('Tokens/Show', [
             'plainTextToken' => $request->input('plain-text-token', null),
             'users' => User::getUserWithRoles($user),
