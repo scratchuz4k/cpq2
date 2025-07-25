@@ -9,7 +9,7 @@
             </tr>
         </thead>
         <tbody>
-            <tr v-for="item in props.item.data" class="field-info">
+            <tr v-for="item in props.item.data.filter((item) => item.field != 'updated_at')" class="field-info">
                 <td class="">
                     <p class="small">{{ item.field }}</p>
                 </td>
