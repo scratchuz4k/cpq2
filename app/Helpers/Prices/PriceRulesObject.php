@@ -14,14 +14,6 @@ class PriceRulesObject
 {
     public Collection $spas;
 
-    public ?Product $product;
-
-    public ?User $user;
-
-    public ?Supplier $supplier;
-
-    public ?Account $account;
-
     public Tenant $tenant;
 
     public function __construct(
