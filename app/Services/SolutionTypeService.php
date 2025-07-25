@@ -52,7 +52,7 @@ class SolutionTypeService
                     'group_name' => $table['group_name'] ?? null,
                     'columns' => $table['columns'],
                 ]);
-                $olderItems = $olderItems->reject(fn($temp) => $temp->id === $table->id);
+                $olderItems = $olderItems->reject(fn ($temp) => $temp->id === $table->id);
             }
         }
 

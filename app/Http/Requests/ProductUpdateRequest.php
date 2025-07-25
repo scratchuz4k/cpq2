@@ -33,7 +33,7 @@ class ProductUpdateRequest extends FormRequest
 
         return [
             'code' => ['required', 'string', 'max:255',
-                Rule::unique('products')->where(fn($query) => $query->where('tenant_id', $user->tenant_id)
+                Rule::unique('products')->where(fn ($query) => $query->where('tenant_id', $user->tenant_id)
                     ->where('code', request('code')))->ignore($product_id),
             ],
             'name' => 'required|string|max:255',

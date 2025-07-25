@@ -68,7 +68,7 @@ class OrderController extends BaseController
     public function store(OrderCreateRequest $request)
     {
         try {
-            $order = DB::transaction(fn() => $this->orderService->store($request->all()));
+            $order = DB::transaction(fn () => $this->orderService->store($request->all()));
         } catch (\Exception $e) {
             if (! env('APP_DEBUG')) {
                 Log::error($e->getMessage());
@@ -109,7 +109,7 @@ class OrderController extends BaseController
     public function update(OrderUpdateRequest $request, Order $order)
     {
         try {
-            $order = DB::transaction(fn() => $this->orderService->update($order, $request->all()));
+            $order = DB::transaction(fn () => $this->orderService->update($order, $request->all()));
         } catch (\Exception $e) {
             if (! env('APP_DEBUG')) {
                 Log::error($e->getMessage());

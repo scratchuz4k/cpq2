@@ -41,7 +41,7 @@ trait RegisterActivity
 
     protected static function bootRegisterActivity()
     {
-        static::eventsToBeRecorded()->each(fn($eventName) => static::$eventName(function (Model $model) use ($eventName) {
+        static::eventsToBeRecorded()->each(fn ($eventName) => static::$eventName(function (Model $model) use ($eventName) {
 
             $tenant = Auth::user()->currentTenant;
 

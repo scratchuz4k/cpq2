@@ -64,7 +64,7 @@ class CloudMarketApi
             $quoteCredentials += self::resolveApiAuth($api);
         }
 
-        $quoteCredentials = array_filter($quoteCredentials, fn($value) => ! empty($value));
+        $quoteCredentials = array_filter($quoteCredentials, fn ($value) => ! empty($value));
 
         $quoteRequestParams = array_merge($quoteAddress, $quoteCredentials);
 

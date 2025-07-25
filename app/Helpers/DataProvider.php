@@ -139,7 +139,7 @@ class DataProvider
                 return ! in_array($firstPart, $hidden);
             });
 
-            $this->builder = $this->builder->where(fn($query) => $this->searchModel($query, $columns, $search));
+            $this->builder = $this->builder->where(fn ($query) => $this->searchModel($query, $columns, $search));
         }
 
         foreach ($filters as $filter) {

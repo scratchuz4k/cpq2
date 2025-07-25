@@ -35,7 +35,7 @@ class ExportShopBlocks extends Command
 
         $categoryId = $this->argument('category_id');
 
-        $items = Product::when($categoryId, fn($query) => $query->where('category_id', '=', $categoryId))->get();
+        $items = Product::when($categoryId, fn ($query) => $query->where('category_id', '=', $categoryId))->get();
         file_put_contents(storage_path('mocks/shopblocks.products.json'), json_encode($items->toArray()));
 
         $items = Model::whereHas('products', function ($query) use ($categoryId) {

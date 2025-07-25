@@ -11,9 +11,7 @@ class WarningNote extends Component
     /**
      * Create a new component instance.
      */
-    public function __construct(public $warnings = [])
-    {
-    }
+    public function __construct(public $warnings = []) {}
 
     /**
      * Get the view / contents that represent the component.

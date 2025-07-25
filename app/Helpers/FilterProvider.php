@@ -18,7 +18,7 @@ class FilterProvider
             $data = static::resolveQuery($filter['operator'], $filter['column'], $filter['value'], $data);
         }
         if (request()->has('search') && ! is_null(request()->search)) {
-            $data = $data->filter(fn($item) => collect($item)->contains(key: fn($value) => ! is_array($value) ? str_contains(strtolower((string) $value), strtolower(request()->search)) : false));
+            $data = $data->filter(fn ($item) => collect($item)->contains(key: fn ($value) => ! is_array($value) ? str_contains(strtolower((string) $value), strtolower(request()->search)) : false));
         }
 
         return $data->values();
@@ -78,7 +78,7 @@ class FilterProvider
             case 'equals':
                 return $data->where($column, $value);
             case 'contains':
-                return $data->filter(fn($item) => Str::contains($item[$column], $value));
+                return $data->filter(fn ($item) => Str::contains($item[$column], $value));
             case 'in':
                 return $data->whereIn($column, $value);
             case 'not_in':
@@ -88,13 +88,13 @@ class FilterProvider
 
                 return $data->whereBetween($column, $value);
             case 'greater_than':
-                return $data->filter(fn($item) => $item[$column] > $value);
+                return $data->filter(fn ($item) => $item[$column] > $value);
             case 'greater_than_or_equal_to':
-                return $data->filter(fn($item) => $item[$column] >= $value);
+                return $data->filter(fn ($item) => $item[$column] >= $value);
             case 'less_than':
-                return $data->filter(fn($item) => $item[$column] < $value);
+                return $data->filter(fn ($item) => $item[$column] < $value);
             case 'less_than_or_equal_to':
-                return $data->filter(fn($item) => $item[$column] <= $value);
+                return $data->filter(fn ($item) => $item[$column] <= $value);
             case 'lowest-cost':
                 // CONNECTIVITY SPECIFIC FILTER
                 $keys = [];

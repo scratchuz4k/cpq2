@@ -8,9 +8,7 @@ use Illuminate\View\Component;
 
 class TableItemCustom extends Component
 {
-    public function __construct(public $component = null, public $item = null)
-    {
-    }
+    public function __construct(public $component = null, public $item = null) {}
 
     /**
      * Get the view / contents that represent the component.
