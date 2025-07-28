@@ -24,11 +24,33 @@
         </template>
         <div style="position: relative">
             <div class="d-flex justify-content-between mb-3">
-                <div class="me-2">
-                    <label class="form-label">Entities:</label>
-                    <MultiSelect v-model="entities" :options="options" class="form-select p-0" :maxSelectedLabels="1">
-                    </MultiSelect>
+                <div class="d-flex">
+                    <div class="me-2">
+                        <label class="form-label">Entities:</label>
+                        <MultiSelect
+                            v-model="entities"
+                            :options="options"
+                            size="small"
+                            class="custom-multiselect w-100 p-0"
+                            :maxSelectedLabels="1"
+                        >
+                        </MultiSelect>
+                    </div>
+                    <div class="me-2">
+                        <label class="form-label">Filter:</label>
+                        <Select
+                            v-model="timeStamp"
+                            :options="dateFilter"
+                            optionLabel="label"
+                            optionValue="date"
+                            placeholder="All"
+                            size="small"
+                            class="w-100"
+                        >
+                        </Select>
+                    </div>
                 </div>
+
                 <div class="d-flex justify-content-end align-items-end" v-if="has_export_permission">
                     <div>
                         <Button
@@ -57,8 +79,8 @@
                             slotProps.item.operation == 'deleted'
                                 ? 'bg-danger'
                                 : slotProps.item.operation == 'created'
-                                ? 'bg-success'
-                                : 'bg-primary'
+                                  ? 'bg-success'
+                                  : 'bg-primary'
                         ]"
                     >
                     </span>
@@ -100,7 +122,7 @@ import { ref, onMounted, watch, reactive } from 'vue';
 import { usePage } from '@inertiajs/vue3';
 import queryString from 'query-string';
 import { exportData } from '@/Composables/export.js';
-import { Dialog, Timeline, MultiSelect, Paginator, Card } from 'primevue';
+import { Dialog, Timeline, MultiSelect, Select, Paginator, Card } from 'primevue';
 const props = defineProps({
     model: String,
     filters: Array
@@ -119,6 +141,32 @@ const meta = reactive({
     limit: 20,
     isLoading: false
 });
+
+const today = new Date();
+
+// Last week (7 days ago)
+const lastWeek = new Date(today);
+lastWeek.setDate(today.getDate() - 7);
+
+// Last month (same day previous month)
+const lastMonth = new Date(today);
+lastMonth.setMonth(today.getMonth() - 1);
+
+const dateFilter = [
+    {
+        label: 'Last Week',
+        date: lastWeek.toISOString()
+    },
+    {
+        label: 'Last Month',
+        date: lastMonth.toISOString()
+    },
+    {
+        label: 'All',
+        date: null
+    }
+];
+const timeStamp = ref(lastWeek.toISOString());
 
 const getFilters = () => {
     let temp = [];
@@ -139,7 +187,16 @@ const getFilters = () => {
             operator: 'in',
             value: e.values
         });
+        if (timeStamp.value) {
+            let time = {
+                column: 'created_at',
+                operator: 'greater_than_or_equal_to',
+                value: timeStamp.value
+            };
+            temp.push(time);
+        }
     });
+
     return temp;
 };
 
@@ -168,6 +225,9 @@ watch(visible, () => {
     if (visible) {
         getActivity();
     }
+});
+watch(timeStamp, () => {
+    getActivity();
 });
 watch(entities, () => {
     meta.page = 1;
