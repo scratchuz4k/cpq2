@@ -34,6 +34,7 @@ const fields = reactive({
     product: null
 });
 
+const emptyData = ref(true);
 const data = ref([]);
 const meta = reactive({
     page: 1,
@@ -111,6 +112,7 @@ const getData = async () => {
 
     let res = await axios.get('/api/spas?' + string);
     data.value = res.data.data;
+    emptyData.value = !data.value.length;
     meta.total = res.data.meta?.total ?? res.data.total;
     meta.first = (meta.page - 1) * meta.limit;
 };
@@ -308,7 +310,7 @@ getData();
                         type="button"
                         :severity="'secondary'"
                         @click="getExportData()"
-                        :disabled="!data.value.length || exportDisabled"
+                        :disabled="!emptyData || exportDisabled"
                     >
                         <font-awesome-icon :icon="['fas', 'file-export']" />
                     </Button>
