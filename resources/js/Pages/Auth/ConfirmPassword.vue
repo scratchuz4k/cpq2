@@ -7,12 +7,12 @@ import TextInput from '@/Components/TextInput.vue';
 import { Head, useForm } from '@inertiajs/vue3';
 
 const form = useForm({
-    password: '',
+    password: ''
 });
 
 const submit = () => {
     form.post(route('password.confirm'), {
-        onFinish: () => form.reset(),
+        onFinish: () => form.reset()
     });
 };
 </script>

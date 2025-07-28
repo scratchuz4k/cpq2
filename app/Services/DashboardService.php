@@ -16,13 +16,13 @@ class DashboardService
 
     public $relation;
 
-    protected $user_instance = 'App\\Models\\User';
+    protected $user_instance = \App\Models\User::class;
 
-    protected $activity_instance = 'App\\Models\\Activity';
+    protected $activity_instance = \App\Models\Activity::class;
 
-    protected $supplier_instance = 'App\\Models\\Supplier';
+    protected $supplier_instance = \App\Models\Supplier::class;
 
-    protected $quote_instance = 'App\\Models\\Quote';
+    protected $quote_instance = \App\Models\Quote::class;
 
     public function __construct($model, $relation = null)
     {
@@ -61,16 +61,14 @@ class DashboardService
     public function getFilteredData(array $array): array
     {
         $cumulative = true;
-        $date_interval = formated_date_range($array, get_class($this->model));
+        $date_interval = formated_date_range($array, $this->model::class);
         $query = $this->model->whereBetween('created_at', $date_interval);
         $total_query = $this->model->query();
 
         if ($this->model instanceof $this->user_instance) {
-            $query = $this->excludeSuperAdmins($query)
-                ->where('tenant_id', request()->user()->tenant_id);
+            $query = $this->excludeSuperAdmins($query)->where('tenant_id', request()->user()->tenant_id);
 
-            $total_query = $this->excludeSuperAdmins($total_query)
-                ->where('tenant_id', request()->user()->tenant_id);
+            $total_query = $this->excludeSuperAdmins($total_query)->where('tenant_id', request()->user()->tenant_id);
         }
 
         if ($this->model instanceof $this->quote_instance) {
@@ -83,7 +81,7 @@ class DashboardService
 
             $solution_types = $this->model->distinct()->pluck('solution_type_id');
 
-            foreach ($solution_types as $key => $solution_type_id) {
+            foreach ($solution_types as $solution_type_id) {
                 $solution_type = SolutionType::find($solution_type_id);
                 $quotes_collection = $solution_type->quotes;
 
@@ -101,9 +99,7 @@ class DashboardService
                 ];
             }
 
-            uasort($results, function ($a, $b) {
-                return $b['total'] <=> $a['total'];
-            });
+            uasort($results, fn ($a, $b) => $b['total'] <=> $a['total']);
 
             return [
                 'data' => $results ?? collect(),
@@ -217,7 +213,7 @@ class DashboardService
 
     public function getRelationFilteredData(array $array)
     {
-        $date_interval = formated_date_range($array, get_class($this->model));
+        $date_interval = formated_date_range($array, $this->model::class);
         $query = $this->model->whereBetween('created_at', $date_interval);
         $total_query = $this->model->query();
 
@@ -251,9 +247,7 @@ class DashboardService
                 ->get();
 
             $items->each(function ($quote) use (&$grouped) {
-                $providers = $quote->items->map(function ($item) {
-                    return data_get($item->data, 'providerKey');
-                })->unique();
+                $providers = $quote->items->map(fn ($item) => data_get($item->data, 'providerKey'))->unique();
 
                 foreach ($providers as $provider) {
                     $grouped[$provider] = $grouped->get($provider, collect())->push($quote);
@@ -287,9 +281,7 @@ class DashboardService
                 ];
             }
 
-            uasort($results, function ($a, $b) {
-                return $b['total'] <=> $a['total'];
-            });
+            uasort($results, fn ($a, $b) => $b['total'] <=> $a['total']);
 
             return [
                 'data' => $results ?? collect(),

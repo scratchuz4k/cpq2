@@ -32,7 +32,7 @@ class SsoController extends Controller
         ]);
 
         $email = $request->input('email');
-        $domain = substr(strrchr($email, '@'), 1);
+        $domain = substr(strrchr((string) $email, '@'), 1);
         $domainRecord = Tenant::where('domain', $domain)->first();
         if (! $domainRecord || ! $domainRecord->sso_id) {
             return back()->with([
@@ -48,7 +48,7 @@ class SsoController extends Controller
         }
 
         $ssoXmlContent = Storage::disk('public')->get($resourceFile->getRouteValue());
-        if (! simplexml_load_string($ssoXmlContent)) {
+        if (! simplexml_load_string((string) $ssoXmlContent)) {
             return back()->with([
                 'status' => __('The SSO configuration found for your domain is invalid'),
             ]);

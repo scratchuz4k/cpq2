@@ -67,9 +67,7 @@ class RegionController extends BaseController
     public function update(Request $request, Region $region)
     {
         try {
-            $region = DB::transaction(function () use ($region, $request) {
-                return $this->service->update($region, $request->all());
-            });
+            $region = DB::transaction(fn () => $this->service->update($region, $request->all()));
         } catch (Exception $e) {
             Log::debug($e->getMessage());
             throw new Exception($e);

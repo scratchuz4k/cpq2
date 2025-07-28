@@ -42,9 +42,7 @@ class CategoryController extends BaseController
     public function store(CategoryCreateRequest $request)
     {
         try {
-            $category = DB::transaction(function () use ($request) {
-                return $this->categoryService->store($request->all());
-            });
+            $category = DB::transaction(fn () => $this->categoryService->store($request->all()));
         } catch (\Exception $e) {
             throw new \Exception($e);
         }
@@ -76,9 +74,7 @@ class CategoryController extends BaseController
     public function update(CategoryUpdateRequest $request, Category $category)
     {
         try {
-            $category = DB::transaction(function () use ($request, $category) {
-                return $this->categoryService->update($category, $request->all());
-            });
+            $category = DB::transaction(fn () => $this->categoryService->update($category, $request->all()));
         } catch (\Exception $e) {
             throw new \Exception($e);
         }

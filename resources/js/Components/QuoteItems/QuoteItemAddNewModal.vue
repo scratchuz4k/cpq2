@@ -22,8 +22,14 @@
             </div>
             <div class="mb-3">
                 <label>Price Plan:</label>
-                <InputSelect @change="() => (newLine.contract_length = 1)" id="order-item-new-item" url="/price-plans"
-                    :fields="['name']" v-model="newLine.price_plan" placeholder="Select an Price Plan">
+                <InputSelect
+                    @change="() => (newLine.contract_length = 1)"
+                    id="order-item-new-item"
+                    url="/price-plans"
+                    :fields="['name']"
+                    v-model="newLine.price_plan"
+                    placeholder="Select an Price Plan"
+                >
                 </InputSelect>
             </div>
             <div class="row mb-3">
@@ -45,21 +51,17 @@
                 </div>
             </div>
             <div class="mb-3">
-                <button type="submit" id="btn-shareable-create" class="btn btn-primary">
-                    Create
-                </button>
-                <button type="button" class="btn" @click="() => (showModalNewItem = !showModalNewItem)">
-                    Cancel
-                </button>
+                <button type="submit" id="btn-shareable-create" class="btn btn-primary">Create</button>
+                <button type="button" class="btn" @click="() => (showModalNewItem = !showModalNewItem)">Cancel</button>
             </div>
         </form>
     </Dialog>
 </template>
 <script setup>
-import { Dialog, InputText } from "primevue";
-import { quote } from "@composables/useQuote";
-import { createQuoteItem } from "@/Composables/useQuoteItem";
-import { ref, reactive } from "vue";
+import { Dialog, InputText } from 'primevue';
+import { quote } from '@composables/useQuote';
+import { createQuoteItem } from '@/Composables/useQuoteItem';
+import { ref, reactive } from 'vue';
 
 const showModalNewItem = ref(false);
 
@@ -75,21 +77,21 @@ const newLine = reactive({
     contract_length: 1,
     price_plan: null,
     price_plan_id: null,
-    group: null,
+    group: null
 });
 
 const submitForm = async () => {
     newLine.price_plan_id = newLine.price_plan?.id;
     if (await createQuoteItem({ quote_id: quote.id, ...newLine })) {
         showModalNewItem.value = false;
-        emitter.emit("quote-items:updated");
+        emitter.emit('quote-items:updated');
         Object.assign(newLine, {
             name: null,
             margin: 0,
             quantity: 0,
             price: 0,
             discount: 0,
-            group: null,
+            group: null
         });
     }
 };

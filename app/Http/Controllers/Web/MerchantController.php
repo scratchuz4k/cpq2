@@ -42,9 +42,7 @@ class MerchantController extends BaseController
     public function store(MerchantCreateRequest $request)
     {
         try {
-            $merchant = DB::transaction(function () use ($request) {
-                return $this->merchantService->store($request->all());
-            });
+            $merchant = DB::transaction(fn () => $this->merchantService->store($request->all()));
         } catch (\Exception $e) {
             throw new \Exception($e);
         }
@@ -78,9 +76,7 @@ class MerchantController extends BaseController
     public function update(MerchantUpdateRequest $request, Merchant $merchant)
     {
         try {
-            $merchant = DB::transaction(function () use ($merchant, $request) {
-                return $this->merchantService->update($merchant, $request->all());
-            });
+            $merchant = DB::transaction(fn () => $this->merchantService->update($merchant, $request->all()));
         } catch (\Exception $e) {
             throw new \Exception($e);
         }

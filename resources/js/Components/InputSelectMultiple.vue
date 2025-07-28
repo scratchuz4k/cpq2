@@ -127,7 +127,7 @@ search();
                 <p v-for="(items, index) in proxyValue" class="w-100 d-flex justify-content-between">
                     <span>
                         <template v-for="(field, index) in fields">
-                            {{ index !== 0 ? ` (${items?.[field] ?? ''})` : items?.[field] ?? '' }}
+                            {{ index !== 0 ? ` (${items?.[field] ?? ''})` : (items?.[field] ?? '') }}
                         </template>
                     </span>
 
@@ -189,7 +189,7 @@ search();
                     style="cursor: pointer"
                 >
                     <template v-for="(field, index) in props.fields">
-                        {{ index !== 0 ? ` (${option?.[field] ?? ''})` : option?.[field] ?? '' }}
+                        {{ index !== 0 ? ` (${option?.[field] ?? ''})` : (option?.[field] ?? '') }}
                     </template>
                 </div>
                 <div class="m-auto" v-if="page < meta.total_pages">

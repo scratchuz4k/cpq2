@@ -1,5 +1,5 @@
-import { ref, createApp } from "vue";
-import WarningNote from "@/Components/WarningNote.vue";
+import { ref, createApp } from 'vue';
+import WarningNote from '@/Components/WarningNote.vue';
 
 export const checkWarnings = (warningProviders, link) => {
     if (!warningProviders.some((obj) => Object.values(obj).includes(true))) {
@@ -9,17 +9,17 @@ export const checkWarnings = (warningProviders, link) => {
         return;
     }
 
-    const wrapper = document.createElement("div");
+    const wrapper = document.createElement('div');
     let result = swal
         .fire({
             html: '<div id="warning-note-container"></div>',
             showCancelButton: false,
-            confirmButtonText: "Continue",
+            confirmButtonText: 'Continue',
             showCloseButton: true,
             width: 640,
             customClass: {
-                htmlContainer: "provider-warning",
-            },
+                htmlContainer: 'provider-warning'
+            }
         })
         .then((result) => {
             if (result.isConfirmed) {
@@ -38,7 +38,7 @@ export const checkWarnings = (warningProviders, link) => {
     swal.getHtmlContainer();
 
     // Dynamically mount the Vue component into the placeholder div
-    const container = document.getElementById("warning-note-container");
+    const container = document.getElementById('warning-note-container');
     if (container) {
         const app = createApp(WarningNote, { warnings: warningProviders });
         app.mount(container);

@@ -41,40 +41,38 @@ trait RegisterActivity
 
     protected static function bootRegisterActivity()
     {
-        static::eventsToBeRecorded()->each(function ($eventName) {
-            return static::$eventName(function (Model $model) use ($eventName) {
+        static::eventsToBeRecorded()->each(fn ($eventName) => static::$eventName(function (Model $model) use ($eventName) {
 
-                $tenant = Auth::user()->currentTenant;
+            $tenant = Auth::user()->currentTenant;
 
-                if (! array_key_exists('log_system_is_active', $tenant->configs) || $tenant->configs['log_system_is_active'] == '0') {
-                    return;
+            if (! array_key_exists('log_system_is_active', $tenant->configs) || $tenant->configs['log_system_is_active'] == '0') {
+                return;
+            }
+
+            $description = $model->getDescriptionForEvent($eventName);
+
+            if (empty($description)) {
+                return;
+            }
+
+            $data = [];
+            $changes = $model->getDirty();
+            foreach ($changes as $field => $newValue) {
+                $originalValue = $model->getOriginal($field);
+                if (isset($model->activity_field) && ! in_array($field, $model->activity_field)) {
+                    continue;
                 }
+                $data[] = ['field' => $field, 'from' => $originalValue, 'to' => $newValue];
+            }
 
-                $description = $model->getDescriptionForEvent($eventName);
-
-                if (empty($description)) {
-                    return;
-                }
-
-                $data = [];
-                $changes = $model->getDirty();
-                foreach ($changes as $field => $newValue) {
-                    $originalValue = $model->getOriginal($field);
-                    if (isset($model->activity_field) && ! in_array($field, $model->activity_field)) {
-                        continue;
-                    }
-                    $data[] = ['field' => $field, 'from' => $originalValue, 'to' => $newValue];
-                }
-
-                Activity::create([
-                    'operation' => $description,
-                    'activitable_id' => $model->getValue($model),
-                    'activitable_type' => $model::class,
-                    'data' => $data,
-                    'user_id' => auth()->user()->id ?? null,
-                    'tenant_id' => auth()->user()->tenant_id ?? null,
-                ]);
-            });
-        });
+            Activity::create([
+                'operation' => $description,
+                'activitable_id' => $model->getValue($model),
+                'activitable_type' => $model::class,
+                'data' => $data,
+                'user_id' => auth()->user()->id ?? null,
+                'tenant_id' => auth()->user()->tenant_id ?? null,
+            ]);
+        }));
     }
 }

@@ -39,9 +39,7 @@ class OrderService
                     $temp = OrderItem::find($order_item['id']);
                     $this->orderItemService->update($temp, [...$order_item, 'order_id' => $order->id]);
 
-                    $olderItems = $olderItems->reject(function ($temp) use ($order_item) {
-                        return $temp->id === $order_item['id'];
-                    });
+                    $olderItems = $olderItems->reject(fn ($temp) => $temp->id === $order_item['id']);
                 } else {
                     $this->orderItemService->store([...$order_item, 'order_id' => $order->id]);
                 }

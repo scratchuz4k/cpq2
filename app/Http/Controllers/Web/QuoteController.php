@@ -49,9 +49,7 @@ class QuoteController extends BaseController
         }
 
         $users = $users->filter(fn ($user) => $user->quotes->count() > 0);
-        $solutionTypes = SolutionType::whereHas('quotes', function ($query) use ($users) {
-            return $query->whereIn('user_id', $users->pluck('id'));
-        })->get();
+        $solutionTypes = SolutionType::whereHas('quotes', fn ($query) => $query->whereIn('user_id', $users->pluck('id')))->get();
 
         return Inertia::render('Quotes/Index', [
             'users' => $users->values(),
@@ -65,9 +63,7 @@ class QuoteController extends BaseController
      */
     public function create()
     {
-        $solutionTypes = Auth::user()->currentTenant->solutionTypes->filter(function ($solutionType) {
-            return $solutionType->pivot->is_active === 1;
-        });
+        $solutionTypes = Auth::user()->currentTenant->solutionTypes->filter(fn ($solutionType) => $solutionType->pivot->is_active === 1);
 
         return Inertia::render('Quotes/Create', [
             'accounts' => Account::all(),
@@ -126,9 +122,7 @@ class QuoteController extends BaseController
     public function update(QuoteUpdateRequest $request, Quote $quote)
     {
         try {
-            $quote = DB::transaction(function () use ($request, $quote) {
-                return $this->quoteService->update($quote, $request->all());
-            });
+            $quote = DB::transaction(fn () => $this->quoteService->update($quote, $request->all()));
         } catch (Exception $e) {
             if (! env('APP_DEBUG')) {
                 Log::error($e->getMessage());

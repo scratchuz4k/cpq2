@@ -32,9 +32,7 @@ class ProductCreateRequest extends FormRequest
                 'required',
                 'numeric',
                 Rule::unique('prices')
-                    ->where(function ($query) {
-                        return $query->where('product_id', $this->input('product_id'));
-                    }),
+                    ->where(fn ($query) => $query->where('product_id', $this->input('product_id'))),
             ],
             'prices.*.tax_rate' => 'required|numeric',
             'prices.*.net' => 'required|numeric',

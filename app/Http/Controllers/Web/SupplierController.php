@@ -42,9 +42,7 @@ class SupplierController extends BaseController
     public function store(SupplierCreateRequest $request)
     {
         try {
-            $supplier = DB::transaction(function () use ($request) {
-                return $this->suppliersService->store($request->all());
-            });
+            $supplier = DB::transaction(fn () => $this->suppliersService->store($request->all()));
         } catch (\Exception $e) {
             throw new \Exception($e);
         }
@@ -78,9 +76,7 @@ class SupplierController extends BaseController
     public function update(SupplierUpdateRequest $request, Supplier $supplier)
     {
         try {
-            $supplier = DB::transaction(function () use ($supplier, $request) {
-                return $this->suppliersService->update($supplier, $request->all());
-            });
+            $supplier = DB::transaction(fn () => $this->suppliersService->update($supplier, $request->all()));
         } catch (\Exception $e) {
             throw new \Exception($e);
         }

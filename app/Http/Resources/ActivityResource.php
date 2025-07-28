@@ -24,7 +24,6 @@ class ActivityResource extends JsonResource
 
         return [
             ...$this->resource->toArray(),
-            'activitable' => $temp ? $temp : $this->activitable,
             'activitable_type' => str_replace("App\Models\\", '', $this->activitable_type),
             'user' => $this->user,
         ];

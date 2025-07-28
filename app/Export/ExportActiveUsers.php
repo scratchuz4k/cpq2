@@ -20,7 +20,7 @@ class ExportActiveUsers implements FromCollection, ShouldAutoSize, WithHeadings
         $query = User::join('activities', function ($join) {
             $join->on('users.id', '=', 'activities.user_id')
                 ->where('activities.operation', 'user_login')
-                ->where('activities.activitable_type', 'App\Models\User')
+                ->where('activities.activitable_type', \App\Models\User::class)
                 ->whereBetween('activities.created_at', formated_date_range($this->dateRange, User::class));
         })
             ->select(array_merge(

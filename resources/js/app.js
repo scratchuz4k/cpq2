@@ -51,13 +51,16 @@ import Swal from 'sweetalert2';
 window.swal = Swal.mixin({
     buttonsStyling: true,
     showCancelButton: true,
-    confirmButtonColor: '#67236a',
     width: '20em',
     customClass: {
-        confirmButton: 'btn text-light btn-lg mr-2 fs-6',
+        confirmButton: 'btn btn-lg mr-2 fs-6',
         cancelButton: 'btn btn-outline-primary border-light-purple btn-lg fs-6',
         loader: 'custom-loader',
         title: 'h3'
+    },
+    didOpen: () => {
+        document.querySelector('.swal2-confirm').id = 'swal-btn-confirm';
+        document.querySelector('.swal2-cancel').id = 'swal-btn-cancel';
     }
 });
 

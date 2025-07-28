@@ -64,9 +64,7 @@ class ApiController extends BaseController
     public function update(Request $request, Api $api)
     {
         try {
-            $api = DB::transaction(function () use ($api, $request) {
-                return $this->apiService->update($api, $request->all());
-            });
+            $api = DB::transaction(fn () => $this->apiService->update($api, $request->all()));
         } catch (\Exception $e) {
             throw new \Exception($e);
         }

@@ -45,9 +45,7 @@ class BlacklistController extends BaseController
     public function update(Request $request, Blacklist $blacklist)
     {
         try {
-            $blacklist = DB::transaction(function () use ($blacklist, $request) {
-                return $this->blacklistService->update($blacklist, $request->all());
-            });
+            $blacklist = DB::transaction(fn () => $this->blacklistService->update($blacklist, $request->all()));
         } catch (Exception $e) {
             if (! env('APP_DEBUG')) {
                 Log::error($e->getMessage());
