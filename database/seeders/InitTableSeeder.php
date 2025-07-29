@@ -2,8 +2,6 @@
 
 namespace Database\Seeders;
 
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-
 use App\Enums\OrderStatusesEnum;
 use App\Enums\PricePlanEnum;
 use App\Enums\SolutionTypesEnum;
@@ -18,6 +16,7 @@ use App\Models\Tenant;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class InitTableSeeder extends Seeder
 {
@@ -28,22 +27,40 @@ class InitTableSeeder extends Seeder
      */
     public function run()
     {
-        $tenant = Tenant::updateOrCreate([
-            'name' => 'CloudMarket',
-        ], [
-            'domain' => 'localhost',
-            'database' => 'cloudmarket',
-        ]);
+        $tenant = Tenant::first();
+        if (! Tenant::count()) {
+            $tenant = Tenant::updateOrCreate([
+                'name' => 'CloudMarket',
+            ], [
+                'domain' => 'localhost',
+                'database' => 'cloudmarket',
+            ]);
+        }
 
-        $super_user = User::updateOrCreate([
-            'email' => 'super@example.com',
-        ], [
-            'name' => 'Super User',
-            'tenant_id' => $tenant->id,
-            'password' => Hash::make('werwerwer'),
-        ]);
+        if (! $super_user = User::where('email', 'super@example.com')->first()) {
+            $super_user = User::updateOrCreate([
+                'email' => 'super@example.com',
+            ], [
+                'name' => 'Super User',
+                'tenant_id' => $tenant->id,
+                'password' => Hash::make('werwerwer'),
+            ]);
+        }
+
+        if (! $system_user = User::where('email', 'system@cpq.cloudmarket.com')->first()) {
+            $system_user = User::updateOrCreate([
+                'email' => 'system@cpq.cloudmarket.com',
+            ], [
+                'name' => 'System User',
+                'tenant_id' => $tenant->id,
+                'password' => Hash::make(Str::random(10)),
+            ]);
+        }
 
         $super_user->tenants()->sync([$super_user->id]);
+
+        $allTenants = Tenant::all();
+        $system_user->tenants()->sync([$allTenants->pluck('id')]);
 
         foreach (SolutionTypesEnum::cases() as $case) {
             SolutionType::updateOrCreate(['code' => $case->value], ['name' => $case->getName()]);

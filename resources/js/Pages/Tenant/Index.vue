@@ -93,18 +93,6 @@ const submitTenantSettings = async () => {
 
 const submitTenantExprire = _.debounce(submitTenantSettings, 1000);
 
-// const onQuoteDaysInput = (value) => {
-//     const min = 1;
-//     const max = 365;
-//
-//     const clamped = Math.min(Math.max(value.value, min), max);
-//     tenant.configurations.quote_expiration_days = value.value;
-//
-//     if (!isNaN(clamped)) {
-//         submitTenantExprire();
-//     }
-// };
-
 const onQuoteDaysInput = () => {
     let value = tenant.configurations.quote_expiration_days;
     value = Number(value);
