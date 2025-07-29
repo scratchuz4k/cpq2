@@ -49,11 +49,11 @@ class CloudMarketApi
             $quoteAddress['TermMonths'] = (bool) $quote->configs['contract_length'] ? explode(',', (string) $quote->configs['contract_length']) : [];
         }
 
-        if (array_key_exists('bearer', $quote->configs)) {
+        if (array_key_exists('bearer', $quote->configs) && is_numeric($quote->configs['bearer'])) {
             $quoteAddress['ConnectionSpeeds.MinBearer'] = (int) $quote->configs['bearer'];
         }
 
-        if (array_key_exists('speed', $quote->configs)) {
+        if (array_key_exists('speed', $quote->configs) && is_numeric($quote->configs['speed'])) {
             $quoteAddress['ConnectionSpeeds.MinSpeed'] = (int) $quote->configs['speed'];
         }
 
