@@ -24,7 +24,7 @@ const changeEntity1 = (index) => {
 const icons = {
   Product: ["far", "rectangle-list"],
   Account: ["far", "address-card"],
-  Supplier: ["far", "handshake"],
+  Supplier: ["fas", "industry"],
   Global: ["fas", "landmark"],
   Group: ["fas", "users"],
   null: ["fas", "fa-slash"],
