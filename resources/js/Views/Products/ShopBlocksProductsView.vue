@@ -275,7 +275,7 @@ watch(
                             <font-awesome-icon :icon="['fas', 'grip-lines']"></font-awesome-icon>
                         </button>
                     </div>
-                    <div class="d-flex justify-content-end">
+                    <div class="d-flex justify-content-end text-nowrap flex-shrink-0">
                         <span class="me-2 align-self-center">Sort by</span>
                         <Select v-model="sort" :options="sorts" optionLabel="label" placeholder="All"> </Select>
                     </div>
