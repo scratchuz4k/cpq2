@@ -40,7 +40,7 @@ const changeEntity = () => {
 const icons = {
     Product: ['far', 'rectangle-list'],
     Account: ['far', 'address-card'],
-    Supplier: ['far', 'handshake'],
+    Supplier: ['fa', 'industry'],
     Global: ['fas', 'landmark'],
     Group: ['fas', 'users'],
     null: ['fas', 'fa-slash']
