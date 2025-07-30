@@ -2,10 +2,9 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head } from '@inertiajs/vue3';
 import { reactive, ref } from 'vue';
-import Button from 'primevue/button';
 import axios from 'axios';
 import ToggleSwitch from 'primevue/toggleswitch';
-import InputNumber from 'primevue/inputnumber';
+import { InputText } from 'primevue';
 import _ from 'lodash';
 
 const props = defineProps({
@@ -91,20 +90,15 @@ const submitTenantSettings = async () => {
     }
 };
 
-const submitTenantExprire = _.debounce(submitTenantSettings, 1000);
-
-const onQuoteDaysInput = () => {
-    let value = tenant.configurations.quote_expiration_days;
-    value = Number(value);
+const onQuoteDaysInput = _.debounce(() => {
+    let value = Number(tenant.configurations.quote_expiration_days);
 
     if (value < 1) value = 1;
     if (value > 365) value = 365;
 
-    if (value !== tenant.configurations.quote_expiration_days) {
-        tenant.configurations.quote_expiration_days = value;
-    }
-    submitTenantExprire();
-};
+    tenant.configurations.quote_expiration_days = value;
+    submitTenantSettings();
+}, 1000);
 
 const items = ref([{ label: 'Home', url: '/' }, { label: 'My Account', url: '/myaccount' }, { label: 'Tenants' }]);
 </script>
@@ -386,15 +380,16 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'My Account', url: '/my
                                                                 </label>
                                                             </div>
                                                             <div>
-                                                                <InputNumber
+                                                                <InputText
+                                                                    type="number"
+                                                                    class="w-100"
                                                                     id="quote-expiration-days"
                                                                     v-model="
                                                                         tenant.configurations.quote_expiration_days
                                                                     "
-                                                                    @input="onQuoteDaysInput"
                                                                     :min="1"
                                                                     :max="365"
-                                                                    fluid
+                                                                    @input="onQuoteDaysInput"
                                                                 />
                                                             </div>
                                                         </div>
