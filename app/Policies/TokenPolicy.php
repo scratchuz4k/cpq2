@@ -4,17 +4,17 @@ namespace App\Policies;
 
 use App\Models\Token;
 use App\Models\User;
-use Illuminate\Auth\Access\Response;
 
 class TokenPolicy
 {
-    private string $model = "token";
+    private string $model = 'token';
+
     /**
      * Determine whether the user can view any models.
      */
     public function viewAny(User $user): bool
     {
-        if (!$user->can("viewAny $this->model")) {
+        if (! $user->can("viewAny $this->model")) {
             return false;
         }
 
@@ -26,7 +26,7 @@ class TokenPolicy
      */
     public function view(User $user, Token $token): bool
     {
-        if (!$user->can("view $this->model")) {
+        if (! $user->can("view $this->model")) {
             return false;
         }
 
@@ -38,7 +38,7 @@ class TokenPolicy
      */
     public function create(User $user): bool
     {
-        if (!$user->can("create $this->model")) {
+        if (! $user->can("create $this->model")) {
             return false;
         }
 
@@ -50,7 +50,7 @@ class TokenPolicy
      */
     public function update(User $user, Token $token): bool
     {
-        if (!$user->can("update $this->model")) {
+        if (! $user->can("update $this->model")) {
             return false;
         }
 
@@ -62,7 +62,7 @@ class TokenPolicy
      */
     public function delete(User $user, Token $token): bool
     {
-        if (!$user->can("delete $this->model")) {
+        if (! $user->can("delete $this->model")) {
             return false;
         }
 
@@ -74,7 +74,7 @@ class TokenPolicy
      */
     public function restore(User $user, Token $token): bool
     {
-        if (!$user->can("restore $this->model")) {
+        if (! $user->can("restore $this->model")) {
             return false;
         }
 
@@ -86,22 +86,22 @@ class TokenPolicy
      */
     public function forceDelete(User $user, Token $token): bool
     {
-        if (!$user->can("forceDelete $this->model")) {
+        if (! $user->can("forceDelete $this->model")) {
             return false;
         }
 
         return true;
     }
 
-
     /**
      * Determine whether the user can export the model.
      */
     public function export(User $user): bool
     {
-        if (!$user->can("export $this->model")) {
+        if (! $user->can("export $this->model")) {
             return false;
         }
+
         return true;
     }
 }

@@ -6,9 +6,7 @@ import { Link } from '@inertiajs/vue3';
 <template>
     <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-gray-100">
         <div>
-            <Link href="/">
-
-            </Link>
+            <Link href="/"> </Link>
         </div>
 
         <nav class="navbar navbar-expand-lg bg-theme-secondary-dark">
@@ -16,9 +14,15 @@ import { Link } from '@inertiajs/vue3';
                 <a class="navbar-brand" href="/">
                     <ApplicationLogo />
                 </a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-                    data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
-                    aria-expanded="false" aria-label="Toggle navigation">
+                <button
+                    class="navbar-toggler"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#navbarSupportedContent"
+                    aria-controls="navbarSupportedContent"
+                    aria-expanded="false"
+                    aria-label="Toggle navigation"
+                >
                     <i class="fa-solid fa-bars"></i>
                 </button>
             </div>
@@ -26,7 +30,7 @@ import { Link } from '@inertiajs/vue3';
 
         <main>
             <div class="container">
-                <slot/>
+                <slot />
             </div>
         </main>
 

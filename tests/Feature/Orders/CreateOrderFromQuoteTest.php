@@ -1,11 +1,11 @@
 <?php
 
 use App\Enums\QuoteStatusesEnum;
-use App\Models\Order;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use App\Models\User;
-use App\Models\Tenant;
 use App\Models\Account;
+use App\Models\Order;
+use App\Models\Tenant;
+use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Auth;
 
 uses(RefreshDatabase::class);
@@ -89,7 +89,7 @@ beforeEach(function () {
             'active_spas' => [],
         ],
         'price' => 0,
-        'price_monthly' => 13.59
+        'price_monthly' => 13.59,
     ];
 
     $this->post('api/quote-items', $quote_item);
@@ -98,7 +98,7 @@ beforeEach(function () {
 
 it('Assert Quote status equals registry on Order create', function () {
     $data = [
-        'status' => QuoteStatusesEnum::REGISTRY->name
+        'status' => QuoteStatusesEnum::REGISTRY->name,
     ];
 
     $response = $this->put('api/quotes/1', $data);

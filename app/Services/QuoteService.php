@@ -42,7 +42,7 @@ class QuoteService
     {
         // TODO: MOVE THIS LOGIC TO A SPECIFIC CONTROLLER
         if (array_key_exists('discounts', $array)) {
-            foreach ($array['discounts'] as $key => $discount) {
+            foreach ($array['discounts'] as $discount) {
                 if (! array_key_exists('entity', $discount)) {
                     continue;
                 }
@@ -99,7 +99,7 @@ class QuoteService
         $items = $dataProvider->group(QuoteItemResource::class);
 
         $columns = json_decode(json_encode($solutionType['table']['columns']), true);
-        $view = array_key_exists('component', $solutionType['configurations']) ? strtolower($solutionType['configurations']['component']) : 'dealmaker';
+        $view = array_key_exists('component', $solutionType['configurations']) ? strtolower((string) $solutionType['configurations']['component']) : 'dealmaker';
         if (array_key_exists('has_custom_table', $solutionType['configurations']) && $solutionType['configurations']['has_custom_table'] == '1') {
             $view = 'custom';
         }

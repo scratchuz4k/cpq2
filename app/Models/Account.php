@@ -25,7 +25,7 @@ class Account extends Model
     protected function casts(): array
     {
         return [
-            'is_active' => 'boolean'
+            'is_active' => 'boolean',
         ];
     }
 
@@ -42,7 +42,7 @@ class Account extends Model
                         'group_id' => $user->group->id,
                     ]);
                 } catch (Exception $e) {
-                    if (!env('APP_DEBUG')) {
+                    if (! env('APP_DEBUG')) {
                         Log::error($e->getMessage());
                     }
                 }

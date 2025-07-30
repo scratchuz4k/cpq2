@@ -1,15 +1,15 @@
 <script setup>
-import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
-import Permissions from "@/Components/Permissions.vue";
-import { Head, Link } from "@inertiajs/vue3";
-import { can, hasRole } from "@composables/useAuth";
-import { ref } from "vue";
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import Permissions from '@/Components/Permissions.vue';
+import { Head, Link } from '@inertiajs/vue3';
+import { can, hasRole } from '@composables/useAuth';
+import { ref } from 'vue';
 
 defineProps({
     permissions: Array,
-    tenants: Array,
+    tenants: Array
 });
-const items = ref([{ label: "Home", url: "/" }, { label: "My Account" }]);
+const items = ref([{ label: 'Home', url: '/' }, { label: 'My Account' }]);
 </script>
 
 <template>
@@ -19,11 +19,7 @@ const items = ref([{ label: "Home", url: "/" }, { label: "My Account" }]);
             <Header title="My Account" :breadcrumbs="items">
                 <template #buttons>
                     <form @submit.prevent="submit">
-                        <Link
-                            :href="route('logout')"
-                            method="post"
-                            as="button"
-                            class="btn btn-primary px-4"
+                        <Link :href="route('logout')" method="post" as="button" class="btn btn-primary px-4"
                             >Log Out
                         </Link>
                     </form>
@@ -50,11 +46,7 @@ const items = ref([{ label: "Home", url: "/" }, { label: "My Account" }]);
                         <span>{{ $page.props.auth.user.email }}</span>
 
                         <div v-if="true" class="buttons mt-3">
-                            <Link
-                                class="btn btn-outline-primary px-4"
-                                :href="route('profile.edit')"
-                                >Edit Profile</Link
-                            >
+                            <Link class="btn btn-outline-primary px-4" :href="route('profile.edit')">Edit Profile</Link>
                         </div>
 
                         <hr class="login-seperator" />
@@ -64,7 +56,7 @@ const items = ref([{ label: "Home", url: "/" }, { label: "My Account" }]);
                                 <Link
                                     :href="
                                         route('tenant.make-current', {
-                                            tenant: tenant.id,
+                                            tenant: tenant.id
                                         })
                                     "
                                 >
@@ -81,12 +73,7 @@ const items = ref([{ label: "Home", url: "/" }, { label: "My Account" }]);
                 </div>
                 <div class="col-8">
                     <div class="row row-cols-1 row-cols-md-3 g-4">
-                        <div
-                            class="col"
-                            v-if="
-                                hasRole('Super Admin') || can('viewAny account')
-                            "
-                        >
+                        <div class="col" v-if="hasRole('Super Admin') || can('viewAny account')">
                             <div class="card bg-light border-0">
                                 <a
                                     id="link-accounts"
@@ -102,12 +89,7 @@ const items = ref([{ label: "Home", url: "/" }, { label: "My Account" }]);
                                 </a>
                             </div>
                         </div>
-                        <div
-                            class="col"
-                            v-if="
-                                hasRole('Super Admin') || can('viewAny brand')
-                            "
-                        >
+                        <div class="col" v-if="hasRole('Super Admin') || can('viewAny brand')">
                             <div class="card bg-light border-0">
                                 <a
                                     id="link-brands"
@@ -123,13 +105,7 @@ const items = ref([{ label: "Home", url: "/" }, { label: "My Account" }]);
                                 </a>
                             </div>
                         </div>
-                        <div
-                            class="col"
-                            v-if="
-                                hasRole('Super Admin') ||
-                                can('viewAny category')
-                            "
-                        >
+                        <div class="col" v-if="hasRole('Super Admin') || can('viewAny category')">
                             <div class="card bg-light border-0">
                                 <a
                                     id="link-categories"
@@ -145,12 +121,7 @@ const items = ref([{ label: "Home", url: "/" }, { label: "My Account" }]);
                                 </a>
                             </div>
                         </div>
-                        <div
-                            class="col"
-                            v-if="
-                                hasRole('Super Admin') || can('viewAny product')
-                            "
-                        >
+                        <div class="col" v-if="hasRole('Super Admin') || can('viewAny product')">
                             <div class="card bg-light border-0">
                                 <a
                                     id="link-products"
@@ -166,12 +137,7 @@ const items = ref([{ label: "Home", url: "/" }, { label: "My Account" }]);
                                 </a>
                             </div>
                         </div>
-                        <div
-                            class="col"
-                            v-if="
-                                hasRole('Super Admin') || can('viewAny region')
-                            "
-                        >
+                        <div class="col" v-if="hasRole('Super Admin') || can('viewAny region')">
                             <div class="card bg-light border-0">
                                 <a
                                     id="link-regions"
@@ -187,13 +153,7 @@ const items = ref([{ label: "Home", url: "/" }, { label: "My Account" }]);
                                 </a>
                             </div>
                         </div>
-                        <div
-                            class="col"
-                            v-if="
-                                hasRole('Super Admin') ||
-                                can('viewAny solution_type')
-                            "
-                        >
+                        <div class="col" v-if="hasRole('Super Admin') || can('viewAny solution_type')">
                             <div class="card bg-light border-0">
                                 <a
                                     id="link-solutions"
@@ -209,10 +169,7 @@ const items = ref([{ label: "Home", url: "/" }, { label: "My Account" }]);
                                 </a>
                             </div>
                         </div>
-                        <div
-                            class="col"
-                            v-if="hasRole('Super Admin') || can('viewAny spa')"
-                        >
+                        <div class="col" v-if="hasRole('Super Admin') || can('viewAny spa')">
                             <div class="card bg-light border-0">
                                 <a
                                     id="link-spas"
@@ -228,13 +185,7 @@ const items = ref([{ label: "Home", url: "/" }, { label: "My Account" }]);
                                 </a>
                             </div>
                         </div>
-                        <div
-                            class="col"
-                            v-if="
-                                hasRole('Super Admin') ||
-                                can('viewAny supplier')
-                            "
-                        >
+                        <div class="col" v-if="hasRole('Super Admin') || can('viewAny supplier')">
                             <div class="card bg-light border-0">
                                 <a
                                     id="link-suppliers"
@@ -243,49 +194,33 @@ const items = ref([{ label: "Home", url: "/" }, { label: "My Account" }]);
                                 >
                                     <font-awesome-icon
                                         class="py-3 opacity-25"
-                                        :icon="['far', 'handshake']"
+                                        :icon="['fas', 'industry']"
                                         size="2x"
                                     ></font-awesome-icon>
                                     <span class="d-block h5">Suppliers</span>
                                 </a>
                             </div>
                         </div>
-                        <div
-                            class="col"
-                            v-if="
-                                hasRole('Super Admin') ||
-                                can('viewAny merchant')
-                            "
-                        >
+                        <div class="col" v-if="hasRole('Super Admin') || can('viewAny merchant')">
                             <div class="card bg-light border-0">
                                 <a
                                     id="link-merchants"
                                     :href="route('merchants.index')"
                                     class="card-body text-center p-2 text-decoration-none"
                                 >
-                                    <font-awesome-icon
-                                        class="py-3 opacity-25"
-                                        :icon="['fas', 'shop']"
-                                        size="2x"
-                                    />
+                                    <font-awesome-icon class="py-3 opacity-25" :icon="['fas', 'shop']" size="2x" />
                                     <span class="d-block h5">Merchants</span>
                                 </a>
                             </div>
                         </div>
-                        <div
-                            class="col"
-                            v-if="
-                                hasRole('Super Admin') || can('viewAny tenant')
-                            "
-                        >
+                        <div class="col" v-if="hasRole('Super Admin') || can('viewAny tenant')">
                             <div class="card bg-light border-0">
                                 <a
                                     :href="
                                         hasRole('Super Admin')
                                             ? route('tenants.index')
                                             : route('tenants.edit', {
-                                                  tenant: $page.props.auth.user
-                                                      .current_tenant.id,
+                                                  tenant: $page.props.auth.user.current_tenant.id
                                               })
                                     "
                                     id="link-tenant"
@@ -300,12 +235,7 @@ const items = ref([{ label: "Home", url: "/" }, { label: "My Account" }]);
                                 </a>
                             </div>
                         </div>
-                        <div
-                            class="col"
-                            v-if="
-                                hasRole('Super Admin') || can('viewAny token')
-                            "
-                        >
+                        <div class="col" v-if="hasRole('Super Admin') || can('viewAny token')">
                             <div class="card bg-light border-0">
                                 <a
                                     id="link-tokens"
@@ -321,10 +251,7 @@ const items = ref([{ label: "Home", url: "/" }, { label: "My Account" }]);
                                 </a>
                             </div>
                         </div>
-                        <div
-                            class="col"
-                            v-if="hasRole('Super Admin') || can('viewAny api')"
-                        >
+                        <div class="col" v-if="hasRole('Super Admin') || can('viewAny api')">
                             <div class="card bg-light border-0">
                                 <a
                                     id="link-apis"
@@ -340,10 +267,7 @@ const items = ref([{ label: "Home", url: "/" }, { label: "My Account" }]);
                                 </a>
                             </div>
                         </div>
-                        <div
-                            class="col"
-                            v-if="hasRole('Super Admin') || can('viewAny user')"
-                        >
+                        <div class="col" v-if="hasRole('Super Admin') || can('viewAny user')">
                             <div class="card bg-light border-0">
                                 <a
                                     id="link-users"
@@ -360,13 +284,7 @@ const items = ref([{ label: "Home", url: "/" }, { label: "My Account" }]);
                                 </a>
                             </div>
                         </div>
-                        <div
-                            class="col"
-                            v-if="
-                                hasRole('Super Admin') ||
-                                can('viewAny email_template')
-                            "
-                        >
+                        <div class="col" v-if="hasRole('Super Admin') || can('viewAny email_template')">
                             <div class="card bg-light border-0">
                                 <a
                                     id="link-email-templates"
@@ -382,12 +300,7 @@ const items = ref([{ label: "Home", url: "/" }, { label: "My Account" }]);
                                 </a>
                             </div>
                         </div>
-                        <div
-                            v-if="
-                                hasRole('Super Admin') || can('viewAny export')
-                            "
-                            class="col"
-                        >
+                        <div v-if="hasRole('Super Admin') || can('viewAny export')" class="col">
                             <div class="card bg-light border-0">
                                 <a
                                     id="link-reporting"
@@ -412,7 +325,7 @@ const items = ref([{ label: "Home", url: "/" }, { label: "My Account" }]);
 
 <style scoped>
 .login-seperator {
-    content: "";
+    content: '';
     width: 80%;
     margin-left: auto;
     margin-right: auto;

@@ -25,6 +25,7 @@ class MerchantController extends BaseController
 
     /**
      * List Merchants
+     *
      * @response AnonymousResourceCollection<LengthAwarePaginator<MerchantResource>>
      */
     public function index(IndexRequest $request)
@@ -34,6 +35,7 @@ class MerchantController extends BaseController
             $data = $dataProvider->get();
         } catch (Exception $e) {
             Log::debug($e->getMessage());
+
             return $e->getMessage();
         }
 
@@ -65,9 +67,7 @@ class MerchantController extends BaseController
     public function update(Request $request, Merchant $merchant)
     {
         try {
-            $merchant = DB::transaction(function () use ($merchant, $request) {
-                return $this->service->update($merchant, $request->all());
-            });
+            $merchant = DB::transaction(fn () => $this->service->update($merchant, $request->all()));
         } catch (Exception $e) {
             Log::debug($e->getMessage());
             throw new Exception($e);

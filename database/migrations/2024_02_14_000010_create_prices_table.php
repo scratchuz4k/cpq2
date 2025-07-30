@@ -24,7 +24,6 @@ return new class extends Migration
             $table->timestamps();
         });
 
-
     }
 
     /**
@@ -38,7 +37,7 @@ return new class extends Migration
             $table->dropConstrainedForeignId('spa_id');
             $table->dropConstrainedForeignId('product_id');
         });
-        
+
         Schema::dropIfExists('prices');
     }
 };

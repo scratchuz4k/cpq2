@@ -8,14 +8,7 @@ use Illuminate\View\Component;
 
 class TableItemCustom extends Component
 {
-    public $component;
-    public $item;
-
-    public function __construct($component = null, $item = null)
-    {
-        $this->component = $component;
-        $this->item = $item;
-    }
+    public function __construct(public $component = null, public $item = null) {}
 
     /**
      * Get the view / contents that represent the component.

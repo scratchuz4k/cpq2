@@ -42,8 +42,7 @@ trait RegisterActivity
 
     protected static function bootRegisterActivity()
     {
-        static::eventsToBeRecorded()->each(function ($eventName) {
-            return static::$eventName(function (Model $model) use ($eventName) {
+        static::eventsToBeRecorded()->each(fn ($eventName) => static::$eventName(function (Model $model) use ($eventName) {
 
                 if (app()->runningInConsole()) {
                     $user = User::where('email', 'system@cpq.cloudmarket.com')->first();
@@ -53,25 +52,25 @@ trait RegisterActivity
                     $tenant = $user->currentTenant;
                 }
 
-                if (! array_key_exists('log_system_is_active', $tenant->configs) || $tenant->configs['log_system_is_active'] == '0') {
-                    return;
-                }
+            if (! array_key_exists('log_system_is_active', $tenant->configs) || $tenant->configs['log_system_is_active'] == '0') {
+                return;
+            }
 
-                $description = $model->getDescriptionForEvent($eventName);
+            $description = $model->getDescriptionForEvent($eventName);
 
-                if (empty($description)) {
-                    return;
-                }
+            if (empty($description)) {
+                return;
+            }
 
-                $data = [];
-                $changes = $model->getDirty();
-                foreach ($changes as $field => $newValue) {
-                    $originalValue = $model->getOriginal($field);
-                    if (isset($model->activity_field) && ! in_array($field, $model->activity_field)) {
-                        continue;
-                    }
-                    $data[] = ['field' => $field, 'from' => $originalValue, 'to' => $newValue];
+            $data = [];
+            $changes = $model->getDirty();
+            foreach ($changes as $field => $newValue) {
+                $originalValue = $model->getOriginal($field);
+                if (isset($model->activity_field) && ! in_array($field, $model->activity_field)) {
+                    continue;
                 }
+                $data[] = ['field' => $field, 'from' => $originalValue, 'to' => $newValue];
+            }
 
                 Activity::create([
                     'operation' => $description,

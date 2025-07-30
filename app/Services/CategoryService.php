@@ -3,13 +3,13 @@
 namespace App\Services;
 
 use App\Models\Category;
-use Illuminate\Support\Facades\DB;
 
 class CategoryService
 {
     public function store(array $array): Category
     {
         $category = Category::create($array);
+
         return $category;
     }
 
@@ -20,6 +20,7 @@ class CategoryService
         if (array_key_exists('product_id', $array)) {
             $category->products()->toggle($array['product_id']);
         }
+
         return $category->refresh();
     }
 }

@@ -70,9 +70,7 @@ class SolutionTypeController extends BaseController
     public function update(Request $request, SolutionType $solutionType)
     {
         try {
-            $solutionType = DB::transaction(function () use ($solutionType, $request) {
-                return $this->service->update($solutionType, $request->all());
-            });
+            $solutionType = DB::transaction(fn () => $this->service->update($solutionType, $request->all()));
         } catch (Exception $e) {
             Log::debug($e->getMessage());
             throw new Exception($e);

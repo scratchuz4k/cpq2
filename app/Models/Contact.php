@@ -2,11 +2,11 @@
 
 namespace App\Models;
 
-use App\Trait\SetTenantId;
 use App\Models\Scopes\TenantScope;
+use App\Trait\SetTenantId;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Contact extends Model
 {
@@ -23,6 +23,7 @@ class Contact extends Model
     {
         return $this->belongsTo(Account::class);
     }
+
     public function tenant(): BelongsTo
     {
         return $this->belongsTo(Tenant::class);

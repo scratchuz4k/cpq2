@@ -21,10 +21,10 @@ class TenantFactory extends Factory
         $username = trim(preg_replace('/[^a-z]+/', ' ', $username));
         $tenant_domain = Str::words($username, 1, '');
         $tenant_name = ucfirst($tenant_domain);
-        
+
         return [
             'name' => $tenant_name,
-            'domain' => $tenant_domain . '.example.com',
+            'domain' => $tenant_domain.'.example.com',
             'database' => $tenant_domain,
         ];
     }

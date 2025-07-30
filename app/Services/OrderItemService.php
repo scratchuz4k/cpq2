@@ -7,13 +7,12 @@ use Illuminate\Support\Facades\DB;
 
 class OrderItemService
 {
-
     public function store(array $array): OrderItem
     {
         return DB::transaction(function () use ($array) {
             $orderItem = OrderItem::create([
                 ...$array,
-                'original_price' => $array['price']
+                'original_price' => $array['price'],
             ]);
 
             if (array_key_exists('children', $array)) {
@@ -22,12 +21,11 @@ class OrderItemService
                         ...$array,
                         ...$child,
                         'parent_id' => $orderItem->id,
-                        'original_price' => isset($child['price']) ? $child['price'] : 0,
+                        'original_price' => $child['price'] ?? 0,
                     ]);
 
                 }
             }
-
 
             return $orderItem;
         });
@@ -37,6 +35,7 @@ class OrderItemService
     {
         return DB::transaction(function () use ($array, $orderItem) {
             $orderItem->update($array);
+
             return $orderItem;
         });
     }

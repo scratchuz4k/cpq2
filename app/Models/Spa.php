@@ -21,13 +21,13 @@ class Spa extends Model
         'group_id',
         'value',
         'percentage',
-        'is_active'
+        'is_active',
     ];
 
     protected function casts(): array
     {
         return [
-            'is_active' => 'boolean'
+            'is_active' => 'boolean',
         ];
     }
 

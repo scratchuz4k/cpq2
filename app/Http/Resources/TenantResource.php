@@ -16,7 +16,7 @@ class TenantResource extends JsonResource
     {
         return [
             ...$this->resource->load('file', 'logo')->toArray(),
-            "configurations" => $this->configs,
+            'configurations' => $this->configs,
         ];
     }
 }

@@ -2,7 +2,6 @@
 
 namespace App\Helpers\Api;
 
-use App\Helpers\Api\AddressLookup;
 use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
@@ -13,7 +12,7 @@ class VirtualOneLookupApi
     private function request($endpoint, $options)
     {
         $authentication = [
-            'auth' => [env('VIRTUAL1_ADDRESS_USERNAME', default: 'JenniferLawrence'), env('VIRTUAL1_ADDRESS_PASSWORD', 'secretpass')]
+            'auth' => [env('VIRTUAL1_ADDRESS_USERNAME', default: 'JenniferLawrence'), env('VIRTUAL1_ADDRESS_PASSWORD', 'secretpass')],
         ];
 
         $options += $authentication;
@@ -23,7 +22,7 @@ class VirtualOneLookupApi
             $response = $client->get($endpoint, $options);
             $json = $response->getBody()->getContents();
 
-            if (!$json) {
+            if (! $json) {
                 throw new \Exception('No data Found!');
             }
 
@@ -36,7 +35,7 @@ class VirtualOneLookupApi
 
     public function normalisePostcode($postcode)
     {
-        $postcode = strtoupper(trim(urldecode($postcode)));
+        $postcode = strtoupper(trim(urldecode((string) $postcode)));
         $postcode = str_replace(' ', '', $postcode);
 
         $regex = "/^([Gg][Ii][Rr] 0[Aa]{2})|((([A-Za-z][0-9]{1,2})|(([A-Za-z][A-Ha-hJ-Yj-y][0-9]{1,2})|(([A-Za-z][0-9][A-Za-z])|([A-Za-z][A-Ha-hJ-Yj-y][0-9]?[A-Za-z]))))\s?[0-9][A-Za-z]{2})$/";
@@ -48,7 +47,7 @@ class VirtualOneLookupApi
             $outcode = str_replace($incode, '', $postcode);
         } else {
             // attempt Republic of Ireland validation if UK hasn't
-            $regex = "/^((?:^[AC-FHKNPRTV-Y][0-9]{2}|D6W))[ -]?([0-9A-FHKNPRTV-Y]{4})$/";
+            $regex = '/^((?:^[AC-FHKNPRTV-Y][0-9]{2}|D6W))[ -]?([0-9A-FHKNPRTV-Y]{4})$/';
             if (preg_match($regex, $postcode, $match)) {
                 $outcode = $match[1];
                 $incode = $match[2];
@@ -64,9 +63,9 @@ class VirtualOneLookupApi
     public function findAddresses($string)
     {
         $parsedPostcode = $this->normalisePostcode($string);
-        $postcode = $parsedPostcode['outcode'] . $parsedPostcode['incode'];
+        $postcode = $parsedPostcode['outcode'].$parsedPostcode['incode'];
 
-        $cache_key = 'virtual1_address_lookup_' . Str::slug($postcode);
+        $cache_key = 'virtual1_address_lookup_'.Str::slug($postcode);
 
         if (Cache::has($cache_key)) {
             Log::debug("Getting virtual1 address lookup from cache for {$cache_key}");
@@ -77,40 +76,40 @@ class VirtualOneLookupApi
             $response = $this->request('/utility/address-lookup', [
                 'query' => [
                     'postcode' => $postcode,
-                ]
+                ],
             ]);
 
-            if (array_key_exists("address", $response) && !empty($response["address"])) {
+            if (array_key_exists('address', $response) && ! empty($response['address'])) {
                 Cache::put($cache_key, $response);
             }
         }
 
         $addresses = [];
-        if (array_key_exists("address", $response) && !empty($response["address"])) {
-            foreach ($response["address"] as $address) {
+        if (array_key_exists('address', $response) && ! empty($response['address'])) {
+            foreach ($response['address'] as $address) {
 
                 $virtualOneAddress = new AddressLookup(
+                    postCode : $address['postcode'] ?? null,
                     addressKey : $address['addressReferenceNum'] ?? null,
-                    type : $address["addressQualifier"] ?? null,
-                    uprn : $address["uprn"] ?? null,
-                    districtCode : $address["districtCode"] ?? null,
-                    coordinatesEasting : $address["coordinatesEasting"] ?? null,
-                    coordinatesNorthing : $address["coordinatesNorthing"] ?? null,
-                    latitude : array_key_exists("latitude", $address) ? (float)$address["latitude"] : null,
-                    longitude : array_key_exists("longitude", $address) ? (float)$address["longitude"] : null,
-                    label : $address["label"] ?? null,
-                    organisationName : $address["organisationName"] ?? null,
-                    subPremises : $address["subPremises"] ?? null,
-                    premisesName : $address["premisesName"] ?? null,
-                    dependentThoroughfareName : $address["dependentThoroughfareName"] ?? null,
-                    thoroughfareNumber : $address["thoroughfareNumber"] ?? null,
-                    thoroughfareName : $address["thoroughfareName"] ?? null,
-                    doubleDependentLocality : $address["doubleDependentLocality"] ?? null,
-                    locality : $address["locality"] ?? null,
-                    postTown : $address["postTown"] ?? null,
-                    postCode : $address["postcode"] ?? null,
-                    county : $address["county"] ?? null,
-                    country : $address["country"] ?? null,
+                    type : $address['addressQualifier'] ?? null,
+                    uprn : $address['uprn'] ?? null,
+                    districtCode : $address['districtCode'] ?? null,
+                    coordinatesEasting : $address['coordinatesEasting'] ?? null,
+                    coordinatesNorthing : $address['coordinatesNorthing'] ?? null,
+                    latitude : array_key_exists('latitude', $address) ? (float) $address['latitude'] : null,
+                    longitude : array_key_exists('longitude', $address) ? (float) $address['longitude'] : null,
+                    label : $address['label'] ?? null,
+                    organisationName : $address['organisationName'] ?? null,
+                    subPremises : $address['subPremises'] ?? null,
+                    premisesName : $address['premisesName'] ?? null,
+                    dependentThoroughfareName : $address['dependentThoroughfareName'] ?? null,
+                    thoroughfareNumber : $address['thoroughfareNumber'] ?? null,
+                    thoroughfareName : $address['thoroughfareName'] ?? null,
+                    doubleDependentLocality : $address['doubleDependentLocality'] ?? null,
+                    locality : $address['locality'] ?? null,
+                    postTown : $address['postTown'] ?? null,
+                    county : $address['county'] ?? null,
+                    country : $address['country'] ?? null,
                 );
 
                 $virtualOneAddress->label = $virtualOneAddress->getFullAddress();

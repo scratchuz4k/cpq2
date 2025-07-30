@@ -6,6 +6,7 @@ class AddressLookup
 {
     public function __construct(
 
+        public $postCode,
         public $addressKey = null,
         public $type = null,
         public $uprn = null,
@@ -24,7 +25,6 @@ class AddressLookup
         public $doubleDependentLocality = null,
         public $locality = null,
         public $postTown = null,
-        public $postCode,
         public $county = null,
         public $country = null
     ) {}

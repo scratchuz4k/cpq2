@@ -3,8 +3,6 @@
 namespace App\Http\Requests;
 
 use App\Enums\OrderStatusesEnum;
-use App\Models\Order;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Foundation\Http\FormRequest;
 
 class OrderUpdateRequest extends FormRequest
@@ -40,7 +38,7 @@ class OrderUpdateRequest extends FormRequest
             'items.*.price_monthly' => 'numeric',
             'items.*.margin' => 'numeric|min:0|max:100',
             'items.*.discount' => 'numeric|min:0|max:100',
-            'status' => 'in:' . implode(',', OrderStatusesEnum::names()),
+            'status' => 'in:'.implode(',', OrderStatusesEnum::names()),
         ];
     }
 }

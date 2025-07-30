@@ -46,14 +46,14 @@ class CloudMarketApi
         }
 
         if (array_key_exists('contract_length', $quote->configs)) {
-            $quoteAddress['TermMonths'] = (bool) $quote->configs['contract_length'] ? explode(',', $quote->configs['contract_length']) : [];
+            $quoteAddress['TermMonths'] = (bool) $quote->configs['contract_length'] ? explode(',', (string) $quote->configs['contract_length']) : [];
         }
 
-        if (array_key_exists('bearer', $quote->configs)) {
+        if (array_key_exists('bearer', $quote->configs) && is_numeric($quote->configs['bearer'])) {
             $quoteAddress['ConnectionSpeeds.MinBearer'] = (int) $quote->configs['bearer'];
         }
 
-        if (array_key_exists('speed', $quote->configs)) {
+        if (array_key_exists('speed', $quote->configs) && is_numeric($quote->configs['speed'])) {
             $quoteAddress['ConnectionSpeeds.MinSpeed'] = (int) $quote->configs['speed'];
         }
 
@@ -64,9 +64,7 @@ class CloudMarketApi
             $quoteCredentials += self::resolveApiAuth($api);
         }
 
-        $quoteCredentials = array_filter($quoteCredentials, function ($value) {
-            return ! empty($value);
-        });
+        $quoteCredentials = array_filter($quoteCredentials, fn ($value) => ! empty($value));
 
         $quoteRequestParams = array_merge($quoteAddress, $quoteCredentials);
 
@@ -90,24 +88,20 @@ class CloudMarketApi
 
         $connectionBase = "SupplierApiConnections.{$supplierKey}_Connection";
 
-        switch ($api?->auth_type) {
-            case 'basic':
-                return [
-                    "{$connectionBase}.Username" => $api?->username ?? env(strtoupper("{$supplierKey}_CONNECTION_USERNAME")),
-                    "{$connectionBase}.Password" => $api?->password ?? env(strtoupper("{$supplierKey}_CONNECTION_PASSWORD")),
-                ];
-            case 'basic_client':
-                return [
-                    "{$connectionBase}.Username" => $api?->username ?? env(strtoupper("{$supplierKey}_CONNECTION_USERNAME")),
-                    "{$connectionBase}.Password" => $api?->password ?? env(strtoupper("{$supplierKey}_CONNECTION_PASSWORD")),
-                    "{$connectionBase}.ClientId" => $api?->client_id ?? env(strtoupper("{$supplierKey}_CONNECTION_CLIENTID")),
-                ];
-            case 'token':
-                return [
-                    "{$connectionBase}.Token" => $api?->token ?? env(strtoupper("{$supplierKey}_CONNECTION_TOKEN")),
-                ];
-            default:
-                return [];
-        }
+        return match ($api?->auth_type) {
+            'basic' => [
+                "{$connectionBase}.Username" => $api?->username ?? env(strtoupper("{$supplierKey}_CONNECTION_USERNAME")),
+                "{$connectionBase}.Password" => $api?->password ?? env(strtoupper("{$supplierKey}_CONNECTION_PASSWORD")),
+            ],
+            'basic_client' => [
+                "{$connectionBase}.Username" => $api?->username ?? env(strtoupper("{$supplierKey}_CONNECTION_USERNAME")),
+                "{$connectionBase}.Password" => $api?->password ?? env(strtoupper("{$supplierKey}_CONNECTION_PASSWORD")),
+                "{$connectionBase}.ClientId" => $api?->client_id ?? env(strtoupper("{$supplierKey}_CONNECTION_CLIENTID")),
+            ],
+            'token' => [
+                "{$connectionBase}.Token" => $api?->token ?? env(strtoupper("{$supplierKey}_CONNECTION_TOKEN")),
+            ],
+            default => [],
+        };
     }
 }

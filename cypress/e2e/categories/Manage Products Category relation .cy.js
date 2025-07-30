@@ -33,35 +33,34 @@ describe('Manage Products Category relation', () => {
 
     products.forEach((product, index) => {
         it('Creates a Product', () => {
-            cy.visit('/')
-            cy.get('#my-account').click()
-            cy.get('#link-products').click()
+            cy.visit('/');
+            cy.get('#my-account').click();
+            cy.get('#link-products').click();
 
-            cy.get('#product-create-btn').click()
+            cy.get('#product-create-btn').click();
 
-            cy.get('#product-code').type(product.code)
-            cy.get('#product-name').type(product.name)
+            cy.get('#product-code').type(product.code);
+            cy.get('#product-name').type(product.name);
 
             if (index === 1) {
                 cy.selectLazyOption('product-categories', category.name);
             }
 
-            cy.get('#btn-save-product').click()
-            cy.get('.notyf').contains('Created with Success')
+            cy.get('#btn-save-product').click();
+            cy.get('.notyf').contains('Created with Success');
 
-            cy.get('#datatable-search').type(product.code)
+            cy.get('#datatable-search').type(product.code);
             cy.get('.p-datatable-table').contains(product.name);
-        })
-    })
-
+        });
+    });
 
     it('Check Category has related product', () => {
         cy.visit('/');
         cy.get('#my-account').click();
         cy.get('#link-categories').click();
         cy.get('#datatable-search').type(category.name);
-        cy.wait(1000)
-        cy.get('#datatable-btn-0-edit').click()
+        cy.wait(1000);
+        cy.get('#datatable-btn-0-edit').click();
 
         cy.get('#1-1').click();
         cy.get('.p-datatable-table').contains(products[1].name);
@@ -76,18 +75,18 @@ describe('Manage Products Category relation', () => {
         cy.get('#my-account').click();
         cy.get('#link-categories').click();
         cy.get('#datatable-search').type(category_2.name);
-        cy.wait(1000)
-        cy.get('#datatable-btn-0-edit').click()
+        cy.wait(1000);
+        cy.get('#datatable-btn-0-edit').click();
 
         cy.get('#1-1').click();
 
-        products.forEach(product => {
-            cy.get('#input-select-select-product').click()
-            cy.get('#select-select-product-search').type(product.name)
-            cy.wait(200)
-            cy.get('#select-product-sidebar').contains('No available options')
-            cy.get('#input-select-select-product').click()
-        })
+        products.forEach((product) => {
+            cy.get('#input-select-select-product').click();
+            cy.get('#select-select-product-search').type(product.name);
+            cy.wait(200);
+            cy.get('#select-product-sidebar').contains('No available options');
+            cy.get('#input-select-select-product').click();
+        });
     });
 
     it('Remove Category Products', () => {
@@ -95,17 +94,17 @@ describe('Manage Products Category relation', () => {
         cy.get('#my-account').click();
         cy.get('#link-categories').click();
         cy.get('#datatable-search').type(category.name);
-        cy.wait(1000)
-        cy.get('#datatable-btn-0-edit').click()
+        cy.wait(1000);
+        cy.get('#datatable-btn-0-edit').click();
 
         cy.get('#1-1').click();
 
-        products.forEach(product => {
+        products.forEach((product) => {
             cy.get('#datatable-search').clear().type(product.name);
-            cy.wait(500)
-            cy.get('#datatable-btn-0-delete').click()
-            cy.get(".notyf").contains("Product removed with success");
-        })
+            cy.wait(500);
+            cy.get('#datatable-btn-0-delete').click();
+            cy.get('.notyf').contains('Product removed with success');
+        });
     });
 
     it('Check that Category has no Products', () => {
@@ -113,15 +112,15 @@ describe('Manage Products Category relation', () => {
         cy.get('#my-account').click();
         cy.get('#link-categories').click();
         cy.get('#datatable-search').type(category.name);
-        cy.wait(1000)
-        cy.get('#datatable-btn-0-edit').click()
+        cy.wait(1000);
+        cy.get('#datatable-btn-0-edit').click();
 
         cy.get('#1-1').click();
 
-        products.forEach(product => {
+        products.forEach((product) => {
             cy.get('#datatable-search').type(product.name);
-            cy.wait(500)
-            cy.get('.p-datatable-table').should('not.contain', product.name)
-        })
+            cy.wait(500);
+            cy.get('.p-datatable-table').should('not.contain', product.name);
+        });
     });
 });

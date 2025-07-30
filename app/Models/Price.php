@@ -47,7 +47,7 @@ class Price extends Model
         static::addGlobalScope(new TenantScope);
 
         static::retrieved(function ($model) {
-            //TODO: switch to a account saved in the user model
+            // TODO: switch to a account saved in the user model
             static::$priceRules = new PriceRules;
             $account = Account::find(request() ? request()->input('account_id', null) : null);
             static::$priceRules->find($model->product, $model->product->supplier, $account, $model->product->pricePlan);

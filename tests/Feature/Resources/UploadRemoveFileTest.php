@@ -1,12 +1,12 @@
 <?php
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use App\Models\User;
-use App\Models\Tenant;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Storage;
 use App\Models\Resource;
+use App\Models\Tenant;
+use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 uses(RefreshDatabase::class);
 
@@ -56,7 +56,7 @@ it('remove file', function () {
         ->not->toBeEmpty();
 
     $firstResource = Resource::firstOrFail();
-    $response = $this->delete('api/resources/' . $firstResource->id);
+    $response = $this->delete('api/resources/'.$firstResource->id);
     $response->assertStatus(200);
     expect(Resource::count())->toBe(0);
 });

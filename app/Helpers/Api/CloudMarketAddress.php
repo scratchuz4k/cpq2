@@ -4,7 +4,6 @@ namespace App\Helpers\Api;
 
 use Illuminate\Support\Str;
 
-
 class CloudMarketAddress
 {
     public function __construct(
@@ -22,6 +21,6 @@ class CloudMarketAddress
 
     public function toString(): string
     {
-        return Str::slug($this->postCode) . '_' . md5($this->uprn . $this->addressKey . $this->buildingName . $this->buildingNumber . $this->subPremises . $this->street . $this->town);
+        return Str::slug($this->postCode).'_'.md5($this->uprn.$this->addressKey.$this->buildingName.$this->buildingNumber.$this->subPremises.$this->street.$this->town);
     }
 }

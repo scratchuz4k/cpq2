@@ -1,14 +1,14 @@
 <script setup>
-import { proceedOrder, rejectOrder } from "@/Composables/useOrders.js";
-import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
-import { Head, Link, usePage } from "@inertiajs/vue3";
-import { reactive, ref } from "vue";
-import { setOrder, order } from "@composables/useOrders";
+import { proceedOrder, rejectOrder } from '@/Composables/useOrders.js';
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import { Head, Link, usePage } from '@inertiajs/vue3';
+import { reactive, ref } from 'vue';
+import { setOrder, order } from '@composables/useOrders';
 
 const page = usePage();
 const props = defineProps({
     order: Object,
-    pricePlans: Object,
+    pricePlans: Object
 });
 
 setOrder(props.order);
@@ -16,8 +16,7 @@ setOrder(props.order);
 const showDate = (days = 0) => {
     const dateObj = new Date();
     dateObj.setDate(dateObj.getDate() + days);
-    const currentDate =
-        dateObj.getDate() + "/" + (dateObj.getMonth() + 1) + "/" + dateObj.getFullYear();
+    const currentDate = dateObj.getDate() + '/' + (dateObj.getMonth() + 1) + '/' + dateObj.getFullYear();
     return currentDate;
 };
 
@@ -28,14 +27,13 @@ const orderTotal = (key) => {
 };
 
 const items = ref([
-    { label: "Home", url: "/dashboard" },
-    { label: `Orders`, url: "/orders" },
-    { label: `Order #${order?.id} Preview` },
+    { label: 'Home', url: '/dashboard' },
+    { label: `Orders`, url: '/orders' },
+    { label: `Order #${order?.id} Preview` }
 ]);
 </script>
 
 <template>
-
     <Head :title="'Preview Order #' + order.id" />
     <AuthenticatedLayout :order="order">
         <div class="row mb-3">
@@ -49,15 +47,21 @@ const items = ref([
                     </div>
                 </template>
                 <template v-else>
-                    <button id="reject-order-btn"
+                    <button
+                        id="reject-order-btn"
                         v-if="order.user_id === page.props.auth.user.id || order.user_id === null"
-                        class="btn btn-secondary mx-2" @click="rejectOrder(order)">
+                        class="btn btn-secondary mx-2"
+                        @click="rejectOrder(order)"
+                    >
                         <font-awesome-icon :icon="['fas', 'x']"></font-awesome-icon>
                         Reject
                     </button>
-                    <button id="proceed-order-btn"
+                    <button
+                        id="proceed-order-btn"
                         v-if="order.user_id === page.props.auth.user.id || order.user_id === null"
-                        class="btn btn-primary mx-2" @click="proceedOrder(order)">
+                        class="btn btn-primary mx-2"
+                        @click="proceedOrder(order)"
+                    >
                         <font-awesome-icon :icon="['fas', 'check']"></font-awesome-icon>
                         Proceed
                     </button>

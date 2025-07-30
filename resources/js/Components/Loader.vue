@@ -7,14 +7,12 @@
 </template>
 
 <script setup>
-
 const props = defineProps({
     classBind: {
         type: String,
         default: ''
     }
-})
-
+});
 </script>
 
 <style scoped>
@@ -26,9 +24,9 @@ const props = defineProps({
 }
 
 .app-loading div {
-    width: .5rem;
-    height: .5rem;
-    margin: .5rem 0.3rem;
+    width: 0.5rem;
+    height: 0.5rem;
+    margin: 0.5rem 0.3rem;
     background: #828282;
     border-radius: 50%;
     -webkit-animation: 0.9s bounce infinite;

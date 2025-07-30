@@ -42,5 +42,5 @@ return [
         'client_id' => env('GOOGLE_OIDC_CLIENT_ID'),
         'client_secret' => env('GOOGLE_OIDC_CLIENT_SECRET'),
         'redirect' => env('APP_URL').'/auth/google',
-    ]
+    ],
 ];

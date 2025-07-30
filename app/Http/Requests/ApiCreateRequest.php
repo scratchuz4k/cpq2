@@ -23,7 +23,7 @@ class ApiCreateRequest extends FormRequest
     {
         return [
             'auth_type' => 'required',
-            'code' => 'required'
+            'code' => 'required',
         ];
     }
 }

@@ -4,49 +4,45 @@
     </form>
 </template>
 
-
 <script setup>
-import Dropzone from "dropzone"
-import {onMounted} from "vue"
+import Dropzone from 'dropzone';
+import { onMounted } from 'vue';
 
 const props = defineProps({
     acceptedFiles: String
-})
-const emit = defineEmits(["resource:created"])
+});
+const emit = defineEmits(['resource:created']);
 
 onMounted(() => {
-    let element = document.getElementById("dropzone");
+    let element = document.getElementById('dropzone');
 
     new Dropzone(element, {
         url: '/api/resources',
-        paramName: "file",
+        paramName: 'file',
         maxFilesize: 2,
         uploadMultiple: true,
         acceptedFiles: props.acceptedFiles,
         addRemoveLinks: true,
-        dictRemoveFile: "×",
+        dictRemoveFile: '×',
         dictCancelUpload: null,
         headers: {
-            "X-CSRF-TOKEN": document
-                .querySelector('meta[name="csrf-token"]')
-                .getAttribute("content"),
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
         },
         init: function () {
-            this.on("error", function(file, response) {
+            this.on('error', function (file, response) {
                 window.notyf.error(response.message ?? response);
                 this.removeFile(file);
-            })
+            });
         },
-        success: (res, data) => onUpload(data),
-    })
-})
+        success: (res, data) => onUpload(data)
+    });
+});
 
 const onUpload = (data) => {
-    window.notyf.success(data.message)
-    emit("resource:created")
-}
+    window.notyf.success(data.message);
+    emit('resource:created');
+};
 </script>
-
 
 <style lang="scss" scoped>
 .dropzone {

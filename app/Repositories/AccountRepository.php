@@ -17,11 +17,9 @@ class AccountRepository
 
                 $contact->update($item);
 
-                $oldContacts = $oldContacts->reject(function ($contact) use ($item) {
-                    return $contact->id === $item['id'];
-                });
+                $oldContacts = $oldContacts->reject(fn ($contact) => $contact->id === $item['id']);
             } else {
-                if (!empty($item)) {
+                if (! empty($item)) {
                     $contact = Contact::create([...$item, 'account_id' => $account->id, 'tenant_id' => session()->get('tenant_id')]);
                 }
             }

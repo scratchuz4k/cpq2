@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\BaseController;
-use Illuminate\Http\Request;
 use App\Models\Configuration;
+use Illuminate\Http\Request;
 
 class ConfigurationController extends BaseController
 {

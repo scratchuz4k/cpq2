@@ -4,25 +4,25 @@ namespace App\Policies;
 
 use App\Models\Account;
 use App\Models\User;
-use Illuminate\Auth\Access\Response;
 
 class AccountPolicy
 {
-    private string $model = "account";
+    private string $model = 'account';
 
     private function isAccountManagementRestricted(User $user): bool
     {
         $configs = $user->currentTenant->configs ?? [];
-        return !empty($configs['restrict_account_management_is_active']) && $configs['restrict_account_management_is_active'] !== '0';
+
+        return ! empty($configs['restrict_account_management_is_active']) && $configs['restrict_account_management_is_active'] !== '0';
     }
 
     public function userCanManageAccount(User $user, Account $account)
     {
-        if (!$user->group()->exists()) {
+        if (! $user->group()->exists()) {
             return true;
         }
 
-        if (!$user->hasRole('Super Admin') && !$user->hasRole('Company Admin')) {
+        if (! $user->hasRole('Super Admin') && ! $user->hasRole('Company Admin')) {
             return $user->group->accounts->contains('id', $account->id);
         }
 
@@ -31,26 +31,26 @@ class AccountPolicy
 
     private function hasPermission(User $user, string $action): bool
     {
-        if ($user->can("$action $this->model") && !$this->isAccountManagementRestricted($user)) {
+        if ($user->can("$action $this->model") && ! $this->isAccountManagementRestricted($user)) {
             return true;
         }
 
-        if ($user->can("view token") && request()->expectsJson()) {
+        if ($user->can('view token') && request()->expectsJson()) {
             return true;
         }
+
         return false;
     }
-
-
 
     /**
      * Determine whether the user can view any models.
      */
     public function viewAny(User $user): bool
     {
-        if (!$user->can("viewAny $this->model")) {
+        if (! $user->can("viewAny $this->model")) {
             return false;
         }
+
         return true;
     }
 
@@ -59,9 +59,10 @@ class AccountPolicy
      */
     public function view(User $user, Account $account): bool
     {
-        if (!$user->can("view $this->model") && $this->userCanManageAccount($user, $account)) {
+        if (! $user->can("view $this->model") && $this->userCanManageAccount($user, $account)) {
             return false;
         }
+
         return true;
     }
 
@@ -110,9 +111,10 @@ class AccountPolicy
      */
     public function export(User $user): bool
     {
-        if (!$user->can("export $this->model")) {
+        if (! $user->can("export $this->model")) {
             return false;
         }
+
         return true;
     }
 }

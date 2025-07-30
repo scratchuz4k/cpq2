@@ -14,6 +14,7 @@ use Inertia\Response;
 class GroupController extends BaseController
 {
     protected $model = Group::class;
+
     public function __construct(protected GroupService $groupService)
     {
         parent::__construct();
@@ -35,9 +36,7 @@ class GroupController extends BaseController
     public function update(Request $request, Group $group)
     {
         try {
-            $category = DB::transaction(function () use ($request, $group) {
-                return $this->groupService->update($group, $request->all());
-            });
+            $category = DB::transaction(fn () => $this->groupService->update($group, $request->all()));
         } catch (\Exception $e) {
             throw new \Exception($e);
         }

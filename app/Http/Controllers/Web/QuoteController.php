@@ -42,21 +42,19 @@ class QuoteController extends BaseController
     {
         $user = request()->user();
 
-        if (!$user->hasRole('Sales Rep')) {
+        if (! $user->hasRole('Sales Rep')) {
             $users = User::whereHas('quotes')->get();
         } else {
             $users = $this->descendantsWithQuotes();
         }
 
-        $users = $users->filter(fn($user) => $user->quotes->count() > 0);
-        $solutionTypes = SolutionType::whereHas('quotes', function ($query) use ($users) {
-            return $query->whereIn('user_id', $users->pluck('id'));
-        })->get();
+        $users = $users->filter(fn ($user) => $user->quotes->count() > 0);
+        $solutionTypes = SolutionType::whereHas('quotes', fn ($query) => $query->whereIn('user_id', $users->pluck('id')))->get();
 
         return Inertia::render('Quotes/Index', [
             'users' => $users->values(),
             'solutions' => $solutionTypes,
-            'status' => array_map(fn($status) => $status->name, QuoteStatusesEnum::cases()),
+            'status' => array_map(fn ($status) => $status->name, QuoteStatusesEnum::cases()),
         ]);
     }
 
@@ -65,9 +63,8 @@ class QuoteController extends BaseController
      */
     public function create()
     {
-        $solutionTypes = Auth::user()->currentTenant->solutionTypes->filter(function ($solutionType) {
-            return $solutionType->pivot->is_active === 1;
-        });
+        $solutionTypes = Auth::user()->currentTenant->solutionTypes->filter(fn ($solutionType) => $solutionType->pivot->is_active === 1);
+
         return Inertia::render('Quotes/Create', [
             'accounts' => Account::all(),
             'solution_types' => (SolutionTypeResource::collection($solutionTypes))->resolve(),
@@ -87,7 +84,7 @@ class QuoteController extends BaseController
                 return $quote;
             });
         } catch (Exception $e) {
-            if (!env('APP_DEBUG')) {
+            if (! env('APP_DEBUG')) {
                 Log::error($e->getMessage());
             }
             throw new Exception($e);
@@ -125,11 +122,9 @@ class QuoteController extends BaseController
     public function update(QuoteUpdateRequest $request, Quote $quote)
     {
         try {
-            $quote = DB::transaction(function () use ($request, $quote) {
-                return $this->quoteService->update($quote, $request->all());
-            });
+            $quote = DB::transaction(fn () => $this->quoteService->update($quote, $request->all()));
         } catch (Exception $e) {
-            if (!env('APP_DEBUG')) {
+            if (! env('APP_DEBUG')) {
                 Log::error($e->getMessage());
             }
             throw new Exception($e);
@@ -176,7 +171,7 @@ class QuoteController extends BaseController
         $pdf = $this->quoteService->generatePdf($request, $quote);
 
         return $pdf
-            ->name('quote-' . $quote['id'] . '.pdf')
+            ->name('quote-'.$quote['id'].'.pdf')
             ->download();
 
     }
@@ -184,7 +179,7 @@ class QuoteController extends BaseController
     public function email(EmailSendRequest $request, Quote $quote)
     {
         $pdf = $this->quoteService->generatePdf($request, $quote);
-        $pdf->save(storage_path('app/temp/quote-' . $quote['id'] . '.pdf'));
+        $pdf->save(storage_path('app/temp/quote-'.$quote['id'].'.pdf'));
 
         Mail::queue(
             new DynamicEmail(
@@ -203,8 +198,8 @@ class QuoteController extends BaseController
                 files: [
                     [
                         'disk' => 'temp',
-                        'path' => 'quote-' . $quote['id'] . '.pdf',
-                        'title' => 'quote-' . $quote['id'] . '.pdf',
+                        'path' => 'quote-'.$quote['id'].'.pdf',
+                        'title' => 'quote-'.$quote['id'].'.pdf',
                         'mimetype' => 'application/pdf',
                     ],
                 ],
