@@ -16,31 +16,41 @@ const item = defineModel();
             v-tooltip
             data-bs-toggle="tooltip"
             data-bs-placement="top"
-            title="Primary Router Model"
+            :title="'Primary Router Model: ' + item.data.additionalInfo['router']"
             class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm router-model"
         >
             <font-awesome-icon :icon="['fas', 'plug']"></font-awesome-icon>
-            {{ item.data.additionalInfo['router'] }}
         </span>
         <span
             v-if="item.data?.isContended"
             class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm is-contended"
             data-bs-toggle="tooltip"
             data-bs-placement="top"
-            title="Contended, wires only full fibre service with symmetrical upload and download speeds"
+            title="Contended Service: Contended, wires only full fibre service with symmetrical upload and download speeds"
             v-tooltip
         >
-            Contended Service
+            <font-awesome-icon :icon="['fas', 'server']"></font-awesome-icon>
         </span>
         <span
             v-if="item.data?.additionalInfo?.['Type'] == 'Fibre Flex 200+'"
             v-tooltip
             data-bs-toggle="tooltip"
             data-bs-placement="top"
-            title="This service offers guaranteed upload and download speeds of 200Mbps and can burst up to a peak of 1Gbps"
+            title="Burstable Service: This service offers guaranteed upload and download speeds of 200Mbps and can burst up to a peak of 1Gbps"
             class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm router-model"
         >
-            Burstable Service
+            <font-awesome-icon :icon="['fas', 'bolt']"></font-awesome-icon>
+        </span>
+
+        <span
+            v-if="item.data?.additionalInfo?.['addon_ipv4']"
+            v-tooltip
+            data-bs-toggle="tooltip"
+            data-bs-placement="top"
+            :title="item.data?.additionalInfo?.['addon_ipv4']"
+            class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm router-model"
+        >
+            <font-awesome-icon :icon="['fas', 'network-wired']"></font-awesome-icon>
         </span>
     </p>
 </template>

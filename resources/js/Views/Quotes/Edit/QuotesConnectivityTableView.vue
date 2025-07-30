@@ -896,31 +896,40 @@ getArticles(false, true);
                                         v-tooltip
                                         data-bs-toggle="tooltip"
                                         data-bs-placement="top"
-                                        title="Primary Router Model"
+                                        :title="'Primary Router Model: ' + article.additionalInfo['router']"
                                         class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm router-model"
                                     >
                                         <font-awesome-icon :icon="['fas', 'plug']"></font-awesome-icon>
-                                        {{ article.additionalInfo['router'] }}
                                     </span>
                                     <span
                                         v-if="article?.isContended"
                                         class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm is-contended"
                                         data-bs-toggle="tooltip"
                                         data-bs-placement="top"
-                                        title="Contended, wires only full fibre service with symmetrical upload and download speeds"
+                                        title="Contended Service: Contended, wires only full fibre service with symmetrical upload and download speeds"
                                         v-tooltip
                                     >
-                                        Contended Service
+                                        <font-awesome-icon :icon="['fas', 'server']"></font-awesome-icon>
                                     </span>
                                     <span
                                         v-if="article?.additionalInfo?.['Type'] == 'Fibre Flex 200+'"
                                         v-tooltip
                                         data-bs-toggle="tooltip"
                                         data-bs-placement="top"
-                                        title="This service offers guaranteed upload and download speeds of 200Mbps and can burst up to a peak of 1Gbps"
+                                        title="Burstable Service: This service offers guaranteed upload and download speeds of 200Mbps and can burst up to a peak of 1Gbps"
                                         class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm router-model"
                                     >
-                                        Burstable Service
+                                        <font-awesome-icon :icon="['fas', 'bolt']"></font-awesome-icon>
+                                    </span>
+                                    <span
+                                        v-if="article?.additionalInfo?.['addon_ipv4']"
+                                        v-tooltip
+                                        data-bs-toggle="tooltip"
+                                        data-bs-placement="top"
+                                        :title="article?.additionalInfo?.['addon_ipv4']"
+                                        class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm router-model"
+                                    >
+                                        <font-awesome-icon :icon="['fas', 'network-wired']"></font-awesome-icon>
                                     </span>
                                 </td>
                                 <td>
@@ -951,6 +960,14 @@ getArticles(false, true);
                                 <td>{{ format.speed(article.speed) }}</td>
                                 <td :id="'line-' + index + '-price-install'">
                                     {{ format.GBP(article.priceInstall_spa) }}
+                                    <span
+                                        v-if="article?.additionalInfo?.['addon_install'] && !article.amortisation"
+                                        :data-bs-original-title="article?.additionalInfo?.['addon_install']"
+                                        data-bs-html="true"
+                                        v-tooltip
+                                    >
+                                        <font-awesome-icon :icon="['fas', 'circle-info']"></font-awesome-icon>
+                                    </span>
                                 </td>
                                 <td :id="'line-' + index + '-price-monthly'">
                                     <template v-if="!article.amortisation">
@@ -961,6 +978,9 @@ getArticles(false, true);
                                         :data-bs-original-title="
                                             '<b>Initial Setup Cost:</b> ' +
                                             format.GBP(article.amortisation_install) +
+                                            (article?.additionalInfo?.['addon_install'] && article.amortisation
+                                                ? '<br/>' + article?.additionalInfo?.['addon_install']
+                                                : '') +
                                             '<br/><b>Monthly Amortisation:</b> ' +
                                             format.GBP(article.amortisation)
                                         "
