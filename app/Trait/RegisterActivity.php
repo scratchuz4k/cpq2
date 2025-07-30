@@ -44,13 +44,13 @@ trait RegisterActivity
     {
         static::eventsToBeRecorded()->each(fn ($eventName) => static::$eventName(function (Model $model) use ($eventName) {
 
-                if (app()->runningInConsole()) {
-                    $user = User::where('email', 'system@cpq.cloudmarket.com')->first();
-                    $tenant = Tenant::current();
-                } else {
-                    $user = auth()->user();
-                    $tenant = $user->currentTenant;
-                }
+            if (app()->runningInConsole()) {
+                $user = User::where('email', 'system@cpq.cloudmarket.com')->first();
+                $tenant = Tenant::current();
+            } else {
+                $user = auth()->user();
+                $tenant = $user->currentTenant;
+            }
 
             if (! array_key_exists('log_system_is_active', $tenant->configs) || $tenant->configs['log_system_is_active'] == '0') {
                 return;
@@ -72,15 +72,14 @@ trait RegisterActivity
                 $data[] = ['field' => $field, 'from' => $originalValue, 'to' => $newValue];
             }
 
-                Activity::create([
-                    'operation' => $description,
-                    'activitable_id' => $model->getValue($model),
-                    'activitable_type' => $model::class,
-                    'data' => $data,
-                    'user_id' => $user->id ?? null,
-                    'tenant_id' => $tenant->id ?? null,
-                ]);
-            });
-        });
+            Activity::create([
+                'operation' => $description,
+                'activitable_id' => $model->getValue($model),
+                'activitable_type' => $model::class,
+                'data' => $data,
+                'user_id' => $user->id ?? null,
+                'tenant_id' => $tenant->id ?? null,
+            ]);
+        }));
     }
 }
