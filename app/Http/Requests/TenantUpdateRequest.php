@@ -27,7 +27,7 @@ class TenantUpdateRequest extends FormRequest
             'sso_id' => ['nullable', new FileValidator('xml')],
             'sso_text_area' => ['nullable', new XmlValidator],
             'logo_id' => ['nullable', new FileValidator('image')],
-            'configurations.quote_expiration_days' => ['required', 'integer', 'min:1', 'max:365'],
+            'configurations.quote_expiration_days' => ['integer', 'min:1', 'max:365'],
         ];
     }
 }

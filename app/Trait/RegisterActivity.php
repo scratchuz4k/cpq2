@@ -44,7 +44,7 @@ trait RegisterActivity
     {
         static::eventsToBeRecorded()->each(fn ($eventName) => static::$eventName(function (Model $model) use ($eventName) {
 
-            if (app()->runningInConsole()) {
+            if (app()->bound('fromJob')) {
                 $user = User::where('email', 'system@cpq.cloudmarket.com')->first();
                 $tenant = Tenant::current();
             } else {

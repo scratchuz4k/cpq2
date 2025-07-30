@@ -25,6 +25,7 @@ class UpdateStatusExpiredQuotesJob implements ShouldQueue
      */
     public function handle(): void
     {
+        app()->instance('fromJob', true);
         $tenant = Tenant::current();
         $expiredStatus = QuoteStatusesEnum::EXPIRED->name;
 
