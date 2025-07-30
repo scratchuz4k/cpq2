@@ -60,7 +60,7 @@ class InitTableSeeder extends Seeder
         $super_user->tenants()->sync([$super_user->id]);
 
         $allTenants = Tenant::all();
-        $system_user->tenants()->sync([$allTenants->pluck('id')]);
+        $system_user->tenants()->sync($allTenants->pluck('id'));
 
         foreach (SolutionTypesEnum::cases() as $case) {
             SolutionType::updateOrCreate(['code' => $case->value], ['name' => $case->getName()]);
