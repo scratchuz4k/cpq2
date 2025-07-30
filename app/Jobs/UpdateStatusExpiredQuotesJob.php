@@ -25,9 +25,6 @@ class UpdateStatusExpiredQuotesJob implements ShouldQueue
      */
     public function handle(): void
     {
-        $start = now();
-        Log::info("UpdateStatusExpiredQuotesJob | Started at $start");
-
         $tenant = Tenant::current();
         $expiredStatus = QuoteStatusesEnum::EXPIRED->name;
 
@@ -36,9 +33,10 @@ class UpdateStatusExpiredQuotesJob implements ShouldQueue
             $expirationDays = ($tenant->configs && array_key_exists('quote_expiration_days', $tenant->configs))
                 ? $tenant->configs['quote_expiration_days']
                 : 14;
-            $expirationDate = now()->subDays($expirationDays);
+            $expirationDate = today()->subDays($expirationDays)->format('Y-m-d');
 
-            Log::info("Processing tenant {$tenant->name} | Expiring quotes older than {$expirationDate}");
+            Log::info("--------------------     {$tenant->name}     --------------------");
+            Log::info("Expiring quotes created before {$expirationDate}");
 
             DB::transaction(function () use (
                 &$quotesUpdated,
@@ -54,7 +52,7 @@ class UpdateStatusExpiredQuotesJob implements ShouldQueue
                             $quote->save();
 
                             $quotesUpdated++;
-                            Log::info("Quote ID {$quote->id} updated from {$originalStatus} to {$expiredStatus}");
+                            Log::info("Quote ID {$quote->id} created at {$quote->created_at->format('Y-m-d')} updated from {$originalStatus} to {$expiredStatus}");
                         }
                     });
             });
@@ -63,6 +61,6 @@ class UpdateStatusExpiredQuotesJob implements ShouldQueue
         }
 
         Log::info("{$quotesUpdated} quotes update for {$tenant->name}");
-        Log::info('UpdateStatusExpiredQuotes | Job completed at '.now());
+        Log::info('-----------------------------------------------------------------');
     }
 }

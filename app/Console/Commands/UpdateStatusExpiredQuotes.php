@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Jobs\UpdateStatusExpiredQuotesJob;
 use App\Models\Tenant;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Log;
 
 class UpdateStatusExpiredQuotes extends Command
 {
@@ -27,10 +28,13 @@ class UpdateStatusExpiredQuotes extends Command
      */
     public function handle()
     {
+        Log::info('UpdateStatusExpiredQuotesJob started at  '.now());
+
         foreach (Tenant::all() as $tenant) {
             $tenant->makeCurrent();
             UpdateStatusExpiredQuotesJob::dispatch();
             $tenant->forgetCurrent();
         }
+        Log::info('UpdateStatusExpiredQuotesJob completed at '.now());
     }
 }
