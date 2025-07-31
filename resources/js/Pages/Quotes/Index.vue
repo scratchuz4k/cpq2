@@ -118,6 +118,7 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Quotes' }]);
                             class="d-flex justify-content-end"
                         >
                             <button
+                                v-if="['QUOTE', 'REJECTED'].includes(data.status)"
                                 :id="'datatable-btn-' + index + '-crete-order'"
                                 :hidden="!(tenant.configurations.orders_flow_is_active === '1')"
                                 class="btn px-2 py-0 mx-1 border-0"

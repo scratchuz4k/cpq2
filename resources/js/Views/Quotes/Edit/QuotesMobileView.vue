@@ -2,7 +2,7 @@
 import _ from 'lodash';
 import { quote, setQuote } from '@composables/useQuote';
 import axios from 'axios';
-import { router } from '@inertiajs/vue3';
+import { router, usePage } from '@inertiajs/vue3';
 import { ref } from 'vue';
 import queryString from 'query-string';
 import format from '@/Composables/format.js';
@@ -10,6 +10,9 @@ import format from '@/Composables/format.js';
 const props = defineProps({
     modelValue: Object
 });
+
+const page = usePage();
+const tenant = page.props.tenant;
 
 const solution_type = props.modelValue.solution_type;
 const active_categories = ref([]);
@@ -109,7 +112,6 @@ getCategoriesWithProducts();
                             Email: firstname.lastname@gmail.com
                         </div>
                     </InfoBox>
-                    <
                     <InfoBox v-if="['QUOTE', 'PRICE', 'CONFIGURE'].includes(modelValue.status)">
                         <div style="font-size: 14px">
                             This quote will expire on

@@ -55,7 +55,10 @@ let view = component && Object.keys(solutionsViews).includes(component) ? soluti
                 <div class="col">
                     <div class="d-flex">
                         <h1 class="mb-1 w-auto">Quote Q-{{ quote.id }}</h1>
-                        <span class="badge border border-secondary text-secondary opacity-75 ms-4 lh-sm my-auto">
+                        <span
+                            v-if="quote.status === 'EXPIRED'"
+                            class="badge border border-secondary text-secondary opacity-75 ms-4 lh-sm my-auto"
+                        >
                             {{ quote.status }}
                         </span>
                     </div>
