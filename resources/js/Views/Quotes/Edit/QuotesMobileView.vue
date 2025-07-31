@@ -5,6 +5,7 @@ import axios from 'axios';
 import { router } from '@inertiajs/vue3';
 import { ref } from 'vue';
 import queryString from 'query-string';
+import format from '@/Composables/format.js';
 
 const props = defineProps({
     modelValue: Object
@@ -106,6 +107,20 @@ getCategoriesWithProducts();
                             <br />
                             Contact Number: 0124567890<br />
                             Email: firstname.lastname@gmail.com
+                        </div>
+                    </InfoBox>
+                    <
+                    <InfoBox v-if="['QUOTE', 'PRICE', 'CONFIGURE'].includes(modelValue.status)">
+                        <div style="font-size: 14px">
+                            This quote will expire on
+                            <b style="font-size: 16px">
+                                {{
+                                    format.expireDate(
+                                        modelValue.created_at,
+                                        tenant.configurations?.quotes_expiration_days
+                                    )
+                                }}
+                            </b>
                         </div>
                     </InfoBox>
                     <div class="configure-mobile-sidebar px-4 py-4">

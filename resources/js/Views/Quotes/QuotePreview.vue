@@ -2,6 +2,12 @@
 import { ref } from 'vue';
 import { setQuote, quote } from '@composables/useQuote';
 import WarningNote from '@/Components/WarningNote.vue';
+import format from '@/Composables/format.js';
+import { usePage } from '@inertiajs/vue3';
+import dayjs from 'dayjs';
+
+const page = usePage();
+const tenant = page.props.tenant;
 
 const props = defineProps({
     modelValue: Object,
@@ -47,12 +53,18 @@ let view = component && Object.keys(solutionsViews).includes(component) ? soluti
             </div>
             <div class="row mt-4">
                 <div class="col">
-                    <h1 class="mb-1">Quote Q-{{ quote.id }}</h1>
+                    <div class="d-flex">
+                        <h1 class="mb-1 w-auto">Quote Q-{{ quote.id }}</h1>
+                        <span class="badge border border-secondary text-secondary opacity-75 ms-4 lh-sm my-auto">
+                            {{ quote.status }}
+                        </span>
+                    </div>
                     <div class="row mb-3">
                         <div class="col">
                             <p>
-                                Quotation Date: {{ showDate() }}<br />
-                                Valid Date: {{ showDate(30) }}
+                                Quotation Date: {{ dayjs(quote.created_at).format('DD/MM/YYYY') }}<br />
+                                Valid Date:
+                                {{ format.expireDate(quote.created_at, tenant.configurations?.quotes_expiration_days) }}
                             </p>
                         </div>
                     </div>

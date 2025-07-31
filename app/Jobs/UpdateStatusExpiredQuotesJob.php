@@ -44,18 +44,19 @@ class UpdateStatusExpiredQuotesJob implements ShouldQueue
                 $expiredStatus,
                 $expirationDate
             ) {
-                Quote::whereIn('status', $this->statusThatCanBeUpdated)
+                $quotes = Quote::whereIn('status', $this->statusThatCanBeUpdated)
                     ->whereDate('created_at', '<=', $expirationDate)
-                    ->chunkById(100, function ($quotes) use (&$quotesUpdated, $expiredStatus) {
-                        foreach ($quotes as $quote) {
-                            $originalStatus = $quote->status;
-                            $quote->status = $expiredStatus;
-                            $quote->save();
+                    ->get();
 
-                            $quotesUpdated++;
-                            Log::info("Quote ID {$quote->id} created at {$quote->created_at->format('Y-m-d')} updated from {$originalStatus} to {$expiredStatus}");
-                        }
-                    });
+                foreach ($quotes as $quote) {
+                    $originalStatus = $quote->status;
+                    $quote->update([
+                        'status' => $expiredStatus,
+                    ]);
+
+                    $quotesUpdated++;
+                    Log::info("Quote ID {$quote->id} created at {$quote->created_at->format('Y-m-d')} updated from {$originalStatus} to {$expiredStatus}");
+                }
             });
         } catch (\Exception $e) {
             Log::error("Error processing tenant {$tenant->name}: {$e->getMessage()}");

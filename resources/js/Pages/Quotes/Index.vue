@@ -3,6 +3,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link, usePage } from '@inertiajs/vue3';
 import { ref } from 'vue';
 import { createOrder } from '@/Composables/useOrders.js';
+import dayjs from 'dayjs';
 
 const props = defineProps({
     users: {
@@ -31,6 +32,14 @@ const createOrderAndRefresh = async (id) => {
     if (res) {
         emitter.emit('datatable-refresh');
     }
+};
+
+const expirableStatuses = ['QUOTE', 'PRICE', 'CONFIGURE'];
+
+const dateToExpire = (date) => {
+    return dayjs(date)
+        .add(tenant.configurations?.quotes_expiration_days ?? 14, 'day')
+        .format('DD/MM/YYYY');
 };
 
 const deleteRecord = (id) => {
@@ -88,8 +97,17 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Quotes' }]);
                     :tableProps="{ id: 'dashboard-table' }"
                     route="/quotes"
                 >
-                    <template #status="{ value }">
-                        <span class="badge text-bg-secondary">{{ value }}</span>
+                    <template #status="{ data, value }">
+                        <span
+                            v-if="expirableStatuses.includes(data.status)"
+                            class="badge text-bg-secondary"
+                            v-tooltip
+                            data-bs-toggle="tooltip"
+                            data-bs-placement="top"
+                            :title="'This quote will expire on ' + dateToExpire(data.created_at)"
+                            >{{ value }}</span
+                        >
+                        <span v-else class="badge text-bg-secondary">{{ value }}</span>
                     </template>
                     <template #updated_at="{ value }">
                         {{ format.date(value) }}
