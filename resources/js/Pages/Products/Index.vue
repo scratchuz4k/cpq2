@@ -30,12 +30,11 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'My Account', url: '/my
                         link: false
                     }"
                     :columns="[
-                        { data: 'id', title: '#', style: 'width:5%' },
                         { data: 'is_active', title: 'Active', style: 'width:5%' },
                         { data: 'code', title: 'Code', style: 'width:20%' },
                         { data: 'name', title: 'Name', style: 'width:25%' },
-                        { data: 'supplier.name', title: 'Supplier', style: 'width:12%' },
-                        { data: 'brand.name', title: 'Brand', style: 'width:12%' },
+                        { data: 'parent.name', title: 'Parent', style: 'width:12%' },
+                        { data: 'categories.name', title: 'Category', style: 'width:12%' },
                         { data: 'updated_at', title: 'Updated At', style: 'width:15%' }
                     ]"
                     route="/products"

@@ -36,6 +36,7 @@ const saveProduct = () => {
             ...props.product,
             supplier_id: props.product.supplier?.id,
             brand_id: props.product.brand?.id,
+            parent_id: props.product.parent?.id,
             categories: categories.value?.id ?? null
         },
         {
@@ -203,6 +204,21 @@ const items = ref([
                                     :query="[{ column: 'is_active', operator: 'equals', value: 1 }]"
                                 >
                                 </InputSelect>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="product-parent" class="form-label">Parent:</label>
+                                <div class="input-group p-0">
+                                    <InputSelect
+                                        id="product-parent"
+                                        url="/products"
+                                        :fields="['name']"
+                                        class="w-100"
+                                        v-model="product.parent"
+                                        placeholder="Select a Parent"
+                                        :query="[{ column: 'is_active', operator: 'equals', value: 1 }]"
+                                    />
+                                </div>
                             </div>
                         </div>
                     </div>

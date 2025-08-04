@@ -35,6 +35,7 @@ const proxyValue = computed({
 });
 
 const products = ref([]);
+const children = ref([]);
 
 const getProducts = async () => {
     meta.isLoading = true;
@@ -46,6 +47,11 @@ const getProducts = async () => {
                 column: 'categories.id',
                 operator: 'equals',
                 value: props.category.id
+            },
+            {
+                column: 'parent_id',
+                operator: 'is_null',
+                value: 'null'
             }
         ]),
         account_id: props.account.id
@@ -124,7 +130,7 @@ getProducts();
                     </div>
                     <font-awesome-icon :icon="['fa', 'circle-info']" />
                 </div>
-                <div class="mobile-product-quantity">
+                <div class="mobile-product-quantity" v-if="!product.has_children">
                     <label>Quantity</label>
                     <div class="d-flex align-items-center pb-3">
                         <div :style="{ width: '150px' }">
@@ -161,6 +167,7 @@ getProducts();
                         </button>
                     </div>
                 </div>
+                <div v-else>Show More...</div>
             </div>
         </div>
         <div v-else v-for="n in meta.limit" class="mobile-item mobile-product mb-3">

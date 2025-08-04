@@ -16,13 +16,14 @@ class Product extends Model
     use HasFactory, SetTenantId;
 
     protected $fillable = [
+        'tenant_id',
+        'parent_id',
+        'price_plan_id',
+        'supplier_id',
+        'brand_id',
         'code',
         'name',
         'description',
-        'supplier_id',
-        'brand_id',
-        'price_plan_id',
-        'tenant_id',
         'is_active',
     ];
 
@@ -41,6 +42,16 @@ class Product extends Model
     public function activePrice(): ?Price
     {
         return $this->prices()->first();
+    }
+
+    public function parent()
+    {
+        return $this->hasOne(Product::class, 'id', 'parent_id');
+    }
+
+    public function children()
+    {
+        return $this->hasMany(Product::class, 'parent_id', 'id');
     }
 
     public function prices(): HasMany
