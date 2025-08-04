@@ -14,7 +14,7 @@ use App\Http\Controllers\Auth\SsoController;
 use App\Http\Controllers\Auth\VerifyEmailController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('login/{token}', [IntegrateAuthController::class, 'login'])
+Route::get('login/external/{token}', [IntegrateAuthController::class, 'login'])
     ->name('login-token');
 
 Route::middleware('guest')->group(function () {
