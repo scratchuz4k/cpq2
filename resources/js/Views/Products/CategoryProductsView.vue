@@ -39,22 +39,31 @@ const selectedParent = ref(null);
 
 const getProducts = async () => {
     meta.isLoading = true;
+    let temp = selectedParent.value
+        ? [
+              {
+                  column: 'parent_id',
+                  operator: 'equals',
+                  value: selectedParent.value?.id
+              }
+          ]
+        : [
+              {
+                  column: 'categories.id',
+                  operator: 'equals',
+                  value: props.category.id
+              },
+              {
+                  column: 'parent_id',
+                  operator: 'is_null',
+                  value: 'null'
+              }
+          ];
 
     let query = queryString.stringify({
         page: meta.page,
         limit: meta.limit,
-        filters: JSON.stringify([
-            {
-                column: 'categories.id',
-                operator: 'equals',
-                value: props.category.id
-            },
-            {
-                column: 'parent_id',
-                operator: selectedParent.value ? 'equals' : 'is_null',
-                value: selectedParent.value ? selectedParent.value.id : 'null'
-            }
-        ]),
+        filters: JSON.stringify(temp),
         account_id: props.account.id
     });
     let res = await axios.get('/api/products' + '?' + query);
