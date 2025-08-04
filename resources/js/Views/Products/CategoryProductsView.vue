@@ -35,10 +35,11 @@ const proxyValue = computed({
 });
 
 const products = ref([]);
-const children = ref([]);
+const selectedParent = ref(null);
 
 const getProducts = async () => {
     meta.isLoading = true;
+
     let query = queryString.stringify({
         page: meta.page,
         limit: meta.limit,
@@ -50,8 +51,8 @@ const getProducts = async () => {
             },
             {
                 column: 'parent_id',
-                operator: 'is_null',
-                value: 'null'
+                operator: selectedParent.value ? 'equals' : 'is_null',
+                value: selectedParent.value ? selectedParent.value.id : 'null'
             }
         ]),
         account_id: props.account.id
@@ -109,13 +110,26 @@ const checkQuantity = _.debounce(async (product, temp) => {
     getQuote(quote.id);
 }, 200);
 
+const showChildren = (product) => {
+    selectedParent.value = product;
+};
+
+watch(selectedParent, () => {
+    getProducts();
+});
 getProducts();
 </script>
 
 <template>
     <div v-if="proxyValue == props.index" :id="'step-' + (props.index + 1)" class="step">
         <div class="d-flex justify-content-between mb-3">
-            <h2>Select some products</h2>
+            <h2 v-if="!selectedParent">Select some products</h2>
+            <a class="text-black" v-else @click="showChildren(product)" href="#">
+                <h2 class="small" href="#">
+                    <font-awesome-icon :icon="['fas', 'arrow-left']" class="ms-2"></font-awesome-icon>
+                    Seeing sub-products of <span class="text-primary bold">{{ selectedParent.name }}</span>
+                </h2>
+            </a>
             <p class="bigger bold text-primary">STEP {{ props.index + 1 }}/{{ total_categories }}</p>
         </div>
         <div v-if="!meta.isLoading">
@@ -167,7 +181,7 @@ getProducts();
                         </button>
                     </div>
                 </div>
-                <div v-else>Show More...</div>
+                <a v-else class="text-secondary small" href="#" @click="showChildren(product)"> Show more... </a>
             </div>
         </div>
         <div v-else v-for="n in meta.limit" class="mobile-item mobile-product mb-3">
