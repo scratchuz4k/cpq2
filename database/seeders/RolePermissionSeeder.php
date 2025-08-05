@@ -183,7 +183,7 @@ class RolePermissionSeeder extends Seeder
             }
         }
 
-        $sAdmin = User::where('email', 'super@example.com')->first();
+        $sAdmin = User::where('email', env('SUPERUSER_EMAIL', 'super@example.com'))->first();
         $sAdmin->assignRole('Super Admin');
     }
 }

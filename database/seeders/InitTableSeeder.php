@@ -37,9 +37,10 @@ class InitTableSeeder extends Seeder
             ]);
         }
 
-        if (! $super_user = User::where('email', 'super@example.com')->first()) {
+        $super_user_email = env('SUPERUSER_EMAIL', 'super@example.com');
+        if (! $super_user = User::where('email', $super_user_email)->first()) {
             $super_user = User::updateOrCreate([
-                'email' => 'super@example.com',
+                'email' => $super_user_email,
             ], [
                 'name' => 'Super User',
                 'tenant_id' => $tenant->id,
