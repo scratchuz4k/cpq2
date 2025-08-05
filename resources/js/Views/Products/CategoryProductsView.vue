@@ -49,7 +49,7 @@ const getProducts = async () => {
           ]
         : [
               {
-                  column: 'categories.id',
+                  column: 'category.id',
                   operator: 'equals',
                   value: props.category.id
               },

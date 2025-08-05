@@ -26,32 +26,30 @@ const price = reactive({
 
 const showModal = ref(false);
 const prices = ref(props.product.prices);
-const category = ref(props.product.category);
+const category = ref(props.product.category ?? null);
 const editingRows = ref([]);
 
 const saveProduct = () => {
-    router.put(
-        `/products/${props.product.id}`,
-        {
-            ...props.product,
-            supplier_id: props.product.supplier?.id,
-            brand_id: props.product.brand?.id,
-            parent_id: props.product.parent?.id,
-            category_id: category.value?.id ?? null
+    let temp = {
+        ...props.product,
+        supplier_id: props.product.supplier?.id,
+        brand_id: props.product.brand?.id,
+        parent_id: props.product.parent?.id,
+        category_id: category.value?.id ?? null
+    };
+
+    router.put(`/products/${props.product.id}`, temp, {
+        onSuccess: (page) => {
+            notyf.success('Updated with Success');
         },
-        {
-            onSuccess: (page) => {
-                notyf.success('Updated with Success');
-            },
-            onError: (errors) => {
-                let string = '';
-                Object.keys(errors).forEach((key) => {
-                    string += errors[key] + '<br>';
-                });
-                notyf.error(string);
-            }
+        onError: (errors) => {
+            let string = '';
+            Object.keys(errors).forEach((key) => {
+                string += errors[key] + '<br>';
+            });
+            notyf.error(string);
         }
-    );
+    });
 };
 
 const savePrice = async () => {

@@ -23,7 +23,10 @@ class ProductsService
 
     public function update(Product $product, array $array): Product
     {
-        $product->update($array);
+        $product->update([
+            ...$array,
+            'category_id' => array_key_exists('category_id', $array) && ! is_null($array['category_id']) ? $array['category_id'] : $product->category_id,
+        ]);
 
         return $product->refresh();
     }

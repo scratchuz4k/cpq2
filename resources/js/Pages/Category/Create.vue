@@ -10,11 +10,15 @@ const props = defineProps({});
 const category = reactive({
     name: null,
     code: null,
-    is_active: true
+    is_active: true,
+    solution_type_id: null
 });
 
 const saveCate = () => {
-    router.post(`/categories`, category, {
+    let temp = category;
+    temp.solution_type_id = category.solution_type?.id ?? null;
+
+    router.post(`/categories`, temp, {
         onSuccess: (page) => {
             notyf.success('Created with Success');
         },
@@ -65,6 +69,21 @@ const items = ref([
                 <div class="mb-3">
                     <label for="category-name" class="form-label">Name:</label>
                     <input id="category-name" class="form-control" v-model="category.name" />
+                </div>
+
+                <h4>Relations</h4>
+                <hr />
+                <div class="mb-3">
+                    <label for="product-categories" class="form-label">Solution Type:</label>
+                    <InputSelect
+                        id="product-categories"
+                        url="/solution-types"
+                        :fields="['name']"
+                        v-model="category.solution_type"
+                        placeholder="Select a Category"
+                        :query="[{ column: 'is_active', operator: 'equals', value: 1 }]"
+                    >
+                    </InputSelect>
                 </div>
             </div>
         </div>

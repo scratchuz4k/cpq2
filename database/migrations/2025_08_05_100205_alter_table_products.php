@@ -43,7 +43,7 @@ return new class extends Migration
         Schema::dropIfExists('categories_solution_type');
 
         Schema::table('categories', function (Blueprint $table) {
-            $table->foreignId('solution_type_id')->nullable()->constrained()->nullOnDelete();
+            $table->foreignId('solution_type_id')->nullable()->constrained('solution_type_tenant', 'id')->nullOnDelete();
             $table->integer('sort_order')->default(0);
         });
     }

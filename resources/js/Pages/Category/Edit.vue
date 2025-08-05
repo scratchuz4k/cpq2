@@ -14,6 +14,8 @@ const product = ref(null);
 const category = reactive(props.category);
 
 const saveCate = () => {
+    let temp = category;
+    temp.solution_type_id = category.solution_type?.id ?? null;
     router.put(`/categories/${category.id}`, category, {
         onSuccess: (page) => {
             notyf.success('Updated with Success');
@@ -88,6 +90,21 @@ const items = ref([
                             <label class="form-label" for="product-name">Name:</label>
                             <input id="product-name" v-model="category.name" class="form-control" />
                         </div>
+
+                        <h4>Relations</h4>
+                        <hr />
+                        <div class="mb-3">
+                            <label for="product-categories" class="form-label">Solution Type:</label>
+                            <InputSelect
+                                id="product-categories"
+                                url="/solution-types"
+                                :fields="['name']"
+                                v-model="category.solution_type"
+                                placeholder="Select a Category"
+                                :query="[{ column: 'is_active', operator: 'equals', value: 1 }]"
+                            >
+                            </InputSelect>
+                        </div>
                     </div>
                 </tab>
                 <tab title="Products">
@@ -134,7 +151,7 @@ const items = ref([
                                 <template #created_at="{ value }">
                                     {{ format.date(value) }}
                                 </template>
-                                <template #actions="{ data, value, index }">
+                                <!-- <template #actions="{ data, value, index }">
                                     <button
                                         class="btn px-2 py-0 mx-1 border-0"
                                         :id="'datatable-btn-' + index + '-delete'"
@@ -142,7 +159,7 @@ const items = ref([
                                     >
                                         <font-awesome-icon :icon="['fas', 'trash-alt']"></font-awesome-icon>
                                     </button>
-                                </template>
+                                </template> -->
                             </Datatable>
                         </div>
                     </div>
