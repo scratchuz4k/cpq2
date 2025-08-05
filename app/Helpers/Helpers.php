@@ -78,9 +78,15 @@ if (! function_exists('safeXmlParse')) {
         $dom->resolveExternals = false;
         $dom->substituteEntities = false;
 
-        if (! $dom->loadXML($xmlString, LIBXML_NONET | LIBXML_NOERROR | LIBXML_NOWARNING)) {
+        if (! $dom->loadXML($xmlString, LIBXML_NONET)) {
             foreach (libxml_get_errors() as $error) {
-                Log::debug('Error parsing XML: '.$error->message);
+                Log::warning(sprintf(
+                    'XML parse error (level %d): %s at line %d column %d',
+                    $error->level,
+                    trim($error->message),
+                    $error->line,
+                    $error->column
+                ));
             }
             libxml_clear_errors();
 
