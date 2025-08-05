@@ -2,6 +2,7 @@
 
 use App\Models\Order;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 
 if (! function_exists('format_date')) {
     /**
@@ -66,5 +67,26 @@ if (! function_exists('formated_date_range')) {
         return $start_date->greaterThan($end_date)
             ? [$end_date, $start_date]
             : [$start_date, $end_date];
+    }
+}
+
+if (! function_exists('safeXmlParse')) {
+    function safeXmlParse(string $xmlString)
+    {
+        libxml_use_internal_errors(true);
+        $dom = new \DOMDocument;
+        $dom->resolveExternals = false;
+        $dom->substituteEntities = false;
+
+        if (! $dom->loadXML($xmlString, LIBXML_NONET | LIBXML_NOERROR | LIBXML_NOWARNING)) {
+            foreach (libxml_get_errors() as $error) {
+                Log::debug('Error parsing XML: '.$error->message);
+            }
+            libxml_clear_errors();
+
+            return null;
+        }
+
+        return simplexml_import_dom($dom)->asXML() ?: null;
     }
 }

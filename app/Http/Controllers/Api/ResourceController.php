@@ -59,7 +59,7 @@ class ResourceController extends Controller
                     $key->getSize(),
                 ];
 
-                if (in_array($mimeType, ['text/xml', 'application/xml']) && ! simplexml_load_string((string) $key->get(), null, LIBXML_NOERROR)) {
+                if (in_array($mimeType, ['text/xml', 'application/xml']) && ! safeXmlParse($key->get())) {
                     return response()->json([
                         'message' => 'The file must contain a valid XML.',
                         'error' => true,
@@ -78,7 +78,7 @@ class ResourceController extends Controller
                 }
             }
         } catch (\Exception) {
-            return response(['message' => 'An error occurred while uploading the resource.!', 'error' => true], 500);
+            return response(['message' => 'An error occurred while uploading the resource!', 'error' => true], 500);
         }
 
         return response(['file' => $newFile, 'message' => 'Resource uploaded successfully!', 'error' => false], 200);

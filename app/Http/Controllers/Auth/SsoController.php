@@ -47,8 +47,8 @@ class SsoController extends Controller
             ]);
         }
 
-        $ssoXmlContent = Storage::disk('public')->get($resourceFile->getRouteValue());
-        if (! simplexml_load_string((string) $ssoXmlContent)) {
+        $ssoXmlContent = safeXmlParse(Storage::disk('public')->get($resourceFile->getRouteValue()));
+        if (! $ssoXmlContent) {
             return back()->with([
                 'status' => __('The SSO configuration found for your domain is invalid'),
             ]);
