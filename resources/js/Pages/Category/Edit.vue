@@ -98,7 +98,7 @@ const items = ref([
                             <InputSelect
                                 id="product-categories"
                                 url="/solution-types"
-                                :fields="['name']"
+                                :fields="['id', 'name']"
                                 v-model="category.solution_type"
                                 placeholder="Select a Category"
                                 :query="[{ column: 'is_active', operator: 'equals', value: 1 }]"

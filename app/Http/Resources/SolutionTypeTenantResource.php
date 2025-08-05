@@ -17,13 +17,12 @@ class SolutionTypeTenantResource extends JsonResource
         if (is_null($this->resource)) {
             return [];
         }
+        $temp = (new SolutionTypeResource($this->solutionType))->resolve();
 
         return [
+            ...$temp,
             ...$this->resource->toArray(),
             'is_active' => (bool) $this->is_active,
-            'code' => $this->solutionType->code,
-            'name' => $this->solutionType->name,
-            'solution_type' => (new SolutionTypeResource($this->solutionType))->resolve(),
         ];
     }
 }
