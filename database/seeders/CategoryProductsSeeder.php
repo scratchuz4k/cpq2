@@ -71,6 +71,7 @@ class CategoryProductsSeeder extends Seeder
                     'name' => $temp['name'],
                     'description' => $temp['description'],
                     'price_plan_id' => $pricePlan->id,
+                    'is_active' => 1,
                 ]);
 
                 $price = $product->prices()->updateOrCreate(

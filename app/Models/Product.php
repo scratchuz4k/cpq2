@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Carbon;
 
 class Product extends Model
 {
@@ -23,8 +24,10 @@ class Product extends Model
         'brand_id',
         'code',
         'name',
+        'status',
         'description',
         'is_active',
+        'expires_at',
     ];
 
     protected function casts(): array
@@ -37,6 +40,10 @@ class Product extends Model
     protected static function booted(): void
     {
         static::addGlobalScope(new TenantScope);
+
+        static::saving(function (Product $product) {
+            $product->status = Product::resolveStatus($product);
+        });
     }
 
     public function activePrice(): ?Price
@@ -77,5 +84,16 @@ class Product extends Model
     public function brand(): HasOne
     {
         return $this->hasOne(Brand::class, 'id', 'brand_id');
+    }
+
+    public static function resolveStatus(Product $product): string
+    {
+
+        $date = Carbon::parse($product->expires_at);
+        if ($product->expires_at && $date->isPast()) {
+            return 'Retired';
+        }
+
+        return $product->is_active ? 'Active' : 'Inactive';
     }
 }

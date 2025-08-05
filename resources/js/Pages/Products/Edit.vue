@@ -1,10 +1,10 @@
 <script setup>
-import { reactive, ref } from 'vue';
+import { reactive, ref, watch } from 'vue';
 import { can, hasRole } from '@composables/useAuth';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, router } from '@inertiajs/vue3';
-import DataTable from 'primevue/datatable';
+import { DataTable, DatePicker } from 'primevue';
 import Column from 'primevue/column';
 import InputText from 'primevue/inputtext';
 import Button from 'primevue/button';
@@ -24,6 +24,7 @@ const price = reactive({
     product_id: props.product.id
 });
 
+const expires_at = ref(props.product?.expires_at);
 const showModal = ref(false);
 const prices = ref(props.product.prices);
 const categories = ref(props.product.categories[0]);
@@ -147,12 +148,24 @@ const items = ref([
                                 <input id="product-name" class="form-control" v-model="product.name" />
                             </div>
 
-                            <div class="mb-5">
+                            <div class="mb-3">
                                 <label for="product-description" class="form-label">Description:</label>
                                 <textarea id="product-description" class="form-control" v-model="product.description">{{
                                     product.description
                                 }}</textarea>
                             </div>
+
+                            <div class="mb-5">
+                                <label for="product-expires_at" class="form-label">Expires_at:</label>
+
+                                <input
+                                    id="product-name"
+                                    class="form-control"
+                                    type="datetime-local"
+                                    v-model="product.expires_at"
+                                />
+                            </div>
+
                             <h4>Relations</h4>
                             <hr />
                             <div class="mb-3">
