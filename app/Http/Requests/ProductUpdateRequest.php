@@ -32,12 +32,13 @@ class ProductUpdateRequest extends FormRequest
         $user = Auth::user();
 
         return [
-            'code' => ['required', 'string', 'max:255',
+            'sku' => ['required', 'string', 'max:255',
                 Rule::unique('products')->where(fn ($query) => $query->where('tenant_id', $user->tenant_id)
-                    ->where('code', request('code')))->ignore($product_id),
+                    ->where('sku', request('sku')))->ignore($product_id),
             ],
             'name' => 'required|string|max:255',
             'supplier_id' => 'nullable|exists:suppliers,id',
+            'category_id' => 'nullable|exists:categories,id',
             'brand_id' => 'nullable|exists:brands,id',
             'price_plan_id' => 'required|exists:price_plans,id',
         ];

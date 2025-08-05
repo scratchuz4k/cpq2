@@ -59,18 +59,18 @@ class CategoryProductsSeeder extends Seeder
         ];
 
         foreach (Tenant::all() as $tenant) {
-            $categories = [];
             $pricePlan = PricePlan::where('code', PricePlanEnum::MONTHLY->name)->first();
-            $categories['plan'] = Category::updateOrCreate(['code' => 'plan', 'tenant_id' => $tenant->id], ['name' => 'Plans']);
+            $category = Category::updateOrCreate(['code' => 'plan', 'tenant_id' => $tenant->id], ['name' => 'Plans']);
 
             foreach ($products as $temp) {
                 $product = Product::updateOrCreate([
-                    'code' => $temp['code'],
+                    'sku' => $temp['code'],
                     'tenant_id' => $tenant->id,
                 ], [
                     'name' => $temp['name'],
                     'description' => $temp['description'],
                     'price_plan_id' => $pricePlan->id,
+                    'category_id' => $category->id,
                     'is_active' => 1,
                 ]);
 
@@ -86,8 +86,6 @@ class CategoryProductsSeeder extends Seeder
                 );
 
                 $price->calculate();
-
-                $product->categories()->attach($categories[$temp['category']]);
             }
         }
     }

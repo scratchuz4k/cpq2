@@ -24,10 +24,9 @@ const price = reactive({
     product_id: props.product.id
 });
 
-const expires_at = ref(props.product?.expires_at);
 const showModal = ref(false);
 const prices = ref(props.product.prices);
-const categories = ref(props.product.categories[0]);
+const category = ref(props.product.category);
 const editingRows = ref([]);
 
 const saveProduct = () => {
@@ -38,7 +37,7 @@ const saveProduct = () => {
             supplier_id: props.product.supplier?.id,
             brand_id: props.product.brand?.id,
             parent_id: props.product.parent?.id,
-            categories: categories.value?.id ?? null
+            category_id: category.value?.id ?? null
         },
         {
             onSuccess: (page) => {
@@ -140,8 +139,8 @@ const items = ref([
                                 </ToggleSwitch>
                             </div>
                             <div class="mb-3">
-                                <label for="product-code" class="form-label">Code:</label>
-                                <input id="product-code" class="form-control" v-model="product.code" />
+                                <label for="product-sku" class="form-label">SKU:</label>
+                                <input id="product-sku" class="form-control" v-model="product.sku" />
                             </div>
                             <div class="mb-3">
                                 <label for="product-name" class="form-label">Name:</label>
@@ -156,7 +155,7 @@ const items = ref([
                             </div>
 
                             <div class="mb-5">
-                                <label for="product-expires_at" class="form-label">Expires_at:</label>
+                                <label for="product-expires_at" class="form-label">Expires At:</label>
 
                                 <input
                                     id="product-name"
@@ -212,7 +211,7 @@ const items = ref([
                                     id="product-categories"
                                     url="/categories"
                                     :fields="['name']"
-                                    v-model="categories"
+                                    v-model="category"
                                     placeholder="Select a Category"
                                     :query="[{ column: 'is_active', operator: 'equals', value: 1 }]"
                                 >

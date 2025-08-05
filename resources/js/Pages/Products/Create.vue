@@ -28,7 +28,7 @@ const product = reactive({
     supplier_id: null,
     brand_id: null,
     parent_id: null,
-    code: null,
+    sku: null,
     description: null,
     prices: [],
     is_active: true
@@ -36,7 +36,7 @@ const product = reactive({
 
 const editingRows = ref([]);
 const showModal = ref(false);
-const categories = ref(null);
+const category = ref(null);
 
 const saveProduct = () => {
     router.post(
@@ -46,7 +46,7 @@ const saveProduct = () => {
             supplier_id: product.supplier?.id,
             brand_id: product.brand?.id,
             parent_id: product.parent?.id,
-            categories: categories.value?.id
+            category_id: category.value?.id
         },
         {
             onSuccess: (page) => {
@@ -133,21 +133,32 @@ const items = ref([
                                 </template>
                             </ToggleSwitch>
                         </div>
-                        <div class="row mb-3">
-                            <label for="product-code" class="form-label">Code:</label>
-                            <input id="product-code" class="form-control" v-model="product.code" />
+                        <div class="mb-3">
+                            <label for="product-sku" class="form-label">SKU:</label>
+                            <input id="product-sku" class="form-control" v-model="product.sku" />
                         </div>
-                        <div class="row mb-3">
+                        <div class="mb-3">
                             <label for="product-name" class="form-label">Name:</label>
                             <input id="product-name" class="form-control" v-model="product.name" />
                         </div>
-                        <div class="row mb-3">
+                        <div class="mb-3">
                             <label for="product-description" class="form-label">Description:</label>
                             <textarea
                                 id="product-description"
                                 class="form-control"
                                 v-model="product.description"
                             ></textarea>
+                        </div>
+
+                        <div class="mb-5">
+                            <label for="product-expires_at" class="form-label">Expires At:</label>
+
+                            <input
+                                id="product-expires_at"
+                                class="form-control"
+                                type="datetime-local"
+                                v-model="product.expires_at"
+                            />
                         </div>
                         <h4>Relations</h4>
                         <hr />
@@ -162,6 +173,19 @@ const items = ref([
                                 optionValue="id"
                                 placeholder="Select an Price Plan"
                             />
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="product-categories" class="form-label">Category:</label>
+                            <InputSelect
+                                id="product-categories"
+                                url="/categories"
+                                :fields="['name']"
+                                v-model="category"
+                                placeholder="Select a Category"
+                                :query="[{ column: 'is_active', operator: 'equals', value: 1 }]"
+                            >
+                            </InputSelect>
                         </div>
                         <div class="mb-3">
                             <label for="supplier-name" class="form-label">Supplier:</label>
@@ -189,18 +213,6 @@ const items = ref([
                             </InputSelect>
                         </div>
 
-                        <div class="mb-3">
-                            <label for="product-categories" class="form-label">Category:</label>
-                            <InputSelect
-                                id="product-categories"
-                                url="/categories"
-                                :fields="['name']"
-                                v-model="categories"
-                                placeholder="Select a Category"
-                                :query="[{ column: 'is_active', operator: 'equals', value: 1 }]"
-                            >
-                            </InputSelect>
-                        </div>
                         <div class="mb-3">
                             <label for="product-parent" class="form-label">Parent:</label>
                             <div class="input-group p-0">

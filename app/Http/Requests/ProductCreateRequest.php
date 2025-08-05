@@ -23,11 +23,12 @@ class ProductCreateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'code' => ['required', 'string', 'max:255', Rule::unique('products')],
+            'sku' => ['required', 'string', 'max:255', Rule::unique('products')],
             'name' => 'required|string|max:255',
             'supplier_id' => 'nullable|exists:suppliers,id',
             'brand_id' => 'nullable|exists:brands,id',
             'price_plan_id' => 'required|exists:price_plans,id',
+            'category_id' => 'required|exists:categories,id',
             'prices.*.code' => [
                 'required',
                 'numeric',

@@ -7,7 +7,6 @@ use App\Trait\SetTenantId;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Carbon;
@@ -22,7 +21,8 @@ class Product extends Model
         'price_plan_id',
         'supplier_id',
         'brand_id',
-        'code',
+        'category_id',
+        'sku',
         'name',
         'status',
         'description',
@@ -71,9 +71,9 @@ class Product extends Model
         return $this->belongsTo(PricePlan::class);
     }
 
-    public function categories(): BelongsToMany
+    public function category(): BelongsTo
     {
-        return $this->belongsToMany(Category::class, 'product_category');
+        return $this->belongsTo(Category::class);
     }
 
     public function supplier(): HasOne

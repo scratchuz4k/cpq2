@@ -25,7 +25,7 @@ class ProductResource extends JsonResource
             'price_plan' => $this->pricePlan,
             'price' => PriceResource::make($this->activePrice())->resolve(),
             'prices' => PriceResource::collection($this->whenLoaded('prices', default: collect([])))->resolve(),
-            'categories' => CategoryResource::collection($this->categories)->resolve(),
+            'category' => CategoryResource::make($this->category)->resolve(),
             'parent' => ProductResource::make($this->parent)->resolve(),
             'has_children' => (bool) $this->children->count(),
             'updated_at' => $this->updated_at,
