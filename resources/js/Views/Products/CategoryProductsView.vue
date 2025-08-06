@@ -104,7 +104,7 @@ const checkQuantity = _.debounce(async (product, temp) => {
             quantity: product.quantity,
             contract_length: product.contract_length,
             name: product.name,
-            raw_price: product.price ? product.price.net : 0,
+            raw_price: product.price ? product.price.cost : 0,
             price: product.price ? product.price.net_spa : 0,
             price_plan_id: product.price_plan_id
         });
