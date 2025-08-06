@@ -19,7 +19,7 @@ const props = defineProps({
 
 const price = reactive({
     code: null,
-    tax_rate: 0,
+    cost: 0,
     net: 0,
     product_id: props.product.id
 });
@@ -261,24 +261,43 @@ const items = ref([
                                     }"
                                 >
                                     <Column field="code" header="Code" style="width: 10%"></Column>
-                                    <Column field="tax_rate" header="Tax Rate" style="width: 20%">
+                                    <Column field="cost" header="Cost">
                                         <template #editor="{ data, field }">
                                             <InputText v-model="data[field]" fluid />
                                         </template>
                                     </Column>
-                                    <Column field="net" header="Net" style="width: 20%">
+                                    <Column field="net" header="Net">
                                         <template #editor="{ data, field }">
                                             <InputText v-model="data[field]" fluid />
                                         </template>
                                     </Column>
-                                    <Column field="tax" header="Tax" style="width: 20%"></Column>
-                                    <Column field="gross" header="Gross" style="width: 20%"></Column>
-
-                                    <Column :rowEditor="true" v-if="hasRole('Super Admin') || can('update price')">
+                                    <Column field="net_spa" header="Net SPA">
+                                        <template #editor="{ data, field }">
+                                            <InputText v-model="data[field]" fluid />
+                                        </template>
+                                    </Column>
+                                    <Column field="active_spas" header="Active SPA">
+                                        <template #body="slotProps">
+                                            <p v-for="item in slotProps.data.active_spas">
+                                                {{ item.operation.code }}:
+                                                {{
+                                                    item.percentage
+                                                        ? format.decimalPlaces(item.percentage) + '%'
+                                                        : format.GBP(item.margin)
+                                                }}
+                                            </p>
+                                        </template>
+                                    </Column>
+                                    <Column
+                                        :rowEditor="true"
+                                        v-if="hasRole('Super Admin') || can('update price')"
+                                        style="width: 5%"
+                                    >
                                     </Column>
                                     <Column
                                         bodyStyle="text-align:center"
                                         v-if="hasRole('Super Admin') || can('delete price')"
+                                        style="width: 5%"
                                     >
                                         <template #body="{ data }">
                                             <Button
@@ -320,12 +339,12 @@ const items = ref([
                                     <input class="form-control" v-model="price.code" />
                                 </div>
                                 <div class="mb-3">
-                                    <label class="form-label">Price</label>
-                                    <input class="form-control" type="number" v-model="price.net" />
+                                    <label class="form-label">Cost</label>
+                                    <input class="form-control" type="number" v-model="price.cost" />
                                 </div>
                                 <div class="mb-3">
-                                    <label class="form-label">Tax Rate</label>
-                                    <input class="form-control" type="number" v-model="price.tax_rate" />
+                                    <label class="form-label">Price</label>
+                                    <input class="form-control" type="number" v-model="price.net" />
                                 </div>
 
                                 <div class="d-flex justify-content-end">

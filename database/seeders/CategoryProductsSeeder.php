@@ -80,12 +80,9 @@ class CategoryProductsSeeder extends Seeder
                         'tenant_id' => $tenant->id,
                     ],
                     [
-                        'tax_rate' => 20,
                         'net' => $temp['price'] ?? 0,
                     ]
                 );
-
-                $price->calculate();
             }
         }
     }

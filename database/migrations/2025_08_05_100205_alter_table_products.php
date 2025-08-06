@@ -34,18 +34,6 @@ return new class extends Migration
                 ->update(['status' => $status]);
         }
 
-        Schema::table('product_category', function (Blueprint $table) {
-            $table->dropForeign(['product_id']);
-            $table->dropForeign(['category_id']);
-        });
-
-        Schema::dropIfExists('product_category');
-        Schema::dropIfExists('categories_solution_type');
-
-        Schema::table('categories', function (Blueprint $table) {
-            $table->foreignId('solution_type_id')->nullable()->constrained('solution_type_tenant', 'id')->nullOnDelete();
-            $table->integer('sort_order')->default(0);
-        });
     }
 
     /**
@@ -53,27 +41,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('categories', function (Blueprint $table) {
-            $table->dropForeign(['solution_type_id']);
-            $table->dropColumn('solution_type_id');
-            $table->dropColumn('sort_order');
-        });
-
-        Schema::create('categories_solution_type', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('solution_type_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('category_id')->constrained()->cascadeOnDelete();
-            $table->integer('order')->default(1);
-            $table->timestamps();
-        });
-
-        Schema::create('product_category', function (Blueprint $table) {
-            $table->id();
-            $table->unsignedBigInteger('product_id');
-            $table->foreign('product_id')->references('id')->on('products')->cascadeOnDelete();
-            $table->unsignedBigInteger('category_id');
-            $table->foreign('category_id')->references('id')->on('categories')->cascadeOnDelete();
-        });
 
         Schema::table('products', function (Blueprint $table) {
             $table->dropForeign(['parent_id']);
