@@ -177,6 +177,20 @@ const items = ref([
                                     placeholder="Select an Price Plan"
                                 />
                             </div>
+
+                            <div class="mb-3">
+                                <label for="product-categories" class="form-label">Category:</label>
+                                <InputSelect
+                                    id="product-categories"
+                                    url="/categories"
+                                    :fields="['name']"
+                                    v-model="category"
+                                    placeholder="Select a Category"
+                                    :query="[{ column: 'is_active', operator: 'equals', value: 1 }]"
+                                >
+                                </InputSelect>
+                            </div>
+
                             <div class="mb-3">
                                 <label for="product-supplier" class="form-label">Supplier:</label>
                                 <InputSelect
@@ -198,19 +212,6 @@ const items = ref([
                                     :fields="['name']"
                                     v-model="product.brand"
                                     placeholder="Select a Brand"
-                                    :query="[{ column: 'is_active', operator: 'equals', value: 1 }]"
-                                >
-                                </InputSelect>
-                            </div>
-
-                            <div class="mb-3">
-                                <label for="product-categories" class="form-label">Category:</label>
-                                <InputSelect
-                                    id="product-categories"
-                                    url="/categories"
-                                    :fields="['name']"
-                                    v-model="category"
-                                    placeholder="Select a Category"
                                     :query="[{ column: 'is_active', operator: 'equals', value: 1 }]"
                                 >
                                 </InputSelect>
