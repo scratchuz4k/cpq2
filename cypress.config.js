@@ -34,7 +34,7 @@ export default defineConfig({
         }
     },
     env: {
-        SUPERUSER_EMAIL: process.env.CYPRESS_SUPERUSER_EMAIL || 'super@example.com',
-        SUPERUSER_PASSWORD: process.env.CYPRESS_SUPERUSER_PASSWORD || 'werwerwer'
+        SUPERUSER_EMAIL: process.env.SUPERUSER_EMAIL || 'super@example.com',
+        SUPERUSER_PASSWORD: process.env.SUPERUSER_PASSWORD || 'werwerwer'
     }
 });
