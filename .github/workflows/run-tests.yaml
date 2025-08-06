@@ -42,8 +42,8 @@ jobs:
                   echo -e "VIRTUAL1_ADDRESS_PASSWORD=${{ secrets.VIRTUAL1_ADDRESS_PASSWORD }}" >> .env
                   echo -e "VIRTUAL1_ADDRESS_USERNAME=${{ secrets.VIRTUAL1_ADDRESS_USERNAME }}" >> .env
                   echo -e "VITE_GOOGLE_MAPS_API_KEY=${{ secrets.VITE_GOOGLE_MAPS_API_KEY }}" >> .env
-                  echo -e "SUPERUSER_EMAIL=super@example.com" >> .env
-                  echo -e "SUPERUSER_PASSWORD=werwerwer" >> .env
+                  echo -e "SUPERUSER_EMAIL=${{ secrets.SUPERUSER_EMAIL }}" >> .env
+                  echo -e "SUPERUSER_PASSWORD=${{ secrets.SUPERUSER_PASSWORD }}" >> .env
 
             - name: Install Composer Dependencies
               run: composer install --prefer-dist --optimize-autoloader --no-scripts --no-progress --no-interaction && composer dump-autoload --optimize -q
