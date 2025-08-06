@@ -4,7 +4,7 @@ const merchant_name = 'Merchant - ' + generateHash(getCurrentDate());
 const updated_merchant_name = 'Updated ' + merchant_name;
 describe('Create Order Manager User.cy', () => {
     beforeEach(() => {
-        cy.login('super@example.com', 'werwerwer');
+        cy.login(Cypress.env('SUPERUSER_EMAIL'), Cypress.env('SUPERUSER_PASSWORD'));
     });
 
     it('Create a Merchant', () => {

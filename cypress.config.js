@@ -1,5 +1,8 @@
 import { defineConfig } from 'cypress';
 import fs from 'fs';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 export default defineConfig({
     chromeWebSecurity: false,
@@ -29,5 +32,9 @@ export default defineConfig({
                 }
             });
         }
+    },
+    env: {
+        SUPERUSER_EMAIL: process.env.CYPRESS_SUPERUSER_EMAIL || 'super@example.com',
+        SUPERUSER_PASSWORD: process.env.CYPRESS_SUPERUSER_PASSWORD || 'werwerwer'
     }
 });
