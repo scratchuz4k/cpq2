@@ -73,7 +73,8 @@ if (! function_exists('formated_date_range')) {
 if (! function_exists('safeXmlParse')) {
     function safeXmlParse(string $xmlString)
     {
-        // TODO When available use LIBXML_NO_XXE verification to prevent xxe injextion
+        // TODO When available use LIBXML_NO_XXE verification to prevent xxe injection (Ubuntu 22.04 LTS only provides
+        // XML Lib version 2.9.4 and LIBXML_NO_XXE needs XML Lib version >2.13.0 which is not stable yet)
         libxml_use_internal_errors(true);
         $dom = new \DOMDocument;
         $dom->resolveExternals = false;

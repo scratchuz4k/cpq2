@@ -61,6 +61,7 @@ class SsoController extends Controller
             return Inertia::location(Socialite::driver('saml2')->redirect());
         } catch (\Exception $e) {
             Log::debug('Error on socialite saml2 redirect: '.$e->getMessage());
+            Cache::forget('saml2.metadata');
 
             return back()->with([
                 'status' => __('An error occurred while redirecting to your SSO provider, please contact your administrator'),
