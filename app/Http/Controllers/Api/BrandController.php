@@ -2,21 +2,27 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Helpers\DataProvider;
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\IndexRequest;
+use App\Http\Resources\BrandResource;
+use App\Models\Brand;
+use App\Services\BrandService;
 use Dedoc\Scramble\Attributes\ExcludeRouteFromDocs;
 use Exception;
-use App\Models\Brand;
 use Illuminate\Http\Request;
-use App\Helpers\DataProvider;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use App\Http\Resources\BrandResource;
-use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
-use Illuminate\Pagination\LengthAwarePaginator;
 
 class BrandController extends BaseController
 {
     protected $model = Brand::class;
+
+    public function __construct(protected BrandService $brandService)
+    {
+        parent::__construct();
+    }
+
     /**
      * List Brands
      * @response AnonymousResourceCollection<LengthAwarePaginator<BrandResource>>
@@ -60,7 +66,16 @@ class BrandController extends BaseController
     #[ExcludeRouteFromDocs]
     public function update(Request $request, Brand $brand)
     {
-        //
+        try {
+            $brand = DB::transaction(function () use ($brand, $request) {
+                return $this->brandService->update($brand, $request->all());
+            });
+        } catch (Exception $e) {
+            Log::debug($e->getMessage());
+            throw new Exception($e);
+        }
+
+        return new BrandResource($brand);
     }
 
     /**

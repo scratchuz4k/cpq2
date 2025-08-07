@@ -17,7 +17,15 @@ class Region extends Model
         'user_id',
         'tenant_id',
         'name',
+        'is_active',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'is_active' => 'boolean'
+        ];
+    }
 
     protected static function booted(): void
     {

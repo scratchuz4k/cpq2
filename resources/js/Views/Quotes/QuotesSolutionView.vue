@@ -1,7 +1,8 @@
 <script setup>
+import Select from 'primevue/select';
 import { MultiSelect } from 'primevue';
 import _ from 'lodash';
-import { reactive, ref, watch } from 'vue';
+import { reactive, ref, watch, computed } from 'vue';
 import format from '@/Composables/format';
 import RadioCard from '@/Components/RadioCard.vue';
 
@@ -13,6 +14,16 @@ const props = defineProps({
     is_updating_quote: Boolean
 });
 
+const emit = defineEmits(['update:modelValue']);
+const proxyValue = computed({
+    get() {
+        return props.modelValue;
+    },
+    set(val) {
+        emit('update:modelValue', val);
+    }
+});
+
 const configurations = reactive({
     speed: props.modelValue.configs?.speed ? props.modelValue.configs.speed.split(',') : [10, 10000],
     bearer: props.modelValue.configs?.bearer ? props.modelValue.configs.bearer.split(',') : [100, 10000],
@@ -22,7 +33,7 @@ const configurations = reactive({
     managed: props.modelValue.configs?.managed ? props.modelValue.configs.managed : '0'
 });
 
-props.modelValue.configurations = configurations;
+proxyValue.value.configs = configurations;
 
 const solutionChange = (form) => {
     if (props.is_updating_quote) {
@@ -159,18 +170,15 @@ watch(addressPostCode, () => {
                 <div class="mb-3">
                     <template v-if="solution_types.length">
                         <label class="form-label">Solution Type <span class="text-primary fw-bold">*</span></label>
-                        <select
-                            :disabled="is_updating_quote"
-                            id="solution_id"
-                            class="form-select"
-                            @change="solutionChange(modelValue)"
+                        <Select
                             v-model="modelValue.solution_type"
-                        >
-                            <option :value="null">Select an option</option>
-                            <option v-for="(solution, key) in solution_types" :value="solution">
-                                {{ solution.name }}
-                            </option>
-                        </select>
+                            :inputId="'solution_id'"
+                            :options="solution_types"
+                            class="w-100"
+                            optionLabel="name"
+                            placeholder="Select an option"
+                            @change="solutionChange(modelValue)"
+                        />
                     </template>
                     <div v-else class="text-primary fst-italic">
                         <font-awesome-icon class="me-2" :icon="['fas', 'circle-exclamation']"></font-awesome-icon>
@@ -206,17 +214,16 @@ watch(addressPostCode, () => {
                         <label class="form-label" for="select_address"
                             >Select address <span class="text-primary fw-bold">*</span></label
                         >
-                        <select
-                            class="form-select"
-                            id="select_address"
-                            @change="addressSelect(modelValue)"
+                        <Select
                             v-model="modelValue.address"
-                        >
-                            <option :value="null">Select address</option>
-                            <option v-for="(address, key) in addresses" :value="address">
-                                {{ address.label }}
-                            </option>
-                        </select>
+                            :inputId="'select_address'"
+                            :options="addresses"
+                            filter
+                            class="w-100"
+                            optionLabel="label"
+                            placeholder="Select Address"
+                            @change="addressSelect(modelValue)"
+                        />
                     </div>
                 </template>
             </div>
@@ -250,137 +257,11 @@ watch(addressPostCode, () => {
             </InfoBox>
         </div>
     </div>
-    <div class="row" v-if="modelValue.solution_type?.code == 3 && modelValue.address != null">
-        <div class="col-lg-6">
-            <div class="panel">
-                <h5 class="font-bold mb-3">Optionally, select some default filters</h5>
-                <div class="mb-5 pb-2">
-                    <div class="d-flex justify-content-between mb-2">
-                        <p class="form-label">Speed</p>
-                        <span>
-                            <span class="badge text-bg-secondary">Min</span>
-                            {{ format.speed(configurations.speed[0]) }}
-                            <span class="ms-2 badge text-bg-secondary">Max</span>
-                            {{ format.speed(configurations.speed[1]) }}
-                        </span>
-                    </div>
-                    <div class="d-flex align-items-end">
-                        <div class="w-20">
-                            <input
-                                type="number"
-                                min="10"
-                                max="10000"
-                                class="form-control w-100"
-                                @change="(ev) => formatInput(ev, configurations.speed, 0)"
-                                v-model="configurations.speed[0]"
-                            />
-                        </div>
-                        <div class="px-4 mb-3" style="width: 80%">
-                            <SpeedRange v-model="configurations.speed" :options="[10, 100, 1000, 10000]"></SpeedRange>
-                        </div>
-                        <div class="w-20">
-                            <input
-                                type="number"
-                                :min="10"
-                                :max="10000"
-                                @change="(ev) => formatInput(ev, configurations.speed, 1)"
-                                class="form-control w-100"
-                                v-model="configurations.speed[1]"
-                            />
-                        </div>
-                    </div>
-                </div>
-                <hr class="mb-4" />
-                <div class="mb-5 pb-2">
-                    <div class="d-flex justify-content-between mb-2">
-                        <p class="form-label">Bearer</p>
-                        <span>
-                            <span class="badge text-bg-secondary">Min</span>
-                            {{ format.speed(configurations.bearer[0]) }}
-                            <span class="ms-2 badge text-bg-secondary">Max</span>
-                            {{ format.speed(configurations.bearer[1]) }}
-                        </span>
-                    </div>
-                    <div class="d-flex align-items-end">
-                        <div class="w-20">
-                            <input
-                                type="number"
-                                min="100"
-                                max="10000"
-                                class="form-control w-100"
-                                @change="(ev) => formatInput(ev, configurations.bearer, 0)"
-                                v-model="configurations.bearer[0]"
-                            />
-                        </div>
-                        <div class="px-4 mb-3" style="width: 80%">
-                            <BearerRange v-model="configurations.bearer" :options="[100, 1000, 10000]"></BearerRange>
-                        </div>
-                        <div class="w-20">
-                            <input
-                                type="number"
-                                :min="100"
-                                :max="10000"
-                                @change="(ev) => formatInput(ev, configurations.bearer, 1)"
-                                class="form-control w-100"
-                                v-model="configurations.bearer[1]"
-                            />
-                        </div>
-                    </div>
-                </div>
-                <div class="mb-4 pb-2">
-                    <div class="d-flex justify-content-between">
-                        <p class="form-label">Contract Length</p>
-                    </div>
-                    <MultiSelect
-                        v-model="configurations.contract_length"
-                        style="width: 100%"
-                        :options="['12', '24', '36', '48', '60']"
-                        placeholder="All Terms"
-                        class="me-3 custom-multiselect"
-                    >
-                        <template #option="slotProps">
-                            <div style="font-size: 14px; line-height: 1.5rem">{{ slotProps.option }} Months</div>
-                        </template>
-                    </MultiSelect>
-                </div>
-                <div class="mb-3">
-                    <p class="form-label mb-2">Managed Products:</p>
-                    <div class="row row-cols-1 row-cols-md-3 g-3">
-                        <div class="col">
-                            <RadioCard v-model="configurations.managed" :value="'0'" name="managed-products">
-                                <font-awesome-icon
-                                    class="py-3 opacity-25"
-                                    :icon="['fa', 'layer-group']"
-                                    size="2x"
-                                ></font-awesome-icon>
-                                <span class="d-block h6">Show All</span>
-                            </RadioCard>
-                        </div>
-                        <div class="col">
-                            <RadioCard v-model="configurations.managed" :value="'1'" name="managed-products">
-                                <font-awesome-icon
-                                    class="py-3 opacity-25"
-                                    :icon="['fa', 'lock']"
-                                    size="2x"
-                                ></font-awesome-icon>
-                                <span class="d-block h6">Show Managed Only</span>
-                            </RadioCard>
-                        </div>
-                        <div class="col">
-                            <RadioCard v-model="configurations.managed" :value="'2'" name="managed-products">
-                                <font-awesome-icon
-                                    class="py-3 opacity-25"
-                                    :icon="['fa', 'lock-open']"
-                                    size="2x"
-                                ></font-awesome-icon>
-                                <span class="d-block h6">Show Unmanaged Only</span>
-                            </RadioCard>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    <StepOptionalFilters
+        v-model="proxyValue"
+        :showButton="false"
+        v-if="modelValue.solution_type?.code == 3 && modelValue.address != null"
+    ></StepOptionalFilters>
 </template>
 <style scoped>
 .form-label {

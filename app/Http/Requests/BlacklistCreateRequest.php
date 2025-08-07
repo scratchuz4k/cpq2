@@ -2,9 +2,10 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
-class BlacklistItemCreateRequest extends FormRequest
+class BlacklistCreateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -17,11 +18,16 @@ class BlacklistItemCreateRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     * @return array<string, ValidationRule|array<mixed>|string>
      */
     public function rules(): array
     {
-        $flattenedData = collect(request()->all())
+        $array = [
+            ...request()->all(),
+            'is_active' => null
+        ];
+
+        $flattenedData = collect($array)
             ->map(fn($value) => is_array($value) && array_filter($value) == [] ? null : $value) // Remove empty array values
             ->all();
 
@@ -52,7 +58,8 @@ class BlacklistItemCreateRequest extends FormRequest
             }],
             'speed.unit' => 'nullable|required_with:speed.operator,speed.value',
 
-            'contractTermMonths' => 'nullable'
+            'contractTermMonths' => 'nullable',
+            'is_active' => 'required|boolean',
         ];
     }
 

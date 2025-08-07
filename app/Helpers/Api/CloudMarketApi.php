@@ -49,20 +49,12 @@ class CloudMarketApi
             $quoteAddress['TermMonths'] = (bool) $quote->configs['contract_length'] ? explode(',', $quote->configs['contract_length']) : [];
         }
 
-        if (array_key_exists('bearer', $quote->configs)) {
-            $temp = explode(',', $quote->configs['bearer']);
-            if (count($temp) == 2) {
-                $quoteAddress['ConnectionSpeeds.MinBearer'] = (int) $temp[0];
-                $quoteAddress['ConnectionSpeeds.MaxBearer'] = (int) $temp[1];
-            }
+        if (array_key_exists('bearer', $quote->configs) && is_numeric($quote->configs['bearer'])) {
+            $quoteAddress['ConnectionSpeeds.MinBearer'] = (int) $quote->configs['bearer'];
         }
 
-        if (array_key_exists('speed', $quote->configs)) {
-            (int) $temp = explode(',', $quote->configs['speed']);
-            if (count($temp) == 2) {
-                $quoteAddress['ConnectionSpeeds.MinSpeed'] = (int) $temp[0];
-                $quoteAddress['ConnectionSpeeds.MaxSpeed'] = (int) $temp[1];
-            }
+        if (array_key_exists('speed', $quote->configs) && is_numeric($quote->configs['speed'])) {
+            $quoteAddress['ConnectionSpeeds.MinSpeed'] = (int) $quote->configs['speed'];
         }
 
         Log::debug('CloudMarketApi::getQuotes lookup:', $quoteAddress);

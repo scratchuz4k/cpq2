@@ -25,8 +25,8 @@ const quote = reactive({
     solution_type: null,
     address: null,
     configs: {
-        speed: [10, 10000],
-        bearer: [100, 10000],
+        speed: null,
+        bearer: null,
         contract_length: [],
         managed: '0'
     },
@@ -36,6 +36,9 @@ const quote = reactive({
 });
 
 const submit = () => {
+    if (!quote.account || !quote.solution_type) {
+        return;
+    }
     let configs = {};
     if (quote.solution_type?.code == 3) {
         Object.keys(quote.configs).forEach((key) => {

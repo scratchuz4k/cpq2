@@ -15,6 +15,8 @@ use DOMXPath;
 use Exception;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -49,27 +51,46 @@ class ShopBlocksProductsSyncJob implements NotTenantAware, ShouldQueue
         if (! array_key_exists('data', $res)) {
             return;
         }
-
         $pricePlanId = PricePlan::where('code', PricePlanEnum::SINGLE->name)->value('id');
         foreach ($res['data'] as $key => $product) {
             if (count($product['children']) == 0) {
                 continue;
             }
+            if ($product['children'][0]['stock'] == 0) {
+                continue;
+            }
             $sku = $product['children'][0]['sku'];
-
             $temp = $this->getProduct($product);
             $temp['price_plan_id'] = $pricePlanId;
             $temp['expire_at'] = $this->expire_at;
-
-            $temp = $this->getBrandAndModel($product, $temp);
-            $category = $this->getCategory($product);
-
             $temp = Product::updateOrCreate(
                 ['sku' => $sku],
-                [...$temp, 'category_id' => $category->id]
+                [...$temp]
             );
 
+            $this->getBrandAndModel($product, $temp);
+            $this->getCategory($product, $temp);
+
             $this->getFeaturesFromContent($temp, $product['tabbed_content'], $this->expire_at);
+        }
+        $temp = Cache::get('shopblocks-sync-status');
+        array_push($temp['synced'], $this->page);
+        Cache::put('shopblocks-sync-status', ['synced' => $temp['synced'], 'last_page' => $temp['last_page'], 'started_at' => $temp['started_at']], 30);
+
+        if (($this->page == $temp['last_page'] || count($temp['synced']) == $temp['last_page']) && env('DISCORD_SHOPBLOCKS_JOBS')) {
+            $allPages = range(1, $temp['last_page']);
+            $missingPages = array_diff($allPages, $temp['synced']);
+
+            if (count($missingPages)) {
+                $res = 'Missing Pages: '.json_encode(array_values($missingPages));
+                $date1 = Carbon::parse($temp['started_at']);
+                $date2 = Carbon::parse(now());
+                $interval = $date1->diff($date2);
+                $timeDiff = sprintf('%02d:%02d:%02d', ($interval->d * 24) + $interval->h, $interval->i, $interval->s);
+
+                $message = '['.strtoupper(env('APP_ENV')).'] ShopBlocksProducts Finished: '.$res.' ( Duration: '.$timeDiff.')';
+                Http::post(env('DISCORD_SHOPBLOCKS_JOBS'), ['content' => $message]);
+            }
         }
     }
 
@@ -92,8 +113,8 @@ class ShopBlocksProductsSyncJob implements NotTenantAware, ShouldQueue
         $message = '['.strtoupper(env('APP_ENV')).'] ShopBlocksProducts failed with error: '.json_encode($error);
 
         Log::error($message);
-        if (env('DISCORD_CLOUDMARKET_JOBS')) {
-            Http::post(env('DISCORD_CLOUDMARKET_JOBS'), ['content' => $message]);
+        if (env('DISCORD_SHOPBLOCKS_JOBS')) {
+            Http::post(env('DISCORD_SHOPBLOCKS_JOBS'), ['content' => $message]);
         }
     }
 
@@ -109,6 +130,7 @@ class ShopBlocksProductsSyncJob implements NotTenantAware, ShouldQueue
         $temp['description'] = $product['description'];
         $temp['stock'] = $product['stock'];
         $temp['primary_image'] = count($child['images']) ? $child['images'][0]['url'] : null;
+        $temp['images'] = count($child['images']) ? $child['images'] : [];
         $temp['updated'] = $product['updated'];
 
         $temp['price'] = [
@@ -122,11 +144,11 @@ class ShopBlocksProductsSyncJob implements NotTenantAware, ShouldQueue
         return $temp;
     }
 
-    private function getCategory($product)
+    private function getCategory($product, $temp)
     {
         $code = $product['category']['id'];
-
-        return Category::updateOrCreate(['code' => $code], $product['category']);
+        $category = Category::updateOrCreate(['code' => $code], $product['category']);
+        $category->products()->save($temp);
     }
 
     private function getFeaturesFromContent($product, $contents, $expire_at)
@@ -141,7 +163,8 @@ class ShopBlocksProductsSyncJob implements NotTenantAware, ShouldQueue
         foreach ($contents as $key => $item) {
             $dom = new DOMDocument;
             libxml_use_internal_errors(true); // Suppress warnings for malformed HTML
-            $dom->loadHTML($item['content']);
+            $content = '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">'.$item['content'];
+            $dom->loadHTML($content);
             libxml_clear_errors();
 
             $xpath = new DOMXPath($dom);
@@ -173,12 +196,11 @@ class ShopBlocksProductsSyncJob implements NotTenantAware, ShouldQueue
         if (! is_null($product['brand'])) {
             unset($product['brand']['id']);
             $brand = Brand::updateOrCreate(['code' => $product['brand']['slug']], $product['brand']);
+            $brand->products()->save($temp);
         }
-
-        $temp['brand_id'] = $brand?->id;
         $modelName = (string) Str::of($product['name'])->words(3, '');
         $model = Model::updateOrCreate(['brand_id' => $brand?->id, 'code' => Str::slug($modelName)], ['name' => $modelName]);
-        $temp['model_id'] = $model?->id;
+        $model->products()->save($temp);
 
         return $temp;
     }

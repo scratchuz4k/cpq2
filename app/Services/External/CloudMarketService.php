@@ -5,7 +5,7 @@ namespace App\Services\External;
 use App\Enums\CloudMarketSuppliersEnum;
 use App\Enums\PricePlanEnum;
 use App\Helpers\Api\CloudMarketAddress;
-use App\Helpers\Files\BlacklistFile;
+use App\Models\General\Blacklist;
 use App\Helpers\Files\CloudMarketFile;
 use App\Helpers\FilterProvider;
 use App\Helpers\Prices\PriceRules;
@@ -17,7 +17,6 @@ use App\Models\Quote;
 use App\Models\SolutionType;
 use App\Models\Supplier;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 
@@ -86,8 +85,8 @@ class CloudMarketService
 
         $items = FilterProvider::get($file['data'], []);
 
-        $blacklist_file = new BlacklistFile(Auth::user()->currentTenant);
-        $blacklist_items = $blacklist_file->getBlacklistedData($items);
+        $blacklist = new Blacklist;
+        $blacklist_items = $blacklist->getBlacklistedData($items);
 
         $diff_codes = $items->pluck('code')->diff($blacklist_items->pluck('code'));
 

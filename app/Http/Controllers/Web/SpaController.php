@@ -12,6 +12,7 @@ use App\Models\SpaOperation;
 use App\Models\SpaRule;
 use App\Models\Supplier;
 use App\Services\SpasService;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
@@ -110,5 +111,24 @@ class SpaController extends BaseController
     public function destroy(Spa $spa)
     {
         //
+    }
+
+    protected function transformExportData(Collection $data): Collection
+    {
+        return new Collection($data->map(function ($item) {
+            return [
+                'id' => $item->id,
+                'rule' => $item->rule?->name ?? null,
+                'level_1' => app($item->rule->entity_1)::where('id', $item->field_1)->first()->name ?? null,
+                'level_2' => $item->rule->entity_2 ? app($item->rule->entity_2)::where('id', $item->field_2)->first()->name : null,
+                'price_plan' => $item->pricePlan?->name ?? null,
+                'operation' => $item->operation?->code ?? null,
+                'value' => $item->value,
+                'percentage' => $item->percentage,
+                'group' => $item->group?->name,
+                'created_at' => $item->created_at,
+                'updated_at' => $item->updated_at,
+            ];
+        }));
     }
 }
