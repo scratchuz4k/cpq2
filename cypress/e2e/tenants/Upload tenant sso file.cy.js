@@ -1,4 +1,4 @@
-const { slugify, generateHash, getCurrentDate } = require('../../support/utils.js');
+/**/ const { slugify, generateHash, getCurrentDate } = require('../../support/utils.js');
 const dropzoneSelector = '.dropzone';
 const XXEContent = `<?xml version="1.0"?>
 <!DOCTYPE data [
@@ -45,8 +45,7 @@ const user = { name: slugify(temp), email: slugify(temp) + '@' + domain, passwor
 
 describe('Update tenant SSO', () => {
     beforeEach(() => {
-        cy.clearCookies();
-        cy.clearLocalStorage();
+        Cypress.session.clearAllSavedSessions();
         cy.login('super@example.com', 'werwerwer');
         cy.visit('/');
         cy.get('#my-account').click();
@@ -145,7 +144,7 @@ describe('Update tenant SSO', () => {
     it('Try to Login with SSO without SSO provider', () => {
         cy.logout();
         cy.visit('/');
-        cy.get('#login-soo-btn').click();
+        cy.get('#login-sso-btn').click();
 
         cy.get('#email').type(user.email);
         cy.get('#btn-login').click();
@@ -191,10 +190,16 @@ describe('Update tenant SSO', () => {
     it('Try to login with SSO a user without SSO login permission', () => {
         cy.logout();
         cy.visit('/');
-        cy.get('#login-soo-btn').click();
+        cy.get('#login-sso-btn').click();
 
         cy.get('#email').type(user.email);
         cy.get('#btn-login').click();
+
+        cy.get('#username').type(user.name);
+        cy.get('#domain').select(domain);
+        cy.get('#password').clear().type(user.password);
+
+        cy.get('button').contains('Sign In').click();
 
         cy.get('.info-box-primary').contains(
             'We were unable to log into your account using SSO, please contact your administrator'
@@ -205,7 +210,7 @@ describe('Update tenant SSO', () => {
         cy.get('#my-account').click();
         cy.get('#link-users').click();
         cy.get('#treetable-search').type(user.name);
-
+        cy.wait(1000);
         cy.get('#treetable-0-edit').click();
 
         cy.get('#user-sso').click();
@@ -219,14 +224,18 @@ describe('Update tenant SSO', () => {
     it('Login with SSO', () => {
         cy.logout();
         cy.visit('/');
-        cy.get('#login-soo-btn').click();
+        cy.get('#login-sso-btn').click();
 
+        cy.wait(500);
         cy.get('#email').type(user.email);
         cy.get('#btn-login').click();
 
-        cy.get('#username').type(user.email);
+        cy.wait(500);
+        cy.get('#username').type(user.name);
         cy.get('#domain').select(domain);
-        cy.get('#password').type(user.password);
+        cy.get('#password').clear().type(user.password);
+
+        cy.get('button').contains('Sign In').click();
 
         cy.get('#page-title').contains(/Quotes|Orders/);
     });
