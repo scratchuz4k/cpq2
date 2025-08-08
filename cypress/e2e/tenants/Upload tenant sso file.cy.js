@@ -226,7 +226,7 @@ describe('Update tenant SSO', () => {
         cy.visit('/');
         cy.get('#login-sso-btn').click();
 
-        cy.wait(500);
+        cy.wait(1000);
         cy.get('#email').type(user.email);
         cy.get('#btn-login').click();
 
