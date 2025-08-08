@@ -98,6 +98,15 @@ const format = {
             .replace(/\s+/g, '') // Replace spaces with underscores
             .toLowerCase();
     },
+    friendlyString: (str) => {
+        if (!str) {
+            return '';
+        }
+        return str
+            .replace(/_/g, ' ')
+            .toLowerCase()
+            .replace(/\b\w/g, (char) => char.toUpperCase());
+    },
     capitalizeFirstLetter: (str) => {
         if (!str) {
             return '';

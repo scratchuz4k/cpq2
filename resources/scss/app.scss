@@ -8,6 +8,12 @@
 @import 'custom_sweet_alert2';
 
 :root {
+    --color-primary: #a34996;
+    --color-secondary: #6c757d;
+    --color-warning: #ffcb66;
+    --color-danger: #ff9664;
+    --color-error: #be1717;
+
     --color-dark: #100034;
     --color-violet: #4a3a6f;
     --color-purple-dark: #67236a;
@@ -91,6 +97,22 @@ body {
     }
     .cursor-pointer {
         cursor: pointer;
+    }
+
+    .bg-primary {
+        background-color: var(--color-primary) !important;
+    }
+    .bg-secondary {
+        background-color: var(--color-secondary) !important;
+    }
+    .bg-warning {
+        background-color: var(--color-warning) !important;
+    }
+    .bg-danger {
+        background-color: var(--color-danger) !important;
+    }
+    .bg-error {
+        background-color: var(--color-error) !important;
     }
 }
 
@@ -729,7 +751,7 @@ body {
         .mobile-payment-method {
             display: flex;
             align-items: center;
-            radius: var(--radius);
+            border-radius: var(--radius);
             background-color: var(--tertiary-light);
         }
     }
