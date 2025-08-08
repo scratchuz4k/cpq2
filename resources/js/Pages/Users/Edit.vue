@@ -58,7 +58,7 @@ const items = ref([
         <div class="panel">
             <Header :title="'Edit User #' + user.id" :breadcrumbs="items">
                 <template #buttons>
-                    <PrimaryButton @click="saveUser()">
+                    <PrimaryButton id="btn-save-user" @click="saveUser()">
                         <font-awesome-icon class="me-2" :icon="['fas', 'save']"></font-awesome-icon>
                         Save
                     </PrimaryButton>
