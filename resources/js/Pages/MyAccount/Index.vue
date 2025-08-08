@@ -194,7 +194,7 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'My Account' }]);
                                 >
                                     <font-awesome-icon
                                         class="py-3 opacity-25"
-                                        :icon="['far', 'handshake']"
+                                        :icon="['fas', 'industry']"
                                         size="2x"
                                     ></font-awesome-icon>
                                     <span class="d-block h5">Suppliers</span>
