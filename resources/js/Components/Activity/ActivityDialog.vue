@@ -24,8 +24,7 @@ const options = props.filters.map((x) => ({
     label: entityLabels[x.entity] || x.entity,
     value: x.entity
 }));
-const entities = ref(props.filters.map((x) => x.entity));
-const customActivities = ['Quote', 'QuoteItem', 'QuoteDiscount'];
+const entities = ref([]);
 const has_export_permission = can(`export activity`) || hasRole('Super Admin');
 const meta = reactive({
     page: 1,
@@ -37,6 +36,10 @@ const meta = reactive({
 
 const today = new Date();
 
+// Last day (24 hours ago)
+const lastDay = new Date(today);
+lastDay.setDate(today.getDate() - 1);
+
 // Last week (7 days ago)
 const lastWeek = new Date(today);
 lastWeek.setDate(today.getDate() - 7);
@@ -46,6 +49,10 @@ const lastMonth = new Date(today);
 lastMonth.setMonth(today.getMonth() - 1);
 
 const dateFilter = [
+    {
+        label: 'Last 24 hours',
+        date: lastDay.toISOString()
+    },
     {
         label: 'Last Week',
         date: lastWeek.toISOString()
@@ -62,9 +69,11 @@ const dateFilter = [
 const timeStamp = ref(null);
 
 const getFilters = () => {
+    const selectedEntities = entities.value.length === 0 ? props.filters.map((e) => e.entity) : entities.value;
+
     let temp = [];
     props.filters.forEach((e, i) => {
-        if (!entities.value.includes(e.entity)) {
+        if (!selectedEntities.includes(e.entity)) {
             return;
         }
         let item = {
@@ -190,8 +199,12 @@ function getEntityLabel(type) {
                             size="small"
                             class="custom-multiselect w-100 p-0"
                             placeholder="All"
-                            :maxSelectedLabels="1"
                         >
+                            <template #value="{ value }">
+                                <span v-if="!value || value.length === 0 || value.length === options.length">
+                                    All
+                                </span>
+                            </template>
                         </MultiSelect>
                     </div>
                     <div class="me-2">
@@ -231,7 +244,7 @@ function getEntityLabel(type) {
                         v-tooltip
                         data-bs-toggle="tooltip"
                         data-bs-placement="top"
-                        :title="slotProps.item.created_at"
+                        :data-bs-original-title="format.formattedDate(slotProps.item.created_at)"
                         >{{ format.date(slotProps.item.created_at) }}</small
                     >
                 </template>

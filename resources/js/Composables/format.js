@@ -38,7 +38,18 @@ const format = {
         const dt = new Date(parsedDate);
         return dt.toISOString().slice(0, 16).replace('T', ' '); // Y-m-d H:i format
     },
+    formattedDate: (date, formatStr = 'dd-MM-yyyy HH:mm:ss') => {
+        if (!date) {
+            return '';
+        }
 
+        let dt = DateTime.fromISO(date, { zone: 'utc' });
+        if (!dt.isValid) {
+            dt = DateTime.fromJSDate(new Date(date));
+            if (!dt.isValid) return '';
+        }
+        return dt.toFormat(formatStr);
+    },
     speed: (value) => {
         let temp = value ?? 0;
         let number = temp;

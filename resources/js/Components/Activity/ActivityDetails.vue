@@ -95,7 +95,7 @@ function getFilteredChanges(item) {
         <a
             class="text-secondary small"
             v-if="props.item.data?.length"
-            href="#"
+            role="button"
             @click="() => (props.item.readmore = !props.item.readmore)"
         >
             Show {{ !props.item.readmore ? 'more' : 'less' }}...

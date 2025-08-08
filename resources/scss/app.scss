@@ -80,6 +80,7 @@ body {
 
     .tooltip {
         --bs-tooltip-max-width: 300px;
+        z-index: 1999;
     }
 
     .tooltip-small {
