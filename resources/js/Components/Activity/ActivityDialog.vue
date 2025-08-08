@@ -155,6 +155,10 @@ const getExportData = async () => {
 const handlePaginator = (ev) => {
     meta.limit = ev.rows;
     meta.page = ev.page + 1;
+    const content = document.querySelector('.p-dialog-content');
+    if (content) {
+        content.scrollTo({ top: 0, behavior: 'smooth' });
+    }
     getActivity();
 };
 
