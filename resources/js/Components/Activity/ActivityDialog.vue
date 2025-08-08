@@ -50,6 +50,10 @@ lastMonth.setMonth(today.getMonth() - 1);
 
 const dateFilter = [
     {
+        label: 'All',
+        date: null
+    },
+    {
         label: 'Last 24 hours',
         date: lastDay.toISOString()
     },
@@ -60,10 +64,6 @@ const dateFilter = [
     {
         label: 'Last Month',
         date: lastMonth.toISOString()
-    },
-    {
-        label: 'All',
-        date: null
     }
 ];
 const timeStamp = ref(null);
