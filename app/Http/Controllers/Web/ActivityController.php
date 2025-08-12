@@ -4,12 +4,17 @@ namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\BaseController;
 use App\Models\Activity;
-use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 
 class ActivityController extends BaseController
 {
+    protected $entityLabels = [
+        'App\\Models\\Quote' => 'Quote Properties',
+        'App\\Models\\QuoteItem' => 'Line Item',
+        'App\\Models\\QuoteDiscount' => 'Discount',
+    ];
+
     protected $model = Activity::class;
 
     protected $fieldsToExport = [
@@ -21,12 +26,6 @@ class ActivityController extends BaseController
         'contract_length',
         'name',
         'status',
-    ];
-
-    protected $entityLabels = [
-        'App\\Models\\Quote' => 'Quote Properties',
-        'App\\Models\\QuoteItem' => 'Line Item',
-        'App\\Models\\QuoteDiscount' => 'Discount',
     ];
 
     /**
@@ -91,20 +90,37 @@ class ActivityController extends BaseController
                 $from = is_array($change) ? ($change['from'] ?? null) : ($change->from ?? null);
                 $to = is_array($change) ? ($change['to'] ?? null) : ($change->to ?? null);
 
+                if (empty($from) && empty($to)) {
+                    continue;
+                }
+
                 $rows[] = [
-                    'username' => User::find($item->user->id)->name,
-                    'activity_id' => $item->id,
+                    'user_id' => $item->user->id,
+                    'username' => $item->user->name,
                     'operation' => $item->operation,
                     'activitable_type' => $this->entityLabels[$item->activitable_type] ?? null,
                     'activitable_id' => $item->activitable_id,
-                    'timestamp' => $item->updated_at,
+                    'product_name' => $this->getProductName($item),
                     'changed_field' => $field,
                     'old' => (is_scalar($from) || is_null($from)) ? $from : json_encode($from),
                     'new' => (is_scalar($to) || is_null($to)) ? $to : json_encode($to),
+                    'timestamp' => $item->updated_at,
                 ];
             }
         }
 
         return new Collection($rows);
+    }
+
+    public function getProductName($item)
+    {
+        switch ($item->activitable_type) {
+            case 'App\\Models\\QuoteItem':
+                return $item->activitable->name;
+            case 'App\\Models\\QuoteDiscount':
+                return 'Global discount';
+            default:
+                return '#';
+        }
     }
 }
