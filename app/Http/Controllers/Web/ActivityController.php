@@ -71,6 +71,10 @@ class ActivityController extends BaseController
 
     protected function transformExportData(Collection $data): Collection
     {
+        $data = $data->sortByDesc(function ($item) {
+            return $item->updated_at;
+        });
+
         $rows = [];
 
         foreach ($data as $item) {
