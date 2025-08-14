@@ -62,7 +62,7 @@ const items = ref([
         <div class="panel">
             <Header :title="'Edit User #' + user.id" :breadcrumbs="items">
                 <template #buttons>
-                    <PrimaryButton @click="saveUser()">
+                    <PrimaryButton id="btn-save-user" @click="saveUser()">
                         <font-awesome-icon class="me-2" :icon="['fas', 'save']"></font-awesome-icon>
                         Save
                     </PrimaryButton>
@@ -147,7 +147,7 @@ const items = ref([
                     </div>
                     <div class="mb-3">
                         <div class="form-check p-0">
-                            <input id="user-sso " type="checkbox" class="form-check-input" v-model="user.sso" />
+                            <input id="user-sso" type="checkbox" class="form-check-input" v-model="user.sso" />
                             <label class="form-check-label ms-2" for="user-sso">
                                 Single sign-on (SSO) login only
                             </label>

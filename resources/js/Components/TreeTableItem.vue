@@ -162,31 +162,51 @@ onUnmounted(() => {
         <td v-if="allow.update || allow.link || allow.delete || allow.commission || allow.create" :class="['p-0']">
             <div class="d-flex justify-content-center">
                 <template v-if="allow.create">
-                    <Link :href="props.route + '/create?parent_id=' + item.id" class="btn p-2 mx-1 border-0">
+                    <Link
+                        :id="'treetable-' + index + '-create'"
+                        :href="props.route + '/create?parent_id=' + item.id"
+                        class="btn p-2 mx-1 border-0"
+                    >
                         <font-awesome-icon :icon="['fas', 'plus']" />
                     </Link>
                 </template>
 
                 <template v-if="allow.commission">
-                    <button class="btn p-2 mx-1 border-0" @click="showModal(item)">
+                    <button
+                        :id="'treetable-' + index + '-comission'"
+                        class="btn p-2 mx-1 border-0"
+                        @click="showModal(item)"
+                    >
                         <font-awesome-icon :icon="['fas', 'gear']" />
                     </button>
                 </template>
 
                 <template v-if="allow.update">
-                    <Link :href="props.route + '/' + item.id + '/edit'" class="btn p-2 mx-1 border-0">
+                    <Link
+                        :id="'treetable-' + index + '-edit'"
+                        :href="props.route + '/' + item.id + '/edit'"
+                        class="btn p-2 mx-1 border-0"
+                    >
                         <font-awesome-icon :icon="['fas', 'edit']" />
                     </Link>
                 </template>
 
                 <template v-if="allow.link">
-                    <Link :href="props.route + '/' + item.id" class="btn p-2 mx-1 border-0">
+                    <Link
+                        :id="'treetable-' + index + '-show'"
+                        :href="props.route + '/' + item.id"
+                        class="btn p-2 mx-1 border-0"
+                    >
                         <font-awesome-icon :icon="['fas', 'eye']" />
                     </Link>
                 </template>
 
                 <template v-if="allow.delete">
-                    <button class="btn p-2 mx-1 border-0" @click="deleteRecord(item.id)">
+                    <button
+                        :id="'treetable-' + index + '-delete'"
+                        class="btn p-2 mx-1 border-0"
+                        @click="deleteRecord(item.id)"
+                    >
                         <font-awesome-icon icon="fas fa-trash-alt" />
                     </button>
                 </template>
