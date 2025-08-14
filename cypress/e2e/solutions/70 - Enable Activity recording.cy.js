@@ -11,6 +11,8 @@ const rand = (notAllowedNumber, max = 101) => {
 
 const temp = getCurrentDate();
 const account = { ref: generateHash(temp), name: temp };
+const provider = 'Giacom';
+const subprovider = 'BT';
 
 describe('Creates a Mobile Quote', () => {
     beforeEach(() => {
@@ -41,6 +43,24 @@ describe('Creates a Mobile Quote', () => {
         cy.selectOption('#select_address', 1);
         cy.get('#btn-next-step').click();
         cy.get('#btn-create-quote').should('not.be.disabled').click();
+
+        //Provider filter
+        cy.get('#provider-multiselect').click();
+        cy.wait(500);
+        cy.get('.p-multiselect-list-container')
+            .eq(0)
+            .within(() => {
+                cy.get('.p-multiselect-option').contains(provider).click();
+            });
+
+        //SubProvider filter
+        cy.get('#subprovider-multiselect').click();
+        cy.wait(500);
+        cy.get('.p-multiselect-list-container')
+            .eq(0)
+            .within(() => {
+                cy.get('.p-multiselect-option').contains(subprovider).click();
+            });
 
         // Scroll back to top
         cy.scrollTo('top');
