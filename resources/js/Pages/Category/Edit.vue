@@ -15,7 +15,7 @@ const category = reactive(props.category);
 
 const saveCate = () => {
     let temp = category;
-    temp.solution_type_id = category.solution_type?.id ?? null;
+    temp.solution_type_id = category.solution_type?.solution_type_id ?? null;
     router.put(`/categories/${category.id}`, category, {
         onSuccess: (page) => {
             notyf.success('Updated with Success');
@@ -98,7 +98,7 @@ const items = ref([
                             <InputSelect
                                 id="product-categories"
                                 url="/solution-types"
-                                :fields="['id', 'name']"
+                                :fields="['name']"
                                 v-model="category.solution_type"
                                 placeholder="Select a Category"
                                 :query="[{ column: 'is_active', operator: 'equals', value: 1 }]"

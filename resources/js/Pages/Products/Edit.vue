@@ -11,6 +11,7 @@ import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
 import ToggleSwitch from 'primevue/toggleswitch';
 import Select from 'primevue/select';
+import { DateTime } from 'luxon';
 
 const props = defineProps({
     product: Object,
@@ -32,9 +33,10 @@ const editingRows = ref([]);
 const saveProduct = () => {
     let temp = {
         ...props.product,
-        supplier_id: props.product.supplier?.id,
-        brand_id: props.product.brand?.id,
-        parent_id: props.product.parent?.id,
+        expires_at: DateTime.fromJSDate(props.product?.expires_at).toISO() ?? null,
+        supplier_id: props.product.supplier?.id ?? null,
+        brand_id: props.product.brand?.id ?? null,
+        parent_id: props.product.parent?.id ?? null,
         category_id: category.value?.id ?? null
     };
 
@@ -54,7 +56,11 @@ const saveProduct = () => {
 
 const savePrice = async () => {
     try {
-        let res = await axios.post(`/api/prices`, price);
+        let res = await axios.post(`/api/prices`, {
+            ...price,
+            net: price.net ?? 0,
+            tax_rate: price.tax_rate ?? 0
+        });
         prices.value.push(res.data.data);
         showModal.value = !showModal.value;
     } catch (ex) {
@@ -155,11 +161,14 @@ const items = ref([
                             <div class="mb-5">
                                 <label for="product-expires_at" class="form-label">Expires At:</label>
 
-                                <input
-                                    id="product-name"
-                                    class="form-control"
-                                    type="datetime-local"
+                                <DatePicker
+                                    id="expire-date"
+                                    class="w-100"
                                     v-model="product.expires_at"
+                                    placeholder="Expires At"
+                                    showIcon
+                                    iconDisplay="input"
+                                    dateFormat="mm/dd/yy"
                                 />
                             </div>
 
@@ -262,18 +271,24 @@ const items = ref([
                                 >
                                     <Column field="code" header="Code" style="width: 10%"></Column>
                                     <Column field="cost" header="Cost">
+                                        <template #body="{ data, field }">
+                                            {{ format.GBP(data[field]) }}
+                                        </template>
                                         <template #editor="{ data, field }">
                                             <InputText v-model="data[field]" fluid />
                                         </template>
                                     </Column>
                                     <Column field="net" header="Net">
+                                        <template #body="{ data, field }">
+                                            {{ format.GBP(data[field]) }}
+                                        </template>
                                         <template #editor="{ data, field }">
                                             <InputText v-model="data[field]" fluid />
                                         </template>
                                     </Column>
                                     <Column field="net_spa" header="Net SPA">
-                                        <template #editor="{ data, field }">
-                                            <InputText v-model="data[field]" fluid />
+                                        <template #body="{ data, field }">
+                                            {{ format.GBP(data[field]) }}
                                         </template>
                                     </Column>
                                     <Column field="active_spas" header="Active SPA">

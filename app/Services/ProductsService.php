@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Product;
+use Illuminate\Support\Carbon;
 
 class ProductsService
 {
@@ -10,7 +11,10 @@ class ProductsService
 
     public function store(array $array): Product
     {
-        $product = Product::create($array);
+        $product = Product::create([
+            ...$array,
+            'expires_at' => Carbon::parse($array['expires_at']),
+        ]);
 
         if (array_key_exists('prices', $array) && is_array($array['prices'])) {
             foreach ($array['prices'] as $price) {
@@ -25,6 +29,7 @@ class ProductsService
     {
         $product->update([
             ...$array,
+            'expires_at' => Carbon::parse($array['expires_at']),
             'category_id' => array_key_exists('category_id', $array) && ! is_null($array['category_id']) ? $array['category_id'] : $product->category_id,
         ]);
 

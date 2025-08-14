@@ -5,12 +5,14 @@ import PrimaryButton from '@/Components/PrimaryButton.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, router } from '@inertiajs/vue3';
 import DataTable from 'primevue/datatable';
+import DatePicker from 'primevue/datepicker';
 import Column from 'primevue/column';
 import Dialog from 'primevue/dialog';
 import InputText from 'primevue/inputtext';
 import Button from 'primevue/button';
 import ToggleSwitch from 'primevue/toggleswitch';
 import Select from 'primevue/select';
+import { DateTime } from 'luxon';
 
 const props = defineProps({
     price_plans: Object
@@ -43,6 +45,7 @@ const saveProduct = () => {
         `/products`,
         {
             ...product,
+            expires_at: DateTime.fromJSDate(product.expires_at).toISO() ?? null,
             supplier_id: product.supplier?.id,
             brand_id: product.brand?.id,
             parent_id: product.parent?.id,
@@ -153,11 +156,14 @@ const items = ref([
                         <div class="mb-5">
                             <label for="product-expires_at" class="form-label">Expires At:</label>
 
-                            <input
-                                id="product-expires_at"
-                                class="form-control"
-                                type="datetime-local"
+                            <DatePicker
+                                id="expire-date"
+                                class="w-100"
                                 v-model="product.expires_at"
+                                placeholder="Expires At"
+                                showIcon
+                                iconDisplay="input"
+                                dateFormat="mm/dd/yy"
                             />
                         </div>
                         <h4>Relations</h4>
@@ -257,11 +263,17 @@ const items = ref([
                                 >
                                     <Column field="code" header="Code" style="width: 10%"></Column>
                                     <Column field="cost" header="Cost">
+                                        <template #body="{ data, field }">
+                                            {{ format.GBP(data[field]) }}
+                                        </template>
                                         <template #editor="{ data, field }">
                                             <InputText v-model="data[field]" fluid />
                                         </template>
                                     </Column>
                                     <Column field="net" header="Net">
+                                        <template #body="{ data, field }">
+                                            {{ format.GBP(data[field]) }}
+                                        </template>
                                         <template #editor="{ data, field }">
                                             <InputText v-model="data[field]" fluid />
                                         </template>

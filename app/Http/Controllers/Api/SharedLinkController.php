@@ -31,6 +31,7 @@ class SharedLinkController extends Controller
      */
     public function store(ShareLinkCreateRequest $request)
     {
+        //        dd($request->all());
         $sharedLink = SharedLink::create([
             ...$request->all(),
             'tenant_id' => Auth::user()->tenant_id,

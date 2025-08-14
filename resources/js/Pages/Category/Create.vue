@@ -16,7 +16,7 @@ const category = reactive({
 
 const saveCate = () => {
     let temp = category;
-    temp.solution_type_id = category.solution_type?.id ?? null;
+    temp.solution_type_id = category.solution_type?.solution_type_id ?? null;
 
     router.post(`/categories`, temp, {
         onSuccess: (page) => {
