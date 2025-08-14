@@ -67,7 +67,7 @@ let view = component && Object.keys(solutionsViews).includes(component) ? soluti
                             <p>
                                 Quotation Date: {{ dayjs(quote.created_at).format('DD/MM/YYYY') }}<br />
                                 Valid Date:
-                                {{ format.expireDate(quote.created_at, tenant.configurations?.quotes_expiration_days) }}
+                                {{ format.expireDate(quote.created_at, tenant.configurations?.quote_expiration_days) }}
                             </p>
                         </div>
                     </div>

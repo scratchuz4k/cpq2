@@ -215,7 +215,7 @@ const items = ref([
                     <div style="font-size: 14px">
                         This quote will expire on
                         <b style="font-size: 16px">
-                            {{ format.expireDate(quote.created_at, tenant.configurations?.quotes_expiration_days) }}
+                            {{ format.expireDate(quote.created_at, tenant.configurations?.quote_expiration_days) }}
                         </b>
                     </div>
                 </InfoBox>

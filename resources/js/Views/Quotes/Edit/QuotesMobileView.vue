@@ -119,7 +119,7 @@ getCategoriesWithProducts();
                                 {{
                                     format.expireDate(
                                         modelValue.created_at,
-                                        tenant.configurations?.quotes_expiration_days
+                                        tenant.configurations?.quote_expiration_days
                                     )
                                 }}
                             </b>

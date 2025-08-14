@@ -53,7 +53,7 @@ class InitTableSeeder extends Seeder
             $system_user = User::updateOrCreate([
                 'email' => 'system@cpq.cloudmarket.com',
             ], [
-                'name' => 'System User',
+                'name' => 'System Bot',
                 'tenant_id' => $tenant->id,
                 'password' => Hash::make(Str::random(10)),
             ]);

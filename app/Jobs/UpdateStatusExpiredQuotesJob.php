@@ -36,8 +36,9 @@ class UpdateStatusExpiredQuotesJob implements ShouldQueue
                 : 14;
             $expirationDate = today()->subDays($expirationDays)->format('Y-m-d');
 
-            Log::info("--------------------     {$tenant->name}     --------------------");
-            Log::info("Expiring quotes created before {$expirationDate}");
+            Log::info("UpdateStatusExpiredQuotesJob | ------------------- TENANT:  ({$tenant->id}) {$tenant->name} -------------------");
+            Log::info("UpdateStatusExpiredQuotesJob | CONFIG: Expiring quotes created before {$expirationDate} ({$expirationDays} days ago})");
+            Log::info('UpdateStatusExpiredQuotesJob | ---------------------------------------------------------------');
 
             DB::transaction(function () use (
                 &$quotesUpdated,
@@ -55,14 +56,14 @@ class UpdateStatusExpiredQuotesJob implements ShouldQueue
                     ]);
 
                     $quotesUpdated++;
-                    Log::info("Quote ID {$quote->id} created at {$quote->created_at->format('Y-m-d')} updated from {$originalStatus} to {$expiredStatus}");
+                    Log::info("UpdateStatusExpiredQuotesJob | Quote ID {$quote->id} created at {$quote->created_at->format('Y-m-d')} updated from {$originalStatus} to {$expiredStatus}");
                 }
             });
         } catch (\Exception $e) {
-            Log::error("Error processing tenant {$tenant->name}: {$e->getMessage()}");
+            Log::error("UpdateStatusExpiredQuotesJob | Error processing tenant ({$tenant->id}) {$tenant->name}: {$e->getMessage()}");
         }
 
-        Log::info("{$quotesUpdated} quotes update for {$tenant->name}");
-        Log::info('-----------------------------------------------------------------');
+        Log::info("UpdateStatusExpiredQuotesJob | {$quotesUpdated} quotes update for ({$tenant->id}) {$tenant->name}");
+        Log::info('UpdateStatusExpiredQuotesJob | ---------------------------------------------------------------');
     }
 }

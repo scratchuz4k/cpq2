@@ -86,8 +86,8 @@ jobs:
             - name: Execute cypress tests
               id: execute-cypress-tests
               env:
-                  SUPERUSER_EMAIL: super@example.com
-                  SUPERUSER_PASSWORD: werwerwer
+                  SUPERUSER_EMAIL: ${{ secrets.SUPERUSER_EMAIL }}
+                  SUPERUSER_PASSWORD: ${{ secrets.SUPERUSER_PASSWORD }}
               run: npm run cy:run
 
             - name: Check for failed Cypress tests and send screenshot to Discord
