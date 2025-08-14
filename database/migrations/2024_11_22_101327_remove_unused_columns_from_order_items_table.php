@@ -15,7 +15,7 @@ return new class extends Migration
             $table->dropColumn([
                 'margin',
                 'raw_price',
-                'original_price'
+                'original_price',
             ]);
         });
     }

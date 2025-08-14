@@ -21,7 +21,7 @@ class Product extends Model
         'description',
         'supplier_id',
         'brand_id',
-        "price_plan_id",
+        'price_plan_id',
         'tenant_id',
         'is_active',
     ];
@@ -29,10 +29,10 @@ class Product extends Model
     protected function casts(): array
     {
         return [
-            'is_active' => 'boolean'
+            'is_active' => 'boolean',
         ];
     }
-    
+
     protected static function booted(): void
     {
         static::addGlobalScope(new TenantScope);

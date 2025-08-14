@@ -23,49 +23,48 @@
 //
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
-const { getCurrentDate, generateHash, slugify } = require("../support/utils.js");
-const temp = getCurrentDate()
-const user = { name: slugify(temp), email: slugify(temp) + "@email.com", password: generateHash(temp) }
+const { getCurrentDate, generateHash, slugify } = require('../support/utils.js');
+const temp = getCurrentDate();
+const user = { name: slugify(temp), email: slugify(temp) + '@email.com', password: generateHash(temp) };
 
-Cypress.Commands.add("login", (email, password) => {
+Cypress.Commands.add('login', (email, password) => {
     // run these tests as if in a desktop
     // browser with a 720p monitor
-    cy.viewport(1920, 1080)
+    cy.viewport(1920, 1080);
     cy.session([email, password, cy.id], () => {
-        cy.visit("/login")
-        cy.get("#email").type(email, { force: true })
-        cy.get("#password").type(password, { force: true })
-        cy.get("#btn-login").click()
+        cy.visit('/login');
+        cy.get('#email').type(email, { force: true });
+        cy.get('#password').type(password, { force: true });
+        cy.get('#btn-login').click();
         cy.get('#page-title').contains(/Quotes|Orders/);
-    }
-    )
-})
+    });
+});
 
 Cypress.Commands.add('selectLazyOption', (id, option = null) => {
     const inputSelect = `#input-select-${id}`;
     const optionsContainer = `#${id}-sidebar`;
 
     cy.get(inputSelect).click();
-    cy.wait(200)
+    cy.wait(200);
     if (option) {
-        cy.get('#select-' + id + '-search').type(option)
-        cy.wait(1000)
+        cy.get('#select-' + id + '-search').type(option);
+        cy.wait(1000);
     }
     const scrollToOption = (retries = 10) => {
-        cy.get(optionsContainer).then($container => {
-            const options = [...$container[0].querySelectorAll('.option')]
+        cy.get(optionsContainer).then(($container) => {
+            const options = [...$container[0].querySelectorAll('.option')];
 
-            const match = option
-                ? options.find(el => el.textContent.trim().includes(option))
-                : options[0]
-
+            const match = option ? options.find((el) => el.textContent.trim().includes(option)) : options[0];
 
             if (match) {
                 cy.wrap(match).scrollIntoView().click();
             } else if (retries > 0) {
-                cy.wrap($container).scrollTo('bottom').wait(300).then(() => {
-                    scrollToOption(retries - 1);
-                });
+                cy.wrap($container)
+                    .scrollTo('bottom')
+                    .wait(300)
+                    .then(() => {
+                        scrollToOption(retries - 1);
+                    });
             } else {
                 throw new Error(`Option "${option}" not found in ${optionsContainer}`);
             }
@@ -73,26 +72,25 @@ Cypress.Commands.add('selectLazyOption', (id, option = null) => {
     };
 
     scrollToOption();
-})
+});
 
 Cypress.Commands.add('selectOption', (id, option) => {
     cy.get(id).click();
     cy.wait(500);
-    cy.get(".p-select-list-container")
-        .within(() => {
-            cy.get(".p-select-option").contains(option).click();
-        });
-})
+    cy.get('.p-select-list-container').within(() => {
+        cy.get('.p-select-option').contains(option).click();
+    });
+});
 
 Cypress.Commands.add('createUser', (role) => {
-    cy.visit("/users")
-    cy.get("#link-to-create-user").click()
+    cy.visit('/users');
+    cy.get('#link-to-create-user').click();
 
-    cy.get("#user-name").type(user.name)
-    cy.get("#user-email").type(user.email)
-    cy.get("#user-password").type(user.password)
+    cy.get('#user-name').type(user.name);
+    cy.get('#user-email').type(user.email);
+    cy.get('#user-password').type(user.password);
     cy.selectOption('#user-role', role);
-    cy.get("#btn-save-user").click()
-    cy.get("#treetable-search").type(user.name)
-    cy.get("#users-table").contains(user.name)
-})
+    cy.get('#btn-save-user').click();
+    cy.get('#treetable-search').type(user.name);
+    cy.get('#users-table').contains(user.name);
+});

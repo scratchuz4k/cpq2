@@ -29,7 +29,7 @@ it('CRUD if setting is disable', function () {
     $response->assertRedirect();
     expect(Account::count())->toBe(1);
 
-    //Update Api
+    // Update Api
     $account = Account::find(1);
 
     $data = [
@@ -37,13 +37,13 @@ it('CRUD if setting is disable', function () {
         'reference' => 'ref',
     ];
 
-    $response = $this->put('accounts/' . $account->id, $data);
+    $response = $this->put('accounts/'.$account->id, $data);
     $response->assertRedirect();
 
     $account->refresh();
     $this->assertEquals($account->name, $data['name']);
 
-    $response = $this->delete('api/accounts/' . $account->id);
+    $response = $this->delete('api/accounts/'.$account->id);
     $response->assertSuccessful();
     expect(Account::count())->toBe(0);
 });
@@ -51,7 +51,7 @@ it('CRUD if setting is disable', function () {
 it('CRUD if setting is enabled', function () {
     $account = Account::factory()->create();
     $confs = [
-        'restrict_account_management_is_active' => 1
+        'restrict_account_management_is_active' => 1,
     ];
 
     $this->tenant->syncConfigurations($confs);
@@ -65,24 +65,24 @@ it('CRUD if setting is enabled', function () {
     $response->assertForbidden();
     expect(Account::count())->toBe(1);
 
-    //Update Api
+    // Update Api
     $new_data = [
         'name' => 'updated_name',
         'reference' => 'ref',
     ];
-    $response = $this->put('accounts/' . $account->id, $new_data);
+    $response = $this->put('accounts/'.$account->id, $new_data);
     $response->assertForbidden();
 
     $this->assertEquals($account->name, $account->name);
 
-    $response = $this->delete('api/accounts/' . $account->id);
+    $response = $this->delete('api/accounts/'.$account->id);
     $response->assertForbidden();
     expect(Account::count())->toBe(1);
 });
 
 it('Check API access to accounts if setting is enabled for user with token permission', function () {
     $confs = [
-        'restrict_account_management_is_active' => 1
+        'restrict_account_management_is_active' => 1,
     ];
 
     $this->tenant->syncConfigurations($confs);
@@ -95,7 +95,6 @@ it('Check API access to accounts if setting is enabled for user with token permi
     Auth::guard('web')->logout();
     Auth::guard('web')->login($user);
 
-
     $data = [
         'name' => 'name',
         'reference' => 'ref',
@@ -107,7 +106,7 @@ it('Check API access to accounts if setting is enabled for user with token permi
     $response->assertRedirect();
     expect(Account::count())->toBe(1);
 
-    //Update Api
+    // Update Api
     $account = Account::find(1);
 
     $data = [
@@ -115,13 +114,13 @@ it('Check API access to accounts if setting is enabled for user with token permi
         'reference' => 'ref',
     ];
 
-    $response = $this->putJson('api/accounts/' . $account->id, $data);
+    $response = $this->putJson('api/accounts/'.$account->id, $data);
     $response->assertSuccessful();
 
     $account->refresh();
     $this->assertEquals($account->name, $data['name']);
 
-    $response = $this->deleteJson('api/accounts/' . $account->id);
+    $response = $this->deleteJson('api/accounts/'.$account->id);
     $response->assertSuccessful();
     expect(Account::count())->toBe(0);
 });

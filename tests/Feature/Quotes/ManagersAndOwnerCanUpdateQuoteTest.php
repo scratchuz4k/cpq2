@@ -1,10 +1,10 @@
 <?php
 
 use App\Enums\QuoteStatusesEnum;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use App\Models\User;
-use App\Models\Tenant;
 use App\Models\Account;
+use App\Models\Tenant;
+use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Auth;
 
 uses(RefreshDatabase::class);
@@ -30,7 +30,7 @@ beforeEach(function () {
         $this->super_user,
         $this->company_admin,
         $this->sales_user,
-        $this->sales_user_child
+        $this->sales_user_child,
     ];
 
     $this->account = Account::factory()->create();
@@ -106,7 +106,7 @@ beforeEach(function () {
     Auth::login($this->sales_user_child);
     $this->actingAs($this->sales_user_child);
 
-    $this->quotes = array_map(fn () => createQuoteWithItems($this), range(1,4));
+    $this->quotes = array_map(fn () => createQuoteWithItems($this), range(1, 4));
 });
 
 it('Managers and Owner can add an item to quote', function () {
@@ -127,8 +127,8 @@ it('Managers and Owner can update the quote', function () {
         Auth::guard('web')->login($user); // Log in as the sales user
         $this->actingAs($user);
 
-        $response = $this->put('api/quotes/' . $this->quotes[$index]['id'], [
-            'status' => QuoteStatusesEnum::REGISTRY->name
+        $response = $this->put('api/quotes/'.$this->quotes[$index]['id'], [
+            'status' => QuoteStatusesEnum::REGISTRY->name,
         ]);
         $response->assertSuccessful();
     }
@@ -140,7 +140,7 @@ it('Managers and Owner can delete quotes', function () {
         Auth::guard('web')->login($user);
         $this->actingAs($user);
 
-        $response = $this->delete('api/quotes/' . $this->quotes[$index]['id']);
+        $response = $this->delete('api/quotes/'.$this->quotes[$index]['id']);
         $response->assertSuccessful();
     }
 });

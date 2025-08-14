@@ -2,7 +2,6 @@
 
 namespace App\Policies;
 
-use App\Enums\OrderStatusesEnum;
 use App\Models\Order;
 use App\Models\User;
 
@@ -11,12 +10,14 @@ class OrderPolicy
     /**
      * Determine whether the user can view any models.
      */
-    private string $model = "order";
+    private string $model = 'order';
+
     public function viewAny(User $user): bool
     {
         if ($user->can("viewAny $this->model")) {
             return true;
         }
+
         return false;
     }
 
@@ -28,6 +29,7 @@ class OrderPolicy
         if ($user->can("view $this->model")) {
             return true;
         }
+
         return false;
     }
 
@@ -39,6 +41,7 @@ class OrderPolicy
         if ($user->can("create $this->model")) {
             return true;
         }
+
         return false;
     }
 
@@ -50,8 +53,9 @@ class OrderPolicy
         if ($user->can("update $this->model")) {
             return true;
         }
+
         return false;
-   }
+    }
 
     /**
      * Determine whether the user can delete the model.
@@ -61,8 +65,9 @@ class OrderPolicy
         if ($user->can("delete $this->model")) {
             return true;
         }
+
         return false;
-   }
+    }
 
     /**
      * Determine whether the user can restore the model.
@@ -72,6 +77,7 @@ class OrderPolicy
         if ($user->can("restore $this->model")) {
             return true;
         }
+
         return false;
     }
 
@@ -83,18 +89,19 @@ class OrderPolicy
         if ($user->can("forceDelete $this->model")) {
             return true;
         }
+
         return false;
     }
-
 
     /**
      * Determine whether the user can export the model.
      */
     public function export(User $user): bool
     {
-        if (!$user->can("export $this->model")) {
+        if (! $user->can("export $this->model")) {
             return false;
         }
+
         return true;
     }
 }

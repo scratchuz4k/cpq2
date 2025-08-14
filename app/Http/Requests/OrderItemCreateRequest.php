@@ -22,15 +22,15 @@ class OrderItemCreateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "order_id" => 'required',
-            "name" => "required",
-            "quantity" => "required|numeric",
-            "raw_price" => "numeric",
-            "raw_price_monthly" => "numeric",
-            "price" => "numeric",
-            "price_monthly" => "numeric",
-            "margin" => "numeric|min:0|max:100",
-            "discount" => "numeric|min:0|max:100",
+            'order_id' => 'required',
+            'name' => 'required',
+            'quantity' => 'required|numeric',
+            'raw_price' => 'numeric',
+            'raw_price_monthly' => 'numeric',
+            'price' => 'numeric',
+            'price_monthly' => 'numeric',
+            'margin' => 'numeric|min:0|max:100',
+            'discount' => 'numeric|min:0|max:100',
         ];
     }
 }

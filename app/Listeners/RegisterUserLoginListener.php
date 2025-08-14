@@ -24,13 +24,13 @@ class RegisterUserLoginListener
             'cityName',
             'zipCode',
             'latitude',
-            'longitude'
+            'longitude',
         ];
 
         Activity::create([
             'operation' => 'user_login',
             'activitable_id' => $user->id,
-            'activitable_type' => get_class($user),
+            'activitable_type' => $user::class,
             'data' => [
                 'location' => array_intersect_key(
                     (array) Location::get($ip) ?? [],

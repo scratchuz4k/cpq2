@@ -28,19 +28,15 @@ class AccountCreateRequest extends FormRequest
         return [
             'name' => [
                 'required',
-                Rule::unique('accounts')->where(function ($query) use ($user) {
-                    return $query->where('tenant_id', $user->tenant_id)
-                        ->where('reference', request('reference'))
-                        ->whereNull('deleted_at');
-                }),
+                Rule::unique('accounts')->where(fn ($query) => $query->where('tenant_id', $user->tenant_id)
+                    ->where('reference', request('reference'))
+                    ->whereNull('deleted_at')),
             ],
             'reference' => [
                 'required',
-                Rule::unique('accounts')->where(function ($query) use ($user) {
-                    return $query->where('tenant_id', $user->tenant_id)
-                        ->where('name', request('name'))
-                        ->whereNull('deleted_at');
-                }),
+                Rule::unique('accounts')->where(fn ($query) => $query->where('tenant_id', $user->tenant_id)
+                    ->where('name', request('name'))
+                    ->whereNull('deleted_at')),
             ],
             'contacts.*.name' => 'nullable',
             'contacts.*.email' => 'nullable|email',

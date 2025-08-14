@@ -15,13 +15,13 @@ class EmailTemplate extends Model
         'cc',
         'bcc',
         'subject',
-        'body'
+        'body',
     ];
 
     protected function casts(): array
     {
         return [
-            'is_active' => 'boolean'
+            'is_active' => 'boolean',
         ];
     }
 
@@ -29,8 +29,8 @@ class EmailTemplate extends Model
     {
 
         static::retrieved(function ($model) {
-            //TODO: switch to a account saved in the user model
-            if (!Auth::check()) {
+            // TODO: switch to a account saved in the user model
+            if (! Auth::check()) {
                 return;
             }
 
@@ -46,7 +46,6 @@ class EmailTemplate extends Model
             }
         });
     }
-
 
     public function tokens(): HasMany
     {

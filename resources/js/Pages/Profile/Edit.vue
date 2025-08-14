@@ -13,19 +13,14 @@ import TabPanel from 'primevue/tabpanel';
 
 defineProps({
     mustVerifyEmail: {
-        type: Boolean,
+        type: Boolean
     },
     status: {
-        type: String,
-    },
+        type: String
+    }
 });
 
-const items = ref([
-    { label: 'Home', url: '/' },
-    { label: 'My Account', url: '/myaccount' },
-    { label: 'My Profile' }
-]);
-
+const items = ref([{ label: 'Home', url: '/' }, { label: 'My Account', url: '/myaccount' }, { label: 'My Profile' }]);
 </script>
 
 <template>

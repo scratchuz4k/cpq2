@@ -1,15 +1,14 @@
 <?php
 
-use App\Models\Spa;
-use App\Models\User;
-use App\Models\Tenant;
-use App\Models\Account;
-use App\Helpers\Prices\PriceRules;
-use Illuminate\Support\Facades\Auth;
-use App\Enums\SpaRulesEnum;
 use App\Enums\SpaOperationsEnum;
+use App\Enums\SpaRulesEnum;
+use App\Helpers\Prices\PriceRules;
+use App\Models\Account;
+use App\Models\Spa;
 use App\Models\SpaOperation;
 use App\Models\SpaRule;
+use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 
 beforeEach(function () {
     // Declaration of values
@@ -23,24 +22,23 @@ beforeEach(function () {
 });
 
 test('Account without Spa', function () {
-    $prices = new PriceRules();
+    $prices = new PriceRules;
     $value = $prices->calculate(1, account: $this->account);
 
     expect($value)->toBe(1.0);
     expect(count($prices->getAppliedSpas()))->toBe(0);
 });
 
-
 test('Account with OperationMargin Spa', function () {
-    $spa = new Spa();
+    $spa = new Spa;
     $spa->tenant_id = 1;
     $spa->rule_id = SpaRule::where('code', SpaRulesEnum::Account->name)->value('id');
     $spa->field_1 = $this->account->id;
-    $spa->operation_id = SpaOperation::where('code',  SpaOperationsEnum::Margin->name)->value('id');
+    $spa->operation_id = SpaOperation::where('code', SpaOperationsEnum::Margin->name)->value('id');
     $spa->value = 10;
     $spa->save();
 
-    $prices = new PriceRules();
+    $prices = new PriceRules;
     $value = $prices->calculate(10, account: $this->account);
     expect($value)->toBe(20.0);
     expect(count($prices->getAppliedSpas()))->toBe(1);
@@ -53,17 +51,16 @@ test('Account with OperationMargin Spa', function () {
     expect(count($prices->getAppliedSpas()))->toBe(1);
 });
 
-
 test('Account with OperationDiscount Spa', function () {
-    $spa = new Spa();
+    $spa = new Spa;
     $spa->tenant_id = 1;
     $spa->rule_id = SpaRule::where('code', SpaRulesEnum::Account->name)->value('id');
     $spa->field_1 = $this->account->id;
-    $spa->operation_id = SpaOperation::where('code',  SpaOperationsEnum::Discount->name)->value('id');
+    $spa->operation_id = SpaOperation::where('code', SpaOperationsEnum::Discount->name)->value('id');
     $spa->value = 10;
     $spa->save();
 
-    $prices = new PriceRules();
+    $prices = new PriceRules;
     $value = $prices->calculate(10, account: $this->account);
     expect($value)->toBe(0.0);
     expect(count($prices->getAppliedSpas()))->toBe(1);

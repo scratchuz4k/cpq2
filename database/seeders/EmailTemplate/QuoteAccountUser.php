@@ -2,10 +2,10 @@
 
 namespace Database\Seeders\EmailTemplate;
 
-use App\Models\EmailToken;
-use App\Models\EmailTemplate;
-use Illuminate\Database\Seeder;
 use App\Enums\EmailTemplatesEnum;
+use App\Models\EmailTemplate;
+use App\Models\EmailToken;
+use Illuminate\Database\Seeder;
 
 class QuoteAccountUser extends Seeder
 {
@@ -31,20 +31,20 @@ class QuoteAccountUser extends Seeder
         EmailToken::updateOrCreate(
             [
                 'field' => 'account_name',
-                'email_template_id' => $quoteAccountShare->id
+                'email_template_id' => $quoteAccountShare->id,
             ],
             [
-                'description' => 'Account Name'
+                'description' => 'Account Name',
             ],
         );
 
         EmailToken::updateOrCreate(
             [
                 'field' => 'quote_number',
-                'email_template_id' => $quoteAccountShare->id
+                'email_template_id' => $quoteAccountShare->id,
             ],
             [
-                'description' => 'Quote Number'
+                'description' => 'Quote Number',
             ],
         );
     }

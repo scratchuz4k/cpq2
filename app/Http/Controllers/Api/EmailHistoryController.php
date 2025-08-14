@@ -2,20 +2,22 @@
 
 namespace App\Http\Controllers\Api;
 
-use Exception;
-use App\Models\EmailHistory;
-use Illuminate\Http\Request;
 use App\Helpers\DataProvider;
-use App\Http\Requests\IndexRequest;
-use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\BaseController;
+use App\Http\Requests\IndexRequest;
 use App\Http\Resources\EmailHistoryResource;
+use App\Models\EmailHistory;
+use Exception;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class EmailHistoryController extends BaseController
 {
     protected $model = EmailHistory::class;
+
     /**
      * Index
+     *
      * @response AnonymousResourceCollection<LengthAwarePaginator<AccountResource>>
      */
     public function index(IndexRequest $request)
@@ -26,6 +28,7 @@ class EmailHistoryController extends BaseController
             $data = $dataProvider->get();
         } catch (Exception $e) {
             Log::debug($e->getMessage());
+
             return $e->getMessage();
         }
 

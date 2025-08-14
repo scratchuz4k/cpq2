@@ -33,10 +33,8 @@ class CategoryUpdateRequest extends FormRequest
         return [
             'name' => 'string|max:255',
             'code' => ['string', 'max:255',
-                Rule::unique('categories')->where(function ($query) use ($user) {
-                    return $query->where('tenant_id', $user->tenant_id)
-                        ->where('code', request('code'));
-                })->ignore($category_id),
+                Rule::unique('categories')->where(fn ($query) => $query->where('tenant_id', $user->tenant_id)
+                    ->where('code', request('code')))->ignore($category_id),
             ],
         ];
     }

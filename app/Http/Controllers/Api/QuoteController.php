@@ -42,8 +42,8 @@ class QuoteController extends BaseController
             $users = $user->descendants();
 
             if ($user->hasRole('Sales Manager') && $user->group) {
-                $group_users = User::with("roles")->whereHas("roles", function($q) use ($user) {
-                    $q->where("name", $user->roles->first()->children->first()->name);
+                $group_users = User::with('roles')->whereHas('roles', function ($q) use ($user) {
+                    $q->where('name', $user->roles->first()->children->first()->name);
                 })->where('group_id', $user->group_id)->get();
 
                 $users = $users->merge($group_users);
@@ -69,9 +69,7 @@ class QuoteController extends BaseController
     public function store(QuoteCreateRequest $request)
     {
         try {
-            $quote = DB::transaction(function () use ($request) {
-                return $this->quoteService->store($request->all());
-            });
+            $quote = DB::transaction(fn () => $this->quoteService->store($request->all()));
         } catch (Exception $e) {
             return response($e->getMessage(), 500);
         }

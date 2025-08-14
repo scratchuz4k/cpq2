@@ -18,8 +18,8 @@ class TenantUserFactory extends Factory
     public function definition()
     {
         return [
-            'user_id' => rand(2,4),
-            'tenant_id' => Tenant::where("name", "CloudMarket")->value('id'),
+            'user_id' => rand(2, 4),
+            'tenant_id' => Tenant::where('name', 'CloudMarket')->value('id'),
         ];
     }
 }

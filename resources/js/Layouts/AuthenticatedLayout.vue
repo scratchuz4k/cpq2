@@ -1,25 +1,25 @@
 <script setup>
-import _ from "lodash";
-import ApplicationLogo from "@/Components/ApplicationLogo.vue";
-import { Link, usePage } from "@inertiajs/vue3";
-import { ref } from "vue";
-import * as Sentry from "@sentry/vue";
-import TopBarSearchable from "@/Components/TopBarSearchable.vue";
-import Resources from "@/Components/Resources.vue";
-import { hasRole } from "@/Composables/useAuth.js";
+import _ from 'lodash';
+import ApplicationLogo from '@/Components/ApplicationLogo.vue';
+import { Link, usePage } from '@inertiajs/vue3';
+import { ref } from 'vue';
+import * as Sentry from '@sentry/vue';
+import TopBarSearchable from '@/Components/TopBarSearchable.vue';
+import Resources from '@/Components/Resources.vue';
+import { hasRole } from '@/Composables/useAuth.js';
 
 const page = usePage();
 Sentry.setUser({
     fullName: page.props.auth.user.name,
-    email: page.props.auth.user.email,
+    email: page.props.auth.user.email
 });
 
 defineProps({
     quote: Object,
-    order: Object,
+    order: Object
 });
 
-const activeTab = ref(window.location.pathname.replace(/^\/|\/$/g, ""));
+const activeTab = ref(window.location.pathname.replace(/^\/|\/$/g, ''));
 const tenants = ref(page.props.auth.user.tenants);
 const currentTenant = ref(page.props.tenant);
 </script>
@@ -30,9 +30,15 @@ const currentTenant = ref(page.props.tenant);
             <a class="navbar-brand" href="/">
                 <ApplicationLogo />
             </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
-                aria-label="Toggle navigation">
+            <button
+                class="navbar-toggler"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent"
+                aria-expanded="false"
+                aria-label="Toggle navigation"
+            >
                 <i class="fa-solid fa-bars"></i>
             </button>
             <div class="collapse navbar-collapse justify-content-end" id="navbarSupportedContent">
@@ -44,28 +50,46 @@ const currentTenant = ref(page.props.tenant);
                         <a class="nav-link" href="#">ASSETS</a>
                     </li>
                     <li class="nav-item d-md-none d-lg-block">
-                        <a class="nav-link" :class="{ active: activeTab === 'quotes' }" aria-current="page"
-                            :href="route('quotes.index')">QUOTES</a>
+                        <a
+                            class="nav-link"
+                            :class="{ active: activeTab === 'quotes' }"
+                            aria-current="page"
+                            :href="route('quotes.index')"
+                            >QUOTES</a
+                        >
                     </li>
                     <li class="nav-item d-md-none d-lg-block">
-                        <a class="nav-link" :class="{ active: activeTab === 'orders' }" aria-current="page"
-                            :href="route('orders.index')">ORDER</a>
+                        <a
+                            class="nav-link"
+                            :class="{ active: activeTab === 'orders' }"
+                            aria-current="page"
+                            :href="route('orders.index')"
+                            >ORDER</a
+                        >
                     </li>
                     <li class="nav-item d-md-none d-lg-block">
                         <a class="nav-link" href="#">BILLING</a>
                     </li>
                     <li v-if="hasRole('Super Admin')" class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
-                            aria-expanded="false">
+                        <a
+                            class="nav-link dropdown-toggle"
+                            href="#"
+                            role="button"
+                            data-bs-toggle="dropdown"
+                            aria-expanded="false"
+                        >
                             <font-awesome-icon :icon="['far', 'building']" />
                             {{ currentTenant.name }} (T{{ currentTenant.id }})
                         </a>
 
                         <ul class="dropdown-menu">
                             <li v-for="tenant in tenants">
-                                <Link :class="currentTenant.id === tenant.id && 'active'" class="dropdown-item fw-bold"
-                                    :href="route('tenant.make-current', { tenant: tenant.id })">
-                                {{ tenant.name }} (T{{ tenant.id }})
+                                <Link
+                                    :class="currentTenant.id === tenant.id && 'active'"
+                                    class="dropdown-item fw-bold"
+                                    :href="route('tenant.make-current', { tenant: tenant.id })"
+                                >
+                                    {{ tenant.name }} (T{{ tenant.id }})
                                 </Link>
                             </li>
                         </ul>
@@ -78,8 +102,15 @@ const currentTenant = ref(page.props.tenant);
                     </li>
 
                     <li class="nav-item">
-                        <a id="my-account" class="nav-link" :href="route('myaccount')" v-tooltip
-                            data-bs-toggle="tooltip" data-bs-placement="top" :title="page.props.auth.user.name">
+                        <a
+                            id="my-account"
+                            class="nav-link"
+                            :href="route('myaccount')"
+                            v-tooltip
+                            data-bs-toggle="tooltip"
+                            data-bs-placement="top"
+                            :title="page.props.auth.user.name"
+                        >
                             <font-awesome-icon :icon="['far', 'user']" />
                         </a>
                     </li>
@@ -102,30 +133,57 @@ const currentTenant = ref(page.props.tenant);
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
-                        <a class="nav-link" id="dashboard-tab" data-toggle="tab" href="/" role="tab"
-                            aria-controls="dashboard" aria-selected="false"
-                            :class="{ active: activeTab === '' }">DASHBOARD</a>
+                        <a
+                            class="nav-link"
+                            id="dashboard-tab"
+                            data-toggle="tab"
+                            href="/"
+                            role="tab"
+                            aria-controls="dashboard"
+                            aria-selected="false"
+                            :class="{ active: activeTab === '' }"
+                            >DASHBOARD</a
+                        >
                     </li>
                     <li class="nav-item" v-if="!page.props.auth.roles.includes('Order Manager')">
-                        <a class="nav-link" :class="{ active: $page.component == 'Quotes/Create' }" id="create-tab"
-                            data-toggle="tab" href="/quotes/create" role="tab" aria-controls="create"
-                            aria-selected="false">
+                        <a
+                            class="nav-link"
+                            :class="{ active: $page.component == 'Quotes/Create' }"
+                            id="create-tab"
+                            data-toggle="tab"
+                            href="/quotes/create"
+                            role="tab"
+                            aria-controls="create"
+                            aria-selected="false"
+                        >
                             <font-awesome-icon :icon="['fas', 'plus']" />
                             NEW
                         </a>
                     </li>
                     <template v-if="quote && quote.status !== 'REGISTRY'">
                         <li class="nav-item">
-                            <Link :href="route('quotes.configure', { quote: quote.id })" class="nav-link"
-                                :class="{ active: $page.component == 'Quotes/Configure' }">CONFIGURE</Link>
+                            <Link
+                                :href="route('quotes.configure', { quote: quote.id })"
+                                class="nav-link"
+                                :class="{ active: $page.component == 'Quotes/Configure' }"
+                                >CONFIGURE</Link
+                            >
                         </li>
                         <li class="nav-item">
-                            <Link :href="route('quotes.edit', { quote: quote.id })" class="nav-link"
-                                :class="{ active: $page.component == 'Quotes/Edit' }">PRICE</Link>
+                            <Link
+                                :href="route('quotes.edit', { quote: quote.id })"
+                                class="nav-link"
+                                :class="{ active: $page.component == 'Quotes/Edit' }"
+                                >PRICE</Link
+                            >
                         </li>
                         <li class="nav-item">
-                            <Link :href="route('quotes.show', { quote: quote.id })" class="nav-link"
-                                :class="{ active: $page.component == 'Quotes/Show' }">QUOTE</Link>
+                            <Link
+                                :href="route('quotes.show', { quote: quote.id })"
+                                class="nav-link"
+                                :class="{ active: $page.component == 'Quotes/Show' }"
+                                >QUOTE</Link
+                            >
                         </li>
                     </template>
                 </ul>

@@ -2,15 +2,15 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Helpers\DataProvider;
+use App\Http\Controllers\Controller;
 use App\Http\Requests\IndexRequest;
+use App\Models\Resource;
 use Dedoc\Scramble\Attributes\ExcludeRouteFromDocs;
 use Exception;
-use App\Models\Resource;
 use Illuminate\Http\Request;
-use App\Helpers\DataProvider;
-use Illuminate\Support\Facades\Log;
-use App\Http\Controllers\Controller;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class ResourceController extends Controller
@@ -26,25 +26,25 @@ class ResourceController extends Controller
             $data = $dataProvider->get();
         } catch (Exception $e) {
             Log::debug($e->getMessage());
+
             return $e->getMessage();
         }
 
         return JsonResource::collection($data);
     }
 
-
     /**
      * Store a new Resource
      */
     public function store(Request $request)
     {
-        //TODO on php upgrade to 8.4 implement LIBXML_NO_XXE verification to prevent xxe injextion
+        // TODO on php upgrade to 8.4 implement LIBXML_NO_XXE verification to prevent xxe injextion
         $request->validate([
             'file' => 'required',
         ]);
 
         $files = $request->file;
-        if (!is_array($files)) {
+        if (! is_array($files)) {
             $files = [$request->file];
         }
 
@@ -56,10 +56,10 @@ class ResourceController extends Controller
                     $key->getClientMimeType(),
                     $key->getClientOriginalName(),
                     $key->get(),
-                    $key->getSize()
+                    $key->getSize(),
                 ];
 
-                if (in_array($mimeType, ['text/xml', 'application/xml']) && !simplexml_load_string($key->get(), null, LIBXML_NOERROR)) {
+                if (in_array($mimeType, ['text/xml', 'application/xml']) && ! simplexml_load_string((string) $key->get(), null, LIBXML_NOERROR)) {
                     return response()->json([
                         'message' => 'The file must contain a valid XML.',
                         'error' => true,
@@ -73,11 +73,11 @@ class ResourceController extends Controller
                         'mime_type' => $mimeType,
                         'route' => $path,
                         'size' => $size,
-                        'tenant_id' => auth()->user()->tenant_id
+                        'tenant_id' => auth()->user()->tenant_id,
                     ]);
                 }
             }
-        } catch (\Exception $e) {
+        } catch (\Exception) {
             return response(['message' => 'An error occurred while uploading the resource.!', 'error' => true], 500);
         }
 

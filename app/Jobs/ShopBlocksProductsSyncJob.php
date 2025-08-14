@@ -52,7 +52,7 @@ class ShopBlocksProductsSyncJob implements NotTenantAware, ShouldQueue
             return;
         }
         $pricePlanId = PricePlan::where('code', PricePlanEnum::SINGLE->name)->value('id');
-        foreach ($res['data'] as $key => $product) {
+        foreach ($res['data'] as $product) {
             if (count($product['children']) == 0) {
                 continue;
             }
@@ -102,7 +102,7 @@ class ShopBlocksProductsSyncJob implements NotTenantAware, ShouldQueue
     public function failed(Exception $exception)
     {
         // Handle the failure, log exception details, etc.
-        $message = '['.strtoupper(env('APP_ENV')).'] ShopBlocksProducts failed with error: '.$exception->getMessage();
+        $message = '['.strtoupper((string) env('APP_ENV')).'] ShopBlocksProducts failed with error: '.$exception->getMessage();
 
         $error = [
             'provider' => 'ShopBlocks',
@@ -110,7 +110,7 @@ class ShopBlocksProductsSyncJob implements NotTenantAware, ShouldQueue
         ];
 
         // Handle the failure, log exception details, etc.
-        $message = '['.strtoupper(env('APP_ENV')).'] ShopBlocksProducts failed with error: '.json_encode($error);
+        $message = '['.strtoupper((string) env('APP_ENV')).'] ShopBlocksProducts failed with error: '.json_encode($error);
 
         Log::error($message);
         if (env('DISCORD_SHOPBLOCKS_JOBS')) {
@@ -175,12 +175,12 @@ class ShopBlocksProductsSyncJob implements NotTenantAware, ShouldQueue
             foreach ($rows as $tr) {
                 $th = $tr->getElementsByTagName('th')->item(0);
                 if ($th && $th->hasAttribute('colspan') && $th->getAttribute('colspan') == '2') {
-                    $currentSection = trim($th->textContent);
+                    $currentSection = trim((string) $th->textContent);
                 } else {
                     $tds = $tr->getElementsByTagName('td');
                     if ($tds->length == 2 && $currentSection) {
-                        $key = trim($tds->item(0)->textContent);
-                        $value = trim($tds->item(1)->textContent);
+                        $key = trim((string) $tds->item(0)->textContent);
+                        $value = trim((string) $tds->item(1)->textContent);
                         array_push($result, ['group' => $currentSection, 'key' => Str::slug($key), 'label' => $key, 'value' => $value]);
                     }
                 }
