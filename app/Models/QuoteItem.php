@@ -9,10 +9,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class QuoteItem extends Model
 {
-    use HasFactory, RegisterActivity, SetTenantId;
+    use HasFactory, RegisterActivity, SetTenantId, SoftDeletes;
 
     protected $fillable = [
         'quote_id',
@@ -39,6 +40,17 @@ class QuoteItem extends Model
     {
         return [
             'data' => 'object',
+            'raw_price' => 'float',
+            'original_price' => 'float',
+            'price' => 'float',
+            'margin' => 'float',
+            'discount' => 'float',
+            'total' => 'float',
+            'total_tax' => 'float',
+            'total_gross' => 'float',
+            'tax' => 'float',
+            'created_at' => 'datetime:y-m-d H:i:s',
+            'updated_at' => 'datetime:y-m-d H:i:s',
         ];
     }
 
@@ -98,8 +110,8 @@ class QuoteItem extends Model
 
         $this->price = $price;
         $this->margin = $this->price - $this->raw_price;
-        $this->total = ($this->price * $this->quantity * $this->contract_length);
-        $this->total_tax = ($this->total * ($this->tax / 100));
-        $this->total_gross = ($this->total * (($this->tax / 100) + 1));
+        $this->total = format_currency($this->price * $this->quantity * $this->contract_length);
+        $this->total_tax = format_currency($this->total * ($this->tax / 100));
+        $this->total_gross = format_currency($this->total * (($this->tax / 100) + 1));
     }
 }

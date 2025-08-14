@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Web\AccountController;
+use App\Http\Controllers\Web\ActivityController;
 use App\Http\Controllers\Web\ApiController;
 use App\Http\Controllers\Web\BrandController;
 use App\Http\Controllers\Web\CategoryController;
@@ -97,6 +98,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         'blacklists' => BlacklistController::class,
         'groups' => GroupController::class,
         'group-accounts' => GroupAccountController::class,
+        'activities' => ActivityController::class,
 
     ]);
 

@@ -27,6 +27,7 @@ class QuoteItemResource extends JsonResource
             'total_gross' => format_currency($this->total_gross),
             'price_plan' => $this->pricePlan,
             'contract_length' => (float) $this->contract_length,
+            'is_deleted' => $this->trashed(),
         ];
     }
 }

@@ -12,21 +12,6 @@ const props = defineProps({
 
 setQuote(props.quote);
 
-const solutionsViews = {
-    Simple: 'TableSimple',
-    DealMaker: 'TableDealMaker'
-};
-
-let component = props.quote.solution_type.configurations?.component;
-let view = component && Object.keys(solutionsViews).includes(component) ? solutionsViews[component] : 'TableDealMaker';
-
-const showDate = (days = 0) => {
-    const dateObj = new Date();
-    dateObj.setDate(dateObj.getDate() + days);
-    const currentDate = dateObj.getDate() + '/' + (dateObj.getMonth() + 1) + '/' + dateObj.getFullYear();
-    return currentDate;
-};
-
 const warningProviders = ref([
     { its: quote.items.some((item) => item.data?.providerName === 'ITS') },
     { pxc: quote.items.some((item) => item.data?.providerName === 'PXC') }
