@@ -1,5 +1,5 @@
 <script setup>
-import { reactive, ref } from 'vue';
+import { reactive, ref, computed } from 'vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, router, usePage } from '@inertiajs/vue3';
 import Permissions from '@/Components/Permissions.vue';
@@ -15,6 +15,16 @@ const props = defineProps({
     permissions: Array
 });
 
+const emit = defineEmits(['update:modelValue']);
+const proxyValue = computed({
+    get() {
+        return props.user;
+    },
+    set(val) {
+        emit('update:modelValue', val);
+    }
+});
+
 const page = usePage();
 const form = reactive({
     parent: props.user.parent ?? null,
@@ -23,27 +33,21 @@ const form = reactive({
 
 const role_id = ref(props.user.roles.length ? props.user.roles[0].id : { id: null });
 const saveUser = () => {
-    props.user.role = [role_id.value];
+    proxyValue.value.parent_id = form.parent?.id ?? null;
+    proxyValue.value.role = [role_id.value];
 
-    router.put(
-        `/users/${props.user.id}`,
-        {
-            ...props.user,
-            ...form
+    router.put(`/users/${proxyValue.value.id}`, proxyValue.value, {
+        onSuccess: (page) => {
+            notyf.success('Updated with Success');
         },
-        {
-            onSuccess: (page) => {
-                notyf.success('Updated with Success');
-            },
-            onError: (errors) => {
-                let string = '';
-                Object.keys(errors).forEach((key) => {
-                    string += errors[key] + '<br>';
-                });
-                notyf.error(string);
-            }
+        onError: (errors) => {
+            let string = '';
+            Object.keys(errors).forEach((key) => {
+                string += errors[key] + '<br>';
+            });
+            notyf.error(string);
         }
-    );
+    });
 };
 const items = ref([
     { label: 'Home', url: '/' },
@@ -68,10 +72,10 @@ const items = ref([
                 <div class="col-6">
                     <div class="mb-3 d-flex flex-column">
                         <label class="form-label" for="active-filter"> Active: </label>
-                        <ToggleSwitch id="active-filter" v-model="user.is_active">
+                        <ToggleSwitch id="active-filter" v-model="proxyValue.is_active">
                             <template #handle>
                                 <font-awesome-icon
-                                    :icon="user.is_active ? ['fas', 'circle-check'] : ['far', 'circle-xmark']"
+                                    :icon="proxyValue.is_active ? ['fas', 'circle-check'] : ['far', 'circle-xmark']"
                                     class="text-primary"
                                 />
                             </template>
@@ -79,11 +83,11 @@ const items = ref([
                     </div>
                     <div class="mb-3">
                         <label for="user-name" class="form-label">Name:</label>
-                        <input id="user-name" class="form-control" v-model="user.name" required />
+                        <input id="user-name" class="form-control" v-model="proxyValue.name" required />
                     </div>
                     <div class="mb-3">
                         <label for="user-email" class="form-label">Email:</label>
-                        <input id="user-email" type="email" class="form-control" v-model="user.email" required />
+                        <input id="user-email" type="email" class="form-control" v-model="proxyValue.email" required />
                     </div>
                     <div class="mb-3">
                         <label for="user-password" class="form-label">Password:</label>
@@ -91,7 +95,7 @@ const items = ref([
                             id="user-password"
                             type="password"
                             class="form-control"
-                            v-model="user.password"
+                            v-model="proxyValue.password"
                             required
                         />
                     </div>
@@ -130,7 +134,10 @@ const items = ref([
                                 class="w-100"
                                 v-model="form.parent"
                                 placeholder="Select an Manager"
-                                :query="[{ column: 'is_active', operator: 'equals', value: 1 }]"
+                                :query="[
+                                    { column: 'is_active', operator: 'equals', value: 1 },
+                                    { column: 'id', operator: 'not_equals', value: proxyValue.id }
+                                ]"
                             />
                         </div>
                     </div>
