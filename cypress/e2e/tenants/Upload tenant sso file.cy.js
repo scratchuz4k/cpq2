@@ -46,7 +46,7 @@ const user = { name: slugify(temp), email: slugify(temp) + '@' + domain, passwor
 describe('Update tenant SSO', () => {
     beforeEach(() => {
         Cypress.session.clearAllSavedSessions();
-        cy.login('super@example.com', 'werwerwer');
+        cy.login(Cypress.env('SUPERUSER_EMAIL'), Cypress.env('SUPERUSER_PASSWORD'));
         cy.visit('/');
         cy.get('#my-account').click();
         cy.get('#link-tenant').click();

@@ -3,7 +3,7 @@ const { getCurrentDate, generateHash } = require('../../support/utils.js');
 
 describe('Creates a Mobile Quote', () => {
     beforeEach(() => {
-        cy.login('super@example.com', 'werwerwer');
+        cy.login(Cypress.env('SUPERUSER_EMAIL'), Cypress.env('SUPERUSER_PASSWORD'));
     });
 
     it('Formats connectivity table to simple view', () => {

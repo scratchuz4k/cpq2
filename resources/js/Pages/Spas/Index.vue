@@ -18,7 +18,6 @@ const props = defineProps({
 const visible = ref(false);
 const showGlobal = ref(false);
 const selectedRules = ref([]);
-const emptyData = ref(true);
 const has_export_permission = can(`export spa`) || hasRole('Super Admin');
 
 const form = reactive({
@@ -35,6 +34,7 @@ const fields = reactive({
     product: null
 });
 
+const emptyData = ref(true);
 const data = ref([]);
 const meta = reactive({
     page: 1,
@@ -310,7 +310,7 @@ getData();
                         type="button"
                         :severity="'secondary'"
                         @click="getExportData()"
-                        :disabled="emptyData || exportDisabled"
+                        :disabled="!emptyData || exportDisabled"
                     >
                         <font-awesome-icon :icon="['fas', 'file-export']" />
                     </Button>

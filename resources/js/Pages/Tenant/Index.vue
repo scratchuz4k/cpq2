@@ -2,9 +2,10 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head } from '@inertiajs/vue3';
 import { reactive, ref } from 'vue';
-import Button from 'primevue/button';
 import axios from 'axios';
 import ToggleSwitch from 'primevue/toggleswitch';
+import { InputText } from 'primevue';
+import _ from 'lodash';
 
 const props = defineProps({
     isSuperAdmin: Boolean,
@@ -18,7 +19,8 @@ const tenant = reactive({
     configurations: {
         orders_flow_is_active: props.tenant.configurations.orders_flow_is_active ?? '0',
         log_system_is_active: props.tenant.configurations.log_system_is_active ?? '0',
-        restrict_account_management_is_active: props.tenant.configurations.restrict_account_management_is_active ?? '0'
+        restrict_account_management_is_active: props.tenant.configurations.restrict_account_management_is_active ?? '0',
+        quote_expiration_days: props.tenant.configurations.quote_expiration_days ?? 14
     }
 });
 
@@ -76,16 +78,27 @@ const submitTextForm = async () => {
     isLoading.value = false;
 };
 
-const submitTenantOrdersSettings = async () => {
+const submitTenantSettings = async () => {
     try {
         let res = await axios.put(`/api/tenants/` + tenant.id, tenant);
         Object.assign(tenant, res.data);
         notyf.success('Content updated successfully');
     } catch (err) {
         notyf.error(err?.response?.data?.message ?? 'Something went wrong');
+    } finally {
+        isLoading.value = false;
     }
-    isLoading.value = false;
 };
+
+const onQuoteDaysInput = _.debounce(() => {
+    let value = Number(tenant.configurations.quote_expiration_days);
+
+    if (value < 1) value = 1;
+    if (value > 365) value = 365;
+
+    tenant.configurations.quote_expiration_days = value;
+    submitTenantSettings();
+}, 1000);
 
 const items = ref([{ label: 'Home', url: '/' }, { label: 'My Account', url: '/myaccount' }, { label: 'Tenants' }]);
 </script>
@@ -246,7 +259,7 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'My Account', url: '/my
                                                                     v-model="
                                                                         tenant.configurations.orders_flow_is_active
                                                                     "
-                                                                    @change="submitTenantOrdersSettings"
+                                                                    @change="submitTenantSettings"
                                                                     trueValue="1"
                                                                     falseValue="0"
                                                                     binary
@@ -273,7 +286,7 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'My Account', url: '/my
                                                         <div class="log_system_is_active">
                                                             <div>
                                                                 <label
-                                                                    for="active-orders-flow"
+                                                                    for="log-system-is-active"
                                                                     class="form-label lh-sm small pb-2"
                                                                 >
                                                                     <i
@@ -284,9 +297,9 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'My Account', url: '/my
                                                             </div>
                                                             <div>
                                                                 <ToggleSwitch
-                                                                    id="active-orders-flow"
+                                                                    id="log-system-is-active"
                                                                     v-model="tenant.configurations.log_system_is_active"
-                                                                    @change="submitTenantOrdersSettings"
+                                                                    @change="submitTenantSettings"
                                                                     trueValue="1"
                                                                     falseValue="0"
                                                                     binary
@@ -329,7 +342,7 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'My Account', url: '/my
                                                                         tenant.configurations
                                                                             .restrict_account_management_is_active
                                                                     "
-                                                                    @change="submitTenantOrdersSettings"
+                                                                    @change="submitTenantSettings"
                                                                     trueValue="1"
                                                                     falseValue="0"
                                                                     binary
@@ -347,6 +360,37 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'My Account', url: '/my
                                                                         />
                                                                     </template>
                                                                 </ToggleSwitch>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="card bg-light border-0 settings-block m-2">
+                                                    <div class="card-body">
+                                                        <h6 class="fw-bold">Quote expire days</h6>
+                                                        <div class="quote-expiration-days">
+                                                            <div>
+                                                                <label
+                                                                    for="quote-expiration-days"
+                                                                    class="form-label lh-sm small pb-2"
+                                                                >
+                                                                    <i>
+                                                                        Set the number of days a quote takes to expire.
+                                                                        (Should be a number between 1 and 365)
+                                                                    </i>
+                                                                </label>
+                                                            </div>
+                                                            <div>
+                                                                <InputText
+                                                                    type="number"
+                                                                    class="w-100"
+                                                                    id="quote-expiration-days"
+                                                                    v-model="
+                                                                        tenant.configurations.quote_expiration_days
+                                                                    "
+                                                                    :min="1"
+                                                                    :max="365"
+                                                                    @input="onQuoteDaysInput"
+                                                                />
                                                             </div>
                                                         </div>
                                                     </div>

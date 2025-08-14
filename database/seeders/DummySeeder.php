@@ -75,7 +75,7 @@ class DummySeeder extends Seeder
             $order_manager_user->id,
         ]);
 
-        $super_user = User::where('email', 'super@example.com')->first();
+        $super_user = User::where('email', env('SUPERUSER_EMAIL', 'super@example.com'))->first();
         $super_user->tenants()->sync([$tenant->id, ...$dummy_tenants->pluck('id')]);
 
         $supp = User::where('email', 'support@example.com')->first();
