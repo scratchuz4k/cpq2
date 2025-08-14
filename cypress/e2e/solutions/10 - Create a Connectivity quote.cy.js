@@ -7,7 +7,7 @@ const subprovider = 'BT';
 
 describe('Creates a Connectivity quote', () => {
     beforeEach(() => {
-        cy.login('super@example.com', 'werwerwer');
+        cy.login(Cypress.env('SUPERUSER_EMAIL'), Cypress.env('SUPERUSER_PASSWORD'));
     });
 
     it('Creates an Account', () => {

@@ -2,7 +2,7 @@ const dropzoneSelector = '.dropzone';
 
 describe('Update tenant logo', () => {
     beforeEach(() => {
-        cy.login('super@example.com', 'werwerwer');
+        cy.login(Cypress.env('SUPERUSER_EMAIL'), Cypress.env('SUPERUSER_PASSWORD'));
         cy.visit('/');
         cy.get('#my-account').click();
         cy.get('#link-tenant').click();

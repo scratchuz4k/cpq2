@@ -2,13 +2,17 @@
 import _ from 'lodash';
 import { quote, setQuote } from '@composables/useQuote';
 import axios from 'axios';
-import { router } from '@inertiajs/vue3';
+import { router, usePage } from '@inertiajs/vue3';
 import { ref } from 'vue';
 import queryString from 'query-string';
+import format from '@/Composables/format.js';
 
 const props = defineProps({
     modelValue: Object
 });
+
+const page = usePage();
+const tenant = page.props.tenant;
 
 const solution_type = props.modelValue.solution_type;
 const active_categories = ref([]);
@@ -106,6 +110,19 @@ getCategoriesWithProducts();
                             <br />
                             Contact Number: 0124567890<br />
                             Email: firstname.lastname@gmail.com
+                        </div>
+                    </InfoBox>
+                    <InfoBox v-if="['QUOTE', 'PRICE', 'CONFIGURE'].includes(modelValue.status)">
+                        <div style="font-size: 14px">
+                            This quote will expire on
+                            <b style="font-size: 16px">
+                                {{
+                                    format.expireDate(
+                                        modelValue.created_at,
+                                        tenant.configurations?.quote_expiration_days
+                                    )
+                                }}
+                            </b>
                         </div>
                     </InfoBox>
                     <div class="configure-mobile-sidebar px-4 py-4">
