@@ -1,4 +1,5 @@
 import { DateTime } from 'luxon';
+import dayjs from 'dayjs';
 
 let currency = JSON.parse(document.head.querySelector('meta[name="currency-config"]').content);
 const GBP = new Intl.NumberFormat('en-GB', {
@@ -126,6 +127,11 @@ const format = {
                 value === null ? null : dateMethods[key](DateTime.fromJSDate(value)).toISO()
             ])
         );
+    },
+    expireDate: (date, expireDays) => {
+        return dayjs(date)
+            .add(expireDays ?? 14, 'day')
+            .format('DD/MM/YYYY');
     }
 };
 

@@ -62,13 +62,20 @@ const items = ref([
                 <Header title="Create a quote" :breadcrumbs="items"></Header>
             </div>
             <div class="col" style="text-align: right">
-                <a
-                    @click="checkWarnings(warningProviders, route('quotes.download', { quote: quote.id }))"
-                    class="btn btn-secondary mx-2"
-                >
-                    <font-awesome-icon :icon="['fas', 'file-pdf']"></font-awesome-icon>
-                    Download PDF
-                </a>
+                <div>
+                    <a
+                        @click="checkWarnings(warningProviders, route('quotes.download', { quote: quote.id }))"
+                        class="btn btn-secondary mx-2"
+                    >
+                        <font-awesome-icon :icon="['fas', 'file-pdf']"></font-awesome-icon>
+                        Download PDF
+                    </a>
+                </div>
+                <template v-if="quote.status === 'EXPIRED'">
+                    <div class="badge text-bg-dark h2 mt-4 mx-2">
+                        {{ quote.status }}
+                    </div>
+                </template>
             </div>
         </div>
         <QuotePreview v-model="props.quote" :pricePlans="pricePlans"></QuotePreview>

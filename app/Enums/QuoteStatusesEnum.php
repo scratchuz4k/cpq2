@@ -17,6 +17,7 @@ enum QuoteStatusesEnum: string
     case CANCELLED = 'cancelled';
     case FAILED = 'failed';
     case ON_HOLD = 'on hold';
+    case EXPIRED = 'expired';
 
     public static function names(): array
     {

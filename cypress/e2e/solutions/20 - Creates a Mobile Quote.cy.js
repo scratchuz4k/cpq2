@@ -20,7 +20,7 @@ const category = { code: generateHash(temp2), name: temp2 };
 
 describe('Creates a Mobile Quote', () => {
     beforeEach(() => {
-        cy.login('super@example.com', 'werwerwer');
+        cy.login(Cypress.env('SUPERUSER_EMAIL'), Cypress.env('SUPERUSER_PASSWORD'));
     });
 
     it('Creates an Account', () => {
