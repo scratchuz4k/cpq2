@@ -7,7 +7,7 @@ const managerUsers = ['sales@example.com', 'companyadmin@example.com'];
 
 describe('User Parent can update a quote.cy', () => {
     beforeEach(() => {
-        cy.login('super@example.com', 'werwerwer');
+        cy.login(Cypress.env('SUPERUSER_EMAIL'), Cypress.env('SUPERUSER_PASSWORD'));
     });
     it('Create a child user', () => {
         cy.visit('/');

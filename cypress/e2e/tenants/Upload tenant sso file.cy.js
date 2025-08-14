@@ -6,7 +6,7 @@ const xmlValidContent = `<?xml version="1.0" encoding="UTF-8"?>
 
 describe('Update tenant SSO', () => {
     beforeEach(() => {
-        cy.login('super@example.com', 'werwerwer');
+        cy.login(Cypress.env('SUPERUSER_EMAIL'), Cypress.env('SUPERUSER_PASSWORD'));
         cy.visit('/');
         cy.get('#my-account').click();
         cy.get('#link-tenant').click();

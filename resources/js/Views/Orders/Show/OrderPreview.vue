@@ -42,10 +42,7 @@ const showDate = (days = 0) => {
                     <h1 class="mb-1">Order Q-{{ order.id }}</h1>
                     <div class="row mb-3">
                         <div class="col">
-                            <p>
-                                Quotation Date: {{ showDate() }}<br />
-                                Valid Date: {{ showDate(30) }}
-                            </p>
+                            <p>Quotation Date: {{ showDate() }}<br /></p>
                         </div>
                     </div>
                     <div v-if="warningProviders.some((obj) => Object.values(obj).includes(true))">

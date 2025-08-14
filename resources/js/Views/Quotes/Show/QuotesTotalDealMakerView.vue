@@ -6,6 +6,7 @@ import { setQuote, quote } from '@composables/useQuote';
 import { usePage } from '@inertiajs/vue3';
 import WarningNote from '@/Components/WarningNote.vue';
 import { checkWarnings } from '@composables/warning.js';
+import format from '@/Composables/format.js';
 
 const props = defineProps({
     modelValue: Object,
@@ -215,6 +216,14 @@ const items = ref([
                         <span class="badge text-bg-secondary">{{ quote.status }}</span>
                     </h6>
                     <button class="btn btn-sm btn-primary" @click="showModal = true">See Rejection Notes</button>
+                </InfoBox>
+                <InfoBox v-if="['QUOTE', 'PRICE', 'CONFIGURE'].includes(quote.status)">
+                    <div style="font-size: 14px">
+                        This quote will expire on
+                        <b style="font-size: 16px">
+                            {{ format.expireDate(quote.created_at, tenant.configurations?.quote_expiration_days) }}
+                        </b>
+                    </div>
                 </InfoBox>
                 <div class="price-mobile-sidebar total-quote-discount px-4 pt-4 pb-2 mb-3">
                     <h3 class="mb-3">Total Quote Discount</h3>

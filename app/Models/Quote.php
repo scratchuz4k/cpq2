@@ -150,6 +150,7 @@ class Quote extends Model
             QuoteStatusesEnum::REJECTED->name,
             QuoteStatusesEnum::REGISTRY->name,
             QuoteStatusesEnum::SUBMITTED->name,
+            QuoteStatusesEnum::EXPIRED->name,
         ];
 
         if (in_array($quote->status, $statuses_to_ignore)) {

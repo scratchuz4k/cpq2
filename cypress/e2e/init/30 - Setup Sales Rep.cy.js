@@ -6,7 +6,7 @@ const account = { ref: generateHash(temp), name: temp };
 
 describe('Setup Sales Rep.cy', () => {
     it('Creates an User', () => {
-        cy.login('super@example.com', 'werwerwer');
+        cy.login(Cypress.env('SUPERUSER_EMAIL'), Cypress.env('SUPERUSER_PASSWORD'));
         cy.visit('/');
         cy.get('#my-account').click();
         cy.get('#link-users').click();
