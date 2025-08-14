@@ -141,7 +141,7 @@ const createSharedLink = async () => {
         let res = await axios.post(`/api/shared-links`, {
             shareable_type: 'quotes',
             shareable_id: quote.id,
-            expires_at: shareLink.expires_at,
+            expires_at: DateTime.fromJSDate(shareLink.expires_at).toISO() ?? null,
             password: shareLink.password
         });
         shareLink.expires_at = res.data.data.expires_at;
