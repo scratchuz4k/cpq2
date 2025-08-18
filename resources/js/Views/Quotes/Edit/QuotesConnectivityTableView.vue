@@ -457,9 +457,10 @@ getArticles(false, true);
                                                       : value
                                             "
                                             class="px-3 py-1"
-                                            data-toggle="tooltip"
-                                            data-placement="top"
-                                            :title="selectedFilter.name"
+                                            data-bs-toggle="tooltip"
+                                            data-bs-placement="top"
+                                            :data-bs-original-title="selectedFilter.name"
+                                            v-tooltip
                                         >
                                             <template #close-button>
                                                 <font-awesome-icon
