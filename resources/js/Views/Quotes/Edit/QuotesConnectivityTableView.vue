@@ -801,7 +801,7 @@ getArticles(false, true);
                                 >
                                     Set Up
                                     <span class="text-center d-inline-block align-middle" style="width: 20px">
-                                        <template v-if="sort.field == 'priceInstall'">
+                                        <template v-if="sort.field == 'priceInstall_spa'">
                                             <font-awesome-icon
                                                 v-if="sort.order == 'desc'"
                                                 :icon="['fa-solid', 'fa-sort-amount-up-alt']"
@@ -822,7 +822,7 @@ getArticles(false, true);
                                 >
                                     Monthly
                                     <span class="text-center d-inline-block align-middle" style="width: 20px">
-                                        <template v-if="sort.field == 'priceMonthly'">
+                                        <template v-if="sort.field == 'priceMonthly_spa'">
                                             <font-awesome-icon
                                                 v-if="sort.order == 'desc'"
                                                 :icon="['fa-solid', 'fa-sort-amount-up-alt']"
