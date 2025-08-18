@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\ProductStatusesEnum;
 use App\Models\Scopes\TenantScope;
 use App\Trait\SetTenantId;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -42,6 +43,7 @@ class Product extends Model
         static::addGlobalScope(new TenantScope);
 
         static::saving(function (Product $product) {
+            ds('This is using saving event');
             $product->status = Product::resolveStatus($product);
         });
     }
@@ -91,9 +93,9 @@ class Product extends Model
 
         $date = Carbon::parse($product->expires_at);
         if ($product->expires_at && $date->isPast()) {
-            return 'Retired';
+            return ProductStatusesEnum::RETIRED->value;
         }
 
-        return $product->is_active ? 'Active' : 'Inactive';
+        return $product->is_active ? ProductStatusesEnum::ACTIVE->value : ProductStatusesEnum::INACTIVE->value;
     }
 }

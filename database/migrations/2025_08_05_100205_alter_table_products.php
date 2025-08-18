@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\ProductStatusesEnum;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Carbon;
@@ -23,10 +24,10 @@ return new class extends Migration
 
         $items = DB::table('products')->get();
         foreach ($items as $item) {
-            $status = $item->is_active ? 'Active' : 'Inactive';
+            $status = $item->is_active ? ProductStatusesEnum::ACTIVE->value : ProductStatusesEnum::INACTIVE->value;
             $date = Carbon::parse($item->expires_at);
             if ($item->expires_at && $date->isPast()) {
-                $status = 'Retired';
+                $status = ProductStatusesEnum::RETIRED->value;
             }
 
             DB::table('products')

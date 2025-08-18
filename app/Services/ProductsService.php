@@ -13,7 +13,7 @@ class ProductsService
     {
         $product = Product::create([
             ...$array,
-            'expires_at' => Carbon::parse($array['expires_at']),
+            'expires_at' => $array['expires_at'] ? Carbon::parse($array['expires_at'])->endOfDay() : null,
         ]);
 
         if (array_key_exists('prices', $array) && is_array($array['prices'])) {
@@ -29,7 +29,7 @@ class ProductsService
     {
         $product->update([
             ...$array,
-            'expires_at' => Carbon::parse($array['expires_at']),
+            'expires_at' => Carbon::parse($array['expires_at'])->endOfDay(),
             'category_id' => array_key_exists('category_id', $array) && ! is_null($array['category_id']) ? $array['category_id'] : $product->category_id,
         ]);
 

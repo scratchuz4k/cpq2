@@ -100,7 +100,7 @@ const items = ref([
                                 url="/solution-types"
                                 :fields="['name']"
                                 v-model="category.solution_type"
-                                placeholder="Select a Category"
+                                placeholder="Select a Solution Type"
                                 :query="[{ column: 'is_active', operator: 'equals', value: 1 }]"
                             >
                             </InputSelect>

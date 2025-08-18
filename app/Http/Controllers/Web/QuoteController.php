@@ -13,7 +13,6 @@ use App\Http\Requests\QuoteUpdateRequest;
 use App\Http\Resources\QuoteResource;
 use App\Http\Resources\SolutionTypeResource;
 use App\Models\Account;
-use App\Models\Category;
 use App\Models\PricePlan;
 use App\Models\Quote;
 use App\Models\SolutionType;
@@ -41,22 +40,6 @@ class QuoteController extends BaseController
      */
     public function index()
     {
-        //        $items = DB::table(table: 'categories_solution_type')->get();
-        //
-        //        foreach ($items as $item) {
-        //            $cat = Category::find($item->category_id);
-        //
-        //            $solutionTypeTenant = DB::table('solution_type_tenant')
-        //                ->where('solution_type_id', $item->solution_type_id)
-        //                ->where('tenant_id', $cat->tenant_id)
-        //                ->first();
-        //
-        //            DB::table('categories')
-        //                ->where('id', $item->category_id)
-        //                ->update(['solution_type_id' => $solutionTypeTenant->id]);
-        //
-        //        }
-
         $user = request()->user();
 
         if (! $user->hasRole('Sales Rep')) {
