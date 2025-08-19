@@ -43,7 +43,6 @@ class Product extends Model
         static::addGlobalScope(new TenantScope);
 
         static::saving(function (Product $product) {
-            ds('This is using saving event');
             $product->status = Product::resolveStatus($product);
         });
     }
