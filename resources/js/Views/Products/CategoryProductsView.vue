@@ -47,15 +47,10 @@ const getProducts = async () => {
             value: props.category.id
         },
         {
-            column: 'parent_id',
-            operator: 'in',
-            value: [...quote.items.map((x) => x.product_id)],
-            function: 'orWhere'
-        },
-        {
-            column: 'parent_id',
-            operator: 'is_null',
-            value: 'null'
+            group: [
+                { column: 'parent_id', operator: 'in', value: [...quote.items.map((x) => x.product_id)] },
+                { column: 'parent_id', operator: 'is_null', value: '', function: 'orWhere' }
+            ]
         }
     ];
 
@@ -67,7 +62,7 @@ const getProducts = async () => {
     });
     let res = await axios.get('/api/products' + '?' + query);
     res.data.data.forEach((e) => {
-        let temp = quote.items.find((x) => x.product_code == e.code);
+        let temp = quote.items.find((x) => x.product_code == e.sku);
         e.quantity = temp ? temp.quantity : 0;
         e.contract_length = 12;
     });
@@ -90,15 +85,12 @@ const checkQuantity = _.debounce(async (product, temp) => {
         temp = product.stock;
     }
     product.quantity = temp;
-    if (product.quantity == 0) {
-        return;
-    }
 
-    let item = quote.items.find((x) => x.product_code == product.code);
+    let item = quote.items.find((x) => x.product_code == product.sku);
     if (!item) {
         createQuoteItem({
             quote_id: quote.id,
-            product_code: product.code,
+            product_code: product.sku,
             product_id: product.id,
             quantity: product.quantity,
             contract_length: product.contract_length,
@@ -118,10 +110,6 @@ const checkQuantity = _.debounce(async (product, temp) => {
     getQuote(quote.id);
 }, 200);
 
-// const showChildren = (product) => {
-//     selectedParent.value = product;
-// };
-
 watch(proxyValue, () => {
     getProducts();
 });
@@ -132,19 +120,10 @@ getProducts();
     <div v-if="proxyValue == props.index" :id="'step-' + (props.index + 1)" class="step">
         <div class="d-flex justify-content-between mb-3">
             <h2>Select some products</h2>
-            <!--            <a class="text-black" v-else @click="showChildren(product)" href="#">-->
-            <!--                <h2 class="small" href="#">-->
-            <!--                    <font-awesome-icon :icon="['fas', 'arrow-left']" class="ms-2"></font-awesome-icon>-->
-            <!--                    Seeing sub-products of <span class="text-primary bold">{{ selectedParent.name }}</span>-->
-            <!--                </h2>-->
-            <!--            </a>-->
             <p class="bigger bold text-primary">STEP {{ props.index + 1 }}/{{ total_categories }}</p>
         </div>
         <div v-if="!meta.isLoading">
-            <p>Step: {{ proxyValue }}</p>
-            <p>Index: {{ index }}</p>
-            <p>Product IDs: {{ products.map((x) => x.id) }}</p>
-            <div v-for="(product, index) in products" class="mobile-item mobile-product mb-3">
+            <div v-if="products.length" v-for="(product, index) in products" class="mobile-item mobile-product mb-3">
                 <div class="d-flex justify-content-between">
                     <div class="d-flex align-items-center mb-2">
                         <h4 class="m-0">{{ product.name }}</h4>
@@ -192,7 +171,9 @@ getProducts();
                         </button>
                     </div>
                 </div>
-                <!--                <a v-else class="text-secondary small" href="#" @click="showChildren(product)"> Show more... </a>-->
+            </div>
+            <div v-else>
+                <p class="h5 text-center my-4">No products available for this Category!</p>
             </div>
         </div>
         <div v-else v-for="n in meta.limit" class="mobile-item mobile-product mb-3">

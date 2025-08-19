@@ -143,18 +143,38 @@ class DataProvider
         }
 
         foreach ($filters as $filter) {
-            if (is_null($filter['value'])) {
-                continue;
-            }
+            if (isset($filter['group']) && is_array($filter['group'])) {
 
-            $queryParts = $this->resolveQueryParts($filter['operator'], $filter['value']);
-            $this->builder = $this->buildSearch(
-                $this->builder,
-                $filter['column'],
-                $queryParts['operator'],
-                $queryParts['value'],
-                array_key_exists('function', $filter) ? $filter['function'] : 'where'
-            );
+                $this->builder = $this->builder->where(function ($query) use ($filter) {
+                    foreach ($filter['group'] as $i => $groupFilter) {
+                        if (is_null($groupFilter['value'])) {
+                            continue;
+                        }
+                        $queryParts = $this->resolveQueryParts($groupFilter['operator'], $groupFilter['value']);
+                        $func = array_key_exists('function', $groupFilter) ? $groupFilter['function'] : ($i === 0 ? 'where' : 'orWhere');
+                        $this->buildSearch(
+                            $query,
+                            $groupFilter['column'],
+                            $queryParts['operator'],
+                            $queryParts['value'],
+                            $func
+                        );
+                    }
+                });
+            } else {
+                if (is_null($filter['value'])) {
+                    continue;
+                }
+
+                $queryParts = $this->resolveQueryParts($filter['operator'], $filter['value']);
+                $this->builder = $this->buildSearch(
+                    $this->builder,
+                    $filter['column'],
+                    $queryParts['operator'],
+                    $queryParts['value'],
+                    array_key_exists('function', $filter) ? $filter['function'] : 'where'
+                );
+            }
         }
     }
 
@@ -191,7 +211,7 @@ class DataProvider
         return match ($operator) {
             'in' => $query->whereIn($column, $value),
             'not_in' => $query->whereNotIn($column, $value),
-            'is_null' => $query->whereNull($column),
+            'is_null' => $query->{$func}($column),
             default => $query->{$func}($column, $operator, $value),
         };
     }
@@ -199,9 +219,10 @@ class DataProvider
     protected function relatedQuery($query, $relation, $column, $operator, $value, $function)
     {
         $temp = $function == 'orWhere' ? 'orWhereHas' : 'whereHas';
+        $tempDoesntHave = $function == 'orWhere' ? 'orWhereDoesntHave' : 'whereDoesntHave';
 
         return match ($operator) {
-            'is_null' => $query->whereDoesntHave($relation),
+            'is_null' => $query->{$tempDoesntHave}($relation),
             default => $query->{$temp}($relation, function ($query) use ($column, $operator, $value) {
                 $this->basicQuery($query, $column, $operator, $value, 'where');
             }),
@@ -226,14 +247,14 @@ class DataProvider
 
     protected function getFunction($function, $operator)
     {
-        $functions = ['where', 'orWhere', 'whereNull'];
+        $functions = ['where', 'orWhere', 'whereNull', 'orWhereNull'];
 
         if (! in_array($function, $functions)) {
             return 'where';
         }
 
         if ($operator == 'is_null') {
-            return 'whereNull';
+            return $function === 'orWhere' ? 'orWhereNull' : 'whereNull';
         }
 
         return $function;
