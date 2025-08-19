@@ -39,31 +39,30 @@ const selectedParent = ref(null);
 
 const getProducts = async () => {
     meta.isLoading = true;
-    let temp = selectedParent.value
-        ? [
-              {
-                  column: 'parent_id',
-                  operator: 'equals',
-                  value: selectedParent.value?.id
-              }
-          ]
-        : [
-              {
-                  column: 'category.id',
-                  operator: 'equals',
-                  value: props.category.id
-              },
-              {
-                  column: 'parent_id',
-                  operator: 'is_null',
-                  value: 'null'
-              }
-          ];
+
+    let filters = [
+        {
+            column: 'category_id',
+            operator: 'equals',
+            value: props.category.id
+        },
+        {
+            column: 'parent_id',
+            operator: 'in',
+            value: [...quote.items.map((x) => x.product_id)],
+            function: 'orWhere'
+        },
+        {
+            column: 'parent_id',
+            operator: 'is_null',
+            value: 'null'
+        }
+    ];
 
     let query = queryString.stringify({
         page: meta.page,
         limit: meta.limit,
-        filters: JSON.stringify(temp),
+        filters: JSON.stringify(filters),
         account_id: props.account.id
     });
     let res = await axios.get('/api/products' + '?' + query);
@@ -119,11 +118,11 @@ const checkQuantity = _.debounce(async (product, temp) => {
     getQuote(quote.id);
 }, 200);
 
-const showChildren = (product) => {
-    selectedParent.value = product;
-};
+// const showChildren = (product) => {
+//     selectedParent.value = product;
+// };
 
-watch(selectedParent, () => {
+watch(proxyValue, () => {
     getProducts();
 });
 getProducts();
@@ -132,16 +131,19 @@ getProducts();
 <template>
     <div v-if="proxyValue == props.index" :id="'step-' + (props.index + 1)" class="step">
         <div class="d-flex justify-content-between mb-3">
-            <h2 v-if="!selectedParent">Select some products</h2>
-            <a class="text-black" v-else @click="showChildren(product)" href="#">
-                <h2 class="small" href="#">
-                    <font-awesome-icon :icon="['fas', 'arrow-left']" class="ms-2"></font-awesome-icon>
-                    Seeing sub-products of <span class="text-primary bold">{{ selectedParent.name }}</span>
-                </h2>
-            </a>
+            <h2>Select some products</h2>
+            <!--            <a class="text-black" v-else @click="showChildren(product)" href="#">-->
+            <!--                <h2 class="small" href="#">-->
+            <!--                    <font-awesome-icon :icon="['fas', 'arrow-left']" class="ms-2"></font-awesome-icon>-->
+            <!--                    Seeing sub-products of <span class="text-primary bold">{{ selectedParent.name }}</span>-->
+            <!--                </h2>-->
+            <!--            </a>-->
             <p class="bigger bold text-primary">STEP {{ props.index + 1 }}/{{ total_categories }}</p>
         </div>
         <div v-if="!meta.isLoading">
+            <p>Step: {{ proxyValue }}</p>
+            <p>Index: {{ index }}</p>
+            <p>Product IDs: {{ products.map((x) => x.id) }}</p>
             <div v-for="(product, index) in products" class="mobile-item mobile-product mb-3">
                 <div class="d-flex justify-content-between">
                     <div class="d-flex align-items-center mb-2">
@@ -153,7 +155,7 @@ getProducts();
                     </div>
                     <font-awesome-icon :icon="['fa', 'circle-info']" />
                 </div>
-                <div class="mobile-product-quantity" v-if="!product.has_children">
+                <div class="mobile-product-quantity">
                     <label>Quantity</label>
                     <div class="d-flex align-items-center pb-3">
                         <div :style="{ width: '150px' }">
@@ -190,7 +192,7 @@ getProducts();
                         </button>
                     </div>
                 </div>
-                <a v-else class="text-secondary small" href="#" @click="showChildren(product)"> Show more... </a>
+                <!--                <a v-else class="text-secondary small" href="#" @click="showChildren(product)"> Show more... </a>-->
             </div>
         </div>
         <div v-else v-for="n in meta.limit" class="mobile-item mobile-product mb-3">
