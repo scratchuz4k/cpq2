@@ -202,12 +202,20 @@
         </div>
         <div class="row mt-4">
             <div class="col">
-                <h1 class="mb-1">Quote Q-{{ $quote['id'] }}</h1>
+                <div class="d-flex">
+                    <h1 class="mb-1">Quote Q-{{ $quote['id'] }}</h1>
+                    @if ($quote['status'] === 'EXPIRED')
+                        <span class="badge border border-secondary text-secondary opacity-75 ms-4 lh-sm my-auto">
+                            {{ $quote['status'] }}
+                        </span>
+                    @endif
+                </div>
                 <div class="row mb-3">
                     <div class="col">
                         <p>
-                            Quotation Date: {{ date('d/m/Y') }}<br>
-                            Valid Until: {{ date('d/m/Y', strtotime('+30 days')) }}
+                            Quotation Date: {{ \Carbon\Carbon::parse($quote['created_at'])->format('d/m/Y') }}<br />
+                            Valid Date:
+                            {{ \Carbon\Carbon::parse($quote['created_at'])->addDays($tenant->getConfiguration('quote_expiration_days', 14))->format('d/m/Y') }}
                         </p>
                     </div>
                 </div>
