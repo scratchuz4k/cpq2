@@ -52,8 +52,8 @@ class Quote extends Model
             'total_gross' => 'float',
             'commission_value' => 'float',
             'commission_rate ' => 'float',
-            'created_at' => 'datetime:y-m-d H:i:s',
-            'updated_at' => 'datetime:y-m-d H:i:s',
+            'created_at' => 'datetime:Y-m-d H:i:s',
+            'updated_at' => 'datetime:Y-m-d H:i:s',
         ];
     }
 
