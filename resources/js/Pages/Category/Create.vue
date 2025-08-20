@@ -3,9 +3,12 @@ import { reactive, ref } from 'vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, router } from '@inertiajs/vue3';
+import Select from 'primevue/select';
 import ToggleSwitch from 'primevue/toggleswitch';
 
-const props = defineProps({});
+const props = defineProps({
+    solution_types: Array
+});
 
 const category = reactive({
     name: null,
@@ -16,7 +19,7 @@ const category = reactive({
 
 const saveCate = () => {
     let temp = category;
-    temp.solution_type_id = category.solution_type?.solution_type_id ?? null;
+    temp.solution_type_id = category.solution_type ?? null;
 
     router.post(`/categories`, temp, {
         onSuccess: (page) => {
@@ -74,16 +77,16 @@ const items = ref([
                 <h4>Relations</h4>
                 <hr />
                 <div class="mb-3">
-                    <label for="product-categories" class="form-label">Solution Type:</label>
-                    <InputSelect
-                        id="product-categories"
-                        url="/solution-types"
-                        :fields="['name']"
+                    <label for="category-solution-type" class="form-label">Solution Type:</label>
+                    <Select
+                        inputId="category-solution-type"
                         v-model="category.solution_type"
+                        :options="props.solution_types"
+                        optionLabel="name"
+                        optionValue="id"
                         placeholder="Select a Solution Type"
-                        :query="[{ column: 'is_active', operator: 'equals', value: 1 }]"
-                    >
-                    </InputSelect>
+                        class="w-100"
+                    />
                 </div>
             </div>
         </div>

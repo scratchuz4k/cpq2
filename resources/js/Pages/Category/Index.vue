@@ -4,6 +4,13 @@ import { Head, Link } from '@inertiajs/vue3';
 import { ref } from 'vue';
 import ToggleActive from '@/Components/ToggleActive.vue';
 
+const props = defineProps({
+    solution_types: {
+        type: Array,
+        default: []
+    }
+});
+
 const items = ref([{ label: 'Home', url: '/' }, { label: 'My Account', url: '/myaccount' }, { label: 'Categories' }]);
 </script>
 <template>
@@ -35,6 +42,12 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'My Account', url: '/my
                         { data: 'created_at', title: 'Created At', style: 'width:15%' },
                         { data: 'updated_at', title: 'Updated At', style: 'width:15%' }
                     ]"
+                    :filters="{
+                        'solution_type.name': {
+                            type: 'options',
+                            options: solution_types.map((x) => x.name)
+                        }
+                    }"
                     route="/categories"
                 >
                     <template #updated_at="{ value }">

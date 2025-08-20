@@ -31,6 +31,6 @@ class Category extends Model
 
     public function solutionType(): BelongsTo
     {
-        return $this->belongsTo(SolutionTypeTenant::class);
+        return $this->belongsTo(SolutionType::class);
     }
 }
