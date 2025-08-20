@@ -16,6 +16,8 @@ const meta = reactive({
     isLoading: false
 });
 
+const disableButton = ref(false);
+
 const props = defineProps({
     category: Object,
     account: Object,
@@ -39,6 +41,8 @@ const selectedParent = ref(null);
 
 const getProducts = async () => {
     meta.isLoading = true;
+
+    setTimeout(() => {}, 1000);
 
     let filters = [
         {
@@ -80,35 +84,42 @@ const handlePaginator = (ev) => {
     getProducts();
 };
 
-const checkQuantity = _.debounce(async (product, temp) => {
-    if (product.stock <= temp) {
-        temp = product.stock;
-    }
-    product.quantity = temp;
-
-    let item = quote.items.find((x) => x.product_code == product.sku);
-    if (!item) {
-        createQuoteItem({
-            quote_id: quote.id,
-            product_code: product.sku,
-            product_id: product.id,
-            quantity: product.quantity,
-            contract_length: product.contract_length,
-            name: product.name,
-            raw_price: product.price ? product.price.cost : 0,
-            price: product.price ? product.price.net_spa : 0,
-            price_plan_id: product.price_plan_id
-        });
-    } else {
-        if (product.quantity == 0) {
-            removeQuoteItem(item.id);
-        } else {
-            updateQuoteItem(item.id, { quantity: product.quantity });
+const checkQuantity = _.debounce(
+    async (product, temp) => {
+        disableButton.value = true;
+        if (product.stock <= temp) {
+            temp = product.stock;
         }
-    }
+        product.quantity = temp;
 
-    getQuote(quote.id);
-}, 200);
+        let item = quote.items.find((x) => x.product_code == product.sku);
+        if (!item) {
+            createQuoteItem({
+                quote_id: quote.id,
+                product_code: product.sku,
+                product_id: product.id,
+                quantity: product.quantity,
+                contract_length: product.contract_length,
+                name: product.name,
+                raw_price: product.price ? product.price.cost : 0,
+                price: product.price ? product.price.net_spa : 0,
+                price_plan_id: product.price_plan_id
+            });
+        } else {
+            if (product.quantity == 0) {
+                removeQuoteItem(item.id);
+            } else {
+                updateQuoteItem(item.id, { quantity: product.quantity });
+            }
+        }
+
+        await getQuote(quote.id);
+
+        disableButton.value = false;
+    },
+    200,
+    { leading: true, trailing: true }
+);
 
 watch(proxyValue, () => {
     getProducts();
@@ -203,6 +214,7 @@ getProducts();
         <div class="d-flex justify-content-between align-items-center mt-3">
             <div>
                 <button
+                    :disabled="meta.isLoading"
                     v-if="props.index > 0"
                     :id="'btn-step-{{ props.index + 1}}-previous'"
                     class="btn text-primary step-nav btn-sm me-3"
@@ -214,6 +226,7 @@ getProducts();
             </div>
             <div>
                 <button
+                    :disabled="disableButton"
                     :id="'btn-step-' + (props.index + 1) + '-next'"
                     class="ms-3 btn btn-primary step-nav"
                     type="button"
