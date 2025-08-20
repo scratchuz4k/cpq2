@@ -96,6 +96,7 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Quotes' }]);
                     }"
                     :tableProps="{ id: 'dashboard-table' }"
                     route="/quotes"
+                    :sort="{ orderBy: 'id', order: 'desc' }"
                 >
                     <template #status="{ data, value }">
                         <span
