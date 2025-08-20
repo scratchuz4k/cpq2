@@ -66,7 +66,7 @@ const items = ref([
         <div class="panel">
             <Header title="Edit Category" :breadcrumbs="items">
                 <template #buttons>
-                    <PrimaryButton id="btn-save-product" @click="saveCate()">
+                    <PrimaryButton id="btn-save-category" @click="saveCate()">
                         <font-awesome-icon class="me-2" :icon="['fas', 'save']"></font-awesome-icon>
                         Save
                     </PrimaryButton>
@@ -87,12 +87,12 @@ const items = ref([
                             </ToggleSwitch>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label" for="product-code">Code:</label>
-                            <input id="product-code" v-model="category.code" class="form-control" />
+                            <label class="form-label" for="category-code">Code:</label>
+                            <input id="category-code" v-model="category.code" class="form-control" />
                         </div>
                         <div class="mb-3">
-                            <label class="form-label" for="product-name">Name:</label>
-                            <input id="product-name" v-model="category.name" class="form-control" />
+                            <label class="form-label" for="category-name">Name:</label>
+                            <input id="category-name" v-model="category.name" class="form-control" />
                         </div>
 
                         <h4>Relations</h4>

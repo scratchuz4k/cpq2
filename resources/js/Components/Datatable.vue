@@ -78,7 +78,7 @@ const getData = async () => {
 
     let res = await axios.get('/api' + props.route + '?' + string);
     data.value = res.data.data;
-    emptyData.value = !data.value.length;
+    emptyData.value = !data.value?.length;
     meta.total = res.data.meta?.total ?? res.data.total;
     meta.first = (meta.page - 1) * form.limit;
 };

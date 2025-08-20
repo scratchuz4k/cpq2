@@ -1,7 +1,7 @@
 import { generateHash, getCurrentDate } from '../../support/utils.js';
 
 const temp1 = getCurrentDate();
-const product = { code: generateHash(temp1), name: temp1 };
+const product = { sku: generateHash(temp1), name: temp1 };
 
 const temp2 = getCurrentDate();
 const category = { code: generateHash(temp2), name: temp2 };
@@ -24,7 +24,7 @@ describe('Creates products and associates Category.cy', () => {
 
                 cy.get('#category-name').type(category.name);
                 cy.get('#category-code').type(category.code);
-
+                cy.selectOption('#category-solution-type', 'Mobile');
                 cy.get('#btn-save-category').click();
                 cy.get('.notyf').contains('Created with Success');
             }
@@ -36,14 +36,14 @@ describe('Creates products and associates Category.cy', () => {
         cy.get('#my-account').click();
         cy.get('#link-products').click();
 
-        cy.get('#datatable-search').type(product.code);
+        cy.get('#datatable-search').type(product.sku);
         cy.wait(3000);
         cy.get('#products-table').then(($table) => {
             if ($table.text().includes('No records found')) {
                 cy.get('#product-create-btn').click();
 
                 cy.get('#product-name').type(product.name);
-                cy.get('#product-code').type(product.code);
+                cy.get('#product-sku').type(product.sku);
 
                 cy.selectLazyOption('product-categories', category.name);
 
@@ -51,10 +51,5 @@ describe('Creates products and associates Category.cy', () => {
                 cy.get('.notyf').contains('Created with Success');
             }
         });
-
-        cy.get('#datatable-search').type(product.code);
-        cy.wait(3000);
-        cy.get('#datatable-btn-0-edit').click();
-        cy.selectLazyOption('product-categories', category.name);
     });
 });

@@ -13,7 +13,7 @@ const temp = getCurrentDate();
 const account = { ref: generateHash(temp), name: temp };
 
 const temp1 = getCurrentDate();
-const product = { code: generateHash(temp1), name: temp1 };
+const product = { sku: generateHash(temp1), name: temp1 };
 
 const temp2 = getCurrentDate();
 const category = { code: generateHash(temp2), name: temp2 };
@@ -46,7 +46,7 @@ describe('Creates a Mobile Quote', () => {
 
                 cy.get('#category-name').type(category.name);
                 cy.get('#category-code').type(category.code);
-
+                cy.selectOption('#category-solution-type', 'Mobile');
                 cy.get('#btn-save-category').click();
                 cy.get('.notyf').contains('Created with Success');
             }
@@ -58,14 +58,14 @@ describe('Creates a Mobile Quote', () => {
         cy.get('#my-account').click();
         cy.get('#link-products').click();
 
-        cy.get('#datatable-search').type(product.code);
+        cy.get('#datatable-search').type(product.sku);
         cy.wait(3000);
         cy.get('#products-table').then(($table) => {
             if ($table.text().includes('No records found')) {
                 cy.get('#product-create-btn').click();
 
                 cy.get('#product-name').type(product.name);
-                cy.get('#product-code').type(product.code);
+                cy.get('#product-sku').type(product.sku);
 
                 cy.selectLazyOption('product-categories', category.name);
 
@@ -73,30 +73,6 @@ describe('Creates a Mobile Quote', () => {
                 cy.get('.notyf').contains('Created with Success');
             }
         });
-
-        cy.get('#datatable-search').type(product.code);
-        cy.wait(3000);
-        cy.get('#datatable-btn-0-edit').click();
-
-        cy.selectLazyOption('product-categories', category.name);
-    });
-
-    it('Associate Category with Mobile Solution', () => {
-        cy.visit('/');
-        cy.get('#my-account').click();
-        cy.get('#link-solutions').click();
-        cy.get('#datatable-search').type('Mobile');
-        cy.wait(3000);
-        cy.get('#datatable-btn-0-edit').click();
-        cy.get('#1-1').click();
-
-        cy.get('#solution-type-table-add-category').click();
-        cy.wait(500);
-        cy.selectLazyOption('solution-type-categories-0-value', 'Plans');
-
-        cy.get('#solution-type-table-add-category').click();
-        cy.selectLazyOption('solution-type-categories-1-value', category.name);
-        cy.get('#btn-save-solution-type').click();
     });
 
     it('Creates Mobile Quote', () => {
