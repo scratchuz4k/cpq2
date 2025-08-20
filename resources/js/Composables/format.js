@@ -1,26 +1,24 @@
-import {DateTime} from "luxon";
+import { DateTime } from 'luxon';
 
-let currency = JSON.parse(
-    document.head.querySelector('meta[name="currency-config"]').content
-);
-const GBP = new Intl.NumberFormat("en-GB", {
-    style: "currency",
-    currency: "GBP",
+let currency = JSON.parse(document.head.querySelector('meta[name="currency-config"]').content);
+const GBP = new Intl.NumberFormat('en-GB', {
+    style: 'currency',
+    currency: 'GBP',
     minimumFractionDigits: currency.precision ?? 2,
-    maximumFractionDigits: currency.precision ?? 2,
+    maximumFractionDigits: currency.precision ?? 2
 });
 
 const format = {
     date: (date) => {
         if (!date) {
-            return "";
+            return '';
         }
 
         const now = Date.now();
         const parsedDate = Date.parse(date);
 
         if (isNaN(parsedDate)) {
-            return ""; // Invalid date format
+            return ''; // Invalid date format
         }
 
         const oneMinuteAgo = now - 60 * 1000; // 1 minute in milliseconds
@@ -28,7 +26,7 @@ const format = {
 
         // "just now" if within the last minute
         if (parsedDate >= oneMinuteAgo) {
-            return "just now";
+            return 'just now';
         }
 
         // If within the last 24 hours, return time difference (like "5 hours ago")
@@ -38,13 +36,13 @@ const format = {
 
         // Otherwise, return formatted date as 'Y-m-d H:i'
         const dt = new Date(parsedDate);
-        return dt.toISOString().slice(0, 16).replace("T", " "); // Y-m-d H:i format
+        return dt.toISOString().slice(0, 16).replace('T', ' '); // Y-m-d H:i format
     },
 
     speed: (value) => {
         let temp = value ?? 0;
         let number = temp;
-        let suffix = "Mb";
+        let suffix = 'Mb';
 
         if (temp < 100) {
             number = Math.ceil(temp / 10) * 10;
@@ -52,11 +50,11 @@ const format = {
             number = Math.ceil(temp / 100) * 100;
         } else {
             number = temp / 1000;
-            suffix = "Gb";
+            suffix = 'Gb';
             number = Math.round(number * 10) / 10;
         }
 
-        return number + " " + suffix;
+        return number + ' ' + suffix;
     },
     simpleSpeed: (value) => {
         let temp = value ?? 0;
@@ -75,7 +73,7 @@ const format = {
 
     toCamelCase: (str) => {
         if (!str) {
-            return "";
+            return '';
         }
         return str
             .toLowerCase()
@@ -84,25 +82,25 @@ const format = {
     },
     toSnakeCase: (str) => {
         if (!str) {
-            return "";
+            return '';
         }
         return str
-            .replace(/([a-z])([A-Z])/g, "$1_$2") // Insert an underscore between lowercase and uppercase letters
-            .replace(/\s+/g, "_") // Replace spaces with underscores
+            .replace(/([a-z])([A-Z])/g, '$1_$2') // Insert an underscore between lowercase and uppercase letters
+            .replace(/\s+/g, '_') // Replace spaces with underscores
             .toLowerCase();
     },
     toLowerCase: (str) => {
         if (!str) {
-            return "";
+            return '';
         }
         return str
-            .replace(/([a-z])([A-Z])/g, "$1$2") // Insert an underscore between lowercase and uppercase letters
-            .replace(/\s+/g, "") // Replace spaces with underscores
+            .replace(/([a-z])([A-Z])/g, '$1$2') // Insert an underscore between lowercase and uppercase letters
+            .replace(/\s+/g, '') // Replace spaces with underscores
             .toLowerCase();
     },
     capitalizeFirstLetter: (str) => {
         if (!str) {
-            return "";
+            return '';
         }
 
         return str
@@ -118,20 +116,16 @@ const format = {
     },
     parsedDateRange: (rangeDate) => {
         const dateMethods = {
-            start: dt => dt.startOf('day'),
-            end: dt => dt.endOf('day'),
+            start: (dt) => dt.startOf('day'),
+            end: (dt) => dt.endOf('day')
         };
 
         return Object.fromEntries(
-            Object.entries(rangeDate)
-                .map(([key, value]) => [
-                        key,
-                        value === null
-                            ? null
-                            : dateMethods[key](DateTime.fromJSDate(value)).toISO()
-                    ]
-                )
-        )
+            Object.entries(rangeDate).map(([key, value]) => [
+                key,
+                value === null ? null : dateMethods[key](DateTime.fromJSDate(value)).toISO()
+            ])
+        );
     }
 };
 
@@ -150,16 +144,16 @@ function timeDiffForHumans(date) {
 
     if (diffInSeconds < secondsInHour) {
         const minutes = Math.floor(diffInSeconds / secondsInMinute);
-        return `${minutes} minute${minutes > 1 ? "s" : ""} ago`;
+        return `${minutes} minute${minutes > 1 ? 's' : ''} ago`;
     }
 
     if (diffInSeconds < secondsInDay) {
         const hours = Math.floor(diffInSeconds / secondsInHour);
-        return `${hours} hour${hours > 1 ? "s" : ""} ago`;
+        return `${hours} hour${hours > 1 ? 's' : ''} ago`;
     }
 
     const days = Math.floor(diffInSeconds / secondsInDay);
-    return `${days} day${days > 1 ? "s" : ""} ago`;
+    return `${days} day${days > 1 ? 's' : ''} ago`;
 }
 
 export default format;

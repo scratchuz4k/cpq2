@@ -5,13 +5,13 @@ namespace App\Services\External;
 use App\Enums\CloudMarketSuppliersEnum;
 use App\Enums\PricePlanEnum;
 use App\Helpers\Api\CloudMarketAddress;
-use App\Models\General\Blacklist;
 use App\Helpers\Files\CloudMarketFile;
 use App\Helpers\FilterProvider;
 use App\Helpers\Prices\PriceRules;
 use App\Jobs\CloudMarketConnectivityProducts;
 use App\Models\Account;
 use App\Models\Api;
+use App\Models\General\Blacklist;
 use App\Models\PricePlan;
 use App\Models\Quote;
 use App\Models\SolutionType;
@@ -90,9 +90,7 @@ class CloudMarketService
 
         $diff_codes = $items->pluck('code')->diff($blacklist_items->pluck('code'));
 
-        $items = $items->filter(function ($item) use ($diff_codes) {
-            return $diff_codes->contains($item['code']);
-        });
+        $items = $items->filter(fn ($item) => $diff_codes->contains($item['code']));
 
         $items = FilterProvider::get($items->toArray(), $filters);
 
@@ -101,7 +99,7 @@ class CloudMarketService
         }
 
         $solutionType = SolutionType::where('code', $connectivityType)->first();
-        $amortisation = array_key_exists('amortisation', $solutionType->configs) ? json_decode($solutionType->configs['amortisation'], true) : [];
+        $amortisation = array_key_exists('amortisation', $solutionType->configs) ? json_decode((string) $solutionType->configs['amortisation'], true) : [];
         $priceRules = new PriceRules;
 
         $account = Account::where('id', request()->input('account_id', null))->first();

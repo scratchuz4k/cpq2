@@ -46,11 +46,9 @@ class OrderItemController extends BaseController
     public function store(OrderItemCreateRequest $request)
     {
         try {
-            $orderItem = DB::transaction(function () use ($request) {
-                return $this->orderItemService->store($request->all());
-            });
+            $orderItem = DB::transaction(fn () => $this->orderItemService->store($request->all()));
         } catch (\Exception $e) {
-            if (!env('APP_DEBUG')) {
+            if (! env('APP_DEBUG')) {
                 Log::error($e->getMessage());
             }
             throw new \Exception($e);
@@ -73,11 +71,9 @@ class OrderItemController extends BaseController
     public function update(OrderItemUpdateRequest $request, OrderItem $orderItem)
     {
         try {
-            $orderItem = DB::transaction(function () use ($request, $orderItem) {
-                return $this->orderItemService->update($orderItem, $request->all());
-            });
+            $orderItem = DB::transaction(fn () => $this->orderItemService->update($orderItem, $request->all()));
         } catch (\Exception $e) {
-            if (!env('APP_DEBUG')) {
+            if (! env('APP_DEBUG')) {
                 Log::error($e->getMessage());
             }
             throw new \Exception($e);

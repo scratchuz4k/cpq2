@@ -35,9 +35,7 @@ class ExportSuppliers implements WithMultipleSheets
             ->whereBetween('created_at', formated_date_range($this->dateRange, Quote::class))
             ->get();
 
-        return $data->map(function ($quote) {
-            return $quote->getAttributes();
-        });
+        return $data->map(fn ($quote) => $quote->getAttributes());
     }
 
     public function sheets(): array
@@ -51,7 +49,7 @@ class ExportSuppliers implements WithMultipleSheets
             }
         }
 
-        if (is_array($sheets) && !count($sheets)) {
+        if (is_array($sheets) && ! count($sheets)) {
             throw new \Exception('No data Found!');
         }
 

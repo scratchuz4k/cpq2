@@ -53,6 +53,8 @@
     --font-primary: Montserrat, Helvetica, Arial, sans-serif;
     --table-header-grey: #dcdcdc;
     --table-header-dark-grey: #646464;
+    --p-breadcrumb-background: transparent !important;
+    --p-breadcrumb-padding: 0.5rem 0 !important;
 }
 
 :root {
@@ -91,6 +93,10 @@ body {
     }
     .cursor-pointer {
         cursor: pointer;
+    }
+
+    .svg-inline--fa {
+        width: auto !important;
     }
 }
 

@@ -3,26 +3,19 @@
 namespace App\Rules;
 
 use Closure;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Contracts\Validation\ValidationRule;
+use Illuminate\Support\Facades\DB;
 
 class ExistsInDatabase implements ValidationRule
 {
-    protected $table;
-    protected $column;
-
     /**
      * Create a new rule instance.
      *
      * @param  string  $table  The table to check against
-     * @param  string  $column The column to check against
+     * @param  string  $column  The column to check against
      * @return void
      */
-    public function __construct($table, $column)
-    {
-        $this->table = $table;
-        $this->column = $column;
-    }
+    public function __construct(protected $table, protected $column) {}
 
     /**
      * Run the validation rule.

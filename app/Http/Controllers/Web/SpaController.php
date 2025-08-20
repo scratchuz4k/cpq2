@@ -55,9 +55,7 @@ class SpaController extends BaseController
     public function store(SpaCreateRequest $request)
     {
         try {
-            $spa = DB::transaction(function () use ($request) {
-                return $this->spasService->store($request->all());
-            });
+            $spa = DB::transaction(fn () => $this->spasService->store($request->all()));
         } catch (\Exception $e) {
             throw new \Exception($e);
         }
@@ -95,9 +93,7 @@ class SpaController extends BaseController
     public function update(SpaUpdateRequest $request, Spa $spa)
     {
         try {
-            $spa = DB::transaction(function () use ($spa, $request) {
-                return $this->spasService->update($spa, $request->all());
-            });
+            $spa = DB::transaction(fn () => $this->spasService->update($spa, $request->all()));
         } catch (\Exception $e) {
             throw new \Exception($e);
         }
@@ -115,20 +111,17 @@ class SpaController extends BaseController
 
     protected function transformExportData(Collection $data): Collection
     {
-        return new Collection($data->map(function ($item) {
-            return [
-                'id' => $item->id,
-                'rule' => $item->rule?->name ?? null,
-                'level_1' => app($item->rule->entity_1)::where('id', $item->field_1)->first()->name ?? null,
-                'level_2' => $item->rule->entity_2 ? app($item->rule->entity_2)::where('id', $item->field_2)->first()->name : null,
-                'price_plan' => $item->pricePlan?->name ?? null,
-                'operation' => $item->operation?->code ?? null,
-                'value' => $item->value,
-                'percentage' => $item->percentage,
-                'group' => $item->group?->name,
-                'created_at' => $item->created_at,
-                'updated_at' => $item->updated_at,
-            ];
-        }));
+        return new Collection($data->map(fn ($item) => [
+            'id' => $item->id,
+            'rule' => $item->rule?->name ?? null,
+            'level_1' => app($item->rule->entity_1)::where('id', $item->field_1)->first()->name ?? null,
+            'level_2' => $item->rule->entity_2 ? app($item->rule->entity_2)::where('id', $item->field_2)->first()->name : null,
+            'price_plan' => $item->pricePlan?->name ?? null,
+            'operation' => $item->operation?->code ?? null,
+            'value' => $item->value,
+            'percentage' => $item->percentage,
+            'created_at' => $item->created_at,
+            'updated_at' => $item->updated_at,
+        ]));
     }
 }

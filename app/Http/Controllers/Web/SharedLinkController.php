@@ -2,14 +2,13 @@
 
 namespace App\Http\Controllers\Web;
 
-use Inertia\Inertia;
-use App\Models\Quote;
-use App\Models\PricePlan;
-use App\Models\SharedLink;
-use Illuminate\Http\Request;
-use App\Models\Scopes\TenantScope;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\QuoteResource;
+use App\Models\PricePlan;
+use App\Models\Quote;
+use App\Models\SharedLink;
+use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class SharedLinkController extends Controller
 {
@@ -64,14 +63,12 @@ class SharedLinkController extends Controller
 
     private function getResource($component, $item)
     {
-        switch ($component) {
-            case 'Quotes':
-                return [
-                    'pricePlans' => PricePlan::all(),
-                    'model' => new QuoteResource($item->load(['items', 'tenant.logo'])),
-                ];
-            default:
-                return $item;
-        }
+        return match ($component) {
+            'Quotes' => [
+                'pricePlans' => PricePlan::all(),
+                'model' => new QuoteResource($item->load(['items', 'tenant.logo'])),
+            ],
+            default => $item,
+        };
     }
 }

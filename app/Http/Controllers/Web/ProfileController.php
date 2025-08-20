@@ -2,15 +2,15 @@
 
 namespace App\Http\Controllers\Web;
 
-use Inertia\Inertia;
-use Inertia\Response;
-use Illuminate\Http\Request;
-use Inertia\Controller;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Facades\Redirect;
 use App\Http\Requests\ProfileUpdateRequest;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Redirect;
+use Inertia\Controller;
+use Inertia\Inertia;
+use Inertia\Response;
 
 class ProfileController extends Controller
 {
@@ -30,7 +30,7 @@ class ProfileController extends Controller
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
-        //$request->user()->fill($request->validated());
+        // $request->user()->fill($request->validated());
         $request->user()->fill($request->only('name'));
         /*
         if ($request->user()->isDirty('email')) {

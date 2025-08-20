@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Models\Quote;
-use App\Models\SharedLink;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ShareLinkCreateRequest;
 use App\Http\Resources\SharedLinkResource;
+use App\Models\Quote;
+use App\Models\SharedLink;
 use Dedoc\Scramble\Attributes\ExcludeRouteFromDocs;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Auth;
 class SharedLinkController extends Controller
 {
     private $sharedModels = [
-        'quotes' => Quote::class
+        'quotes' => Quote::class,
     ];
 
     /**List of SharedLinks

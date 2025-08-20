@@ -1,10 +1,10 @@
 <?php
 
 use App\Enums\QuoteStatusesEnum;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use App\Models\User;
-use App\Models\Tenant;
 use App\Models\Account;
+use App\Models\Tenant;
+use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Auth;
 
 uses(RefreshDatabase::class);

@@ -55,7 +55,7 @@ class CloudMarketConnectivityProducts implements ShouldQueue, TenantAware
         }
 
         $stream = StreamWrapper::getResource($res->toPsrResponse()->getBody());
-        foreach (Items::fromStream($stream) as $key => $value) {
+        foreach (Items::fromStream($stream) as $value) {
             if (! is_object($value) && ! is_array($value)) {
                 continue;
             }
@@ -101,7 +101,7 @@ class CloudMarketConnectivityProducts implements ShouldQueue, TenantAware
     public function failed(Exception $exception)
     {
         // Handle the failure, log exception details, etc.
-        $message = '['.strtoupper(env('APP_ENV')).'] CloudMarketConnectivityProducts failed with error: '.$exception->getMessage();
+        $message = '['.strtoupper((string) env('APP_ENV')).'] CloudMarketConnectivityProducts failed with error: '.$exception->getMessage();
 
         $error = [
             'provider' => 'CPQ',
@@ -112,7 +112,7 @@ class CloudMarketConnectivityProducts implements ShouldQueue, TenantAware
         $file['errors'][] = $error;
 
         // Handle the failure, log exception details, etc.
-        $message = '['.strtoupper(env('APP_ENV')).'] CloudMarketConnectivityProducts failed with error: '.json_encode($file['errors']);
+        $message = '['.strtoupper((string) env('APP_ENV')).'] CloudMarketConnectivityProducts failed with error: '.json_encode($file['errors']);
 
         $this->file->write($file['data'], false, now(), $file['created_at'], $file['filters'], $file['errors']);
         Log::error($message);
@@ -148,7 +148,7 @@ class CloudMarketConnectivityProducts implements ShouldQueue, TenantAware
         ];
 
         foreach ($unauthorizedMessages as $unauthorizedMessage) {
-            if (str_contains($message, $unauthorizedMessage)) {
+            if (str_contains((string) $message, $unauthorizedMessage)) {
                 $message = 'Request failed with status Unauthorized';
                 break;
             }

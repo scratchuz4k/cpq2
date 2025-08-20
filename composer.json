@@ -1,94 +1,95 @@
 {
-  "name": "laravel/laravel",
-  "type": "project",
-  "description": "The skeleton application for the Laravel framework.",
-  "keywords": [
-    "laravel",
-    "framework"
-  ],
-  "license": "MIT",
-  "require": {
-    "php": "^8.3",
-    "dedoc/scramble": "^0.11.16",
-    "halaxa/json-machine": "^1.1",
-    "inertiajs/inertia-laravel": "^1.0",
-    "laravel/framework": "^11.9",
-    "laravel/horizon": "^5.29",
-    "laravel/sanctum": "^4.0",
-    "laravel/socialite": "^5.16",
-    "laravel/tinker": "^2.9",
-    "maatwebsite/excel": "^3.1",
-    "moneyphp/money": "^4.5",
-    "mongodb/laravel-mongodb": "^5.1",
-    "reedware/laravel-relation-joins": "^6.0",
-    "sentry/sentry-laravel": "^4.9",
-    "socialiteproviders/google": "^4.1",
-    "socialiteproviders/saml2": "^4.7",
-    "spatie/browsershot": "^5.0",
-    "spatie/fork": "^1.2",
-    "spatie/laravel-multitenancy": "^4.0",
-    "spatie/laravel-pdf": "^1.5",
-    "spatie/laravel-permission": "^6.9",
-    "stevebauman/location": "^7.5",
-    "tightenco/ziggy": "^2.0"
-  },
-  "require-dev": {
-    "barryvdh/laravel-debugbar": "^3.14",
-    "fakerphp/faker": "^1.23",
-    "laracasts/cypress": "^3.0",
-    "laravel/breeze": "^2.1",
-    "laravel/pint": "^1.13",
-    "laravel/sail": "^1.31",
-    "mockery/mockery": "^1.6",
-    "nunomaduro/collision": "^8.0",
-    "pestphp/pest": "^3.5"
-  },
-  "autoload": {
-    "psr-4": {
-      "App\\": "app/",
-      "Database\\Factories\\": "database/factories/",
-      "Database\\Seeders\\": "database/seeders/"
+    "name": "laravel/laravel",
+    "type": "project",
+    "description": "The skeleton application for the Laravel framework.",
+    "keywords": [
+        "laravel",
+        "framework"
+    ],
+    "license": "MIT",
+    "require": {
+        "php": "^8.4",
+        "dedoc/scramble": "^0.12.23",
+        "halaxa/json-machine": "^1.1",
+        "inertiajs/inertia-laravel": "^2.0",
+        "laravel/framework": "^12.20",
+        "laravel/horizon": "^5.29",
+        "laravel/sanctum": "^4.0",
+        "laravel/socialite": "^5.16",
+        "laravel/tinker": "^2.9",
+        "maatwebsite/excel": "^3.1",
+        "moneyphp/money": "^4.5",
+        "mongodb/laravel-mongodb": "^5.1",
+        "reedware/laravel-relation-joins": "^8.0",
+        "sentry/sentry-laravel": "^4.9",
+        "socialiteproviders/google": "^4.1",
+        "socialiteproviders/saml2": "^4.7",
+        "spatie/browsershot": "^5.0",
+        "spatie/fork": "^1.2",
+        "spatie/laravel-multitenancy": "^4.0",
+        "spatie/laravel-pdf": "^1.5",
+        "spatie/laravel-permission": "^6.9",
+        "stevebauman/location": "^7.5",
+        "tightenco/ziggy": "^2.0"
     },
-    "files": [
-      "app/Helpers/Helpers.php"
-    ]
-  },
-  "autoload-dev": {
-    "psr-4": {
-      "Tests\\": "tests/"
-    }
-  },
-  "scripts": {
-    "post-autoload-dump": [
-      "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
-      "@php artisan package:discover --ansi"
-    ],
-    "post-update-cmd": [
-      "@php artisan vendor:publish --tag=laravel-assets --ansi --force"
-    ],
-    "post-root-package-install": [
-      "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
-    ],
-    "post-create-project-cmd": [
-      "@php artisan key:generate --ansi",
-      "@php -r \"file_exists('database/database.sqlite') || touch('database/database.sqlite');\"",
-      "@php artisan migrate --graceful --ansi"
-    ]
-  },
-  "extra": {
-    "laravel": {
-      "dont-discover": []
-    }
-  },
-  "config": {
-    "optimize-autoloader": true,
-    "preferred-install": "dist",
-    "sort-packages": true,
-    "allow-plugins": {
-      "pestphp/pest-plugin": true,
-      "php-http/discovery": true
-    }
-  },
-  "minimum-stability": "stable",
-  "prefer-stable": true
+    "require-dev": {
+        "barryvdh/laravel-debugbar": "^3.14",
+        "fakerphp/faker": "^1.23",
+        "laracasts/cypress": "^3.0",
+        "laravel/breeze": "^2.1",
+        "laravel/pint": "^1.13",
+        "laravel/sail": "^1.31",
+        "mockery/mockery": "^1.6",
+        "nunomaduro/collision": "^8.0",
+        "pestphp/pest": "^3.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "app/",
+            "Database\\Factories\\": "database/factories/",
+            "Database\\Seeders\\": "database/seeders/"
+        },
+        "files": [
+            "app/Helpers/Helpers.php"
+        ]
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "post-autoload-dump": [
+            "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
+            "@php artisan package:discover --ansi"
+        ],
+        "post-update-cmd": [
+            "@php artisan vendor:publish --tag=laravel-assets --ansi --force"
+        ],
+        "post-root-package-install": [
+            "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
+        ],
+        "post-create-project-cmd": [
+            "@php artisan key:generate --ansi",
+            "@php -r \"file_exists('database/database.sqlite') || touch('database/database.sqlite');\"",
+            "@php artisan migrate --graceful --ansi"
+        ],
+        "format": "pint"
+    },
+    "extra": {
+        "laravel": {
+            "dont-discover": []
+        }
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "preferred-install": "dist",
+        "sort-packages": true,
+        "allow-plugins": {
+            "pestphp/pest-plugin": true,
+            "php-http/discovery": true
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
 }

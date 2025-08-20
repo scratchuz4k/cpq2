@@ -2,9 +2,6 @@
 
 namespace App\Http\Requests;
 
-use App\Models\SpaRule;
-use App\Enums\SpaRulesEnum;
-use Illuminate\Validation\Rule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class SolutionTypeUpdateRequest extends FormRequest
@@ -25,7 +22,7 @@ class SolutionTypeUpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'configurations' => 'nullable|array'
+            'configurations' => 'nullable|array',
         ];
     }
 }

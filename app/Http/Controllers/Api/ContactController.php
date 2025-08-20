@@ -2,27 +2,30 @@
 
 namespace App\Http\Controllers\Api;
 
-use Exception;
-use App\Models\Contact;
-use Illuminate\Http\Request;
 use App\Helpers\DataProvider;
-use App\Services\ContactService;
-use Illuminate\Support\Facades\DB;
-use App\Http\Requests\IndexRequest;
-use Illuminate\Support\Facades\Log;
-use App\Http\Resources\ContactResource;
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\ContactCreateRequest;
+use App\Http\Requests\IndexRequest;
+use App\Http\Resources\ContactResource;
+use App\Models\Contact;
+use App\Services\ContactService;
+use Exception;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class ContactController extends BaseController
 {
     protected $model = Contact::class;
+
     public function __construct(protected ContactService $contactService)
     {
         parent::__construct();
     }
+
     /**
      * List Contacts
+     *
      * @response AnonymousResourceCollection<LengthAwarePaginator<ContactResource>>
      */
     public function index(IndexRequest $request)
@@ -32,6 +35,7 @@ class ContactController extends BaseController
             $data = $dataProvider->get();
         } catch (Exception $e) {
             Log::debug($e->getMessage());
+
             return $e->getMessage();
         }
 
@@ -44,13 +48,12 @@ class ContactController extends BaseController
     public function store(ContactCreateRequest $request)
     {
         try {
-            $contact = DB::transaction(function () use ($request) {
-                return $this->contactService->store($request->all());
-            });
+            $contact = DB::transaction(fn () => $this->contactService->store($request->all()));
         } catch (Exception $e) {
             Log::debug($e->getMessage());
             throw new Exception($e);
         }
+
         return new ContactResource($contact);
     }
 
@@ -68,13 +71,12 @@ class ContactController extends BaseController
     public function update(Request $request, Contact $contact)
     {
         try {
-            $contact =  DB::transaction(function () use ($contact, $request) {
-                return $this->contactService->update($contact, $request->all());
-            });
+            $contact = DB::transaction(fn () => $this->contactService->update($contact, $request->all()));
         } catch (Exception $e) {
             Log::debug($e->getMessage());
             throw new Exception($e);
         }
+
         return new ContactResource($contact);
     }
 
@@ -84,6 +86,7 @@ class ContactController extends BaseController
     public function destroy(Contact $contact)
     {
         $contact->delete();
+
         return response()->json(null, 204);
     }
 }

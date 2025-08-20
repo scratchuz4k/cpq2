@@ -37,40 +37,19 @@ class DynamicEmail extends Mailable
 {
     use Queueable, SerializesModels;
 
-    private ?User $user;
-
-    private Tenant $tenant;
-
-    private EmailTemplatesEnum $templateEnum;
-
     private EmailTemplate $email;
 
-    private array $parameters;
-
-    private array $files;
-
-    private bool $isPreview;
-
-    private array $overrides;
-
     public function __construct(
-        Tenant $tenant,
-        EmailTemplatesEnum $templateEnum,
-        array $parameters = [],
-        array $files = [],
-        array $overrides = [],
-        bool $isPreview = false,
-        ?User $user = null,
+        private Tenant $tenant,
+        private EmailTemplatesEnum $templateEnum,
+        private array $parameters = [],
+        private array $files = [],
+        private array $overrides = [],
+        private bool $isPreview = false,
+        private ?User $user = null,
     ) {
-        //TODO: EMAILS: remove the return once we get the credentials for email functionality
-        return;
-        $this->files = $files;
-        $this->isPreview = $isPreview;
-        $this->parameters = $parameters;
-        $this->overrides = $overrides;
-        $this->templateEnum = $templateEnum;
-        $this->user = $user;
-        $this->tenant = $tenant;
+        // TODO: EMAILS: remove the return once we get the credentials for email functionality
+
     }
 
     public function build()

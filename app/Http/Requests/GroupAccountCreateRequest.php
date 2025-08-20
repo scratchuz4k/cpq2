@@ -29,10 +29,8 @@ class GroupAccountCreateRequest extends FormRequest
             'group_id' => ['required'],
             'account_id' => [
                 'required',
-                Rule::unique('group_account')->where(function ($query) use ($user) {
-                    return $query->where('tenant_id', $user->tenant_id)
-                        ->where('group_id', request('group_id'));
-                }),
+                Rule::unique('group_account')->where(fn ($query) => $query->where('tenant_id', $user->tenant_id)
+                    ->where('group_id', request('group_id'))),
             ],
         ];
     }

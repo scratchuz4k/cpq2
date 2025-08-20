@@ -3,7 +3,6 @@
 namespace Database\Factories;
 
 use App\Models\Tenant;
-use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -19,7 +18,7 @@ class SupplierFactory extends Factory
     public function definition()
     {
         return [
-            'tenant_id' => Tenant::where("name", "CloudMarket")->value('id'),
+            'tenant_id' => Tenant::where('name', 'CloudMarket')->value('id'),
             'name' => fake()->company,
         ];
     }

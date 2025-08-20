@@ -25,6 +25,7 @@ class BrandController extends BaseController
 
     /**
      * List Brands
+     *
      * @response AnonymousResourceCollection<LengthAwarePaginator<BrandResource>>
      */
     public function index(IndexRequest $request)
@@ -34,6 +35,7 @@ class BrandController extends BaseController
             $data = $dataProvider->get();
         } catch (Exception $e) {
             Log::debug($e->getMessage());
+
             return $e->getMessage();
         }
 
@@ -51,7 +53,6 @@ class BrandController extends BaseController
 
     /**
      * Show Brand
-     *
      */
     #[ExcludeRouteFromDocs]
     public function show(Brand $brand)
@@ -61,15 +62,12 @@ class BrandController extends BaseController
 
     /**
      * Update Brand
-     *
      */
     #[ExcludeRouteFromDocs]
     public function update(Request $request, Brand $brand)
     {
         try {
-            $brand = DB::transaction(function () use ($brand, $request) {
-                return $this->brandService->update($brand, $request->all());
-            });
+            $brand = DB::transaction(fn () => $this->brandService->update($brand, $request->all()));
         } catch (Exception $e) {
             Log::debug($e->getMessage());
             throw new Exception($e);

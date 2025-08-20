@@ -2,15 +2,15 @@
 
 namespace App\Models;
 
-use App\Trait\RegisterActivity;
 use App\Models\Scopes\TenantScope;
+use App\Trait\RegisterActivity;
 use App\Trait\SetTenantId;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class QuoteDiscount extends Model
 {
-    use SetTenantId, RegisterActivity;
+    use RegisterActivity, SetTenantId;
 
     protected $fillable = ['discountable_type', 'discountable_id', 'discount', 'tenant_id'];
 

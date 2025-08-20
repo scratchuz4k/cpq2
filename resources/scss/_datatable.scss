@@ -1,17 +1,14 @@
 #print {
-
     .table-connectivity thead,
     .table-dealmaker thead {
         th {
             background: none !important;
         }
     }
-
 }
 
 .table-connectivity thead,
 .table-dealmaker thead {
-
     th {
         background: var(--table-header-grey);
         color: var(--table-header-dark-grey);
@@ -63,7 +60,7 @@
         cursor: pointer;
     }
 
-    tbody>tr:has(.form-check-input:checked)>* {
+    tbody > tr:has(.form-check-input:checked) > * {
         background-color: var(--light-teal);
     }
 
@@ -83,12 +80,10 @@
         background-color: var(--teal);
         border-color: var(--teal);
     }
-
 }
 
 .table-connectivity,
 .table-dealmaker {
-
     th,
     td {
         position: relative;
@@ -99,13 +94,11 @@
 }
 
 .table-dealmaker {
-
     th,
     td {
         padding: 0.2rem 0.2rem !important;
     }
 }
-
 
 .table-dealmaker {
     .container-form-check-input {
@@ -123,7 +116,7 @@
         cursor: pointer;
     }
 
-    tbody>tr:has(.form-check-input:checked)>* {
+    tbody > tr:has(.form-check-input:checked) > * {
         background-color: var(--light-red);
     }
 
@@ -198,7 +191,6 @@
     width: 8% !important;
     text-align: center;
 }
-
 
 .column-margin-header,
 .column-margin-body,

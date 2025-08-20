@@ -3,7 +3,7 @@ import { onMounted, ref } from 'vue';
 
 const model = defineModel({
     type: String,
-    required: true,
+    required: true
 });
 
 const input = ref(null);
@@ -18,9 +18,5 @@ defineExpose({ focus: () => input.value.focus() });
 </script>
 
 <template>
-    <input
-        class="form-control"
-        v-model="model"
-        ref="input"
-    />
+    <input class="form-control" v-model="model" ref="input" />
 </template>

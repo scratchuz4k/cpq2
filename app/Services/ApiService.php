@@ -3,7 +3,6 @@
 namespace App\Services;
 
 use App\Models\Api;
-use Illuminate\Support\Facades\DB;
 
 class ApiService
 {

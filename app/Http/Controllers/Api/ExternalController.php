@@ -56,7 +56,7 @@ class ExternalController extends Controller
             'fullAddress' => 'required',
         ]);
 
-        if (! ($address = trim(preg_replace('/[\s]+/', ' ', $request->input('fullAddress'))))) {
+        if (! ($address = trim(preg_replace('/[\s]+/', ' ', (string) $request->input('fullAddress'))))) {
             return response('Something went wrong', 400);
         }
 

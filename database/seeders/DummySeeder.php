@@ -72,7 +72,7 @@ class DummySeeder extends Seeder
             $company_admin_user->id,
             $sales_manager_user->id,
             $sales_user->id,
-            $order_manager_user->id
+            $order_manager_user->id,
         ]);
 
         $super_user = User::where('email', 'super@example.com')->first();

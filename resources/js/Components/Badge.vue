@@ -1,9 +1,7 @@
 <script setup>
-
 const props = defineProps({
     value: String
-})
-
+});
 </script>
 
 <template>
@@ -14,8 +12,8 @@ const props = defineProps({
 </template>
 
 <style scoped>
-    span {
-        background-color: #F5E5F3;
-        color: #A34996;
-    }
+span {
+    background-color: #f5e5f3;
+    color: #a34996;
+}
 </style>
