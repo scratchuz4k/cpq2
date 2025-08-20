@@ -24,6 +24,16 @@ class UserUpdateRequest extends FormRequest
         return [
             'name' => ['string', 'max:255'],
             'email' => ['string', 'email', 'max:255'],
+            'parent_id' => [
+                'nullable',
+                'integer',
+                function ($attribute, $value, $fail) {
+                    // Only fail if there is an 'id' in the request
+                    if ($value == $this->user->id) {
+                        $fail('The parent_id cannot be the same as the user id.');
+                    }
+                },
+            ],
         ];
     }
 }

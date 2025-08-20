@@ -1,4 +1,5 @@
 import { DateTime } from 'luxon';
+import dayjs from 'dayjs';
 
 let currency = JSON.parse(document.head.querySelector('meta[name="currency-config"]').content);
 const GBP = new Intl.NumberFormat('en-GB', {
@@ -38,7 +39,18 @@ const format = {
         const dt = new Date(parsedDate);
         return dt.toISOString().slice(0, 16).replace('T', ' '); // Y-m-d H:i format
     },
+    formattedDate: (date, formatStr = 'dd-MM-yyyy HH:mm:ss') => {
+        if (!date) {
+            return '';
+        }
 
+        let dt = DateTime.fromISO(date, { zone: 'utc' });
+        if (!dt.isValid) {
+            dt = DateTime.fromJSDate(new Date(date));
+            if (!dt.isValid) return '';
+        }
+        return dt.toFormat(formatStr);
+    },
     speed: (value) => {
         let temp = value ?? 0;
         let number = temp;
@@ -98,6 +110,15 @@ const format = {
             .replace(/\s+/g, '') // Replace spaces with underscores
             .toLowerCase();
     },
+    friendlyString: (str) => {
+        if (!str) {
+            return '';
+        }
+        return str
+            .replace(/_/g, ' ')
+            .toLowerCase()
+            .replace(/\b\w/g, (char) => char.toUpperCase());
+    },
     capitalizeFirstLetter: (str) => {
         if (!str) {
             return '';
@@ -126,6 +147,11 @@ const format = {
                 value === null ? null : dateMethods[key](DateTime.fromJSDate(value)).toISO()
             ])
         );
+    },
+    expireDate: (date, expireDays) => {
+        return dayjs(date)
+            .add(expireDays ?? 14, 'day')
+            .format('DD/MM/YYYY');
     }
 };
 

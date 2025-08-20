@@ -7,7 +7,7 @@ const group = { name: temp + '-group' };
 
 describe('Creates a Group and associates accounts.cy', () => {
     it('Creates  User', () => {
-        cy.login('super@example.com', 'werwerwer');
+        cy.login(Cypress.env('SUPERUSER_EMAIL'), Cypress.env('SUPERUSER_PASSWORD'));
         cy.visit('/users');
         cy.get('#link-to-create-user').click();
 
@@ -20,7 +20,7 @@ describe('Creates a Group and associates accounts.cy', () => {
         cy.get('#users-table').contains(user.name);
     });
     it('Creates Accounts', () => {
-        cy.login('super@example.com', 'werwerwer');
+        cy.login(Cypress.env('SUPERUSER_EMAIL'), Cypress.env('SUPERUSER_PASSWORD'));
         cy.visit('/');
         cy.get('#create-tab').click();
         cy.get('#link-to-create-account').click();
@@ -35,7 +35,7 @@ describe('Creates a Group and associates accounts.cy', () => {
         cy.get('.notyf').contains('Created with Success');
     });
     it('Creates an Group, associates users and accounts', () => {
-        cy.login('super@example.com', 'werwerwer');
+        cy.login(Cypress.env('SUPERUSER_EMAIL'), Cypress.env('SUPERUSER_PASSWORD'));
         cy.visit('/');
         cy.get('#my-account').click();
         cy.get('#link-users').click();

@@ -16,38 +16,54 @@ const item = defineModel();
             v-tooltip
             data-bs-toggle="tooltip"
             data-bs-placement="top"
-            title="Primary Router Model"
+            data-bs-html="true"
+            :data-bs-original-title="'<b>Primary Router Model:</b> ' + item.data.additionalInfo['router']"
             class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm router-model"
         >
             <font-awesome-icon :icon="['fas', 'plug']"></font-awesome-icon>
-            {{ item.data.additionalInfo['router'] }}
         </span>
         <span
             v-if="item.data?.isContended"
             class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm is-contended"
             data-bs-toggle="tooltip"
             data-bs-placement="top"
-            title="Contended, wires only full fibre service with symmetrical upload and download speeds"
+            data-bs-html="true"
+            data-bs-original-title="<b>Contended Service:</b> Contended, wires only full fibre service with symmetrical upload and download speeds"
             v-tooltip
         >
-            Contended Service
+            <font-awesome-icon :icon="['fas', 'server']"></font-awesome-icon>
         </span>
         <span
             v-if="item.data?.additionalInfo?.['Type'] == 'Fibre Flex 200+'"
             v-tooltip
             data-bs-toggle="tooltip"
             data-bs-placement="top"
-            title="This service offers guaranteed upload and download speeds of 200Mbps and can burst up to a peak of 1Gbps"
-            class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm router-model"
+            data-bs-html="true"
+            data-bs-original-title="<b>Burstable Service:</b> This service offers guaranteed upload and download speeds of 200Mbps and can burst up to a peak of 1Gbps"
+            class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm is-burstable"
         >
-            Burstable Service
+            <font-awesome-icon :icon="['fas', 'bolt']"></font-awesome-icon>
+        </span>
+
+        <span
+            v-if="item.data?.additionalInfo?.['addon_ipv4']"
+            v-tooltip
+            data-bs-toggle="tooltip"
+            data-bs-placement="top"
+            data-bs-html="true"
+            :data-bs-original-title="item.data?.additionalInfo?.['addon_ipv4']"
+            class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm addon-ipv4"
+        >
+            <font-awesome-icon :icon="['fas', 'network-wired']"></font-awesome-icon>
         </span>
     </p>
 </template>
 
 <style>
+.router-model,
 .is-contended,
-.router-model {
-    font-size: 0.625rem !important;
+.is-burstable,
+.addon-ipv4 {
+    font-size: 0.75rem !important;
 }
 </style>
