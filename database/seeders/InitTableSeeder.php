@@ -32,7 +32,7 @@ class InitTableSeeder extends Seeder
             $tenant = Tenant::updateOrCreate([
                 'name' => 'CloudMarket',
             ], [
-                'domain' => 'localhost',
+                'domain' => 'example.com',
                 'database' => 'cloudmarket',
             ]);
         }
@@ -59,9 +59,8 @@ class InitTableSeeder extends Seeder
             ]);
         }
 
-        $super_user->tenants()->sync([$super_user->id]);
-
         $allTenants = Tenant::all();
+        $super_user->tenants()->sync($allTenants->pluck('id'));
         $system_user->tenants()->sync($allTenants->pluck('id'));
 
         foreach (SolutionTypesEnum::cases() as $case) {

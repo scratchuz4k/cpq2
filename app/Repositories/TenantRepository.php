@@ -10,16 +10,16 @@ class TenantRepository
 {
     public function createSooFileForTenant($data, $tenant)
     {
-        // TODO on php upgrade to 8.4 implement LIBXML_NO_XXE verification to prevent xxe injextion
         $resource = Resource::find($tenant->sso_id);
 
+        $ssoText = safeXmlParse($data['sso_text_area']);
         if ($resource) {
-            Storage::disk('public')->put($resource->getRouteValue(), $data['sso_text_area']);
+            Storage::disk('public')->put($resource->getRouteValue(), $ssoText);
 
             return $resource->id;
         }
 
-        $xml_content = $data['sso_text_area'];
+        $xml_content = $ssoText;
 
         $fileName = 'files/'.Str::random(40).'.xml';
         Storage::disk('public')->put($fileName, $xml_content);

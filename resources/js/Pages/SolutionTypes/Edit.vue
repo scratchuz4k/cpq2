@@ -255,7 +255,7 @@ const items = ref([
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr style="text-align: center" v-for="supplier in props.suppliers">
+                                        <tr v-for="supplier in props.suppliers">
                                             <td style="text-align: left">{{ supplier.name }}</td>
                                             <td>
                                                 <MultiSelect

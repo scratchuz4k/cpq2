@@ -98,7 +98,7 @@ class DataProvider
 
             if (count($groupBy) == 2) {
                 $table = $this->builder->getModel()->getTable();
-                $this->builder = $this->builder->select($table.'.*')->joinRelation(Str::camel($groupBy[0]).' as '.$groupBy[0])
+                $this->builder = $this->builder->select($table.'.*')->leftJoinRelation(Str::camel($groupBy[0]).' as '.$groupBy[0])
                     ->orderBy($groupBy[0].'.'.$groupBy[1], $groupOrder);
             } else {
                 $this->builder = $this->builder->orderBy($groupBy[0], $groupOrder);
@@ -116,7 +116,7 @@ class DataProvider
 
         if (count($orderByArray) == 2) {
             $table = $this->builder->getModel()->getTable();
-            $this->builder = $this->builder->select($table.'.*')->joinRelation(Str::camel($orderByArray[0]).' as '.$orderByArray[0])
+            $this->builder = $this->builder->select($table.'.*')->leftJoinRelation(Str::camel($orderByArray[0]).' as '.$orderByArray[0])
                 ->orderBy($orderByArray[0].'.'.$orderByArray[1], $order);
         } else {
             $this->builder = $this->builder->orderBy($orderBy, $order);

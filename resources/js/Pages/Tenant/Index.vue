@@ -20,7 +20,7 @@ const tenant = reactive({
         orders_flow_is_active: props.tenant.configurations.orders_flow_is_active ?? '0',
         log_system_is_active: props.tenant.configurations.log_system_is_active ?? '0',
         restrict_account_management_is_active: props.tenant.configurations.restrict_account_management_is_active ?? '0',
-        quote_expiration_days: props.tenant.configurations.quote_expiration_days ?? 14
+        quote_expiration_days: props.tenant.configurations.quote_expiration_days ?? 30
     }
 });
 
@@ -286,7 +286,7 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'My Account', url: '/my
                                                         <div class="log_system_is_active">
                                                             <div>
                                                                 <label
-                                                                    for="active-orders-flow"
+                                                                    for="log-system-is-active"
                                                                     class="form-label lh-sm small pb-2"
                                                                 >
                                                                     <i
@@ -297,7 +297,7 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'My Account', url: '/my
                                                             </div>
                                                             <div>
                                                                 <ToggleSwitch
-                                                                    id="active-orders-flow"
+                                                                    id="log-system-is-active"
                                                                     v-model="tenant.configurations.log_system_is_active"
                                                                     @change="submitTenantSettings"
                                                                     trueValue="1"

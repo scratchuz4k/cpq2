@@ -163,7 +163,13 @@ const items = ref([
                             <ActivityDialog
                                 :filters="[
                                     { entity: 'Quote', values: quote.id },
-                                    { entity: 'QuoteItem', values: quote.items.map((x) => x.id).join(',') },
+                                    {
+                                        entity: 'QuoteItem',
+                                        values:
+                                            quote.items.map((x) => x.id).join(',') +
+                                            ',' +
+                                            quote.items_trashed.map((x) => x.id).join(',')
+                                    },
                                     {
                                         entity: 'QuoteDiscount',
                                         values: quote.discounts.map((x) => x.id).join(',')
