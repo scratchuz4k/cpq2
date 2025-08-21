@@ -88,7 +88,9 @@ class QuoteItemController extends BaseController
     public function destroy(QuoteItem $quoteItem)
     {
         $quote = $quoteItem->quote;
-        $descendants = Product::descendants($quoteItem->product_id);
+        $descendants = ! is_null($quoteItem->product_id)
+            ? Product::descendants($quoteItem->product_id)
+            : collect();
 
         $quoteItem->delete();
 

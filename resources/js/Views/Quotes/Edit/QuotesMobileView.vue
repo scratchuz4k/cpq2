@@ -146,7 +146,7 @@ getCategoriesWithProducts();
                                 </span>
                             </div>
                         </div>
-                        <button class="btn btn-primary mt-2" @click="saveQuote()">Next</button>
+                        <button id="next-step-btn" class="btn btn-primary mt-2" @click="saveQuote()">Next</button>
                     </div>
                 </div>
             </div>
