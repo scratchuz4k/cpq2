@@ -42,8 +42,6 @@ const selectedParent = ref(null);
 const getProducts = async () => {
     meta.isLoading = true;
 
-    setTimeout(() => {}, 1000);
-
     let filters = [
         {
             column: 'category_id',
