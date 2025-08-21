@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Product;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
@@ -42,5 +43,27 @@ class ProductUpdateRequest extends FormRequest
             'supplier_id' => 'nullable|exists:suppliers,id',
             'brand_id' => 'nullable|exists:brands,id',
         ];
+    }
+
+    /**
+     * Configure the validator instance.
+     */
+    public function withValidator($validator): void
+    {
+        $validator->after(function ($validator) {
+            $parentId = $this->input('parent_id');
+            $categoryId = $this->input('category_id');
+
+            if ($parentId) {
+                $parent = Product::find($parentId);
+
+                if ($parent && $parent->category_id === (int) $categoryId) {
+                    $validator->errors()->add(
+                        'parent_id',
+                        'The parent product cannot belong to the same category as the product.'
+                    );
+                }
+            }
+        });
     }
 }

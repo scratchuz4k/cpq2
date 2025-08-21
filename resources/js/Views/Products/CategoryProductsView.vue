@@ -131,7 +131,10 @@ getProducts();
     <div v-if="proxyValue == props.index" :id="'step-' + (props.index + 1)" class="step">
         <div class="d-flex justify-content-between mb-3">
             <h2>Select some products</h2>
-            <p class="bigger bold text-primary">STEP {{ props.index + 1 }}/{{ total_categories }}</p>
+            <p class="bigger bold text-primary">
+                STEP <span id="current-step">{{ props.index + 1 }}</span
+                >/<span id="last-step">{{ total_categories }}</span>
+            </p>
         </div>
         <div v-if="!meta.isLoading">
             <div v-if="products.length" v-for="(product, index) in products" class="mobile-item mobile-product mb-3">

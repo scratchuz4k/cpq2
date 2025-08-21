@@ -244,7 +244,12 @@ watch(
         <div class="row">
             <div class="d-flex justify-content-between mb-3">
                 <h2>Select some products</h2>
-                <p class="bigger text-primary bold">STEP {{ step }}/{{ step }}</p>
+                <p class="bigger text-primary bold">
+                    STEP
+                    <span id="current-step">{{ step }}</span>
+                    /
+                    <span id="last-step">{{ step }}</span>
+                </p>
             </div>
         </div>
         <div class="row justify-content-end">

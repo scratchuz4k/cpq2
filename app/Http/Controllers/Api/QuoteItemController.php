@@ -8,6 +8,7 @@ use App\Http\Requests\IndexRequest;
 use App\Http\Requests\QuoteItemCreateRequest;
 use App\Http\Requests\QuoteItemUpdateRequest;
 use App\Http\Resources\QuoteItemResource;
+use App\Models\Product;
 use App\Models\QuoteItem;
 use App\Services\QuoteItemService;
 use Exception;
@@ -87,7 +88,17 @@ class QuoteItemController extends BaseController
     public function destroy(QuoteItem $quoteItem)
     {
         $quote = $quoteItem->quote;
+        $descendants = Product::descendants($quoteItem->product_id);
+
         $quoteItem->delete();
+
+        // delete all items with the same parent_id
+        if ($descendants->isNotEmpty()) {
+            $quote->items()
+                ->whereIn('product_id', $descendants->pluck('id'))
+                ->delete();
+        }
+
         $quote->computeTotals();
 
         return response(null, 200);

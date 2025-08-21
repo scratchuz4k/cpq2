@@ -97,4 +97,17 @@ class Product extends Model
 
         return $product->is_active ? ProductStatusesEnum::ACTIVE->value : ProductStatusesEnum::INACTIVE->value;
     }
+
+    public static function descendants(int $product_id)
+    {
+        $product = Product::find($product_id);
+        $descendants = collect();
+
+        foreach ($product->children as $child) {
+            $descendants->push($child);
+            $descendants = $descendants->merge($child->descendants($child->id));
+        }
+
+        return $descendants;
+    }
 }

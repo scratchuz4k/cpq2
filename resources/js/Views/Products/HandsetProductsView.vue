@@ -167,7 +167,12 @@ watch(
     <div id="mobile_step_shopblocks" class="step">
         <div class="d-flex justify-content-between mb-4">
             <h2 class="m-0">Finally, choose your handsets</h2>
-            <p class="bigger text-primary bold">STEP {{ step }}/{{ step }}</p>
+            <p class="bigger text-primary bold">
+                STEP
+                <span id="current-step">{{ step }}</span>
+                /
+                <span id="last-step">{{ step }}</span>
+            </p>
         </div>
         <div class="d-flex justify-content-between mb-3">
             <div class="d-flex justify-content-end">

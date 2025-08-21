@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Product;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -29,6 +30,7 @@ class ProductCreateRequest extends FormRequest
             'brand_id' => 'nullable|exists:brands,id',
             'price_plan_id' => 'required|exists:price_plans,id',
             'category_id' => 'required|exists:categories,id',
+            'parent_id' => 'nullable|exists:products,id',
             'prices.*.code' => [
                 'required',
                 'numeric',
@@ -38,5 +40,27 @@ class ProductCreateRequest extends FormRequest
             'prices.*.tax_rate' => 'required|numeric',
             'prices.*.net' => 'required|numeric',
         ];
+    }
+
+    /**
+     * Configure the validator instance.
+     */
+    public function withValidator($validator): void
+    {
+        $validator->after(function ($validator) {
+            $parentId = $this->input('parent_id');
+            $categoryId = $this->input('category_id');
+
+            if ($parentId) {
+                $parent = Product::find($parentId);
+
+                if ($parent && $parent->category_id === (int) $categoryId) {
+                    $validator->errors()->add(
+                        'parent_id',
+                        'The parent product cannot belong to the same category as the product.'
+                    );
+                }
+            }
+        });
     }
 }

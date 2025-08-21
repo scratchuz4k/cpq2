@@ -129,7 +129,6 @@ const format = {
         );
     },
     expireDate: (date, expireDays) => {
-        debugger;
         return dayjs(date)
             .add(expireDays ?? 14, 'day')
             .format('DD/MM/YYYY');
