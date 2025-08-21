@@ -37,6 +37,24 @@ describe('Create a Shareable Link.cy', () => {
         cy.wait(1000);
         cy.get('#btn-step-2-next').click();
 
+        cy.get('#current-step')
+            .invoke('text')
+            .then((currentStepText) => {
+                cy.get('#last-step')
+                    .invoke('text')
+                    .then((lastStepText) => {
+                        const current_step = parseInt(currentStepText.trim());
+                        const last_step = parseInt(lastStepText.trim());
+
+                        for (let i = current_step; i < last_step; i++) {
+                            cy.task('log', 'current-step: ' + current_step);
+                            cy.task('log', 'last-step: ' + last_step);
+                            cy.task('log', 'index: ' + i);
+                            cy.get(`#btn-step-${i}-next`).click();
+                        }
+                    });
+            });
+
         let hardwareCount = 0;
         let keys = [0, 1, 2, 3, 4];
         let max_pages = 5;

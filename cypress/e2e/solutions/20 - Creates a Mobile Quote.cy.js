@@ -78,7 +78,7 @@ describe('Creates a Mobile Quote', () => {
     it('Creates Mobile Quote', () => {
         cy.visit('/');
         cy.get('#create-tab').click();
-        cy.selectLazyOption('account_id', 'test account');
+        cy.selectLazyOption('account_id', account.name);
         cy.get('#btn-next-step').click();
 
         cy.get('#solution_type-mobile').click();
