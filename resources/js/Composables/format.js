@@ -150,7 +150,7 @@ const format = {
     },
     expireDate: (date, expireDays) => {
         return dayjs(date)
-            .add(expireDays ?? 14, 'day')
+            .add(expireDays ?? 30, 'day')
             .format('DD/MM/YYYY');
     }
 };

@@ -276,7 +276,7 @@ const dynamicSavings = computed(() => {
                 <div style="font-size: 14px">
                     This quote will expire on
                     <b style="font-size: 16px">
-                        {{ formatt.expireDate(proxyValue.created_at, tenant.configurations?.quote_expiration_days) }}
+                        {{ format.expireDate(proxyValue.created_at, tenant.configurations?.quote_expiration_days) }}
                     </b>
                 </div>
             </InfoBox>
