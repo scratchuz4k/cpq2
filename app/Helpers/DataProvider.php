@@ -349,6 +349,6 @@ class DataProvider
             }
         }
 
-        return in_array($relation, $relationships);
+        return in_array($relation, $relationships) || in_array(Str::camel($relation), $relationships);
     }
 }
