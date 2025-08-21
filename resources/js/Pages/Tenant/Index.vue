@@ -20,7 +20,7 @@ const tenant = reactive({
         orders_flow_is_active: props.tenant.configurations.orders_flow_is_active ?? '0',
         log_system_is_active: props.tenant.configurations.log_system_is_active ?? '0',
         restrict_account_management_is_active: props.tenant.configurations.restrict_account_management_is_active ?? '0',
-        quote_expiration_days: props.tenant.configurations.quote_expiration_days ?? 14
+        quote_expiration_days: props.tenant.configurations.quote_expiration_days ?? 30
     }
 });
 

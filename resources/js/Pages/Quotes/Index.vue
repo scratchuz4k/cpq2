@@ -38,7 +38,7 @@ const expirableStatuses = ['QUOTE', 'PRICE', 'CONFIGURE'];
 
 const dateToExpire = (date) => {
     return dayjs(date)
-        .add(tenant.configurations?.quote_expiration_days ?? 14, 'day')
+        .add(tenant.configurations?.quote_expiration_days ?? 30, 'day')
         .format('DD/MM/YYYY');
 };
 

@@ -51,8 +51,8 @@ const has_export_permission =
 
 const form = reactive({
     filters: [],
-    order: props.sort?.order || 'desc',
-    orderBy: props.sort?.orderBy || 'updated_at',
+    order: props.sort?.order ?? 'desc',
+    orderBy: props.sort?.orderBy ?? 'updated_at',
     limit: 20
 });
 
