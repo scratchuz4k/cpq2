@@ -22,9 +22,6 @@ class PriceResource extends JsonResource
             ...$this->resource->toArray(),
             'net' => number_format((float) $this->net, config('currency.precision')),
             'cost' => number_format((float) $this->cost, config('currency.precision')),
-            'tax_rate' => format_currency((float) $this->tax_rate),
-            'tax' => format_currency((float) $this->tax),
-            'gross' => format_currency((float) $this->gross),
             'updated_at' => $this->updated_at,
             'created_at' => $this->created_at,
         ];
