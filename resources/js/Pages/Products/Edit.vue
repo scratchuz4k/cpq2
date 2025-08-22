@@ -18,29 +18,34 @@ const props = defineProps({
     price_plans: Object
 });
 
+const product = reactive({
+    ...props.product,
+    expires_at: props.product.expires_at ? new Date(props.product.expires_at) : null
+});
+
 const price = reactive({
     code: null,
     cost: 0,
     net: 0,
-    product_id: props.product.id
+    product_id: product.id
 });
 
 const showModal = ref(false);
-const prices = ref(props.product.prices);
-const category = ref(props.product.category ?? null);
+const prices = ref(product.prices);
+const category = ref(product.category ?? null);
 const editingRows = ref([]);
 
 const saveProduct = () => {
     let temp = {
-        ...props.product,
-        expires_at: DateTime.fromJSDate(props.product?.expires_at).toISO() ?? null,
-        supplier_id: props.product.supplier?.id ?? null,
-        brand_id: props.product.brand?.id ?? null,
-        parent_id: props.product.parent?.id ?? null,
+        ...product,
+        expires_at: product.expires_at ? DateTime.fromJSDate(product.expires_at).toISO() : null,
+        supplier_id: product.supplier?.id ?? null,
+        brand_id: product.brand?.id ?? null,
+        parent_id: product.parent?.id ?? null,
         category_id: category.value?.id ?? null
     };
 
-    router.put(`/products/${props.product.id}`, temp, {
+    router.put(`/products/${product.id}`, temp, {
         onSuccess: (page) => {
             notyf.success('Updated with Success');
         },
@@ -160,7 +165,6 @@ const items = ref([
 
                             <div class="mb-5">
                                 <label for="product-expires_at" class="form-label">Expires At:</label>
-
                                 <DatePicker
                                     id="expire-date"
                                     class="w-100"

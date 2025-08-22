@@ -29,7 +29,7 @@ class ProductsService
     {
         $product->update([
             ...$array,
-            'expires_at' => Carbon::parse($array['expires_at'])->endOfDay(),
+            'expires_at' => $array['expires_at'] ? Carbon::parse($array['expires_at'])->endOfDay() : null,
             'category_id' => array_key_exists('category_id', $array) && ! is_null($array['category_id']) ? $array['category_id'] : $product->category_id,
         ]);
 
