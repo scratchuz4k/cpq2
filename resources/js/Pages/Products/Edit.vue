@@ -12,6 +12,8 @@ import Dialog from 'primevue/dialog';
 import ToggleSwitch from 'primevue/toggleswitch';
 import Select from 'primevue/select';
 import { DateTime } from 'luxon';
+import _ from 'lodash';
+import format from '@/Composables/format.js';
 
 const props = defineProps({
     product: Object,
@@ -134,6 +136,21 @@ const items = ref([
                     </div>
                     <div class="row my-4">
                         <div class="col-6">
+                            <div class="mb-3 d-flex flex-column">
+                                <label class="form-label" for="product-status"> Status: </label>
+                                <div>
+                                    <span
+                                        v-tooltip
+                                        data-bs-toggle="tooltip"
+                                        data-bs-placement="top"
+                                        data-bs-html="true"
+                                        :data-bs-original-title="'This product is ' + product.status"
+                                        class="badge border border-primary text-primary opacity-75 ms-1 lh-sm"
+                                    >
+                                        {{ product.status }}
+                                    </span>
+                                </div>
+                            </div>
                             <div class="mb-3 d-flex flex-column">
                                 <label class="form-label" for="active-filter"> Active: </label>
                                 <ToggleSwitch id="active-filter" v-model="product.is_active">
