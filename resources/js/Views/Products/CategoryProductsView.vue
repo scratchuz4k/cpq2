@@ -49,6 +49,11 @@ const getProducts = async () => {
             value: props.category.id
         },
         {
+            column: 'status',
+            operator: 'equals',
+            value: 'Active'
+        },
+        {
             group: [
                 { column: 'parent_id', operator: 'in', value: [...quote.items.map((x) => x.product_id)] },
                 { column: 'parent_id', operator: 'is_null', value: '', function: 'orWhere' }
