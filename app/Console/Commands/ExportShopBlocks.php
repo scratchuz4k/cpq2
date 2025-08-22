@@ -33,7 +33,7 @@ class ExportShopBlocks extends Command
         Log::withContext(['signature' => $this->signature]);
         Log::info('Job Started.');
 
-        $categoryId = $this->argument('category_id');
+        $categoryId = (int) $this->argument('category_id');
 
         $items = Product::when($categoryId, fn ($query) => $query->where('category_id', '=', $categoryId))->get();
         file_put_contents(storage_path('mocks/shopblocks.products.json'), json_encode($items->toArray()));
