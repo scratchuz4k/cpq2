@@ -3,6 +3,13 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link } from '@inertiajs/vue3';
 import { ref } from 'vue';
 
+const props = defineProps({
+    solution_types: {
+        type: Array,
+        default: []
+    }
+});
+
 const items = ref([{ label: 'Home', url: '/' }, { label: 'My Account', url: '/myaccount' }, { label: 'Products' }]);
 </script>
 <template>
@@ -36,12 +43,18 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'My Account', url: '/my
                         { data: 'parent.name', title: 'Parent', style: 'width:12%' },
                         { data: 'category.name', title: 'Category', style: 'width:12%' },
                         {
-                            data: 'category.solution_type.solution_type.name',
+                            data: 'category.solution_type.name',
                             title: 'Solution Type',
                             style: 'width:12%'
                         },
                         { data: 'updated_at', title: 'Updated At', style: 'width:15%' }
                     ]"
+                    :filters="{
+                        'category.solution_type.name': {
+                            type: 'options',
+                            options: solution_types.map((x) => x.name)
+                        }
+                    }"
                     route="/products"
                 >
                     <template #updated_at="{ value }">

@@ -42,13 +42,16 @@ const selectedParent = ref(null);
 const getProducts = async () => {
     meta.isLoading = true;
 
-    setTimeout(() => {}, 1000);
-
     let filters = [
         {
             column: 'category_id',
             operator: 'equals',
             value: props.category.id
+        },
+        {
+            column: 'status',
+            operator: 'equals',
+            value: 'Active'
         },
         {
             group: [

@@ -67,9 +67,6 @@ describe('User Parent can update a quote.cy', () => {
                         const last_step = parseInt(lastStepText.trim());
 
                         for (let i = current_step; i < last_step; i++) {
-                            cy.task('log', 'current-step: ' + current_step);
-                            cy.task('log', 'last-step: ' + last_step);
-                            cy.task('log', 'index: ' + i);
                             cy.get(`#btn-step-${i}-next`).click();
                         }
                     });
@@ -135,9 +132,6 @@ describe('User Parent can update a quote.cy', () => {
                             const last_step = parseInt(lastStepText.trim());
 
                             for (let i = current_step; i <= last_step; i++) {
-                                cy.task('log', 'current-step: ' + current_step);
-                                cy.task('log', 'last-step: ' + last_step);
-                                cy.task('log', 'index: ' + i);
                                 cy.get(`#next-step-btn`).click();
                             }
                         });

@@ -94,7 +94,7 @@ class QuoteItemController extends BaseController
 
         $quoteItem->delete();
 
-        // delete all items with the same parent_id
+        // delete all items with descendant products
         if ($descendants->isNotEmpty()) {
             $quote->items()
                 ->whereIn('product_id', $descendants->pluck('id'))

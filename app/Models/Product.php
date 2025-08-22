@@ -43,7 +43,12 @@ class Product extends Model
         static::addGlobalScope(new TenantScope);
 
         static::saving(function (Product $product) {
-            $product->status = Product::resolveStatus($product);
+            $status = Product::resolveStatus($product);
+
+            if ($status === ProductStatusesEnum::RETIRED->value) {
+                $product->is_active = false;
+            }
+            $product->status = $status;
         });
     }
 
