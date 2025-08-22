@@ -20,18 +20,15 @@ class PriceFactory extends Factory
      */
     public function definition()
     {
+        $code = $this->faker->unique()->randomNumber;
         $net = $this->faker->randomFloat(2, 1, 1000);
-        $tax_rate = $this->faker->randomFloat(2, 0.01, 0.50);
-        $tax = round($net * $tax_rate, 2);
-        $gross = round($net + $tax, 2);
+        $cost = $this->faker->randomFloat(2, 1, 1000);
 
         return [
             'tenant_id' => 1,
-            'code' => 1,
-            'tax_rate' => $tax_rate,
+            'code' => $code,
             'net' => $net,
-            'tax' => $tax,
-            'gross' => $gross,
+            'cost' => $cost,
             'product_id' => Product::factory()->create(),
         ];
     }

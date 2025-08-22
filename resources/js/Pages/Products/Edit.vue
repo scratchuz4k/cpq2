@@ -63,8 +63,8 @@ const savePrice = async () => {
     try {
         let res = await axios.post(`/api/prices`, {
             ...price,
-            net: price.net ?? 0,
-            tax_rate: price.tax_rate ?? 0
+            net: parseFloat(price.net) ?? 0,
+            cost: parseFloat(price.cost) ?? 0
         });
         prices.value.push(res.data.data);
         showModal.value = !showModal.value;
@@ -95,8 +95,8 @@ const onRowEditSave = async (event) => {
     let { newData, index } = event;
     try {
         let res = await axios.put(`/api/prices/${newData.id}`, {
-            tax_rate: newData.tax_rate,
-            net: newData.net
+            cost: parseFloat(newData.cost),
+            net: parseFloat(newData.net)
         });
         prices.value[index] = res.data.data;
         notyf.success('Updated with success');
@@ -172,7 +172,7 @@ const items = ref([
                                     placeholder="Expires At"
                                     showIcon
                                     iconDisplay="input"
-                                    dateFormat="mm/dd/yy"
+                                    dateFormat="dd/mm/yy"
                                 />
                             </div>
 
@@ -250,7 +250,7 @@ const items = ref([
                 <tab title="Prices" v-if="hasRole('Super Admin') || can('viewAny price')">
                     <div class="my-3">
                         <p>
-                            Here are the available prices for this product, including details like tax and gross value.
+                            Here are the available prices for this product, including details like cost and net value.
                         </p>
                     </div>
                     <div class="row my-4">

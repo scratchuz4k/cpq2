@@ -20,7 +20,7 @@ const props = defineProps({
 
 const price = reactive({
     code: null,
-    tax_rate: 0,
+    cost: 0,
     net: 0
 });
 
@@ -67,12 +67,10 @@ const saveProduct = () => {
 };
 
 const savePrice = async () => {
-    price.tax = parseFloat((price.net * (price.tax_rate / 100)).toFixed(2));
-    price.gross = parseFloat((price.net * (1 + price.tax_rate / 100)).toFixed(2));
     let temp = {};
     Object.assign(temp, price);
     product.prices.push(temp);
-    Object.assign(price, { code: null, tax_rate: 0, net: 0, tax: 0, gross: 0 });
+    Object.assign(price, { code: null, cost: 0, net: 0 });
     showModal.value = !showModal.value;
 };
 
@@ -90,10 +88,6 @@ const deletePrice = async (id) => {
 
 const onRowEditSave = async (event) => {
     let { newData, index } = event;
-
-    newData.tax = parseFloat((newData.net * (newData.tax_rate / 100)).toFixed(2));
-    newData.gross = parseFloat((newData.net * (1 + newData.tax_rate / 100)).toFixed(2));
-
     product.prices[index] = newData;
 };
 
@@ -163,7 +157,7 @@ const items = ref([
                                 placeholder="Expires At"
                                 showIcon
                                 iconDisplay="input"
-                                dateFormat="mm/dd/yy"
+                                dateFormat="dd/mm/yy"
                             />
                         </div>
                         <h4>Relations</h4>
@@ -238,7 +232,7 @@ const items = ref([
                 <tab title="Prices" v-if="hasRole('Super Admin') || can('viewAny price')">
                     <div class="my-3">
                         <p>
-                            Here are the available prices for this product, including details like tax and gross value.
+                            Here are the available prices for this product, including details like cost and net value.
                         </p>
                     </div>
                     <div class="row my-4">
