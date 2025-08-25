@@ -1,6 +1,6 @@
 <script setup>
 import _ from 'lodash';
-import { quote } from '@composables/useQuote';
+import { quote, setQuote } from '@composables/useQuote';
 import axios from 'axios';
 import { router, usePage } from '@inertiajs/vue3';
 import { ref } from 'vue';
@@ -56,6 +56,8 @@ const params = new Proxy(urlParams, {
 });
 const step = ref(params['step'] ?? 0);
 
+setQuote(props.modelValue);
+
 const saveQuote = async () => {
     if (step.value == active_categories.value.length) {
         router.get(`/quotes/${props.modelValue.id}`);
@@ -65,10 +67,8 @@ const saveQuote = async () => {
 };
 
 const getHardwareProductsCount = () => {
-    if (!quote.items) {
-        return 0;
-    }
-    return quote.items.filter((x) => !x.product_id).reduce((acc, i) => (acc += i.quantity), 0);
+    let items = [...quote.items];
+    return items.filter((x) => !x.product_id).reduce((acc, i) => (acc += i.quantity), 0);
 };
 
 getCategoriesWithProducts();
@@ -137,15 +137,15 @@ getCategoriesWithProducts();
                                 </div>
                             </div>
                         </div>
-                        <h4>{{ active_categories.length + 1 }}. Add-ons</h4>
-                        <div class="sidebar_add_ons mb-3">
+                        <h4>{{ active_categories.length + 1 }}. Handsets</h4>
+                        <!--<div class="sidebar_add_ons mb-3">
                             <div class="item mb-2">
                                 <span>Hardware</span
                                 ><span class="badge bg-light-grey dark">
                                     {{ getHardwareProductsCount() }}
                                 </span>
                             </div>
-                        </div>
+                        </div>-->
                         <button id="next-step-btn" class="btn btn-primary mt-2" @click="saveQuote()">Next</button>
                     </div>
                 </div>

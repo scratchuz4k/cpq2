@@ -165,8 +165,8 @@ watch(
 </script>
 <template>
     <div id="mobile_step_shopblocks" class="step">
-        <div class="d-flex justify-content-between mb-4">
-            <h2 class="m-0">Finally, choose your handsets</h2>
+        <div class="d-flex justify-content-between mb-3">
+            <h3 class="mb-0">{{ step }}. Handsets</h3>
             <p class="bigger text-primary bold">
                 STEP
                 <span id="current-step">{{ step }}</span>

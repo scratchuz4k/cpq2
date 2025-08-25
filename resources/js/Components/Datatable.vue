@@ -386,6 +386,10 @@ getData();
     padding: 0.5rem 0.5rem !important;
 }
 
+.p-datatable .p-datatable-empty-message td:not(.p-0) {
+    padding: 0.25rem 0.5rem !important;
+}
+
 .sortable:hover {
     text-decoration: underline;
 }

@@ -36,9 +36,9 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'My Account', url: '/my
                     :columns="[
                         { data: 'id', title: '#', style: 'width:5%' },
                         { data: 'is_active', title: 'Active', style: 'width:5%' },
-                        { data: 'code', title: 'Code', style: 'width:20%' },
-                        { data: 'name', title: 'Name' },
-                        { data: 'solution_type.name', title: 'Solution Type', style: 'width:12%' },
+                        { data: 'code', title: 'Code', style: 'width:10%' },
+                        { data: 'name', title: 'Name', style: 'width:25%' },
+                        { data: 'solution_type.name', title: 'Solution Type', style: 'width:15%' },
                         { data: 'created_at', title: 'Created At', style: 'width:15%' },
                         { data: 'updated_at', title: 'Updated At', style: 'width:15%' }
                     ]"

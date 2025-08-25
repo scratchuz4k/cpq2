@@ -50,10 +50,10 @@ const items = ref([
                         { data: 'id', title: '#', style: 'width:5%' },
                         { data: 'is_active', title: 'Active', style: 'width:5%' },
                         { data: 'solution_type.code', title: 'Code', style: 'width:10%' },
-                        { data: 'solution_type.name', title: 'Name', style: 'width:40%' },
+                        { data: 'solution_type.name', title: 'Name', style: 'width:35%' },
                         { data: 'created_at', title: 'Created At', style: 'width:15%' },
                         { data: 'updated_at', title: 'Updated At', style: 'width:15%' },
-                        { data: 'actions', title: '', style: 'width:13%' },
+                        { data: 'actions', title: '', style: 'width:10%' },
                         { data: 'solution_type.id', hide: true }
                     ]"
                     route="/solution-types"

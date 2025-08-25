@@ -37,9 +37,9 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'My Account', url: '/my
                         link: false
                     }"
                     :columns="[
-                        { data: 'sku', title: 'SKU', style: 'width:20%' },
+                        { data: 'status', title: 'Status', style: 'width:4%' },
+                        { data: 'sku', title: 'SKU', style: 'width:10%' },
                         { data: 'name', title: 'Name', style: 'width:25%' },
-                        { data: 'status', title: 'Status', style: 'width:5%' },
                         { data: 'parent.name', title: 'Parent', style: 'width:12%' },
                         { data: 'category.name', title: 'Category', style: 'width:12%' },
                         {
@@ -57,6 +57,14 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'My Account', url: '/my
                     }"
                     route="/products"
                 >
+                    <template #status="{ value }">
+                        <span class="badge text-bg-secondary">{{ value }}</span>
+                    </template>
+                    <template #parent.name="{ value }">
+                        <span class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm">{{
+                            value
+                        }}</span>
+                    </template>
                     <template #updated_at="{ value }">
                         {{ format.date(value) }}
                     </template>
