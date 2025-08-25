@@ -1,6 +1,6 @@
 <script setup>
 import _ from 'lodash';
-import { quote, setQuote } from '@composables/useQuote';
+import { quote } from '@composables/useQuote';
 import axios from 'axios';
 import { router, usePage } from '@inertiajs/vue3';
 import { ref } from 'vue';
@@ -56,8 +56,6 @@ const params = new Proxy(urlParams, {
 });
 const step = ref(params['step'] ?? 0);
 
-setQuote(props.modelValue);
-
 const saveQuote = async () => {
     if (step.value == active_categories.value.length) {
         router.get(`/quotes/${props.modelValue.id}`);
@@ -67,8 +65,10 @@ const saveQuote = async () => {
 };
 
 const getHardwareProductsCount = () => {
-    let items = [...quote.items];
-    return items.filter((x) => !x.product_id).reduce((acc, i) => (acc += i.quantity), 0);
+    if (!quote.items) {
+        return 0;
+    }
+    return quote.items.filter((x) => !x.product_id).reduce((acc, i) => (acc += i.quantity), 0);
 };
 
 getCategoriesWithProducts();
