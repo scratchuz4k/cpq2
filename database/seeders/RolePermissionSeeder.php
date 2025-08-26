@@ -79,7 +79,7 @@ class RolePermissionSeeder extends Seeder
                     'spa', 'user', 'solution_type', 'api', 'price_plan', 'activity', 'email_template', 'email_history',
                     'group', 'blacklist',
                 ],
-                'simple_permission' => [],
+                'simple_permission' => ['viewAny export'],
             ],
             'Support Agent' => [
                 'parent' => 'Company Admin',
@@ -183,7 +183,7 @@ class RolePermissionSeeder extends Seeder
             }
         }
 
-        $sAdmin = User::where('email', 'super@example.com')->first();
+        $sAdmin = User::where('email', env('SUPERUSER_EMAIL', 'super@example.com'))->first();
         $sAdmin->assignRole('Super Admin');
     }
 }

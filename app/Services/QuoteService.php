@@ -77,7 +77,7 @@ class QuoteService
 
     public function generatePdf(Request $request, Quote $quote, $disk = 'temp')
     {
-        $tenant = $quote->tenant->makeCurrent();
+        $tenant = (new \App\Http\Resources\TenantResource($quote->tenant))->resolve();
         $dir = 'pdf/'.$quote->tenant->id;
 
         if (! Storage::makeDirectory($dir)) {

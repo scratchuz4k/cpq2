@@ -44,10 +44,6 @@ class UsersService
             $array['password'] = $user->password;
         }
 
-        if (array_key_exists('parent_id', $array) && $array['parent_id'] == 0) {
-            $array['parent_id'] = null;
-        }
-
         $user->update($array);
 
         if (array_key_exists('role_id', $array)) {

@@ -47,8 +47,8 @@ class SsoController extends Controller
             ]);
         }
 
-        $ssoXmlContent = Storage::disk('public')->get($resourceFile->getRouteValue());
-        if (! simplexml_load_string((string) $ssoXmlContent)) {
+        $ssoXmlContent = safeXmlParse(Storage::disk('public')->get($resourceFile->getRouteValue()));
+        if (! $ssoXmlContent) {
             return back()->with([
                 'status' => __('The SSO configuration found for your domain is invalid'),
             ]);
@@ -61,6 +61,7 @@ class SsoController extends Controller
             return Inertia::location(Socialite::driver('saml2')->redirect());
         } catch (\Exception $e) {
             Log::debug('Error on socialite saml2 redirect: '.$e->getMessage());
+            Cache::forget('saml2.metadata');
 
             return back()->with([
                 'status' => __('An error occurred while redirecting to your SSO provider, please contact your administrator'),

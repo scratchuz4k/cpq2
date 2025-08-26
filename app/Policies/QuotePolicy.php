@@ -16,6 +16,7 @@ class QuotePolicy
     private array $statusToBlockQuotes = [
         QuoteStatusesEnum::REGISTRY->name,
         QuoteStatusesEnum::SUBMITTED->name,
+        QuoteStatusesEnum::EXPIRED->name,
     ];
 
     public function viewAny(User $user): bool

@@ -2,6 +2,7 @@
 
 use App\Models\Order;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 
 if (! function_exists('format_date')) {
     /**
@@ -66,5 +67,34 @@ if (! function_exists('formated_date_range')) {
         return $start_date->greaterThan($end_date)
             ? [$end_date, $start_date]
             : [$start_date, $end_date];
+    }
+}
+
+if (! function_exists('safeXmlParse')) {
+    function safeXmlParse(string $xmlString)
+    {
+        // TODO When available use LIBXML_NO_XXE verification to prevent xxe injection (Ubuntu 22.04 LTS only provides
+        // XML Lib version 2.9.4 and LIBXML_NO_XXE needs XML Lib version >2.13.0 which is not stable yet)
+        libxml_use_internal_errors(true);
+        $dom = new \DOMDocument;
+        $dom->resolveExternals = false;
+        $dom->substituteEntities = false;
+
+        if (! $dom->loadXML($xmlString, LIBXML_NONET)) {
+            foreach (libxml_get_errors() as $error) {
+                Log::warning(sprintf(
+                    'XML parse error (level %d): %s at line %d column %d',
+                    $error->level,
+                    trim($error->message),
+                    $error->line,
+                    $error->column
+                ));
+            }
+            libxml_clear_errors();
+
+            return null;
+        }
+
+        return simplexml_import_dom($dom)->asXML() ?: null;
     }
 }

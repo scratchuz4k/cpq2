@@ -118,6 +118,7 @@ const submit = () => {
                                 <div class="mb-2">
                                     <div class="d-grid">
                                         <a
+                                            id="login-sso-btn"
                                             :href="route('login.sso')"
                                             class="btn btn-outline-secondary d-flex align-items-center"
                                         >

@@ -8,7 +8,7 @@ const account = { ref: generateHash(temp), name: temp };
 
 describe('Blacklist Crud', () => {
     beforeEach(() => {
-        cy.login('super@example.com', 'werwerwer');
+        cy.login(Cypress.env('SUPERUSER_EMAIL'), Cypress.env('SUPERUSER_PASSWORD'));
     });
 
     it('Create a Blacklist Item', () => {

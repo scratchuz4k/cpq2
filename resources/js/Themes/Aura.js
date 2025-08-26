@@ -814,6 +814,13 @@ const AuraReformed = definePreset(Aura, {
                     selected: { background: '{surface.100}', color: '{text.color}' }
                 }
             }
+        },
+        timeline: {
+            event: {
+                min: {
+                    height: '4rem'
+                }
+            }
         }
     }
 });

@@ -4,7 +4,7 @@ const user = { name: slugify(temp), email: slugify(temp) + '@email.com', passwor
 
 describe('Create Order Manager User.cy', () => {
     it('Creates Order Manager User', () => {
-        cy.login('super@example.com', 'werwerwer');
+        cy.login(Cypress.env('SUPERUSER_EMAIL'), Cypress.env('SUPERUSER_PASSWORD'));
         cy.visit('/users');
         cy.get('#link-to-create-user').click();
 
