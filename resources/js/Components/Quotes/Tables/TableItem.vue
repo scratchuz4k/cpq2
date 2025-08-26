@@ -71,7 +71,10 @@ const getComponent = (column) => {
 emitter.on('quote-items:toggle:is-editing', () => (item.value.is_editing = false));
 </script>
 <template>
-    <tr :class="['item-row', props.code + '-item', isChild ? 'child-bg' : '']" :style="{ 'vertical-align': 'middle' }">
+    <tr
+        :class="['item-row', props.code + '-item', isChild ? 'child-bg' : '', !item.is_margin_valid ? 'red-bg' : '']"
+        :style="{ 'vertical-align': 'middle' }"
+    >
         <template v-for="column in columns">
             <td v-if="!groupColumns.find((x) => x.value == column.value)" :class="[`column-${column.value}-body`]">
                 <component
@@ -129,5 +132,9 @@ emitter.on('quote-items:toggle:is-editing', () => (item.value.is_editing = false
 <style>
 .child-bg > td {
     background-color: whitesmoke !important;
+}
+.red-bg > td {
+    border-bottom: 2px solid red !important;
+    background: rgb(247, 169, 169) !important;
 }
 </style>

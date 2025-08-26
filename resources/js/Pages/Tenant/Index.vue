@@ -13,18 +13,20 @@ const props = defineProps({
 });
 
 const isLoading = ref(false);
-const event = ref(null);
 const tenant = reactive({
     ...props.tenant,
     configurations: {
         orders_flow_is_active: props.tenant.configurations.orders_flow_is_active ?? '0',
         log_system_is_active: props.tenant.configurations.log_system_is_active ?? '0',
         restrict_account_management_is_active: props.tenant.configurations.restrict_account_management_is_active ?? '0',
-        quote_expiration_days: props.tenant.configurations.quote_expiration_days ?? 30
+        quote_expiration_days: props.tenant.configurations.quote_expiration_days ?? 30,
+        quote_margin_rules_active: props.tenant.configurations.quote_margin_rules_active ?? '0',
+        quote_margin_rules_value: props.tenant.configurations.quote_margin_rules_value
+            ? Number(props.tenant.configurations.quote_margin_rules_value)
+            : 1,
+        quote_margin_rules_operation: props.tenant.configurations.quote_margin_rules_operation ?? 'percentage'
     }
 });
-
-const item = ref(null);
 
 const submitFileForm = async () => {
     isLoading.value = true;
@@ -82,7 +84,9 @@ const submitTenantSettings = async () => {
     try {
         let res = await axios.put(`/api/tenants/` + tenant.id, tenant);
         Object.assign(tenant, res.data);
-        notyf.success('Content updated successfully');
+        tenant.configurations.quote_margin_rules_value = tenant.configurations.quote_margin_rules_value
+            ? Number(tenant.configurations.quote_margin_rules_value)
+            : 1;
     } catch (err) {
         notyf.error(err?.response?.data?.message ?? 'Something went wrong');
     } finally {
@@ -100,6 +104,12 @@ const onQuoteDaysInput = _.debounce(() => {
     submitTenantSettings();
 }, 1000);
 
+const setMarginDefaults = () => {
+    tenant.configurations.quote_margin_rules_value =
+        tenant.configurations.quote_margin_rules_operation == 'percentage' ? 25 : 500;
+    submitTenantSettings();
+};
+
 const items = ref([{ label: 'Home', url: '/' }, { label: 'My Account', url: '/myaccount' }, { label: 'Tenants' }]);
 </script>
 
@@ -108,9 +118,10 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'My Account', url: '/my
     <AuthenticatedLayout>
         <div class="panel">
             <Header title="Tenants" :breadcrumbs="items"></Header>
-            <div class="containter">
-                <div class="row">
-                    <div class="d-flex align-items-start">
+
+            <tabs>
+                <tab :selected="true" title="General">
+                    <div class="d-flex align-items-start mt-5">
                         <div
                             class="nav flex-column nav-pills me-3"
                             id="v-pills-tab"
@@ -140,18 +151,6 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'My Account', url: '/my
                                 aria-selected="false"
                             >
                                 Logo
-                            </button>
-                            <button
-                                class="nav-link"
-                                id="v-pills-orders-tab"
-                                data-bs-toggle="pill"
-                                data-bs-target="#v-pills-orders"
-                                type="button"
-                                role="tab"
-                                aria-controls="v-pills-orders"
-                                aria-selected="false"
-                            >
-                                Settings
                             </button>
                         </div>
                         <div class="tab-content ps-3 w-100" id="v-pills-tabContent">
@@ -227,174 +226,199 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'My Account', url: '/my
                                     </div>
                                 </div>
                             </div>
-                            <div
-                                class="tab-pane fade"
-                                id="v-pills-orders"
-                                role="tabpanel"
-                                aria-labelledby="v-pills-orders-tab"
-                            >
-                                <div class="col xml-in-tabs">
-                                    <div class="d-flex">
-                                        <div class="orders-form w-100">
-                                            <h4>Settings</h4>
-                                            <div class="row row-cols-4 mt-4">
-                                                <div class="card bg-light border-0 settings-block m-2">
-                                                    <div class="card-body">
-                                                        <h6 class="fw-bold">Orders Flow</h6>
-                                                        <div class="orders_flow_is_active">
-                                                            <div>
-                                                                <label
-                                                                    for="active-orders-flow"
-                                                                    class="form-label lh-sm small pb-2"
-                                                                >
-                                                                    <i
-                                                                        >If this setting is active, the order management
-                                                                        will be activated.</i
-                                                                    >
-                                                                </label>
-                                                            </div>
-                                                            <div>
-                                                                <ToggleSwitch
-                                                                    id="active-orders-flow"
-                                                                    v-model="
-                                                                        tenant.configurations.orders_flow_is_active
-                                                                    "
-                                                                    @change="submitTenantSettings"
-                                                                    trueValue="1"
-                                                                    falseValue="0"
-                                                                    binary
-                                                                >
-                                                                    <template #handle>
-                                                                        <font-awesome-icon
-                                                                            :icon="
-                                                                                tenant.configurations
-                                                                                    .orders_flow_is_active === '1'
-                                                                                    ? ['fas', 'circle-check']
-                                                                                    : ['far', 'circle-xmark']
-                                                                            "
-                                                                            class="text-primary"
-                                                                        />
-                                                                    </template>
-                                                                </ToggleSwitch>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="card bg-light border-0 settings-block m-2">
-                                                    <div class="card-body">
-                                                        <h6 class="fw-bold">Log System</h6>
-                                                        <div class="log_system_is_active">
-                                                            <div>
-                                                                <label
-                                                                    for="log-system-is-active"
-                                                                    class="form-label lh-sm small pb-2"
-                                                                >
-                                                                    <i
-                                                                        >If this setting is active, the activate the log
-                                                                        system</i
-                                                                    >
-                                                                </label>
-                                                            </div>
-                                                            <div>
-                                                                <ToggleSwitch
-                                                                    id="log-system-is-active"
-                                                                    v-model="tenant.configurations.log_system_is_active"
-                                                                    @change="submitTenantSettings"
-                                                                    trueValue="1"
-                                                                    falseValue="0"
-                                                                    binary
-                                                                >
-                                                                    <template #handle>
-                                                                        <font-awesome-icon
-                                                                            :icon="
-                                                                                tenant.configurations
-                                                                                    .log_system_is_active === '1'
-                                                                                    ? ['fas', 'circle-check']
-                                                                                    : ['far', 'circle-xmark']
-                                                                            "
-                                                                            class="text-primary"
-                                                                        />
-                                                                    </template>
-                                                                </ToggleSwitch>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="card bg-light border-0 settings-block m-2">
-                                                    <div class="card-body">
-                                                        <h6 class="fw-bold">Account Management</h6>
-                                                        <div class="restrict_account_management_is_active">
-                                                            <div>
-                                                                <label
-                                                                    for="active-orders-flow"
-                                                                    class="form-label lh-sm small pb-2"
-                                                                >
-                                                                    <i>
-                                                                        If this setting is active, users will be
-                                                                        restricted from managing accounts
-                                                                    </i>
-                                                                </label>
-                                                            </div>
-                                                            <div>
-                                                                <ToggleSwitch
-                                                                    id="active-orders-flow"
-                                                                    v-model="
-                                                                        tenant.configurations
-                                                                            .restrict_account_management_is_active
-                                                                    "
-                                                                    @change="submitTenantSettings"
-                                                                    trueValue="1"
-                                                                    falseValue="0"
-                                                                    binary
-                                                                >
-                                                                    <template #handle>
-                                                                        <font-awesome-icon
-                                                                            :icon="
-                                                                                tenant.configurations
-                                                                                    .restrict_account_management_is_active ===
-                                                                                '1'
-                                                                                    ? ['fas', 'circle-check']
-                                                                                    : ['far', 'circle-xmark']
-                                                                            "
-                                                                            class="text-primary"
-                                                                        />
-                                                                    </template>
-                                                                </ToggleSwitch>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="card bg-light border-0 settings-block m-2">
-                                                    <div class="card-body">
-                                                        <h6 class="fw-bold">Quote expire days</h6>
-                                                        <div class="quote-expiration-days">
-                                                            <div>
-                                                                <label
-                                                                    for="quote-expiration-days"
-                                                                    class="form-label lh-sm small pb-2"
-                                                                >
-                                                                    <i>
-                                                                        Set the number of days a quote takes to expire.
-                                                                        (Should be a number between 1 and 365)
-                                                                    </i>
-                                                                </label>
-                                                            </div>
-                                                            <div>
-                                                                <InputText
-                                                                    type="number"
-                                                                    class="w-100"
-                                                                    id="quote-expiration-days"
-                                                                    v-model="
-                                                                        tenant.configurations.quote_expiration_days
-                                                                    "
-                                                                    :min="1"
-                                                                    :max="365"
-                                                                    @input="onQuoteDaysInput"
-                                                                />
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
+                        </div>
+                    </div>
+                </tab>
+                <tab title="Settings">
+                    <div class="col xml-in-tabs">
+                        <div class="seperator">Misc</div>
+                        <div class="row row-cols-4">
+                            <div class="card bg-light border-0 settings-block m-2">
+                                <div class="card-body">
+                                    <h6 class="fw-bold">Orders Flow</h6>
+                                    <div class="orders_flow_is_active">
+                                        <div>
+                                            <label for="active-orders-flow" class="form-label lh-sm small pb-2">
+                                                <i
+                                                    >If this setting is active, the order management will be
+                                                    activated.</i
+                                                >
+                                            </label>
+                                        </div>
+                                        <div>
+                                            <ToggleSwitch
+                                                id="active-orders-flow"
+                                                v-model="tenant.configurations.orders_flow_is_active"
+                                                @change="submitTenantSettings"
+                                                trueValue="1"
+                                                falseValue="0"
+                                                binary
+                                            >
+                                                <template #handle>
+                                                    <font-awesome-icon
+                                                        :icon="
+                                                            tenant.configurations.orders_flow_is_active === '1'
+                                                                ? ['fas', 'circle-check']
+                                                                : ['far', 'circle-xmark']
+                                                        "
+                                                        class="text-primary"
+                                                    />
+                                                </template>
+                                            </ToggleSwitch>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card bg-light border-0 settings-block m-2">
+                                <div class="card-body">
+                                    <h6 class="fw-bold">Log System</h6>
+                                    <div class="log_system_is_active">
+                                        <div>
+                                            <label for="log-system-is-active" class="form-label lh-sm small pb-2">
+                                                <i> If this setting is active, the activate the log system </i>
+                                            </label>
+                                        </div>
+                                        <div>
+                                            <ToggleSwitch
+                                                id="log-system-is-active"
+                                                v-model="tenant.configurations.log_system_is_active"
+                                                @change="submitTenantSettings"
+                                                trueValue="1"
+                                                falseValue="0"
+                                                binary
+                                            >
+                                                <template #handle>
+                                                    <font-awesome-icon
+                                                        :icon="
+                                                            tenant.configurations.log_system_is_active === '1'
+                                                                ? ['fas', 'circle-check']
+                                                                : ['far', 'circle-xmark']
+                                                        "
+                                                        class="text-primary"
+                                                    />
+                                                </template>
+                                            </ToggleSwitch>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card bg-light border-0 settings-block m-2">
+                                <div class="card-body">
+                                    <h6 class="fw-bold">Account Management</h6>
+                                    <div class="restrict_account_management_is_active">
+                                        <div>
+                                            <label for="active-orders-flow" class="form-label lh-sm small pb-2">
+                                                <i>
+                                                    If this setting is active, users will be restricted from managing
+                                                    accounts
+                                                </i>
+                                            </label>
+                                        </div>
+                                        <div>
+                                            <ToggleSwitch
+                                                id="active-orders-flow"
+                                                v-model="tenant.configurations.restrict_account_management_is_active"
+                                                @change="submitTenantSettings"
+                                                trueValue="1"
+                                                falseValue="0"
+                                                binary
+                                            >
+                                                <template #handle>
+                                                    <font-awesome-icon
+                                                        :icon="
+                                                            tenant.configurations
+                                                                .restrict_account_management_is_active === '1'
+                                                                ? ['fas', 'circle-check']
+                                                                : ['far', 'circle-xmark']
+                                                        "
+                                                        class="text-primary"
+                                                    />
+                                                </template>
+                                            </ToggleSwitch>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="seperator">Quotes</div>
+                        <div class="row row-cols-4">
+                            <div class="card bg-light border-0 settings-block m-2">
+                                <div class="card-body">
+                                    <h6 class="fw-bold">Quote expire days</h6>
+                                    <div class="quote-expiration-days">
+                                        <div>
+                                            <label for="quote-expiration-days" class="form-label lh-sm small pb-2">
+                                                <i>
+                                                    Set the number of days a quote takes to expire. (Should be a number
+                                                    between 1 and 365)
+                                                </i>
+                                            </label>
+                                        </div>
+                                        <div>
+                                            <InputText
+                                                type="number"
+                                                class="w-100"
+                                                id="quote-expiration-days"
+                                                v-model="tenant.configurations.quote_expiration_days"
+                                                :min="1"
+                                                :max="365"
+                                                @input="onQuoteDaysInput"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card bg-light border-0 settings-block m-2">
+                                <div class="card-body">
+                                    <h6 class="fw-bold">Quote Margin Rules</h6>
+                                    <div class="quote-expiration-days">
+                                        <div>
+                                            <label for="quote-expiration-days" class="form-label lh-sm small pb-2">
+                                                <i> Activate this setting to set margin rules in the quote summary </i>
+                                            </label>
+                                        </div>
+                                        <div>
+                                            <ToggleSwitch
+                                                id="active-orders-flow"
+                                                v-model="tenant.configurations.quote_margin_rules_active"
+                                                @change="submitTenantSettings"
+                                                trueValue="1"
+                                                falseValue="0"
+                                                binary
+                                            >
+                                                <template #handle>
+                                                    <font-awesome-icon
+                                                        :icon="
+                                                            tenant.configurations.quote_margin_rules_active === '1'
+                                                                ? ['fas', 'circle-check']
+                                                                : ['far', 'circle-xmark']
+                                                        "
+                                                        class="text-primary"
+                                                    />
+                                                </template>
+                                            </ToggleSwitch>
+                                        </div>
+                                        <p class="mt-2">Margin value:</p>
+                                        <div class="row g-3 mb-3">
+                                            <div class="col">
+                                                <input
+                                                    type="number"
+                                                    class="form-control"
+                                                    v-model="tenant.configurations.quote_margin_rules_value"
+                                                    @input="onQuoteDaysInput"
+                                                    min="0"
+                                                    max="100"
+                                                />
+                                            </div>
+                                            <div class="col">
+                                                <select
+                                                    class="form-select"
+                                                    v-model="tenant.configurations.quote_margin_rules_operation"
+                                                    @change="setMarginDefaults()"
+                                                >
+                                                    <option value="percentage">%</option>
+                                                    <option value="value">£</option>
+                                                </select>
                                             </div>
                                         </div>
                                     </div>
@@ -402,8 +426,8 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'My Account', url: '/my
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
+                </tab>
+            </tabs>
         </div>
     </AuthenticatedLayout>
 </template>

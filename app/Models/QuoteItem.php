@@ -114,4 +114,19 @@ class QuoteItem extends Model
         $this->total_tax = format_currency($this->total * ($this->tax / 100));
         $this->total_gross = format_currency($this->total * (($this->tax / 100) + 1));
     }
+
+    public function isWithinMarginThresholds(): bool
+    {
+        $isActive = get_tenant_config('quote_margin_rules_active');
+
+        if (! is_null($isActive) || ! $isActive == '0') {
+            $margin = ($this->margin / $this->price) * 100;
+            $operation = get_tenant_config('quote_margin_rules_operation');
+            $value = (float) get_tenant_config('quote_margin_rules_value');
+
+            return $operation == 'percentage' ? $margin >= $value : $this->margin >= $value;
+        }
+
+        return true;
+    }
 }
