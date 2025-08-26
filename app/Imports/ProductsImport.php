@@ -3,11 +3,11 @@
 namespace App\Imports;
 
 use App\Http\Requests\ProductCreateRequest;
+use App\Models\Brand;
 use App\Models\Category;
 use App\Models\PricePlan;
 use App\Models\Product;
 use App\Models\Supplier;
-use App\Models\User;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
@@ -28,54 +28,54 @@ class ProductsImport implements ToCollection, WithBatchInserts, WithHeadingRow
     ];
 
     /**
-     * Recursively processes and inserts users with missing managers.
+     * Recursively processes and inserts products with missing parent_id.
      *
-     * @param  array  $usersWithManagers
+     * @param  array  $productsWhithParent
      * @return void
      */
-    private function processUsersWithManagers(?int $managerIndex = null)
+    private function processProductsWithParent(?int $parentIndex = null)
     {
 
-        if (empty($this->usersWithManagers)) {
+        if (empty($this->productsWithParent)) {
             return;
         }
-        if ($managerIndex !== null) {
-            $currentUser = $this->usersWithManagers[$managerIndex];
-            array_splice($this->usersWithManagers, $managerIndex, 1);
+        if ($parentIndex !== null) {
+            $currentProduct = $this->productsWithParent[$parentIndex];
+            array_splice($this->productsWithParent, $parentIndex, 1);
         } else {
-            $currentUser = array_shift($this->usersWithManagers);
+            $currentProduct = array_shift($this->productsWithParent);
         }
 
-        $manager = User::where('name', $currentUser['managername'])->first();
+        $product = Product::find($currentProduct['parent_id']);
 
-        if ($manager) {
-            $this->insertUser($currentUser, $manager->id);
+        if ($product) {
+            $this->insertProduct($currentProduct, $product->id);
         } else {
-            $managerKey = array_search($currentUser['managername'], array_column($this->usersWithManagers, 'name'), false);
+            $productKey = array_search($currentProduct['parent_id'], array_column($this->productsWithParent, 'id'), false);
 
-            if ($managerKey !== false) {
-                $this->processUsersWithManagers($managerKey);
+            if ($productKey !== false) {
+                $this->processProductsWithParent($productKey);
 
-                $newManager = User::where('name', $currentUser['managername'])->first();
-                if (! empty($newManager)) {
-                    $this->insertUser($currentUser, $newManager->id);
+                $newParent = Product::find($currentProduct['parent_id']);
+                if (! empty($newParent)) {
+                    $this->insertProduct($currentProduct, $newParent->id);
                 } else {
                     $this->results['skipped']++;
-                    $this->results['errors'][] = ['row' => $currentUser, 'error' => 'Manager "'.$currentUser['managername'].'" not found!'];
+                    $this->results['errors'][] = ['row' => $currentProduct, 'error' => 'Parent Product with id: "'.$currentProduct['parent_id'].'" not found!'];
                 }
             } else {
                 $this->results['skipped']++;
-                $this->results['errors'][] = ['row' => $currentUser, 'error' => 'Manager "'.$currentUser['managername'].'" not found!'];
+                $this->results['errors'][] = ['row' => $currentProduct, 'error' => 'Parent Product with id: "'.$currentProduct['parent_id'].'" not found!'];
             }
         }
 
-        if ($managerIndex === null) {
-            $this->processUsersWithManagers();
+        if ($parentIndex === null) {
+            $this->processProductsWithParent();
         }
     }
 
     /**
-     * Insert a new user with a specific manager.
+     * Insert a new product with a specific product.
      *
      * @return void
      */
@@ -97,13 +97,13 @@ class ProductsImport implements ToCollection, WithBatchInserts, WithHeadingRow
                 'sku' => $product['sku'] ?? '',
                 'name' => $product['name'] ?? '',
                 'description' => $product['description'] ?? '',
-                'expires_at' => $product['expires_at'] ?? null,
-                'is_active' => $product['is_active'] ? true : false,
-                'supplier_id' => Supplier::find($product['managername'])->first(),
-                'brand_id' => Supplier::find($product['managername'])->first(),
-                'price_plan_id' => PricePlan::find($product['managername'])->first(),
-                'category_id' => Category::find($product['managername'])->first(),
-                'parent_id' => '',
+                'expires_at' => (isset($product['expires_at']) && ! empty($product['expires_at'])) ? $product['expires_at'] : null,
+                'is_active' => (isset($product['is_active']) && ! empty($product['is_active'])) && (int) $product['is_active'] === 1 ? 1 : 0,
+                'supplier_id' => (isset($product['supplier_id']) && ! empty($product['supplier_id'])) ? Supplier::find($product['supplier_id'])->id : null,
+                'brand_id' => (isset($product['brand_id']) && ! empty($product['brand_id'])) ? Brand::find($product['brand_id'])->id : null,
+                'price_plan_id' => (isset($product['price_plan_id']) && ! empty($product['price_plan_id'])) ? PricePlan::find($product['price_plan_id'])->id : null,
+                'category_id' => (isset($product['category_id']) && ! empty($product['category_id'])) ? Category::find($product['category_id'])->id : null,
+                //                'parent_id' => '',
             ]);
 
             $newProduct->save();
@@ -121,13 +121,13 @@ class ProductsImport implements ToCollection, WithBatchInserts, WithHeadingRow
         foreach ($rows as $row) {
             $row = array_map(fn ($value) => trim((string) $value), $row->toArray());
             $this->results['processed']++;
-            if (empty($row['managername'])) {
+            if (empty($row['parent_id'])) {
                 $this->insertProduct($row);
             } else {
-                $this->usersWithManagers[] = $row;
+                $this->productsWithParent[] = $row;
             }
         }
-        $this->processUsersWithManagers();
+        $this->processProductsWithParent();
     }
 
     public function batchSize(): int
@@ -143,13 +143,5 @@ class ProductsImport implements ToCollection, WithBatchInserts, WithHeadingRow
     public function headingRow(): int
     {
         return 1;
-    }
-
-    public function rules(): array
-    {
-        return [
-            '*.email' => 'required|email|unique:users,email',
-            '*.name' => 'required|string|max:255',
-        ];
     }
 }
