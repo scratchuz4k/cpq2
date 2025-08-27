@@ -134,7 +134,10 @@ emitter.on('quote-items:toggle:is-editing', () => (item.value.is_editing = false
     background-color: whitesmoke !important;
 }
 .red-bg > td {
-    border-bottom: 2px solid red !important;
-    background: rgb(247, 169, 169) !important;
+    background: #f5cccc !important;
+}
+.red-bg > td:nth-child(1) {
+    border-width: 0;
+    border-left: 4px solid #dc3545 !important;
 }
 </style>
