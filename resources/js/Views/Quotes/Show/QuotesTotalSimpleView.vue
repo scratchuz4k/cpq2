@@ -3,8 +3,12 @@ import _ from 'lodash';
 import { ref } from 'vue';
 import { createOrder } from '@/Composables/useOrders.js';
 import { setQuote, quote } from '@composables/useQuote';
+import { usePage } from '@inertiajs/vue3';
 import { checkWarnings } from '@composables/warning.js';
 import WarningNote from '@/Components/WarningNote.vue';
+
+const page = usePage();
+const tenant = page.props.tenant;
 
 const props = defineProps({
     modelValue: Object,
@@ -21,6 +25,16 @@ const warningProviders = ref([
 ]);
 
 checkWarnings(warningProviders.value, null);
+
+const disableButtonSendToOrder = ref(false);
+const createOrderAndRedirect = async (id) => {
+    disableButtonSendToOrder.value = true;
+    const res = await createOrder(id);
+    if (res) {
+        window.location = '/dashboard';
+    }
+    disableButtonSendToOrder.value = false;
+};
 
 const items = ref([
     { label: 'Home', url: '/dashboard' },
@@ -57,23 +71,28 @@ const items = ref([
                     }
                 ]"
             ></ActivityDialog>
-            <ShareableQuote></ShareableQuote>
-            <button hidden class="btn btn-outline-primary me-2" @click="createOrder(quote.id)">
+            <ShareableQuote :disabled="quote.items.some((x) => !x.is_margin_valid)"></ShareableQuote>
+
+            <button
+                :hidden="!(tenant.configurations.orders_flow_is_active === '1')"
+                :disabled="disableButtonSendToOrder || quote.items.some((x) => !x.is_margin_valid)"
+                class="btn btn-primary me-2"
+                @click="createOrderAndRedirect(quote.id)"
+            >
                 <font-awesome-icon class="me-2" :icon="['fas', 'thumbtack']"> </font-awesome-icon>Send to Order
             </button>
-            <button v-if="modelValue.items.length == 0" class="btn btn-outline-primary me-2" type="button" disabled>
-                <font-awesome-icon :icon="['far', 'file-pdf']"></font-awesome-icon>
-                Preview PDF
-            </button>
             <a
-                v-else
                 class="btn btn-outline-primary me-2"
-                type="submit"
                 :href="route('quotes.preview', { quote: quote.id })"
+                v-if="!quote.items.some((x) => !x.is_margin_valid)"
             >
                 <font-awesome-icon :icon="['far', 'file-pdf']"></font-awesome-icon>
-                Preview PDF
+                Preview
             </a>
+            <button class="btn btn-outline-primary me-2" v-else disabled="true">
+                <font-awesome-icon :icon="['far', 'file-pdf']"></font-awesome-icon>
+                Preview
+            </button>
             <a :href="route('dashboard')" class="btn btn-primary" type="submit"> Save and close </a>
         </div>
     </div>
@@ -121,23 +140,27 @@ const items = ref([
                     }
                 ]"
             ></ActivityDialog>
-            <ShareableQuote></ShareableQuote>
-            <button hidden class="btn btn-outline-primary me-2" @click="createOrder(quote.id)">
+            <ShareableQuote :disabled="quote.items.some((x) => !x.is_margin_valid)"></ShareableQuote>
+            <button
+                :hidden="!(tenant.configurations.orders_flow_is_active === '1')"
+                :disabled="disableButtonSendToOrder || quote.items.some((x) => !x.is_margin_valid)"
+                class="btn btn-primary me-2"
+                @click="createOrderAndRedirect(quote.id)"
+            >
                 <font-awesome-icon class="me-2" :icon="['fas', 'thumbtack']"> </font-awesome-icon>Send to Order
             </button>
-            <button v-if="modelValue.items.length == 0" class="btn btn-outline-primary me-2" type="button" disabled>
-                <font-awesome-icon :icon="['far', 'file-pdf']"></font-awesome-icon>
-                Preview PDF
-            </button>
             <a
-                v-else
                 class="btn btn-outline-primary me-2"
-                type="submit"
                 :href="route('quotes.preview', { quote: quote.id })"
+                v-if="!quote.items.some((x) => !x.is_margin_valid)"
             >
                 <font-awesome-icon :icon="['far', 'file-pdf']"></font-awesome-icon>
-                Preview PDF
+                Preview
             </a>
+            <button class="btn btn-outline-primary me-2" v-else disabled="true">
+                <font-awesome-icon :icon="['far', 'file-pdf']"></font-awesome-icon>
+                Preview
+            </button>
             <a :href="route('dashboard')" class="btn btn-primary" type="submit"> Save and close </a>
         </div>
     </div>

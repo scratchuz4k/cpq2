@@ -3,6 +3,7 @@ import { ref } from 'vue';
 import Dialog from 'primevue/dialog';
 import { createOrder } from '@/Composables/useOrders.js';
 import { setQuote, quote } from '@composables/useQuote';
+import { getMarginThreshHoldWarning } from '@composables/useQuoteItem';
 import { usePage } from '@inertiajs/vue3';
 import WarningNote from '@/Components/WarningNote.vue';
 import { checkWarnings } from '@composables/warning.js';
@@ -142,6 +143,16 @@ const items = ref([
                         </div>
                     </div>
                 </div>
+                <div v-if="quote.items.some((x) => !x.is_margin_valid)">
+                    <div class="row">
+                        <div class="col">
+                            <InfoBox class="mb-4 py-0" severity="danger">
+                                <WarningNote :warnings="warningProviders" />
+                                {{ getMarginThreshHoldWarning() }}
+                            </InfoBox>
+                        </div>
+                    </div>
+                </div>
                 <TableCustom v-if="quote.solution_type.configurations?.has_custom_table == 1"></TableCustom>
                 <TableDealMaker v-else :pricePlans="pricePlans" :preview="preview"></TableDealMaker>
 
@@ -176,21 +187,30 @@ const items = ref([
                                     }
                                 ]"
                             ></ActivityDialog>
-                            <ShareableQuote></ShareableQuote>
+                            <ShareableQuote :disabled="quote.items.some((x) => !x.is_margin_valid)"></ShareableQuote>
                             <a
                                 class="btn btn-outline-primary me-2"
                                 :href="route('quotes.preview', { quote: quote.id })"
+                                v-if="!quote.items.some((x) => !x.is_margin_valid)"
                             >
                                 <font-awesome-icon :icon="['far', 'file-pdf']"></font-awesome-icon>
                                 Preview
                             </a>
-                            <button hidden class="btn btn-outline-primary me-2">
+                            <button class="btn btn-outline-primary me-2" v-else disabled="true">
+                                <font-awesome-icon :icon="['far', 'file-pdf']"></font-awesome-icon>
+                                Preview
+                            </button>
+                            <button
+                                hidden
+                                class="btn btn-outline-primary me-2"
+                                :disabled="quote.items.some((x) => !x.is_margin_valid)"
+                            >
                                 <font-awesome-icon class="me-2" :icon="['fas', 'envelope']"> </font-awesome-icon>
                                 Email this quote
                             </button>
                             <button
                                 :hidden="!(tenant.configurations.orders_flow_is_active === '1')"
-                                :disabled="disableButtonSendToOrder"
+                                :disabled="disableButtonSendToOrder || quote.items.some((x) => !x.is_margin_valid)"
                                 class="btn btn-primary"
                                 @click="createOrderAndRedirect(quote.id)"
                             >

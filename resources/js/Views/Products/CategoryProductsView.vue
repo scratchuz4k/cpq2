@@ -75,9 +75,6 @@ const checkQuantity = _.debounce(async (product, temp) => {
         temp = product.stock;
     }
     product.quantity = temp;
-    if (product.quantity == 0) {
-        return;
-    }
 
     let item = quote.items.find((x) => x.product_code == product.code);
     if (!item) {

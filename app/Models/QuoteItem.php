@@ -124,7 +124,7 @@ class QuoteItem extends Model
             $operation = get_tenant_config('quote_margin_rules_operation');
             $value = (float) get_tenant_config('quote_margin_rules_value');
 
-            return $operation == 'percentage' ? $margin >= $value : $this->margin >= $value;
+            return $operation == 'percentage' ? $margin >= $value : $this->margin * $this->quantity >= $value;
         }
 
         return true;
