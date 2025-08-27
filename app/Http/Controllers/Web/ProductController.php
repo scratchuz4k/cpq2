@@ -6,9 +6,11 @@ use App\Http\Controllers\BaseController;
 use App\Http\Requests\ProductCreateRequest;
 use App\Http\Requests\ProductUpdateRequest;
 use App\Http\Resources\ProductResource;
+use App\Http\Resources\SolutionTypeTenantResource;
 use App\Models\PricePlan;
 use App\Models\Product;
 use App\Services\ProductsService;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
@@ -28,7 +30,12 @@ class ProductController extends BaseController
      */
     public function index()
     {
-        return Inertia::render(component: 'Products/Index');
+        $solutionTypes = Auth::user()->currentTenant->solutionTypes->filter(fn ($solutionType) => $solutionType->pivot->is_active === 1)->makeHidden('pivot');
+
+        return Inertia::render('Products/Index', [
+            'solution_types' => (SolutionTypeTenantResource::collection($solutionTypes))->resolve(),
+        ]);
+
     }
 
     /**
@@ -73,7 +80,7 @@ class ProductController extends BaseController
     {
 
         return Inertia::render('Products/Edit', [
-            'product' => ProductResource::make($product->load(['prices', 'categories']))->resolve(),
+            'product' => ProductResource::make($product->load(['prices', 'category']))->resolve(),
             'price_plans' => PricePlan::all(),
         ]);
     }

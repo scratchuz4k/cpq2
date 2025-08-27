@@ -190,6 +190,10 @@ body {
         color: var(--color-purple) !important;
     }
 
+    .border-primary {
+        border-color: var(--color-purple) !important;
+    }
+
     .text-left {
         text-align: left !important;
     }
@@ -906,6 +910,11 @@ body {
             color: black;
         }
     }
+}
+
+.p-paginator .p-paginator-page.p-paginator-page-selected {
+    background-color: var(--color-purple-light) !important  ;
+    color: var(--purple) !important;
 }
 
 .p-select {

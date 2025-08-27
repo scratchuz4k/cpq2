@@ -34,7 +34,7 @@ class PriceUpdateRequest extends FormRequest
                     ->where(fn ($query) => $query->where('product_id', $this->input('product_id')))
                     ->ignore($price_id),
             ],
-            'tax_rate' => 'required|numeric',
+            'cost' => 'required|numeric',
             'net' => 'required|numeric',
             'product_id' => 'exists:products,id',
         ];

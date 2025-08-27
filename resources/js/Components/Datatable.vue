@@ -82,7 +82,7 @@ const getData = async () => {
 
     let res = await axios.get('/api' + props.route + '?' + string);
     data.value = res.data.data;
-    emptyData.value = !data.value.length;
+    emptyData.value = !data.value?.length;
     meta.total = res.data.meta?.total ?? res.data.total;
     meta.first = (meta.page - 1) * form.limit;
 };
@@ -384,6 +384,10 @@ getData();
 .p-datatable tr td:not(.p-0),
 .p-datatable tr th {
     padding: 0.5rem 0.5rem !important;
+}
+
+.p-datatable .p-datatable-empty-message td:not(.p-0) {
+    padding: 0.25rem 0.5rem !important;
 }
 
 .sortable:hover {

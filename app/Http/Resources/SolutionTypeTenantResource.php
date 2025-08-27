@@ -14,11 +14,15 @@ class SolutionTypeTenantResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        if (is_null($this->resource)) {
+            return [];
+        }
+        $temp = (new SolutionTypeResource($this->solutionType))->resolve();
 
         return [
+            ...$temp,
             ...$this->resource->toArray(),
             'is_active' => (bool) $this->is_active,
-            'solution_type' => (new SolutionTypeResource($this->solutionType))->resolve(),
         ];
     }
 }

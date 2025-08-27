@@ -6,13 +6,14 @@ use App\Models\Scopes\TenantScope;
 use App\Trait\SetTenantId;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Category extends Model
 {
     use HasFactory, SetTenantId;
 
-    protected $fillable = ['code', 'name', 'tenant_id', 'is_active'];
+    protected $fillable = ['code', 'name', 'sort_order', 'tenant_id', 'solution_type_id', 'is_active'];
 
     protected $casts = [
         'is_active' => 'boolean',
@@ -23,15 +24,13 @@ class Category extends Model
         static::addGlobalScope(new TenantScope);
     }
 
-    public function products(): BelongsToMany
+    public function products(): HasMany
     {
-        return $this->belongsToMany(Product::class, 'product_category', 'category_id');
+        return $this->hasMany(Product::class);
     }
 
-    public function solutionTypes(): BelongsToMany
+    public function solutionType(): BelongsTo
     {
-        return $this->belongsToMany(SolutionType::class, 'categories_solution_type')
-            ->withPivot('order')
-            ->orderBy('pivot_order');
+        return $this->belongsTo(SolutionType::class);
     }
 }

@@ -28,7 +28,6 @@ class Quote extends Model
         'address_city',
         'address_country',
         'address_data',
-        'solution_type_id',
         'tenant_id',
         'name',
         'total',

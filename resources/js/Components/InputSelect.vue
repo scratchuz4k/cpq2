@@ -71,6 +71,29 @@ const search = _.debounce(async (clearOptions = false) => {
     isLoading.value = false;
 }, 200);
 
+const getValue = (item, key) => {
+    let items = key.split('.');
+    let result = item;
+
+    for (let i = 0; i < items.length; i++) {
+        const prop = items[i];
+
+        // Check if the current property exists in the current object
+        if (result && typeof result === 'object' && prop in result) {
+            result = result[prop];
+            // Access the nested object using the current property
+            if (Array.isArray(result) && i < items.length - 1) {
+                result = result.length > 0 ? result[0] : undefined;
+            }
+        } else {
+            // Property not found, return undefined
+            return undefined;
+        }
+    }
+
+    return result;
+};
+
 onMounted(() => {
     var sidebar = document.getElementById(props.id + '-sidebar');
 
@@ -178,7 +201,7 @@ emitter.on('input-select-refresh' + (props.id ? ':' + props.id : ''), () => {
                     style="cursor: pointer"
                 >
                     <template v-for="(field, index) in props.fields">
-                        {{ index !== 0 ? ` (${option?.[field] ?? ''})` : (option?.[field] ?? '') }}
+                        {{ index !== 0 ? ` (${getValue(option, field) ?? ''})` : (getValue(option, field) ?? '') }}
                     </template>
                 </div>
                 <div class="m-auto" v-if="page < meta.total_pages">

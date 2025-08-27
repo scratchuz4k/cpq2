@@ -38,11 +38,9 @@ class SolutionType extends Model
             ->first() : null;
     }
 
-    public function categories(): BelongsToMany
+    public function categories(): HasMany
     {
-        return $this->belongsToMany(Category::class, 'categories_solution_type')
-            ->withPivot('order')
-            ->orderBy('pivot_order');
+        return $this->hasMany(Category::class)->orderBy('sort_order');
     }
 
     public function quotes(): HasMany
