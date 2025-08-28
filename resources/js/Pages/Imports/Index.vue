@@ -5,6 +5,7 @@ import { reactive, ref } from 'vue';
 import Header from '@/Components/Header.vue';
 import Datatable from '@/Components/Datatable.vue';
 import { Dialog, Button, Checkbox } from 'primevue';
+import { exportData } from '@/Composables/export.js';
 
 const page = usePage();
 const showForm = ref(false);
@@ -17,6 +18,10 @@ const formFile = reactive({
     file: null,
     overwrite: 0
 });
+
+const getTemplateFile = async () => {
+    exportData('', '/imports');
+};
 
 const submitFile = async () => {
     isLoading.value = true;
@@ -98,7 +103,7 @@ const items = ref([{ label: 'Home', url: '/' }, { label: `Imports` }]);
                     <input type="file" accept=".csv" required @input="onFileChange" />
                     <p class="py-2">
                         Download a
-                        <a href="/public" class="color-purple" id="products-import-template-link"
+                        <a @click="getTemplateFile" class="color-purple" id="products-import-template-link"
                             >sample CSV template</a
                         >
                         to see and example of the format required.

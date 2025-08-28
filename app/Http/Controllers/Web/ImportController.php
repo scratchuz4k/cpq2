@@ -2,15 +2,18 @@
 
 namespace App\Http\Controllers\Web;
 
+use App\Export\ImportTemplate;
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\ImportCreateRequest;
 use App\Http\Resources\ImportResource;
 use App\Jobs\ImporsJob;
 use App\Models\Import;
+use App\Models\Product;
 use App\Services\ImportService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ImportController extends BaseController
 {
@@ -85,5 +88,26 @@ class ImportController extends BaseController
     public function destroy(Import $import)
     {
         //
+    }
+
+    /**
+     * Download CSV import template file.
+     */
+    public function export(Request $request)
+    {
+        $data = [[
+            'test',
+            'test',
+            'test',
+            1,
+            1,
+            'Active',
+            '',
+            1,
+            1,
+        ]];
+        $filename = 'teste.csv';
+
+        return Excel::download(new ImportTemplate(Product::class, $data), $filename);
     }
 }
