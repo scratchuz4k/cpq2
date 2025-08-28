@@ -26,7 +26,7 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'My Account', url: '/my
                         <font-awesome-icon :icon="['fas', 'plus']"></font-awesome-icon>
                         New Product
                     </Link>
-                    <Link href="/products/import" id="product-import-btn" class="btn btn-primary me-2">
+                    <Link href="/imports" id="product-import-btn" class="btn btn-primary me-2">
                         <font-awesome-icon :icon="['fas', 'file-import']"></font-awesome-icon>
                         Import Products
                     </Link>

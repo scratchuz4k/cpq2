@@ -1393,3 +1393,8 @@ body {
 .p-timeline-event-marker::before {
     background: none !important;
 }
+
+.p-checkbox-checked .p-checkbox-box {
+    border-color: var(--color-purple) !important;
+    background: var(--color-purple) !important;
+}

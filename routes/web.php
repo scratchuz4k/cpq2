@@ -11,6 +11,7 @@ use App\Http\Controllers\Web\EmailTemplateController;
 use App\Http\Controllers\Web\General\BlacklistController;
 use App\Http\Controllers\Web\GroupAccountController;
 use App\Http\Controllers\Web\GroupController;
+use App\Http\Controllers\Web\ImportController;
 use App\Http\Controllers\Web\MerchantController;
 use App\Http\Controllers\Web\OrderController;
 use App\Http\Controllers\Web\ProductController;
@@ -77,9 +78,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/users/import', [UserController::class, 'index'])->name('users.index');
     Route::post('/users/import', [UserController::class, 'importUsers'])->name('users.import');
 
-    Route::get('/products/import', [ProductController::class, 'import'])->name('products.import');
-    Route::post('/products/import', [ProductController::class, 'importProducts'])->name('products.import');
-
     Route::resources([
         'email-templates' => EmailTemplateController::class,
         'email-history' => EmailHistoryController::class,
@@ -102,6 +100,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         'groups' => GroupController::class,
         'group-accounts' => GroupAccountController::class,
         'activities' => ActivityController::class,
+        'imports' => ImportController::class,
 
     ]);
 

@@ -8,6 +8,7 @@ use App\Models\Category;
 use App\Models\PricePlan;
 use App\Models\Product;
 use App\Models\Supplier;
+use App\Models\Tenant;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
@@ -26,6 +27,13 @@ class ProductsImport implements ToCollection, WithBatchInserts, WithHeadingRow
         'skipped' => 0,
         'errors' => [],
     ];
+
+    public Tenant $tenant;
+
+    public function __construct(protected bool $override = false)
+    {
+        $this->tenant = auth()->user()?->currentTenant;
+    }
 
     /**
      * Recursively processes and inserts products with missing parent_id.
@@ -84,7 +92,12 @@ class ProductsImport implements ToCollection, WithBatchInserts, WithHeadingRow
         try {
             $rules = (new ProductCreateRequest)->rules();
 
-            $validator = Validator::make($product, $rules);
+            $validator = Validator::make($product, [
+                ...$rules,
+                'sku' => $this->override
+                    ? 'required|string|max:255'
+                    : 'required|string|max:255|unique:products,sku',
+            ]);
 
             if ($validator->fails()) {
                 $this->results['skipped']++;
@@ -93,8 +106,7 @@ class ProductsImport implements ToCollection, WithBatchInserts, WithHeadingRow
                 return null;
             }
 
-            $newProduct = Product::create([
-                'sku' => $product['sku'] ?? '',
+            $productData = [
                 'name' => $product['name'] ?? '',
                 'description' => $product['description'] ?? '',
                 'expires_at' => (isset($product['expires_at']) && ! empty($product['expires_at'])) ? $product['expires_at'] : null,
@@ -104,9 +116,29 @@ class ProductsImport implements ToCollection, WithBatchInserts, WithHeadingRow
                 'price_plan_id' => (isset($product['price_plan_id']) && ! empty($product['price_plan_id'])) ? PricePlan::find($product['price_plan_id'])->id : null,
                 'category_id' => (isset($product['category_id']) && ! empty($product['category_id'])) ? Category::find($product['category_id'])->id : null,
                 //                'parent_id' => '',
-            ]);
+            ];
 
-            $newProduct->save();
+            if ($this->override) {
+                Product::UpdateOrCreate(
+                    [
+                        'sku' => $product['sku'] ?? '', 'tenant_id' => $this->tenant->id,
+                    ],
+                    $productData
+                );
+            } else {
+                if (Product::where('sku', $product['sku'])->exists()) {
+                    $this->results['skipped']++;
+                    $this->results['errors'][] = ['row' => $product, 'error' => 'Product already exists'];
+
+                    return;
+                }
+                Product::create([
+                    'sku' => $product['sku'] ?? '',
+                    ...$productData,
+                ]);
+            }
+            $this->results['success']++;
+
         } catch (ValidationException $e) {
             $this->results['errors'][] = ['row' => $product, 'error' => $e->errors()];
         } catch (\Exception $e) {

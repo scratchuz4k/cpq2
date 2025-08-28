@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\ImportStatusesEnum;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -13,14 +14,13 @@ return new class extends Migration
     {
         Schema::create('imports', function (Blueprint $table) {
             $table->id();
-
-            $table->string('name');
-            $table->string('mime_type');
-            $table->unsignedInteger('size')->default(0);
-            $table->boolean('status')->nullable();
-            $table->foreignId('user_id')->nullable()->constrained()->nullOnDelete();
             $table->foreignId('tenant_id')->constrained()->cascadeOnDelete();
-
+            $table->foreignId('user_id')->nullable()->constrained()->nullOnDelete();
+            $table->string('name');
+            $table->foreignId('file_id')->nullable()->constrained('resources', 'id')->nullOnDelete();
+            $table->enum('status', ImportStatusesEnum::names())->default(ImportStatusesEnum::IN_PROGRESS->name);
+            $table->json('data')->nullable();
+            $table->boolean('override')->default(false);
             $table->timestamps();
         });
     }

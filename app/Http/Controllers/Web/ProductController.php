@@ -7,17 +7,16 @@ use App\Http\Requests\ProductCreateRequest;
 use App\Http\Requests\ProductUpdateRequest;
 use App\Http\Resources\ProductResource;
 use App\Http\Resources\SolutionTypeTenantResource;
-use App\Imports\ProductsImport;
 use App\Models\PricePlan;
 use App\Models\Product;
+use App\Models\Resource;
 use App\Services\ProductsService;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
-use Maatwebsite\Excel\Facades\Excel;
 
 class ProductController extends BaseController
 {
@@ -111,26 +110,5 @@ class ProductController extends BaseController
     public function destroy(Product $product)
     {
         //
-    }
-
-    /**
-     * Show the page for importing products.
-     */
-    public function import()
-    {
-        return Inertia::render('Products/Import');
-    }
-
-    /**
-     * Import Products from CSV file
-     */
-    public function importProducts(Request $request)
-    {
-        $import = new ProductsImport;
-        Excel::import($import, $request->file);
-
-        return Inertia::render('Products/Import', [
-            'results' => $import->results,
-        ]);
     }
 }
