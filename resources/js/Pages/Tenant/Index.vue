@@ -23,7 +23,7 @@ const tenant = reactive({
         quote_margin_rules_active: props.tenant.configurations.quote_margin_rules_active ?? '0',
         quote_margin_rules_value: props.tenant.configurations.quote_margin_rules_value
             ? Number(props.tenant.configurations.quote_margin_rules_value)
-            : 25,
+            : 0,
         quote_margin_rules_operation: props.tenant.configurations.quote_margin_rules_operation ?? 'percentage'
     }
 });
@@ -105,8 +105,7 @@ const onQuoteDaysInput = _.debounce(() => {
 }, 1000);
 
 const setMarginDefaults = () => {
-    tenant.configurations.quote_margin_rules_value =
-        tenant.configurations.quote_margin_rules_operation == 'percentage' ? 25 : 500;
+    tenant.configurations.quote_margin_rules_value = 0;
     submitTenantSettings();
 };
 

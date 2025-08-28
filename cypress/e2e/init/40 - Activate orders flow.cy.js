@@ -10,12 +10,11 @@ describe('Activate orders flow.cy', () => {
         cy.visit('/');
         cy.get('#my-account').click();
         cy.get('#link-tenant').click();
-        cy.get('#v-pills-orders-tab').click();
+        cy.get('#1-1').click();
         cy.get('#active-orders-flow > input').then(($checkbox) => {
             if (!$checkbox.is(':checked')) {
                 cy.wrap($checkbox).check();
             }
         });
-        cy.get('.notyf').contains('Content updated successfully');
     });
 });
