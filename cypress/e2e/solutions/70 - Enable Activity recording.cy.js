@@ -90,6 +90,7 @@ describe('Creates a Mobile Quote', () => {
         cy.get('#log-system-is-active> input').then(($checkbox) => {
             if (!$checkbox.is(':checked')) {
                 cy.wrap($checkbox).check();
+                cy.get('.notyf').contains('Content updated successfully');
             }
         });
     });
@@ -158,6 +159,7 @@ describe('Creates a Mobile Quote', () => {
         cy.get('#log-system-is-active> input').then(($checkbox) => {
             if ($checkbox.is(':checked')) {
                 cy.wrap($checkbox).uncheck();
+                cy.get('.notyf').contains('Content updated successfully');
             }
         });
     });

@@ -3,6 +3,7 @@ import _ from 'lodash';
 import { ref } from 'vue';
 import { createOrder } from '@/Composables/useOrders.js';
 import { setQuote, quote } from '@composables/useQuote';
+import { getMarginThreshHoldWarning } from '@composables/useQuoteItem';
 import { usePage } from '@inertiajs/vue3';
 import { checkWarnings } from '@composables/warning.js';
 import WarningNote from '@/Components/WarningNote.vue';
@@ -48,7 +49,16 @@ const items = ref([
 <template>
     <Header title="Create a quote" :breadcrumbs="items"></Header>
     <InfoConnectivity v-if="!preview" :quote="quote"></InfoConnectivity>
-
+    <div v-if="quote.items.some((x) => !x.is_margin_valid)">
+        <div class="row">
+            <div class="col">
+                <InfoBox class="mb-4 py-0" severity="danger">
+                    <WarningNote :warnings="warningProviders" />
+                    <i class="small">{{ getMarginThreshHoldWarning() }}</i>
+                </InfoBox>
+            </div>
+        </div>
+    </div>
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div class="d-flex justify-content-between align-items-center">
             <p class="fs-4 me-3 mb-0"><b>Your quote</b></p>

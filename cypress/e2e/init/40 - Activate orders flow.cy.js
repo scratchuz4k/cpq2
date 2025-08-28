@@ -16,5 +16,6 @@ describe('Activate orders flow.cy', () => {
                 cy.wrap($checkbox).check();
             }
         });
+        cy.get('.notyf').contains('Content updated successfully');
     });
 });

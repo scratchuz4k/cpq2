@@ -1,5 +1,6 @@
 import { reactive } from 'vue';
 import { usePage } from '@inertiajs/vue3';
+import format from './format';
 
 const page = usePage();
 
@@ -12,7 +13,7 @@ export const getMarginThreshHoldWarning = () => {
     let tenant = page.props.tenant;
     let value = tenant.configurations.quote_margin_rules_value;
     let operation = tenant.configurations.quote_margin_rules_operation == 'percentage' ? '%' : '£';
-    return `Minimum Margin Threshold of ${value}${operation}  has not been reached.`;
+    return `Minimum Margin Threshold of ${operation == '%' ? format.decimalPlaces(value) + '%' : format.GBP(value)} has not been reached.`;
 };
 
 export const createQuoteItem = async (data) => {

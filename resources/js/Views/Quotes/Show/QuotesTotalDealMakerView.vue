@@ -148,7 +148,7 @@ const items = ref([
                         <div class="col">
                             <InfoBox class="mb-4 py-0" severity="danger">
                                 <WarningNote :warnings="warningProviders" />
-                                {{ getMarginThreshHoldWarning() }}
+                                <i class="small">{{ getMarginThreshHoldWarning() }}</i>
                             </InfoBox>
                         </div>
                     </div>
