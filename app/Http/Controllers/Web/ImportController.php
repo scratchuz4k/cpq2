@@ -48,7 +48,7 @@ class ImportController extends BaseController
             throw new \Exception($e);
         }
 
-        ImporsJob::dispatch($import, $import->override);
+        ImporsJob::dispatch($import, $import->overwrite);
 
         return redirect()->route('imports.index');
     }

@@ -30,7 +30,7 @@ class ProductsImport implements ToCollection, WithBatchInserts, WithHeadingRow
 
     public Tenant $tenant;
 
-    public function __construct(protected bool $override = false)
+    public function __construct(protected bool $overwrite = false)
     {
         $this->tenant = auth()->user()?->currentTenant;
     }
@@ -94,7 +94,7 @@ class ProductsImport implements ToCollection, WithBatchInserts, WithHeadingRow
 
             $validator = Validator::make($product, [
                 ...$rules,
-                'sku' => $this->override
+                'sku' => $this->overwrite
                     ? 'required|string|max:255'
                     : 'required|string|max:255|unique:products,sku',
             ]);
@@ -118,7 +118,7 @@ class ProductsImport implements ToCollection, WithBatchInserts, WithHeadingRow
                 //                'parent_id' => '',
             ];
 
-            if ($this->override) {
+            if ($this->overwrite) {
                 Product::UpdateOrCreate(
                     [
                         'sku' => $product['sku'] ?? '', 'tenant_id' => $this->tenant->id,

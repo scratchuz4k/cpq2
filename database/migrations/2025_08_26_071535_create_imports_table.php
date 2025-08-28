@@ -20,7 +20,7 @@ return new class extends Migration
             $table->foreignId('file_id')->nullable()->constrained('resources', 'id')->nullOnDelete();
             $table->enum('status', ImportStatusesEnum::names())->default(ImportStatusesEnum::IN_PROGRESS->name);
             $table->json('data')->nullable();
-            $table->boolean('override')->default(false);
+            $table->boolean('overwrite')->default(false);
             $table->timestamps();
         });
     }

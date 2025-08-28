@@ -15,7 +15,7 @@ const onFileChange = (event) => {
 
 const formFile = reactive({
     file: null,
-    override: 0
+    overwrite: 0
 });
 
 const submitFile = async () => {
@@ -23,7 +23,7 @@ const submitFile = async () => {
 
     const formData = new FormData();
     formData.append('file', formFile.file);
-    formData.append('override', formFile.override);
+    formData.append('overwrite', formFile.overwrite);
 
     try {
         let res = await axios.post('/imports', formData, {
@@ -42,7 +42,7 @@ const submitFile = async () => {
         notyf.error(err?.response?.data?.message ?? 'Something went wrong');
         return false;
     } finally {
-        formFile.override = 0;
+        formFile.overwrite = 0;
         isLoading.value = false;
     }
 };
@@ -105,14 +105,14 @@ const items = ref([{ label: 'Home', url: '/' }, { label: `Imports` }]);
                     </p>
                     <div class="form-check px-0 pt-2">
                         <Checkbox
-                            id="override-products"
-                            v-model="formFile.override"
+                            id="overwrite-products"
+                            v-model="formFile.overwrite"
                             binary
                             trueValue="1"
                             falseValue="0"
                         />
-                        <label class="form-check-label ms-2" for="override-products">
-                            Override existing products that have the same handle
+                        <label class="form-check-label ms-2" for="overwrite-products">
+                            Overwrite existing products that have the same handle
                         </label>
                     </div>
                     <hr />

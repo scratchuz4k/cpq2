@@ -23,7 +23,7 @@ class ImportCreateRequest extends FormRequest
     {
         return [
             'file' => 'required|file|mimes:csv,txt',
-            'override' => 'required|boolean',
+            'overwrite' => 'required|boolean',
         ];
     }
 }

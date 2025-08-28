@@ -18,14 +18,14 @@ class Import extends Model
         'user_id',
         'tenant_id',
         'data',
-        'override',
+        'overwrite',
     ];
 
     protected function casts(): array
     {
         return [
             'data' => 'object',
-            'override' => 'boolean',
+            'overwrite' => 'boolean',
         ];
     }
 

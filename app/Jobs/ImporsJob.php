@@ -18,9 +18,9 @@ class ImporsJob implements ShouldQueue
     /**
      * Create a new job instance.
      */
-    public function __construct(public Import $import, public bool $override = false)
+    public function __construct(public Import $import, public bool $overwrite = false)
     {
-        $this->productsImport = new ProductsImport($override);
+        $this->productsImport = new ProductsImport($overwrite);
     }
 
     /**

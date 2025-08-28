@@ -25,7 +25,7 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Imports', url: '/impor
             <Panel class="mt-3" header="Import Data:" :toggleable="true">
                 <p><b>File name:</b> {{ props.importObject?.name }}</p>
                 <p><b>Status:</b> {{ props.importObject?.status }}</p>
-                <p><b>Override flag:</b> {{ props.importObject?.override }}</p>
+                <p><b>Overwrite flag:</b> {{ props.importObject?.overwrite }}</p>
                 <p><b>Imported by:</b> {{ props.importObject.user.name }}</p>
                 <p><b>Imported on:</b> {{ format.date(props.importObject?.created_at) }}</p>
             </Panel>

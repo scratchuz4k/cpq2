@@ -11,7 +11,7 @@ class ImportService
     public function store(array $array): Import
     {
         $file = array_key_exists('file', $array) ? $array['file'] : null;
-        $override = array_key_exists('overwrite', $array) ? $array['overwrite'] : 0;
+        $overwrite = array_key_exists('overwrite', $array) ? $array['overwrite'] : 0;
         $user = auth()->user();
 
         if ($path = $file->store('files', 'public')) {
@@ -29,7 +29,7 @@ class ImportService
             'file_id' => $resource->id ?? null,
             'status' => ImportStatusesEnum::IN_PROGRESS->name,
             'user_id' => $user->id,
-            'override' => $override,
+            'overwrite' => $overwrite,
             'tenant_id' => $user->tenant_id,
         ]);
 
