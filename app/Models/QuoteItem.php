@@ -119,8 +119,8 @@ class QuoteItem extends Model
     {
         $isActive = get_tenant_config('quote_margin_rules_active');
 
-        if (! is_null($isActive) || ! $isActive == '0') {
-            $margin = ($this->margin / $this->price) * 100;
+        if (! is_null($isActive) || $isActive == '0') {
+            $margin = $this->price ? ($this->margin / $this->price) * 100 : 0;
             $operation = get_tenant_config('quote_margin_rules_operation');
             $value = (float) get_tenant_config('quote_margin_rules_value');
 

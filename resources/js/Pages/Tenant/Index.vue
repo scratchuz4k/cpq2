@@ -378,7 +378,7 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'My Account', url: '/my
                                         </div>
                                         <div>
                                             <ToggleSwitch
-                                                id="active-orders-flow"
+                                                id="active-margin-rules"
                                                 v-model="tenant.configurations.quote_margin_rules_active"
                                                 @change="submitTenantSettings"
                                                 trueValue="1"
