@@ -25,7 +25,7 @@ class ProductFactory extends Factory
         return [
             'tenant_id' => Tenant::where('name', 'CloudMarket')->value('id'),
             'name' => $product_name,
-            'code' => Str::slug($product_name),
+            'sku' => Str::slug($product_name),
         ];
     }
 }

@@ -1,4 +1,5 @@
 <script setup>
+import { getQuote } from '@/Composables/useQuote';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link } from '@inertiajs/vue3';
 import { ref } from 'vue';
@@ -12,6 +13,8 @@ const solutionsViews = {
     4: 'QuotesMobileView',
     5: 'QuotesHardwareView'
 };
+
+getQuote(props.quote.id);
 
 const items = ref([
     { label: 'Home', url: '/' },

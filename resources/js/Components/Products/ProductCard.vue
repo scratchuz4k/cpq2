@@ -170,7 +170,7 @@
                             <font-awesome-icon icon="fas fa-search" />
                         </InputIcon>
                         <InputText
-                            :id="'select-' + props.id + '-search'"
+                            :id="'select-' + proxyValue.id + '-search'"
                             v-model="searchInput"
                             placeholder="Search"
                             type="search"

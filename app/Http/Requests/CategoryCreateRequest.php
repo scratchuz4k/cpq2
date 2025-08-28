@@ -28,6 +28,7 @@ class CategoryCreateRequest extends FormRequest
                 'required',
                 Rule::unique('categories'),
             ],
+            'solution_type_id' => 'required|exists:solution_type_tenant,id',
         ];
     }
 }

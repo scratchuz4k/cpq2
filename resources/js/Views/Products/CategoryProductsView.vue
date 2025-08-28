@@ -16,6 +16,8 @@ const meta = reactive({
     isLoading: false
 });
 
+const disableButton = ref(false);
+
 const props = defineProps({
     category: Object,
     account: Object,
@@ -35,24 +37,39 @@ const proxyValue = computed({
 });
 
 const products = ref([]);
+const selectedParent = ref(null);
 
 const getProducts = async () => {
     meta.isLoading = true;
+
+    let filters = [
+        {
+            column: 'category_id',
+            operator: 'equals',
+            value: props.category.id
+        },
+        {
+            column: 'status',
+            operator: 'equals',
+            value: 'Active'
+        },
+        {
+            group: [
+                { column: 'parent_id', operator: 'in', value: quote.items.map((x) => x.product_id) },
+                { column: 'parent_id', operator: 'is_null', value: '', function: 'orWhere' }
+            ]
+        }
+    ];
+
     let query = queryString.stringify({
         page: meta.page,
         limit: meta.limit,
-        filters: JSON.stringify([
-            {
-                column: 'categories.id',
-                operator: 'equals',
-                value: props.category.id
-            }
-        ]),
+        filters: JSON.stringify(filters),
         account_id: props.account.id
     });
     let res = await axios.get('/api/products' + '?' + query);
     res.data.data.forEach((e) => {
-        let temp = quote.items.find((x) => x.product_code == e.code);
+        let temp = quote.items.find((x) => x.product_code == e.sku);
         e.quantity = temp ? temp.quantity : 0;
         e.contract_length = e.price_plan.code == 'SINGLE' ? 1 : 12;
     });
@@ -70,47 +87,60 @@ const handlePaginator = (ev) => {
     getProducts();
 };
 
-const checkQuantity = _.debounce(async (product, temp) => {
-    if (product.stock <= temp) {
-        temp = product.stock;
-    }
-    product.quantity = temp;
-
-    let item = quote.items.find((x) => x.product_code == product.code);
-    if (!item) {
-        createQuoteItem({
-            quote_id: quote.id,
-            product_code: product.code,
-            product_id: product.id,
-            quantity: product.quantity,
-            contract_length: product.contract_length,
-            name: product.name,
-            raw_price: product.price ? product.price.net : 0,
-            price: product.price ? product.price.net_spa : 0,
-            price_plan_id: product.price_plan_id
-        });
-    } else {
-        if (product.quantity == 0) {
-            removeQuoteItem(item.id);
-        } else {
-            updateQuoteItem(item.id, { quantity: product.quantity });
+const checkQuantity = _.debounce(
+    async (product, temp) => {
+        disableButton.value = true;
+        if (product.stock <= temp) {
+            temp = product.stock;
         }
-    }
+        product.quantity = temp;
 
-    getQuote(quote.id);
-}, 200);
+        let item = quote.items.find((x) => x.product_code == product.sku);
+        if (!item) {
+            createQuoteItem({
+                quote_id: quote.id,
+                product_code: product.sku,
+                product_id: product.id,
+                quantity: product.quantity,
+                contract_length: product.contract_length,
+                name: product.name,
+                raw_price: product.price ? product.price.cost : 0,
+                price: product.price ? product.price.net_spa : 0,
+                price_plan_id: product.price_plan_id
+            });
+        } else {
+            if (product.quantity == 0) {
+                removeQuoteItem(item.id);
+            } else {
+                updateQuoteItem(item.id, { quantity: product.quantity });
+            }
+        }
 
+        await getQuote(quote.id);
+
+        disableButton.value = false;
+    },
+    200,
+    { leading: true, trailing: true }
+);
+
+watch(proxyValue, () => {
+    getProducts();
+});
 getProducts();
 </script>
 
 <template>
     <div v-if="proxyValue == props.index" :id="'step-' + (props.index + 1)" class="step">
         <div class="d-flex justify-content-between mb-3">
-            <h2>Select some products</h2>
-            <p class="bigger bold text-primary">STEP {{ props.index + 1 }}/{{ total_categories }}</p>
+            <h3 class="mb-0">{{ props.index + 1 }}. {{ category?.name }}</h3>
+            <p class="bigger bold text-primary">
+                STEP <span id="current-step">{{ props.index + 1 }}</span> /
+                <span id="last-step">{{ total_categories }}</span>
+            </p>
         </div>
         <div v-if="!meta.isLoading">
-            <div v-for="(product, index) in products" class="mobile-item mobile-product mb-3">
+            <div v-if="products.length" v-for="(product, index) in products" class="mobile-item mobile-product mb-3">
                 <div class="d-flex justify-content-between">
                     <div class="d-flex align-items-center mb-2">
                         <h4 class="m-0">{{ product.name }}</h4>
@@ -159,6 +189,9 @@ getProducts();
                     </div>
                 </div>
             </div>
+            <div v-else>
+                <p class="h5 text-center my-4">No products available for this Category!</p>
+            </div>
         </div>
         <div v-else v-for="n in meta.limit" class="mobile-item mobile-product mb-3">
             <div class="d-flex justify-content-between mb-3">
@@ -187,6 +220,7 @@ getProducts();
         <div class="d-flex justify-content-between align-items-center mt-3">
             <div>
                 <button
+                    :disabled="meta.isLoading"
                     v-if="props.index > 0"
                     :id="'btn-step-{{ props.index + 1}}-previous'"
                     class="btn text-primary step-nav btn-sm me-3"
@@ -198,6 +232,7 @@ getProducts();
             </div>
             <div>
                 <button
+                    :disabled="disableButton"
                     :id="'btn-step-' + (props.index + 1) + '-next'"
                     class="ms-3 btn btn-primary step-nav"
                     type="button"

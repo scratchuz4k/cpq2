@@ -38,6 +38,11 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'My Account', url: '/my
                     }"
                     route="/apis"
                 >
+                    <template #auth_type="{ value }">
+                        <span class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm">{{
+                            value
+                        }}</span>
+                    </template>
                     <template #updated_at="{ value }">
                         {{ format.date(value) }}
                     </template>

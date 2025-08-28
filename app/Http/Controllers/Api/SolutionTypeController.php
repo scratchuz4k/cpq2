@@ -5,13 +5,14 @@ namespace App\Http\Controllers\Api;
 use App\Helpers\DataProvider;
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\IndexRequest;
+use App\Http\Requests\SolutionTypeCreateRequest;
+use App\Http\Requests\SolutionTypeUpdateRequest;
 use App\Http\Resources\SolutionTypeTenantResource;
 use App\Models\SolutionType;
 use App\Models\SolutionTypeTenant;
 use App\Services\SolutionTypeService;
 use Dedoc\Scramble\Attributes\ExcludeRouteFromDocs;
 use Exception;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -49,7 +50,7 @@ class SolutionTypeController extends BaseController
      * Store a new Solution Type
      */
     #[ExcludeRouteFromDocs]
-    public function store(Request $request)
+    public function store(SolutionTypeCreateRequest $request)
     {
         //
     }
@@ -67,7 +68,7 @@ class SolutionTypeController extends BaseController
      * Update Solution Type
      */
     #[ExcludeRouteFromDocs]
-    public function update(Request $request, SolutionType $solutionType)
+    public function update(SolutionTypeUpdateRequest $request, SolutionType $solutionType)
     {
         try {
             $solutionType = DB::transaction(fn () => $this->service->update($solutionType, $request->all()));

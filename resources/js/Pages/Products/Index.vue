@@ -3,6 +3,13 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link } from '@inertiajs/vue3';
 import { ref } from 'vue';
 
+const props = defineProps({
+    solution_types: {
+        type: Array,
+        default: []
+    }
+});
+
 const items = ref([{ label: 'Home', url: '/' }, { label: 'My Account', url: '/myaccount' }, { label: 'Products' }]);
 </script>
 <template>
@@ -30,16 +37,34 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'My Account', url: '/my
                         link: false
                     }"
                     :columns="[
-                        { data: 'id', title: '#', style: 'width:5%' },
-                        { data: 'is_active', title: 'Active', style: 'width:5%' },
-                        { data: 'code', title: 'Code', style: 'width:20%' },
+                        { data: 'status', title: 'Status', style: 'width:4%' },
+                        { data: 'sku', title: 'SKU', style: 'width:10%' },
                         { data: 'name', title: 'Name', style: 'width:25%' },
-                        { data: 'supplier.name', title: 'Supplier', style: 'width:12%' },
-                        { data: 'brand.name', title: 'Brand', style: 'width:12%' },
+                        { data: 'parent.name', title: 'Parent', style: 'width:12%' },
+                        { data: 'category.name', title: 'Category', style: 'width:12%' },
+                        {
+                            data: 'category.solution_type.name',
+                            title: 'Solution Type',
+                            style: 'width:12%'
+                        },
                         { data: 'updated_at', title: 'Updated At', style: 'width:15%' }
                     ]"
+                    :filters="{
+                        'category.solution_type.name': {
+                            type: 'options',
+                            options: solution_types.map((x) => x.name)
+                        }
+                    }"
                     route="/products"
                 >
+                    <template #status="{ value }">
+                        <span class="badge text-bg-secondary">{{ value }}</span>
+                    </template>
+                    <template #parent.name="{ value }">
+                        <span class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm">{{
+                            value
+                        }}</span>
+                    </template>
                     <template #updated_at="{ value }">
                         {{ format.date(value) }}
                     </template>

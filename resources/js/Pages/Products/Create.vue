@@ -5,12 +5,14 @@ import PrimaryButton from '@/Components/PrimaryButton.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, router } from '@inertiajs/vue3';
 import DataTable from 'primevue/datatable';
+import DatePicker from 'primevue/datepicker';
 import Column from 'primevue/column';
 import Dialog from 'primevue/dialog';
 import InputText from 'primevue/inputtext';
 import Button from 'primevue/button';
 import ToggleSwitch from 'primevue/toggleswitch';
 import Select from 'primevue/select';
+import { DateTime } from 'luxon';
 
 const props = defineProps({
     price_plans: Object
@@ -18,7 +20,7 @@ const props = defineProps({
 
 const price = reactive({
     code: null,
-    tax_rate: 0,
+    cost: 0,
     net: 0
 });
 
@@ -27,7 +29,8 @@ const product = reactive({
     price_plan_id: 1,
     supplier_id: null,
     brand_id: null,
-    code: null,
+    parent_id: null,
+    sku: null,
     description: null,
     prices: [],
     is_active: true
@@ -35,16 +38,18 @@ const product = reactive({
 
 const editingRows = ref([]);
 const showModal = ref(false);
-const categories = ref(null);
+const category = ref(null);
 
 const saveProduct = () => {
     router.post(
         `/products`,
         {
             ...product,
+            expires_at: DateTime.fromJSDate(product.expires_at).toISO() ?? null,
             supplier_id: product.supplier?.id,
             brand_id: product.brand?.id,
-            categories: categories.value?.id
+            parent_id: product.parent?.id,
+            category_id: category.value?.id
         },
         {
             onSuccess: (page) => {
@@ -62,12 +67,10 @@ const saveProduct = () => {
 };
 
 const savePrice = async () => {
-    price.tax = parseFloat((price.net * (price.tax_rate / 100)).toFixed(2));
-    price.gross = parseFloat((price.net * (1 + price.tax_rate / 100)).toFixed(2));
     let temp = {};
     Object.assign(temp, price);
     product.prices.push(temp);
-    Object.assign(price, { code: null, tax_rate: 0, net: 0, tax: 0, gross: 0 });
+    Object.assign(price, { code: null, cost: 0, net: 0 });
     showModal.value = !showModal.value;
 };
 
@@ -85,10 +88,6 @@ const deletePrice = async (id) => {
 
 const onRowEditSave = async (event) => {
     let { newData, index } = event;
-
-    newData.tax = parseFloat((newData.net * (newData.tax_rate / 100)).toFixed(2));
-    newData.gross = parseFloat((newData.net * (1 + newData.tax_rate / 100)).toFixed(2));
-
     product.prices[index] = newData;
 };
 
@@ -131,21 +130,35 @@ const items = ref([
                                 </template>
                             </ToggleSwitch>
                         </div>
-                        <div class="row mb-3">
-                            <label for="product-code" class="form-label">Code:</label>
-                            <input id="product-code" class="form-control" v-model="product.code" />
+                        <div class="mb-3">
+                            <label for="product-sku" class="form-label">SKU:</label>
+                            <input id="product-sku" class="form-control" v-model="product.sku" />
                         </div>
-                        <div class="row mb-3">
+                        <div class="mb-3">
                             <label for="product-name" class="form-label">Name:</label>
                             <input id="product-name" class="form-control" v-model="product.name" />
                         </div>
-                        <div class="row mb-3">
+                        <div class="mb-3">
                             <label for="product-description" class="form-label">Description:</label>
                             <textarea
                                 id="product-description"
                                 class="form-control"
                                 v-model="product.description"
                             ></textarea>
+                        </div>
+
+                        <div class="mb-5">
+                            <label for="product-expires_at" class="form-label">Expires At:</label>
+
+                            <DatePicker
+                                id="expire-date"
+                                class="w-100"
+                                v-model="product.expires_at"
+                                placeholder="Expires At"
+                                showIcon
+                                iconDisplay="input"
+                                dateFormat="dd/mm/yy"
+                            />
                         </div>
                         <h4>Relations</h4>
                         <hr />
@@ -160,6 +173,19 @@ const items = ref([
                                 optionValue="id"
                                 placeholder="Select an Price Plan"
                             />
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="product-categories" class="form-label">Category:</label>
+                            <InputSelect
+                                id="product-categories"
+                                url="/categories"
+                                :fields="['name']"
+                                v-model="category"
+                                placeholder="Select a Category"
+                                :query="[{ column: 'is_active', operator: 'equals', value: 1 }]"
+                            >
+                            </InputSelect>
                         </div>
                         <div class="mb-3">
                             <label for="supplier-name" class="form-label">Supplier:</label>
@@ -188,23 +214,25 @@ const items = ref([
                         </div>
 
                         <div class="mb-3">
-                            <label for="product-categories" class="form-label">Category:</label>
-                            <InputSelect
-                                id="product-categories"
-                                url="/categories"
-                                :fields="['name']"
-                                v-model="categories"
-                                placeholder="Select a Category"
-                                :query="[{ column: 'is_active', operator: 'equals', value: 1 }]"
-                            >
-                            </InputSelect>
+                            <label for="product-parent" class="form-label">Parent:</label>
+                            <div class="input-group p-0">
+                                <InputSelect
+                                    id="product-parent"
+                                    url="/products"
+                                    :fields="['name']"
+                                    class="w-100"
+                                    v-model="product.parent"
+                                    placeholder="Select a Parent"
+                                    :query="[{ column: 'is_active', operator: 'equals', value: 1 }]"
+                                />
+                            </div>
                         </div>
                     </div>
                 </tab>
                 <tab title="Prices" v-if="hasRole('Super Admin') || can('viewAny price')">
                     <div class="my-3">
                         <p>
-                            Here are the available prices for this product, including details like tax and gross value.
+                            Here are the available prices for this product, including details like cost and net value.
                         </p>
                     </div>
                     <div class="row my-4">
@@ -228,24 +256,33 @@ const items = ref([
                                     }"
                                 >
                                     <Column field="code" header="Code" style="width: 10%"></Column>
-                                    <Column field="tax_rate" header="Tax Rate" style="width: 20%">
+                                    <Column field="cost" header="Cost">
+                                        <template #body="{ data, field }">
+                                            {{ format.GBP(data[field]) }}
+                                        </template>
                                         <template #editor="{ data, field }">
                                             <InputText v-model="data[field]" fluid />
                                         </template>
                                     </Column>
-                                    <Column field="net" header="Net" style="width: 20%">
+                                    <Column field="net" header="Net">
+                                        <template #body="{ data, field }">
+                                            {{ format.GBP(data[field]) }}
+                                        </template>
                                         <template #editor="{ data, field }">
                                             <InputText v-model="data[field]" fluid />
                                         </template>
                                     </Column>
-                                    <Column field="tax" header="Tax" style="width: 20%"></Column>
-                                    <Column field="gross" header="Gross" style="width: 20%"></Column>
 
-                                    <Column :rowEditor="true" v-if="hasRole('Super Admin') || can('update price')">
+                                    <Column
+                                        :rowEditor="true"
+                                        v-if="hasRole('Super Admin') || can('update price')"
+                                        style="width: 5%"
+                                    >
                                     </Column>
                                     <Column
                                         bodyStyle="text-align:center"
                                         v-if="hasRole('Super Admin') || can('delete price')"
+                                        style="width: 5%"
                                     >
                                         <template #body="{ data }">
                                             <Button
@@ -290,12 +327,12 @@ const items = ref([
                                     <input class="form-control" v-model="price.code" />
                                 </div>
                                 <div class="mb-3">
-                                    <label class="form-label">Price</label>
-                                    <input class="form-control" type="number" v-model="price.net" />
+                                    <label class="form-label">Cost</label>
+                                    <input class="form-control" type="number" v-model="price.cost" />
                                 </div>
                                 <div class="mb-3">
-                                    <label class="form-label">Tax Rate</label>
-                                    <input class="form-control" type="number" v-model="price.tax_rate" />
+                                    <label class="form-label">Price</label>
+                                    <input class="form-control" type="number" v-model="price.net" />
                                 </div>
 
                                 <div class="d-flex justify-content-end">

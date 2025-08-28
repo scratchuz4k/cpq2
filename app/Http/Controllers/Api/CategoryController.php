@@ -4,13 +4,14 @@ namespace App\Http\Controllers\Api;
 
 use App\Helpers\DataProvider;
 use App\Http\Controllers\BaseController;
+use App\Http\Requests\CategoryCreateRequest;
+use App\Http\Requests\CategoryUpdateRequest;
 use App\Http\Requests\IndexRequest;
 use App\Http\Resources\CategoryResource;
 use App\Models\Category;
 use App\Services\CategoryService;
 use Dedoc\Scramble\Attributes\ExcludeRouteFromDocs;
 use Exception;
-use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
@@ -48,7 +49,7 @@ class CategoryController extends BaseController
      * Store a new Category
      */
     #[ExcludeRouteFromDocs]
-    public function store(Request $request) {}
+    public function store(CategoryCreateRequest $request) {}
 
     /**
      * Show Category
@@ -59,7 +60,7 @@ class CategoryController extends BaseController
     /**
      * Update Category
      */
-    public function update(Request $request, Category $category)
+    public function update(CategoryUpdateRequest $request, Category $category)
     {
         try {
             $api = DB::transaction(fn () => $this->categoryService->update($category, $request->all()));
