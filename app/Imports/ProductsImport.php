@@ -12,6 +12,7 @@ use App\Models\Tenant;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 use Maatwebsite\Excel\Concerns\SkipsErrors;
 use Maatwebsite\Excel\Concerns\ToCollection;
@@ -97,7 +98,7 @@ class ProductsImport implements ToCollection, WithBatchInserts, WithHeadingRow
                 ...$rules,
                 'sku' => $this->overwrite
                     ? 'required|string|max:255'
-                    : 'required|string|max:255|unique:products,sku',
+                    : ['required', 'string', 'max:255', Rule::unique('products')->where('tenant_id', $this->tenant->id)],
             ]);
 
             if ($validator->fails()) {
