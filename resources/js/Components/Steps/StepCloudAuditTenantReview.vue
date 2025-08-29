@@ -1,6 +1,7 @@
 <script setup>
 import { Checkbox } from 'primevue';
 import { computed, ref, reactive, watch } from 'vue';
+import format from '@/Composables/format.js';
 const props = defineProps({
     solutionType: Array,
     modelValue: Object
@@ -269,6 +270,14 @@ const dynamicSavings = computed(() => {
                     <br />
                     Contact Number: 0124567890<br />
                     Email: firstname.lastname@gmail.com
+                </div>
+            </InfoBox>
+            <InfoBox v-if="['QUOTE', 'PRICE', 'CONFIGURE'].includes(proxyValue.status)">
+                <div style="font-size: 14px">
+                    This quote will expire on
+                    <b style="font-size: 16px">
+                        {{ format.expireDate(proxyValue.created_at, tenant.configurations?.quote_expiration_days) }}
+                    </b>
                 </div>
             </InfoBox>
             <div class="panel mt-3">

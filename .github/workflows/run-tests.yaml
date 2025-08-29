@@ -31,6 +31,8 @@ jobs:
 
             - name: Setup NodeJS
               uses: actions/setup-node@v4
+              with:
+                  node-version: 20.18.1
 
             - name: Copy .env
               run: cp .env.testing .env
@@ -42,6 +44,8 @@ jobs:
                   echo -e "VIRTUAL1_ADDRESS_PASSWORD=${{ secrets.VIRTUAL1_ADDRESS_PASSWORD }}" >> .env
                   echo -e "VIRTUAL1_ADDRESS_USERNAME=${{ secrets.VIRTUAL1_ADDRESS_USERNAME }}" >> .env
                   echo -e "VITE_GOOGLE_MAPS_API_KEY=${{ secrets.VITE_GOOGLE_MAPS_API_KEY }}" >> .env
+                  echo -e "SUPERUSER_EMAIL=${{ secrets.SUPERUSER_EMAIL }}" >> .env
+                  echo -e "SUPERUSER_PASSWORD=${{ secrets.SUPERUSER_PASSWORD }}" >> .env
 
             - name: Install Composer Dependencies
               run: composer install --prefer-dist --optimize-autoloader --no-scripts --no-progress --no-interaction && composer dump-autoload --optimize -q
@@ -83,6 +87,9 @@ jobs:
 
             - name: Execute cypress tests
               id: execute-cypress-tests
+              env:
+                  SUPERUSER_EMAIL: ${{ secrets.SUPERUSER_EMAIL }}
+                  SUPERUSER_PASSWORD: ${{ secrets.SUPERUSER_PASSWORD }}
               run: npm run cy:run
 
             - name: Check for failed Cypress tests and send screenshot to Discord

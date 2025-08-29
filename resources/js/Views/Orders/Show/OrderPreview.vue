@@ -2,6 +2,11 @@
 import { reactive, ref } from 'vue';
 import WarningNote from '@/Components/WarningNote.vue';
 import { setOrder, order } from '@composables/useOrders';
+import dayjs from 'dayjs';
+import { usePage } from '@inertiajs/vue3';
+
+const page = usePage();
+const tenant = page.props.tenant;
 
 const props = defineProps({
     modelValue: Object,
@@ -43,8 +48,9 @@ const showDate = (days = 0) => {
                     <div class="row mb-3">
                         <div class="col">
                             <p>
-                                Quotation Date: {{ showDate() }}<br />
-                                Valid Date: {{ showDate(30) }}
+                                Quotation Date: {{ dayjs(order.created_at).format('DD/MM/YYYY') }}<br />
+                                Valid Date:
+                                {{ format.expireDate(order.created_at, tenant.configurations?.quote_expiration_days) }}
                             </p>
                         </div>
                     </div>

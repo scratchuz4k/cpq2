@@ -9,7 +9,7 @@ const products = [
 ];
 describe('Manage Products Category relation', () => {
     beforeEach(() => {
-        cy.login('super@example.com', 'werwerwer');
+        cy.login(Cypress.env('SUPERUSER_EMAIL'), Cypress.env('SUPERUSER_PASSWORD'));
     });
 
     it('Create a Category', () => {

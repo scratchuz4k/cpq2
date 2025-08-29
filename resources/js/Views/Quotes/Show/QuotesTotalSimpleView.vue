@@ -41,6 +41,22 @@ const items = ref([
             <p class="mb-0 text-primary bold fs-5 pt-1">STEP 2/2</p>
         </div>
         <div class="d-flex justify-content-between align-items-center">
+            <ActivityDialog
+                :filters="[
+                    { entity: 'Quote', values: quote.id },
+                    {
+                        entity: 'QuoteItem',
+                        values:
+                            quote.items.map((x) => x.id).join(',') +
+                            ',' +
+                            quote.items_trashed.map((x) => x.id).join(',')
+                    },
+                    {
+                        entity: 'QuoteDiscount',
+                        values: quote.discounts.map((x) => x.id).join(',')
+                    }
+                ]"
+            ></ActivityDialog>
             <ShareableQuote></ShareableQuote>
             <button hidden class="btn btn-outline-primary me-2" @click="createOrder(quote.id)">
                 <font-awesome-icon class="me-2" :icon="['fas', 'thumbtack']"> </font-awesome-icon>Send to Order
@@ -89,6 +105,22 @@ const items = ref([
 
     <div>
         <div class="d-flex justify-content-end align-items-center">
+            <ActivityDialog
+                :filters="[
+                    { entity: 'Quote', values: quote.id },
+                    {
+                        entity: 'QuoteItem',
+                        values:
+                            quote.items.map((x) => x.id).join(',') +
+                            ',' +
+                            quote.items_trashed.map((x) => x.id).join(',')
+                    },
+                    {
+                        entity: 'QuoteDiscount',
+                        values: quote.discounts.map((x) => x.id).join(',')
+                    }
+                ]"
+            ></ActivityDialog>
             <ShareableQuote></ShareableQuote>
             <button hidden class="btn btn-outline-primary me-2" @click="createOrder(quote.id)">
                 <font-awesome-icon class="me-2" :icon="['fas', 'thumbtack']"> </font-awesome-icon>Send to Order

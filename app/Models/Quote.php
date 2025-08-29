@@ -13,10 +13,11 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Quote extends Model
 {
-    use HasConfigurations, HasFactory, RegisterActivity, SetTenantId;
+    use HasConfigurations, HasFactory, RegisterActivity, SetTenantId, SoftDeletes;
 
     protected $fillable = [
         'account_id',
@@ -45,6 +46,14 @@ class Quote extends Model
         return [
             'address_position' => 'array',
             'address_data' => 'array',
+            'margin' => 'float',
+            'total' => 'float',
+            'total_tax' => 'float',
+            'total_gross' => 'float',
+            'commission_value' => 'float',
+            'commission_rate ' => 'float',
+            'created_at' => 'datetime:Y-m-d H:i:s',
+            'updated_at' => 'datetime:Y-m-d H:i:s',
         ];
     }
 
@@ -88,6 +97,11 @@ class Quote extends Model
         return $this->hasMany(QuoteItem::class);
     }
 
+    public function itemsTrashed(): HasMany
+    {
+        return $this->hasMany(QuoteItem::class)->withTrashed()->whereNotNull('deleted_at');
+    }
+
     public function orders(): HasMany
     {
         return $this->hasMany(Order::class);
@@ -119,6 +133,9 @@ class Quote extends Model
             $this->total_tax += $item->total_tax;
             $this->total_gross += $item->total_gross;
         }
+        $this->total = format_currency($this->total);
+        $this->total_tax = format_currency($this->total_tax);
+        $this->total_gross = format_currency($this->total_gross);
 
         $total_cost = $raw_total;
         $margin_value = $this->total - $total_cost;
@@ -133,6 +150,7 @@ class Quote extends Model
             QuoteStatusesEnum::REJECTED->name,
             QuoteStatusesEnum::REGISTRY->name,
             QuoteStatusesEnum::SUBMITTED->name,
+            QuoteStatusesEnum::EXPIRED->name,
         ];
 
         if (in_array($quote->status, $statuses_to_ignore)) {

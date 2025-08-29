@@ -195,13 +195,13 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'My Account', url: '/my
                                     v-if="value === true"
                                     :icon="['fas', 'circle-check']"
                                     style="font-size: 1.125rem"
-                                    class="text-primary"
+                                    class="text-primary sso-login-active"
                                 />
                                 <font-awesome-icon
                                     v-else
                                     :icon="['far', 'circle-xmark']"
                                     style="font-size: 1.125rem"
-                                    class="text-secondary"
+                                    class="text-secondary sso-login-inactive"
                                 />
                             </template>
                             <template #is_active="{ data, value }">

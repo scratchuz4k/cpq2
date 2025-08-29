@@ -5,7 +5,7 @@ let url = '';
 
 describe('Create a Shareable Link.cy', () => {
     beforeEach(() => {
-        cy.login('super@example.com', 'werwerwer');
+        cy.login(Cypress.env('SUPERUSER_EMAIL'), Cypress.env('SUPERUSER_PASSWORD'));
     });
     it('Creates an Account', () => {
         cy.visit('/');
