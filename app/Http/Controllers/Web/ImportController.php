@@ -95,19 +95,20 @@ class ImportController extends BaseController
      */
     public function export(Request $request)
     {
-        $data = [[
-            'test',
-            'test',
-            'test',
-            1,
-            1,
-            'Active',
-            '',
-            1,
-            1,
-        ]];
-        $filename = 'teste.csv';
+        $p = Product::all();
 
-        return Excel::download(new ImportTemplate(Product::class, $data), $filename);
+        $dummyProduct = Product::factory()->count(10)->make();
+
+        $dummyProduct->each(function ($item) {
+            $item->price_code = fake()->optional()->numberBetween(1, 999);
+            $item->price_cost = $item->price_code ? fake()->optional()->numberBetween(1, 999) : null;
+            $item->price_net = $item->price_code ? fake()->optional()->numberBetween(1, 999) : null;
+            $item->parent_sku = fake()->optional()->slug(2);
+        });
+
+        //        $dummyPrice = Price::factory()->count(10)->make();
+        $filename = 'import_products_template.csv';
+
+        return Excel::download(new ImportTemplate(Product::class, $dummyProduct), $filename);
     }
 }

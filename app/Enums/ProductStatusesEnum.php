@@ -2,8 +2,12 @@
 
 namespace App\Enums;
 
+use App\Trait\EnumHelpers;
+
 enum ProductStatusesEnum: string
 {
+    use EnumHelpers;
+
     case RETIRED = 'Retired';
     case ACTIVE = 'Active';
     case INACTIVE = 'Inactive';
