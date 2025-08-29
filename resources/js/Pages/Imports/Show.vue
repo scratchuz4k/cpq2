@@ -23,23 +23,28 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Imports', url: '/impor
             </Header>
 
             <Panel class="mt-3" header="Import Data:" :toggleable="true">
-                <p><b>File name:</b> {{ props.importObject?.name }}</p>
-                <p><b>Status:</b> {{ props.importObject?.status }}</p>
-                <p><b>Overwrite flag:</b> {{ props.importObject?.overwrite }}</p>
+                <p><b>File name:</b> {{ props.importObject.name }}</p>
+                <p><b>Status:</b> {{ props.importObject.status }}</p>
+                <p><b>Overwrite flag:</b> {{ props.importObject.overwrite }}</p>
                 <p><b>Imported by:</b> {{ props.importObject.user.name }}</p>
-                <p><b>Imported on:</b> {{ format.date(props.importObject?.created_at) }}</p>
+                <p><b>Imported on:</b> {{ format.date(props.importObject.created_at) }}</p>
             </Panel>
 
             <Panel class="mt-3" header="Import Results:" :toggleable="true">
-                <p><b>Rows Processed:</b> {{ props.importObject?.data?.processed }}</p>
-                <p><b>Rows successfully imported:</b> {{ props.importObject?.data?.success }}</p>
-                <p><b>Rows Skipped:</b> {{ props.importObject?.data?.skipped }}</p>
+                <p><b>Rows Processed:</b> {{ props.importObject.data?.processed }}</p>
+                <p><b>Rows successfully imported:</b> {{ props.importObject.data?.success }}</p>
+                <p><b>Rows Skipped:</b> {{ props.importObject.data?.skipped }}</p>
                 <br />
                 <p class="fw-semibold">Errors</p>
-                <ul v-if="props.importObject?.errors?.length > 0">
-                    <li v-for="(row, index) in results.errors" :key="index">
-                        {{ row.row.name || 'Unknown' }} ({{ row.row.email || 'Unknown' }}):
-                        <span v-for="(error, key) in row.error" :key="key">{{ error }}</span>
+                <ul v-if="props.importObject.data?.errors?.length > 0">
+                    <li class="rows" v-for="(row, index) in props.importObject.data.errors" :key="index">
+                        {{ row.row.name || 'Unknown' }} (SKU: {{ row.row.sku || 'Unknown' }}):
+                        <ul>
+                            <li v-if="row.errors" v-for="(error, key) in row.errors" :key="key">
+                                {{ error }}
+                            </li>
+                            <li v-else>{{ row.error }}</li>
+                        </ul>
                     </li>
                 </ul>
                 <p v-else>No errors occurred.</p>
@@ -49,11 +54,11 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Imports', url: '/impor
 </template>
 
 <style scoped>
-li {
+li.rows {
     counter-increment: item;
     margin-bottom: 5px;
 }
-li:before {
+li.rows:before {
     margin-right: 10px;
     content: counter(item);
     background: var(--color-purple-light);

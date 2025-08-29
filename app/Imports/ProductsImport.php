@@ -102,7 +102,7 @@ class ProductsImport implements ToCollection, WithBatchInserts, WithHeadingRow
 
             if ($validator->fails()) {
                 $this->results['skipped']++;
-                $this->results['errors'][] = ['row' => $product, 'error' => 'Product has already been added!'];
+                $this->results['errors'][] = ['row' => $product, 'errors' => $validator->errors()->all()];
 
                 return null;
             }
