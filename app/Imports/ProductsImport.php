@@ -9,6 +9,7 @@ use App\Models\PricePlan;
 use App\Models\Product;
 use App\Models\Supplier;
 use App\Models\Tenant;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
@@ -54,26 +55,26 @@ class ProductsImport implements ToCollection, WithBatchInserts, WithHeadingRow
             $currentProduct = array_shift($this->productsWithParent);
         }
 
-        $product = Product::find($currentProduct['parent_id']);
+        $parent = Product::where('sku', $currentProduct['parent_sku'])->first();
 
-        if ($product) {
-            $this->insertProduct($currentProduct, $product->id);
+        if ($parent) {
+            $this->insertProduct($currentProduct, $parent->id);
         } else {
-            $productKey = array_search($currentProduct['parent_id'], array_column($this->productsWithParent, 'id'), false);
+            $productKey = array_search($currentProduct['parent_sku'], array_column($this->productsWithParent, 'id'), false);
 
             if ($productKey !== false) {
                 $this->processProductsWithParent($productKey);
 
-                $newParent = Product::find($currentProduct['parent_id']);
+                $newParent = Product::find($currentProduct['parent_sku']);
                 if (! empty($newParent)) {
                     $this->insertProduct($currentProduct, $newParent->id);
                 } else {
                     $this->results['skipped']++;
-                    $this->results['errors'][] = ['row' => $currentProduct, 'error' => 'Parent Product with id: "'.$currentProduct['parent_id'].'" not found!'];
+                    $this->results['errors'][] = ['row' => $currentProduct, 'error' => 'Parent Product with SKU: "'.$currentProduct['parent_sku'].'" not found!'];
                 }
             } else {
                 $this->results['skipped']++;
-                $this->results['errors'][] = ['row' => $currentProduct, 'error' => 'Parent Product with id: "'.$currentProduct['parent_id'].'" not found!'];
+                $this->results['errors'][] = ['row' => $currentProduct, 'error' => 'Parent Product with SKU: "'.$currentProduct['parent_sku'].'" not found!'];
             }
         }
 
@@ -87,7 +88,7 @@ class ProductsImport implements ToCollection, WithBatchInserts, WithHeadingRow
      *
      * @return void
      */
-    private function insertProduct(array $product, ?int $managerId = null)
+    private function insertProduct(array $product, ?int $parentId = null)
     {
         try {
             $rules = (new ProductCreateRequest)->rules();
@@ -109,13 +110,15 @@ class ProductsImport implements ToCollection, WithBatchInserts, WithHeadingRow
             $productData = [
                 'name' => $product['name'] ?? '',
                 'description' => $product['description'] ?? '',
-                'expires_at' => (isset($product['expires_at']) && ! empty($product['expires_at'])) ? $product['expires_at'] : null,
+                'expires_at' => (isset($product['expires_at']) && ! empty($product['expires_at']))
+                     ? Carbon::parse($product['expires_at'])->endOfDay()
+                    : null,
                 'is_active' => (isset($product['is_active']) && ! empty($product['is_active'])) && (int) $product['is_active'] === 1 ? 1 : 0,
                 'supplier_id' => (isset($product['supplier_id']) && ! empty($product['supplier_id'])) ? Supplier::find($product['supplier_id'])->id : null,
                 'brand_id' => (isset($product['brand_id']) && ! empty($product['brand_id'])) ? Brand::find($product['brand_id'])->id : null,
                 'price_plan_id' => (isset($product['price_plan_id']) && ! empty($product['price_plan_id'])) ? PricePlan::find($product['price_plan_id'])->id : null,
                 'category_id' => (isset($product['category_id']) && ! empty($product['category_id'])) ? Category::find($product['category_id'])->id : null,
-                //                'parent_id' => '',
+                'parent_id' => $parentId,
             ];
 
             if ($this->overwrite) {
@@ -153,7 +156,7 @@ class ProductsImport implements ToCollection, WithBatchInserts, WithHeadingRow
         foreach ($rows as $row) {
             $row = array_map(fn ($value) => trim((string) $value), $row->toArray());
             $this->results['processed']++;
-            if (empty($row['parent_id'])) {
+            if (empty($row['parent_sku'])) {
                 $this->insertProduct($row);
             } else {
                 $this->productsWithParent[] = $row;
