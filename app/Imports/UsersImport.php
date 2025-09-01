@@ -161,4 +161,26 @@ class UsersImport implements ToCollection, WithBatchInserts, WithHeadingRow
             '*.name' => 'required|string|max:255',
         ];
     }
+
+    public static function getImportTemplate()
+    {
+        $dummyUsers = User::factory()->count(10)->make();
+
+        $data = $dummyUsers->map(function ($item) {
+            return [
+                'name' => $item->name,
+                'email' => $item->email,
+                'password' => $item->password,
+                'sso' => $item->sso,
+                'managername' => fake()->optional()->word(),
+            ];
+        });
+
+        $filename = 'import_users_template.csv';
+
+        return [
+            'data' => $data,
+            'filename' => $filename,
+        ];
+    }
 }

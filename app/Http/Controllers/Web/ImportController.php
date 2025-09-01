@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers\Web;
 
-use App\Export\ImportTemplate;
+use App\Enums\ImportsEnum;
+use App\Export\ExportCSVTemplate;
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\ImportCreateRequest;
 use App\Http\Resources\ImportResource;
 use App\Jobs\ImporsJob;
 use App\Models\Import;
-use App\Models\Product;
 use App\Services\ImportService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -29,7 +29,10 @@ class ImportController extends BaseController
      */
     public function index()
     {
-        return Inertia::render('Imports/Index');
+        return Inertia::render('Imports/Index', [
+            'imports' => ImportsEnum::names(),
+            'model' => request()->get('model') ?? null,
+        ]);
     }
 
     /**
@@ -37,7 +40,7 @@ class ImportController extends BaseController
      */
     public function create()
     {
-        return Inertia::render('Imports/Create');
+        //
     }
 
     /**
@@ -95,20 +98,15 @@ class ImportController extends BaseController
      */
     public function export(Request $request)
     {
-        $p = Product::all();
+        $model = $request->input('model') ?? null;
+        if ($model) {
+            $importClass = ImportsEnum::tryFromName($model)->value;
+            $importHandler = new $importClass;
+            $template = $importHandler::getImportTemplate();
 
-        $dummyProduct = Product::factory()->count(10)->make();
+            return Excel::download(new ExportCSVTemplate($importHandler::class, $template['data']), $template['filename']);
+        }
 
-        $dummyProduct->each(function ($item) {
-            $item->price_code = fake()->optional()->numberBetween(1, 999);
-            $item->price_cost = $item->price_code ? fake()->optional()->numberBetween(1, 999) : null;
-            $item->price_net = $item->price_code ? fake()->optional()->numberBetween(1, 999) : null;
-            $item->parent_sku = fake()->optional()->slug(2);
-        });
-
-        //        $dummyPrice = Price::factory()->count(10)->make();
-        $filename = 'import_products_template.csv';
-
-        return Excel::download(new ImportTemplate(Product::class, $dummyProduct), $filename);
+        return parent::export($request);
     }
 }

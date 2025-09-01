@@ -13,6 +13,7 @@ class Import extends Model
 
     protected $fillable = [
         'name',
+        'model',
         'file_id',
         'status',
         'user_id',

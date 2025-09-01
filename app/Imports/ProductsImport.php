@@ -180,4 +180,40 @@ class ProductsImport implements ToCollection, WithBatchInserts, WithHeadingRow
     {
         return 1;
     }
+
+    public static function getImportTemplate()
+    {
+        $dummyProducts = Product::factory()->count(10)->make();
+
+        $dummyProducts->each(function ($item) {
+            $item->price_code = fake()->numberBetween(1, 999);
+            $item->price_cost = fake()->numberBetween(1, 999);
+            $item->price_net = fake()->numberBetween(1, 999);
+            $item->parent_sku = fake()->optional()->slug(2);
+        });
+
+        $data = $dummyProducts->map(function ($item) {
+            return [
+                'sku' => $item->sku,
+                'name' => $item->name,
+                'description' => $item->description,
+                'supplier_id' => $item->supplier_id,
+                'category_id' => $item->category_id,
+                'status' => $item->status,
+                'expires_at' => $item->expires_at,
+                'price_code' => $item->price_code,
+                'price_cost' => $item->price_cost,
+                'price_net' => $item->price_net,
+                'price_plan_id' => $item->price_plan_id,
+                'parent_sku' => $item->parent_sku,
+            ];
+        });
+
+        $filename = 'import_products_template.csv';
+
+        return [
+            'data' => $data,
+            'filename' => $filename,
+        ];
+    }
 }

@@ -2,8 +2,8 @@
 
 namespace App\Jobs;
 
+use App\Enums\ImportsEnum;
 use App\Enums\ImportStatusesEnum;
-use App\Imports\ProductsImport;
 use App\Models\Import;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
@@ -13,14 +13,15 @@ class ImporsJob implements ShouldQueue
 {
     use Queueable;
 
-    public ProductsImport $productsImport;
+    public $importHandler;
 
     /**
      * Create a new job instance.
      */
     public function __construct(public Import $import, public bool $overwrite = false)
     {
-        $this->productsImport = new ProductsImport($overwrite);
+        $importClass = ImportsEnum::tryFromName($this->import->model)->value;
+        $this->importHandler = new $importClass;
     }
 
     /**
@@ -30,11 +31,11 @@ class ImporsJob implements ShouldQueue
     {
         $resource = $this->import->file;
 
-        Excel::import($this->productsImport, $resource->route);
+        Excel::import($this->importHandler, $resource->route);
 
         $this->import->update([
             'status' => ImportStatusesEnum::COMPLETED->name,
-            'data' => $this->productsImport->results,
+            'data' => $this->importHandler->results,
         ]);
     }
 
@@ -42,7 +43,7 @@ class ImporsJob implements ShouldQueue
     {
         $this->import->update([
             'status' => ImportStatusesEnum::FAILURE->name,
-            'data' => $this->productsImport->results,
+            'data' => $this->importHandler->results,
         ]);
     }
 }

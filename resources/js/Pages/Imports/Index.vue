@@ -4,31 +4,47 @@ import { Head, Link, usePage } from '@inertiajs/vue3';
 import { reactive, ref } from 'vue';
 import Header from '@/Components/Header.vue';
 import Datatable from '@/Components/Datatable.vue';
-import { Dialog, Button, Checkbox } from 'primevue';
+import { Dialog, Button, Checkbox, Select } from 'primevue';
 import { exportData } from '@/Composables/export.js';
+import queryString from 'query-string';
 
 const page = usePage();
+const props = defineProps({
+    imports: Array,
+    model: {
+        type: String,
+        default: 'Product'
+    }
+});
 const showForm = ref(false);
 const isLoading = ref(false);
 const onFileChange = (event) => {
-    formFile.file = event.target.files[0];
+    form.file = event.target.files[0];
 };
 
-const formFile = reactive({
+const form = reactive({
     file: null,
-    overwrite: 0
+    overwrite: 0,
+    model: props.model ?? props.imports[0]
 });
 
 const getTemplateFile = async () => {
-    exportData('', '/imports');
+    exportData(
+        queryString.stringify({
+            model: form.model,
+            template: true
+        }),
+        '/imports'
+    );
 };
 
 const submitFile = async () => {
     isLoading.value = true;
 
     const formData = new FormData();
-    formData.append('file', formFile.file);
-    formData.append('overwrite', formFile.overwrite);
+    formData.append('file', form.file);
+    formData.append('overwrite', form.overwrite);
+    formData.append('model', form.model);
 
     try {
         let res = await axios.post('/imports', formData, {
@@ -47,8 +63,9 @@ const submitFile = async () => {
         notyf.error(err?.response?.data?.message ?? 'Something went wrong');
         return false;
     } finally {
-        formFile.overwrite = 0;
+        form.overwrite = 0;
         isLoading.value = false;
+        isLoading.value = null;
     }
 };
 
@@ -76,6 +93,7 @@ const items = ref([{ label: 'Home', url: '/' }, { label: `Imports` }]);
                         { data: 'id', title: 'ID', style: 'width:20%' },
                         { data: 'name', title: 'Name', style: 'width:20%' },
                         { data: 'status', title: 'Status', style: 'width:20%' },
+                        { data: 'model', title: 'Model', style: 'width:20%' },
                         { data: 'user.name', title: 'Imported By', style: 'width:20%' },
                         { data: 'created_at', title: 'Updated At', style: 'width:20%' }
                     ]"
@@ -95,11 +113,22 @@ const items = ref([{ label: 'Home', url: '/' }, { label: `Imports` }]);
             :breakpoints="{ '1199px': '75vw', '575px': '90vw' }"
             :draggable="false"
             position="top"
-            header="Import Products by CSV file"
+            header="Import by CSV file"
         >
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 pb-2">
                 <hr class="mt-0" />
                 <form @submit.prevent="submitFile" enctype="multipart/form-data">
+                    <div class="mb-3">
+                        {{ imports }}
+                        <label for="import" class="form-label">Imports:</label>
+                        <Select
+                            inputId="import"
+                            v-model="form.model"
+                            :options="props.imports"
+                            placeholder="Select a Import"
+                            class="w-100"
+                        />
+                    </div>
                     <input type="file" accept=".csv" required @input="onFileChange" />
                     <p class="py-2">
                         Download a
@@ -111,7 +140,7 @@ const items = ref([{ label: 'Home', url: '/' }, { label: `Imports` }]);
                     <div class="form-check px-0 pt-2">
                         <Checkbox
                             id="overwrite-products"
-                            v-model="formFile.overwrite"
+                            v-model="form.overwrite"
                             binary
                             trueValue="1"
                             falseValue="0"

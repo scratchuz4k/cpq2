@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enums\ImportsEnum;
 use App\Enums\ImportStatusesEnum;
 use App\Models\Import;
 use App\Models\Resource;
@@ -28,6 +29,7 @@ class ImportService
             'name' => $resource->title ?? '',
             'file_id' => $resource->id ?? null,
             'status' => ImportStatusesEnum::IN_PROGRESS->name,
+            'model' => ImportsEnum::tryFromName($array['model'])->name ?? ImportsEnum::Product->name,
             'user_id' => $user->id,
             'overwrite' => $overwrite,
             'tenant_id' => $user->tenant_id,
