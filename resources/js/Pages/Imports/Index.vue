@@ -119,7 +119,6 @@ const items = ref([{ label: 'Home', url: '/' }, { label: `Imports` }]);
                 <hr class="mt-0" />
                 <form @submit.prevent="submitFile" enctype="multipart/form-data">
                     <div class="mb-3">
-                        {{ imports }}
                         <label for="import" class="form-label">Imports:</label>
                         <Select
                             inputId="import"

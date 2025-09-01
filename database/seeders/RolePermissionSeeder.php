@@ -62,6 +62,7 @@ class RolePermissionSeeder extends Seeder
                 'export' => 'Export',
                 'group' => 'Groups',
                 'blacklist' => 'Blacklists',
+                'import' => 'Import',
             ],
         ];
 
@@ -77,7 +78,7 @@ class RolePermissionSeeder extends Seeder
                     'quote', 'quote_item', 'order', 'order_item', 'merchant', 'account', 'contact',
                     'price', 'product', 'category', 'region', 'tenant', 'brand', 'supplier',
                     'spa', 'user', 'solution_type', 'api', 'price_plan', 'activity', 'email_template', 'email_history',
-                    'group', 'blacklist',
+                    'group', 'blacklist', 'import',
                 ],
                 'simple_permission' => ['viewAny export'],
             ],
