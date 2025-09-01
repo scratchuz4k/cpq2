@@ -190,6 +190,8 @@ class ProductsImport implements ToCollection, WithBatchInserts, WithHeadingRow
             $item->price_cost = fake()->numberBetween(1, 999);
             $item->price_net = fake()->numberBetween(1, 999);
             $item->parent_sku = fake()->optional()->slug(2);
+            $item->supplier_id = fake()->numberBetween(1, 99);
+            $item->category_id = fake()->numberBetween(1, 99);
         });
 
         $data = $dummyProducts->map(function ($item) {

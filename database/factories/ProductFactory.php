@@ -28,8 +28,6 @@ class ProductFactory extends Factory
             'sku' => Str::slug($product_name),
             'name' => $product_name,
             'description' => fake()->optional()->text(),
-            'supplier_id' => fake()->optional()->numberBetween(1, 99),
-            'category_id' => fake()->numberBetween(1, 99),
             'status' => ProductStatusesEnum::randomValue(),
             'expires_at' => optional(fake()->optional(0.7)->dateTimeBetween('now', '+30 days'))->format('Y-m-d'),
             'price_plan_id' => random_int(1, 2),
