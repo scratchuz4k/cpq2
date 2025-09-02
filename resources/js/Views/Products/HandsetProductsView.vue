@@ -105,7 +105,7 @@ const getProductsShopBlocks = async () => {
         filters: JSON.stringify(temp),
         order: sort.value.order,
         orderBy: sort.value.orderBy,
-        columns: ['name', 'description'],
+        columns: ['name,description,model.name'],
         search: search.value,
         account_id: quote.account_id
     });
@@ -220,6 +220,7 @@ watch(
                         id="product-brands"
                         url="/shop-blocks/brands"
                         :fields="['name']"
+                        :query="[{ column: 'products.category_id', operator: 'equals', value: 22 }]"
                         v-model="filters.brands"
                         placeholder="All"
                     >
