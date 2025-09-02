@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\ShopBlocks;
 
 use App\Enums\PricePlanEnum;
 use App\Helpers\DataProvider;
+use App\Helpers\DimensionFilters;
 use App\Helpers\FilterProvider;
 use App\Helpers\Prices\PriceRules;
 use App\Http\Controllers\BaseController;
@@ -31,6 +32,7 @@ class ProductController extends BaseController
     public function index(IndexRequest $request)
     {
         $dataProvider = new DataProvider(Product::class);
+        $dataProvider->builder = DimensionFilters::build($dataProvider->builder);
         try {
             $items = $dataProvider->getCollection();
         } catch (Exception $e) {

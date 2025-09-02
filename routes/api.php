@@ -28,9 +28,11 @@ use App\Http\Controllers\Api\ResourceController;
 use App\Http\Controllers\Api\SharedLinkController;
 use App\Http\Controllers\Api\ShopBlocks\BrandController as ShopBlocksBrandController;
 use App\Http\Controllers\Api\ShopBlocks\CategoryController as ShopBlocksCategoryController;
+use App\Http\Controllers\Api\ShopBlocks\DimensionController;
+use App\Http\Controllers\Api\ShopBlocks\DimensionTypeController;
 use App\Http\Controllers\Api\ShopBlocks\ModelController as ShopBlocksModelController;
 use App\Http\Controllers\Api\ShopBlocks\ProductController as ShopBlocksProductController;
-use App\Http\Controllers\Api\ShopBlocks\ProductFeatureController;
+use App\Http\Controllers\Api\ShopBlocks\ProductDimensionController;
 use App\Http\Controllers\Api\SolutionTypeController;
 use App\Http\Controllers\Api\SpaController;
 use App\Http\Controllers\Api\SupplierController;
@@ -44,11 +46,13 @@ Route::post('generate-auth-token', [IntegrateAuthController::class, 'createToken
 
 Route::middleware(['api', 'auth:sanctum'])->group(function () {
     Route::prefix('shop-blocks')->group(callback: function () {
+        Route::get('dimensions', [DimensionController::class, 'index']);
+        Route::get('dimension-types', [DimensionTypeController::class, 'index']);
         Route::get('models', [ShopBlocksModelController::class, 'index']);
         Route::get('brands', [ShopBlocksBrandController::class, 'index']);
         Route::get('products', [ShopBlocksProductController::class, 'index']);
         Route::get('products/{article}', [ShopBlocksProductController::class, 'show']);
-        Route::get('product-features', [ProductFeatureController::class, 'index']);
+        Route::get('product-dimensions', [ProductDimensionController::class, 'index']);
         Route::get('categories', [ShopBlocksCategoryController::class, 'index']);
     });
 

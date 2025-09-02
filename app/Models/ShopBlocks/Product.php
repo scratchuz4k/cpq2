@@ -3,6 +3,7 @@
 namespace App\Models\ShopBlocks;
 
 use Illuminate\Database\Eloquent\Model as EloquentModel;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Product extends EloquentModel
 {
@@ -15,6 +16,7 @@ class Product extends EloquentModel
     protected function casts(): array
     {
         return [
+            'stock' => 'float',
             'images' => 'array',
             'price' => 'array',
         ];
@@ -33,5 +35,10 @@ class Product extends EloquentModel
     public function model()
     {
         return $this->belongsTo(Model::class);
+    }
+
+    public function dimensions(): BelongsToMany
+    {
+        return $this->belongsToMany(Dimension::class, 'product_dimensions');
     }
 }
