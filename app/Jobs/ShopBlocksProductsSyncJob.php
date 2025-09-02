@@ -7,9 +7,11 @@ use App\Helpers\Api\ShopBlocksApi;
 use App\Models\PricePlan;
 use App\Models\ShopBlocks\Brand;
 use App\Models\ShopBlocks\Category;
+use App\Models\ShopBlocks\Dimension;
+use App\Models\ShopBlocks\DimensionType;
 use App\Models\ShopBlocks\Model;
 use App\Models\ShopBlocks\Product;
-use App\Models\ShopBlocks\ProductFeature;
+use App\Models\ShopBlocks\ProductDimension;
 use DOMDocument;
 use DOMXPath;
 use Exception;
@@ -63,19 +65,21 @@ class ShopBlocksProductsSyncJob implements NotTenantAware, ShouldQueue
             $temp = $this->getProduct($product);
             $temp['price_plan_id'] = $pricePlanId;
             $temp['expire_at'] = $this->expire_at;
+
+            $temp = $this->getBrandAndModel($product, $temp);
+            $temp = $this->getCategory($product, $temp);
             $temp = Product::updateOrCreate(
                 ['sku' => $sku],
                 [...$temp]
             );
 
-            $this->getBrandAndModel($product, $temp);
-            $this->getCategory($product, $temp);
-
             $this->getFeaturesFromContent($temp, $product['tabbed_content'], $this->expire_at);
         }
         $temp = Cache::get('shopblocks-sync-status');
-        array_push($temp['synced'], $this->page);
-        Cache::put('shopblocks-sync-status', ['synced' => $temp['synced'], 'last_page' => $temp['last_page'], 'started_at' => $temp['started_at']], 30);
+        if (is_array($temp) && array_key_exists('synced', $temp)) {
+            array_push($temp['synced'], $this->page);
+            Cache::put('shopblocks-sync-status', ['synced' => $temp['synced'], 'last_page' => $temp['last_page'], 'started_at' => $temp['started_at']], 30);
+        }
 
         if (($this->page == $temp['last_page'] || count($temp['synced']) == $temp['last_page']) && env('DISCORD_SHOPBLOCKS_JOBS')) {
             $allPages = range(1, $temp['last_page']);
@@ -144,15 +148,25 @@ class ShopBlocksProductsSyncJob implements NotTenantAware, ShouldQueue
 
     private function getCategory($product, $temp)
     {
-        $code = $product['category']['id'];
-        $category = Category::updateOrCreate(['code' => $code], $product['category']);
-        $category->products()->save($temp);
+        $category = $product['category'];
+        $code = $category['id'];
+        unset($category['id']);
+        if (! is_null($category['parent_id'])) {
+            $cat = Category::where('code', $category['parent_id'])->first();
+
+            $category['parent_id'] = $cat?->id;
+        }
+
+        $category = Category::updateOrCreate(['code' => $code], $category);
+        $temp['category_id'] = $category->id;
+
+        return $temp;
     }
 
     private function getFeaturesFromContent($product, $contents, $expire_at)
     {
         $result = [];
-        ProductFeature::where('product_id', $product->id)->delete();
+        // ProductFeature::where('product_id', $product->id)->delete();
 
         if (is_null($contents)) {
             return;
@@ -179,13 +193,22 @@ class ShopBlocksProductsSyncJob implements NotTenantAware, ShouldQueue
                     if ($tds->length == 2 && $currentSection) {
                         $key = trim((string) $tds->item(0)->textContent);
                         $value = trim((string) $tds->item(1)->textContent);
-                        array_push($result, ['group' => $currentSection, 'key' => Str::slug($key), 'label' => $key, 'value' => $value]);
+                        $dimType = DimensionType::updateOrCreate(
+                            ['group' => $currentSection, 'key' => Str::slug($key)],
+                            ['label' => $key]
+                        );
+
+                        $dim = Dimension::updateOrCreate(
+                            ['dimension_type_id' => $dimType->id, 'value' => $value]
+                        );
+                        if (! ProductDimension::where('dimension_type_id', $dimType->id)->where('product_id', $product->id)->first()) {
+                            ProductDimension::updateOrCreate(['dimension_type_id' => $dimType->id, 'dimension_id' => $dim->id, 'product_id' => $product->id]);
+                        }
                     }
                 }
             }
 
         }
-        ProductFeature::insert(['product_id' => $product->id, 'items' => $result, 'expire_at' => $expire_at]);
     }
 
     private function getBrandAndModel($product, $temp)
@@ -194,11 +217,12 @@ class ShopBlocksProductsSyncJob implements NotTenantAware, ShouldQueue
         if (! is_null($product['brand'])) {
             unset($product['brand']['id']);
             $brand = Brand::updateOrCreate(['code' => $product['brand']['slug']], $product['brand']);
-            $brand->products()->save($temp);
+            $temp['brand_id'] = $brand->id;
         }
+
         $modelName = (string) Str::of($product['name'])->words(3, '');
         $model = Model::updateOrCreate(['brand_id' => $brand?->id, 'code' => Str::slug($modelName)], ['name' => $modelName]);
-        $model->products()->save($temp);
+        $temp['model_id'] = $model->id;
 
         return $temp;
     }
