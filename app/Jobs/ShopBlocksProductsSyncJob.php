@@ -79,21 +79,21 @@ class ShopBlocksProductsSyncJob implements NotTenantAware, ShouldQueue
         if (is_array($temp) && array_key_exists('synced', $temp)) {
             array_push($temp['synced'], $this->page);
             Cache::put('shopblocks-sync-status', ['synced' => $temp['synced'], 'last_page' => $temp['last_page'], 'started_at' => $temp['started_at']], 30);
-        }
 
-        if (($this->page == $temp['last_page'] || count($temp['synced']) == $temp['last_page']) && env('DISCORD_SHOPBLOCKS_JOBS')) {
-            $allPages = range(1, $temp['last_page']);
-            $missingPages = array_diff($allPages, $temp['synced']);
+            if (($this->page == $temp['last_page'] || count($temp['synced']) == $temp['last_page']) && env('DISCORD_SHOPBLOCKS_JOBS')) {
+                $allPages = range(1, $temp['last_page']);
+                $missingPages = array_diff($allPages, $temp['synced']);
 
-            if (count($missingPages)) {
-                $res = 'Missing Pages: '.json_encode(array_values($missingPages));
-                $date1 = Carbon::parse($temp['started_at']);
-                $date2 = Carbon::parse(now());
-                $interval = $date1->diff($date2);
-                $timeDiff = sprintf('%02d:%02d:%02d', ($interval->d * 24) + $interval->h, $interval->i, $interval->s);
+                if (count($missingPages)) {
+                    $res = 'Missing Pages: '.json_encode(array_values($missingPages));
+                    $date1 = Carbon::parse($temp['started_at']);
+                    $date2 = Carbon::parse(now());
+                    $interval = $date1->diff($date2);
+                    $timeDiff = sprintf('%02d:%02d:%02d', ($interval->d * 24) + $interval->h, $interval->i, $interval->s);
 
-                $message = '['.strtoupper(env('APP_ENV')).'] ShopBlocksProducts Finished: '.$res.' ( Duration: '.$timeDiff.')';
-                Http::post(env('DISCORD_SHOPBLOCKS_JOBS'), ['content' => $message]);
+                    $message = '['.strtoupper(env('APP_ENV')).'] ShopBlocksProducts Finished: '.$res.' ( Duration: '.$timeDiff.')';
+                    Http::post(env('DISCORD_SHOPBLOCKS_JOBS'), ['content' => $message]);
+                }
             }
         }
     }
