@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\ActivityController;
 use App\Http\Controllers\Api\ApiController;
 use App\Http\Controllers\Api\BrandController;
 use App\Http\Controllers\Api\CategoryController;
+use App\Http\Controllers\Api\Cloudmarket\ProductController as CloudmarketProductController;
 use App\Http\Controllers\Api\ContactController;
 use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\EmailHistoryController;
@@ -50,6 +51,10 @@ Route::middleware(['api', 'auth:sanctum'])->group(function () {
         Route::get('products/{article}', [ShopBlocksProductController::class, 'show']);
         Route::get('product-features', [ProductFeatureController::class, 'index']);
         Route::get('categories', [ShopBlocksCategoryController::class, 'index']);
+    });
+
+    Route::prefix('cloudmarket')->group(callback: function () {
+        Route::get('products', [CloudmarketProductController::class, 'index']);
     });
 
     Route::prefix('external')->group(function () {
