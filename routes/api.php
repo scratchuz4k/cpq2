@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\ActivityController;
 use App\Http\Controllers\Api\ApiController;
 use App\Http\Controllers\Api\BrandController;
 use App\Http\Controllers\Api\CategoryController;
+use App\Http\Controllers\Api\Cloudmarket\AddressController as CloudmarketAddressController;
 use App\Http\Controllers\Api\Cloudmarket\ProductController as CloudmarketProductController;
 use App\Http\Controllers\Api\ContactController;
 use App\Http\Controllers\Api\DashboardController;
@@ -54,13 +55,13 @@ Route::middleware(['api', 'auth:sanctum'])->group(function () {
     });
 
     Route::prefix('cloudmarket')->group(callback: function () {
+        Route::get('address', [CloudmarketAddressController::class, 'index']);
         Route::get('products', [CloudmarketProductController::class, 'index']);
     });
 
     Route::prefix('external')->group(function () {
         Route::post('get-address-by-postcode', [ExternalController::class, 'getAddressesByPostCode']);
         Route::post('get-position-by-address', [ExternalController::class, 'getPositionByAddress']);
-        Route::post('get-articles-from-cloud-market', [ExternalController::class, 'getArticlesFromCloudMarket']);
     });
 
     Route::prefix('shop-blocks')->group(callback: function () {

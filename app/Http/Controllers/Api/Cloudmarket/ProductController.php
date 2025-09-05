@@ -2,25 +2,23 @@
 
 namespace App\Http\Controllers\Api\Cloudmarket;
 
-use App\Enums\PricePlanEnum;
-use App\Helpers\DataProvider;
-use App\Helpers\FilterProvider;
-use App\Helpers\Prices\PriceRules;
+use App\Enums\CloudMarketSuppliersEnum;
+use App\Helpers\Api\CloudMarketAddress;
 use App\Http\Controllers\BaseController;
-use App\Http\Requests\IndexRequest;
 use App\Http\Resources\ShopBlocks\ProductResource;
-use App\Models\Account;
+use App\Models\Api;
 use App\Models\Cloudmarket\Product;
-use App\Models\PricePlan;
-use App\Services\External\ShopBlocksService;
+use App\Models\Quote;
+use App\Services\External\CloudMarketService;
 use Dedoc\Scramble\Attributes\ExcludeRouteFromDocs;
 use Exception;
+use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Pagination\LengthAwarePaginator;
 
 class ProductController extends BaseController
 {
-    public function __construct(protected ShopBlocksService $shopBlocksService) {}
+    public function __construct(protected CloudMarketService $cloudMarketService) {}
 
     /**
      * List of Products
@@ -28,41 +26,59 @@ class ProductController extends BaseController
      * @response AnonymousResourceCollection<LengthAwarePaginator<ProductResource>>
      */
     #[ExcludeRouteFromDocs]
-    public function index(IndexRequest $request)
+    public function index(Request $request)
     {
-        $dataProvider = new DataProvider(Product::class);
-        try {
-            $items = $dataProvider->getCollection();
-        } catch (Exception $e) {
-            return $e->getMessage();
+        $quote = Quote::find($request->get('quote_id'));
+        if (! $quote) {
+            throw new Exception('Quote not found!');
         }
 
-        $priceRules = new PriceRules;
-        $account = Account::where('id', $request->input('account_id', null))->first();
-        $pricePlan = PricePlan::where('code', PricePlanEnum::SINGLE->name)->first();
-        $priceRules->find(account: $account, pricePlan: $pricePlan);
+        if (! env('CLOUDMARKET_CONNECTION_LIVE_DATA')) {
+            $mock_prices = storage_path('mocks/prices.json');
+            if (! is_file($mock_prices)) {
+                return [];
+            }
+            $items = json_decode(file_get_contents($mock_prices), true);
+            $filters = $request->has('filters') ? json_decode($request->filters, true) : [];
 
-        $items = $items->map(function ($item) use ($priceRules) {
-            $net_spa = $priceRules->apply($item->price['net'] ?? 0);
-            $item['price'] = [
-                'net' => $item->price['net'] ?? 0,
-                'net_spa' => $net_spa,
-                'tax' => $net_spa * 0.2,
-                'gross' => $net_spa * 1.2,
-                'active_spas' => $priceRules->getAppliedSpas(),
-            ];
+            return $this->cloudMarketService->sendResponse($items, $filters, 3);
+        }
 
-            return $item;
-        });
+        $address = (object) $quote->address_data;
 
-        $paginator = FilterProvider::slice(collect($items));
-        $items = ProductResource::collection($paginator['items'])->toArray(request());
-
-        return new LengthAwarePaginator(
-            $items,
-            $paginator['total'],
-            $paginator['perPage'],
-            $paginator['currentPage'],
+        $address = new CloudMarketAddress(
+            postCode: $address->postCode ?? null,
+            uprn: $address->uprn ?? null,
+            lat: $address->latitude ?? null,
+            lon: $address->longitude ?? null,
+            addressKey: $address->addressKey ?? null,
+            buildingName: $address->premisesName ?? $address->organisationName ?? null,
+            buildingNumber: $address->buildingNumber ?? null,
+            subPremises: $address->subPremises ?? null,
+            street: $address->thoroughfareName ?? $address->dependentThoroughfareName ?? null,
+            town: $address->postTown ?? $address->locality ?? $address->doubleDependentLocality ?? null,
         );
+
+        $apis = array_map(fn ($case) => $case->value, CloudMarketSuppliersEnum::cases());
+        $apiRecords = Api::active()->whereIn('code', $apis)->get();
+        $apiCodes = $apiRecords->pluck('code')->sort()->implode('');
+
+        $configs = '';
+        $configs .= 'speed:'.(array_key_exists('speed', $quote->configs) ? $quote->configs['speed'] : '10');
+        $configs .= 'bearer:'.(array_key_exists('bearer', $quote->configs) ? $quote->configs['bearer'] : '100');
+        $configs .= 'contract_length:'.(array_key_exists('contract_length', $quote->configs) ? $quote->configs['contract_length'] : '0');
+        $configs .= 'managed:'.(array_key_exists('managed', $quote->configs) ? $quote->configs['managed'] : '0');
+
+        $filename = 'live_prices_'.$address->toString().'_'.md5($apiCodes.$configs).'.json';
+        if (! count($apiRecords)) {
+            Product::write($filename, [], true, now(), now(), [], [[
+                'provider' => 'CPQ',
+                'response' => 'No provider is configured',
+            ]]);
+        }
+
+        $this->cloudMarketService->get($filename, $quote, $address);
+
+        return $this->cloudMarketService->sendResponse($filename, $request->input('filters', []), 3);
     }
 }

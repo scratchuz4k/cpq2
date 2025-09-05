@@ -4,8 +4,8 @@ namespace App\Jobs;
 
 use App\Helpers\Api\CloudMarketAddress;
 use App\Helpers\Api\CloudMarketApi;
-use App\Helpers\Files\CloudMarketFile;
 use App\Helpers\FilterProvider;
+use App\Models\Cloudmarket\Product;
 use App\Models\Quote;
 use Exception;
 use GuzzleHttp\Psr7\StreamWrapper;
@@ -40,19 +40,16 @@ class CloudMarketConnectivityProducts implements ShouldQueue, TenantAware
     /**
      * Create a new job instance.
      */
-    public function __construct(protected Quote $quote, protected CloudMarketFile $file, protected $connectivityType, protected CloudMarketAddress $address) {}
+    public function __construct(protected Quote $quote, protected string $file, protected CloudMarketAddress $address) {}
 
     /**
      * Execute the job.
      */
     public function handle(): void
     {
-        $res = CloudMarketApi::getQuotes($this->quote, $this->connectivityType, $this->address);
+        $res = CloudMarketApi::getQuotes($this->quote, $this->address);
 
         $this->started_at = now();
-        if (! $this->file->exists()) {
-            throw new Exception('CloudMarketConnectivityProducts: File was not Found!');
-        }
 
         $stream = StreamWrapper::getResource($res->toPsrResponse()->getBody());
         foreach (Items::fromStream($stream) as $value) {
@@ -86,10 +83,10 @@ class CloudMarketConnectivityProducts implements ShouldQueue, TenantAware
 
             $this->prices[] = [...$temp, 'code' => md5(Str::slug($temp['code']))];
             $this->tempFilters = FilterProvider::process($this->tempFilters, $temp);
-            $this->file->write($this->prices, false, null, $this->started_at, $this->tempFilters, $this->errors);
+            Product::write($this->file, $this->prices, false, null, $this->started_at, $this->tempFilters, $this->errors);
         }
 
-        $this->file->write($this->prices, false, now(), $this->started_at, $this->tempFilters, $this->errors);
+        Product::write($this->file, $this->prices, false, now(), $this->started_at, $this->tempFilters, $this->errors);
         Log::info($res->toPsrResponse()->getBody()->getContents());
     }
 
@@ -108,13 +105,14 @@ class CloudMarketConnectivityProducts implements ShouldQueue, TenantAware
             'response' => $exception->getMessage(),
         ];
 
-        $file = $this->file->getContent();
+        $file = Product::where('key', $this->file)->first();
         $file['errors'][] = $error;
 
         // Handle the failure, log exception details, etc.
         $message = '['.strtoupper((string) env('APP_ENV')).'] CloudMarketConnectivityProducts failed with error: '.json_encode($file['errors']);
 
-        $this->file->write($file['data'], false, now(), $file['created_at'], $file['filters'], $file['errors']);
+        Product::write($this->file, $file['data'], false, now(), $file['created_at'], $file['filters'], $file['errors']);
+
         Log::error($message);
         if (env('DISCORD_CLOUDMARKET_JOBS')) {
             Http::post(env('DISCORD_CLOUDMARKET_JOBS'), ['content' => $message]);

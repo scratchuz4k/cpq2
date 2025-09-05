@@ -12,7 +12,7 @@ class CloudMarketApi
 {
     public function __construct() {}
 
-    public static function getQuotes(Quote $quote, $connectivityType, CloudMarketAddress $address)
+    public static function getQuotes(Quote $quote, CloudMarketAddress $address)
     {
 
         $url = env('CLOUDMARKET_CONNECTION_SERVICE_URL', 'https://cpq-poc-uat-api.cloudmarket.com');
@@ -20,7 +20,7 @@ class CloudMarketApi
         $apis = Api::active()->whereIn('code', CloudMarketSuppliersEnum::values())->get();
 
         $quoteAddress = [
-            'ConnectivityType' => $connectivityType,
+            'ConnectivityType' => 3,
             'Address1.Postcode' => $address->postCode,
             'Address1.Latitude' => $address->lat,
             'Address1.Longitude' => $address->lon,

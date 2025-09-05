@@ -35,7 +35,7 @@ const quote = reactive({
     solutionCheck: true
 });
 
-const submit = () => {
+const submit = async () => {
     if (!quote.account || !quote.solution_type) {
         return;
     }
@@ -47,7 +47,7 @@ const submit = () => {
     }
 
     try {
-        router.post('/quotes', {
+        await router.post('/quotes', {
             account_id: quote.account?.id,
             address_position: quote.position,
             address_city: quote.address?.postTown,
