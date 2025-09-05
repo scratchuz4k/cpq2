@@ -33,13 +33,13 @@ class ProductController extends BaseController
             throw new Exception('Quote not found!');
         }
 
+        $filters = $request->has('filters') ? json_decode($request->filters, true) : [];
         if (! env('CLOUDMARKET_CONNECTION_LIVE_DATA')) {
             $mock_prices = storage_path('mocks/prices.json');
             if (! is_file($mock_prices)) {
                 return [];
             }
             $items = json_decode(file_get_contents($mock_prices), true);
-            $filters = $request->has('filters') ? json_decode($request->filters, true) : [];
 
             return $this->cloudMarketService->sendResponse($items, $filters, 3);
         }
@@ -79,6 +79,6 @@ class ProductController extends BaseController
 
         $this->cloudMarketService->get($filename, $quote, $address);
 
-        return $this->cloudMarketService->sendResponse($filename, $request->input('filters', []), 3);
+        return $this->cloudMarketService->sendResponse($filename, $filters, 3);
     }
 }

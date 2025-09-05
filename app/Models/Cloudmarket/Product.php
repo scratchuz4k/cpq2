@@ -17,7 +17,6 @@ class Product extends Model
 
     public static function write(string $filename, array $data, bool $wating_task, $finished_at, $created_at, $filters = [], $errors = [])
     {
-
         $content = [
             'data' => $data,
             'total' => count($data),
@@ -34,6 +33,5 @@ class Product extends Model
         ], $content);
 
         Cache::put($filename, json_encode(['updated_at' => now()]), 86400);
-
     }
 }

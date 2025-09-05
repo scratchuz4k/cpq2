@@ -35,7 +35,7 @@ class CloudMarketService
             CloudMarketConnectivityProducts::dispatch($quote, $filename, $address);
         }
 
-        if (is_null($content?->finished_at) && $createdAt->addMinutes(10)->isPast()) {
+        if (! $content || (is_null($content?->finished_at) && $createdAt->addMinutes(10)->isPast())) {
             Product::write($filename, [], true, null, now());
             CloudMarketConnectivityProducts::dispatch($quote, $filename, $address);
         }
@@ -45,7 +45,7 @@ class CloudMarketService
     public function sendResponse(string $filename, $filters, $connectivityType)
     {
         $content = Product::where('key', $filename)->first();
-        $items = FilterProvider::get($content['data'], []);
+        $items = FilterProvider::get($content->data ?? [], []);
 
         $blacklist = new Blacklist;
         $blacklist_items = $blacklist->getBlacklistedData($items);
@@ -57,7 +57,7 @@ class CloudMarketService
         $items = FilterProvider::get($items->toArray(), $filters);
 
         foreach ($items as $key => $value) {
-            $content['filters'] = FilterProvider::process($content['filters'], $value, true);
+            $content['filters'] = FilterProvider::process($content->filters, $value, true);
         }
 
         $solutionType = SolutionType::where('code', $connectivityType)->first();
@@ -110,7 +110,7 @@ class CloudMarketService
                 'finished_at' => $content['finished_at'],
                 'created_at' => $content['created_at'],
                 'filters' => $content['filters'],
-                'errors' => array_key_exists('errors', $content) ? $content['errors'] : [],
+                'errors' => isset($content->errors) ? $content->errors : [],
             ]
         );
     }
