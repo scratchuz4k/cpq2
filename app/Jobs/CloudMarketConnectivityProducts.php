@@ -11,6 +11,7 @@ use Exception;
 use GuzzleHttp\Psr7\StreamWrapper;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -48,6 +49,7 @@ class CloudMarketConnectivityProducts implements ShouldQueue, TenantAware
     public function handle(): void
     {
         $res = CloudMarketApi::getQuotes($this->quote, $this->address);
+        $time = Carbon::now()->addSeconds(86400);
 
         $this->started_at = now();
 
@@ -83,10 +85,10 @@ class CloudMarketConnectivityProducts implements ShouldQueue, TenantAware
 
             $this->prices[] = [...$temp, 'code' => md5(Str::slug($temp['code']))];
             $this->tempFilters = FilterProvider::process($this->tempFilters, $temp);
-            Product::write($this->file, $this->prices, false, null, $this->started_at, $this->tempFilters, $this->errors);
+            Product::write($this->file, $this->prices, false, null, $this->started_at, $this->tempFilters, $this->errors, $time);
         }
 
-        Product::write($this->file, $this->prices, false, now(), $this->started_at, $this->tempFilters, $this->errors);
+        Product::write($this->file, $this->prices, false, now(), $this->started_at, $this->tempFilters, $this->errors, $time);
         Log::info($res->toPsrResponse()->getBody()->getContents());
     }
 

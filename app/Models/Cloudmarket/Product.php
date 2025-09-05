@@ -15,7 +15,7 @@ class Product extends Model
 
     protected $guarded = [];
 
-    public static function write(string $filename, array $data, bool $wating_task, $finished_at, $created_at, $filters = [], $errors = [])
+    public static function write(string $filename, array $data, bool $wating_task, $finished_at, $created_at, $filters = [], $errors = [], $expire_at = null)
     {
         $content = [
             'data' => $data,
@@ -26,6 +26,7 @@ class Product extends Model
             'finished_at' => $finished_at,
             'filters' => $filters,
             'errors' => $errors,
+            'expire_at' => $expire_at,
         ];
 
         Product::updateOrCreate([

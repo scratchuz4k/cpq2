@@ -28,11 +28,6 @@ class ProductController extends BaseController
     #[ExcludeRouteFromDocs]
     public function index(Request $request)
     {
-        $quote = Quote::find($request->get('quote_id'));
-        if (! $quote) {
-            throw new Exception('Quote not found!');
-        }
-
         $filters = $request->has('filters') ? json_decode($request->filters, true) : [];
         if (! env('CLOUDMARKET_CONNECTION_LIVE_DATA')) {
             $mock_prices = storage_path('mocks/prices.json');
@@ -44,6 +39,10 @@ class ProductController extends BaseController
             return $this->cloudMarketService->sendResponse($items, $filters, 3);
         }
 
+        $quote = Quote::find($request->get('quote_id'));
+        if (! $quote) {
+            throw new Exception('Quote not found!');
+        }
         $address = (object) $quote->address_data;
 
         $address = new CloudMarketAddress(

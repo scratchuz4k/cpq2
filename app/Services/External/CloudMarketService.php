@@ -23,9 +23,6 @@ class CloudMarketService
     public function get(string $filename, Quote $quote, $address)
     {
 
-        $content = Product::where('key', $filename)->first();
-        $createdAt = Carbon::parse($content?->created_at);
-
         if (request()->input('clearCache', false)) {
             Cache::forget($filename);
         }
@@ -34,6 +31,9 @@ class CloudMarketService
             Product::write($filename, [], true, null, now());
             CloudMarketConnectivityProducts::dispatch($quote, $filename, $address);
         }
+
+        $content = Product::where('key', $filename)->first();
+        $createdAt = Carbon::parse($content?->created_at);
 
         if (! $content || (is_null($content?->finished_at) && $createdAt->addMinutes(10)->isPast())) {
             Product::write($filename, [], true, null, now());
