@@ -68,16 +68,18 @@ class ProductController extends BaseController
         $configs .= 'contract_length:'.(array_key_exists('contract_length', $quote->configs) ? $quote->configs['contract_length'] : '0');
         $configs .= 'managed:'.(array_key_exists('managed', $quote->configs) ? $quote->configs['managed'] : '0');
 
-        $filename = 'live_prices_'.$address->toString().'_'.md5($apiCodes.$configs).'.json';
+        $filename = $address->toString().'_'.md5($apiCodes.$configs).'.json';
         if (! count($apiRecords)) {
-            Product::write($filename, [], true, now(), now(), [], [[
+            Product::write('live_prices', $filename, [], true, now(), now(), [], [[
                 'provider' => 'CPQ',
                 'response' => 'No provider is configured',
             ]]);
         }
 
-        $this->cloudMarketService->get($filename, $quote, $address);
+        // $this->cloudMarketService->getConnectivityProducts($filename, $quote, $address);
+        $this->cloudMarketService->getFailoverProducts($filename, $quote, $address);
+        $content = Product::where('key', $request->input('key', 'live_prices'))->where('filename', $filename)->first();
 
-        return $this->cloudMarketService->sendResponse($filename, $filters, 3);
+        return $this->cloudMarketService->sendResponse($content->toArray(), $filters, 3);
     }
 }

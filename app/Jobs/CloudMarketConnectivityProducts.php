@@ -85,10 +85,10 @@ class CloudMarketConnectivityProducts implements ShouldQueue, TenantAware
 
             $this->prices[] = [...$temp, 'code' => md5(Str::slug($temp['code']))];
             $this->tempFilters = FilterProvider::process($this->tempFilters, $temp);
-            Product::write($this->file, $this->prices, false, null, $this->started_at, $this->tempFilters, $this->errors, $time);
+            Product::write('live_prices', $this->file, $this->prices, false, null, $this->started_at, $this->tempFilters, $this->errors, $time);
         }
 
-        Product::write($this->file, $this->prices, false, now(), $this->started_at, $this->tempFilters, $this->errors, $time);
+        Product::write('live_prices', $this->file, $this->prices, false, now(), $this->started_at, $this->tempFilters, $this->errors, $time);
         Log::info($res->toPsrResponse()->getBody()->getContents());
     }
 
@@ -107,13 +107,13 @@ class CloudMarketConnectivityProducts implements ShouldQueue, TenantAware
             'response' => $exception->getMessage(),
         ];
 
-        $file = Product::where('key', $this->file)->first();
+        $file = Product::where('key', 'live_prices')->where('filename', $this->file)->first();
         $file['errors'][] = $error;
 
         // Handle the failure, log exception details, etc.
         $message = '['.strtoupper((string) env('APP_ENV')).'] CloudMarketConnectivityProducts failed with error: '.json_encode($file['errors']);
 
-        Product::write($this->file, $file['data'], false, now(), $file['created_at'], $file['filters'], $file['errors']);
+        Product::write('live_prices', $this->file, $file['data'], false, now(), $file['created_at'], $file['filters'], $file['errors']);
 
         Log::error($message);
         if (env('DISCORD_CLOUDMARKET_JOBS')) {

@@ -5,6 +5,7 @@ namespace App\Helpers\Api;
 use App\Enums\CloudMarketSuppliersEnum;
 use App\Models\Api;
 use App\Models\Quote;
+use Exception;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
@@ -75,6 +76,48 @@ class CloudMarketApi
         ])->timeout($requestTimeout)->withToken(env('ALPNET_API_TOKEN'))
             ->get(
                 $url.'/PartnerQuoteService/GetQuotes',
+                $quoteRequestParams
+            );
+    }
+
+    public static function getFailover(Quote $quote, CloudMarketAddress $address)
+    {
+
+        $url = env('CLOUDMARKET_CONNECTION_SERVICE_URL', 'https://cpq-poc-uat-api.cloudmarket.com');
+        $requestTimeout = 420;
+        $apis = Api::active()->whereIn('code', CloudMarketSuppliersEnum::values())->get();
+
+        $product = collect($quote['items'])->where(function ($x) {
+            return in_array(data_get($x, 'data.type'), ['Primary Product'], true);
+        });
+
+        if (! count($product)) {
+            throw new Exception('No Primary Product Available');
+        }
+
+        $params = [
+            'ProductId' => $product[0]->data?->productCode,
+            'QuoteId' => $product[0]->data?->quoteId,
+        ];
+
+        Log::debug('CloudMarketApi::getFailover lookup:', $params);
+
+        $quoteCredentials = [];
+        foreach ($apis as $api) {
+            $quoteCredentials += self::resolveApiAuth($api);
+        }
+
+        $quoteCredentials = array_filter($quoteCredentials, fn ($value) => ! empty($value));
+
+        $quoteRequestParams = array_merge($params, $quoteCredentials);
+
+        return Http::withOptions([
+            'stream' => false,
+            'timeout' => $requestTimeout,
+            'connect_timeout' => 30,
+        ])->timeout($requestTimeout)->withToken(env('ALPNET_API_TOKEN'))
+            ->get(
+                $url.'/PartnerQuoteService/GetFailover',
                 $quoteRequestParams
             );
     }
