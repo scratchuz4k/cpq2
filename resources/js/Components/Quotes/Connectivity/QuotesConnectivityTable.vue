@@ -105,7 +105,6 @@ const getArticles = async (clearCache = false, runTimeout = false) => {
     let query = queryString.stringify({
         quote_id: props.modelValue.id,
         filters: JSON.stringify(temp),
-        clearCache: clearCache,
         page: meta.page,
         perPage: meta.limit,
         order: sort.order,

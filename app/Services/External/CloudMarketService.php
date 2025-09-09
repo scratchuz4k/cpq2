@@ -21,10 +21,6 @@ class CloudMarketService
 
     public function handleProductJob($key, $filename, Quote $quote, $address, $dispatchJob)
     {
-        if (request()->input('clearCache', false)) {
-            Cache::forget($filename);
-        }
-
         if (! Cache::has($filename)) {
             Product::write($key, $filename, [], true, null, now());
             $dispatchJob::dispatch($quote, $filename, $address);
