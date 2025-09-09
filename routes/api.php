@@ -57,6 +57,7 @@ Route::middleware(['api', 'auth:sanctum'])->group(function () {
     Route::prefix('cloudmarket')->group(callback: function () {
         Route::get('address', [CloudmarketAddressController::class, 'index']);
         Route::get('products', [CloudmarketProductController::class, 'index']);
+        Route::get('products/failover', [CloudmarketProductController::class, 'failover']);
     });
 
     Route::prefix('external')->group(function () {

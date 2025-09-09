@@ -15,9 +15,6 @@ export const remove = (item) => {
 };
 
 export const add = (article) => {
-    if (quote.items.length) {
-        return;
-    }
     try {
         let items = [];
 
@@ -29,7 +26,7 @@ export const add = (article) => {
             product_id: null,
             quantity: 1,
             product_code: article.code,
-            data: { ...article, type: 'Primary Product' }
+            data: article
         };
 
         if (article.priceMonthly_spa) {

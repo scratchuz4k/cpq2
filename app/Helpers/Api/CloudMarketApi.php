@@ -85,7 +85,6 @@ class CloudMarketApi
 
         $url = env('CLOUDMARKET_CONNECTION_SERVICE_URL', 'https://cpq-poc-uat-api.cloudmarket.com');
         $requestTimeout = 420;
-        $apis = Api::active()->whereIn('code', CloudMarketSuppliersEnum::values())->get();
 
         $product = collect($quote['items'])->where(function ($x) {
             return in_array(data_get($x, 'data.type'), ['Primary Product'], true);
@@ -94,6 +93,9 @@ class CloudMarketApi
         if (! count($product)) {
             throw new Exception('No Primary Product Available');
         }
+
+        $provider = $product[0]->data?->providerKey == 'pxc' ? 'virtual1' : $product[0]->data?->providerKey;
+        $apis = Api::active()->whereIn('code', CloudMarketSuppliersEnum::values())->where('code', $provider)->get();
 
         $params = [
             'ProductId' => $product[0]->data?->productCode,
@@ -112,7 +114,7 @@ class CloudMarketApi
         $quoteRequestParams = array_merge($params, $quoteCredentials);
 
         return Http::withOptions([
-            'stream' => false,
+            'stream' => true,
             'timeout' => $requestTimeout,
             'connect_timeout' => 30,
         ])->timeout($requestTimeout)->withToken(env('ALPNET_API_TOKEN'))

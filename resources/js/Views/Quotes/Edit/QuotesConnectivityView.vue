@@ -1,4 +1,5 @@
 <template>
+    <InfoConnectivity></InfoConnectivity>
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div class="d-flex justify-content-between align-items-center">
             <p v-if="currentStep == 0" class="fs-4 me-3 mb-0"><b>Select a Product</b></p>
@@ -36,8 +37,9 @@
             <div class="card">
                 <div class="card-body">
                     <h5 class="card-title">{{ article.data.type }}</h5>
-                    <p class="card-text">
-                        {{ article.name }}
+                    <p>{{ article.name }}</p>
+                    <p class="card-text small">
+                        {{ article.product_code }}
                     </p>
                     <div class="d-flex my-2 items-center">
                         <img

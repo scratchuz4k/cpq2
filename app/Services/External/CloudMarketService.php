@@ -5,8 +5,6 @@ namespace App\Services\External;
 use App\Enums\PricePlanEnum;
 use App\Helpers\FilterProvider;
 use App\Helpers\Prices\PriceRules;
-use App\Jobs\CloudMarketConnectivityProducts;
-use App\Jobs\CloudMarketFailOverProducts;
 use App\Models\Account;
 use App\Models\Cloudmarket\Product;
 use App\Models\General\Blacklist;
@@ -21,17 +19,15 @@ class CloudMarketService
 {
     protected $providers = [];
 
-    public function getConnectivityProducts(string $filename, Quote $quote, $address)
+    public function handleProductJob($key, $filename, Quote $quote, $address, $dispatchJob)
     {
-        $key = 'live_prices';
-
         if (request()->input('clearCache', false)) {
             Cache::forget($filename);
         }
 
         if (! Cache::has($filename)) {
             Product::write($key, $filename, [], true, null, now());
-            CloudMarketConnectivityProducts::dispatch($quote, $filename, $address);
+            $dispatchJob::dispatch($quote, $filename, $address);
         }
 
         $content = Product::where('key', $key)->where('filename', $filename)->first();
@@ -39,37 +35,8 @@ class CloudMarketService
 
         if (! $content || (is_null($content?->finished_at) && $createdAt->addMinutes(10)->isPast())) {
             Product::write($key, $filename, [], true, null, now());
-            CloudMarketConnectivityProducts::dispatch($quote, $filename, $address);
+            $dispatchJob::dispatch($quote, $filename, $address);
         }
-    }
-
-    public function getFailoverProducts(string $filename, Quote $quote, $address)
-    {
-        $key = 'fail_over';
-        $flag = collect($quote['items'])->contains(function ($x) {
-            return in_array(data_get($x, 'data.providerKey'), ['pxc', 'its'], true);
-        });
-        if (! $flag) {
-            return;
-        }
-
-        if (request()->input('clearCache', false)) {
-            Cache::forget($filename);
-        }
-
-        if (! Cache::has($filename)) {
-            Product::write($key, $filename, [], true, null, now());
-            CloudMarketFailOverProducts::dispatch($quote, $filename, $address);
-        }
-
-        $content = Product::where('key', $key)->where('filename', $filename)->first();
-        $createdAt = Carbon::parse($content?->created_at);
-
-        if (! $content || (is_null($content?->finished_at) && $createdAt->addMinutes(10)->isPast())) {
-            Product::write($key, $filename, [], true, null, now());
-            CloudMarketFailOverProducts::dispatch($quote, $filename, $address);
-        }
-
     }
 
     public function sendResponse(array $content, $filters, $connectivityType)

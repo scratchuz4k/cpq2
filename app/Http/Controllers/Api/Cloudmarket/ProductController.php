@@ -6,6 +6,8 @@ use App\Enums\CloudMarketSuppliersEnum;
 use App\Helpers\Api\CloudMarketAddress;
 use App\Http\Controllers\BaseController;
 use App\Http\Resources\ShopBlocks\ProductResource;
+use App\Jobs\CloudMarketConnectivityProducts;
+use App\Jobs\CloudMarketFailOverProducts;
 use App\Models\Api;
 use App\Models\Cloudmarket\Product;
 use App\Models\Quote;
@@ -43,9 +45,52 @@ class ProductController extends BaseController
         if (! $quote) {
             throw new Exception('Quote not found!');
         }
+        $address = $this->generateAddress($quote);
+        $filename = $this->generateFilename($quote, $address);
+
+        $this->cloudMarketService->handleProductJob('live_prices', $filename, $quote, $address, CloudMarketConnectivityProducts::class);
+
+        $content = Product::where('key', 'live_prices')->where('filename', $filename)->first();
+
+        return $this->cloudMarketService->sendResponse($content->toArray(), $filters, 3);
+    }
+
+    /**
+     * List of Products
+     *
+     * @response AnonymousResourceCollection<LengthAwarePaginator<ProductResource>>
+     */
+    #[ExcludeRouteFromDocs]
+    public function failover(Request $request)
+    {
+        $filters = $request->has('filters') ? json_decode($request->filters, true) : [];
+        $quote = Quote::find($request->get('quote_id'));
+        if (! $quote) {
+            throw new Exception('Quote not found!');
+        }
+        $address = $this->generateAddress($quote);
+        $filename = $this->generateFilename($quote, $address);
+        $product = $quote->items->where(function ($x) {
+            return in_array(data_get($x, 'data.type'), ['Primary Product'], true);
+        });
+
+        if (! count($product)) {
+            throw new Exception('Primary Product not found!');
+        }
+
+        $filename = $filename.$product[0]->product_code;
+        $this->cloudMarketService->handleProductJob('fail_over', $filename, $quote, $address, CloudMarketFailOverProducts::class);
+
+        $content = Product::where('key', 'fail_over')->where('filename', $filename)->first();
+
+        return $this->cloudMarketService->sendResponse($content->toArray(), $filters, 3);
+    }
+
+    private function generateAddress(Quote $quote)
+    {
         $address = (object) $quote->address_data;
 
-        $address = new CloudMarketAddress(
+        return new CloudMarketAddress(
             postCode: $address->postCode ?? null,
             uprn: $address->uprn ?? null,
             lat: $address->latitude ?? null,
@@ -57,6 +102,11 @@ class ProductController extends BaseController
             street: $address->thoroughfareName ?? $address->dependentThoroughfareName ?? null,
             town: $address->postTown ?? $address->locality ?? $address->doubleDependentLocality ?? null,
         );
+
+    }
+
+    private function generateFilename(Quote $quote, CloudMarketAddress $address)
+    {
 
         $apis = array_map(fn ($case) => $case->value, CloudMarketSuppliersEnum::cases());
         $apiRecords = Api::active()->whereIn('code', $apis)->get();
@@ -76,10 +126,6 @@ class ProductController extends BaseController
             ]]);
         }
 
-        // $this->cloudMarketService->getConnectivityProducts($filename, $quote, $address);
-        $this->cloudMarketService->getFailoverProducts($filename, $quote, $address);
-        $content = Product::where('key', $request->input('key', 'live_prices'))->where('filename', $filename)->first();
-
-        return $this->cloudMarketService->sendResponse($content->toArray(), $filters, 3);
+        return $filename;
     }
 }

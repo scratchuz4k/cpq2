@@ -255,7 +255,12 @@ const resetFilters = () => {
 const checkProduct = (article) => {
     let item = quote.items.find((item) => item.product_code == article.code);
     let index = quote.items.findIndex((item) => item.product_code == article.code);
+    article.type = 'Primary Product';
     return index == -1 ? add(article) : remove(item);
+};
+
+const hasProduct = () => {
+    return quote.items.find((x) => x.data.type == 'Primary Product');
 };
 
 const removeFilter = (selectedFilter, value) => {
@@ -289,7 +294,6 @@ getArticles(false, true);
 </script>
 <template>
     <div>
-        <InfoConnectivity></InfoConnectivity>
         <div class="row mb-2">
             <div class="col position-relative">
                 <div class="row mb-3" v-if="errors.length">
@@ -768,7 +772,7 @@ getArticles(false, true);
                                     </span>
                                 </th>
                                 <th
-                                    v-if="!quote.items.length"
+                                    v-if="!hasProduct()"
                                     :style="{
                                         width: '130px'
                                     }"
@@ -903,7 +907,7 @@ getArticles(false, true);
                                     </span>
                                 </td>
                                 <td>{{ article.contractTermMonths }} Months</td>
-                                <td class="text-end" v-if="!quote.items.length">
+                                <td class="text-end" v-if="!hasProduct()">
                                     <button class="btn btn-outline-primary me-2 py-1" @click="checkProduct(article)">
                                         <font-awesome-icon :icon="['fas', 'plus']" />
                                         Add
