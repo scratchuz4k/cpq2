@@ -9,7 +9,7 @@
         </div>
         <div class="d-flex justify-content-end align-items-center">
             <div>
-                <button v-if="currentStep != 0" class="btn continue-btn" type="button" @click="currentStep--">
+                <button v-if="currentStep != 0" class="btn continue-btn" type="button" @click="checkGoPrevious()">
                     <font-awesome-icon :icon="['fas', 'arrow-left']" class="ms-2"></font-awesome-icon>
                     Previous Step
                 </button>
@@ -24,7 +24,7 @@
                     Continue
                     <font-awesome-icon :icon="['fas', 'arrow-right']" class="ms-2"></font-awesome-icon>
                 </a>
-                <button v-else class="btn btn-primary continue-btn" type="button" @click="currentStep++">
+                <button v-else class="btn btn-primary continue-btn" type="button" @click="checkGoNext()">
                     Next Step
                     <font-awesome-icon :icon="['fas', 'arrow-right']" class="ms-2"></font-awesome-icon>
                 </button>
@@ -73,16 +73,22 @@
             modelValue: props.modelValue
         }"
     ></component>
+    <QuoteConnectivityAddonsTable
+        v-if="needsAddons"
+        v-model="props.modelValue"
+        :currentStep="currentStep"
+    ></QuoteConnectivityAddonsTable>
 </template>
 <script setup>
 import { ref, watch } from 'vue';
 import { quote } from '@/Composables/useQuote';
-import { remove, add } from '@/Composables/useConnectivityItem';
+import { remove, addons } from '@/Composables/useConnectivityItem';
 
 const props = defineProps({
     modelValue: Object
 });
 
+const needsAddons = ref(false);
 const result = ref([]);
 const currentStep = ref(0);
 const connectivitySteps = ref(['QuotesConnectivityTable']);
@@ -96,13 +102,11 @@ const calculateSteps = () => {
         return;
     }
     if (quote.items.some((x) => ['pxc', 'its'].includes(x.data?.providerKey))) {
-        connectivitySteps.value = [
-            'QuotesConnectivityTable',
-            'QuoteConnectivityFailOverTable',
-            'QuoteConnectivityAddonsTable'
-        ];
+        connectivitySteps.value = ['QuotesConnectivityTable', 'QuoteConnectivityFailOverTable'];
+        needsAddons.value = true;
     } else {
         connectivitySteps.value = ['QuotesConnectivityTable'];
+        needsAddons.value = false;
     }
 };
 
@@ -118,6 +122,32 @@ const getbyGroup = () => {
             result.value.push(item);
         }
     });
+};
+
+const checkGoPrevious = () => {
+    calculateSteps();
+    currentStep.value--;
+};
+
+const checkGoNext = () => {
+    let items = quote.items.filter((x) => x.group == 1);
+    if (!items.find((x) => x.data.type == 'Addon Product') && addons.value.length != 0) {
+        scrollToDiv();
+    } else {
+        needsAddons.value = false;
+        currentStep.value++;
+    }
+};
+
+const scrollToDiv = () => {
+    const el = document.getElementById('pcx-its-addons');
+    el.scrollIntoView({ behavior: 'smooth' });
+    el.classList.add('blink');
+
+    // Stop blinking after 'duration' ms
+    setTimeout(() => {
+        el.classList.remove('blink');
+    }, 1500);
 };
 
 watch(
