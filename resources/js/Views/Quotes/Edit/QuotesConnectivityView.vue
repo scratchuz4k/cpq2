@@ -24,7 +24,13 @@
                     Continue
                     <font-awesome-icon :icon="['fas', 'arrow-right']" class="ms-2"></font-awesome-icon>
                 </a>
-                <button v-else class="btn btn-primary continue-btn" type="button" @click="checkGoNext()">
+                <button
+                    v-else
+                    class="btn btn-primary continue-btn"
+                    type="button"
+                    @click="checkGoNext()"
+                    :disabled="isLoading"
+                >
                     Next Step
                     <font-awesome-icon :icon="['fas', 'arrow-right']" class="ms-2"></font-awesome-icon>
                 </button>
@@ -38,9 +44,6 @@
                 <div class="card-body">
                     <h5 class="card-title">{{ article.data.type }}</h5>
                     <p>{{ article.name }}</p>
-                    <p class="card-text small">
-                        {{ article.product_code }}
-                    </p>
                     <div class="d-flex my-2 items-center">
                         <img
                             class="img-provider me-3"
@@ -60,7 +63,7 @@
                             v-tooltip
                         />
                     </div>
-                    <button type="button " class="btn p-0 mt-2" data-mdb-ripple-init @click="remove(article)">
+                    <button type="button " class="btn p-0 mt-2" data-mdb-ripple-init @click="removeItem(article)">
                         Remove
                     </button>
                 </div>
@@ -82,7 +85,7 @@
 <script setup>
 import { ref, watch } from 'vue';
 import { quote } from '@/Composables/useQuote';
-import { remove, addons } from '@/Composables/useConnectivityItem';
+import { remove, addons, isLoading } from '@/Composables/useConnectivityItem';
 
 const props = defineProps({
     modelValue: Object
@@ -95,6 +98,13 @@ const connectivitySteps = ref(['QuotesConnectivityTable']);
 
 const setAltImg = (event) => {
     event.target.src = '/images/no_image.png';
+};
+
+const removeItem = (article) => {
+    remove(article);
+    if (article.data?.type == 'Primary Product') {
+        currentStep.value = 0;
+    }
 };
 
 const calculateSteps = () => {
@@ -134,7 +144,6 @@ const checkGoNext = () => {
     if (!items.find((x) => x.data.type == 'Addon Product') && addons.value.length != 0) {
         scrollToDiv();
     } else {
-        needsAddons.value = false;
         currentStep.value++;
     }
 };

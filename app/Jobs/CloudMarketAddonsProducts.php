@@ -64,10 +64,14 @@ class CloudMarketAddonsProducts implements ShouldQueue, TenantAware
                 $temp = (array) $item;
                 $temp['code'] = '';
                 foreach (array_keys($temp) as $itemKey) {
-                    if (! (is_string($temp[$itemKey]) || is_numeric($temp[$itemKey]))) {
+                    if (is_object($temp[$itemKey]) && get_class($temp[$itemKey]) === 'stdClass') {
                         continue;
                     }
-                    $temp['code'] .= $temp[$itemKey];
+                    if (is_array($temp[$itemKey])) {
+                        continue;
+                    }
+
+                    $temp['code'] .= (string) $temp[$itemKey];
                 }
 
                 $temp['providerKey'] = $product[0]->data?->providerKey == 'pxc' ? 'virtual1' : $product[0]->data?->providerKey;

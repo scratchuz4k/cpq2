@@ -1,10 +1,14 @@
 import { quote, getQuote } from '@/Composables/useQuote';
 import { ref } from 'vue';
 
+export const isLoading = ref(false);
 export const addons = ref([]);
 
 export const remove = (item) => {
     let items = quote.items.filter((x) => x.group == item.group);
+    if (item.data?.type == 'Primary Product') {
+        items = quote.items;
+    }
     try {
         items.forEach(async (x) => {
             await axios.delete(`/api/quote-items/${x.id}`);

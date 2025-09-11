@@ -1,38 +1,38 @@
 <template>
     <div id="pcx-its-addons" class="py-5">
-        <template v-if="addons.length">
-            <div>
-                <div class="d-flex mb-2">
-                    <p class="fs-5 bold me-2">
-                        Addons
-                        <span class="fw-normal">({{ meta.total }})</span>
-                    </p>
-                </div>
+        <div>
+            <div class="d-flex mb-2">
+                <p class="fs-5 bold me-2">
+                    Hardware
+                    <span class="fw-normal">({{ meta.total }})</span>
+                </p>
             </div>
-            <div class="row mb-4" v-if="addons.length">
-                <div class="col-3 mb-3" v-for="addon in addons">
-                    <div
-                        class="card cursor-pointer"
-                        :class="[
-                            quote.items.find((x) => x.product_code == addon.code) ? 'border-primary border-2' : null
-                        ]"
-                        @click="checkProduct(addon)"
-                    >
-                        <div class="card-body">
-                            <h5 class="card-title">{{ addon.productType ?? 'Misc' }}</h5>
-                            <p>{{ addon.productName }}</p>
-                            <p class="card-text small">
-                                {{ addon.productReference }}
-                            </p>
+        </div>
+        <div class="row mb-4" v-if="addons.length">
+            <div class="col-3 mb-3" v-for="addon in addons">
+                <div
+                    class="card cursor-pointer"
+                    :class="[quote.items.find((x) => x.product_code == addon.code) ? 'border-primary border-2' : null]"
+                    @click="checkProduct(addon)"
+                >
+                    <div class="card-body">
+                        <h5 class="card-title">{{ addon.productType ?? 'Misc' }}</h5>
+                        <p>{{ addon.productName }}</p>
+                        <p class="card-text small mb-4">
+                            {{ addon.productReference }}
+                        </p>
+                        <div class="d-flex justify-content-between">
+                            <div>{{ format.GBP(addon.priceMonthly_spa) }}</div>
+                            <div>{{ format.GBP(addon.priceInstall_spa) }}</div>
                         </div>
                     </div>
                 </div>
             </div>
-        </template>
+        </div>
     </div>
 </template>
 <script setup>
-import { removeAddon, addAddon, addons } from '@/Composables/useConnectivityItem';
+import { removeAddon, addAddon, addons, isLoading } from '@/Composables/useConnectivityItem';
 import { watch, reactive } from 'vue';
 import { quote } from '@/Composables/useQuote';
 import queryString from 'query-string';
@@ -51,7 +51,13 @@ const meta = reactive({
 });
 
 const getAddons = async () => {
+    isLoading.value = true;
     let temp = [];
+    temp.push({
+        column: 'isPrimaryCircuitHardware',
+        operator: 'equals',
+        value: props.currentStep == 0 ? true : false
+    });
     let query = queryString.stringify({
         quote_id: props.modelValue.id,
         filters: JSON.stringify(temp),
@@ -64,6 +70,7 @@ const getAddons = async () => {
         meta.total = res.data.total;
         meta.overallTotal = res.data.overall_total;
     } catch (error) {}
+    isLoading.value = false;
 };
 const checkProduct = (article) => {
     let item = quote.items.find((item) => item.product_code == article.code);
