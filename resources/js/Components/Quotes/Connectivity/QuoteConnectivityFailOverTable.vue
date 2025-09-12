@@ -913,7 +913,11 @@ getArticles(false, true);
                                 </td>
                                 <td>{{ article.contractTermMonths }} Months</td>
                                 <td class="text-end" v-if="!hasProduct()">
-                                    <button class="btn btn-outline-primary me-2 py-1" @click="checkProduct(article)">
+                                    <button
+                                        v-if="!quote.items.find((x) => x.product_code == article.code)"
+                                        class="btn btn-outline-primary me-2 py-1"
+                                        @click="checkProduct(article)"
+                                    >
                                         <font-awesome-icon :icon="['fas', 'plus']" />
                                         Add
                                     </button>

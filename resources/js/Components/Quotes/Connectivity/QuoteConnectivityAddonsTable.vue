@@ -2,13 +2,17 @@
     <div id="pcx-its-addons" class="py-5">
         <div>
             <div class="d-flex mb-2">
-                <p class="fs-5 bold me-2">
-                    Hardware
-                    <span class="fw-normal">({{ meta.total }})</span>
+                <p class="d-flex fs-5 bold me-2">
+                    Hardware <span class="fw-normal ms-2">({{ meta.total }})</span>
                 </p>
+                <div v-if="isLoading">
+                    <div class="spinner-border spinner-border-sm" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
             </div>
         </div>
-        <div class="row mb-4" v-if="addons.length">
+        <div class="row mb-4">
             <div class="col-3 mb-3" v-for="addon in addons">
                 <div
                     class="card cursor-pointer"
@@ -17,10 +21,7 @@
                 >
                     <div class="card-body">
                         <h5 class="card-title">{{ addon.productType ?? 'Misc' }}</h5>
-                        <p>{{ addon.productName }}</p>
-                        <p class="card-text small mb-4">
-                            {{ addon.productReference }}
-                        </p>
+                        <p class="mb-4">{{ addon.productName }}</p>
                         <div class="d-flex justify-content-between">
                             <div>{{ format.GBP(addon.priceMonthly_spa) }}</div>
                             <div>{{ format.GBP(addon.priceInstall_spa) }}</div>
@@ -42,12 +43,14 @@ const props = defineProps({
     currentStep: Number
 });
 
+let timeoutId = null;
 const meta = reactive({
     page: 1,
     total: 0,
     overallTotal: 0,
     first: 1,
-    limit: 10
+    limit: 10,
+    isRequestCompleted: false
 });
 
 const getAddons = async () => {
@@ -69,23 +72,37 @@ const getAddons = async () => {
         addons.value = res.data.data ?? [];
         meta.total = res.data.total;
         meta.overallTotal = res.data.overall_total;
-    } catch (error) {}
-    isLoading.value = false;
+        meta.isRequestCompleted = !!res.data.finished_at;
+    } catch (error) {
+        isLoading.value = false;
+        meta.isRequestCompleted = false;
+    }
+
+    if (!meta.isRequestCompleted) {
+        timeoutId = setTimeout(() => {
+            getAddons();
+        }, 2000);
+    } else {
+        isLoading.value = false;
+    }
 };
 const checkProduct = (article) => {
     let item = quote.items.find((item) => item.product_code == article.code);
     let index = quote.items.findIndex((item) => item.product_code == article.code);
-    article.type = 'Addon Product';
+    article.type = props.currentStep == 0 ? 'Primary Hardware Product' : 'Failover Hardware Product';
     article.group = props.currentStep + 1;
     return index == -1 ? addAddon(article) : removeAddon(item);
 };
 
 watch(
-    () => [quote.items],
+    () => [quote.items, props.currentStep],
     () => {
         getAddons();
     }
 );
+window.addEventListener('beforeunload', () => {
+    clearTimeout(timeoutId); // Cancel timeout on page navigation or refresh
+});
 
 getAddons();
 </script>

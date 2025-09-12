@@ -2,9 +2,9 @@
     <InfoConnectivity></InfoConnectivity>
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div class="d-flex justify-content-between align-items-center">
-            <p v-if="currentStep == 0" class="fs-4 me-3 mb-0"><b>Select a Product</b></p>
-            <p v-if="currentStep == 1" class="fs-4 me-3 mb-0"><b>Failover Service</b></p>
-            <p v-if="currentStep == 2" class="fs-4 me-3 mb-0"><b>Addons</b></p>
+            <p class="fs-4 me-3 mb-0">
+                <b>{{ getPrimary() ? steps[getPrimary().data?.providerKey][currentStep].title : 'Select Product' }}</b>
+            </p>
             <p class="mb-0 text-primary bold fs-5 pt-1">STEP {{ currentStep + 1 }}/{{ connectivitySteps.length }}</p>
         </div>
         <div class="d-flex justify-content-end align-items-center">
@@ -107,15 +107,72 @@ const removeItem = (article) => {
     }
 };
 
-const calculateSteps = () => {
+const steps = {
+    pxc: [
+        {
+            title: 'Select a Primary Product',
+            component: 'QuotesConnectivityTable',
+            needAddons: true
+        },
+        {
+            title: 'Failover Service',
+            component: 'QuoteConnectivityFailOverTable',
+            needAddons: true
+        },
+        {
+            title: 'Options',
+            component: 'QuoteConnectivityOptionsTable',
+            needAddons: false
+        }
+    ],
+    its: [
+        {
+            title: 'Select a Primary Product',
+            component: 'QuotesConnectivityTable',
+            needAddons: true
+        },
+        {
+            title: 'Failover Service',
+            component: 'QuoteConnectivityFailOverTable',
+            needAddons: true
+        },
+        {
+            title: 'Options',
+            component: 'QuoteConnectivityOptionsTable',
+            needAddons: false
+        }
+    ]
+};
+
+const getPrimary = () => {
+    if (!quote.items) {
+        return null;
+    }
+    return quote.items.find((x) => x.data.type == 'Primary Product');
+};
+
+const getComponent = () => {
+    if (!quote.items) {
+        connectivitySteps.value = ['QuotesConnectivityTable'];
+    }
+    let item = getPrimary();
+
+    if (item && Object.keys(steps).includes(item.data?.providerKey)) {
+        connectivitySteps.value = steps[item.data?.providerKey].map((x) => x.component);
+    } else {
+        connectivitySteps.value = ['QuotesConnectivityTable'];
+    }
+};
+
+const checkAddons = () => {
     if (!quote.items) {
         return;
     }
-    if (quote.items.some((x) => ['pxc', 'its'].includes(x.data?.providerKey))) {
-        connectivitySteps.value = ['QuotesConnectivityTable', 'QuoteConnectivityFailOverTable'];
-        needsAddons.value = true;
+    let item = getPrimary();
+
+    if (item && Object.keys(steps).includes(item.data?.providerKey)) {
+        needsAddons.value = steps[item.data?.providerKey][currentStep.value].needAddons;
     } else {
-        connectivitySteps.value = ['QuotesConnectivityTable'];
         needsAddons.value = false;
     }
 };
@@ -126,26 +183,29 @@ const getbyGroup = () => {
     }
     const seenGroups = new Set();
     result.value = [];
-    quote.items.forEach((item) => {
-        if (!seenGroups.has(item.group)) {
-            seenGroups.add(item.group);
-            result.value.push(item);
-        }
-    });
+    quote.items
+        .filter((x) => ['Primary Product', 'Failover Product'].includes(x.data?.type))
+        .forEach((item) => {
+            if (!seenGroups.has(item.group)) {
+                seenGroups.add(item.group);
+                result.value.push(item);
+            }
+        });
 };
 
 const checkGoPrevious = () => {
-    calculateSteps();
     currentStep.value--;
+    checkAddons();
 };
 
 const checkGoNext = () => {
     let items = quote.items.filter((x) => x.group == 1);
-    if (!items.find((x) => x.data.type == 'Addon Product') && addons.value.length != 0) {
+    if (!items.find((x) => x.data.type == 'Primary Hardware Product') && addons.value.length != 0) {
         scrollToDiv();
     } else {
         currentStep.value++;
     }
+    checkAddons();
 };
 
 const scrollToDiv = () => {
@@ -162,11 +222,13 @@ const scrollToDiv = () => {
 watch(
     () => [quote.items],
     () => {
-        calculateSteps();
+        getComponent();
+        checkAddons();
         getbyGroup();
     }
 );
 
-calculateSteps();
+getComponent();
+checkAddons();
 getbyGroup();
 </script>

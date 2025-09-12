@@ -9,6 +9,7 @@ use App\Http\Resources\ShopBlocks\ProductResource;
 use App\Jobs\CloudMarketAddonsProducts;
 use App\Jobs\CloudMarketConnectivityProducts;
 use App\Jobs\CloudMarketFailOverProducts;
+use App\Jobs\CloudMarketOptionsProducts;
 use App\Models\Api;
 use App\Models\Cloudmarket\Product;
 use App\Models\Quote;
@@ -117,6 +118,40 @@ class ProductController extends BaseController
         $this->cloudMarketService->handleProductJob('addons', $filename, $quote, $address, CloudMarketAddonsProducts::class);
 
         $content = Product::where('key', 'addons')->where('filename', $filename)->first();
+
+        return $this->cloudMarketService->sendResponse($content->toArray(), $filters, 3);
+    }
+
+    /**
+     * List of Products
+     *
+     * @response AnonymousResourceCollection<LengthAwarePaginator<ProductResource>>
+     */
+    #[ExcludeRouteFromDocs]
+    public function options(Request $request)
+    {
+        $filters = $request->has('filters') ? json_decode($request->filters, true) : [];
+        $quote = Quote::find($request->get('quote_id'));
+        if (! $quote) {
+            throw new Exception('Quote not found!');
+        }
+        $address = $this->generateAddress($quote);
+        $filename = $this->generateFilename($quote, $address);
+        $product = $quote->items->where(function ($x) {
+            return in_array(data_get($x, 'data.type'), ['Primary Product'], true);
+        })->values();
+
+        if (! count($product)) {
+            throw new Exception('Primary Product not found!');
+        }
+        $failover = $quote->items->where(function ($x) {
+            return in_array(data_get($x, 'data.type'), ['Failover Product'], true);
+        })->values();
+
+        $filename = $product[0]->product_code.(count($failover) ? $failover[0]->data?->productCode : 'failover').$filename;
+        $this->cloudMarketService->handleProductJob('options', $filename, $quote, $address, CloudMarketOptionsProducts::class);
+
+        $content = Product::where('key', 'options')->where('filename', $filename)->first();
 
         return $this->cloudMarketService->sendResponse($content->toArray(), $filters, 3);
     }
