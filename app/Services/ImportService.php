@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Enums\ImportsEnum;
 use App\Enums\ImportStatusesEnum;
+use App\Jobs\ImporsJob;
 use App\Models\Import;
 use App\Models\Resource;
 
@@ -34,6 +35,8 @@ class ImportService
             'overwrite' => $overwrite,
             'tenant_id' => $user->tenant_id,
         ]);
+
+        ImporsJob::dispatch($import, $import->overwrite);
 
         return $import;
     }

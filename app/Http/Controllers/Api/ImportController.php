@@ -11,7 +11,6 @@ use App\Services\ImportService;
 use Dedoc\Scramble\Attributes\ExcludeRouteFromDocs;
 use Exception;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class ImportController extends BaseController
@@ -55,7 +54,7 @@ class ImportController extends BaseController
      * Show Import
      */
     #[ExcludeRouteFromDocs]
-    public function show(Import $brand)
+    public function show(Import $import)
     {
         //
     }
@@ -64,23 +63,16 @@ class ImportController extends BaseController
      * Update Import
      */
     #[ExcludeRouteFromDocs]
-    public function update(Request $request, Import $brand)
+    public function update(Request $request, Import $import)
     {
-        try {
-            $brand = DB::transaction(fn () => $this->importService->update($brand, $request->all()));
-        } catch (Exception $e) {
-            Log::debug($e->getMessage());
-            throw new Exception($e);
-        }
-
-        return new ImportResource($brand);
+        //
     }
 
     /**
      * Remove Import
      */
-    public function destroy(Import $brand)
+    public function destroy(Import $import)
     {
-        $brand->delete();
+        $import->delete();
     }
 }

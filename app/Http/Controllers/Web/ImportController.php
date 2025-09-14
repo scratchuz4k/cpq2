@@ -7,7 +7,6 @@ use App\Export\ExportCSVTemplate;
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\ImportCreateRequest;
 use App\Http\Resources\ImportResource;
-use App\Jobs\ImporsJob;
 use App\Models\Import;
 use App\Services\ImportService;
 use Illuminate\Http\Request;
@@ -49,12 +48,10 @@ class ImportController extends BaseController
     public function store(ImportCreateRequest $request)
     {
         try {
-            $import = DB::transaction(fn () => $this->importService->store($request->all()));
+            DB::transaction(fn () => $this->importService->store($request->all()));
         } catch (\Exception $e) {
             throw new \Exception($e);
         }
-
-        ImporsJob::dispatch($import, $import->overwrite);
 
         return redirect()->route('imports.index');
     }
