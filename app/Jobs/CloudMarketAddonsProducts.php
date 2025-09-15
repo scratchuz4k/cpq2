@@ -29,13 +29,7 @@ class CloudMarketAddonsProducts implements ShouldQueue, TenantAware
 
     public $started_at = null;
 
-    public $tempFilters = [
-        'providerName' => [],
-        'connectivitySupplierGroup' => [],
-        'contractTermMonths' => [],
-        'bearer' => [],
-        'speed' => [],
-    ];
+    public $tempFilters = [];
 
     /**
      * Create a new job instance.
