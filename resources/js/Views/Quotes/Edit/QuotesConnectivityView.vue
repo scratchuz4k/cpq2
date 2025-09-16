@@ -120,7 +120,7 @@ const steps = {
             needAddons: true
         },
         {
-            title: 'Options',
+            title: 'Addons',
             component: 'QuoteConnectivityOptionsTable',
             needAddons: false
         }
@@ -137,7 +137,7 @@ const steps = {
             needAddons: true
         },
         {
-            title: 'Options',
+            title: 'Addons',
             component: 'QuoteConnectivityOptionsTable',
             needAddons: false
         }
