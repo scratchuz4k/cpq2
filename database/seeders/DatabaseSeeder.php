@@ -28,7 +28,7 @@ class DatabaseSeeder extends Seeder
                 ApiConfigurationSeeder::class,
                 SolutionTenantSeeder::class,
                 CategoryProductsSeeder::class,
-                // ShopBlocksSeeder::class,
+                ShopBlocksSeeder::class,
             ]);
         }
 
