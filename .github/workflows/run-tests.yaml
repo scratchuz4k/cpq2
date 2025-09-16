@@ -72,7 +72,9 @@ jobs:
               run: |
                   php artisan key:generate
                   php artisan migrate:fresh --seed
+                  php artisan migrate --path=database/shopblocks --database=mysql_shopblocks
                   php artisan db:seed CategoryProductsSeeder
+                  php artisan db:seed ShopBlocksSeeder
 
             - name: Run Laravel Server
               run: php artisan serve --host=0.0.0.0 --port=8000 &
