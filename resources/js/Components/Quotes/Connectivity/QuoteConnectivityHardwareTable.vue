@@ -1,5 +1,5 @@
 <template>
-    <div id="pcx-its-addons" class="py-5">
+    <div id="pcx-its-hardware" class="py-5">
         <div>
             <div class="d-flex mb-2">
                 <p class="d-flex fs-5 bold me-2">
@@ -36,7 +36,7 @@
     </div>
 </template>
 <script setup>
-import { removeAddon, addAddon, addons, isLoading } from '@/Composables/useConnectivityItem';
+import { removeAddon, addAddon, addons, isLoading, checks } from '@/Composables/useConnectivityItem';
 import { watch, reactive } from 'vue';
 import { quote } from '@/Composables/useQuote';
 import queryString from 'query-string';
@@ -75,8 +75,9 @@ const getAddons = async () => {
     });
     try {
         let res = await axios.get('/api/cloudmarket/products/addons?' + query);
-
         addons.value = res.data.data ?? [];
+        checks.primaryHardwareRequired = res.data.options?.primaryHardwareRequired ?? false;
+        checks.failoverHardwareRequired = res.data.options?.failoverHardwareRequired ?? false;
         meta.total = res.data.total;
         meta.overallTotal = res.data.overall_total;
         meta.isRequestCompleted = !!res.data.finished_at;
@@ -107,6 +108,7 @@ watch(
         getAddons();
     }
 );
+
 window.addEventListener('beforeunload', () => {
     clearTimeout(timeoutId); // Cancel timeout on page navigation or refresh
 });

@@ -1,5 +1,5 @@
 <template>
-    <div id="pcx-its-addons" class="py-5">
+    <div class="py-5">
         <div>
             <div class="d-flex mb-2">
                 <p class="fs-5 bold me-2">
@@ -33,6 +33,9 @@
                     </div>
                 </div>
             </div>
+        </div>
+        <div v-else>
+            <div class="col mb-3">No Options found</div>
         </div>
     </div>
 </template>

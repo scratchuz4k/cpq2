@@ -15,7 +15,7 @@ class Product extends Model
 
     protected $guarded = [];
 
-    public static function write(string $key, string $filename, array $data, bool $wating_task, $finished_at, $created_at, $filters = [], $errors = [], $expire_at = null)
+    public static function write(string $key, string $filename, array $data, bool $wating_task, $finished_at, $created_at, $filters = [], $errors = [], $expire_at = null, $options = [])
     {
         $content = [
             'data' => $data,
@@ -27,6 +27,7 @@ class Product extends Model
             'filters' => $filters,
             'errors' => $errors,
             'expire_at' => $expire_at,
+            'options' => $options,
         ];
 
         Product::updateOrCreate([
@@ -35,5 +36,13 @@ class Product extends Model
         ], $content);
 
         Cache::put($filename, json_encode(['updated_at' => now()]), 86400);
+    }
+
+    public static function addOptions(string $key, string $filename, array $data)
+    {
+        Product::updateOrCreate([
+            'key' => $key,
+            'filename' => $filename,
+        ], ['options' => $data]);
     }
 }

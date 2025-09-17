@@ -82,7 +82,7 @@
 <script setup>
 import { ref, watch } from 'vue';
 import { quote } from '@/Composables/useQuote';
-import { remove, addons, isLoading } from '@/Composables/useConnectivityItem';
+import { remove, addons, isLoading, checks } from '@/Composables/useConnectivityItem';
 
 const props = defineProps({
     modelValue: Object
@@ -118,7 +118,7 @@ const steps = {
         },
         {
             title: 'Addons',
-            component: 'QuoteConnectivityOptionsTable',
+            component: 'QuoteConnectivityExtrasTable',
             needAddons: false
         }
     ],
@@ -135,7 +135,7 @@ const steps = {
         },
         {
             title: 'Addons',
-            component: 'QuoteConnectivityOptionsTable',
+            component: 'QuoteConnectivityExtrasTable',
             needAddons: false
         }
     ]
@@ -197,7 +197,8 @@ const checkGoPrevious = () => {
 
 const checkGoNext = () => {
     let items = quote.items.filter((x) => x.group == 1);
-    if (!items.find((x) => x.data.type == 'Primary Hardware Product') && addons.value.length != 0) {
+    let check = currentStep.value == 0 ? checks.primaryHardwareRequired : checks.failoverHardwareRequired;
+    if (check && !items.find((x) => x.data.type == 'Primary Hardware Product') && addons.value.length != 0) {
         scrollToDiv();
     } else {
         currentStep.value++;
@@ -206,7 +207,7 @@ const checkGoNext = () => {
 };
 
 const scrollToDiv = () => {
-    const el = document.getElementById('pcx-its-addons');
+    const el = document.getElementById('pcx-its-hardware');
     el.scrollIntoView({ behavior: 'smooth' });
     el.classList.add('blink');
 

@@ -113,7 +113,9 @@ class CloudMarketConnectivityProducts implements ShouldQueue, TenantAware
         // Handle the failure, log exception details, etc.
         $message = '['.strtoupper((string) env('APP_ENV')).'] CloudMarketConnectivityProducts failed with error: '.json_encode($file['errors']);
 
-        Product::write('live_prices', $this->file, $file['data'], false, now(), $file['created_at'], $file['filters'], $file['errors']);
+        if ($file) {
+            Product::write('live_prices', $this->file, $file['data'], false, now(), $file['created_at'], $file['filters'], $file['errors']);
+        }
 
         Log::error($message);
         if (env('DISCORD_CLOUDMARKET_JOBS')) {

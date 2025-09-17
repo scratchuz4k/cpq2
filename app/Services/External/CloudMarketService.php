@@ -98,6 +98,7 @@ class CloudMarketService
         return array_merge(
             $response,
             [
+                'options' => array_key_exists('options', $content) ? $content['options'] : [],
                 'overall_total' => $content['total'],
                 'finished_at' => $content['finished_at'],
                 'created_at' => $content['created_at'],

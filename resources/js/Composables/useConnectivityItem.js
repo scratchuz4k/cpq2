@@ -1,8 +1,12 @@
 import { quote, getQuote } from '@/Composables/useQuote';
-import { ref } from 'vue';
+import { reactive, ref } from 'vue';
 
 export const isLoading = ref(false);
 export const addons = ref([]);
+export const checks = reactive({
+    primaryHardwareRequired: false,
+    failoverHardwareRequired: false
+});
 
 export const remove = (item) => {
     let items = quote.items.filter((x) => x.group == item.group);

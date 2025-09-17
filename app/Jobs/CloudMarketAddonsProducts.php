@@ -31,6 +31,8 @@ class CloudMarketAddonsProducts implements ShouldQueue, TenantAware
 
     public $tempFilters = [];
 
+    public $options = [];
+
     /**
      * Create a new job instance.
      */
@@ -50,7 +52,10 @@ class CloudMarketAddonsProducts implements ShouldQueue, TenantAware
         })->values();
 
         $stream = StreamWrapper::getResource($res->toPsrResponse()->getBody());
-        foreach (Items::fromStream($stream) as $value) {
+        foreach (Items::fromStream($stream) as $key => $value) {
+            if (in_array($key, ['primaryHardwareRequired', 'failoverHardwareRequired'])) {
+                $this->options[$key] = $value;
+            }
             if (! is_object($value) && ! is_array($value)) {
                 continue;
             }
@@ -75,6 +80,7 @@ class CloudMarketAddonsProducts implements ShouldQueue, TenantAware
         }
 
         Product::write('addons', $this->file, $this->prices, false, now(), $this->started_at, $this->tempFilters, $this->errors, $time);
+        Product::addOptions('addons', $this->file, $this->options);
         Log::info($res->toPsrResponse()->getBody()->getContents());
     }
 
@@ -94,13 +100,15 @@ class CloudMarketAddonsProducts implements ShouldQueue, TenantAware
         ];
         $errors = [];
 
-        $file = Product::where('key', 'fail_over')->where('filename', $this->file)->first();
+        $file = Product::where('key', 'addons')->where('filename', $this->file)->first();
         $errors[] = $error;
         array_merge($errors, $file?->errors ?? []);
         // Handle the failure, log exception details, etc.
         $message = '['.strtoupper((string) env('APP_ENV')).'] CloudMarketConnectivityProducts failed with error: '.json_encode($errors);
 
-        Product::write('fail_over', $this->file, $file['data'], false, now(), $file['created_at'], $file['filters'], $errors);
+        if ($file) {
+            Product::write('addons', $this->file, $file['data'], false, now(), $file['created_at'], $file['filters'], $errors);
+        }
 
         Log::error($message);
         if (env('DISCORD_CLOUDMARKET_JOBS')) {

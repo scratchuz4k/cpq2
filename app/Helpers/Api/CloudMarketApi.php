@@ -11,21 +11,156 @@ use Illuminate\Support\Facades\Log;
 
 class CloudMarketApi
 {
-    public function __construct() {}
+    private static int $requestTimeout = 420;
 
     public static function getQuotes(Quote $quote, CloudMarketAddress $address)
     {
+        $quoteAddress = self::buildQuoteAddress($quote, $address);
+        $credentials = self::collectCredentials();
 
-        $url = env('CLOUDMARKET_CONNECTION_SERVICE_URL', 'https://cpq-poc-uat-api.cloudmarket.com');
-        $requestTimeout = 420;
-        $apis = Api::active()->whereIn('code', CloudMarketSuppliersEnum::values())->get();
+        $params = array_merge($quoteAddress, $credentials);
+        Log::debug('CloudMarketApi::getQuotes lookup:', $quoteAddress);
 
+        return self::makeRequest('/PartnerQuoteService/GetQuotes', $params);
+    }
+
+    public static function getFailover(Quote $quote, CloudMarketAddress $address)
+    {
+        $product = self::getPrimaryProduct($quote);
+        $provider = self::resolveProvider($product);
+
+        $apis = self::fetchApisForProvider($provider);
+        $credentials = self::collectCredentials($apis);
+
+        $params = [
+            'ProductId' => $product->data?->productCode,
+            'QuoteId' => $product->data?->quoteId,
+        ];
+        Log::debug('CloudMarketApi::getFailover lookup:', $params);
+
+        return self::makeRequest('/PartnerQuoteService/GetFailover', array_merge($params, $credentials));
+    }
+
+    public static function getAddons(Quote $quote, CloudMarketAddress $address)
+    {
+        $product = self::getPrimaryProduct($quote);
+        $failover = self::getFailoverProduct($quote);
+        $provider = self::resolveProvider($product);
+
+        $apis = self::fetchApisForProvider($provider);
+        $credentials = self::collectCredentials($apis);
+
+        $params = [
+            'ProductId' => $product->data?->productCode,
+            'QuoteId' => $product->data?->quoteId,
+            'FailoverProductId' => $failover?->data?->productCode ?? null,
+        ];
+        Log::debug('CloudMarketApi::getAddons lookup:', $params);
+
+        return self::makeRequest('/PartnerQuoteService/GetHardware', array_merge($params, $credentials));
+    }
+
+    public static function getOptions(Quote $quote, CloudMarketAddress $address)
+    {
+        $product = self::getPrimaryProduct($quote);
+        $failover = self::getFailoverProduct($quote);
+        $primaryHardware = self::getHardwareProduct($quote, 'Primary Hardware Product');
+        $failoverHardware = self::getHardwareProduct($quote, 'Failover Hardware Product');
+        $provider = self::resolveProvider($product);
+
+        $apis = self::fetchApisForProvider($provider);
+        $credentials = self::collectCredentials($apis);
+
+        $params = [
+            'ProductId' => $product->data?->productCode,
+            'QuoteId' => $product->data?->quoteId,
+            'FailoverProductId' => $failover?->data?->productCode ?? null,
+            'PrimaryHardwareProductId' => $primaryHardware?->data?->productReference ?? null,
+            'FailoverHardwareProductId' => $failoverHardware?->data?->productReference ?? null,
+        ];
+        Log::debug('CloudMarketApi::getOptions lookup:', $params);
+
+        return self::makeRequest('/PartnerQuoteService/GetOptions', array_merge($params, $credentials));
+    }
+
+    public static function getAssignments(Quote $quote, CloudMarketAddress $address)
+    {
+        $product = self::getPrimaryProduct($quote);
+        $failover = self::getFailoverProduct($quote);
+        $primaryHardware = self::getHardwareProduct($quote, 'Primary Hardware Product');
+        $failoverHardware = self::getHardwareProduct($quote, 'Failover Hardware Product');
+        $provider = self::resolveProvider($product);
+
+        $apis = self::fetchApisForProvider($provider);
+        $credentials = self::collectCredentials();
+
+        $params = [
+            'ProductId' => $product->data?->productCode,
+            'QuoteId' => $product->data?->quoteId,
+            'FailoverProductId' => $failover?->data?->productCode ?? null,
+            'PrimaryHardwareProductId' => $primaryHardware?->data?->productReference ?? null,
+            'FailoverHardwareProductId' => $failoverHardware?->data?->productReference ?? null,
+        ];
+        Log::debug('CloudMarketApi::getAssignments lookup:', $params);
+
+        return self::makeRequest('/PartnerQuoteService/GetIPAssignmentsOptions', array_merge($params, $credentials));
+    }
+
+    private static function collectCredentials($apis = null): array
+    {
+        if (! $apis) {
+            $apis = Api::active()->whereIn('code', CloudMarketSuppliersEnum::values())->get();
+        }
+
+        $credentials = [];
+        foreach ($apis as $api) {
+            $credentials += self::resolveApiAuth($api);
+        }
+
+        return array_filter($credentials, fn ($value) => ! empty($value));
+    }
+
+    private static function getPrimaryProduct(Quote $quote)
+    {
+        $products = collect($quote['items'] ?? $quote->items)->where(fn ($x) => in_array(data_get($x, 'data.type'), ['Primary Product'], true))->values();
+        if (! count($products)) {
+            throw new Exception('No Primary Product Available');
+        }
+
+        return $products[0];
+    }
+
+    private static function getFailoverProduct(Quote $quote)
+    {
+        $failovers = collect($quote['items'] ?? $quote->items)->where(fn ($x) => in_array(data_get($x, 'data.type'), ['Failover Product'], true))->values();
+
+        return count($failovers) ? $failovers[0] : null;
+    }
+
+    private static function getHardwareProduct(Quote $quote, string $type)
+    {
+        $hardware = collect($quote['items'] ?? $quote->items)->where(fn ($x) => in_array(data_get($x, 'data.type'), [$type], true))->values();
+
+        return count($hardware) ? $hardware[0] : null;
+    }
+
+    private static function resolveProvider($product): string
+    {
+        return $product->data?->providerKey == 'pxc' ? 'virtual1' : $product->data?->providerKey;
+    }
+
+    private static function fetchApisForProvider(string $provider)
+    {
+        return Api::active()->whereIn('code', CloudMarketSuppliersEnum::values())->where('code', $provider)->get();
+    }
+
+    private static function buildQuoteAddress(Quote $quote, CloudMarketAddress $address): array
+    {
         $quoteAddress = [
             'ConnectivityType' => 3,
             'Address1.Postcode' => $address->postCode,
             'Address1.Latitude' => $address->lat,
             'Address1.Longitude' => $address->lon,
-
             'Address1.UPRN' => $address->uprn,
             'Address1.AddressKey' => $address->addressKey,
             'Address1.BuildingName' => $address->buildingName,
@@ -33,201 +168,29 @@ class CloudMarketApi
             'Address1.SubPremises' => $address->subPremises,
             'Address1.Street' => $address->street,
             'Address1.Town' => $address->town,
-
-            'ManagedOption' => 0,
-            'TermMonths' => [],
-            'ConnectionSpeeds.MinBearer' => 100,
+            'ManagedOption' => $quote->configs['managed'] ?? 0,
+            'TermMonths' => $quote->configs['contract_length'] ? explode(',', (string) $quote->configs['contract_length']) : [],
+            'ConnectionSpeeds.MinBearer' => is_numeric($quote->configs['bearer'] ?? null) ? (int) $quote->configs['bearer'] : 100,
             'ConnectionSpeeds.MaxBearer' => 100000,
-            'ConnectionSpeeds.MinSpeed' => 10,
+            'ConnectionSpeeds.MinSpeed' => is_numeric($quote->configs['speed'] ?? null) ? (int) $quote->configs['speed'] : 10,
             'ConnectionSpeeds.MaxSpeed' => 100000,
         ];
 
-        if (array_key_exists('managed', $quote->configs)) {
-            $quoteAddress['ManagedOption'] = (int) $quote->configs['managed'];
-        }
-
-        if (array_key_exists('contract_length', $quote->configs)) {
-            $quoteAddress['TermMonths'] = (bool) $quote->configs['contract_length'] ? explode(',', (string) $quote->configs['contract_length']) : [];
-        }
-
-        if (array_key_exists('bearer', $quote->configs) && is_numeric($quote->configs['bearer'])) {
-            $quoteAddress['ConnectionSpeeds.MinBearer'] = (int) $quote->configs['bearer'];
-        }
-
-        if (array_key_exists('speed', $quote->configs) && is_numeric($quote->configs['speed'])) {
-            $quoteAddress['ConnectionSpeeds.MinSpeed'] = (int) $quote->configs['speed'];
-        }
-
-        Log::debug('CloudMarketApi::getQuotes lookup:', $quoteAddress);
-
-        $quoteCredentials = [];
-        foreach ($apis as $api) {
-            $quoteCredentials += self::resolveApiAuth($api);
-        }
-
-        $quoteCredentials = array_filter($quoteCredentials, fn ($value) => ! empty($value));
-
-        $quoteRequestParams = array_merge($quoteAddress, $quoteCredentials);
-
-        return Http::withOptions([
-            'stream' => true,
-            'timeout' => $requestTimeout,
-            'connect_timeout' => 30,
-        ])->timeout($requestTimeout)->withToken(env('ALPNET_API_TOKEN'))
-            ->get(
-                $url.'/PartnerQuoteService/GetQuotes',
-                $quoteRequestParams
-            );
+        return $quoteAddress;
     }
 
-    public static function getFailover(Quote $quote, CloudMarketAddress $address)
+    private static function makeRequest(string $endpoint, array $params)
     {
-
-        $url = env('CLOUDMARKET_CONNECTION_SERVICE_URL', 'https://cpq-poc-uat-api.cloudmarket.com');
-        $requestTimeout = 420;
-
-        $product = collect($quote['items'])->where(function ($x) {
-            return in_array(data_get($x, 'data.type'), ['Primary Product'], true);
-        })->values();
-
-        if (! count($product)) {
-            throw new Exception('No Primary Product Available');
-        }
-
-        $provider = $product[0]->data?->providerKey == 'pxc' ? 'virtual1' : $product[0]->data?->providerKey;
-        $apis = Api::active()->whereIn('code', CloudMarketSuppliersEnum::values())->where('code', $provider)->get();
-
-        $params = [
-            'ProductId' => $product[0]->data?->productCode,
-            'QuoteId' => $product[0]->data?->quoteId,
-        ];
-
-        Log::debug('CloudMarketApi::getFailover lookup:', $params);
-
-        $quoteCredentials = [];
-        foreach ($apis as $api) {
-            $quoteCredentials += self::resolveApiAuth($api);
-        }
-
-        $quoteCredentials = array_filter($quoteCredentials, fn ($value) => ! empty($value));
-
-        $quoteRequestParams = array_merge($params, $quoteCredentials);
+        $baseUrl = env('CLOUDMARKET_CONNECTION_SERVICE_URL', 'https://cpq-poc-uat-api.cloudmarket.com');
 
         return Http::withOptions([
             'stream' => true,
-            'timeout' => $requestTimeout,
+            'timeout' => self::$requestTimeout,
             'connect_timeout' => 30,
-        ])->timeout($requestTimeout)->withToken(env('ALPNET_API_TOKEN'))
-            ->get(
-                $url.'/PartnerQuoteService/GetFailover',
-                $quoteRequestParams
-            );
-    }
-
-    public static function getAddons(Quote $quote, CloudMarketAddress $address)
-    {
-
-        $url = env('CLOUDMARKET_CONNECTION_SERVICE_URL', 'https://cpq-poc-uat-api.cloudmarket.com');
-        $requestTimeout = 420;
-
-        $product = collect($quote['items'])->where(function ($x) {
-            return in_array(data_get($x, 'data.type'), ['Primary Product'], true);
-        })->values();
-
-        if (! count($product)) {
-            throw new Exception('No Primary Product Available');
-        }
-
-        $failover = collect($quote['items'])->where(function ($x) {
-            return in_array(data_get($x, 'data.type'), ['Failover Product'], true);
-        })->values();
-
-        $provider = $product[0]->data?->providerKey == 'pxc' ? 'virtual1' : $product[0]->data?->providerKey;
-        $apis = Api::active()->whereIn('code', CloudMarketSuppliersEnum::values())->where('code', $provider)->get();
-
-        $params = [
-            'ProductId' => $product[0]->data?->productCode,
-            'QuoteId' => $product[0]->data?->quoteId,
-            'FailoverProductId' => count($failover) ? $failover[0]->data?->productCode : null,
-        ];
-
-        Log::debug('CloudMarketApi::getFailover lookup:', $params);
-
-        $quoteCredentials = [];
-        foreach ($apis as $api) {
-            $quoteCredentials += self::resolveApiAuth($api);
-        }
-
-        $quoteCredentials = array_filter($quoteCredentials, fn ($value) => ! empty($value));
-
-        $quoteRequestParams = array_merge($params, $quoteCredentials);
-
-        return Http::withOptions([
-            'stream' => true,
-            'timeout' => $requestTimeout,
-            'connect_timeout' => 30,
-        ])->timeout($requestTimeout)->withToken(env('ALPNET_API_TOKEN'))
-            ->get(
-                $url.'/PartnerQuoteService/GetHardware',
-                $quoteRequestParams
-            );
-    }
-
-    public static function getOptions(Quote $quote, CloudMarketAddress $address)
-    {
-
-        $url = env('CLOUDMARKET_CONNECTION_SERVICE_URL', 'https://cpq-poc-uat-api.cloudmarket.com');
-        $requestTimeout = 420;
-
-        $product = $quote->items->where(function ($x) {
-            return in_array(data_get($x, 'data.type'), ['Primary Product'], true);
-        })->values();
-
-        if (! count($product)) {
-            throw new Exception('No Primary Product Available');
-        }
-
-        $failover = $quote->items->where(function ($x) {
-            return in_array(data_get($x, 'data.type'), ['Failover Product'], true);
-        })->values();
-        $primaryHardwareProduct = $quote->items->where(function ($x) {
-            return in_array(data_get($x, 'data.type'), ['Primary Hardware Product'], true);
-        })->values();
-        $failoverHardwareProduct = $quote->items->where(function ($x) {
-            return in_array(data_get($x, 'data.type'), ['Failover Hardware Product'], true);
-        })->values();
-
-        $provider = $product[0]->data?->providerKey == 'pxc' ? 'virtual1' : $product[0]->data?->providerKey;
-        $apis = Api::active()->whereIn('code', CloudMarketSuppliersEnum::values())->where('code', $provider)->get();
-
-        $params = [
-            'ProductId' => $product[0]->data?->productCode,
-            'QuoteId' => $product[0]->data?->quoteId,
-            'FailoverProductId' => count($failover) ? $failover[0]->data?->productCode : null,
-            'PrimaryHardwareProductId' => count($primaryHardwareProduct) ? $primaryHardwareProduct[0]->data?->productReference : null,
-            'FailoverHardwareProductId' => count($failoverHardwareProduct) ? $failoverHardwareProduct[0]->data?->productReference : null,
-        ];
-
-        Log::debug('CloudMarketApi::getFailover lookup:', $params);
-
-        $quoteCredentials = [];
-        foreach ($apis as $api) {
-            $quoteCredentials += self::resolveApiAuth($api);
-        }
-
-        $quoteCredentials = array_filter($quoteCredentials, fn ($value) => ! empty($value));
-
-        $quoteRequestParams = array_merge($params, $quoteCredentials);
-
-        return Http::withOptions([
-            'stream' => true,
-            'timeout' => $requestTimeout,
-            'connect_timeout' => 30,
-        ])->timeout($requestTimeout)->withToken(env('ALPNET_API_TOKEN'))
-            ->get(
-                $url.'/PartnerQuoteService/GetOptions',
-                $quoteRequestParams
-            );
+        ])
+            ->timeout(self::$requestTimeout)
+            ->withToken(env('ALPNET_API_TOKEN'))
+            ->get($baseUrl.$endpoint, $params);
     }
 
     private static function resolveApiAuth($api): array

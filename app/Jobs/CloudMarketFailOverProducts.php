@@ -30,7 +30,13 @@ class CloudMarketFailOverProducts implements ShouldQueue, TenantAware
 
     public $started_at = null;
 
-    public $tempFilters = [];
+    public $tempFilters = [
+        'providerName' => [],
+        'connectivitySupplierGroup' => [],
+        'contractTermMonths' => [],
+        'bearer' => [],
+        'speed' => [],
+    ];
 
     /**
      * Create a new job instance.
@@ -108,7 +114,9 @@ class CloudMarketFailOverProducts implements ShouldQueue, TenantAware
         // Handle the failure, log exception details, etc.
         $message = '['.strtoupper((string) env('APP_ENV')).'] CloudMarketConnectivityProducts failed with error: '.json_encode($errors);
 
-        Product::write('fail_over', $this->file, $file['data'], false, now(), $file['created_at'], $file['filters'], $errors);
+        if ($file) {
+            Product::write('fail_over', $this->file, $file['data'], false, now(), $file['created_at'], $file['filters'], $errors);
+        }
 
         Log::error($message);
         if (env('DISCORD_CLOUDMARKET_JOBS')) {
