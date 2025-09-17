@@ -12,7 +12,7 @@
                 </div>
             </div>
         </div>
-        <div class="row mb-4">
+        <div class="row mb-4" v-if="!isLoading && addons.length">
             <div class="col-3 mb-3" v-for="addon in addons">
                 <div
                     class="card cursor-pointer"
@@ -30,6 +30,9 @@
                 </div>
             </div>
         </div>
+        <div v-else>
+            <div class="col mb-3">No hardware found</div>
+        </div>
     </div>
 </template>
 <script setup>
@@ -40,7 +43,11 @@ import queryString from 'query-string';
 
 const props = defineProps({
     modelValue: Object,
-    currentStep: Number
+    currentStep: Number,
+    productType: {
+        defaul: 'Primary Hardware Product',
+        type: String
+    }
 });
 
 let timeoutId = null;
@@ -89,13 +96,13 @@ const getAddons = async () => {
 const checkProduct = (article) => {
     let item = quote.items.find((item) => item.product_code == article.code);
     let index = quote.items.findIndex((item) => item.product_code == article.code);
-    article.type = props.currentStep == 0 ? 'Primary Hardware Product' : 'Failover Hardware Product';
+    article.type = props.productType;
     article.group = props.currentStep + 1;
     return index == -1 ? addAddon(article) : removeAddon(item);
 };
 
 watch(
-    () => [quote.items, props.currentStep],
+    () => [quote.items],
     () => {
         getAddons();
     }

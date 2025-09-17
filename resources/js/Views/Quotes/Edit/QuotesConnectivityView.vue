@@ -73,14 +73,11 @@
     <component
         :is="connectivitySteps[currentStep]"
         v-bind="{
-            modelValue: props.modelValue
+            modelValue: props.modelValue,
+            needsAddons: needsAddons,
+            currentStep: currentStep
         }"
     ></component>
-    <QuoteConnectivityAddonsTable
-        v-if="needsAddons"
-        v-model="props.modelValue"
-        :currentStep="currentStep"
-    ></QuoteConnectivityAddonsTable>
 </template>
 <script setup>
 import { ref, watch } from 'vue';

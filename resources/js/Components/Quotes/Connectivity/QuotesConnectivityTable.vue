@@ -15,7 +15,9 @@ import { remove, add } from '@/Composables/useConnectivityItem';
 import { quote } from '@/Composables/useQuote';
 
 const props = defineProps({
-    modelValue: Object
+    modelValue: Object,
+    needsAddons: Boolean,
+    currentStep: Number
 });
 
 let timeoutId = null;
@@ -299,7 +301,7 @@ window.addEventListener('beforeunload', () => {
 getArticles(false, true);
 </script>
 <template>
-    <div>
+    <div v-if="!quote.items?.find((x) => x.data.type == 'Primary Product')">
         <div class="row mb-2">
             <div class="col position-relative">
                 <div class="row mb-3" v-if="errors.length">
@@ -966,6 +968,13 @@ getArticles(false, true);
             </div>
         </div>
     </Dialog>
+
+    <QuoteConnectivityHardwareTable
+        v-if="props.needsAddons && quote.items?.find((x) => x.data.type == 'Primary Product')"
+        v-model="props.modelValue"
+        productType="Primary Hardware Product"
+        :currentStep="props.currentStep"
+    ></QuoteConnectivityHardwareTable>
 </template>
 
 <style scoped>

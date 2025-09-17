@@ -15,7 +15,9 @@ import { remove, add } from '@/Composables/useConnectivityItem';
 import { quote } from '@/Composables/useQuote';
 
 const props = defineProps({
-    modelValue: Object
+    modelValue: Object,
+    needsAddons: Boolean,
+    currentStep: Number
 });
 
 let timeoutId = null;
@@ -260,7 +262,9 @@ const resetFilters = () => {
 const checkProduct = (article) => {
     let item = quote.items.find((item) => item.product_code == article.code);
     let index = quote.items.findIndex((item) => item.product_code == article.code);
+    let primaryProduct = quote.items.find((x) => x.data.type == 'Primary Product');
     article.type = 'Failover Product';
+    article.contractTermMonths = article.contractTermMonths ?? primaryProduct.contract_length;
     return index == -1 ? add(article) : remove(item);
 };
 
@@ -298,7 +302,7 @@ window.addEventListener('beforeunload', () => {
 getArticles(false, true);
 </script>
 <template>
-    <div>
+    <div v-if="!quote.items?.find((x) => x.data.type == 'Failover Product')">
         <div class="row mb-2">
             <div class="col position-relative">
                 <div class="row mb-3" v-if="errors.length">
@@ -969,6 +973,13 @@ getArticles(false, true);
             </div>
         </div>
     </Dialog>
+
+    <QuoteConnectivityHardwareTable
+        v-if="props.needsAddons && quote.items?.find((x) => x.data.type == 'Failover Product')"
+        v-model="props.modelValue"
+        productType="Failover Hardware Product"
+        :group="props.currentStep + 1"
+    ></QuoteConnectivityHardwareTable>
 </template>
 
 <style scoped>
