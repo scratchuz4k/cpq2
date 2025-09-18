@@ -92,7 +92,7 @@ class CloudMarketApi
         $provider = self::resolveProvider($product);
 
         $apis = self::fetchApisForProvider($provider);
-        $credentials = self::collectCredentials();
+        $credentials = self::collectCredentials($apis);
 
         $params = [
             'ProductId' => $product->data?->productCode,
@@ -103,7 +103,7 @@ class CloudMarketApi
         ];
         Log::debug('CloudMarketApi::getAssignments lookup:', $params);
 
-        return self::makeRequest('/PartnerQuoteService/GetIPAssignmentsOptions', array_merge($params, $credentials));
+        return self::makeRequest('/PartnerQuoteService/GetIPAssignments', array_merge($params, $credentials));
     }
 
     private static function collectCredentials($apis = null): array

@@ -90,8 +90,10 @@ const getOptions = async () => {
 const checkProduct = (article) => {
     let item = quote.items.find((item) => item.product_code == article.code);
     let index = quote.items.findIndex((item) => item.product_code == article.code);
+    let primaryProduct = quote.items.find((x) => x.data.type == 'Primary Product');
     article.type = 'Option Product';
     article.group = props.currentStep + 1;
+    article.contractTermMonths = article.contractTermMonths ?? primaryProduct.contract_length;
     return index == -1 ? addAddon(article) : removeAddon(item);
 };
 

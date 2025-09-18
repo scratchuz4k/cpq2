@@ -196,9 +196,9 @@ const checkGoPrevious = () => {
 };
 
 const checkGoNext = () => {
-    let items = quote.items.filter((x) => x.group == 1);
     let check = currentStep.value == 0 ? checks.primaryHardwareRequired : checks.failoverHardwareRequired;
-    if (check && !items.find((x) => x.data.type == 'Primary Hardware Product') && addons.value.length != 0) {
+    let productType = currentStep.value == 0 ? 'Primary Hardware Product' : 'Failover Hardware Product';
+    if (check && !quote.items.find((x) => x.data.type == productType) && addons.value.length != 0) {
         scrollToDiv();
     } else {
         currentStep.value++;
