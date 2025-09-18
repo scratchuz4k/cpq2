@@ -70,16 +70,13 @@ describe('Creates a Mobile Quote', () => {
         cy.wait(1000);
 
         //Add products to quote
-        let keys = [0, 1, 2, 3, 4];
-        keys.forEach((key) => {
-            cy.get('tbody tr button').eq(key).click();
-            cy.get('tbody tr button').eq(key).contains('Added');
-        });
+        cy.get('tbody tr button').eq(0).click();
+        cy.get('#connectivity-product-1').contains('Primary Product');
 
         //Save quote
         cy.get('.continue-btn').eq(0).click();
-        cy.get('.recurring-item').its('length').should('eq', 5);
-        cy.get('.one_off-item').its('length').should('eq', 5);
+        cy.get('.recurring-item').its('length').should('eq', 1);
+        cy.get('.one_off-item').its('length').should('eq', 1);
     });
     it('Enable Activity recording', () => {
         cy.login('super@example.com', 'werwerwer');

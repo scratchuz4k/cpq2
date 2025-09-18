@@ -3,7 +3,7 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div class="d-flex justify-content-between align-items-center">
             <p class="fs-4 me-3 mb-0">
-                <b>{{ getPrimary() ? steps[getPrimary().data?.providerKey][currentStep].title : 'Select Product' }}</b>
+                <b>{{ getTitle() }}</b>
             </p>
             <p class="mb-0 text-primary bold fs-5 pt-1">STEP {{ currentStep + 1 }}/{{ connectivitySteps.length }}</p>
         </div>
@@ -39,8 +39,8 @@
     </div>
 
     <div class="row mb-4" v-if="result.length">
-        <div class="col-3" v-for="article in result">
-            <div class="card">
+        <div class="col-3" v-for="(article, index) in result">
+            <div :id="'connectivity-product-' + (index + 1)" class="card">
                 <div class="card-body">
                     <h5 class="card-title">{{ article.data.type }}</h5>
                     <p>{{ article.name }}</p>
@@ -146,6 +146,15 @@ const getPrimary = () => {
         return null;
     }
     return quote.items.find((x) => x.data.type == 'Primary Product');
+};
+
+const getTitle = () => {
+    let primary = getPrimary();
+    if (Object.keys(steps).includes(primary?.data?.providerKey)) {
+        return steps[getPrimary().data?.providerKey][currentStep.value].title;
+    } else {
+        return 'Select Product';
+    }
 };
 
 const getComponent = () => {
