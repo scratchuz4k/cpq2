@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Api\Cloudmarket;
 use App\Enums\CloudMarketSuppliersEnum;
 use App\Helpers\Api\CloudMarketAddress;
 use App\Http\Controllers\BaseController;
-use App\Http\Resources\ShopBlocks\ProductResource;
 use App\Jobs\CloudMarketAddonsProducts;
 use App\Jobs\CloudMarketAssignmentsProducts;
 use App\Jobs\CloudMarketConnectivityProducts;
@@ -18,22 +17,16 @@ use App\Services\External\CloudMarketService;
 use Dedoc\Scramble\Attributes\ExcludeRouteFromDocs;
 use Exception;
 use Illuminate\Http\Request;
-use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
-use Illuminate\Pagination\LengthAwarePaginator;
 
 class ProductController extends BaseController
 {
     public function __construct(protected CloudMarketService $cloudMarketService) {}
 
-    /**
-     * List of Products
-     *
-     * @response AnonymousResourceCollection<LengthAwarePaginator<ProductResource>>
-     */
     #[ExcludeRouteFromDocs]
     public function index(Request $request)
     {
-        $filters = $request->has('filters') ? json_decode($request->filters, true) : [];
+        // Special-cased mock data for index only
+        $filters = $this->decodeFilters($request);
         if (! env('CLOUDMARKET_CONNECTION_LIVE_DATA')) {
             $mock_prices = storage_path('mocks/prices.json');
             if (! is_file($mock_prices)) {
@@ -44,151 +37,85 @@ class ProductController extends BaseController
             return $this->cloudMarketService->sendResponse($items, $filters, 3);
         }
 
-        $quote = Quote::find($request->get('quote_id'));
-        if (! $quote) {
-            throw new Exception('Quote not found!');
-        }
-        $address = $this->generateAddress($quote);
-        $filename = $this->generateFilename($quote, $address);
-
-        $this->cloudMarketService->handleProductJob('live_prices', $filename, $quote, $address, CloudMarketConnectivityProducts::class);
-
-        $content = Product::where('key', 'live_prices')->where('filename', $filename)->first();
-
-        return $this->cloudMarketService->sendResponse($content->toArray(), $filters, 3);
+        return $this->handleProductRequest($request, 'live_prices', CloudMarketConnectivityProducts::class, false, false);
     }
 
-    /**
-     * List of Products
-     *
-     * @response AnonymousResourceCollection<LengthAwarePaginator<ProductResource>>
-     */
     #[ExcludeRouteFromDocs]
     public function failover(Request $request)
     {
-        $filters = $request->has('filters') ? json_decode($request->filters, true) : [];
-        $quote = Quote::find($request->get('quote_id'));
-        if (! $quote) {
-            throw new Exception('Quote not found!');
-        }
-        $address = $this->generateAddress($quote);
-        $filename = $this->generateFilename($quote, $address);
-        $product = $quote->items->where(function ($x) {
-            return in_array(data_get($x, 'data.type'), ['Primary Product'], true);
-        });
-
-        if (! count($product)) {
-            throw new Exception('Primary Product not found!');
-        }
-
-        $filename = $product[0]->product_code.$filename;
-        $this->cloudMarketService->handleProductJob('fail_over', $filename, $quote, $address, CloudMarketFailOverProducts::class);
-
-        $content = Product::where('key', 'fail_over')->where('filename', $filename)->first();
-
-        return $this->cloudMarketService->sendResponse($content->toArray(), $filters, 3);
+        return $this->handleProductRequest($request, 'fail_over', CloudMarketFailOverProducts::class, true);
     }
 
-    /**
-     * List of Products
-     *
-     * @response AnonymousResourceCollection<LengthAwarePaginator<ProductResource>>
-     */
     #[ExcludeRouteFromDocs]
     public function addons(Request $request)
     {
-        $filters = $request->has('filters') ? json_decode($request->filters, true) : [];
-        $quote = Quote::find($request->get('quote_id'));
-        if (! $quote) {
-            throw new Exception('Quote not found!');
-        }
-        $address = $this->generateAddress($quote);
-        $filename = $this->generateFilename($quote, $address);
-        $product = $quote->items->where(function ($x) {
-            return in_array(data_get($x, 'data.type'), ['Primary Product'], true);
-        })->values();
-
-        if (! count($product)) {
-            throw new Exception('Primary Product not found!');
-        }
-        $failover = $quote->items->where(function ($x) {
-            return in_array(data_get($x, 'data.type'), ['Failover Product'], true);
-        })->values();
-
-        $filename = $product[0]->product_code.(count($failover) ? $failover[0]->data?->productCode : 'failover').$filename;
-        $this->cloudMarketService->handleProductJob('addons', $filename, $quote, $address, CloudMarketAddonsProducts::class);
-
-        $content = Product::where('key', 'addons')->where('filename', $filename)->first();
-
-        return $this->cloudMarketService->sendResponse($content->toArray(), $filters, 3);
+        return $this->handleProductRequest($request, 'addons', CloudMarketAddonsProducts::class, true, true);
     }
 
-    /**
-     * List of Products
-     *
-     * @response AnonymousResourceCollection<LengthAwarePaginator<ProductResource>>
-     */
     #[ExcludeRouteFromDocs]
     public function options(Request $request)
     {
-        $filters = $request->has('filters') ? json_decode($request->filters, true) : [];
-        $quote = Quote::find($request->get('quote_id'));
-        if (! $quote) {
-            throw new Exception('Quote not found!');
-        }
-        $address = $this->generateAddress($quote);
-        $filename = $this->generateFilename($quote, $address);
-        $product = $quote->items->where(function ($x) {
-            return in_array(data_get($x, 'data.type'), ['Primary Product'], true);
-        })->values();
-
-        if (! count($product)) {
-            throw new Exception('Primary Product not found!');
-        }
-        $failover = $quote->items->where(function ($x) {
-            return in_array(data_get($x, 'data.type'), ['Failover Product'], true);
-        })->values();
-
-        $filename = $product[0]->product_code.(count($failover) ? $failover[0]->data?->productCode : 'failover').$filename;
-        $this->cloudMarketService->handleProductJob('options', $filename, $quote, $address, CloudMarketOptionsProducts::class);
-
-        $content = Product::where('key', 'options')->where('filename', $filename)->first();
-
-        return $this->cloudMarketService->sendResponse($content->toArray(), $filters, 3);
+        return $this->handleProductRequest($request, 'options', CloudMarketOptionsProducts::class, true, true);
     }
 
-    /**
-     * List of Products
-     *
-     * @response AnonymousResourceCollection<LengthAwarePaginator<ProductResource>>
-     */
     #[ExcludeRouteFromDocs]
     public function assignments(Request $request)
     {
-        $filters = $request->has('filters') ? json_decode($request->filters, true) : [];
+        return $this->handleProductRequest($request, 'assignments', CloudMarketAssignmentsProducts::class, true, true);
+    }
+
+    private function handleProductRequest(
+        Request $request,
+        string $key,
+        string $jobClass,
+        bool $requirePrimary = true,
+        bool $appendFailover = false
+    ) {
+        $filters = $this->decodeFilters($request);
+        $quote = $this->getQuote($request);
+
+        $address = $this->generateAddress($quote);
+        $filename = $this->generateFilename($quote, $address);
+
+        if ($requirePrimary) {
+            $product = $this->getProduct($quote, 'Primary Product');
+            if (! $product) {
+                throw new Exception('Primary Product not found!');
+            }
+            $filename = $product->product_code.$filename;
+
+            if ($appendFailover) {
+                $failover = $this->getProduct($quote, 'Failover Product');
+                $filename = $product->product_code.($failover?->data?->productCode ?? 'failover').$filename;
+            }
+        }
+
+        $this->cloudMarketService->handleProductJob($key, $filename, $quote, $address, $jobClass);
+        $content = Product::where('key', $key)->where('filename', $filename)->first();
+
+        return $this->cloudMarketService->sendResponse($content?->toArray() ?? [], $filters, 3);
+    }
+
+    private function decodeFilters(Request $request)
+    {
+        return $request->has('filters') ? json_decode($request->filters, true) : [];
+    }
+
+    private function getQuote(Request $request)
+    {
         $quote = Quote::find($request->get('quote_id'));
         if (! $quote) {
             throw new Exception('Quote not found!');
         }
-        $address = $this->generateAddress($quote);
-        $filename = $this->generateFilename($quote, $address);
-        $product = $quote->items->where(function ($x) {
-            return in_array(data_get($x, 'data.type'), ['Primary Product'], true);
-        })->values();
 
-        if (! count($product)) {
-            throw new Exception('Primary Product not found!');
-        }
-        $failover = $quote->items->where(function ($x) {
-            return in_array(data_get($x, 'data.type'), ['Failover Product'], true);
-        })->values();
+        return $quote;
+    }
 
-        $filename = $product[0]->product_code.(count($failover) ? $failover[0]->data?->productCode : 'failover').$filename;
-        $this->cloudMarketService->handleProductJob('assignments', $filename, $quote, $address, CloudMarketAssignmentsProducts::class);
-
-        $content = Product::where('key', 'assignments')->where('filename', $filename)->first();
-
-        return $this->cloudMarketService->sendResponse($content->toArray(), $filters, 3);
+    private function getProduct($quote, $type)
+    {
+        return $quote->items->first(function ($x) use ($type) {
+            return in_array(data_get($x, 'data.type'), [$type], true);
+        });
     }
 
     private function generateAddress(Quote $quote)
