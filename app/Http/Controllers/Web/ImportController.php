@@ -63,6 +63,7 @@ class ImportController extends BaseController
     {
         return Inertia::render('Imports/Show', [
             'importObject' => new ImportResource($import),
+            'resources' => $import->file,
         ]);
     }
 

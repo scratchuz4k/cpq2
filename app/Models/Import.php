@@ -25,7 +25,7 @@ class Import extends Model
     protected function casts(): array
     {
         return [
-            'data' => 'object',
+            'data' => 'array',
             'overwrite' => 'boolean',
         ];
     }

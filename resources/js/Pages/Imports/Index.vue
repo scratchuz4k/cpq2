@@ -77,10 +77,10 @@ const items = ref([{ label: 'Home', url: '/' }, { label: `Imports` }]);
         <div class="panel">
             <Header title="Imports" :breadcrumbs="items">
                 <template #buttons>
-                    <Button id="import-btn" class="btn btn-primary me-2" @click.prevent="showForm = !showForm">
+                    <a id="import-btn" class="btn btn-primary me-2" @click.prevent="showForm = !showForm">
                         <font-awesome-icon :icon="['fas', 'upload']"></font-awesome-icon>
                         Import
-                    </Button>
+                    </a>
                 </template>
             </Header>
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
@@ -90,16 +90,28 @@ const items = ref([{ label: 'Home', url: '/' }, { label: `Imports` }]);
                         link: true
                     }"
                     :columns="[
-                        { data: 'id', title: 'ID', style: 'width:20%' },
-                        { data: 'name', title: 'Name', style: 'width:20%' },
-                        { data: 'status', title: 'Status', style: 'width:20%' },
-                        { data: 'model', title: 'Model', style: 'width:20%' },
+                        { data: 'id', title: 'ID', style: 'width:5%' },
+                        { data: 'model', title: 'Model', style: 'width:10%' },
+                        { data: 'name', title: 'Name', style: 'width:25%' },
                         { data: 'user.name', title: 'Imported By', style: 'width:20%' },
-                        { data: 'created_at', title: 'Updated At', style: 'width:20%' }
+                        { data: 'status', title: 'Status', style: 'width:10%' },
+                        { data: 'created_at', title: 'Created At', style: 'width:15%' },
+                        { data: 'updated_at', title: 'Updated At', style: 'width:15%' }
                     ]"
                     route="/imports"
                 >
+                    <template #status="{ value }">
+                        <span class="badge text-bg-secondary text-uppercase">{{ value }}</span>
+                    </template>
+                    <template #model="{ value }">
+                        <span class="badge border border-secondary text-secondary opacity-75 text-uppercase lh-sm">{{
+                            value
+                        }}</span>
+                    </template>
                     <template #created_at="{ value }">
+                        {{ format.date(value) }}
+                    </template>
+                    <template #updated_at="{ value }">
                         {{ format.date(value) }}
                     </template>
                 </Datatable>
@@ -118,34 +130,53 @@ const items = ref([{ label: 'Home', url: '/' }, { label: `Imports` }]);
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 pb-2">
                 <hr class="mt-0" />
                 <form @submit.prevent="submitFile" enctype="multipart/form-data">
-                    <div class="mb-3">
-                        <label for="import" class="form-label">Imports:</label>
-                        <Select
-                            inputId="import"
-                            v-model="form.model"
-                            :options="props.imports"
-                            placeholder="Select a Import"
-                            class="w-100"
-                        />
+                    <div class="row g-3">
+                        <div class="col-md-3 mb-1">
+                            <label for="import" class="form-label">Import Type:</label>
+                            <Select
+                                inputId="import"
+                                v-model="form.model"
+                                :options="props.imports"
+                                placeholder="Select a Import"
+                                class="w-100"
+                            />
+                        </div>
+                        <div class="col-md-9 mb-1">
+                            <label for="csv-file" class="form-label">CSV file:</label>
+                            <input
+                                id="csv-file"
+                                type="file"
+                                accept=".csv"
+                                required
+                                @input="onFileChange"
+                                class="form-control"
+                            />
+                        </div>
                     </div>
-                    <input type="file" accept=".csv" required @input="onFileChange" />
-                    <p class="py-2">
-                        Download a
-                        <a @click="getTemplateFile" class="color-purple" id="products-import-template-link"
-                            >sample CSV template</a
-                        >
-                        to see and example of the format required.
+                    <p class="py-2 text-muted">
+                        <SvgIcon width="20" height="20" name="info" />
+                        <i class="small">
+                            Download a
+                            <a
+                                role="button"
+                                @click="getTemplateFile"
+                                class="color-purple"
+                                id="products-import-template-link"
+                                >sample CSV template</a
+                            >
+                            to see and example of the format required.
+                        </i>
                     </p>
                     <div class="form-check px-0 pt-2">
                         <Checkbox
-                            id="overwrite-products"
+                            inputId="overwrite-products"
                             v-model="form.overwrite"
                             binary
                             trueValue="1"
                             falseValue="0"
                         />
                         <label class="form-check-label ms-2" for="overwrite-products">
-                            Overwrite existing products that have the same handle
+                            Overwrite existing products that have the same SKU
                         </label>
                     </div>
                     <hr />

@@ -3,9 +3,11 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link } from '@inertiajs/vue3';
 import { ref } from 'vue';
 import Panel from 'primevue/panel';
+import CountUp from 'vue-countup-v3';
 
 const props = defineProps({
-    importObject: Object
+    importObject: Object,
+    resources: Object
 });
 
 const items = ref([{ label: 'Home', url: '/' }, { label: 'Imports', url: '/imports' }, { label: 'Show Import' }]);
@@ -22,18 +24,80 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Imports', url: '/impor
                 </template>
             </Header>
 
-            <Panel class="mt-3" header="Import Data:" :toggleable="true">
-                <p><b>File name:</b> {{ props.importObject.name }}</p>
-                <p><b>Status:</b> {{ props.importObject.status }}</p>
-                <p><b>Overwrite flag:</b> {{ props.importObject.overwrite }}</p>
-                <p><b>Imported by:</b> {{ props.importObject.user.name }}</p>
-                <p><b>Imported on:</b> {{ format.date(props.importObject.created_at) }}</p>
+            <Panel class="mt-3" header="Import Details" :toggleable="true">
+                <div class="mt-2 row row-cols-1 row-cols-md-2 g-3 mb-2">
+                    <p><b>Imported By:</b><br />{{ props.importObject.user.name }}</p>
+                    <p><b>Imported On:</b><br />{{ format.formattedDate(props.importObject.created_at) }}</p>
+                    <p>
+                        <b>Imported File:</b><br />
+                        <a
+                            v-if="props.importObject.file_id"
+                            :href="props.resources.full_route"
+                            :download="props.importObject.name"
+                            class="btn p-0 text-decoration-underline"
+                            title="Download file"
+                        >
+                            <font-awesome-icon :icon="['fas', 'download']" class="me-1" />
+                            {{ props.importObject.name }}
+                        </a>
+                    </p>
+                    <p>
+                        <b>Overwrite Existing Products:</b><br />
+                        <span class="text-secondary" v-if="props.importObject.overwrite">
+                            <font-awesome-icon :icon="['fas', 'circle-check']" class="me-1 text-primary" size="lg" />
+                            <i>true</i>
+                        </span>
+                        <span class="text-secondary" v-else>
+                            <font-awesome-icon :icon="['far', 'circle-xmark']" class="me-1 text-secondary" size="lg" />
+                            <i>false</i>
+                        </span>
+                    </p>
+                    <p>
+                        <b>Model:</b><br />
+                        <span class="badge border border-secondary text-secondary opacity-75 lh-sm text-uppercase">
+                            {{ props.importObject.model }}</span
+                        >
+                    </p>
+                    <p>
+                        <b>Status:</b><br />
+                        <span class="badge text-bg-secondary text-uppercase"> {{ props.importObject.status }}</span>
+                    </p>
+                </div>
             </Panel>
 
-            <Panel class="mt-3" header="Import Results:" :toggleable="true">
-                <p><b>Rows Processed:</b> {{ props.importObject.data?.processed }}</p>
-                <p><b>Rows successfully imported:</b> {{ props.importObject.data?.success }}</p>
-                <p><b>Rows Skipped:</b> {{ props.importObject.data?.skipped }}</p>
+            <Panel class="mt-3" header="Import Results" :toggleable="true">
+                <div class="mt-2 row row-cols-1 row-cols-md-3 g-3 mb-2">
+                    <div class="col">
+                        <div class="card py-4 bg-light border-0">
+                            <div class="card-body text-center p-2 text-decoration-none">
+                                <div class="fw-bold mb-1">Rows Processed</div>
+                                <span class="display-6">
+                                    <count-up :endVal="props.importObject.data?.processed ?? 0" />
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="card py-4 bg-light border-0">
+                            <div class="card-body text-center p-2 text-decoration-none">
+                                <div class="fw-bold mb-1">Rows Imported</div>
+                                <span class="display-6">
+                                    <count-up :endVal="props.importObject.data?.success ?? 0" />
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="card py-4 bg-light border-0">
+                            <div class="card-body text-center p-2 text-decoration-none">
+                                <div class="fw-bold mb-1">Rows Skipped</div>
+                                <span class="display-6">
+                                    <count-up :endVal="props.importObject.data?.skipped ?? 0" />
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <br />
                 <p class="fw-semibold">Errors</p>
                 <ul v-if="props.importObject.data?.errors?.length > 0">
@@ -54,6 +118,12 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Imports', url: '/impor
 </template>
 
 <style scoped>
+.p-panel-title {
+    font-size: 2rem;
+    font-weight: 600;
+    color: var(--dark-purple);
+}
+
 li.rows {
     counter-increment: item;
     margin-bottom: 5px;

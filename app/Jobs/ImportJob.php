@@ -7,9 +7,10 @@ use App\Enums\ImportStatusesEnum;
 use App\Models\Import;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
+use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Facades\Excel;
 
-class ImporsJob implements ShouldQueue
+class ImportJob implements ShouldQueue
 {
     use Queueable;
 
@@ -30,8 +31,7 @@ class ImporsJob implements ShouldQueue
     public function handle(): void
     {
         $resource = $this->import->file;
-
-        Excel::import($this->importHandler, $resource->route);
+        Excel::import($this->importHandler, Storage::disk('public')->path($resource->route));
 
         $this->import->update([
             'status' => ImportStatusesEnum::COMPLETED->name,

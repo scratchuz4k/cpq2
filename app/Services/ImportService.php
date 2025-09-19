@@ -4,7 +4,7 @@ namespace App\Services;
 
 use App\Enums\ImportsEnum;
 use App\Enums\ImportStatusesEnum;
-use App\Jobs\ImporsJob;
+use App\Jobs\ImportJob;
 use App\Models\Import;
 use App\Models\Resource;
 
@@ -16,7 +16,7 @@ class ImportService
         $overwrite = array_key_exists('overwrite', $array) ? $array['overwrite'] : 0;
         $user = auth()->user();
 
-        if ($path = $file->store('files', 'public')) {
+        if ($path = $file->store('imports', 'public')) {
             $resource = Resource::create([
                 'title' => $file->getClientOriginalName(),
                 'mime_type' => $file->getClientMimeType(),
@@ -36,7 +36,7 @@ class ImportService
             'tenant_id' => $user->tenant_id,
         ]);
 
-        ImporsJob::dispatch($import, $import->overwrite);
+        ImportJob::dispatch($import, $import->overwrite);
 
         return $import;
     }

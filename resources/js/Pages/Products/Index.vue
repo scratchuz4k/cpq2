@@ -18,17 +18,17 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'My Account', url: '/my
         <div class="panel">
             <Header title="Products" :breadcrumbs="items">
                 <template #buttons>
-                    <Link href="/blacklists" id="blacklist-index-btn" class="btn btn-primary me-2">
+                    <Link href="/blacklists" id="blacklist-index-btn" class="btn btn-secondary me-2">
                         <font-awesome-icon :icon="['fas', 'shop-lock']" />
                         Blacklisted Items
+                    </Link>
+                    <Link href="/imports" id="product-import-btn" class="btn btn-secondary me-2">
+                        <font-awesome-icon :icon="['fas', 'file-import']"></font-awesome-icon>
+                        Import Products
                     </Link>
                     <Link href="/products/create" id="product-create-btn" class="btn btn-primary me-2">
                         <font-awesome-icon :icon="['fas', 'plus']"></font-awesome-icon>
                         New Product
-                    </Link>
-                    <Link href="/imports" id="product-import-btn" class="btn btn-primary me-2">
-                        <font-awesome-icon :icon="['fas', 'file-import']"></font-awesome-icon>
-                        Import Products
                     </Link>
                 </template>
             </Header>
