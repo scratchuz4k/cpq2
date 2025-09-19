@@ -71,7 +71,7 @@ const getProducts = async () => {
     res.data.data.forEach((e) => {
         let temp = quote.items.find((x) => x.product_code == e.sku);
         e.quantity = temp ? temp.quantity : 0;
-        e.contract_length = 12;
+        e.contract_length = e.price_plan.code == 'SINGLE' ? 1 : 12;
     });
     products.value = res.data.data;
 
