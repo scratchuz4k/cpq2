@@ -577,7 +577,7 @@ getArticles(false, true);
                                         </label>
                                     </div>
                                     <div class="checkbox d-flex py-1 px-2">
-                                        <TriStateToggle v-model="showManaged" id="filter-show-contended">
+                                        <TriStateToggle v-model="showManaged" id="filter-show-managed">
                                             <template #handle>
                                                 <font-awesome-icon
                                                     :icon="
@@ -591,7 +591,7 @@ getArticles(false, true);
                                                 />
                                             </template>
                                         </TriStateToggle>
-                                        <label class="form-check-label" for="filter-show-contended">
+                                        <label class="form-check-label" for="filter-show-managed">
                                             Show managed products
                                         </label>
                                     </div>
