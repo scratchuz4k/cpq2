@@ -68,14 +68,6 @@ Route::middleware(['api', 'auth:sanctum'])->group(function () {
         Route::post('get-position-by-address', [ExternalController::class, 'getPositionByAddress']);
     });
 
-    Route::prefix('shop-blocks')->group(callback: function () {
-        Route::get('brands', (new ShopBlocksBrandController)->index(...));
-        Route::get('products', [ShopBlocksProductController::class, 'index']);
-        Route::get('products/{article}', [ShopBlocksProductController::class, 'show']);
-        Route::get('product-features', [ProductFeatureController::class, 'index']);
-        Route::get('categories', [ShopBlocksCategoryController::class, 'index']);
-    });
-
     Route::get('/reporting-data', [DashboardController::class, 'reporting']);
 
     Route::prefix('export')->group(function () {

@@ -27,6 +27,7 @@ const showLowestCost = ref(true);
 const showQuoted = ref(false);
 const showFilters = ref(true);
 const showContended = ref(null);
+const showManaged = ref(null);
 const articles = ref([]);
 const errors = ref([]);
 const selectedFilters = ref([]);
@@ -98,6 +99,10 @@ const getArticles = async (clearCache = false, runTimeout = false) => {
 
     if (showContended.value !== null) {
         temp.push({ column: 'isContended', operator: 'equals', value: showContended.value });
+    }
+
+    if (showManaged.value !== null) {
+        temp.push({ column: 'isManaged', operator: 'equals', value: showManaged.value });
     }
 
     if (clearCache) {
@@ -258,6 +263,7 @@ const resetFilters = () => {
     showLowestCost.value = true;
     showQuoted.value = false;
     showContended.value = null;
+    showManaged.value = null;
 };
 
 const checkProduct = (article) => {
@@ -287,7 +293,7 @@ const handlePaginator = (ev) => {
 };
 
 watch(
-    [filters, showQuoted, showLowestCost, showContended],
+    [filters, showQuoted, showLowestCost, showContended, showManaged],
     _.debounce(function () {
         meta.page = 1;
         getArticles();
@@ -568,6 +574,25 @@ getArticles(false, true);
                                         </TriStateToggle>
                                         <label class="form-check-label" for="filter-show-contended">
                                             Show contended products
+                                        </label>
+                                    </div>
+                                    <div class="checkbox d-flex py-1 px-2">
+                                        <TriStateToggle v-model="showManaged" id="filter-show-contended">
+                                            <template #handle>
+                                                <font-awesome-icon
+                                                    :icon="
+                                                        showManaged === true
+                                                            ? ['fas', 'circle-check']
+                                                            : showManaged === false
+                                                              ? ['far', 'circle-xmark']
+                                                              : ['far', 'circle']
+                                                    "
+                                                    class="text-primary"
+                                                />
+                                            </template>
+                                        </TriStateToggle>
+                                        <label class="form-check-label" for="filter-show-contended">
+                                            Show managed products
                                         </label>
                                     </div>
                                 </li>
