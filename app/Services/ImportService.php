@@ -36,7 +36,7 @@ class ImportService
             'tenant_id' => $user->tenant_id,
         ]);
 
-        ImportJob::dispatch($import, $import->overwrite);
+        ImportJob::dispatch($import, $import->overwrite, $user->tenant_id);
 
         return $import;
     }

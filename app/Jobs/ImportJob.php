@@ -19,10 +19,10 @@ class ImportJob implements ShouldQueue
     /**
      * Create a new job instance.
      */
-    public function __construct(public Import $import, public bool $overwrite = false)
+    public function __construct(public Import $import, public bool $overwrite = false, public ?int $tenant_id = null)
     {
         $importClass = ImportsEnum::tryFromName($this->import->model)->value;
-        $this->importHandler = new $importClass;
+        $this->importHandler = new $importClass($overwrite, $tenant_id);
     }
 
     /**
@@ -31,7 +31,7 @@ class ImportJob implements ShouldQueue
     public function handle(): void
     {
         $resource = $this->import->file;
-        Excel::import($this->importHandler, Storage::disk('public')->path($resource->route));
+        Excel::import($this->importHandler, Storage::disk('public')->path($resource->getRouteValue()));
 
         $this->import->update([
             'status' => ImportStatusesEnum::COMPLETED->name,

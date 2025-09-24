@@ -8,7 +8,6 @@ use App\Models\Category;
 use App\Models\PricePlan;
 use App\Models\Product;
 use App\Models\Supplier;
-use App\Models\Tenant;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Validator;
@@ -30,12 +29,7 @@ class ProductsImport implements ToCollection, WithBatchInserts, WithHeadingRow
         'errors' => [],
     ];
 
-    public Tenant $tenant;
-
-    public function __construct(protected bool $overwrite = false)
-    {
-        $this->tenant = auth()->user()?->currentTenant;
-    }
+    public function __construct(protected bool $overwrite = false, protected ?int $tenant_id = null) {}
 
     /**
      * Recursively processes and inserts products with missing parent_id.
@@ -98,7 +92,7 @@ class ProductsImport implements ToCollection, WithBatchInserts, WithHeadingRow
                 ...$rules,
                 'sku' => $this->overwrite
                     ? 'required|string|max:255'
-                    : ['required', 'string', 'max:255', Rule::unique('products')->where('tenant_id', $this->tenant->id)],
+                    : ['required', 'string', 'max:255', Rule::unique('products')->where('tenant_id', $this->tenant_id)],
             ]);
 
             if ($validator->fails()) {
@@ -120,12 +114,13 @@ class ProductsImport implements ToCollection, WithBatchInserts, WithHeadingRow
                 'price_plan_id' => (isset($product['price_plan_id']) && ! empty($product['price_plan_id'])) ? PricePlan::find($product['price_plan_id'])->id : null,
                 'category_id' => (isset($product['category_id']) && ! empty($product['category_id'])) ? Category::find($product['category_id'])->id : null,
                 'parent_id' => $parentId,
+                'tenant_id' => $this->tenant_id,
             ];
 
             if ($this->overwrite) {
                 Product::UpdateOrCreate(
                     [
-                        'sku' => $product['sku'] ?? '', 'tenant_id' => $this->tenant->id,
+                        'sku' => $product['sku'] ?? '', 'tenant_id' => $this->tenant_id,
                     ],
                     $productData
                 );

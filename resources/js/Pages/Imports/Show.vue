@@ -102,7 +102,7 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Imports', url: '/impor
                 <p class="fw-semibold">Errors</p>
                 <ul v-if="props.importObject.data?.errors?.length > 0">
                     <li class="rows" v-for="(row, index) in props.importObject.data.errors" :key="index">
-                        {{ importObject.model }} {{ row.row.name || 'Unknown' }}:
+                        {{ importObject.model }} {{ row.row?.name || 'Unknown' }}:
                         <ul>
                             <li v-if="row.errors" v-for="(error, key) in row.errors" :key="key">
                                 {{ error }}
