@@ -2,20 +2,36 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Helpers\DataProvider;
 use App\Http\Controllers\BaseController;
+use App\Http\Requests\IndexRequest;
 use App\Models\Permission;
 use Dedoc\Scramble\Attributes\ExcludeAllRoutesFromDocs;
+use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Log;
 
 #[ExcludeAllRoutesFromDocs]
 class PermissionController extends BaseController
 {
+    protected $model = Permission::class;
+
     /**
-     * List of Permissions
+     * List of roles
+     *
+     * @response AnonymousResourceCollection<LengthAwarePaginator<JsonResource>>
      */
-    public function index()
+    public function index(IndexRequest $request)
     {
-        //
+        $dataProvider = new DataProvider($this->model);
+        try {
+            return $dataProvider->group(JsonResource::class);
+        } catch (Exception $e) {
+            Log::debug($e->getMessage());
+
+            return $e->getMessage();
+        }
     }
 
     /**
@@ -29,7 +45,7 @@ class PermissionController extends BaseController
     /**
      * Show Permission
      */
-    public function show(string $id)
+    public function show(Permission $permission)
     {
         //
     }
@@ -37,7 +53,7 @@ class PermissionController extends BaseController
     /**
      * Update Permission
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Permission $permission)
     {
         //
     }
@@ -45,7 +61,7 @@ class PermissionController extends BaseController
     /**
      * Remove Permission
      */
-    public function destroy(string $id)
+    public function destroy(Permission $permission)
     {
         //
     }

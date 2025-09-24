@@ -9,6 +9,107 @@ defineProps({
     permissions: Array,
     tenants: Array
 });
+
+const options = [
+    {
+        title: 'Accounts',
+        url: route('accounts.index'),
+        has_permission: hasRole('Super Admin') || can('viewAny account'),
+        icon: ['far', 'address-card']
+    },
+    {
+        title: 'Brands',
+        url: route('brands.index'),
+        has_permission: hasRole('Super Admin') || can('viewAny brand'),
+        icon: ['far', 'registered']
+    },
+    {
+        title: 'Categories',
+        url: route('categories.index'),
+        has_permission: hasRole('Super Admin') || can('viewAny category'),
+        icon: ['far', 'folder']
+    },
+    {
+        title: 'Products',
+        url: route('products.index'),
+        has_permission: hasRole('Super Admin') || can('viewAny product'),
+        icon: ['far', 'rectangle-list']
+    },
+    {
+        title: 'Regions',
+        url: route('regions.index'),
+        has_permission: hasRole('Super Admin') || can('viewAny region'),
+        icon: ['far', 'map']
+    },
+    {
+        title: 'Solutions',
+        url: route('solution-types.index'),
+        has_permission: hasRole('Super Admin') || can('viewAny solution_type'),
+        icon: ['fas', 'circle-nodes']
+    },
+    {
+        title: 'SPAs',
+        url: route('spas.index'),
+        has_permission: hasRole('Super Admin') || can('viewAny spa'),
+        icon: ['far', 'handshake']
+    },
+    {
+        title: 'Suppliers',
+        url: route('suppliers.index'),
+        has_permission: hasRole('Super Admin') || can('viewAny supplier'),
+        icon: ['fas', 'industry']
+    },
+    {
+        title: 'Merchants',
+        url: route('merchants.index'),
+        has_permission: hasRole('Super Admin') || can('viewAny merchant'),
+        icon: ['fas', 'shop']
+    },
+    {
+        title: 'Tenant',
+        url: hasRole('Super Admin')
+            ? route('tenants.index')
+            : route('tenants.edit', { tenant: $page.props.auth.user.current_tenant.id }),
+        has_permission: hasRole('Super Admin') || can('viewAny tenant'),
+        icon: ['far', 'building']
+    },
+    {
+        title: 'Tokens',
+        url: route('tokens.index'),
+        has_permission: hasRole('Super Admin') || can('viewAny token'),
+        icon: ['far', 'bookmark']
+    },
+    {
+        title: "Api's",
+        url: route('apis.index'),
+        has_permission: hasRole('Super Admin') || can('viewAny api'),
+        icon: ['fas', 'cloud']
+    },
+    {
+        title: 'Users',
+        url: route('users.index'),
+        has_permission: hasRole('Super Admin') || can('viewAny user'),
+        icon: ['far', 'user']
+    },
+    {
+        title: 'Roles',
+        url: route('roles.index'),
+        has_permission: hasRole('Super Admin') || can('viewAny role'),
+        icon: ['far', 'id-badge']
+    },
+    {
+        title: "Email's",
+        url: route('email-templates.index'),
+        has_permission: hasRole('Super Admin') || can('viewAny email_template'),
+        icon: ['fas', 'envelope']
+    },
+    {
+        title: 'Reporting',
+        url: route('reporting'),
+        has_permission: hasRole('Super Admin') || can('viewAny export'),
+        icon: ['fas', 'gauge']
+    }
+];
 const items = ref([{ label: 'Home', url: '/' }, { label: 'My Account' }]);
 </script>
 
@@ -73,246 +174,19 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'My Account' }]);
                 </div>
                 <div class="col-8">
                     <div class="row row-cols-1 row-cols-md-3 g-4">
-                        <div class="col" v-if="hasRole('Super Admin') || can('viewAny account')">
+                        <div v-for="option in options.filter((x) => x.has_permission)" class="col">
                             <div class="card bg-light border-0">
                                 <a
-                                    id="link-accounts"
-                                    :href="route('accounts.index')"
+                                    :id="'link-' + format.toLowerCase(option.title)"
+                                    :href="option.url"
                                     class="card-body text-center p-2 text-decoration-none"
                                 >
                                     <font-awesome-icon
                                         class="py-3 opacity-25"
-                                        :icon="['far', 'address-card']"
+                                        :icon="option.icon"
                                         size="2x"
                                     ></font-awesome-icon>
-                                    <span class="d-block h5">Accounts</span>
-                                </a>
-                            </div>
-                        </div>
-                        <div class="col" v-if="hasRole('Super Admin') || can('viewAny brand')">
-                            <div class="card bg-light border-0">
-                                <a
-                                    id="link-brands"
-                                    :href="route('brands.index')"
-                                    class="card-body text-center p-2 text-decoration-none"
-                                >
-                                    <font-awesome-icon
-                                        class="py-3 opacity-25"
-                                        :icon="['far', 'registered']"
-                                        size="2x"
-                                    ></font-awesome-icon>
-                                    <span class="d-block h5">Brands</span>
-                                </a>
-                            </div>
-                        </div>
-                        <div class="col" v-if="hasRole('Super Admin') || can('viewAny category')">
-                            <div class="card bg-light border-0">
-                                <a
-                                    id="link-categories"
-                                    :href="route('categories.index')"
-                                    class="card-body text-center p-2 text-decoration-none"
-                                >
-                                    <font-awesome-icon
-                                        class="py-3 opacity-25"
-                                        :icon="['far', 'folder']"
-                                        size="2x"
-                                    ></font-awesome-icon>
-                                    <span class="d-block h5">Categories</span>
-                                </a>
-                            </div>
-                        </div>
-                        <div class="col" v-if="hasRole('Super Admin') || can('viewAny product')">
-                            <div class="card bg-light border-0">
-                                <a
-                                    id="link-products"
-                                    :href="route('products.index')"
-                                    class="card-body text-center p-2 text-decoration-none"
-                                >
-                                    <font-awesome-icon
-                                        class="py-3 opacity-25"
-                                        :icon="['far', 'rectangle-list']"
-                                        size="2x"
-                                    ></font-awesome-icon>
-                                    <span class="d-block h5">Products</span>
-                                </a>
-                            </div>
-                        </div>
-                        <div class="col" v-if="hasRole('Super Admin') || can('viewAny region')">
-                            <div class="card bg-light border-0">
-                                <a
-                                    id="link-regions"
-                                    :href="route('regions.index')"
-                                    class="card-body text-center p-2 text-decoration-none"
-                                >
-                                    <font-awesome-icon
-                                        class="py-3 opacity-25"
-                                        :icon="['far', 'map']"
-                                        size="2x"
-                                    ></font-awesome-icon>
-                                    <span class="d-block h5">Regions</span>
-                                </a>
-                            </div>
-                        </div>
-                        <div class="col" v-if="hasRole('Super Admin') || can('viewAny solution_type')">
-                            <div class="card bg-light border-0">
-                                <a
-                                    id="link-solutions"
-                                    :href="route('solution-types.index')"
-                                    class="card-body text-center p-2 text-decoration-none"
-                                >
-                                    <font-awesome-icon
-                                        class="py-3 opacity-25"
-                                        :icon="['fas', 'circle-nodes']"
-                                        size="2x"
-                                    ></font-awesome-icon>
-                                    <span class="d-block h5">Solutions</span>
-                                </a>
-                            </div>
-                        </div>
-                        <div class="col" v-if="hasRole('Super Admin') || can('viewAny spa')">
-                            <div class="card bg-light border-0">
-                                <a
-                                    id="link-spas"
-                                    :href="route('spas.index')"
-                                    class="card-body text-center p-2 text-decoration-none"
-                                >
-                                    <font-awesome-icon
-                                        class="py-3 opacity-25"
-                                        :icon="['far', 'handshake']"
-                                        size="2x"
-                                    ></font-awesome-icon>
-                                    <span class="d-block h5">SPAs</span>
-                                </a>
-                            </div>
-                        </div>
-                        <div class="col" v-if="hasRole('Super Admin') || can('viewAny supplier')">
-                            <div class="card bg-light border-0">
-                                <a
-                                    id="link-suppliers"
-                                    :href="route('suppliers.index')"
-                                    class="card-body text-center p-2 text-decoration-none"
-                                >
-                                    <font-awesome-icon
-                                        class="py-3 opacity-25"
-                                        :icon="['fas', 'industry']"
-                                        size="2x"
-                                    ></font-awesome-icon>
-                                    <span class="d-block h5">Suppliers</span>
-                                </a>
-                            </div>
-                        </div>
-                        <div class="col" v-if="hasRole('Super Admin') || can('viewAny merchant')">
-                            <div class="card bg-light border-0">
-                                <a
-                                    id="link-merchants"
-                                    :href="route('merchants.index')"
-                                    class="card-body text-center p-2 text-decoration-none"
-                                >
-                                    <font-awesome-icon class="py-3 opacity-25" :icon="['fas', 'shop']" size="2x" />
-                                    <span class="d-block h5">Merchants</span>
-                                </a>
-                            </div>
-                        </div>
-                        <div class="col" v-if="hasRole('Super Admin') || can('viewAny tenant')">
-                            <div class="card bg-light border-0">
-                                <a
-                                    :href="
-                                        hasRole('Super Admin')
-                                            ? route('tenants.index')
-                                            : route('tenants.edit', {
-                                                  tenant: $page.props.auth.user.current_tenant.id
-                                              })
-                                    "
-                                    id="link-tenant"
-                                    class="card-body text-center p-2 text-decoration-none"
-                                >
-                                    <font-awesome-icon
-                                        class="py-3 opacity-25"
-                                        :icon="['far', 'building']"
-                                        size="2x"
-                                    ></font-awesome-icon>
-                                    <span class="d-block h5">Tenant</span>
-                                </a>
-                            </div>
-                        </div>
-                        <div class="col" v-if="hasRole('Super Admin') || can('viewAny token')">
-                            <div class="card bg-light border-0">
-                                <a
-                                    id="link-tokens"
-                                    :href="route('tokens.index')"
-                                    class="card-body text-center p-2 text-decoration-none"
-                                >
-                                    <font-awesome-icon
-                                        class="py-3 opacity-25"
-                                        :icon="['far', 'bookmark']"
-                                        size="2x"
-                                    ></font-awesome-icon>
-                                    <span class="d-block h5">Tokens</span>
-                                </a>
-                            </div>
-                        </div>
-                        <div class="col" v-if="hasRole('Super Admin') || can('viewAny api')">
-                            <div class="card bg-light border-0">
-                                <a
-                                    id="link-apis"
-                                    :href="route('apis.index')"
-                                    class="card-body text-center p-2 text-decoration-none"
-                                >
-                                    <font-awesome-icon
-                                        class="py-3 opacity-25"
-                                        :icon="['fas', 'cloud']"
-                                        size="2x"
-                                    ></font-awesome-icon>
-                                    <span class="d-block h5">Api's</span>
-                                </a>
-                            </div>
-                        </div>
-                        <div class="col" v-if="hasRole('Super Admin') || can('viewAny user')">
-                            <div class="card bg-light border-0">
-                                <a
-                                    id="link-users"
-                                    :href="route('users.index')"
-                                    :id="'users-btn'"
-                                    class="card-body text-center p-2 text-decoration-none"
-                                >
-                                    <font-awesome-icon
-                                        class="py-3 opacity-25"
-                                        :icon="['far', 'user']"
-                                        size="2x"
-                                    ></font-awesome-icon>
-                                    <span class="d-block h5">Users</span>
-                                </a>
-                            </div>
-                        </div>
-                        <div class="col" v-if="hasRole('Super Admin') || can('viewAny email_template')">
-                            <div class="card bg-light border-0">
-                                <a
-                                    id="link-email-templates"
-                                    :href="route('email-templates.index')"
-                                    class="card-body text-center p-2 text-decoration-none"
-                                >
-                                    <font-awesome-icon
-                                        class="py-3 opacity-25"
-                                        :icon="['fas', 'envelope']"
-                                        size="2x"
-                                    ></font-awesome-icon>
-                                    <span class="d-block h5">Email's</span>
-                                </a>
-                            </div>
-                        </div>
-                        <div v-if="hasRole('Super Admin') || can('viewAny export')" class="col">
-                            <div class="card bg-light border-0">
-                                <a
-                                    id="link-reporting"
-                                    :href="route('reporting')"
-                                    class="card-body text-center p-2 text-decoration-none"
-                                >
-                                    <font-awesome-icon
-                                        :icon="['fas', 'gauge']"
-                                        class="py-3 opacity-25"
-                                        size="2x"
-                                    ></font-awesome-icon>
-                                    <span class="d-block h5">Reporting</span>
+                                    <span class="d-block h5">{{ option.title }}</span>
                                 </a>
                             </div>
                         </div>

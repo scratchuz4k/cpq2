@@ -17,6 +17,7 @@ use App\Http\Controllers\Web\ProductController;
 use App\Http\Controllers\Web\ProfileController;
 use App\Http\Controllers\Web\QuoteController;
 use App\Http\Controllers\Web\RegionController;
+use App\Http\Controllers\Web\RoleController;
 use App\Http\Controllers\Web\SharedLinkController;
 use App\Http\Controllers\Web\SolutionTypeController;
 use App\Http\Controllers\Web\SpaController;
@@ -99,7 +100,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         'groups' => GroupController::class,
         'group-accounts' => GroupAccountController::class,
         'activities' => ActivityController::class,
-
+        'roles' => RoleController::class,
     ]);
 
     Route::middleware('auth')->group(function () {

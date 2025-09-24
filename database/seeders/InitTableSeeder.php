@@ -27,6 +27,29 @@ class InitTableSeeder extends Seeder
      */
     public function run()
     {
+
+        $super_user_email = env('SUPERUSER_EMAIL', 'super@example.com');
+        $super_user_password = env('SUPERUSER_PASSWORD', 'werwerwer');
+        if (! $super_user = User::where('email', $super_user_email)->first()) {
+            $super_user = User::updateOrCreate([
+                'email' => $super_user_email,
+            ], [
+                'name' => 'Super User',
+                'tenant_id' => null,
+                'password' => Hash::make($super_user_password),
+            ]);
+        }
+
+        if (! $system_user = User::where('email', 'system@cpq.cloudmarket.com')->first()) {
+            $system_user = User::updateOrCreate([
+                'email' => 'system@cpq.cloudmarket.com',
+            ], [
+                'name' => 'System Bot',
+                'tenant_id' => null,
+                'password' => Hash::make(Str::random(10)),
+            ]);
+        }
+
         $tenant = Tenant::first();
         if (! Tenant::count()) {
             $tenant = Tenant::updateOrCreate([
@@ -37,31 +60,11 @@ class InitTableSeeder extends Seeder
             ]);
         }
 
-        $super_user_email = env('SUPERUSER_EMAIL', 'super@example.com');
-        $super_user_password = env('SUPERUSER_PASSWORD', 'werwerwer');
-        if (! $super_user = User::where('email', $super_user_email)->first()) {
-            $super_user = User::updateOrCreate([
-                'email' => $super_user_email,
-            ], [
-                'name' => 'Super User',
-                'tenant_id' => $tenant->id,
-                'password' => Hash::make($super_user_password),
-            ]);
-        }
-
-        if (! $system_user = User::where('email', 'system@cpq.cloudmarket.com')->first()) {
-            $system_user = User::updateOrCreate([
-                'email' => 'system@cpq.cloudmarket.com',
-            ], [
-                'name' => 'System Bot',
-                'tenant_id' => $tenant->id,
-                'password' => Hash::make(Str::random(10)),
-            ]);
-        }
-
         $allTenants = Tenant::all();
         $super_user->tenants()->sync($allTenants->pluck('id'));
+        $super_user->update(['tenant_id' => $tenant->id]);
         $system_user->tenants()->sync($allTenants->pluck('id'));
+        $system_user->update(['tenant_id' => $tenant->id]);
 
         foreach (SolutionTypesEnum::cases() as $case) {
             SolutionType::updateOrCreate(['code' => $case->value], ['name' => $case->getName()]);

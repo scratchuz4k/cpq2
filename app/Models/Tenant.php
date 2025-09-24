@@ -12,6 +12,25 @@ class Tenant extends \Spatie\Multitenancy\Models\Tenant
 {
     use HasApiTokens, HasConfigurations, HasFactory;
 
+    // ...
+    public static function boot()
+    {
+        parent::boot();
+
+        // here assign this team to a global user with global default role
+        self::created(function ($model) {
+            // temporary: get session team_id for restore at end
+            $session_team_id = getPermissionsTeamId();
+            // set actual new team_id to package instance
+            setPermissionsTeamId($model);
+            // get the admin user and assign roles/permissions on new team model
+            $mail = env('SUPERUSER_EMAIL', 'super@example.com');
+            User::where('email', $mail)->first()->assignRole('Super Admin');
+            // restore session team_id to package instance using temporary value stored above
+            setPermissionsTeamId($session_team_id);
+        });
+    }
+
     protected $fillable = ['name', 'domain', 'database', 'sso_id', 'logo_id'];
 
     public function users(): BelongsToMany
