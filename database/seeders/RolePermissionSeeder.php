@@ -4,7 +4,6 @@ namespace Database\Seeders;
 
 use App\Models\Permission;
 use App\Models\Role;
-use App\Models\User;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\PermissionRegistrar;
 
@@ -76,56 +75,9 @@ class RolePermissionSeeder extends Seeder
 
         $roles = [
             'Super Admin' => [
-                'parent' => null,
                 'permissions' => [],
                 'simple_permission' => [],
             ],
-            //     'Company Admin' => [
-            //         'parent' => 'Super Admin',
-            //         'permissions' => [
-            //             'quote', 'quote_item', 'order', 'order_item', 'merchant', 'account', 'contact',
-            //             'price', 'product', 'category', 'region', 'tenant', 'brand', 'supplier',
-            //             'spa', 'user', 'solution_type', 'api', 'price_plan', 'activity', 'email_template', 'email_history',
-            //             'group', 'blacklist',
-            //         ],
-            //         'simple_permission' => ['viewAny export'],
-            //     ],
-            //     'Support Agent' => [
-            //         'parent' => 'Company Admin',
-            //         'permissions' => ['merchant', 'account', 'contact', 'token', 'quote', 'quote_item', 'order', 'order_item', 'activity', 'price_plan'],
-            //         'simple_permission' => ['viewAny product', 'view product', 'viewAny category', 'view category'],
-            //         'deny_permission' => ['export'],
-            //     ],
-            //     'Sales Manager' => [
-            //         'parent' => 'Company Admin',
-            //         'permissions' => ['quote', 'quote_item', 'account', 'contact', 'brand', 'supplier', 'activity', 'price_plan', 'user', 'group'],
-            //         'simple_permission' => ['viewAny product', 'view product', 'viewAny category', 'view category'],
-            //     ],
-            //     'Sales Rep' => [
-            //         'parent' => 'Sales Manager',
-            //         'permissions' => ['quote', 'quote_item', 'account', 'contact', 'brand', 'supplier', 'activity', 'price_plan'],
-            //         'simple_permission' => ['viewAny product', 'view product', 'viewAny category', 'view category'],
-            //         'deny_permission' => ['export'],
-            //     ],
-            //     'Order Manager' => [
-            //         'parent' => 'Company Admin',
-            //         'permissions' => ['order', 'order_item', 'activity'],
-            //         'simple_permission' => [
-            //             'viewAny product',
-            //             'view product',
-            //             'viewAny category',
-            //             'view category',
-            //             'viewAny account',
-            //             'view account',
-            //             'viewAny contact',
-            //             'view contact',
-            //             'viewAny brand',
-            //             'view brand',
-            //             'viewAny supplier',
-            //             'view supplier',
-            //         ],
-            //         'deny_permission' => ['export'],
-            //     ],
         ];
 
         foreach ($simplePermissions as $key => $pe) {
@@ -154,13 +106,8 @@ class RolePermissionSeeder extends Seeder
 
         foreach ($roles as $role => $item) {
             $permissions = [];
-            $temp = null;
 
-            if (! is_null($item['parent'])) {
-                $temp = Role::where('name', $item['parent'])->firstOrFail();
-            }
-
-            $role = Role::updateOrCreate(['name' => $role], ['parent_id' => $temp?->id, 'guard_name' => 'web']);
+            $role = Role::updateOrCreate(['name' => $role], ['guard_name' => 'web']);
             foreach ($item['permissions'] as $group) {
                 if (array_key_exists($group, $insertPermissions->toArray())) {
                     $permissions = array_merge($permissions, $insertPermissions->toArray()[$group]);

@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\IndexRequest;
+use App\Http\Requests\RoleCreateRequest;
+use App\Http\Requests\RoleUpdateRequest;
 use App\Models\Role;
 use App\Services\RoleService;
 use Dedoc\Scramble\Attributes\ExcludeRouteFromDocs;
@@ -47,7 +49,7 @@ class RoleController extends BaseController
      * Store a new role
      */
     #[ExcludeRouteFromDocs]
-    public function store(Request $request)
+    public function store(RoleCreateRequest $request)
     {
         try {
             $role = DB::transaction(fn () => $this->service->store($request->all()));
@@ -69,10 +71,21 @@ class RoleController extends BaseController
     }
 
     /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(Role $role)
+    {
+
+        return Inertia::render('Roles/Edit', [
+            'role' => $role->load('permissions'),
+        ]);
+    }
+
+    /**
      * Update role
      */
     #[ExcludeRouteFromDocs]
-    public function update(Request $request, Role $role)
+    public function update(RoleUpdateRequest $request, Role $role)
     {
         try {
             $role = DB::transaction(fn () => $this->service->update($role, $request->all()));

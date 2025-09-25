@@ -2,17 +2,18 @@
 import { reactive, ref } from 'vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import InputSelect from '@/Components/InputSelect.vue';
 import { Head, router, useForm } from '@inertiajs/vue3';
-import ToggleSwitch from 'primevue/toggleswitch';
 
 const props = defineProps({});
 
 const form = reactive({
-    name: null
+    name: null,
+    temp_permissions: [],
+    permissions: []
 });
 
 const saveRole = () => {
+    form.permissions = form.temp_permissions.map((x) => x.id);
     router.post(
         '/roles',
         {
@@ -51,18 +52,18 @@ const items = ref([
                     </PrimaryButton>
                 </template>
             </Header>
-            <div class="col-6">
-                <div class="row mb-3">
+            <div class="row mb-3">
+                <div class="col-6">
                     <label for="region-name" class="form-label">Name:</label>
                     <div>
                         <input id="region-name" class="form-control" v-model="form.name" required />
                     </div>
                     <div class="text-danger" v-if="form.errors?.name">{{ form.errors?.name }}</div>
                 </div>
-                <div class="row mb-3">
-                    <label for="region-name" class="form-label">Permissions:</label>
-                    <PermissionsTree></PermissionsTree>
-                </div>
+            </div>
+            <div>
+                <label for="region-name" class="form-label">Permissions:</label>
+                <PermissionsTree v-model="form.temp_permissions"></PermissionsTree>
             </div>
         </div>
     </AuthenticatedLayout>

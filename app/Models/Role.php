@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use App\Trait\SetTenantId;
 use Spatie\Permission\Models\Role as ModelsRole;
 
 class Role extends ModelsRole
 {
+    use SetTenantId;
+
     protected $fillable = [
         'name',
         'guard_name',

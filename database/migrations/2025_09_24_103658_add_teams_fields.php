@@ -79,10 +79,22 @@ return new class extends Migration
         app('cache')
             ->store(config('permission.cache.store') != 'default' ? config('permission.cache.store') : null)
             ->forget(config('permission.cache.key'));
+
+        Schema::table('roles', function (Blueprint $table) {
+            $table->dropForeign(['parent_id']);
+            $table->dropColumn('parent_id');
+        });
     }
 
     /**
      * Reverse the migrations.
      */
-    public function down(): void {}
+    public function down(): void
+    {
+
+        Schema::table('roles', function (Blueprint $table) {
+            $table->unsignedBigInteger('parent_id')->nullable()->after('id');
+            $table->foreign('parent_id')->references('id')->on('roles')->onDelete('SET NULL');
+        });
+    }
 };

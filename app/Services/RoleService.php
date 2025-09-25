@@ -10,12 +10,20 @@ class RoleService
     {
         $role = Role::create($array);
 
+        if (array_key_exists('permissions', $array)) {
+            $role->syncPermissions($array['permissions']);
+        }
+
         return $role;
     }
 
     public function update(Role $role, array $array): Role
     {
         $role->update($array);
+
+        if (array_key_exists('permissions', $array)) {
+            $role->syncPermissions($array['permissions']);
+        }
 
         return $role;
     }

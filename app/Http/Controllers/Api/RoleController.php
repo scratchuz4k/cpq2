@@ -5,12 +5,14 @@ namespace App\Http\Controllers\Api;
 use App\Helpers\DataProvider;
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\IndexRequest;
+use App\Http\Requests\RoleCreateRequest;
+use App\Http\Requests\RoleUpdateRequest;
 use App\Models\Role;
 use App\Services\RoleService;
 use Dedoc\Scramble\Attributes\ExcludeRouteFromDocs;
 use Exception;
-use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -31,7 +33,8 @@ class RoleController extends BaseController
     public function index(IndexRequest $request)
     {
         $dataProvider = new DataProvider($this->model);
-        $dataProvider->builder = $dataProvider->builder->where('name', '!=', 'Super Admin');
+        $dataProvider->builder = $dataProvider->builder->where('roles.name', '!=', 'Super Admin');
+        $dataProvider->builder = $dataProvider->builder->where('roles.tenant_id', Auth::user()->tenant_id);
         try {
             $data = $dataProvider->get();
         } catch (Exception $e) {
@@ -47,7 +50,7 @@ class RoleController extends BaseController
      * Store a new role
      */
     #[ExcludeRouteFromDocs]
-    public function store(Request $request)
+    public function store(RoleCreateRequest $request)
     {
         try {
             $role = DB::transaction(fn () => $this->service->store($request->all()));
@@ -72,7 +75,7 @@ class RoleController extends BaseController
      * Update role
      */
     #[ExcludeRouteFromDocs]
-    public function update(Request $request, Role $role)
+    public function update(RoleUpdateRequest $request, Role $role)
     {
         try {
             $role = DB::transaction(fn () => $this->service->update($role, $request->all()));
