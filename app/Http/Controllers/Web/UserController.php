@@ -89,7 +89,7 @@ class UserController extends BaseController
         ]);
 
         return Inertia::render('Users/Edit', [
-            'user' => (new UserResource($user->load(['tenants', 'parent'])))->toArray(request()),
+            'user' => (new UserResource($user->load(['tenants'])))->toArray(request()),
             'managers' => $noManagerOptions->merge($users->get()),
             'permissions' => $user->getAllPermissions(),
         ]);

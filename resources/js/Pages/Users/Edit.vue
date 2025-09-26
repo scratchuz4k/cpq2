@@ -112,7 +112,7 @@ const items = ref([
                             @change="user.commission_rate = 0"
                         />
                     </div>
-                    <div v-if="roles.find((item) => item.id === form.role_id).name === 'Sales Rep'" class="mb-3">
+                    <div class="mb-3">
                         <label for="user-commission-rate" class="form-label">Commission Rate:</label>
                         <div class="input-group p-0">
                             <input

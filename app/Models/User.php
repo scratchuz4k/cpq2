@@ -47,51 +47,6 @@ class User extends Authenticatable
             }
         });
 
-        // Update parent when a child is created
-        static::created(function ($child) {
-            if ($child->parent_id) {
-                $parent = User::find($child->parent_id);
-                if ($parent) {
-                    $parent->has_children = true;
-                    $parent->save();
-                }
-            }
-        });
-
-        static::updating(function ($child) {
-            // Check if parent_id is being changed
-            if ($child->isDirty('parent_id')) {
-                $oldParentId = $child->getOriginal('parent_id');
-                $newParentId = $child->parent_id;
-                // Update old parent
-                if ($oldParentId) {
-                    $oldParent = User::find($oldParentId);
-                    if ($oldParent) {
-                        $oldParent->has_children = $oldParent->children()->where('id', '!=', $child->id)->exists();
-                        $oldParent->save();
-                    }
-                }
-                // Update new parent
-                if ($newParentId) {
-                    $newParent = User::find($newParentId);
-                    if ($newParent) {
-                        $newParent->has_children = true;
-                        $newParent->save();
-                    }
-                }
-            }
-        });
-
-        // Update parent when a child is deleted
-        static::deleting(function ($child) {
-            if ($child->parent_id) {
-                $parent = User::find($child->parent_id);
-                if ($parent) {
-                    $parent->has_children = $parent->children()->where('id', '!=', $child->id)->exists();
-                    $parent->save();
-                }
-            }
-        });
     }
 
     /**
@@ -103,12 +58,10 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'parent_id', // Add parent_id to fillable attributes
         'tenant_id',
         'group_id',
         'sso', // Add sso to fillable attributes
         'commission_rate',
-        'has_children',
         'is_active',
     ];
 
@@ -142,27 +95,11 @@ class User extends Authenticatable
     }
 
     /**
-     * Get the parent user of this user.
-     */
-    public function parent()
-    {
-        return $this->hasOne(User::class, 'id', 'parent_id');
-    }
-
-    /**
-     * Get the parent user of this user.
+     * Get the group of this user.
      */
     public function group(): BelongsTo
     {
         return $this->belongsTo(Group::class);
-    }
-
-    /**
-     * Get the children users of this user.
-     */
-    public function children()
-    {
-        return $this->hasMany(User::class, 'parent_id', 'id');
     }
 
     public function currentTenant(): HasOne
@@ -183,42 +120,6 @@ class User extends Authenticatable
     public function orders(): HasMany
     {
         return $this->hasMany(Order::class);
-    }
-
-    public static function ancestors(?User $user = null)
-    {
-        $currentUser = is_null($user) ? Auth::user() : $user;
-        $users = collect([]);
-        if (is_null($currentUser)) {
-            return $users;
-        }
-        $userAscendents = collect([$currentUser]);
-        do {
-            $current = $userAscendents->pop();
-            $users->push($current);
-            if (! $current->parent) {
-                break;
-            }
-            $userAscendents->push($current->parent);
-        } while (count($userAscendents));
-
-        return $users;
-    }
-
-    public static function descendants()
-    {
-        $users = collect([]);
-        if (is_null(Auth::user())) {
-            return $users;
-        }
-        $userDescedents = collect([Auth::user()]);
-        do {
-            $current = $userDescedents->pop();
-            $users->push($current);
-            $userDescedents->push(...$current->children);
-        } while (count($userDescedents));
-
-        return $users;
     }
 
     /**
