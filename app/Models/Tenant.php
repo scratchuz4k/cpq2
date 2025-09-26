@@ -26,8 +26,13 @@ class Tenant extends \Spatie\Multitenancy\Models\Tenant
             // get the admin user and assign roles/permissions on new team model
             $mail = env('SUPERUSER_EMAIL', 'super@example.com');
             User::where('email', $mail)->first()->assignRole('Super Admin');
+            User::where('email', 'system@cpq.cloudmarket.com')->first()->assignRole('Super Admin');
+
             // restore session team_id to package instance using temporary value stored above
             setPermissionsTeamId($session_team_id);
+
+            $role = Role::create(['name' => 'Company Admin', 'tenant_id' => $model->id]);
+            $role->syncPermissions(Permission::all());
         });
     }
 

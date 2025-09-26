@@ -10,6 +10,7 @@ use Dedoc\Scramble\Attributes\ExcludeAllRoutesFromDocs;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
 #[ExcludeAllRoutesFromDocs]
@@ -25,6 +26,12 @@ class PermissionController extends BaseController
     public function index(IndexRequest $request)
     {
         $dataProvider = new DataProvider($this->model);
+        $permissions = Auth::user()->getAllPermissions();
+        if (Auth::user()->hasRole('Super Admin')) {
+            $permissions = Permission::all();
+        }
+        $dataProvider->builder = $dataProvider->builder->whereIn('id', $permissions->map(fn ($x) => $x->id)->values());
+
         try {
             return $dataProvider->group(JsonResource::class);
         } catch (Exception $e) {

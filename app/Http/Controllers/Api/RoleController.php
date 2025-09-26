@@ -7,11 +7,11 @@ use App\Http\Controllers\BaseController;
 use App\Http\Requests\IndexRequest;
 use App\Http\Requests\RoleCreateRequest;
 use App\Http\Requests\RoleUpdateRequest;
+use App\Http\Resources\RoleResource;
 use App\Models\Role;
 use App\Services\RoleService;
 use Dedoc\Scramble\Attributes\ExcludeRouteFromDocs;
 use Exception;
-use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -28,13 +28,14 @@ class RoleController extends BaseController
     /**
      * List of roles
      *
-     * @response AnonymousResourceCollection<LengthAwarePaginator<JsonResource>>
+     * @response AnonymousResourceCollection<LengthAwarePaginator<RoleResource>>
      */
     public function index(IndexRequest $request)
     {
         $dataProvider = new DataProvider($this->model);
         $dataProvider->builder = $dataProvider->builder->where('roles.name', '!=', 'Super Admin');
         $dataProvider->builder = $dataProvider->builder->where('roles.tenant_id', Auth::user()->tenant_id);
+
         try {
             $data = $dataProvider->get();
         } catch (Exception $e) {
@@ -43,7 +44,7 @@ class RoleController extends BaseController
             return $e->getMessage();
         }
 
-        return JsonResource::collection($data);
+        return RoleResource::collection($data);
     }
 
     /**
@@ -59,7 +60,7 @@ class RoleController extends BaseController
             throw new Exception($e);
         }
 
-        return new JsonResource($role);
+        return new RoleResource($role);
     }
 
     /**
@@ -68,7 +69,7 @@ class RoleController extends BaseController
     #[ExcludeRouteFromDocs]
     public function show(Role $role)
     {
-        return new JsonResource($role);
+        return new RoleResource($role);
     }
 
     /**
@@ -84,7 +85,7 @@ class RoleController extends BaseController
             throw new Exception($e);
         }
 
-        return new JsonResource($role);
+        return new RoleResource($role);
     }
 
     /**

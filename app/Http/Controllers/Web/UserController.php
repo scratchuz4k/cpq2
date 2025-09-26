@@ -7,7 +7,6 @@ use App\Http\Requests\UserCreateRequest;
 use App\Http\Requests\UserImportRequest;
 use App\Http\Requests\UserUpdateRequest;
 use App\Http\Resources\UserResource;
-use App\Models\Role;
 use App\Models\User;
 use App\Services\UsersService;
 use Illuminate\Support\Facades\DB;
@@ -46,7 +45,6 @@ class UserController extends BaseController
         ]);
 
         return Inertia::render('Users/Create', [
-            'roles' => Role::descendants(),
             'managers' => $noManagerOptions->merge($users->get()),
             'parent_id' => $users->where('id', request('parent_id'))->first() ? intval(request('parent_id')) : null,
         ]);
@@ -92,7 +90,6 @@ class UserController extends BaseController
 
         return Inertia::render('Users/Edit', [
             'user' => (new UserResource($user->load(['tenants', 'parent'])))->toArray(request()),
-            'roles' => Role::descendants(),
             'managers' => $noManagerOptions->merge($users->get()),
             'permissions' => $user->getAllPermissions(),
         ]);

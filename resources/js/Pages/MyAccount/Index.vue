@@ -5,6 +5,10 @@ import { Head, Link } from '@inertiajs/vue3';
 import { can, hasRole } from '@composables/useAuth';
 import { ref } from 'vue';
 
+import { usePage } from '@inertiajs/vue3';
+
+const { props } = usePage();
+
 defineProps({
     permissions: Array,
     tenants: Array
@@ -69,7 +73,7 @@ const options = [
         title: 'Tenant',
         url: hasRole('Super Admin')
             ? route('tenants.index')
-            : route('tenants.edit', { tenant: $page.props.auth.user.current_tenant.id }),
+            : route('tenants.edit', { tenant: props.auth.user.current_tenant.id }),
         has_permission: hasRole('Super Admin') || can('viewAny tenant'),
         icon: ['far', 'building']
     },

@@ -6,12 +6,12 @@ use App\Http\Controllers\BaseController;
 use App\Http\Requests\IndexRequest;
 use App\Http\Requests\RoleCreateRequest;
 use App\Http\Requests\RoleUpdateRequest;
+use App\Http\Resources\RoleResource;
 use App\Models\Role;
 use App\Services\RoleService;
 use Dedoc\Scramble\Attributes\ExcludeRouteFromDocs;
 use Exception;
 use Illuminate\Http\Request;
-use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
@@ -25,21 +25,11 @@ class RoleController extends BaseController
         parent::__construct();
     }
 
-    /**
-     * List of roles
-     *
-     * @response AnonymousResourceCollection<LengthAwarePaginator<JsonResource>>
-     */
     public function index(IndexRequest $request)
     {
         return Inertia::render(component: 'Roles/Index');
     }
 
-    /**
-     * List of roles
-     *
-     * @response AnonymousResourceCollection<LengthAwarePaginator<JsonResource>>
-     */
     public function create(Request $request)
     {
         return Inertia::render(component: 'Roles/Create');
@@ -66,8 +56,7 @@ class RoleController extends BaseController
      */
     #[ExcludeRouteFromDocs]
     public function show(Role $role)
-    {
-        return new JsonResource($role);
+    { //
     }
 
     /**
@@ -77,7 +66,7 @@ class RoleController extends BaseController
     {
 
         return Inertia::render('Roles/Edit', [
-            'role' => $role->load('permissions'),
+            'role' => RoleResource::make($role)->resolve(),
         ]);
     }
 
@@ -94,7 +83,7 @@ class RoleController extends BaseController
             throw new Exception($e);
         }
 
-        return Inertia::render(component: 'Roles/Index');
+        return redirect()->route('roles.index');
     }
 
     /**

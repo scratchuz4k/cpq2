@@ -35,16 +35,16 @@ class Role extends ModelsRole
         return static::with([implode('.', array_fill(0, 10, 'parent'))])->where('id', $id)->get();
     }
 
-    public static function descendants()
-    {
-        $temp_roles = auth()->user()->roles()->get();
-        $roles = collect([]);
-        do {
-            $current = $temp_roles->pop();
-            $roles->push($current);
-            $temp_roles->push(...$current->children);
-        } while (count($temp_roles));
+    // public static function descendants()
+    // {
+    //     $temp_roles = auth()->user()->roles()->get();
+    //     $roles = collect([]);
+    //     do {
+    //         $current = $temp_roles->pop();
+    //         $roles->push($current);
+    //         $temp_roles->push(...$current->children);
+    //     } while (count($temp_roles));
 
-        return $roles;
-    }
+    //     return $roles;
+    // }
 }

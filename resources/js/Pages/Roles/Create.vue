@@ -14,24 +14,18 @@ const form = reactive({
 
 const saveRole = () => {
     form.permissions = form.temp_permissions.map((x) => x.id);
-    router.post(
-        '/roles',
-        {
-            ...form
+    router.post('/roles', form, {
+        onSuccess: (page) => {
+            notyf.success('Created with Success');
         },
-        {
-            onSuccess: (page) => {
-                notyf.success('Created with Success');
-            },
-            onError: (errors) => {
-                let string = '';
-                Object.keys(errors).forEach((key) => {
-                    string += errors[key] + '<br>';
-                });
-                notyf.error(string);
-            }
+        onError: (errors) => {
+            let string = '';
+            Object.keys(errors).forEach((key) => {
+                string += errors[key] + '<br>';
+            });
+            notyf.error(string);
         }
-    );
+    });
 };
 const items = ref([
     { label: 'Home', url: '/' },
@@ -54,11 +48,13 @@ const items = ref([
             </Header>
             <div class="row mb-3">
                 <div class="col-6">
-                    <label for="region-name" class="form-label">Name:</label>
-                    <div>
-                        <input id="region-name" class="form-control" v-model="form.name" required />
+                    <div class="mb-3">
+                        <label for="region-name" class="form-label">Name:</label>
+                        <div>
+                            <input id="region-name" class="form-control" v-model="form.name" required />
+                        </div>
+                        <div class="text-danger" v-if="form.errors?.name">{{ form.errors?.name }}</div>
                     </div>
-                    <div class="text-danger" v-if="form.errors?.name">{{ form.errors?.name }}</div>
                 </div>
             </div>
             <div>

@@ -14,9 +14,9 @@ class RolePermissionSeeder extends Seeder
         $insertPermissions = collect();
 
         $simplePermissions = [
-            'Admin' => [
-                'access admin' => 'Administration Access',
-            ],
+            // 'Admin' => [
+            //     'access admin' => 'Administration Access',
+            // ],
             'Website' => [
                 'viewOwn quote' => 'ListOwn Quote',
             ],
@@ -46,7 +46,6 @@ class RolePermissionSeeder extends Seeder
                 'category' => 'Category',
                 'product' => 'Product',
                 'brand' => 'Brand',
-                'user' => 'User',
                 'price_plan' => 'Price Plan',
                 'blacklist' => 'Blacklists',
             ],
@@ -58,15 +57,18 @@ class RolePermissionSeeder extends Seeder
                 'spa' => 'Spa',
                 'supplier' => 'Supplier',
             ],
-            'Managament' => [
+            'Settings' => [
                 'email_template' => 'Email Template',
                 'email_history' => 'Email History',
                 'solution_type' => 'Solution Type',
+                'activity' => 'Activity',
+            ],
+            'Managament' => [
+                'group' => 'Groups',
+                'user' => 'User',
                 'export' => 'Export',
                 'tenant' => 'Tenant',
                 'token' => 'Token',
-                'group' => 'Groups',
-                'activity' => 'Activity',
                 'api' => 'API',
                 'permission' => 'Permission',
                 'role' => 'Role',

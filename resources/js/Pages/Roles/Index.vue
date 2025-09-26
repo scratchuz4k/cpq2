@@ -26,7 +26,8 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'My Account', url: '/my
                     }"
                     :columns="[
                         { data: 'id', title: '#', style: 'width:5%' },
-                        { data: 'name', title: 'Name' }
+                        { data: 'name', title: 'Name' },
+                        { data: 'parent.name', title: 'Parent' }
                     ]"
                     route="/roles"
                 >
