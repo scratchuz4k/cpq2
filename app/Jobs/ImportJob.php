@@ -9,8 +9,9 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Facades\Excel;
+use Spatie\Multitenancy\Jobs\TenantAware;
 
-class ImportJob implements ShouldQueue
+class ImportJob implements ShouldQueue, TenantAware
 {
     use Queueable;
 
@@ -19,10 +20,10 @@ class ImportJob implements ShouldQueue
     /**
      * Create a new job instance.
      */
-    public function __construct(public Import $import, public bool $overwrite = false, public ?int $tenant_id = null)
+    public function __construct(public Import $import, public bool $overwrite = false)
     {
         $importClass = ImportsEnum::tryFromName($this->import->model)->value;
-        $this->importHandler = new $importClass($overwrite, $tenant_id);
+        $this->importHandler = new $importClass($overwrite);
     }
 
     /**

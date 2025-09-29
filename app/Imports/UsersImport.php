@@ -2,11 +2,11 @@
 
 namespace App\Imports;
 
+use App\Models\Tenant;
 use App\Models\User;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
@@ -29,7 +29,12 @@ class UsersImport implements ToCollection, WithBatchInserts, WithHeadingRow
 
     private $usersWithManagers = [];
 
-    public function __construct(protected bool $overwrite = false, protected ?int $tenant_id = null) {}
+    private Tenant $tenant;
+
+    public function __construct(protected bool $overwrite = false)
+    {
+        $this->tenant = Tenant::current();
+    }
 
     /**
      * Recursively processes and inserts users with missing managers.
@@ -95,7 +100,7 @@ class UsersImport implements ToCollection, WithBatchInserts, WithHeadingRow
                 'name' => 'required|string|max:255',
                 'email' => $this->overwrite
                     ? 'required|email'
-                    : ['required', 'email', Rule::unique('users')->where('tenant_id', $this->tenant_id)],
+                    : ['required', 'email', Rule::unique('users')],
             ]);
 
             if ($validator->fails()) {
@@ -111,7 +116,6 @@ class UsersImport implements ToCollection, WithBatchInserts, WithHeadingRow
                 'email' => $user['email'] ?? '',
                 'password' => ! empty($user['password']) ? Hash::make($user['password']) : Hash::make(Str::random(12)),
                 'sso' => isset($user['sso']) && (int) $user['sso'] === 1 ? 1 : 0,
-                'tenant_id' => $this->tenant_id,
             ]);
 
             $newUser->save();
@@ -123,8 +127,7 @@ class UsersImport implements ToCollection, WithBatchInserts, WithHeadingRow
                     'tenant_id' => $this->tenant_id,
                     'user_id' => $newUser->id,
                 ]);
-                Log::info('tenant_id: '.$this->tenant_id);
-                Log::info('user_id: '.$newUser->id);
+
                 $newUser->assignRole(User::$default_role);
 
                 $this->results['success']++;

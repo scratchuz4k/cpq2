@@ -34,7 +34,7 @@ class UpdateStatusExpiredProduct extends Command
 
         foreach (Tenant::all() as $tenant) {
             $tenant->makeCurrent();
-            UpdateStatusExpiredProductsJob::dispatchSync();
+            UpdateStatusExpiredProductsJob::dispatch();
             $tenant->forgetCurrent();
         }
         $end = now();

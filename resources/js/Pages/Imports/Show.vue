@@ -41,7 +41,7 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Imports', url: '/impor
                             {{ props.importObject.name }}
                         </a>
                     </p>
-                    <p>
+                    <p v-if="props.importObject.model === 'Product'">
                         <b>Overwrite Existing Products:</b><br />
                         <span class="text-secondary" v-if="props.importObject.overwrite">
                             <font-awesome-icon :icon="['fas', 'circle-check']" class="me-1 text-primary" size="lg" />

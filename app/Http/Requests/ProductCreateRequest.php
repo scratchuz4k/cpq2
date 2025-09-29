@@ -2,7 +2,12 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Brand;
+use App\Models\Category;
+use App\Models\PricePlan;
 use App\Models\Product;
+use App\Models\Supplier;
+use App\Models\Tenant;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -23,14 +28,32 @@ class ProductCreateRequest extends FormRequest
      */
     public function rules(): array
     {
+        $tenant = Tenant::current();
+        \Illuminate\Support\Facades\Log::info('this is the tenant: '.$tenant->id);
+
         return [
             'sku' => ['required', 'string', 'max:255', Rule::unique('products')],
             'name' => 'required|string|max:255',
-            'supplier_id' => 'nullable|exists:suppliers,id',
-            'brand_id' => 'nullable|exists:brands,id',
-            'price_plan_id' => 'required|exists:price_plans,id',
-            'category_id' => 'required|exists:categories,id',
-            'parent_id' => 'nullable|exists:products,id',
+            'supplier_id' => [
+                'nullable',
+                Rule::exists(Supplier::class, 'id'),
+            ],
+            'brand_id' => [
+                'nullable',
+                Rule::exists(Brand::class, 'id'),
+            ],
+            'price_plan_id' => [
+                'required',
+                Rule::exists(PricePlan::class, 'id'),
+            ],
+            'category_id' => [
+                'required',
+                Rule::exists(Category::class, 'id'),
+            ],
+            'parent_id' => [
+                'nullable',
+                Rule::exists(Product::class, 'id'),
+            ],
             'prices.*.code' => [
                 'required',
                 'numeric',

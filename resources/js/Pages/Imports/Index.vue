@@ -1,7 +1,7 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link, usePage } from '@inertiajs/vue3';
-import { reactive, ref } from 'vue';
+import { reactive, ref, watch } from 'vue';
 import Header from '@/Components/Header.vue';
 import Datatable from '@/Components/Datatable.vue';
 import { Dialog, Button, Checkbox, Select } from 'primevue';
@@ -70,6 +70,13 @@ const submitFile = async () => {
 };
 
 const items = ref([{ label: 'Home', url: '/' }, { label: `Imports` }]);
+
+watch(
+    () => form.model,
+    () => {
+        form.overwrite = 0;
+    }
+);
 </script>
 <template>
     <Head title="Imports" />

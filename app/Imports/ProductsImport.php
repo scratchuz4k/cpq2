@@ -6,7 +6,8 @@ use App\Enums\ProductStatusesEnum;
 use App\Http\Requests\ProductCreateRequest;
 use App\Models\PricePlan;
 use App\Models\Product;
-use App\Rules\TenantExistsRule;
+use App\Models\Tenant;
+use App\Rules\ValidDateValidator;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Validator;
@@ -28,7 +29,10 @@ class ProductsImport implements ToCollection, WithBatchInserts, WithHeadingRow
         'errors' => [],
     ];
 
-    public function __construct(protected bool $overwrite = false, protected ?int $tenant_id = null) {}
+    public function __construct(protected bool $overwrite = false)
+    {
+        Tenant::current();
+    }
 
     /**
      * Recursively processes and inserts products with missing parent_id.
@@ -105,14 +109,13 @@ class ProductsImport implements ToCollection, WithBatchInserts, WithHeadingRow
                 'price_plan_id' => (isset($product['price_plan_id']) && ! empty($product['price_plan_id'])) ? PricePlan::find($product['price_plan_id'])->id : null,
                 'category_id' => $product['category_id'] ?? null,
                 'parent_id' => $parentId,
-                'tenant_id' => $this->tenant_id,
-                'is_active' => 1,
+                'is_active' => $product['status'] === ProductStatusesEnum::ACTIVE->name ? 1 : 0,
             ];
 
             if ($this->overwrite) {
                 Product::UpdateOrCreate(
                     [
-                        'sku' => $product['sku'] ?? '', 'tenant_id' => $this->tenant_id,
+                        'sku' => $product['sku'],
                     ],
                     $productData
                 );
@@ -211,25 +214,14 @@ class ProductsImport implements ToCollection, WithBatchInserts, WithHeadingRow
         ];
     }
 
-    private function getValidationRules(): array
+    private function getValidationRules(array $product): array
     {
         return [
             ...(new ProductCreateRequest)->rules(),
-            'supplier_id' => [
-                'nullable',
-                new TenantExistsRule('suppliers', $this->tenant_id),
-            ],
-            'category_id' => [
-                'required',
-                new TenantExistsRule('categories', $this->tenant_id),
-            ],
-            'parent_id' => [
-                'nullable',
-                new TenantExistsRule('products', $this->tenant_id),
-            ],
+            'expires_at' => new ValidDateValidator,
             'sku' => $this->overwrite
                 ? 'required|string|max:255'
-                : ['required', 'string', 'max:255', Rule::unique('products')->where('tenant_id', $this->tenant_id)],
+                : ['required', 'string', 'max:255', Rule::unique('products')],
         ];
     }
 }
