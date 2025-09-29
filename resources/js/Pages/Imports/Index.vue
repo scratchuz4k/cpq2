@@ -167,7 +167,7 @@ const items = ref([{ label: 'Home', url: '/' }, { label: `Imports` }]);
                             to see and example of the format required.
                         </i>
                     </p>
-                    <div class="form-check px-0 pt-2">
+                    <div v-if="form.model === 'Product'" class="form-check px-0 pt-2">
                         <Checkbox
                             inputId="overwrite-products"
                             v-model="form.overwrite"
