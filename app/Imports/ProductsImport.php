@@ -2,12 +2,11 @@
 
 namespace App\Imports;
 
+use App\Enums\ProductStatusesEnum;
 use App\Http\Requests\ProductCreateRequest;
-use App\Models\Brand;
-use App\Models\Category;
 use App\Models\PricePlan;
 use App\Models\Product;
-use App\Models\Supplier;
+use App\Rules\TenantExistsRule;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Validator;
@@ -86,14 +85,7 @@ class ProductsImport implements ToCollection, WithBatchInserts, WithHeadingRow
     private function insertProduct(array $product, ?int $parentId = null)
     {
         try {
-            $rules = (new ProductCreateRequest)->rules();
-
-            $validator = Validator::make($product, [
-                ...$rules,
-                'sku' => $this->overwrite
-                    ? 'required|string|max:255'
-                    : ['required', 'string', 'max:255', Rule::unique('products')->where('tenant_id', $this->tenant_id)],
-            ]);
+            $validator = Validator::make($product, $this->getValidationRules());
 
             if ($validator->fails()) {
                 $this->results['skipped']++;
@@ -106,15 +98,15 @@ class ProductsImport implements ToCollection, WithBatchInserts, WithHeadingRow
                 'name' => $product['name'] ?? '',
                 'description' => $product['description'] ?? '',
                 'expires_at' => (isset($product['expires_at']) && ! empty($product['expires_at']))
-                     ? Carbon::parse($product['expires_at'])->endOfDay()
+                     ? Carbon::createFromFormat('d/m/Y', '21/10/2025')->endOfDay()
                     : null,
-                'is_active' => (isset($product['is_active']) && ! empty($product['is_active'])) && (int) $product['is_active'] === 1 ? 1 : 0,
-                'supplier_id' => (isset($product['supplier_id']) && ! empty($product['supplier_id'])) ? Supplier::find($product['supplier_id'])->id : null,
-                'brand_id' => (isset($product['brand_id']) && ! empty($product['brand_id'])) ? Brand::find($product['brand_id'])->id : null,
+                'status' => (isset($product['status']) && ! empty($product['status'])) ? $product['status'] : ProductStatusesEnum::ACTIVE->name,
+                'supplier_id' => $product['supplier_id'] ?: null,
                 'price_plan_id' => (isset($product['price_plan_id']) && ! empty($product['price_plan_id'])) ? PricePlan::find($product['price_plan_id'])->id : null,
-                'category_id' => (isset($product['category_id']) && ! empty($product['category_id'])) ? Category::find($product['category_id'])->id : null,
+                'category_id' => $product['category_id'] ?? null,
                 'parent_id' => $parentId,
                 'tenant_id' => $this->tenant_id,
+                'is_active' => 1,
             ];
 
             if ($this->overwrite) {
@@ -150,7 +142,12 @@ class ProductsImport implements ToCollection, WithBatchInserts, WithHeadingRow
     public function collection(Collection $rows): void
     {
         foreach ($rows as $row) {
-            $row = array_map(fn ($value) => trim((string) $value), $row->toArray());
+            //            $row = array_map(fn ($value) => trim((string) $value), $row->toArray());
+            $row = collect($row)->map(function ($value) {
+                $value = trim((string) $value);
+
+                return $value === '' ? null : $value;
+            })->toArray();
             $this->results['processed']++;
             if (empty($row['parent_sku'])) {
                 $this->insertProduct($row);
@@ -197,7 +194,7 @@ class ProductsImport implements ToCollection, WithBatchInserts, WithHeadingRow
                 'supplier_id' => $item->supplier_id,
                 'category_id' => $item->category_id,
                 'status' => $item->status,
-                'expires_at' => $item->expires_at,
+                'expires_at' => Carbon::parse($item->expires_at)->format('d/m/Y'),
                 'price_code' => $item->price_code,
                 'price_cost' => $item->price_cost,
                 'price_net' => $item->price_net,
@@ -211,6 +208,28 @@ class ProductsImport implements ToCollection, WithBatchInserts, WithHeadingRow
         return [
             'data' => $data,
             'filename' => $filename,
+        ];
+    }
+
+    private function getValidationRules(): array
+    {
+        return [
+            ...(new ProductCreateRequest)->rules(),
+            'supplier_id' => [
+                'nullable',
+                new TenantExistsRule('suppliers', $this->tenant_id),
+            ],
+            'category_id' => [
+                'required',
+                new TenantExistsRule('categories', $this->tenant_id),
+            ],
+            'parent_id' => [
+                'nullable',
+                new TenantExistsRule('products', $this->tenant_id),
+            ],
+            'sku' => $this->overwrite
+                ? 'required|string|max:255'
+                : ['required', 'string', 'max:255', Rule::unique('products')->where('tenant_id', $this->tenant_id)],
         ];
     }
 }
