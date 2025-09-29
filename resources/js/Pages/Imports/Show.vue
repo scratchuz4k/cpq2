@@ -65,7 +65,12 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Imports', url: '/impor
                 </div>
             </Panel>
 
-            <Panel class="mt-3" header="Import Results" :toggleable="true">
+            <Panel
+                v-if="props.importObject.status !== 'in progress'"
+                class="mt-3"
+                header="Import Results"
+                :toggleable="true"
+            >
                 <div class="mt-2 row row-cols-1 row-cols-md-3 g-3 mb-2">
                     <div class="col">
                         <div class="card py-4 bg-light border-0">
