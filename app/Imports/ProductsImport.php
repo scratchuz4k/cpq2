@@ -98,7 +98,7 @@ class ProductsImport implements ToCollection, WithBatchInserts, WithHeadingRow
                 'name' => $product['name'] ?? '',
                 'description' => $product['description'] ?? '',
                 'expires_at' => (isset($product['expires_at']) && ! empty($product['expires_at']))
-                     ? Carbon::createFromFormat('d/m/Y', '21/10/2025')->endOfDay()
+                     ? Carbon::createFromFormat('d/m/Y', $product['expires_at'])->endOfDay()
                     : null,
                 'status' => (isset($product['status']) && ! empty($product['status'])) ? $product['status'] : ProductStatusesEnum::ACTIVE->name,
                 'supplier_id' => $product['supplier_id'] ?: null,
