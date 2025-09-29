@@ -35,6 +35,7 @@ class RoleController extends BaseController
         $dataProvider = new DataProvider($this->model);
         $dataProvider->builder = $dataProvider->builder->where('roles.name', '!=', 'Super Admin');
         $dataProvider->builder = $dataProvider->builder->where('roles.tenant_id', Auth::user()->tenant_id);
+        $dataProvider->builder = $this->service->getChilds($dataProvider->builder);
 
         try {
             $data = $dataProvider->get();

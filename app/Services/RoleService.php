@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Role;
+use Illuminate\Support\Facades\Auth;
 
 class RoleService
 {
@@ -26,5 +27,19 @@ class RoleService
         }
 
         return $role;
+    }
+
+    public function getChilds($query)
+    {
+
+        $role = Auth::user()->roles()->first();
+
+        if ($role && ! $role->parent_id) {
+            return $query;
+        }
+
+        $roles = Role::descendants();
+
+        return $query->whereIn('id', $roles->pluck('id'));
     }
 }

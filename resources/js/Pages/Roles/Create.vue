@@ -9,11 +9,14 @@ const props = defineProps({});
 const form = reactive({
     name: null,
     temp_permissions: [],
-    permissions: []
+    permissions: [],
+    parent: null,
+    parent_id: null
 });
 
 const saveRole = () => {
     form.permissions = form.temp_permissions.map((x) => x.id);
+    form.parent_id = form.parent ? form.parent.id : null;
     router.post('/roles', form, {
         onSuccess: (page) => {
             notyf.success('Created with Success');
@@ -46,7 +49,13 @@ const items = ref([
                     </PrimaryButton>
                 </template>
             </Header>
-            <div class="row mb-3">
+
+            <InfoBox class="mt-3">
+                <small>
+                    Roles without parent are considered top-level roles, this influences users and roles visibility
+                </small>
+            </InfoBox>
+            <div class="row mt-3">
                 <div class="col-6">
                     <div class="mb-3">
                         <label for="region-name" class="form-label">Name:</label>
@@ -54,6 +63,18 @@ const items = ref([
                             <input id="region-name" class="form-control" v-model="form.name" required />
                         </div>
                         <div class="text-danger" v-if="form.errors?.name">{{ form.errors?.name }}</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="user-role" class="form-label">Parent:</label>
+                        <InputSelect
+                            id="account_id"
+                            v-model="form.parent"
+                            url="/roles"
+                            :fields="['name']"
+                            :placeholder="'Select an Role'"
+                        >
+                        </InputSelect>
                     </div>
                 </div>
             </div>

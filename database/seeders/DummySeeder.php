@@ -63,7 +63,6 @@ class DummySeeder extends Seeder
         ], [
             'name' => 'Order Manager',
             'tenant_id' => $tenant->id,
-            'parent_id' => 3,
             'password' => Hash::make('werwerwer'),
         ]);
 

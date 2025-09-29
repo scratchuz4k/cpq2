@@ -12,11 +12,14 @@ const props = defineProps({
 const form = reactive({
     name: props.role.name,
     temp_permissions: props.role.permissions,
-    permissions: []
+    permissions: [],
+    parent: props.role.parent,
+    parent_id: props.role.parent ? props.role.parent.id : null
 });
 
 const saveRole = () => {
     form.permissions = form.temp_permissions.map((x) => x.id);
+    form.parent_id = form.parent ? form.parent.id : null;
     router.put(
         '/roles/' + props.role.id,
         {
@@ -55,9 +58,13 @@ const items = ref([
                     </PrimaryButton>
                 </template>
             </Header>
+            <InfoBox class="mt-3">
+                <small> Roles without parent are considered top-level roles </small>
+            </InfoBox>
+
             <InfoBox v-if="hasRole(props.role.name)" severity="danger" class="mt-3">
                 <small>
-                    Additional caution when editing your own role, you might lock users out of critical functionalities
+                    Roles without parent are considered top-level roles, this influences users and roles visibility
                 </small>
             </InfoBox>
             <div class="row mt-3">
@@ -68,6 +75,18 @@ const items = ref([
                             <input id="region-name" class="form-control" v-model="form.name" required />
                         </div>
                         <div class="text-danger" v-if="form.errors?.name">{{ form.errors?.name }}</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="user-role" class="form-label">Parent:</label>
+                        <InputSelect
+                            id="account_id"
+                            v-model="form.parent"
+                            url="/roles"
+                            :fields="['name']"
+                            :placeholder="'Select an Role'"
+                        >
+                        </InputSelect>
                     </div>
                 </div>
             </div>

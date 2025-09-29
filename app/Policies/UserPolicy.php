@@ -23,7 +23,7 @@ class UserPolicy
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user): bool
+    public function view(User $user, User $model): bool
     {
         if ($user->can("view $this->model")) {
             return true;
@@ -45,11 +45,19 @@ class UserPolicy
     }
 
     /**
-     * Determine whether the user can update the model.
+     * Determine if the given user can update the specified user.
+     *
+     * @param  \App\Models\User  $user  The authenticated user
+     * @param  \App\Models\User  $model  The user model to be updated
+     * @return bool
      */
-    public function update(User $user): bool
+    public function update(User $user, User $model)
     {
-        if ($user->can("update $this->model")) {
+        if (true) {
+
+        }
+
+        if ($model->can("update $this->model")) {
             return true;
         }
 
@@ -59,7 +67,7 @@ class UserPolicy
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user): bool
+    public function delete(User $user, User $model): bool
     {
         if ($user->can("delete $this->model")) {
             return true;
