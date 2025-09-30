@@ -59,12 +59,14 @@ const items = ref([
                 </template>
             </Header>
             <InfoBox class="mt-3">
-                <small> Roles without parent are considered top-level roles </small>
+                <small>
+                    Roles without parent are considered top-level roles, this influences users and roles visibility
+                </small>
             </InfoBox>
 
             <InfoBox v-if="hasRole(props.role.name)" severity="danger" class="mt-3">
                 <small>
-                    Roles without parent are considered top-level roles, this influences users and roles visibility
+                    Additional caution when editing your own role, you might lock users out of critical functionalities
                 </small>
             </InfoBox>
             <div class="row mt-3">

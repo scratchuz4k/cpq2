@@ -4,6 +4,7 @@ namespace App\Policies;
 
 use App\Models\Role;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 
 class RolePolicy
 {
@@ -26,11 +27,15 @@ class RolePolicy
      */
     public function view(User $user, Role $role): bool
     {
-        if ($user->can("view $this->model")) {
-            return true;
+        if (! $this->hasRoleInChild($role)) {
+            return false;
         }
 
-        return false;
+        if (! $user->can("view $this->model")) {
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -50,11 +55,16 @@ class RolePolicy
      */
     public function update(User $user, Role $role): bool
     {
-        if ($user->can("update $this->model")) {
-            return true;
+
+        if (! $this->hasRoleInChild($role)) {
+            return false;
         }
 
-        return false;
+        if (! $user->can("update $this->model")) {
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -62,11 +72,16 @@ class RolePolicy
      */
     public function delete(User $user, Role $role): bool
     {
-        if ($user->can("delete $this->model")) {
-            return true;
+
+        if (! $this->hasRoleInChild($role)) {
+            return false;
         }
 
-        return false;
+        if (! $user->can("delete $this->model")) {
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -74,11 +89,16 @@ class RolePolicy
      */
     public function restore(User $user, Role $role): bool
     {
-        if ($user->can("restore $this->model")) {
-            return true;
+
+        if (! $this->hasRoleInChild($role)) {
+            return false;
         }
 
-        return false;
+        if (! $user->can("restore $this->model")) {
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -86,11 +106,16 @@ class RolePolicy
      */
     public function forceDelete(User $user, Role $role): bool
     {
-        if ($user->can("forceDelete $this->model")) {
-            return true;
+
+        if (! $this->hasRoleInChild($role)) {
+            return false;
         }
 
-        return false;
+        if (! $user->can("forceDelete $this->model")) {
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -103,5 +128,19 @@ class RolePolicy
         }
 
         return true;
+    }
+
+    private function hasRoleInChild(Role $role): bool
+    {
+        $first = Auth::user()->roles()->first();
+
+        if ($first && ! $first->parent_id) {
+            return true;
+        }
+
+        $child_roles = Role::descendants();
+
+        return $child_roles->contains(fn ($child) => $child->id === $role->id);
+
     }
 }

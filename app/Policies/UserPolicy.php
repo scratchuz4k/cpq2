@@ -2,7 +2,9 @@
 
 namespace App\Policies;
 
+use App\Models\Role;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 
 class UserPolicy
 {
@@ -25,11 +27,15 @@ class UserPolicy
      */
     public function view(User $user, User $model): bool
     {
-        if ($user->can("view $this->model")) {
-            return true;
+        if (! $this->hasUserInChild($model)) {
+            return false;
         }
 
-        return false;
+        if (! $user->can("view $this->model")) {
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -53,15 +59,15 @@ class UserPolicy
      */
     public function update(User $user, User $model)
     {
-        if (true) {
-
+        if (! $this->hasUserInChild($model)) {
+            return false;
         }
 
-        if ($model->can("update $this->model")) {
-            return true;
+        if (! $model->can("update $this->model")) {
+            return false;
         }
 
-        return false;
+        return true;
     }
 
     /**
@@ -69,23 +75,31 @@ class UserPolicy
      */
     public function delete(User $user, User $model): bool
     {
-        if ($user->can("delete $this->model")) {
-            return true;
+        if (! $this->hasUserInChild($model)) {
+            return false;
         }
 
-        return false;
+        if (! $user->can("delete $this->model")) {
+            return false;
+        }
+
+        return true;
     }
 
     /**
      * Determine whether the user can restore the model.
      */
-    public function restore(User $user): bool
+    public function restore(User $user, User $model): bool
     {
-        if ($user->can("restore $this->model")) {
-            return true;
+        if (! $this->hasUserInChild($user)) {
+            return false;
         }
 
-        return false;
+        if (! $user->can("restore $this->model")) {
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -93,10 +107,31 @@ class UserPolicy
      */
     public function forceDelete(User $user): bool
     {
-        if ($user->can("forceDelete $this->model")) {
+        if (! $this->hasUserInChild($user)) {
+            return false;
+        }
+        if (! $user->can("forceDelete $this->model")) {
+            return false;
+        }
+
+        return true;
+    }
+
+    private function hasUserInChild(User $user): bool
+    {
+        $first = Auth::user()->roles()->first();
+
+        if ($first && ! $first->parent_id) {
             return true;
         }
 
-        return false;
+        $child_roles = Role::descendants();
+
+        $users = User::query()->whereHas('roles', function ($query) use ($child_roles) {
+            $query->whereIn('id', $child_roles->pluck('id'));
+        })->get();
+
+        return $users->contains(fn ($child) => $child->id === $user->id);
+
     }
 }

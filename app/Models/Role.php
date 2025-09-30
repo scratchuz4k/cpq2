@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Scopes\TenantScope;
 use App\Trait\SetTenantId;
 use Spatie\Permission\Models\Role as ModelsRole;
 
@@ -14,6 +15,11 @@ class Role extends ModelsRole
         'guard_name',
         'parent_id',
     ];
+
+    protected static function booted(): void
+    {
+        static::addGlobalScope(new TenantScope);
+    }
 
     /**
      * Get the parent user of this user.
