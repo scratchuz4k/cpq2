@@ -11,6 +11,7 @@ use App\Rules\TenantUniqueRule;
 use App\Rules\ValidDateValidator;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 use Maatwebsite\Excel\Concerns\SkipsErrors;
@@ -29,9 +30,11 @@ class ProductsImport implements ToCollection, WithBatchInserts, WithHeadingRow
         'errors' => [],
     ];
 
+    public Tenant $tenant;
+
     public function __construct(protected bool $overwrite = false)
     {
-        Tenant::current();
+        $tenant = Tenant::current();
     }
 
     /**
@@ -89,6 +92,7 @@ class ProductsImport implements ToCollection, WithBatchInserts, WithHeadingRow
     private function insertProduct(array $product, ?int $parentId = null)
     {
         try {
+            Log::info('this is a test');
             $validator = Validator::make($product, $this->getValidationRules());
 
             if ($validator->fails()) {
@@ -109,6 +113,7 @@ class ProductsImport implements ToCollection, WithBatchInserts, WithHeadingRow
                 'price_plan_id' => (isset($product['price_plan_id']) && ! empty($product['price_plan_id'])) ? PricePlan::find($product['price_plan_id'])->id : null,
                 'category_id' => $product['category_id'] ?? null,
                 'parent_id' => $parentId,
+                'tenant_id' => $this->tenant->id,
                 'is_active' => $product['status'] === ProductStatusesEnum::ACTIVE->name ? 1 : 0,
             ];
 
@@ -126,6 +131,8 @@ class ProductsImport implements ToCollection, WithBatchInserts, WithHeadingRow
 
                     return;
                 }
+                Log::info('teste');
+                Log::info(app('currentTenant')->id);
                 Product::create([
                     'sku' => $product['sku'] ?? '',
                     ...$productData,

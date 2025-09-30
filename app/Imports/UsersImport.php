@@ -116,6 +116,7 @@ class UsersImport implements ToCollection, WithBatchInserts, WithHeadingRow
                 'email' => $user['email'] ?? '',
                 'password' => ! empty($user['password']) ? Hash::make($user['password']) : Hash::make(Str::random(12)),
                 'sso' => isset($user['sso']) && (int) $user['sso'] === 1 ? 1 : 0,
+                'tenant_id' => $this->tenant->id,
             ]);
 
             $newUser->save();
