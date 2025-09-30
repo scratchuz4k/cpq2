@@ -5,6 +5,7 @@ namespace App\Export;
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
+use Maatwebsite\Excel\Concerns\WithCustomCsvSettings;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 
 class ExportCSVTemplate implements FromCollection, ShouldAutoSize, WithCustomCsvSettings, WithHeadings
