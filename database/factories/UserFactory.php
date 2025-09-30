@@ -25,7 +25,6 @@ class UserFactory extends Factory
             'remember_token' => Str::random(10),
             'tenant_id' => 1,
             'commission_rate' => 0,
-            'parent_id' => null,
             'is_active' => true,
         ];
     }

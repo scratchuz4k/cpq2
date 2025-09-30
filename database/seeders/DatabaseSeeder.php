@@ -16,19 +16,20 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
         $this->call([
-            RolePermissionSeeder::class,
             InitTableSeeder::class,
+            RolePermissionSeeder::class,
             EmailTemplateSeeder::class,
             TTLIndexSeeder::class,
         ]);
 
-        if (config('app.env') === 'local') {
+        if (in_array(config('app.env'), ['local', 'testing'])) {
             $this->call([
                 DummySeeder::class,
                 ApiConfigurationSeeder::class,
                 SolutionTenantSeeder::class,
                 CategoryProductsSeeder::class,
                 ShopBlocksSeeder::class,
+                DummyRoles::class,
             ]);
         }
 

@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Permission;
 use App\Models\Role;
+use App\Models\Tenant;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\PermissionRegistrar;
 
@@ -11,12 +12,13 @@ class RolePermissionSeeder extends Seeder
 {
     public function run()
     {
+
+        $tenant = Tenant::first();
+        $tenant->makeCurrent();
+
         $insertPermissions = collect();
 
         $simplePermissions = [
-            // 'Admin' => [
-            //     'access admin' => 'Administration Access',
-            // ],
             'Website' => [
                 'viewOwn quote' => 'ListOwn Quote',
             ],
@@ -75,12 +77,7 @@ class RolePermissionSeeder extends Seeder
             ],
         ];
 
-        $roles = [
-            'Super Admin' => [
-                'permissions' => [],
-                'simple_permission' => [],
-            ],
-        ];
+        $roles = $this->getDummyRoles();
 
         foreach ($simplePermissions as $key => $pe) {
             $ids = collect($pe)
@@ -108,8 +105,13 @@ class RolePermissionSeeder extends Seeder
 
         foreach ($roles as $role => $item) {
             $permissions = [];
+            $temp = null;
 
-            $role = Role::updateOrCreate(['name' => $role], ['guard_name' => 'web']);
+            if (! is_null($item['parent'])) {
+                $temp = Role::where('name', $item['parent'])->firstOrFail();
+            }
+
+            $role = Role::updateOrCreate(['name' => $role], ['guard_name' => 'web', 'parent_id' => $temp?->id, 'tenant_id' => $item['tenant']]);
             foreach ($item['permissions'] as $group) {
                 if (array_key_exists($group, $insertPermissions->toArray())) {
                     $permissions = array_merge($permissions, $insertPermissions->toArray()[$group]);
@@ -140,5 +142,56 @@ class RolePermissionSeeder extends Seeder
                 $role->givePermissionTo($simplePermission);
             }
         }
+    }
+
+    private function getDummyRoles(): array
+    {
+        $roles = [];
+        if (in_array(config('app.env'), ['local', 'testing'])) {
+            $roles =
+                [
+                    'Support Agent' => [
+                        'parent' => 'Company Admin',
+                        'tenant' => 1,
+                        'permissions' => ['merchant', 'account', 'contact', 'token', 'quote', 'quote_item', 'order', 'order_item', 'activity', 'price_plan'],
+                        'simple_permission' => ['viewAny product', 'view product', 'viewAny category', 'view category'],
+                        'deny_permission' => ['export'],
+                    ],
+                    'Sales Manager' => [
+                        'parent' => 'Company Admin',
+                        'tenant' => 1,
+                        'permissions' => ['quote', 'quote_item', 'account', 'contact', 'brand', 'supplier', 'activity', 'price_plan', 'user', 'group'],
+                        'simple_permission' => ['viewAny product', 'view product', 'viewAny category', 'view category'],
+                    ],
+                    'Sales Rep' => [
+                        'parent' => 'Sales Manager',
+                        'tenant' => 1,
+                        'permissions' => ['quote', 'quote_item', 'account', 'contact', 'brand', 'supplier', 'activity', 'price_plan'],
+                        'simple_permission' => ['viewAny product', 'view product', 'viewAny category', 'view category'],
+                        'deny_permission' => ['export'],
+                    ],
+                    'Order Manager' => [
+                        'parent' => 'Company Admin',
+                        'tenant' => 1,
+                        'permissions' => ['order', 'order_item', 'activity'],
+                        'simple_permission' => [
+                            'viewAny product',
+                            'view product',
+                            'viewAny category',
+                            'view category',
+                            'viewAny account',
+                            'view account',
+                            'viewAny contact',
+                            'view contact',
+                            'viewAny brand',
+                            'view brand',
+                            'viewAny supplier',
+                            'view supplier',
+                        ],
+                        'deny_permission' => ['export'],
+                    ]];
+        }
+
+        return $roles;
     }
 }

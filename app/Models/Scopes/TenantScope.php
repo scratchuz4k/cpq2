@@ -15,7 +15,7 @@ class TenantScope implements Scope
     public function apply(Builder $builder, Model $model): void
     {
         $user = request()->user();
-        $currTenant = Tenant::current();
+        $tenant = Tenant::current();
         $tenant = $currTenant ?? $user?->currentTenant;
         if (! $tenant) {
             return;

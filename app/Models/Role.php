@@ -46,11 +46,11 @@ class Role extends ModelsRole
     {
         $temp_roles = auth()->user()->roles()->get();
         $roles = collect([]);
-        do {
+        while (count($temp_roles)) {
             $current = $temp_roles->pop();
             $roles->push($current);
             $temp_roles->push(...$current->children);
-        } while (count($temp_roles));
+        }
 
         return $roles;
     }

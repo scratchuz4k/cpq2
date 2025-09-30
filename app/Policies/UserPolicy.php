@@ -27,6 +27,10 @@ class UserPolicy
      */
     public function view(User $user, User $model): bool
     {
+        if ($user->tenant_id !== $model->tenant_id) {
+            return false;
+        }
+
         if (! $this->hasUserInChild($model)) {
             return false;
         }
@@ -59,6 +63,10 @@ class UserPolicy
      */
     public function update(User $user, User $model)
     {
+        if ($user->tenant_id !== $model->tenant_id) {
+            return false;
+        }
+
         if (! $this->hasUserInChild($model)) {
             return false;
         }
@@ -75,6 +83,10 @@ class UserPolicy
      */
     public function delete(User $user, User $model): bool
     {
+
+        if ($user->tenant_id !== $model->tenant_id) {
+            return false;
+        }
         if (! $this->hasUserInChild($model)) {
             return false;
         }
@@ -91,6 +103,10 @@ class UserPolicy
      */
     public function restore(User $user, User $model): bool
     {
+
+        if ($user->tenant_id !== $model->tenant_id) {
+            return false;
+        }
         if (! $this->hasUserInChild($user)) {
             return false;
         }
@@ -105,8 +121,12 @@ class UserPolicy
     /**
      * Determine whether the user can permanently delete the model.
      */
-    public function forceDelete(User $user): bool
+    public function forceDelete(User $user, User $model): bool
     {
+        if ($user->tenant_id !== $model->tenant_id) {
+            return false;
+        }
+
         if (! $this->hasUserInChild($user)) {
             return false;
         }
@@ -119,6 +139,10 @@ class UserPolicy
 
     private function hasUserInChild(User $user): bool
     {
+        if (Auth::check() && Auth::user()->roles()->withoutGlobalScopes()->where('name', 'Super Admin')->exists()) {
+            return true; // Don't apply tenant filter for super admin
+        }
+
         $first = Auth::user()->roles()->first();
 
         if ($first && ! $first->parent_id) {

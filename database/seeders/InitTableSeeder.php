@@ -9,6 +9,7 @@ use App\Enums\SpaOperationsEnum;
 use App\Enums\SpaRulesEnum;
 use App\Models\OrderStatus;
 use App\Models\PricePlan;
+use App\Models\Role;
 use App\Models\SolutionType;
 use App\Models\SpaOperation;
 use App\Models\SpaRule;
@@ -49,6 +50,8 @@ class InitTableSeeder extends Seeder
                 'password' => Hash::make(Str::random(10)),
             ]);
         }
+
+        Role::updateOrCreate(['name' => 'Super Admin'], ['guard_name' => 'web']);
 
         $tenant = Tenant::first();
         if (! Tenant::count()) {

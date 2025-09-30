@@ -132,6 +132,10 @@ class RolePolicy
 
     private function hasRoleInChild(Role $role): bool
     {
+        if (Auth::check() && Auth::user()->roles()->withoutGlobalScopes()->where('roles.name', 'Super Admin')->exists()) {
+            return true; // Don't apply tenant filter for super admin
+        }
+
         $first = Auth::user()->roles()->first();
 
         if ($first && ! $first->parent_id) {

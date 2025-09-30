@@ -11,10 +11,10 @@ uses(RefreshDatabase::class);
 beforeEach(function () {
     $this->artisan('db:seed');
     $this->user = User::factory()->create();
+    Auth::login($this->user);
     $this->tenant = Tenant::find(1);
     $this->user->tenants()->attach($this->tenant);
     $this->user->assignRole('Company Admin');
-    Auth::login($this->user);
     $this->actingAs($this->user);
 });
 
