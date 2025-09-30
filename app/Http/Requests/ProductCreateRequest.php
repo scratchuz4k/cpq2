@@ -2,11 +2,9 @@
 
 namespace App\Http\Requests;
 
-use App\Models\Brand;
-use App\Models\Category;
-use App\Models\PricePlan;
 use App\Models\Product;
-use App\Models\Supplier;
+use App\Rules\TenantExistsRule;
+use App\Rules\TenantUniqueRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -28,27 +26,31 @@ class ProductCreateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'sku' => ['required', 'string', 'max:255', Rule::unique('products')],
+            'sku' => [
+                'required',
+                'string',
+                'max:255',
+                new TenantUniqueRule('products', 'sku')],
             'name' => 'required|string|max:255',
             'supplier_id' => [
                 'nullable',
-                Rule::exists(Supplier::class, 'id'),
+                new TenantExistsRule('suppliers'),
             ],
             'brand_id' => [
                 'nullable',
-                Rule::exists(Brand::class, 'id'),
+                new TenantExistsRule('brands'),
             ],
             'price_plan_id' => [
                 'required',
-                Rule::exists(PricePlan::class, 'id'),
+                Rule::exists('price_plans', 'id'),
             ],
             'category_id' => [
                 'required',
-                Rule::exists(Category::class, 'id'),
+                new TenantExistsRule('categories'),
             ],
             'parent_id' => [
                 'nullable',
-                Rule::exists(Product::class, 'id'),
+                new TenantExistsRule('products'),
             ],
             'prices.*.code' => [
                 'required',

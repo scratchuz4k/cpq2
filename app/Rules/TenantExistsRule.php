@@ -2,6 +2,7 @@
 
 namespace App\Rules;
 
+use App\Models\Tenant;
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Support\Facades\DB;
@@ -9,8 +10,7 @@ use Illuminate\Support\Facades\DB;
 class TenantExistsRule implements ValidationRule
 {
     public function __construct(
-        protected string $table,
-        protected ?int $tenantId = null
+        protected string $table
     ) {}
 
     /**
@@ -20,11 +20,11 @@ class TenantExistsRule implements ValidationRule
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        $tenantId = $this->tenantId;
+        $tenant = Tenant::current();
 
         $exists = DB::table($this->table)
             ->where('id', $value)
-            ->where('tenant_id', $tenantId)
+            ->where('tenant_id', $tenant->id)
             ->exists();
 
         if (! $exists) {

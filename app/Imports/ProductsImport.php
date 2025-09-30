@@ -7,11 +7,11 @@ use App\Http\Requests\ProductCreateRequest;
 use App\Models\PricePlan;
 use App\Models\Product;
 use App\Models\Tenant;
+use App\Rules\TenantUniqueRule;
 use App\Rules\ValidDateValidator;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 use Maatwebsite\Excel\Concerns\SkipsErrors;
 use Maatwebsite\Excel\Concerns\ToCollection;
@@ -220,7 +220,7 @@ class ProductsImport implements ToCollection, WithBatchInserts, WithHeadingRow
             'expires_at' => new ValidDateValidator,
             'sku' => $this->overwrite
                 ? 'required|string|max:255'
-                : ['required', 'string', 'max:255', Rule::unique('products')],
+                : ['required', 'string', 'max:255', new TenantUniqueRule('products', 'sku')],
         ];
     }
 }
