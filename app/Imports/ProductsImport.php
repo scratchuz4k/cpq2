@@ -145,7 +145,6 @@ class ProductsImport implements ToCollection, WithBatchInserts, WithHeadingRow
     public function collection(Collection $rows): void
     {
         foreach ($rows as $row) {
-            //            $row = array_map(fn ($value) => trim((string) $value), $row->toArray());
             $row = collect($row)->map(function ($value) {
                 $value = trim((string) $value);
 
@@ -214,7 +213,7 @@ class ProductsImport implements ToCollection, WithBatchInserts, WithHeadingRow
         ];
     }
 
-    private function getValidationRules(array $product): array
+    private function getValidationRules(): array
     {
         return [
             ...(new ProductCreateRequest)->rules(),

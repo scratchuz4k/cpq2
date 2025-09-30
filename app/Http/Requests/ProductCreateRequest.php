@@ -7,7 +7,6 @@ use App\Models\Category;
 use App\Models\PricePlan;
 use App\Models\Product;
 use App\Models\Supplier;
-use App\Models\Tenant;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -28,9 +27,6 @@ class ProductCreateRequest extends FormRequest
      */
     public function rules(): array
     {
-        $tenant = Tenant::current();
-        \Illuminate\Support\Facades\Log::info('this is the tenant: '.$tenant->id);
-
         return [
             'sku' => ['required', 'string', 'max:255', Rule::unique('products')],
             'name' => 'required|string|max:255',

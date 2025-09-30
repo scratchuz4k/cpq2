@@ -124,7 +124,7 @@ class UsersImport implements ToCollection, WithBatchInserts, WithHeadingRow
 
                 $user = request()->user();
                 DB::table('tenant_user')->insert([
-                    'tenant_id' => $this->tenant_id,
+                    'tenant_id' => $this->tenant->id,
                     'user_id' => $newUser->id,
                 ]);
 
