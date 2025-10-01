@@ -25,6 +25,7 @@ use App\Models\Tenant;
 use App\Models\Token;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Spatie\Permission\PermissionRegistrar;
 
 pest()->extend(Tests\TestCase::class)
     ->use(Illuminate\Foundation\Testing\RefreshDatabase::class)
@@ -160,4 +161,11 @@ function createQuoteWithItems($testInstance)
     $response->assertSuccessful();
 
     return $testInstance->get('api/quotes/'.$quote['id']);
+}
+
+function setTenantForPermissions()
+{
+    $tenant = Tenant::find(1);
+    // Set the current team context
+    app(PermissionRegistrar::class)->setPermissionsTeamId($tenant->id);
 }

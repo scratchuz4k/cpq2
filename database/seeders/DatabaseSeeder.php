@@ -22,7 +22,7 @@ class DatabaseSeeder extends Seeder
             TTLIndexSeeder::class,
         ]);
 
-        if (in_array(config('app.env'), ['local', 'testing'])) {
+        if (in_array(config('app.env'), ['local'])) {
             $this->call([
                 DummySeeder::class,
                 ApiConfigurationSeeder::class,

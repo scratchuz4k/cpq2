@@ -150,6 +150,17 @@ class RolePermissionSeeder extends Seeder
         if (in_array(config('app.env'), ['local', 'testing'])) {
             $roles =
                 [
+                    'Company Admin' => [
+                        'parent' => 'Super Admin',
+                        'tenant' => 1,
+                        'permissions' => [
+                            'quote', 'quote_item', 'order', 'order_item', 'merchant', 'account', 'contact',
+                            'price', 'product', 'category', 'region', 'tenant', 'brand', 'supplier',
+                            'spa', 'user', 'solution_type', 'api', 'price_plan', 'activity', 'email_template', 'email_history',
+                            'group', 'blacklist',
+                        ],
+                        'simple_permission' => ['viewAny export'],
+                    ],
                     'Support Agent' => [
                         'parent' => 'Company Admin',
                         'tenant' => 1,

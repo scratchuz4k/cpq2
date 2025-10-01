@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 
 beforeEach(function () {
     $this->artisan('db:seed');
+    setTenantForPermissions();
     $this->sales_rep = User::factory()->create();
     $this->sales_rep->tenants()->attach(Tenant::find(1));
     $this->sales_rep->assignRole('Sales Rep');
