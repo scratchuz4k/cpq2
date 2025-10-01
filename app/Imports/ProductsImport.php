@@ -29,11 +29,11 @@ class ProductsImport implements ToCollection, WithBatchInserts, WithHeadingRow
         'errors' => [],
     ];
 
-    public Tenant $tenant;
+    private Tenant $tenant;
 
     public function __construct(protected bool $overwrite = false)
     {
-        $tenant = Tenant::current();
+        $this->tenant = Tenant::current();
     }
 
     /**
@@ -112,7 +112,7 @@ class ProductsImport implements ToCollection, WithBatchInserts, WithHeadingRow
                 'category_id' => $product['category_id'] ?? null,
                 'parent_id' => $parentId,
                 'tenant_id' => $this->tenant->id,
-                'is_active' => $product['status'] === ProductStatusesEnum::ACTIVE->name ? 1 : 0,
+                'is_active' => ucfirst(mb_strtolower($product['status'])) === ProductStatusesEnum::ACTIVE->value ? 1 : 0,
             ];
 
             if ($this->overwrite) {
