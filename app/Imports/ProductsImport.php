@@ -11,7 +11,6 @@ use App\Rules\TenantUniqueRule;
 use App\Rules\ValidDateValidator;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 use Maatwebsite\Excel\Concerns\SkipsErrors;
@@ -92,7 +91,6 @@ class ProductsImport implements ToCollection, WithBatchInserts, WithHeadingRow
     private function insertProduct(array $product, ?int $parentId = null)
     {
         try {
-            Log::info('this is a test');
             $validator = Validator::make($product, $this->getValidationRules());
 
             if ($validator->fails()) {
@@ -131,8 +129,7 @@ class ProductsImport implements ToCollection, WithBatchInserts, WithHeadingRow
 
                     return;
                 }
-                Log::info('teste');
-                Log::info(app('currentTenant')->id);
+
                 Product::create([
                     'sku' => $product['sku'] ?? '',
                     ...$productData,

@@ -7,7 +7,6 @@ use App\Enums\ImportStatusesEnum;
 use App\Jobs\ImportJob;
 use App\Models\Import;
 use App\Models\Resource;
-use Illuminate\Support\Facades\Log;
 
 class ImportService
 {
@@ -36,7 +35,7 @@ class ImportService
             'overwrite' => $overwrite,
             'tenant_id' => $user->tenant_id,
         ]);
-        Log::info('importService');
+
         ImportJob::dispatch($import, $import->overwrite);
 
         return $import;

@@ -7,7 +7,6 @@ use App\Enums\ImportStatusesEnum;
 use App\Models\Import;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Facades\Excel;
 use Spatie\Multitenancy\Jobs\TenantAware;
@@ -32,7 +31,6 @@ class ImportJob implements ShouldQueue, TenantAware
      */
     public function handle(): void
     {
-        Log::info('Import started');
         $resource = $this->import->file;
         Excel::import($this->importHandler, Storage::disk('public')->path($resource->getRouteValue()));
 
@@ -40,7 +38,6 @@ class ImportJob implements ShouldQueue, TenantAware
             'status' => ImportStatusesEnum::COMPLETED->name,
             'data' => $this->importHandler->results,
         ]);
-        Log::info('Import Ended');
     }
 
     public function failed()
