@@ -7,12 +7,15 @@ import { reactive, ref } from 'vue';
 import InputSelect from '@/Components/InputSelect.vue';
 import { v4 as uuid } from 'uuid';
 import ToggleSwitch from 'primevue/toggleswitch';
+import RadioButton from 'primevue/radiobutton';
+import Tabs from '@/Components/Tabs.vue';
 
 const props = defineProps({
     suppliers: Object,
     solution_type: Object,
     available_tables: Array,
-    available_columns: Array
+    available_columns: Array,
+    calculator_layouts: Array
 });
 
 const configurations = reactive({
@@ -20,7 +23,8 @@ const configurations = reactive({
         ? JSON.parse(props.solution_type.configurations.amortisation)
         : {},
     component: props.solution_type.configurations.component ?? 'DealMaker',
-    has_custom_table: props.solution_type.configurations.has_custom_table ?? '0'
+    has_custom_table: props.solution_type.configurations.has_custom_table ?? '0',
+    calculator_layout: props.solution_type.configurations.calculator_layout ?? null
 });
 const solution = reactive({
     name: props.solution_type?.name,
@@ -295,6 +299,39 @@ const items = ref([
                                     v-model="configurations.component"
                                     :options="available_tables"
                                     placeholder="Select a View"
+                                    class="w-100"
+                                />
+                            </div>
+                            <div class="mt-4">
+                                <p for="solution_type-calculator-layout" class="form-label">
+                                    Choose the Calculator Layout:
+                                </p>
+                                <div
+                                    v-for="calculator_layout in props.calculator_layouts"
+                                    class="flex align-items-center"
+                                >
+                                    <RadioButton
+                                        v-model="configurations.calculator_layout"
+                                        :inputId="calculator_layout.name"
+                                        name="dynamic"
+                                        :value="calculator_layout.name"
+                                    />
+                                    <label :for="calculator_layout.name" class="ms-2">{{
+                                        calculator_layout.value
+                                    }}</label>
+                                </div>
+                            </div>
+                            <div class="mt-4">
+                                <p for="solution_type-calculator-layout" class="form-label">
+                                    Choose the Calculator Layout:
+                                </p>
+                                <Select
+                                    inputId="solution_type-component"
+                                    v-model="configurations.calculator_layout"
+                                    :options="props.calculator_layouts"
+                                    optionLabel="value"
+                                    optionValue="name"
+                                    placeholder="Calculator Layout"
                                     class="w-100"
                                 />
                             </div>
