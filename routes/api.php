@@ -14,6 +14,7 @@ use App\Http\Controllers\Api\ExternalController;
 use App\Http\Controllers\Api\General\BlacklistController;
 use App\Http\Controllers\Api\GroupAccountController;
 use App\Http\Controllers\Api\GroupController;
+use App\Http\Controllers\Api\ImportController;
 use App\Http\Controllers\Api\MerchantController;
 use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\OrderItemController;
@@ -103,5 +104,6 @@ Route::middleware(['api', 'auth:sanctum'])->group(function () {
         'email-history' => EmailHistoryController::class,
         'groups' => GroupController::class,
         'group-accounts' => GroupAccountController::class,
+        'imports' => ImportController::class,
     ]);
 });

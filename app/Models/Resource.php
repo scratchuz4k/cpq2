@@ -51,12 +51,21 @@ class Resource extends Model
 
     public function getRouteAttribute(): string
     {
-        return 'storage/'.$this->attributes['route'];
+        if (! app()->runningInConsole()) {
+            return 'storage/'.$this->attributes['route'];
+        }
+
+        return $this->attributes['route'];
+
     }
 
     public function getFullRouteAttribute(): string
     {
-        return asset('storage/'.$this->attributes['route']);
+        if (! app()->runningInConsole()) {
+            return asset('storage/'.$this->attributes['route']);
+        }
+
+        return asset($this->attributes['route']);
     }
 
     public function getRouteValue(): string
