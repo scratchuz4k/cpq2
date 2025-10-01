@@ -36,6 +36,7 @@ class CategoryUpdateRequest extends FormRequest
                 Rule::unique('categories')->where(fn ($query) => $query->where('tenant_id', $user->tenant_id)
                     ->where('code', request('code')))->ignore($category_id),
             ],
+            'solution_type_id' => 'exists:solution_type_tenant,id',
         ];
     }
 }

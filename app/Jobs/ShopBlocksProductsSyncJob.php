@@ -135,10 +135,8 @@ class ShopBlocksProductsSyncJob implements NotTenantAware, ShouldQueue
 
         $temp['price'] = [
             'code' => 1,
-            'tax_rate' => 20,
-            'net' => (float) $child['price'],
-            'tax' => (float) $child['price'] * 0.2,
-            'gross' => (float) $child['price'] * 1.2,
+            'cost' => (float) $child['price'],
+            'net' => (float) $child['computed_price'],
         ];
 
         return $temp;

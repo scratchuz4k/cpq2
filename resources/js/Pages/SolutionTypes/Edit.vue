@@ -211,21 +211,12 @@ const items = ref([
                     <tab title="Price" v-if="solution_type.code != 3">
                         <Panel class="mt-3" header="Categories" :toggleable="true">
                             <div class="mb-3">
-                                <label class="form-label">Choose Categories:</label>
+                                <label class="form-label">Order Categories:</label>
                                 <table class="table">
                                     <thead>
                                         <tr>
                                             <th style="width: 5%"></th>
                                             <th style="text-align: left">Category</th>
-                                            <th style="text-align: right; width: 5%">
-                                                <button
-                                                    id="solution-type-categories-remove-columns"
-                                                    class="btn p-2 mx-1 border-0"
-                                                    @click="clearAllCategories()"
-                                                >
-                                                    <font-awesome-icon :icon="['fas', 'trash-alt']"></font-awesome-icon>
-                                                </button>
-                                            </th>
                                         </tr>
                                     </thead>
                                     <draggable
@@ -243,43 +234,11 @@ const items = ref([
                                                     </button>
                                                 </td>
                                                 <td style="text-align: left">
-                                                    <InputSelect
-                                                        v-model="categories[index].category"
-                                                        url="/categories"
-                                                        :id="`solution-type-categories-` + index + `-value`"
-                                                        :fields="['name']"
-                                                        placeholder="Select a Category"
-                                                        @change="checkCategories(index)"
-                                                        :query="[{ column: 'is_active', operator: 'equals', value: 1 }]"
-                                                    >
-                                                    </InputSelect>
-                                                </td>
-                                                <td style="text-align: right; width: 5%">
-                                                    <button
-                                                        class="btn p-2 mx-1 border-0"
-                                                        @click="deleteCategory(element)"
-                                                    >
-                                                        <font-awesome-icon icon="fas fa-trash-alt" />
-                                                    </button>
+                                                    {{ categories[index].category.name }}
                                                 </td>
                                             </tr>
                                         </template>
                                     </draggable>
-                                    <tfoot>
-                                        <tr>
-                                            <th colspan="4">
-                                                <div class="d-flex justify-content-end">
-                                                    <button
-                                                        id="solution-type-table-add-category"
-                                                        class="btn btn-sm"
-                                                        @click="addCategory()"
-                                                    >
-                                                        <font-awesome-icon :icon="['fas', 'plus']"></font-awesome-icon>
-                                                    </button>
-                                                </div>
-                                            </th>
-                                        </tr>
-                                    </tfoot>
                                 </table>
                             </div>
                         </Panel>
