@@ -2,7 +2,8 @@
 import { computed } from 'vue';
 
 const props = defineProps({
-    modelValue: [Boolean, null]
+    modelValue: [Boolean, null],
+    disabled: { type: Boolean, default: false }
 });
 const emit = defineEmits(['update:modelValue']);
 
@@ -22,11 +23,19 @@ const handleClasses = computed(() => ({
 </script>
 
 <template>
-    <div class="custom-range-container me-2">
+    <div :class="['custom-range-container me-2', { disabled: props.disabled }]">
         <div :class="['custom-range-handle', handleClasses]">
             <slot name="handle"></slot>
         </div>
-        <input type="range" min="0" max="100" step="50" v-model="sliderValue" class="custom-range-input" />
+        <input
+            type="range"
+            min="0"
+            max="100"
+            step="50"
+            v-model="sliderValue"
+            class="custom-range-input"
+            :disabled="props.disabled"
+        />
     </div>
 </template>
 
@@ -44,7 +53,7 @@ const handleClasses = computed(() => ({
     background: #cbd5e1;
 }
 
-.custom-range-container:hover:not(:has(.handle-checked)) {
+.custom-range-container:not(.disabled):hover:not(:has(.handle-checked)) {
     background: #94a3b8 !important;
     border-color: transparent;
 }
@@ -55,7 +64,10 @@ const handleClasses = computed(() => ({
 .custom-range-container:has(.handle-checked) {
     background: #18223c;
 }
-
+.custom-range-container.disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
 .custom-range-input {
     position: absolute;
     opacity: 0;
