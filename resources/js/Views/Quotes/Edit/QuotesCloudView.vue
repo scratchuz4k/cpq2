@@ -1,0 +1,139 @@
+<script setup>
+import _ from 'lodash';
+import { quote, setQuote } from '@composables/useQuote';
+import axios from 'axios';
+import { router, usePage } from '@inertiajs/vue3';
+import { ref } from 'vue';
+import queryString from 'query-string';
+import format from '@/Composables/format.js';
+
+const props = defineProps({
+    modelValue: Object
+});
+
+const page = usePage();
+const tenant = page.props.tenant;
+
+const solution_type = props.modelValue.solution_type;
+const active_categories = ref([]);
+const loading = ref(true);
+
+const getCategoriesWithProducts = async () => {
+    loading.value = true;
+    let query = queryString.stringify({
+        limit: 200,
+        filters: JSON.stringify([
+            {
+                column: 'id',
+                operator: 'in',
+                value: solution_type.categories.map((x) => x.id).join(',')
+            },
+            {
+                column: 'products.id',
+                operator: 'not_equals',
+                value: ''
+            },
+            {
+                column: 'is_active',
+                operator: 'equals',
+                value: 1
+            }
+        ])
+    });
+    let res = await axios.get('/api/categories' + '?' + query);
+
+    const categories_order = solution_type.categories.map((x) => x.id);
+
+    active_categories.value = res.data.data.sort((a, b) => {
+        return categories_order.indexOf(a.id) - categories_order.indexOf(b.id);
+    });
+    loading.value = false;
+};
+
+const urlParams = new URLSearchParams(window.location.search);
+const params = new Proxy(urlParams, {
+    get: (searchParams, prop) => searchParams.get(prop)
+});
+const step = ref(params['step'] ?? 0);
+
+setQuote(props.modelValue);
+
+const saveQuote = async () => {
+    if (step.value == active_categories.value.length - 1) {
+        router.get(`/quotes/${props.modelValue.id}`);
+        return;
+    }
+    step.value++;
+};
+
+emitter.on('save-quote', () => {
+    saveQuote();
+});
+
+getCategoriesWithProducts();
+</script>
+<template>
+    <div class="panel panel-mobile">
+        <div class="row justify-content-between">
+            <div class="col-lg-7">
+                <div v-if="!loading">
+                    <div v-for="(category, index) in active_categories">
+                        <CategoryProductsView
+                            :category="category"
+                            :account="props.modelValue.account"
+                            v-model="step"
+                            :index="index"
+                            :total_categories="active_categories.length"
+                        >
+                        </CategoryProductsView>
+                    </div>
+                </div>
+            </div>
+            <div v-if="active_categories.length" class="col-lg-4 order-first order-lg-last mb-5">
+                <div style="position: sticky; top: 25px; max-width: 82%; margin-right: 0; margin-left: auto">
+                    <InfoBox>
+                        <div style="font-size: 14px">
+                            <b style="font-size: 16px">Quote {{ modelValue.id }} for {{ modelValue.account.name }}</b>
+                            <br />
+                            Contact Number: 0124567890<br />
+                            Email: firstname.lastname@gmail.com
+                        </div>
+                    </InfoBox>
+                    <InfoBox v-if="['QUOTE', 'PRICE', 'CONFIGURE'].includes(modelValue.status)">
+                        <div style="font-size: 14px">
+                            This quote will expire on
+                            <b style="font-size: 16px">
+                                {{
+                                    format.expireDate(
+                                        modelValue.created_at,
+                                        tenant.configurations?.quote_expiration_days
+                                    )
+                                }}
+                            </b>
+                        </div>
+                    </InfoBox>
+                    <div class="configure-mobile-sidebar px-4 py-4">
+                        <div v-for="(category, index) in active_categories">
+                            <h4 id="sidebar_products" data-total="0">{{ index + 1 }}. {{ category.name }}</h4>
+                            <div class="sidebar_items mb-3">
+                                <div v-for="product in category.products" class="item mb-2">
+                                    <span>{{ product.name }}</span>
+                                    <span class="badge bg-light-grey dark">
+                                        {{ quote.items.find((x) => x.product_id == product.id)?.quantity ?? 0 }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <button id="next-step-btn" class="btn btn-primary mt-2" @click="saveQuote()">Next</button>
+                    </div>
+                </div>
+            </div>
+            <div v-else class="col-12">
+                <div class="text-center py-5">
+                    <h5 class="mb-2">No categories available</h5>
+                    <p class="mb-0">There are no active categories with products for this solution.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>

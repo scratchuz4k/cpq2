@@ -62,6 +62,10 @@ const saveQuote = async () => {
     step.value++;
 };
 
+emitter.on('save-quote', () => {
+    saveQuote();
+});
+
 getCategoriesWithProducts();
 </script>
 <template>

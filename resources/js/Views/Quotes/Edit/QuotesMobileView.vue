@@ -66,6 +66,10 @@ const saveQuote = async () => {
     step.value++;
 };
 
+emitter.on('save-quote', () => {
+    saveQuote();
+});
+
 const getHardwareProductsCount = () => {
     let items = [...quote.items];
     return items.filter((x) => !x.product_id).reduce((acc, i) => (acc += i.quantity), 0);
