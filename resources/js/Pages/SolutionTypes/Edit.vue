@@ -293,7 +293,7 @@ const items = ref([
                                 match specific preferences within the quote.
                             </p>
                             <div>
-                                <p for="solution_type-component" class="form-label">Choose the view:</p>
+                                <p class="form-label">Choose the view:</p>
                                 <Select
                                     inputId="solution_type-component"
                                     v-model="configurations.component"
@@ -302,10 +302,8 @@ const items = ref([
                                     class="w-100"
                                 />
                             </div>
-                            <div class="mt-4">
-                                <p for="solution_type-calculator-layout" class="form-label">
-                                    Choose the Calculator Layout:
-                                </p>
+                            <div v-if="configurations.component === 'DealMaker'" class="mt-4">
+                                <p class="form-label">Choose the Calculator Layout:</p>
                                 <div
                                     v-for="calculator_layout in props.calculator_layouts"
                                     class="flex align-items-center"
@@ -321,12 +319,10 @@ const items = ref([
                                     }}</label>
                                 </div>
                             </div>
-                            <div class="mt-4">
-                                <p for="solution_type-calculator-layout" class="form-label">
-                                    Choose the Calculator Layout:
-                                </p>
+                            <div v-if="configurations.component === 'DealMaker'" class="mt-4">
+                                <p class="form-label">Choose the Calculator Layout:</p>
                                 <Select
-                                    inputId="solution_type-component"
+                                    inputId="solution_type-calculator-layout"
                                     v-model="configurations.calculator_layout"
                                     :options="props.calculator_layouts"
                                     optionLabel="value"

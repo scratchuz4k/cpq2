@@ -40,6 +40,7 @@ class SolutionTypeController extends BaseController
         return Inertia::render('SolutionTypes/Create', [
             'solutions' => SolutionTypeResource::collection(SolutionType::all())->resolve(),
             'available_tables' => TablesEnum::cases(),
+            'calculator_layouts' => CalculatorLayoutsEnum::asArray(),
         ]);
     }
 

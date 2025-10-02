@@ -283,12 +283,12 @@ const items = ref([
                     <h3 class="mb-3">Profitability Calculator</h3>
                     <p class="mb-2" style="font-size: 14px">
                         Currently, you will make
-                        <span v-if="show_calc_margin">
+                        <span v-if="show_calc_commission">
                             <b>{{ format.GBP(quote.commission_value) }}</b>
                             commission
                         </span>
                         <span v-if="calc_layout === 'DEFAULT'"> and </span>
-                        <span v-if="show_calc_commission">
+                        <span v-if="show_calc_margin">
                             <b>{{ format.decimalPlaces(quote.margin) }} %</b>
                             margin on this quote </span
                         >.
