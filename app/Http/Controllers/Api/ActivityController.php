@@ -9,7 +9,6 @@ use App\Http\Resources\ActivityResource;
 use App\Models\Activity;
 use Exception;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 
 class ActivityController extends BaseController
 {
@@ -26,9 +25,7 @@ class ActivityController extends BaseController
         try {
             $data = $dataProvider->get();
         } catch (Exception $e) {
-            Log::debug($e->getMessage());
-
-            return $e->getMessage();
+            return handleException($e);
         }
 
         return ActivityResource::collection($data);

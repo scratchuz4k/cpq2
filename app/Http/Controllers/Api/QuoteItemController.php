@@ -32,9 +32,7 @@ class QuoteItemController extends BaseController
         try {
             return $dataProvider->group(QuoteItemResource::class);
         } catch (Exception $e) {
-            Log::debug($e->getMessage());
-
-            return $e->getMessage();
+            return handleException($e);
         }
     }
 
