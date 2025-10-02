@@ -15,7 +15,6 @@ use Exception;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class QuoteController extends BaseController
 {
@@ -69,7 +68,7 @@ class QuoteController extends BaseController
         try {
             $quote = DB::transaction(fn () => $this->quoteService->store($request->all()));
         } catch (Exception $e) {
-            return response($e->getMessage(), 500);
+            return handleException($e);
         }
 
         return response()->json(new QuoteResource($quote->refresh()));
@@ -95,11 +94,7 @@ class QuoteController extends BaseController
                 return $quote;
             });
         } catch (Exception $e) {
-            if (! env('APP_DEBUG')) {
-                Log::error($e->getMessage());
-            }
-
-            return response(['message' => $e->getMessage()], 500);
+            return handleException($e);
         }
 
         return response()->json(new QuoteResource($quote->refresh()->load(['items'])));

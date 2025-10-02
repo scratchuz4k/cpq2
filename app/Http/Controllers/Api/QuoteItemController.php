@@ -44,11 +44,7 @@ class QuoteItemController extends BaseController
         try {
             $quoteItem = DB::transaction(fn () => $this->quoteItemService->store($request->all()), 2);
         } catch (\Exception $e) {
-            if (! env('APP_DEBUG')) {
-                Log::error($e->getMessage());
-            }
-
-            return response()->json($e->getMessage(), 500);
+            return handleException($e);
         }
 
         return new QuoteItemResource($quoteItem);

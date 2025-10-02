@@ -73,8 +73,8 @@ class ResourceController extends Controller
                     ]);
                 }
             }
-        } catch (\Exception) {
-            return response(['message' => 'An error occurred while uploading the resource!', 'error' => true], 500);
+        } catch (\Exception $e) {
+            return handleException($e);
         }
 
         return response(['file' => $newFile, 'message' => 'Resource uploaded successfully!', 'error' => false], 200);

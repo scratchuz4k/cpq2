@@ -12,7 +12,6 @@ use App\Models\GroupAccount;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class GroupAccountController extends BaseController
 {
@@ -40,7 +39,7 @@ class GroupAccountController extends BaseController
         try {
             $groupAccount = DB::transaction(fn () => GroupAccount::create($request->all()));
         } catch (Exception $e) {
-            return response($e->getMessage(), 500);
+            return handleException($e);
         }
 
         return response()->json(new GroupResource($groupAccount));
@@ -62,11 +61,7 @@ class GroupAccountController extends BaseController
         try {
             $groupAccount = DB::transaction(fn () => $groupAccount->update($request->all()));
         } catch (Exception $e) {
-            if (! env('APP_DEBUG')) {
-                Log::error($e->getMessage());
-            }
-
-            return response(['message' => $e->getMessage()], 500);
+            return handleException($e);
         }
 
         return response()->json(new GroupAccountResource($groupAccount));
