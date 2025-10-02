@@ -33,10 +33,7 @@ class BlacklistController extends BaseController
         try {
             $data = $dataProvider->get();
         } catch (Exception $e) {
-            if (! env('APP_DEBUG')) {
-                Log::error($e->getMessage());
-            }
-            throw new Exception($e);
+            return handleException($e);
         }
 
         return BlacklistResource::collection($data);

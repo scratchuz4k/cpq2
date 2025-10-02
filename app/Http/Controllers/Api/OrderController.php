@@ -14,7 +14,6 @@ use Exception;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class OrderController extends BaseController
 {
@@ -36,9 +35,7 @@ class OrderController extends BaseController
         try {
             $data = $dataProvider->get();
         } catch (Exception $e) {
-            Log::debug($e->getMessage());
-
-            return $e->getMessage();
+            return handleException($e);
         }
 
         return OrderResource::collection($data);
@@ -52,7 +49,7 @@ class OrderController extends BaseController
         try {
             $order = DB::transaction(fn () => $this->orderService->store($request->all()));
         } catch (Exception $e) {
-            return response($e->getMessage(), 500);
+            return handleException($e);
         }
 
         return response()->json(new OrderResource($order->refresh()));
@@ -74,11 +71,7 @@ class OrderController extends BaseController
         try {
             $order = DB::transaction(fn () => $this->orderService->update($order, $request->all()));
         } catch (Exception $e) {
-            if (! env('APP_DEBUG')) {
-                Log::error($e->getMessage());
-            }
-
-            return response(['message' => $e->getMessage()], 500);
+            return handleException($e);
         }
 
         return response()->json(new OrderResource($order->refresh()));

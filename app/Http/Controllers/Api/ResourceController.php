@@ -10,7 +10,6 @@ use Dedoc\Scramble\Attributes\ExcludeRouteFromDocs;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class ResourceController extends Controller
@@ -25,9 +24,7 @@ class ResourceController extends Controller
         try {
             $data = $dataProvider->get();
         } catch (Exception $e) {
-            Log::debug($e->getMessage());
-
-            return $e->getMessage();
+            return handleException($e);
         }
 
         return JsonResource::collection($data);
@@ -76,8 +73,8 @@ class ResourceController extends Controller
                     ]);
                 }
             }
-        } catch (\Exception) {
-            return response(['message' => 'An error occurred while uploading the resource!', 'error' => true], 500);
+        } catch (\Exception $e) {
+            return handleException($e);
         }
 
         return response(['file' => $newFile, 'message' => 'Resource uploaded successfully!', 'error' => false], 200);

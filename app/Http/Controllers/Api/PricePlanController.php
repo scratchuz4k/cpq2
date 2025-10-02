@@ -12,7 +12,6 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Support\Facades\Log;
 
 class PricePlanController extends BaseController
 {
@@ -29,9 +28,7 @@ class PricePlanController extends BaseController
         try {
             $data = $dataProvider->get();
         } catch (Exception $e) {
-            Log::debug($e->getMessage());
-
-            return $e->getMessage();
+            return handleException($e);
         }
 
         return JsonResource::collection($data);

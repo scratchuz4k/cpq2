@@ -37,9 +37,7 @@ class SolutionTypeController extends BaseController
         try {
             $data = $dataProvider->get();
         } catch (Exception $e) {
-            Log::debug($e->getMessage());
-
-            return $e->getMessage();
+            return handleException($e);
         }
 
         return SolutionTypeTenantResource::collection($data);

@@ -9,7 +9,6 @@ use App\Http\Resources\EmailHistoryResource;
 use App\Models\EmailHistory;
 use Exception;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 
 class EmailHistoryController extends BaseController
 {
@@ -27,9 +26,7 @@ class EmailHistoryController extends BaseController
         try {
             $data = $dataProvider->get();
         } catch (Exception $e) {
-            Log::debug($e->getMessage());
-
-            return $e->getMessage();
+            return handleException($e);
         }
 
         return EmailHistoryResource::collection($data);
