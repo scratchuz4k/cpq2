@@ -22,7 +22,9 @@ const showLowestCost = ref(true);
 const showQuoted = ref(false);
 const showFilters = ref(true);
 const showContended = ref(null);
-const showManaged = ref(null);
+const showManaged = ref(
+    props.modelValue.configs?.managed === '1' ? true : props.modelValue.configs?.managed === '2' ? false : null
+);
 const articles = ref([]);
 const errors = ref([]);
 const selectedFilters = ref([]);
@@ -479,38 +481,7 @@ getArticles(false, true);
                                         </Badge>
                                     </template>
                                 </li>
-                                <li v-if="props.modelValue.configs?.managed && props.modelValue.configs?.managed != 0">
-                                    <Badge
-                                        :value="
-                                            props.modelValue.configs?.managed == 1
-                                                ? 'Managed Only'
-                                                : props.modelValue.configs?.managed == 2
-                                                  ? 'Unmanaged Only'
-                                                  : 'Managed and Unmanaged'
-                                        "
-                                        class="px-3 py-1"
-                                    >
-                                        <font-awesome-icon
-                                            :icon="['fas', 'shield-alt']"
-                                            class="ms-1 fs-7"
-                                        ></font-awesome-icon>
-                                    </Badge>
-                                </li>
                             </ul>
-                            <div
-                                v-if="
-                                    props.modelValue.configs?.speed ||
-                                    props.modelValue.configs?.bearer ||
-                                    props.modelValue.configs?.contract_length ||
-                                    props.modelValue.configs?.managed !== '0'
-                                "
-                                class="d-flex align-self-end justify-content-around mb-2"
-                            >
-                                <tooltip-with-icon
-                                    class="ms-2 mt-1"
-                                    :info_text="'The current results are based on predefined filters. For a more complete view, please go back and select a broader filter selection.'"
-                                />
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -675,7 +646,11 @@ getArticles(false, true);
                                         </label>
                                     </div>
                                     <div class="checkbox d-flex py-1 px-2">
-                                        <TriStateToggle v-model="showManaged" id="filter-show-managed">
+                                        <TriStateToggle
+                                            v-model="showManaged"
+                                            id="filter-show-managed"
+                                            :disabled="props.modelValue.configs?.managed != 0"
+                                        >
                                             <template #handle>
                                                 <font-awesome-icon
                                                     :icon="
@@ -692,6 +667,15 @@ getArticles(false, true);
                                         <label class="form-check-label" for="filter-show-managed">
                                             Show managed products
                                         </label>
+                                        <div
+                                            v-if="props.modelValue.configs?.managed !== '0'"
+                                            class="d-flex align-self-end justify-content-around"
+                                        >
+                                            <tooltip-with-icon
+                                                class="ms-2"
+                                                :info_text="'The current results are based on predefined filters. For a more complete view, please go back and select a broader filter selection.'"
+                                            />
+                                        </div>
                                     </div>
                                 </li>
                             </ul>

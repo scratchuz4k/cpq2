@@ -59,12 +59,16 @@ const step = ref(params['step'] ?? 0);
 setQuote(props.modelValue);
 
 const saveQuote = async () => {
-    if (step.value == active_categories.value.length) {
+    if (step.value == active_categories.value.length - 1) {
         router.get(`/quotes/${props.modelValue.id}`);
         return;
     }
     step.value++;
 };
+
+emitter.on('save-quote', () => {
+    saveQuote();
+});
 
 getCategoriesWithProducts();
 </script>
@@ -79,13 +83,13 @@ getCategoriesWithProducts();
                             :account="props.modelValue.account"
                             v-model="step"
                             :index="index"
-                            :total_categories="active_categories.length + 1"
+                            :total_categories="active_categories.length"
                         >
                         </CategoryProductsView>
                     </div>
                 </div>
             </div>
-            <div class="col-lg-4 order-first order-lg-last mb-5">
+            <div v-if="active_categories.length" class="col-lg-4 order-first order-lg-last mb-5">
                 <div style="position: sticky; top: 25px; max-width: 82%; margin-right: 0; margin-left: auto">
                     <InfoBox>
                         <div style="font-size: 14px">
@@ -122,6 +126,12 @@ getCategoriesWithProducts();
                         </div>
                         <button id="next-step-btn" class="btn btn-primary mt-2" @click="saveQuote()">Next</button>
                     </div>
+                </div>
+            </div>
+            <div v-else class="col-12">
+                <div class="text-center py-5">
+                    <h5 class="mb-2">No categories available</h5>
+                    <p class="mb-0">There are no active categories with products for this solution.</p>
                 </div>
             </div>
         </div>
