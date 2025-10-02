@@ -128,7 +128,7 @@ getCategoriesWithProducts();
                     </div>
                 </div>
             </div>
-            <div v-else class="col-12">
+            <div v-if="!active_categories.length && !loading" class="col-12">
                 <div class="text-center py-5">
                     <h5 class="mb-2">No categories available</h5>
                     <p class="mb-0">There are no active categories with products for this solution.</p>
