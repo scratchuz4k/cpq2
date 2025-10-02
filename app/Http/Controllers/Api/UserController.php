@@ -12,7 +12,6 @@ use App\Services\UsersService;
 use Dedoc\Scramble\Attributes\ExcludeRouteFromDocs;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class UserController extends BaseController
 {
@@ -34,9 +33,7 @@ class UserController extends BaseController
         try {
             $data = $dataProvider->get();
         } catch (\Exception $e) {
-            Log::debug($e->getMessage());
-
-            return $e->getMessage();
+            return handleException($e);
         }
 
         return UserResource::collection($data);

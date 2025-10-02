@@ -98,3 +98,16 @@ if (! function_exists('safeXmlParse')) {
         return simplexml_import_dom($dom)->asXML() ?: null;
     }
 }
+
+if (! function_exists('handleException')) {
+    function handleException(\Exception $e, string $message = 'Something went wrong.')
+    {
+        Log::debug($e->getMessage());
+
+        if (config('app.debug')) {
+            return $e->getMessage();
+        }
+
+        return response()->json($message, 500);
+    }
+}
