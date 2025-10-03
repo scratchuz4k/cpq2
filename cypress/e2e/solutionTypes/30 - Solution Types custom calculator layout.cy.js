@@ -78,6 +78,7 @@ describe('Solution Types CRUD', () => {
             cy.get('#btn-save-solution-type').click();
 
             cy.visit('/');
+
             cy.get('#datatable-search').type(type);
             cy.get('#datatable-btn-0-show').click();
 
