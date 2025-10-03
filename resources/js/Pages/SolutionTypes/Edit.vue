@@ -7,7 +7,6 @@ import { reactive, ref } from 'vue';
 import InputSelect from '@/Components/InputSelect.vue';
 import { v4 as uuid } from 'uuid';
 import ToggleSwitch from 'primevue/toggleswitch';
-import RadioButton from 'primevue/radiobutton';
 import Tabs from '@/Components/Tabs.vue';
 
 const props = defineProps({
@@ -301,23 +300,6 @@ const items = ref([
                                     placeholder="Select a View"
                                     class="w-100"
                                 />
-                            </div>
-                            <div v-if="configurations.component === 'DealMaker'" class="mt-4">
-                                <p class="form-label">Choose the Calculator Layout:</p>
-                                <div
-                                    v-for="calculator_layout in props.calculator_layouts"
-                                    class="flex align-items-center"
-                                >
-                                    <RadioButton
-                                        v-model="configurations.calculator_layout"
-                                        :inputId="calculator_layout.name"
-                                        name="dynamic"
-                                        :value="calculator_layout.name"
-                                    />
-                                    <label :for="calculator_layout.name" class="ms-2">{{
-                                        calculator_layout.value
-                                    }}</label>
-                                </div>
                             </div>
                             <div v-if="configurations.component === 'DealMaker'" class="mt-4">
                                 <p class="form-label">Choose the Calculator Layout:</p>
