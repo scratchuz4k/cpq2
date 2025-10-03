@@ -38,9 +38,7 @@ class ProductController extends BaseController
         try {
             $data = $dataProvider->getCollection();
         } catch (Exception $e) {
-            Log::debug($e->getMessage());
-
-            return $e->getMessage();
+            return handleException($e);
         }
 
         $suppliers = [];

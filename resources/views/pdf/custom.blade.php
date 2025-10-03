@@ -179,7 +179,7 @@
                         <p>
                             Quotation Date: {{ \Carbon\Carbon::parse($quote['created_at'])->format('d/m/Y') }}<br />
                             Valid Date:
-                            {{ \Carbon\Carbon::parse($quote['created_at'])->addDays((int) $tenant['configurations']['quote_expiration_days'] ?? 30)->format('d/m/Y') }}
+                            {{ \Carbon\Carbon::parse($quote['created_at'])->addDays((int) ($tenant['configurations']['quote_expiration_days'] ?? 30))->format('d/m/Y') }}
                         </p>
                     </div>
                 </div>

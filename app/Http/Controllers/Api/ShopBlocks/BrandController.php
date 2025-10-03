@@ -26,7 +26,7 @@ class BrandController extends BaseController
         try {
             $items = $dataProvider->get();
         } catch (Exception $e) {
-            return $e->getMessage();
+            return handleException($e);
         }
 
         return JsonResource::collection($items);
