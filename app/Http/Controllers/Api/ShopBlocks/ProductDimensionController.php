@@ -27,7 +27,7 @@ class ProductDimensionController extends BaseController
         try {
             $items = $dataProvider->get();
         } catch (Exception $e) {
-            return $e->getMessage();
+            return handleException($e);
         }
 
         return ProductDimensionResource::collection($items);

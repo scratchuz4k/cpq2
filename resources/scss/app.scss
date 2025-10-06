@@ -162,7 +162,7 @@ body {
     .btn-secondary {
         background-color: var(--secondary-dark);
         border-color: var(--secondary-dark);
-        font-weight: bold;
+        font-weight: 600;
     }
 
     .btn-secondary:hover {
@@ -273,7 +273,7 @@ body {
     }
 
     .badge {
-        line-height: 15px;
+        line-height: 16px;
         border: 0;
     }
 
@@ -990,6 +990,11 @@ body {
     }
 }
 
+.p-panel .p-panel-header .p-panel-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
 .p-dialog {
     &.resources-modal {
         .p-dialog-header {
@@ -1392,4 +1397,9 @@ body {
 }
 .p-timeline-event-marker::before {
     background: none !important;
+}
+
+.p-checkbox-checked .p-checkbox-box {
+    border-color: var(--color-purple) !important;
+    background: var(--color-purple) !important;
 }

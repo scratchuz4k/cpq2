@@ -9,10 +9,12 @@ use App\Http\Resources\ProductResource;
 use App\Http\Resources\SolutionTypeTenantResource;
 use App\Models\PricePlan;
 use App\Models\Product;
+use App\Models\Resource;
 use App\Services\ProductsService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
 

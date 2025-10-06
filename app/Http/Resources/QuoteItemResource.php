@@ -28,6 +28,7 @@ class QuoteItemResource extends JsonResource
             'price_plan' => $this->pricePlan,
             'contract_length' => (float) $this->contract_length,
             'is_deleted' => $this->trashed(),
+            'is_margin_valid' => $this->isWithinMarginThresholds(),
         ];
     }
 }
