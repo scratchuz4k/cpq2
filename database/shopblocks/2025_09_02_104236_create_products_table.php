@@ -18,7 +18,7 @@ return new class extends Migration
             $table->text('slug');
             $table->text('name')->nullable();
             $table->longText('description')->nullable();
-            $table->decimal('stock', 10, 2)->default(0);
+            $table->integer('stock')->default(0);
             $table->text('primary_image')->nullable();
             $table->json('images');
             $table->json('price');
