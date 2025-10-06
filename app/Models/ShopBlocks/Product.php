@@ -16,6 +16,7 @@ class Product extends EloquentModel
     protected function casts(): array
     {
         return [
+            'quantity' => 'float',
             'stock' => 'float',
             'images' => 'array',
             'price' => 'array',

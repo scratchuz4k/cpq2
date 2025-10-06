@@ -327,7 +327,7 @@ const getFeaturesTable = () => {
                 gIndex = temp.value.length - 1;
             }
 
-            let index = temp.value[gIndex].features.findIndex((t) => t.key == e.key);
+            let index = temp.value[gIndex].features.findIndex((t) => t.key == e.dimension_type.key);
             if (index == -1) {
                 temp.value[gIndex].features.push({
                     key: e.dimension_type.key,

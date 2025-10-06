@@ -99,8 +99,8 @@ class ShopBlocksProductsJob implements NotTenantAware, ShouldQueue
         $message = '['.strtoupper((string) env('APP_ENV')).'] ShopBlocksProducts failed with error: '.json_encode($error);
 
         Log::error($message);
-        if (env('DISCORD_CLOUDMARKET_JOBS')) {
-            Http::post(env('DISCORD_CLOUDMARKET_JOBS'), ['content' => $message]);
+        if (env('DISCORD_SHOPBLOCKS_JOBS')) {
+            Http::post(env('DISCORD_SHOPBLOCKS_JOBS'), ['content' => $message]);
         }
     }
 }
