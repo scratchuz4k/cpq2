@@ -21,6 +21,7 @@ use App\Services\QuoteService;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
@@ -166,8 +167,11 @@ class QuoteController extends BaseController
     /**
      * Remove the specified resource from storage.
      */
-    public function download(Request $request, Quote $quote)
+    public function download(Request $request, $hash)
     {
+        $quoteId = Crypt::decrypt($hash);
+        $quote = Quote::findOrFail($quoteId);
+
         $pdf = $this->quoteService->generatePdf($request, $quote);
 
         return $pdf
