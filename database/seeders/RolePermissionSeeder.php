@@ -73,6 +73,7 @@ class RolePermissionSeeder extends Seeder
                 'api' => 'API',
                 'permission' => 'Permission',
                 'role' => 'Role',
+                'import' => 'Import',
             ],
         ];
 

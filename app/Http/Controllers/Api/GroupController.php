@@ -4,13 +4,13 @@ namespace App\Http\Controllers\Api;
 
 use App\Helpers\DataProvider;
 use App\Http\Controllers\BaseController;
+use App\Http\Requests\IndexRequest;
 use App\Http\Resources\GroupResource;
 use App\Models\Group;
 use App\Services\GroupService;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class GroupController extends BaseController
 {
@@ -19,16 +19,14 @@ class GroupController extends BaseController
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(IndexRequest $request)
     {
 
         $dataProvider = new DataProvider(Group::class);
         try {
             $data = $dataProvider->get();
         } catch (Exception $e) {
-            Log::debug($e->getMessage());
-
-            return $e->getMessage();
+            return handleException($e);
         }
 
         return GroupResource::collection($data);
@@ -42,7 +40,7 @@ class GroupController extends BaseController
         try {
             $group = DB::transaction(fn () => $this->groupService->store($request->all()));
         } catch (Exception $e) {
-            return response($e->getMessage(), 500);
+            return handleException($e);
         }
 
         return response()->json(new GroupResource($group));
@@ -64,11 +62,7 @@ class GroupController extends BaseController
         try {
             $group = DB::transaction(fn () => $this->groupService->update($group, $request->all()));
         } catch (Exception $e) {
-            if (! env('APP_DEBUG')) {
-                Log::error($e->getMessage());
-            }
-
-            return response(['message' => $e->getMessage()], 500);
+            return handleException($e);
         }
 
         return response()->json(new GroupResource($group));

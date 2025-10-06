@@ -124,6 +124,10 @@ const checkQuantity = _.debounce(
     { leading: true, trailing: true }
 );
 
+const emitSaveQuote = () => {
+    emitter.emit('save-quote');
+};
+
 watch(proxyValue, () => {
     getProducts();
 });
@@ -236,7 +240,7 @@ getProducts();
                     :id="'btn-step-' + (props.index + 1) + '-next'"
                     class="ms-3 btn btn-primary step-nav"
                     type="button"
-                    @click="() => proxyValue++"
+                    @click="() => emitSaveQuote()"
                 >
                     Next
                     <font-awesome-icon :icon="['fas', 'arrow-right']" />

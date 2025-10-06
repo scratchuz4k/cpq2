@@ -11,6 +11,7 @@ use App\Http\Controllers\Web\EmailTemplateController;
 use App\Http\Controllers\Web\General\BlacklistController;
 use App\Http\Controllers\Web\GroupAccountController;
 use App\Http\Controllers\Web\GroupController;
+use App\Http\Controllers\Web\ImportController;
 use App\Http\Controllers\Web\MerchantController;
 use App\Http\Controllers\Web\OrderController;
 use App\Http\Controllers\Web\ProductController;
@@ -101,6 +102,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         'group-accounts' => GroupAccountController::class,
         'activities' => ActivityController::class,
         'roles' => RoleController::class,
+        'imports' => ImportController::class,
+
     ]);
 
     Route::middleware('auth')->group(function () {

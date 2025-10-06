@@ -137,7 +137,12 @@ const items = ref([
                 </div>
                 <div class="mb-3">
                     <div class="form-check p-0">
-                        <Checkbox id="user-sso" name="user-sso" class="form-check-input" v-model:checked="form.sso" />
+                        <Checkbox
+                            inputId="user-sso"
+                            name="user-sso"
+                            class="form-check-input"
+                            v-model:checked="form.sso"
+                        />
                         <label class="form-check-label ms-2" for="user-sso"> Single sign-on (SSO) login only </label>
                     </div>
                 </div>

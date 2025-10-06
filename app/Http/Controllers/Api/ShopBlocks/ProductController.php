@@ -34,7 +34,7 @@ class ProductController extends BaseController
         try {
             $items = $dataProvider->getCollection();
         } catch (Exception $e) {
-            return $e->getMessage();
+            return handleException($e);
         }
 
         $priceRules = new PriceRules;

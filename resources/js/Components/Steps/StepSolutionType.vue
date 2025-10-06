@@ -20,7 +20,8 @@ const icons = {
     3: 'fas fa-ethernet',
     4: 'fas fa-mobile-screen-button',
     5: 'fas fa-microchip',
-    6: 'fas fa-cloud'
+    6: 'fas fa-cloud-arrow-down',
+    7: 'fas fa-cloud'
 };
 </script>
 

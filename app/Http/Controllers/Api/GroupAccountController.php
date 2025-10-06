@@ -5,29 +5,27 @@ namespace App\Http\Controllers\Api;
 use App\Helpers\DataProvider;
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\GroupAccountCreateRequest;
+use App\Http\Requests\IndexRequest;
 use App\Http\Resources\GroupAccountResource;
 use App\Http\Resources\GroupResource;
 use App\Models\GroupAccount;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class GroupAccountController extends BaseController
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(IndexRequest $request)
     {
 
         $dataProvider = new DataProvider(GroupAccount::class);
         try {
             $data = $dataProvider->get();
         } catch (Exception $e) {
-            Log::debug($e->getMessage());
-
-            return $e->getMessage();
+            return handleException($e);
         }
 
         return GroupAccountResource::collection($data);
@@ -41,7 +39,7 @@ class GroupAccountController extends BaseController
         try {
             $groupAccount = DB::transaction(fn () => GroupAccount::create($request->all()));
         } catch (Exception $e) {
-            return response($e->getMessage(), 500);
+            return handleException($e);
         }
 
         return response()->json(new GroupResource($groupAccount));
@@ -63,11 +61,7 @@ class GroupAccountController extends BaseController
         try {
             $groupAccount = DB::transaction(fn () => $groupAccount->update($request->all()));
         } catch (Exception $e) {
-            if (! env('APP_DEBUG')) {
-                Log::error($e->getMessage());
-            }
-
-            return response(['message' => $e->getMessage()], 500);
+            return handleException($e);
         }
 
         return response()->json(new GroupAccountResource($groupAccount));
