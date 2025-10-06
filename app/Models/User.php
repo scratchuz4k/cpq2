@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Trait\SetTenantId;
 use Exception;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -159,5 +160,25 @@ class User extends Authenticatable
 
             return $user;
         });
+    }
+
+    public static function getChildAndOrphansUser(): Builder
+    {
+        $query = User::query();
+        $superUsers = User::whereHas('roles', fn ($query) => $query->whereIn('name', ['Super Admin']))->get();
+        $query = $query->whereNotIn('id', $superUsers->pluck('id'));
+
+        $role = Auth::user()->roles()->first();
+
+        if ($role && ! $role->parent_id) {
+            return $query;
+        }
+
+        $roles = Role::descendants();
+
+        return $query->whereHas('roles', function ($query) use ($roles) {
+            $query->whereIn('id', $roles->pluck('id'));
+        });
+
     }
 }

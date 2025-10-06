@@ -4,12 +4,13 @@ namespace App\Http\Middleware;
 
 use App\Models\Tenant;
 use Closure;
+use Illuminate\Support\Facades\Auth;
 
 class SetTenantBySession
 {
     public function handle($request, Closure $next)
     {
-        $user = $request->user();
+        $user = Auth::user();
         if (! $user) {
             $temp = Tenant::findOrFail(1);
             $temp->makeCurrent();

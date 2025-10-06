@@ -6,6 +6,7 @@ use App\Trait\HasConfigurations;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Support\Facades\Auth;
 use Laravel\Sanctum\HasApiTokens;
 
 class Tenant extends \Spatie\Multitenancy\Models\Tenant
@@ -22,17 +23,37 @@ class Tenant extends \Spatie\Multitenancy\Models\Tenant
             // temporary: get session team_id for restore at end
             $session_team_id = getPermissionsTeamId();
             // set actual new team_id to package instance
-            setPermissionsTeamId($model);
+            setPermissionsTeamId($model->id);
             // get the admin user and assign roles/permissions on new team model
-            $mail = env('SUPERUSER_EMAIL', 'super@example.com');
-            User::where('email', $mail)->first()->assignRole('Super Admin');
-            User::where('email', 'system@cpq.cloudmarket.com')->first()->assignRole('Super Admin');
+            $admin = User::where('email', env('SUPERUSER_EMAIL', 'super@example.com'))->first();
+            $system = User::where('email', 'system@cpq.cloudmarket.com')->first();
+            $role = Role::withoutGlobalScopes()->where('name', 'Super Admin')->first();
+
+            if (Auth::check()) {
+                Auth::user()->update(['tenant_id' => $model->id]);
+                $model->makeCurrent();
+            }
+
+            $admin->tenants()->attach($model->id);
+            $admin->roles()->attach($role->id, ['tenant_id' => $model->id]);
+
+            $system->tenants()->attach($model->id);
+            $system->roles()->attach($role->id, ['tenant_id' => $model->id]);
+
+            $role = Role::firstOrCreate(
+                [
+                    'name' => 'Company Admin',
+                    'tenant_id' => $model->id,
+                    'guard_name' => 'web',
+                ],
+                [
+                    'guard_name' => 'web',
+                ]
+            );
+            $role->syncPermissions(Permission::all());
 
             // restore session team_id to package instance using temporary value stored above
             setPermissionsTeamId($session_team_id);
-
-            $role = Role::create(['name' => 'Company Admin', 'tenant_id' => $model->id]);
-            $role->syncPermissions(Permission::all());
         });
     }
 

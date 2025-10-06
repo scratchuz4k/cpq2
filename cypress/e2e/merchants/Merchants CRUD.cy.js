@@ -8,7 +8,7 @@ describe('Create Order Manager User.cy', () => {
     });
 
     it('Create a Merchant', () => {
-        cy.visit('/');
+        cy.visit('/quotes');
         cy.get('#my-account').click();
         cy.get('#link-merchants').click();
         cy.get('#merchant-create-btn').click();
@@ -21,7 +21,7 @@ describe('Create Order Manager User.cy', () => {
     });
 
     it('Edit a Merchant', () => {
-        cy.visit('/');
+        cy.visit('/quotes');
         cy.get('#my-account').click();
         cy.get('#link-merchants').click();
 
@@ -35,7 +35,7 @@ describe('Create Order Manager User.cy', () => {
     });
 
     it('Delete a Merchant', () => {
-        cy.visit('/');
+        cy.visit('/quotes');
         cy.get('#my-account').click();
         cy.get('#link-merchants').click();
 

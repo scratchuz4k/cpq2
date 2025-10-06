@@ -27,6 +27,10 @@ class RolePolicy
      */
     public function view(User $user, Role $role): bool
     {
+        if ($user->tenant_id !== $role->tenant_id) {
+            return false;
+        }
+
         if (! $this->hasRoleInChild($role)) {
             return false;
         }
@@ -56,6 +60,10 @@ class RolePolicy
     public function update(User $user, Role $role): bool
     {
 
+        if ($user->tenant_id !== $role->tenant_id) {
+            return false;
+        }
+
         if (! $this->hasRoleInChild($role)) {
             return false;
         }
@@ -72,6 +80,10 @@ class RolePolicy
      */
     public function delete(User $user, Role $role): bool
     {
+
+        if ($user->tenant_id !== $role->tenant_id) {
+            return false;
+        }
 
         if (! $this->hasRoleInChild($role)) {
             return false;
@@ -90,6 +102,10 @@ class RolePolicy
     public function restore(User $user, Role $role): bool
     {
 
+        if ($user->tenant_id !== $role->tenant_id) {
+            return false;
+        }
+
         if (! $this->hasRoleInChild($role)) {
             return false;
         }
@@ -106,6 +122,9 @@ class RolePolicy
      */
     public function forceDelete(User $user, Role $role): bool
     {
+        if ($user->tenant_id !== $role->tenant_id) {
+            return false;
+        }
 
         if (! $this->hasRoleInChild($role)) {
             return false;

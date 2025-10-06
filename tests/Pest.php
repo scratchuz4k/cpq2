@@ -163,9 +163,10 @@ function createQuoteWithItems($testInstance)
     return $testInstance->get('api/quotes/'.$quote['id']);
 }
 
-function setTenantForPermissions()
+function setTenantForPermissions($id = 1)
 {
-    $tenant = Tenant::find(1);
     // Set the current team context
+    app(PermissionRegistrar::class)->setPermissionsTeamId(null);
+    $tenant = Tenant::find($id);
     app(PermissionRegistrar::class)->setPermissionsTeamId($tenant->id);
 }

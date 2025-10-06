@@ -12,7 +12,6 @@ class RolePermissionSeeder extends Seeder
 {
     public function run()
     {
-
         $tenant = Tenant::first();
         $tenant->makeCurrent();
 
@@ -108,7 +107,7 @@ class RolePermissionSeeder extends Seeder
             $temp = null;
 
             if (! is_null($item['parent'])) {
-                $temp = Role::where('name', $item['parent'])->firstOrFail();
+                $temp = Role::withoutGlobalScopes()->where('name', $item['parent'])->firstOrFail();
             }
 
             $role = Role::updateOrCreate(['name' => $role], ['guard_name' => 'web', 'parent_id' => $temp?->id, 'tenant_id' => $item['tenant']]);
@@ -157,7 +156,7 @@ class RolePermissionSeeder extends Seeder
                             'quote', 'quote_item', 'order', 'order_item', 'merchant', 'account', 'contact',
                             'price', 'product', 'category', 'region', 'tenant', 'brand', 'supplier',
                             'spa', 'user', 'solution_type', 'api', 'price_plan', 'activity', 'email_template', 'email_history',
-                            'group', 'blacklist',
+                            'group', 'blacklist', 'role',
                         ],
                         'simple_permission' => ['viewAny export'],
                     ],
@@ -171,7 +170,7 @@ class RolePermissionSeeder extends Seeder
                     'Sales Manager' => [
                         'parent' => 'Company Admin',
                         'tenant' => 1,
-                        'permissions' => ['quote', 'quote_item', 'account', 'contact', 'brand', 'supplier', 'activity', 'price_plan', 'user', 'group'],
+                        'permissions' => ['quote', 'quote_item', 'account', 'contact', 'brand', 'supplier', 'activity', 'price_plan', 'user', 'group', 'role'],
                         'simple_permission' => ['viewAny product', 'view product', 'viewAny category', 'view category'],
                     ],
                     'Sales Rep' => [

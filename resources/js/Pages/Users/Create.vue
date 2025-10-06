@@ -98,7 +98,7 @@ const items = ref([
                 <div class="mb-3">
                     <label for="user-role" class="form-label">Role:</label>
                     <InputSelect
-                        id="account_id"
+                        id="user-role"
                         v-model="form.role"
                         url="/roles"
                         :fields="['name']"

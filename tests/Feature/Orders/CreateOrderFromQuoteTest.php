@@ -93,7 +93,7 @@ beforeEach(function () {
         'price_monthly' => 13.59,
     ];
 
-    $this->post('api/quote-items', $quote_item);
+    $response = $this->post('api/quote-items', $quote_item);
     $this->quote = $this->get('api/quotes')->json();
 });
 

@@ -34,7 +34,7 @@ class UserController extends BaseController
      */
     public function create()
     {
-        $users = $this->usersService->getChildAndOrphansUser();
+        $users = User::getChildAndOrphansUser();
         $users = $users->where('tenant_id', request()->user()->tenant_id);
         $noManagerOptions = collect([
             [
@@ -77,7 +77,7 @@ class UserController extends BaseController
      */
     public function edit(User $user)
     {
-        $users = $this->usersService->getChildAndOrphansUser();
+        $users = User::getChildAndOrphansUser();
         $users = $users->where('tenant_id', request()->user()->tenant_id);
         $users = $users->where('id', '!=', $user->id);
         $noManagerOptions = collect([

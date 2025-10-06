@@ -40,14 +40,7 @@ class QuoteController extends BaseController
      */
     public function index()
     {
-        $user = request()->user();
-
-        if (! $user->hasRole('Sales Rep')) {
-            $users = User::whereHas('quotes')->get();
-        } else {
-            $users = $this->descendantsWithQuotes();
-        }
-
+        $users = User::getChildAndOrphansUser()->get();
         $users = $users->filter(fn ($user) => $user->quotes->count() > 0);
         $solutionTypes = SolutionType::whereHas('quotes', fn ($query) => $query->whereIn('user_id', $users->pluck('id')))->get();
 

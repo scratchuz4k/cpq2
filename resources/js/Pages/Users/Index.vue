@@ -144,6 +144,7 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'My Account', url: '/my
                     </Dialog>
                     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 mt-3">
                         <Datatable
+                            :tableProps="{ id: 'users-table' }"
                             id="users-table"
                             :allow="{
                                 update: true,
@@ -263,6 +264,8 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'My Account', url: '/my
                         </Button>
                     </div>
                     <Datatable
+                        :tableProps="{ id: 'roles-table' }"
+                        id="roles-table"
                         :allow="{
                             update: true,
                             delete: true,
