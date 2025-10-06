@@ -103,7 +103,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
         'activities' => ActivityController::class,
         'roles' => RoleController::class,
         'imports' => ImportController::class,
-
     ]);
 
     Route::middleware('auth')->group(function () {
