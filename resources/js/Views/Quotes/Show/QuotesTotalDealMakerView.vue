@@ -290,8 +290,9 @@ const items = ref([
                         <span v-if="calc_layout === 'DEFAULT'"> and </span>
                         <span id="margin_text" v-if="show_calc_margin">
                             <b>{{ format.decimalPlaces(quote.margin) }} %</b>
-                            margin on this quote </span
-                        >.
+                            margin</span
+                        >
+                        on this quote.
                     </p>
                     <div class="p-3 mb-3" style="background: #e9edf0">
                         <div v-if="show_calc_margin" class="mb-3">

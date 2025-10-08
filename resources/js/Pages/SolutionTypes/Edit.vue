@@ -23,7 +23,7 @@ const configurations = reactive({
         : {},
     component: props.solution_type.configurations.component ?? 'DealMaker',
     has_custom_table: props.solution_type.configurations.has_custom_table ?? '0',
-    calculator_layout: props.solution_type.configurations.calculator_layout ?? null
+    calculator_layout: props.solution_type.configurations.calculator_layout ?? 'DEFAULT'
 });
 const solution = reactive({
     name: props.solution_type?.name,
