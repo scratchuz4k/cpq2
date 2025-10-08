@@ -2,13 +2,17 @@
 
 namespace App\Models;
 
+use App\Trait\SetTenantId;
 use Spatie\Permission\Models\Role as ModelsRole;
 
 class Role extends ModelsRole
 {
+    use SetTenantId;
+
     protected $fillable = [
         'name',
         'guard_name',
+        'parent_id',
     ];
 
     /**
@@ -36,11 +40,11 @@ class Role extends ModelsRole
     {
         $temp_roles = auth()->user()->roles()->get();
         $roles = collect([]);
-        do {
+        while (count($temp_roles)) {
             $current = $temp_roles->pop();
             $roles->push($current);
             $temp_roles->push(...$current->children);
-        } while (count($temp_roles));
+        }
 
         return $roles;
     }

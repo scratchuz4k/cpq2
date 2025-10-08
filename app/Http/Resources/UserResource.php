@@ -16,8 +16,6 @@ class UserResource extends JsonResource
     {
         return [
             ...$this->resource->toArray(),
-            'has_children' => $this->has_children,
-            'parent' => $this->whenLoaded('parent'),
             'roles' => $this->roles,
             'group' => $this->group,
             'tenants' => $this->whenLoaded('tenants'),

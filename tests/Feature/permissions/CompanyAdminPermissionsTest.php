@@ -9,6 +9,7 @@ uses(RefreshDatabase::class);
 
 beforeEach(function () {
     $this->artisan('db:seed');
+    setTenantForPermissions();
     $this->user = User::factory()->create();
     $this->user->tenants()->attach(Tenant::find(1));
     $this->user->assignRole('Company Admin');
@@ -20,7 +21,7 @@ beforeEach(function () {
 it('Run Permissions for Company Admin', function () {
     $modelsData = generateModelsData();
     $permissions = [
-        'tenants' => ['index' => true,  'create' => true, 'store' => true, 'show' => true, 'edit' => true, 'update' => true, 'destroy' => true],
+        'tenants' => ['index' => true,  'create' => false, 'store' => false, 'show' => true, 'edit' => true, 'update' => true, 'destroy' => true],
         'products' => ['index' => true,  'create' => true, 'store' => true, 'show' => true, 'edit' => true, 'update' => true, 'destroy' => true],
         'brands' => ['index' => true,  'create' => true, 'store' => true, 'show' => true, 'edit' => true, 'update' => true, 'destroy' => true],
         'suppliers' => ['index' => true,  'create' => true, 'store' => true, 'show' => true, 'edit' => true, 'update' => true, 'destroy' => true],

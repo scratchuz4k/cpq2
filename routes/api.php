@@ -26,6 +26,7 @@ use App\Http\Controllers\Api\QuoteController;
 use App\Http\Controllers\Api\QuoteItemController;
 use App\Http\Controllers\Api\RegionController;
 use App\Http\Controllers\Api\ResourceController;
+use App\Http\Controllers\Api\RoleController;
 use App\Http\Controllers\Api\SharedLinkController;
 use App\Http\Controllers\Api\ShopBlocks\BrandController as ShopBlocksBrandController;
 use App\Http\Controllers\Api\ShopBlocks\CategoryController as ShopBlocksCategoryController;
@@ -87,7 +88,6 @@ Route::middleware(['api', 'auth:sanctum'])->group(function () {
         'orders' => OrderController::class,
         'order-items' => OrderItemController::class,
         'solution-types' => SolutionTypeController::class,
-        'permissions' => PermissionController::class,
         'brands' => BrandController::class,
         'merchants' => MerchantController::class,
         'prices' => PriceController::class,
@@ -104,6 +104,8 @@ Route::middleware(['api', 'auth:sanctum'])->group(function () {
         'email-history' => EmailHistoryController::class,
         'groups' => GroupController::class,
         'group-accounts' => GroupAccountController::class,
+        'permissions' => PermissionController::class,
+        'roles' => RoleController::class,
         'imports' => ImportController::class,
     ]);
 });

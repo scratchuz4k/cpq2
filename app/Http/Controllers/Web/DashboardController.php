@@ -13,11 +13,7 @@ class DashboardController extends BaseController
      */
     public function index()
     {
-        if (auth()->user()->hasRole('Order Manager')) {
-            return Inertia::location(route('orders.index'));
-        }
-
-        return Inertia::location(route('quotes.index'));
+        return Inertia::render('Dashboard');
     }
 
     /**

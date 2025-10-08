@@ -10,6 +10,7 @@ uses(RefreshDatabase::class);
 
 beforeEach(function () {
     $this->artisan('db:seed');
+    setTenantForPermissions();
     $this->user = User::factory()->create();
     $this->tenant = Tenant::find(1);
     $this->user->tenants()->attach($this->tenant);

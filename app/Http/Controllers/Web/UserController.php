@@ -7,7 +7,6 @@ use App\Http\Requests\UserCreateRequest;
 use App\Http\Requests\UserImportRequest;
 use App\Http\Requests\UserUpdateRequest;
 use App\Http\Resources\UserResource;
-use App\Models\Role;
 use App\Models\User;
 use App\Services\UsersService;
 use Illuminate\Support\Facades\DB;
@@ -35,7 +34,7 @@ class UserController extends BaseController
      */
     public function create()
     {
-        $users = $this->usersService->getChildAndOrphansUser();
+        $users = User::getChildAndOrphansUser();
         $users = $users->where('tenant_id', request()->user()->tenant_id);
         $noManagerOptions = collect([
             [
@@ -46,7 +45,6 @@ class UserController extends BaseController
         ]);
 
         return Inertia::render('Users/Create', [
-            'roles' => Role::descendants(),
             'managers' => $noManagerOptions->merge($users->get()),
             'parent_id' => $users->where('id', request('parent_id'))->first() ? intval(request('parent_id')) : null,
         ]);
@@ -79,7 +77,7 @@ class UserController extends BaseController
      */
     public function edit(User $user)
     {
-        $users = $this->usersService->getChildAndOrphansUser();
+        $users = User::getChildAndOrphansUser();
         $users = $users->where('tenant_id', request()->user()->tenant_id);
         $users = $users->where('id', '!=', $user->id);
         $noManagerOptions = collect([
@@ -91,8 +89,7 @@ class UserController extends BaseController
         ]);
 
         return Inertia::render('Users/Edit', [
-            'user' => (new UserResource($user->load(['tenants', 'parent'])))->toArray(request()),
-            'roles' => Role::descendants(),
+            'user' => (new UserResource($user->load(['tenants'])))->toArray(request()),
             'managers' => $noManagerOptions->merge($users->get()),
             'permissions' => $user->getAllPermissions(),
         ]);

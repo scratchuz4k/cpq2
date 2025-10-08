@@ -4,7 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Permission;
 use App\Models\Role;
-use App\Models\User;
+use App\Models\Tenant;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\PermissionRegistrar;
 
@@ -12,11 +12,14 @@ class RolePermissionSeeder extends Seeder
 {
     public function run()
     {
+        $tenant = Tenant::first();
+        $tenant->makeCurrent();
+
         $insertPermissions = collect();
 
         $simplePermissions = [
-            'Admin' => [
-                'access admin' => 'Administration Access',
+            'Website' => [
+                'viewOwn quote' => 'ListOwn Quote',
             ],
         ];
 
@@ -36,89 +39,45 @@ class RolePermissionSeeder extends Seeder
 
         $permissionsByGroup = [
             'Website' => [
-                'tenant' => 'Tenant',
                 'order' => 'Order',
                 'order_item' => 'Order Item',
-                'merchant' => 'Merchant',
-                'account' => 'Account',
-                'contact' => 'Contact',
+                'quote' => 'Quote',
+                'quote_item' => 'Quote Item',
                 'price' => 'Price',
                 'category' => 'Category',
                 'product' => 'Product',
-                'region' => 'Region',
                 'brand' => 'Brand',
-                'supplier' => 'Supplier',
+                'price_plan' => 'Price Plan',
+                'blacklist' => 'Blacklists',
+            ],
+            'Commercial' => [
+                'merchant' => 'Merchant',
+                'account' => 'Account',
+                'contact' => 'Contact',
+                'region' => 'Region',
                 'spa' => 'Spa',
-                'user' => 'User',
-                'token' => 'Token',
-                'quote' => 'Quote',
-                'quote_item' => 'Quote Item',
-                'solution_type' => 'Solution Type',
+                'supplier' => 'Supplier',
+            ],
+            'Settings' => [
                 'email_template' => 'Email Template',
                 'email_history' => 'Email History',
-                'api' => 'API',
-                'price_plan' => 'Price Plan',
+                'solution_type' => 'Solution Type',
                 'activity' => 'Activity',
-                'export' => 'Export',
+            ],
+            'Managament' => [
                 'group' => 'Groups',
-                'blacklist' => 'Blacklists',
+                'user' => 'User',
+                'export' => 'Export',
+                'tenant' => 'Tenant',
+                'token' => 'Token',
+                'api' => 'API',
+                'permission' => 'Permission',
+                'role' => 'Role',
                 'import' => 'Import',
             ],
         ];
 
-        $roles = [
-            'Super Admin' => [
-                'parent' => null,
-                'permissions' => [],
-                'simple_permission' => [],
-            ],
-            'Company Admin' => [
-                'parent' => 'Super Admin',
-                'permissions' => [
-                    'quote', 'quote_item', 'order', 'order_item', 'merchant', 'account', 'contact',
-                    'price', 'product', 'category', 'region', 'tenant', 'brand', 'supplier',
-                    'spa', 'user', 'solution_type', 'api', 'price_plan', 'activity', 'email_template', 'email_history',
-                    'group', 'blacklist', 'import',
-                ],
-                'simple_permission' => ['viewAny export'],
-            ],
-            'Support Agent' => [
-                'parent' => 'Company Admin',
-                'permissions' => ['merchant', 'account', 'contact', 'token', 'quote', 'quote_item', 'order', 'order_item', 'activity', 'price_plan'],
-                'simple_permission' => ['viewAny product', 'view product', 'viewAny category', 'view category'],
-                'deny_permission' => ['export'],
-            ],
-            'Sales Manager' => [
-                'parent' => 'Company Admin',
-                'permissions' => ['quote', 'quote_item', 'account', 'contact', 'brand', 'supplier', 'activity', 'price_plan', 'user', 'group'],
-                'simple_permission' => ['viewAny product', 'view product', 'viewAny category', 'view category'],
-            ],
-            'Sales Rep' => [
-                'parent' => 'Sales Manager',
-                'permissions' => ['quote', 'quote_item', 'account', 'contact', 'brand', 'supplier', 'activity', 'price_plan'],
-                'simple_permission' => ['viewAny product', 'view product', 'viewAny category', 'view category'],
-                'deny_permission' => ['export'],
-            ],
-            'Order Manager' => [
-                'parent' => 'Company Admin',
-                'permissions' => ['order', 'order_item', 'activity'],
-                'simple_permission' => [
-                    'viewAny product',
-                    'view product',
-                    'viewAny category',
-                    'view category',
-                    'viewAny account',
-                    'view account',
-                    'viewAny contact',
-                    'view contact',
-                    'viewAny brand',
-                    'view brand',
-                    'viewAny supplier',
-                    'view supplier',
-                ],
-                'deny_permission' => ['export'],
-            ],
-        ];
+        $roles = $this->getDummyRoles();
 
         foreach ($simplePermissions as $key => $pe) {
             $ids = collect($pe)
@@ -149,10 +108,10 @@ class RolePermissionSeeder extends Seeder
             $temp = null;
 
             if (! is_null($item['parent'])) {
-                $temp = Role::where('name', $item['parent'])->firstOrFail();
+                $temp = Role::withoutGlobalScopes()->where('name', $item['parent'])->firstOrFail();
             }
 
-            $role = Role::updateOrCreate(['name' => $role], ['parent_id' => $temp?->id, 'guard_name' => 'web']);
+            $role = Role::updateOrCreate(['name' => $role], ['guard_name' => 'web', 'parent_id' => $temp?->id, 'tenant_id' => $item['tenant']]);
             foreach ($item['permissions'] as $group) {
                 if (array_key_exists($group, $insertPermissions->toArray())) {
                     $permissions = array_merge($permissions, $insertPermissions->toArray()[$group]);
@@ -183,8 +142,67 @@ class RolePermissionSeeder extends Seeder
                 $role->givePermissionTo($simplePermission);
             }
         }
+    }
 
-        $sAdmin = User::where('email', env('SUPERUSER_EMAIL', 'super@example.com'))->first();
-        $sAdmin->assignRole('Super Admin');
+    private function getDummyRoles(): array
+    {
+        $roles = [];
+        if (in_array(config('app.env'), ['local', 'testing'])) {
+            $roles =
+                [
+                    'Company Admin' => [
+                        'parent' => 'Super Admin',
+                        'tenant' => 1,
+                        'permissions' => [
+                            'quote', 'quote_item', 'order', 'order_item', 'merchant', 'account', 'contact',
+                            'price', 'product', 'category', 'region', 'tenant', 'brand', 'supplier',
+                            'spa', 'user', 'solution_type', 'api', 'price_plan', 'activity', 'email_template', 'email_history',
+                            'group', 'blacklist', 'role',
+                        ],
+                        'simple_permission' => ['viewAny export'],
+                    ],
+                    'Support Agent' => [
+                        'parent' => 'Company Admin',
+                        'tenant' => 1,
+                        'permissions' => ['merchant', 'account', 'contact', 'token', 'quote', 'quote_item', 'order', 'order_item', 'activity', 'price_plan'],
+                        'simple_permission' => ['viewAny product', 'view product', 'viewAny category', 'view category'],
+                        'deny_permission' => ['export'],
+                    ],
+                    'Sales Manager' => [
+                        'parent' => 'Company Admin',
+                        'tenant' => 1,
+                        'permissions' => ['quote', 'quote_item', 'account', 'contact', 'brand', 'supplier', 'activity', 'price_plan', 'user', 'group', 'role'],
+                        'simple_permission' => ['viewAny product', 'view product', 'viewAny category', 'view category'],
+                    ],
+                    'Sales Rep' => [
+                        'parent' => 'Sales Manager',
+                        'tenant' => 1,
+                        'permissions' => ['quote', 'quote_item', 'account', 'contact', 'brand', 'supplier', 'activity', 'price_plan'],
+                        'simple_permission' => ['viewAny product', 'view product', 'viewAny category', 'view category'],
+                        'deny_permission' => ['export'],
+                    ],
+                    'Order Manager' => [
+                        'parent' => 'Company Admin',
+                        'tenant' => 1,
+                        'permissions' => ['order', 'order_item', 'activity'],
+                        'simple_permission' => [
+                            'viewAny product',
+                            'view product',
+                            'viewAny category',
+                            'view category',
+                            'viewAny account',
+                            'view account',
+                            'viewAny contact',
+                            'view contact',
+                            'viewAny brand',
+                            'view brand',
+                            'viewAny supplier',
+                            'view supplier',
+                        ],
+                        'deny_permission' => ['export'],
+                    ]];
+        }
+
+        return $roles;
     }
 }

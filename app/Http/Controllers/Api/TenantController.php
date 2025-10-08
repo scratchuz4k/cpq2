@@ -47,7 +47,16 @@ class TenantController extends BaseController
     #[ExcludeRouteFromDocs]
     public function store(Request $request)
     {
-        //
+        try {
+            $tenant = DB::transaction(fn () => $this->tenantService->create($request->all()));
+        } catch (\Exception $e) {
+            if (! env('APP_DEBUG')) {
+                Log::error($e->getMessage());
+            }
+            throw new \Exception($e);
+        }
+
+        return JsonResource::make($tenant)->resolve();
     }
 
     /**

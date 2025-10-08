@@ -35,19 +35,15 @@ class QuoteController extends BaseController
         $dataProvider = new DataProvider(Quote::class);
 
         $user = request()->user();
-        if (! $user->hasRole(['Sales Rep', 'Sales Manager'])) {
-            $users = User::all();
-        } else {
-            $users = $user->descendants();
+        $users = User::getChildAndOrphansUser()->get();
 
-            if ($user->hasRole('Sales Manager') && $user->group) {
-                $group_users = User::with('roles')->whereHas('roles', function ($q) use ($user) {
-                    $q->where('name', $user->roles->first()->children->first()->name);
-                })->where('group_id', $user->group_id)->get();
+        // if ($user->group) {
+        //     $group_users = User::with('roles')->whereHas('roles', function ($q) use ($user) {
+        //         $q->where('name', $user->roles->first()->children->first()->name);
+        //     })->where('group_id', $user->group_id)->get();
 
-                $users = $users->merge($group_users);
-            }
-        }
+        //     $users = $users->merge($group_users);
+        // }
 
         $dataProvider->builder = $dataProvider->builder->whereIn('quotes.user_id', $users->pluck('id'));
 

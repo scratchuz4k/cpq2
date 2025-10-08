@@ -28,13 +28,13 @@ const proxyValue = computed({
 const page = usePage();
 const form = reactive({
     parent: props.user.parent ?? null,
+    role: props.user.roles.length ? props.user.roles[0] : null,
     role_id: props.user.roles.length ? props.user.roles[0].id : null
 });
 
-const role_id = ref(props.user.roles.length ? props.user.roles[0].id : { id: null });
 const saveUser = () => {
     proxyValue.value.parent_id = form.parent?.id ?? null;
-    proxyValue.value.role = [role_id.value];
+    proxyValue.value.role_id = form.role ? [form.role.id] : [];
 
     router.put(`/users/${proxyValue.value.id}`, proxyValue.value, {
         onSuccess: (page) => {
@@ -99,20 +99,19 @@ const items = ref([
                             required
                         />
                     </div>
+
                     <div class="mb-3">
-                        <label for="supplier-name" class="form-label">Role:</label>
-                        <Select
-                            v-model="form.role_id"
-                            :inputId="'user-role'"
-                            :options="roles"
-                            class="w-100"
-                            optionLabel="name"
-                            optionValue="id"
-                            placeholder="Select an option"
-                            @change="user.commission_rate = 0"
-                        />
+                        <label for="user-role" class="form-label">Role:</label>
+                        <InputSelect
+                            id="account_id"
+                            v-model="form.role"
+                            url="/roles"
+                            :fields="['name']"
+                            :placeholder="'Select an Role'"
+                        >
+                        </InputSelect>
                     </div>
-                    <div v-if="roles.find((item) => item.id === form.role_id).name === 'Sales Rep'" class="mb-3">
+                    <div class="mb-3">
                         <label for="user-commission-rate" class="form-label">Commission Rate:</label>
                         <div class="input-group p-0">
                             <input

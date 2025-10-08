@@ -10,7 +10,7 @@ describe('Accounts Crud', () => {
     });
 
     it('Create an Account', () => {
-        cy.visit('/');
+        cy.visit('/quotes');
         cy.get('#my-account').click();
         cy.get('#link-accounts').click();
         cy.get('#account-create-btn').click();
@@ -22,7 +22,7 @@ describe('Accounts Crud', () => {
     });
 
     it('Update an Account', () => {
-        cy.visit('/');
+        cy.visit('/quotes');
         cy.get('#my-account').click();
         cy.get('#link-accounts').click();
         cy.get('#datatable-search').type(account.name);
@@ -36,7 +36,7 @@ describe('Accounts Crud', () => {
     });
 
     it('Delete an Account', () => {
-        cy.visit('/');
+        cy.visit('/quotes');
         cy.get('#my-account').click();
         cy.get('#link-accounts').click();
         cy.get('#datatable-search').type(updated_account.name);

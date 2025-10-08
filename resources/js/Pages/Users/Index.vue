@@ -143,7 +143,8 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'My Account', url: '/my
                         </div>
                     </Dialog>
                     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 mt-3">
-                        <TreeTable
+                        <Datatable
+                            :tableProps="{ id: 'users-table' }"
                             id="users-table"
                             :allow="{
                                 update: true,
@@ -163,7 +164,6 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'My Account', url: '/my
                                 { data: 'group.name', title: 'Group' }
                             ]"
                             route="/users"
-                            v-model="selectedItems"
                         >
                             <template #dialog_content="{ data, toggleModal }">
                                 <div class="panel">
@@ -216,7 +216,7 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'My Account', url: '/my
                                 <span class="badge text-bg-secondary">{{ value }}</span>
                             </template>
                             <template #commission_rate="{ value }"> {{ value }}%</template>
-                        </TreeTable>
+                        </Datatable>
                     </div>
                     <Dialog
                         v-model:visible="showModal"
@@ -264,6 +264,8 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'My Account', url: '/my
                         </Button>
                     </div>
                     <Datatable
+                        :tableProps="{ id: 'roles-table' }"
+                        id="roles-table"
                         :allow="{
                             update: true,
                             delete: true,

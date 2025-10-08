@@ -3,9 +3,7 @@
 namespace App\Services;
 
 use App\Imports\UsersImport;
-use App\Models\Role;
 use App\Models\User;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Hash;
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -63,21 +61,5 @@ class UsersService
         Excel::import($import, $array['file']);
 
         return $import->results;
-    }
-
-    public function getChildAndOrphansUser(): Builder
-    {
-        $query = User::query();
-        $superUsers = collect([]);
-        if (! request()->user()->hasRole('Super Admin')) {
-            $superUsers = User::whereHas('roles', fn ($query) => $query->whereIn('name', ['Super Admin']))->get();
-        }
-        $query = $query->whereNotIn('id', $superUsers->pluck('id'));
-
-        $roles = Role::descendants();
-
-        return $query->whereHas('roles', function ($query) use ($roles) {
-            $query->whereIn('id', $roles->pluck('id'));
-        });
     }
 }

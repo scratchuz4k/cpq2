@@ -1,0 +1,71 @@
+/*Tree*/
+.trees {
+    margin-left: 10px;
+}
+
+.trees li {
+    border-left: dotted 1px #bcbec0;
+    padding: 1px 0 1px 25px;
+    position: relative;
+}
+
+.trees li > label {
+    position: relative;
+    left: -11px;
+}
+
+.trees li:before {
+    content: '';
+    width: 13px;
+    height: 1px;
+    border-bottom: dotted 1px #bcbec0;
+    position: absolute;
+    top: 14px;
+    left: 0;
+}
+
+.trees li:last-child:after {
+    content: '';
+    position: absolute;
+    width: 2px;
+    height: 13px;
+    left: -1px;
+    bottom: 0px;
+}
+
+.trees li input {
+    margin-right: 5px;
+    margin-left: 5px;
+}
+
+.hide {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.selected {
+    background-color: azure;
+}
+
+.hovered {
+    background: antiquewhite;
+}
+
+.tree-content {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+}
+
+.tree-item {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+.tree-placeholder {
+    border: dotted 1px #bcbec0;
+    background: antiquewhite;
+    height: 20px;
+}
