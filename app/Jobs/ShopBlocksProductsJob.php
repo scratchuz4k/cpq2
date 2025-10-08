@@ -4,12 +4,14 @@ namespace App\Jobs;
 
 use App\Helpers\Api\ShopBlocksApi;
 use App\Models\ShopBlocks\Product;
+use App\Models\ShopBlocks\ProductDimension;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Queue\Middleware\WithoutOverlapping;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Spatie\Multitenancy\Jobs\NotTenantAware;
@@ -45,10 +47,14 @@ class ShopBlocksProductsJob implements NotTenantAware, ShouldQueue
         $start = now();
         Log::info("ShopBlocksProductsJob | Started at $start");
         $page = 1;
+        DB::connection('mysql_shopblocks')->statement('SET FOREIGN_KEY_CHECKS=0;');
+        ProductDimension::truncate();
+        Product::truncate();
+        DB::connection('mysql_shopblocks')->statement('SET FOREIGN_KEY_CHECKS=1;');
 
         // Instead of getting products from the last updated time, we will get all products for now
         // $product = Product::latest('updated')->first();
-        // filters = ['updatedAfter' => '2025-07-18 14:11:50'];
+        // filters = ['updatedAfter' => $product->updated];
         $filters = [];
 
         $time = Carbon::now()->addSeconds(86400);
@@ -93,8 +99,8 @@ class ShopBlocksProductsJob implements NotTenantAware, ShouldQueue
         $message = '['.strtoupper((string) env('APP_ENV')).'] ShopBlocksProducts failed with error: '.json_encode($error);
 
         Log::error($message);
-        if (env('DISCORD_CLOUDMARKET_JOBS')) {
-            Http::post(env('DISCORD_CLOUDMARKET_JOBS'), ['content' => $message]);
+        if (env('DISCORD_SHOPBLOCKS_JOBS')) {
+            Http::post(env('DISCORD_SHOPBLOCKS_JOBS'), ['content' => $message]);
         }
     }
 }

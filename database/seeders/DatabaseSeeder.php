@@ -19,7 +19,6 @@ class DatabaseSeeder extends Seeder
             InitTableSeeder::class,
             RolePermissionSeeder::class,
             EmailTemplateSeeder::class,
-            TTLIndexSeeder::class,
         ]);
 
         if (config('app.env') === 'local') {

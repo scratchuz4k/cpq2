@@ -5,15 +5,15 @@ namespace App\Http\Controllers\Api\ShopBlocks;
 use App\Helpers\DataProvider;
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\IndexRequest;
+use App\Http\Resources\ShopBlocks\ProductDimensionResource;
 use App\Http\Resources\ShopBlocks\ProductResource;
-use App\Models\ShopBlocks\ProductFeature;
+use App\Models\ShopBlocks\ProductDimension;
 use Dedoc\Scramble\Attributes\ExcludeRouteFromDocs;
 use Exception;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
-use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Pagination\LengthAwarePaginator;
 
-class ProductFeatureController extends BaseController
+class ProductDimensionController extends BaseController
 {
     /**
      * List of Products
@@ -23,14 +23,14 @@ class ProductFeatureController extends BaseController
     #[ExcludeRouteFromDocs]
     public function index(IndexRequest $request)
     {
-        $dataProvider = new DataProvider(ProductFeature::class);
+        $dataProvider = new DataProvider(ProductDimension::class);
         try {
             $items = $dataProvider->get();
         } catch (Exception $e) {
             return handleException($e);
         }
 
-        return JsonResource::collection($items);
+        return ProductDimensionResource::collection($items);
 
     }
 
