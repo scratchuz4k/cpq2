@@ -49,8 +49,7 @@ class ProductController extends BaseController
             $item['price'] = [
                 'net' => $item->price['net'] ?? 0,
                 'net_spa' => $net_spa,
-                'tax' => $net_spa * 0.2,
-                'gross' => $net_spa * 1.2,
+                'gross' => $item->price['cost'] ?? 0,
                 'active_spas' => $priceRules->getAppliedSpas(),
             ];
 

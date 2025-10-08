@@ -250,29 +250,6 @@
                                     >
                                 </td>
                             </tr>
-                            <tr>
-                                <th>Gross</th>
-                                <td>
-                                    <template v-if="proxyValue.length >= 1">
-                                        {{ format.GBP(proxyValue[0].price.gross) }}</template
-                                    >
-                                </td>
-                                <td>
-                                    <template v-if="proxyValue.length >= 2">
-                                        {{ format.GBP(proxyValue[1].price.gross) }}</template
-                                    >
-                                </td>
-                                <td>
-                                    <template v-if="proxyValue.length >= 3">
-                                        {{ format.GBP(proxyValue[2].price.gross) }}</template
-                                    >
-                                </td>
-                                <td>
-                                    <template v-if="proxyValue.length >= 4">
-                                        {{ format.GBP(proxyValue[3].price.gross) }}</template
-                                    >
-                                </td>
-                            </tr>
                         </tbody>
                     </table>
                 </div>
