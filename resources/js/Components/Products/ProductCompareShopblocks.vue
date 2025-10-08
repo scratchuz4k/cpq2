@@ -358,7 +358,8 @@ const getFeatures = () => {
                     operator: 'equals',
                     value: x.id
                 }
-            ])
+            ]),
+            limit: 1000
         });
 
         let res = await axios.get('/api/shop-blocks/product-dimensions?' + query);

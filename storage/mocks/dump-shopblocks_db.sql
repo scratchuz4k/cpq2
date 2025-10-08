@@ -252,7 +252,7 @@ CREATE TABLE `products` (
   `slug` text NOT NULL,
   `name` text DEFAULT NULL,
   `description` longtext DEFAULT NULL,
-  `stock` decimal(10,2) NOT NULL DEFAULT 0.00,
+  `stock` integer NOT NULL DEFAULT 0.00,
   `primary_image` text DEFAULT NULL,
   `images` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL CHECK (json_valid(`images`)),
   `price` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL CHECK (json_valid(`price`)),
