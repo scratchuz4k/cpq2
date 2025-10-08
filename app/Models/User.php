@@ -7,7 +7,6 @@ use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -98,9 +97,17 @@ class User extends Authenticatable
     /**
      * Get the group of this user.
      */
-    public function group(): BelongsTo
+    public function group()
     {
-        return $this->belongsTo(Group::class);
+        return $this->groups()->where('is_default', true)->first();
+    }
+
+    /**
+     * Get the group of this user.
+     */
+    public function groups(): BelongsToMany
+    {
+        return $this->belongsToMany(Group::class);
     }
 
     public function currentTenant(): HasOne
