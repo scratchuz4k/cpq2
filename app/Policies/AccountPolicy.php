@@ -18,6 +18,7 @@ class AccountPolicy
 
     public function userCanManageAccount(User $user, Account $account)
     {
+        /* bug fix */
         if (! $user->group()) {
             return true;
         }
