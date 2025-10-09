@@ -38,7 +38,9 @@ class User extends Authenticatable
             $user = Auth::user();
             if ($user && $user->group()) {
                 try {
-                    $model->group_id = $user->group()->id;
+                    $temp = [];
+                    $temp[$user->group()->id] = ['is_default' => true];
+                    $model->groups()->sync($temp);
                 } catch (Exception $e) {
                     if (! env('APP_DEBUG')) {
                         Log::error($e->getMessage());

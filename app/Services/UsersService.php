@@ -21,12 +21,6 @@ class UsersService
 
         $user = User::create($array);
 
-        if (array_key_exists('group_id', $array)) {
-            $temp = [];
-            $temp[$array['group_id']] = ['is_default' => true];
-            $user->groups()->sync($temp);
-        }
-
         if (array_key_exists('role_id', $array) && ! empty($array['role_id'])) {
             $user->assignRole($array['role_id']);
         } else {
