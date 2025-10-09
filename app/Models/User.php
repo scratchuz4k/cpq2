@@ -59,7 +59,6 @@ class User extends Authenticatable
         'email',
         'password',
         'tenant_id',
-        'group_id',
         'sso', // Add sso to fillable attributes
         'commission_rate',
         'is_active',

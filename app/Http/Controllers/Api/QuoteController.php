@@ -14,6 +14,7 @@ use App\Services\QuoteService;
 use Exception;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class QuoteController extends BaseController
@@ -35,16 +36,15 @@ class QuoteController extends BaseController
         $dataProvider = new DataProvider(Quote::class);
 
         $user = request()->user();
-        $users = User::getChildAndOrphansUser()->get();
+        $users = User::where('id', Auth::id())->get();
 
-        // if ($user->group) {
-        //     $group_users = User::with('roles')->whereHas('roles', function ($q) use ($user) {
-        //         $q->where('name', $user->roles->first()->children->first()->name);
-        //     })->where('group_id', $user->group_id)->get();
-
-        //     $users = $users->merge($group_users);
-        // }
-
+        if ($user->can('viewAny quote')) {
+            if ($user->group()) {
+                $users->push(...$user->group()->users);
+            } else {
+                $users->push(...User::get());
+            }
+        }
         $dataProvider->builder = $dataProvider->builder->whereIn('quotes.user_id', $users->pluck('id'));
 
         try {

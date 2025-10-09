@@ -12,7 +12,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('user_groups', function (Blueprint $table) {
+        Schema::create('group_user', function (Blueprint $table) {
             $table->id();
             $table->foreignId('group_id')->constrained()->cascadeOnDelete();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
@@ -25,7 +25,7 @@ return new class extends Migration
             if (! $item->group_id) {
                 continue;
             }
-            $item = DB::table('user_groups')->insert(['group_id' => $item->group_id, 'user_id' => $item->id]);
+            $item = DB::table('group_user')->insert(['group_id' => $item->group_id, 'user_id' => $item->id]);
         }
 
         Schema::table('users', function (Blueprint $table) {

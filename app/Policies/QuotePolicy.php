@@ -25,6 +25,10 @@ class QuotePolicy
             return true;
         }
 
+        if ($user->can("viewOwn $this->model")) {
+            return true;
+        }
+
         return false;
     }
 

@@ -17,7 +17,8 @@ class UserResource extends JsonResource
         return [
             ...$this->resource->toArray(),
             'roles' => $this->roles,
-            'group' => $this->group,
+            'group' => $this->group(),
+            'current_tenant' => $this->currentTenant,
             'tenants' => $this->whenLoaded('tenants'),
             'updated_at' => $this->updated_at,
             'created_at' => $this->created_at,
