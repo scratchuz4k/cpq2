@@ -36,9 +36,9 @@ class User extends Authenticatable
             }
 
             $user = Auth::user();
-            if ($user && $user->group) {
+            if ($user && $user->group()) {
                 try {
-                    $model->group_id = $user->group->id;
+                    $model->group_id = $user->group()->id;
                 } catch (Exception $e) {
                     if (! env('APP_DEBUG')) {
                         Log::error($e->getMessage());
