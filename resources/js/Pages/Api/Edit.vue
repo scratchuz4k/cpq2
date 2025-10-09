@@ -126,7 +126,7 @@ const items = ref([
                     <template v-if="data.auth_type == 'token'">
                         <div class="mb-3">
                             <label for="api-token" class="form-label">Token:</label>
-                            <input id="api-token" class="form-control" v-model="data.token" />
+                            <input id="api-token" autocomplete="off" class="form-control" v-model="data.token" />
                         </div>
                     </template>
                 </div>
