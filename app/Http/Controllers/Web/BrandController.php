@@ -44,7 +44,7 @@ class BrandController extends BaseController
         try {
             $brand = DB::transaction(fn () => $this->brandService->store($request->all()));
         } catch (\Exception $e) {
-            throw new \Exception($e);
+            return handleWebException($e);
         }
 
         return redirect()->route('brands.index');
@@ -78,7 +78,7 @@ class BrandController extends BaseController
         try {
             $brand = DB::transaction(fn () => $this->brandService->update($brand, $request->all()));
         } catch (\Exception $e) {
-            throw new \Exception($e);
+            return handleWebException($e);
         }
 
         return redirect()->route('brands.index');

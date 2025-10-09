@@ -49,7 +49,7 @@ class RegionController extends BaseController
         try {
             $region = DB::transaction(fn () => $this->regionsService->store($request->all()));
         } catch (\Exception $e) {
-            throw new \Exception($e);
+            return handleWebException($e);
         }
 
         return redirect()->route('regions.index');
@@ -85,7 +85,7 @@ class RegionController extends BaseController
         try {
             $region = DB::transaction(fn () => $this->regionsService->update($region, $request->all()));
         } catch (\Exception $e) {
-            throw new \Exception($e);
+            return handleWebException($e);
         }
 
         return redirect()->route('regions.index');

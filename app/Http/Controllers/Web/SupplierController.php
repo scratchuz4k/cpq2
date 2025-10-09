@@ -44,7 +44,7 @@ class SupplierController extends BaseController
         try {
             $supplier = DB::transaction(fn () => $this->suppliersService->store($request->all()));
         } catch (\Exception $e) {
-            throw new \Exception($e);
+            return handleWebException($e);
         }
 
         return redirect()->route('suppliers.index');
@@ -78,7 +78,7 @@ class SupplierController extends BaseController
         try {
             $supplier = DB::transaction(fn () => $this->suppliersService->update($supplier, $request->all()));
         } catch (\Exception $e) {
-            throw new \Exception($e);
+            return handleWebException($e);
         }
 
         return redirect()->route('suppliers.index');

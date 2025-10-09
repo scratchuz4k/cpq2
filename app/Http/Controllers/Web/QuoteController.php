@@ -22,7 +22,6 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Inertia\Inertia;
 
@@ -84,10 +83,7 @@ class QuoteController extends BaseController
                 return $quote;
             });
         } catch (Exception $e) {
-            if (! env('APP_DEBUG')) {
-                Log::error($e->getMessage());
-            }
-            throw new Exception($e);
+            return handleWebException($e);
         }
 
         return redirect()->route('quotes.edit', ['quote' => $quote->id]);
@@ -124,10 +120,7 @@ class QuoteController extends BaseController
         try {
             $quote = DB::transaction(fn () => $this->quoteService->update($quote, $request->all()));
         } catch (Exception $e) {
-            if (! env('APP_DEBUG')) {
-                Log::error($e->getMessage());
-            }
-            throw new Exception($e);
+            return handleWebException($e);
         }
 
         return to_route('quotes.edit', ['quote' => $quote->id]);
