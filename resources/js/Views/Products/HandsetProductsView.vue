@@ -39,15 +39,16 @@ const filters = reactive({
     name: null
 });
 
-const storage = [
-    { label: '1TB', value: '1TB' },
-    { label: '512 GB', value: '512 GB' },
-    { label: '256 GB', value: '256 GB' },
-    { label: '128 GB', value: '128 GB' },
-    { label: '64 GB', value: '64 GB' },
-    { label: '32 GB', value: '32 GB' },
-    { label: '16 GB', value: '16 GB' }
-];
+// const storage = [
+//     { label: '1TB', value: '1TB' },
+//     { label: '512 GB', value: '512 GB' },
+//     { label: '256 GB', value: '256 GB' },
+//     { label: '128 GB', value: '128 GB' },
+//     { label: '64 GB', value: '64 GB' },
+//     { label: '32 GB', value: '32 GB' },
+//     { label: '16 GB', value: '16 GB' }
+// ];
+const storage = ref([]);
 
 const sorts = [
     {
@@ -66,9 +67,37 @@ const selectedItems = ref([]);
 const sort = ref(sorts[1]);
 const step = ref(props.modelValue + 1);
 
+const getDimensionStorage = async () => {
+    let query = queryString.stringify({
+        limit: 1,
+        filters: JSON.stringify([
+            { column: 'key', operator: 'contains', value: 'internal-storage-capacity' },
+            { column: 'group', operator: 'equals', value: 'Storage' }
+        ])
+    });
+
+    let res = await axios.get('/api/shop-blocks/dimension-types?' + query);
+
+    if (!res.data?.data?.length) {
+        return;
+    }
+
+    query = queryString.stringify({
+        limit: 200,
+        filters: JSON.stringify([
+            { column: 'dimension_type_id', operator: 'equals', value: res.data.data[0].id },
+            { column: 'products.category.code', operator: 'equals', value: 22 }
+        ])
+    });
+
+    res = await axios.get('/api/shop-blocks/dimensions?' + query);
+    storage.value = res.data.data;
+};
+
 const getProductsShopBlocks = async () => {
     meta.isLoading = true;
     let temp = [];
+    let dims = [];
 
     //Hide out of stock products
     temp.push({
@@ -86,15 +115,15 @@ const getProductsShopBlocks = async () => {
     }
 
     if (filters.storage) {
-        temp.push({
-            column: 'name',
+        dims.push({
+            column: 'internal-storage-capacity',
             operator: 'contains',
             value: filters.storage
         });
     }
 
     temp.push({
-        column: 'category.id',
+        column: 'category.code',
         operator: 'equals',
         value: 22
     });
@@ -103,9 +132,10 @@ const getProductsShopBlocks = async () => {
         page: meta.page,
         limit: meta.limit,
         filters: JSON.stringify(temp),
+        dimensions: JSON.stringify(dims),
         order: sort.value.order,
         orderBy: sort.value.orderBy,
-        columns: ['name', 'description'],
+        columns: ['name,description,model.name'],
         search: search.value,
         account_id: quote.account_id
     });
@@ -162,6 +192,7 @@ watch(
         getProductsShopBlocks();
     }, 300)
 );
+getDimensionStorage();
 </script>
 <template>
     <div id="mobile_step_shopblocks" class="step">
@@ -220,6 +251,7 @@ watch(
                         id="product-brands"
                         url="/shop-blocks/brands"
                         :fields="['name']"
+                        :query="[{ column: 'products.category_id', operator: 'equals', value: 22 }]"
                         v-model="filters.brands"
                         placeholder="All"
                     >
@@ -231,7 +263,7 @@ watch(
                         v-model="filters.storage"
                         :options="storage"
                         showClear
-                        optionLabel="label"
+                        optionLabel="value"
                         optionValue="value"
                         placeholder="All"
                         class="w-100"

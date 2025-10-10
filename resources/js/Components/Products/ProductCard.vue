@@ -322,23 +322,26 @@ const getFeaturesTable = () => {
         return;
     }
     let lowerSearch = searchInput.value.toLowerCase();
-    let features = proxyValue.value.features.filter(
-        (obj) => obj.value.toLowerCase().includes(lowerSearch) || obj.label.toLowerCase().includes(lowerSearch)
-    );
+    let features = proxyValue.value.features.filter((obj) => {
+        return (
+            obj.dimension.value.toLowerCase().includes(lowerSearch) ||
+            obj.dimension_type.label.toLowerCase().includes(lowerSearch)
+        );
+    });
 
     features.forEach((e) => {
-        let gIndex = temp.value.findIndex((t) => t.name == e.group);
+        let gIndex = temp.value.findIndex((t) => t.name == e.dimension_type.group);
         if (gIndex == -1) {
-            temp.value.push({ name: e.group, show: true, features: [] });
+            temp.value.push({ name: e.dimension_type.group, show: true, features: [] });
             gIndex = temp.value.length - 1;
         }
 
-        let index = temp.value[gIndex].features.findIndex((t) => t.key == e.key);
+        let index = temp.value[gIndex].features.findIndex((t) => t.key == e.dimension_type.key);
         if (index == -1) {
-            temp.value[gIndex].features.push({ key: e.key, label: e.label, items: [] });
+            temp.value[gIndex].features.push({ key: e.dimension_type.key, label: e.dimension_type.label, items: [] });
             index = temp.value[gIndex].features.length - 1;
         }
-        temp.value[gIndex].features[index].items.push(e.value);
+        temp.value[gIndex].features[index].items.push(e.dimension.value);
     });
 };
 
@@ -347,6 +350,7 @@ const openModal = async () => {
     showModal.value = !showModal.value;
     if (!proxyValue.value.features) {
         let query = queryString.stringify({
+            limit: 500,
             filters: JSON.stringify([
                 {
                     column: 'product_id',
@@ -356,8 +360,8 @@ const openModal = async () => {
             ])
         });
 
-        let res = await axios.get('/api/shop-blocks/product-features?' + query);
-        proxyValue.value.features = res.data?.data.reduce((acc, x) => acc.concat(x.items), []);
+        let res = await axios.get('/api/shop-blocks/product-dimensions?' + query);
+        proxyValue.value.features = res.data?.data;
     }
     await getFeaturesTable();
     loadingFeatures.value = false;

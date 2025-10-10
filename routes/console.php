@@ -8,6 +8,6 @@ use Illuminate\Support\Facades\Schedule;
 
 Schedule::command('horizon:snapshot')->everyTenMinutes();
 Schedule::command(DeleteOldFiles::class)->weekly()->sentryMonitor();
-// Schedule::command(SyncShopBlocks::class)->dailyAt('06:00')->sentryMonitor();
+Schedule::command(SyncShopBlocks::class)->dailyAt('06:00')->sentryMonitor();
 Schedule::command(UpdateStatusExpiredQuotes::class)->dailyAt('00:00')->sentryMonitor();
 Schedule::command(UpdateStatusExpiredProduct::class)->dailyAt('00:05')->sentryMonitor();

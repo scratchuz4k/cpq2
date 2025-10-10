@@ -14,6 +14,10 @@ class SolutionTypeService
         $user = Auth::user();
         $solution_type = SolutionType::findOrFail($array['solution_type_id']);
 
+        if (array_key_exists('configurations', $array) && is_array($array['configurations'])) {
+            $solution_type->syncConfigurations($array['configurations']);
+        }
+
         $solution_type->tenants()->attach($user->tenant_id);
 
         $solutionTypeTenant = SolutionTypeTenant::where(['tenant_id' => Auth::user()->tenant_id, 'solution_type_id' => $solution_type->id])->first();
