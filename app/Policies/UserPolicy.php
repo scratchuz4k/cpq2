@@ -71,7 +71,7 @@ class UserPolicy
             return false;
         }
 
-        if (! $model->can("update $this->model")) {
+        if (! $user->can("update $this->model")) {
             return false;
         }
 

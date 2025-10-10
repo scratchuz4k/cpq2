@@ -23,8 +23,6 @@ class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, HasRoles, Notifiable, SetTenantId;
 
-    public static $default_role = 'sales rep';
-
     public static function boot()
     {
         parent::boot();

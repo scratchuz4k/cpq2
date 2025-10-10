@@ -23,8 +23,6 @@ class UsersService
 
         if (array_key_exists('role_id', $array) && ! empty($array['role_id'])) {
             $user->assignRole($array['role_id']);
-        } else {
-            $user->assignRole(User::$default_role);
         }
 
         if ($user->tenant_id) {
