@@ -29,9 +29,12 @@ const getPermissions = async () => {
         order: 'desc',
         orderBy: 'name'
     });
-
-    const res = await axios.get('/api/permissions?' + string);
-    permissions.value = groupPermissions(res.data.data);
+    try {
+        const res = await axios.get('/api/permissions?' + string);
+        permissions.value = groupPermissions(res.data.data);
+    } catch (ex) {
+        notyf.error(ex.response?.data?.message ?? 'Something went wrong!');
+    }
 };
 
 const groupPermissions = (permissions) => {
@@ -163,6 +166,7 @@ watch(search, () => {
                     </li>
                 </ul>
             </div>
+            <div v-if="!permissions.length">No Permissions to show</div>
         </div>
     </div>
 </template>

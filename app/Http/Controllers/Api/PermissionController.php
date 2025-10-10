@@ -27,7 +27,8 @@ class PermissionController extends BaseController
     {
         $dataProvider = new DataProvider($this->model);
         $permissions = Auth::user()->getAllPermissions();
-        if (Auth::user()->hasRole('Super Admin')) {
+        $parentRole = Auth::user()->roles->count() ? Auth::user()->roles[0]->parent_id : null;
+        if (! $parentRole) {
             $permissions = Permission::all();
         }
         $dataProvider->builder = $dataProvider->builder->whereIn('id', $permissions->map(fn ($x) => $x->id)->values());
