@@ -33,6 +33,8 @@ class User extends Authenticatable
                 $model->tenant_id = auth()->user()->tenant_id;
             }
 
+        });
+        static::created(function (Model $model) {
             $user = Auth::user();
             if ($user && $user->group()) {
                 try {
