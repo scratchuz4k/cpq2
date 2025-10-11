@@ -108,6 +108,7 @@ class QuoteService
             ->view("pdf.$view", compact('quote', 'tenant', 'columns', 'items', 'group', 'groupName'))
             ->format(Format::A4)
             ->withBrowsershot(function (Browsershot $browsershot) {
+                $browsershot->noSandbox();
                 $browsershot->waitUntilNetworkIdle();
             });
 

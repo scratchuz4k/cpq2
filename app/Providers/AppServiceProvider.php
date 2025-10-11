@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
 use Laravel\Sanctum\Sanctum;
+use Sqids\Sqids;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -69,5 +70,12 @@ class AppServiceProvider extends ServiceProvider
         });
 
         Sanctum::usePersonalAccessTokenModel(Token::class);
+
+        $this->app->singleton(Sqids::class, function () {
+            return new Sqids(
+                alphabet: Sqids::DEFAULT_ALPHABET,
+                minLength: 16,
+            );
+        });
     }
 }

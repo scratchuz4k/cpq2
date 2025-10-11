@@ -4,7 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-use Illuminate\Support\Facades\Crypt;
+use Sqids\Sqids;
 
 class QuoteResource extends JsonResource
 {
@@ -32,7 +32,7 @@ class QuoteResource extends JsonResource
             'orders' => $this->whenLoaded('orders'),
             'updated_at' => $this->updated_at,
             'configs' => $this->configs,
-            'hash' => Crypt::encrypt($this->id),
+            'hash' => resolve(Sqids::class)->encode([$this->id]),
         ];
     }
 }

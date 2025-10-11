@@ -21,11 +21,11 @@ use App\Services\QuoteService;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Inertia\Inertia;
+use Sqids\Sqids;
 
 class QuoteController extends BaseController
 {
@@ -169,9 +169,28 @@ class QuoteController extends BaseController
      */
     public function download(Request $request, $hash)
     {
-        $quoteId = Crypt::decrypt($hash);
-        $quote = Quote::findOrFail($quoteId);
+        $quoteId = new Sqids()->decode($hash)[0];
 
+        $query = Quote::query()->where('id', $quoteId);
+
+        //        dump([
+        //            'Auth::check()' => Auth::check(),
+        //            'Auth::user()' => Auth::user(),
+        //            'Auth::id()' => Auth::id(),
+        //            'request->user()' => $request->user(),
+        //            'session_id' => session()->getId(),
+        //            'has_session' => $request->hasSession(),
+        //        ]);
+
+        if (! Auth::check()) {
+            $query->whereHas('sharedLink');
+        }
+        $quote = $query->first();
+
+        if (! $quote) {
+            return response()->json(['message' => 'Quote not available or not shared.'], 404);
+        }
+        dump($quote->sharedLink);
         $pdf = $this->quoteService->generatePdf($request, $quote);
 
         return $pdf
