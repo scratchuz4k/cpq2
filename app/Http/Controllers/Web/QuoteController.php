@@ -190,7 +190,6 @@ class QuoteController extends BaseController
         if (! $quote) {
             return response()->json(['message' => 'Quote not available or not shared.'], 404);
         }
-        dump($quote->sharedLink);
         $pdf = $this->quoteService->generatePdf($request, $quote);
 
         return $pdf
