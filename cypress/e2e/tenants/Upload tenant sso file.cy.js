@@ -44,16 +44,13 @@ const temp = getCurrentDate();
 const user = { name: slugify(temp), email: slugify(temp) + '@' + domain, password: generateHash(temp) };
 
 describe('Update tenant SSO', () => {
-    beforeEach(() => {
+    it('Create Users to login with SSO', () => {
         Cypress.session.clearAllSavedSessions();
         cy.login(Cypress.env('SUPERUSER_EMAIL'), Cypress.env('SUPERUSER_PASSWORD'));
         cy.visit('/');
         cy.get('#my-account').click();
         cy.get('#link-tenant').click();
         cy.get('#v-pills-sso-tab').click();
-    });
-
-    it('Create Users to login with SSO', () => {
         cy.get('#my-account').click();
         cy.get('#link-users').click();
         cy.get('#link-to-create-user').click();
@@ -69,6 +66,12 @@ describe('Update tenant SSO', () => {
     });
 
     it('upload xml with xxe injection', () => {
+        Cypress.session.clearAllSavedSessions();
+        cy.login(Cypress.env('SUPERUSER_EMAIL'), Cypress.env('SUPERUSER_PASSWORD'));
+        cy.visit('/');
+        cy.get('#my-account').click();
+        cy.get('#link-tenant').click();
+        cy.get('#v-pills-sso-tab').click();
         cy.get('#v-pills-sso').find('.input-resource').click();
 
         // Create a virtual file in the test
@@ -104,6 +107,12 @@ describe('Update tenant SSO', () => {
     });
 
     it('upload malformated xml file', () => {
+        Cypress.session.clearAllSavedSessions();
+        cy.login(Cypress.env('SUPERUSER_EMAIL'), Cypress.env('SUPERUSER_PASSWORD'));
+        cy.visit('/');
+        cy.get('#my-account').click();
+        cy.get('#link-tenant').click();
+        cy.get('#v-pills-sso-tab').click();
         cy.get('#v-pills-sso').find('img').click();
 
         const fileName = 'malformated_file.xml';
@@ -124,6 +133,12 @@ describe('Update tenant SSO', () => {
     });
 
     it('Update text area content', () => {
+        Cypress.session.clearAllSavedSessions();
+        cy.login(Cypress.env('SUPERUSER_EMAIL'), Cypress.env('SUPERUSER_PASSWORD'));
+        cy.visit('/');
+        cy.get('#my-account').click();
+        cy.get('#link-tenant').click();
+        cy.get('#v-pills-sso-tab').click();
         //submite malformated xml
         cy.get('textarea').clear().type('Invalid xml content');
         cy.get('#submit-sso-textarea').click();
@@ -136,13 +151,18 @@ describe('Update tenant SSO', () => {
     });
 
     it('Remove tenant SSO file', () => {
+        Cypress.session.clearAllSavedSessions();
+        cy.login(Cypress.env('SUPERUSER_EMAIL'), Cypress.env('SUPERUSER_PASSWORD'));
+        cy.visit('/');
+        cy.get('#my-account').click();
+        cy.get('#link-tenant').click();
+        cy.get('#v-pills-sso-tab').click();
         cy.get('#v-pills-sso').find('#remove-file-button').click();
         cy.get('.notyf').contains('File deleted with Success');
         cy.get('#v-pills-sso').find('.input-resource').should('exist');
     });
 
     it('Try to Login with SSO without SSO provider', () => {
-        cy.logout();
         cy.visit('/login/sso');
         cy.get('#email').type(user.email);
         cy.get('#btn-login').click();
@@ -151,6 +171,12 @@ describe('Update tenant SSO', () => {
     });
 
     it('upload mock-saml-metadata xml file', () => {
+        Cypress.session.clearAllSavedSessions();
+        cy.login(Cypress.env('SUPERUSER_EMAIL'), Cypress.env('SUPERUSER_PASSWORD'));
+        cy.visit('/');
+        cy.get('#my-account').click();
+        cy.get('#link-tenant').click();
+        cy.get('#v-pills-sso-tab').click();
         cy.get('#v-pills-sso').find('.input-resource').click();
 
         // Create a virtual file in the test
@@ -186,7 +212,6 @@ describe('Update tenant SSO', () => {
     });
 
     it('Try to login with SSO a user without SSO login permission', () => {
-        cy.logout();
         cy.visit('/login/sso');
 
         cy.get('#email').type(user.email);
@@ -204,6 +229,12 @@ describe('Update tenant SSO', () => {
     });
 
     it('Update User to add SSO Login', () => {
+        Cypress.session.clearAllSavedSessions();
+        cy.login(Cypress.env('SUPERUSER_EMAIL'), Cypress.env('SUPERUSER_PASSWORD'));
+        cy.visit('/');
+        cy.get('#my-account').click();
+        cy.get('#link-tenant').click();
+        cy.get('#v-pills-sso-tab').click();
         cy.get('#my-account').click();
         cy.get('#link-users').click();
 
@@ -219,7 +250,6 @@ describe('Update tenant SSO', () => {
     });
 
     it('Login with SSO', () => {
-        cy.logout();
         cy.visit('/login/sso');
         cy.get('#email').type(user.email);
         cy.get('#btn-login').click();
