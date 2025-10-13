@@ -173,15 +173,6 @@ class QuoteController extends BaseController
 
         $query = Quote::query()->where('id', $quoteId);
 
-        //        dump([
-        //            'Auth::check()' => Auth::check(),
-        //            'Auth::user()' => Auth::user(),
-        //            'Auth::id()' => Auth::id(),
-        //            'request->user()' => $request->user(),
-        //            'session_id' => session()->getId(),
-        //            'has_session' => $request->hasSession(),
-        //        ]);
-
         if (! Auth::check()) {
             $query->whereHas('sharedLink');
         }

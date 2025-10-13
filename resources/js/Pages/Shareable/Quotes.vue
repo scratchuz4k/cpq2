@@ -18,7 +18,7 @@ const getPdf = () => {
             document.body.removeChild(link);
         })
         .catch((error) => {
-            console.error('File download failed', error);
+            notyf.error(error?.response?.data?.message ?? 'Something went wrong');
         });
 };
 </script>
