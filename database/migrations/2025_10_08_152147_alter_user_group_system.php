@@ -45,12 +45,12 @@ return new class extends Migration
             $table->foreignId('group_id')->nullable()->constrained()->nullOnDelete();
         });
 
-        $items = DB::table('user_groups')->get();
+        $items = DB::table('group_user')->get();
         foreach ($items as $item) {
             $item = DB::table('users')->where('id', $item->id)->update(['group_id' => $item->group_id]);
         }
 
-        Schema::dropIfExists('user_groups');
+        Schema::dropIfExists('group_user');
 
     }
 };
