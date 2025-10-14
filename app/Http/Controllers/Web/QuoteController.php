@@ -25,6 +25,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Inertia\Inertia;
+use Sqids\Sqids;
 
 class QuoteController extends BaseController
 {
@@ -166,8 +167,27 @@ class QuoteController extends BaseController
     /**
      * Remove the specified resource from storage.
      */
-    public function download(Request $request, Quote $quote)
+    public function download(Request $request, $hash)
     {
+        $decodedHash = app(Sqids::class)->decode($hash);
+        [$quoteId, $tenantId] = $decodedHash;
+
+        $user = Auth::user();
+        $quote = Quote::query()
+            ->withoutGlobalScopes()
+            ->with([
+                'account' => fn ($query) => $query->withoutGlobalScopes(),
+            ])
+            ->find($quoteId);
+
+        if (
+            ! $quote ||
+            (! $user && ! $quote->sharedLink()->exists()) ||
+            ($user && $user->tenant_id !== $tenantId && ! $quote->sharedLink()->exists())
+        ) {
+            return response()->json(['message' => 'Quote not available or not shared.'], 404);
+        }
+
         $pdf = $this->quoteService->generatePdf($request, $quote);
 
         return $pdf
