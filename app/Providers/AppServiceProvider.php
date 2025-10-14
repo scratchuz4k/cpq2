@@ -73,8 +73,7 @@ class AppServiceProvider extends ServiceProvider
 
         $this->app->singleton(Sqids::class, function () {
             return new Sqids(
-                alphabet: Sqids::DEFAULT_ALPHABET,
-                minLength: 16,
+                alphabet: 'M4tJov5idLjw6TySzYahfG2AWme1VuPEpX89K3rRgOUQFN0qnDxb7kHlCBcsIZ'
             );
         });
     }

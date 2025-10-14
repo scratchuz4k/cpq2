@@ -11,6 +11,7 @@ beforeEach(function () {
     $this->artisan('db:seed');
     $this->account = Account::factory()->create();
     $this->tenant = Tenant::find(1);
+    $this->tenant_2 = Tenant::factory()->create();
     $this->quote_data = [
         'account_id' => 1,
         'address_position' => [
@@ -99,6 +100,26 @@ it('Download not shared Quote PDF without login', function () {
     $this->actingAs($user)->post('/logout');
 
     $pdfResponse = $this->actingAsGuest('web')->post('quotes/'.$quote['hash'].'/download');
+    $pdfResponse->assertNotFound();
+    $pdfResponse->assertHeader('Content-Type', 'application/json');
+    expect($pdfResponse->json()['message'])->toBe('Quote not available or not shared.');
+});
+
+it('Download not shared Quote PDF from another tenant', function () {
+    $user_t1 = User::factory()->create();
+    $user_t1->tenants()->attach($this->tenant);
+    $user_t1->assignRole('Sales Rep');
+
+    $user_t2 = User::factory()->create();
+    $user_t2->tenants()->attach($this->tenant_2);
+    $user_t2->assignRole('Sales Rep');
+
+    $response = $this->actingAs($user_t1)->post('api/quotes', $this->quote_data);
+    $quote = $response->json();
+
+    $this->actingAs($user_t1)->post('/logout');
+
+    $pdfResponse = $this->actingAs($user_t2)->post('quotes/'.$quote['hash'].'/download');
     $pdfResponse->assertNotFound();
     $pdfResponse->assertHeader('Content-Type', 'application/json');
     expect($pdfResponse->json()['message'])->toBe('Quote not available or not shared.');

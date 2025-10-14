@@ -169,18 +169,25 @@ class QuoteController extends BaseController
      */
     public function download(Request $request, $hash)
     {
-        $quoteId = new Sqids()->decode($hash)[0];
+        $decodedHash = app(Sqids::class)->decode($hash);
+        [$quoteId, $tenantId] = $decodedHash;
 
-        $query = Quote::query()->where('id', $quoteId);
+        $user = Auth::user();
+        $quote = Quote::query()
+            ->withoutGlobalScopes()
+            ->with([
+                'account' => fn ($query) => $query->withoutGlobalScopes(),
+            ])
+            ->find($quoteId);
 
-        if (! Auth::check()) {
-            $query->whereHas('sharedLink');
-        }
-        $quote = $query->first();
-
-        if (! $quote) {
+        if (
+            ! $quote ||
+            (! $user && ! $quote->sharedLink()->exists()) ||
+            ($user && $user->tenant_id !== $tenantId && ! $quote->sharedLink()->exists())
+        ) {
             return response()->json(['message' => 'Quote not available or not shared.'], 404);
         }
+
         $pdf = $this->quoteService->generatePdf($request, $quote);
 
         return $pdf

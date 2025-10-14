@@ -32,7 +32,11 @@ class QuoteResource extends JsonResource
             'orders' => $this->whenLoaded('orders'),
             'updated_at' => $this->updated_at,
             'configs' => $this->configs,
-            'hash' => resolve(Sqids::class)->encode([$this->id]),
+            'hash' => app(Sqids::class)->encode([
+                $this->id,
+                $this->tenant_id,
+                $this->user_id,
+            ]),
         ];
     }
 }
