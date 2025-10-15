@@ -89,22 +89,6 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'My Account' }]);
                                 </a>
                             </div>
                         </div>
-                        <div class="col" v-if="hasRole('Super Admin') || can('viewAny brand')">
-                            <div class="card bg-light border-0">
-                                <a
-                                    id="link-brands"
-                                    :href="route('brands.index')"
-                                    class="card-body text-center p-2 text-decoration-none"
-                                >
-                                    <font-awesome-icon
-                                        class="py-3 opacity-25"
-                                        :icon="['far', 'registered']"
-                                        size="2x"
-                                    ></font-awesome-icon>
-                                    <span class="d-block h5">Brands</span>
-                                </a>
-                            </div>
-                        </div>
                         <div class="col" v-if="hasRole('Super Admin') || can('viewAny category')">
                             <div class="card bg-light border-0">
                                 <a
