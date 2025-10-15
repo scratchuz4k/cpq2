@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('tenant_id')->constrained()->cascadeOnDelete();
             $table->foreignId('supplier_id')->nullable()->constrained()->nullOnDelete();
+            $table->foreignId('brand_id')->nullable()->constrained()->nullOnDelete();
             $table->string('name', 100);
             $table->timestamps();
         });
@@ -28,6 +29,7 @@ return new class extends Migration
         Schema::table('products', function (Blueprint $table) {
             $table->dropConstrainedForeignId('tenant_id');
             $table->dropConstrainedForeignId('supplier_id');
+            $table->dropConstrainedForeignId('brand_id');
         });
         Schema::dropIfExists('products');
     }

@@ -22,6 +22,7 @@ return new class extends Migration
      */
     public function up(): void
     {
+
         foreach ($this->models as $model) {
             Schema::table(app($model)->getTable(), function (Blueprint $table) {
                 $table->boolean('is_active')->default(true);
