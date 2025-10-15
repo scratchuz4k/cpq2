@@ -8,7 +8,6 @@ return new class extends Migration
 {
     protected $models = [
         'App\Models\Account',
-        'App\Models\Brand',
         'App\Models\Merchant',
         'App\Models\Product',
         'App\Models\Region',
@@ -23,7 +22,6 @@ return new class extends Migration
      */
     public function up(): void
     {
-
         foreach ($this->models as $model) {
             Schema::table(app($model)->getTable(), function (Blueprint $table) {
                 $table->boolean('is_active')->default(true);
