@@ -23,7 +23,6 @@ use App\Http\Controllers\Api\PricePlanController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\QuoteController;
 use App\Http\Controllers\Api\QuoteItemController;
-use App\Http\Controllers\Api\RegionController;
 use App\Http\Controllers\Api\ResourceController;
 use App\Http\Controllers\Api\SharedLinkController;
 use App\Http\Controllers\Api\ShopBlocks\BrandController as ShopBlocksBrandController;
@@ -86,7 +85,6 @@ Route::middleware(['api', 'auth:sanctum'])->group(function () {
         'merchants' => MerchantController::class,
         'prices' => PriceController::class,
         'suppliers' => SupplierController::class,
-        'regions' => RegionController::class,
         'spas' => SpaController::class,
         'users' => UserController::class,
         'tokens' => TokenController::class,
