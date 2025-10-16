@@ -39,7 +39,6 @@ class RolePermissionSeeder extends Seeder
                 'tenant' => 'Tenant',
                 'order' => 'Order',
                 'order_item' => 'Order Item',
-                'merchant' => 'Merchant',
                 'account' => 'Account',
                 'contact' => 'Contact',
                 'price' => 'Price',
@@ -73,7 +72,7 @@ class RolePermissionSeeder extends Seeder
             'Company Admin' => [
                 'parent' => 'Super Admin',
                 'permissions' => [
-                    'quote', 'quote_item', 'order', 'order_item', 'merchant', 'account', 'contact',
+                    'quote', 'quote_item', 'order', 'order_item', 'account', 'contact',
                     'price', 'product', 'category', 'tenant', 'supplier',
                     'spa', 'user', 'solution_type', 'api', 'price_plan', 'activity', 'email_template', 'email_history',
                     'group', 'blacklist', 'import',
@@ -82,7 +81,7 @@ class RolePermissionSeeder extends Seeder
             ],
             'Support Agent' => [
                 'parent' => 'Company Admin',
-                'permissions' => ['merchant', 'account', 'contact', 'token', 'quote', 'quote_item', 'order', 'order_item', 'activity', 'price_plan'],
+                'permissions' => ['account', 'contact', 'token', 'quote', 'quote_item', 'order', 'order_item', 'activity', 'price_plan'],
                 'simple_permission' => ['viewAny product', 'view product', 'viewAny category', 'view category'],
                 'deny_permission' => ['export'],
             ],
