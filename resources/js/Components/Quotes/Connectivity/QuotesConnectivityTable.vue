@@ -307,7 +307,7 @@ window.addEventListener('beforeunload', () => {
 getArticles(false, true);
 </script>
 <template>
-    <div v-if="!quote.items?.find((x) => x.data.type == 'Primary Product')">
+    <div v-if="!quote.items?.find((x) => x.data?.type == 'Primary Product')">
         <div class="row mb-2">
             <div class="col position-relative">
                 <div class="row mb-3" v-if="errors.length">

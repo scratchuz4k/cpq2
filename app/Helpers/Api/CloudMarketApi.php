@@ -6,6 +6,7 @@ use App\Enums\CloudMarketSuppliersEnum;
 use App\Models\Api;
 use App\Models\Quote;
 use Exception;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
@@ -24,7 +25,7 @@ class CloudMarketApi
         return self::makeRequest('/PartnerQuoteService/GetQuotes', $params);
     }
 
-    public static function getFailover(Quote $quote, CloudMarketAddress $address)
+    public static function getFailover(Quote $quote)
     {
         $product = self::getPrimaryProduct($quote);
         $provider = self::resolveProvider($product);
@@ -41,7 +42,7 @@ class CloudMarketApi
         return self::makeRequest('/PartnerQuoteService/GetFailover', array_merge($params, $credentials));
     }
 
-    public static function getAddons(Quote $quote, CloudMarketAddress $address)
+    public static function getAddons(Quote $quote)
     {
         $product = self::getPrimaryProduct($quote);
         $failover = self::getFailoverProduct($quote);
@@ -60,7 +61,7 @@ class CloudMarketApi
         return self::makeRequest('/PartnerQuoteService/GetHardware', array_merge($params, $credentials));
     }
 
-    public static function getOptions(Quote $quote, CloudMarketAddress $address)
+    public static function getOptions(Quote $quote)
     {
         $product = self::getPrimaryProduct($quote);
         $failover = self::getFailoverProduct($quote);
@@ -83,7 +84,7 @@ class CloudMarketApi
         return self::makeRequest('/PartnerQuoteService/GetOptions', array_merge($params, $credentials));
     }
 
-    public static function getAssignments(Quote $quote, CloudMarketAddress $address)
+    public static function getAssignments(Quote $quote)
     {
         $product = self::getPrimaryProduct($quote);
         $failover = self::getFailoverProduct($quote);
@@ -104,6 +105,33 @@ class CloudMarketApi
         Log::debug('CloudMarketApi::getAssignments lookup:', $params);
 
         return self::makeRequest('/PartnerQuoteService/GetIPAssignments', array_merge($params, $credentials));
+    }
+
+    public static function saveQuote(Quote $quote)
+    {
+        $product = self::getPrimaryProduct($quote);
+        $failover = self::getFailoverProduct($quote);
+        $primaryHardware = self::getHardwareProduct($quote, 'Primary Hardware Product');
+        $failoverHardware = self::getHardwareProduct($quote, 'Failover Hardware Product');
+        $provider = self::resolveProvider($product);
+
+        $apis = self::fetchApisForProvider($provider);
+        $credentials = self::collectCredentials($apis);
+
+        $params = [
+            'productId' => $product->data?->productCode,
+            'quoteId' => $product->data?->quoteId,
+            'addOns' => self::saveAddons($quote),
+        ];
+
+        if (isset($quote->data?->quoteReference)) { // && isset($quote->data?->quoteId) && $params['quoteId'] == $quote->data?->quoteId
+            $params['quoteReference'] = $quote->data?->quoteReference;
+        }
+        Log::debug('CloudMarketApi::getAssignments lookup:', $params);
+
+        $credentials = Arr::undot($credentials);
+
+        return self::makeRequestPost('/PartnerQuoteService/SaveQuote', array_merge($params, $credentials));
     }
 
     private static function collectCredentials($apis = null): array
@@ -142,6 +170,26 @@ class CloudMarketApi
         $hardware = collect($quote['items'] ?? $quote->items)->where(fn ($x) => in_array(data_get($x, 'data.type'), [$type], true))->values();
 
         return count($hardware) ? $hardware[0] : null;
+    }
+
+    private static function saveAddons(Quote $quote)
+    {
+        $temp = [];
+        $addons = collect($quote['items'] ?? $quote->items)->where(fn ($x) => ! in_array(data_get($x, 'data.type'), ['Primary Product'], true))->values();
+
+        $temp = $addons->map(function ($addon) {
+            return [
+                'id' => isset($addon->data?->quoteId) ? data_get($addon->data, 'quoteId') : data_get($addon->data, 'id'),
+                'options' => [
+                    [
+                        'id' => data_get($addon->data, 'productReference'),
+                        'quantity' => data_get($addon, 'quantity', 0),
+                    ],
+                ],
+            ];
+        })->all();
+
+        return $temp;
     }
 
     private static function resolveProvider($product): string
@@ -191,6 +239,19 @@ class CloudMarketApi
             ->timeout(self::$requestTimeout)
             ->withToken(env('ALPNET_API_TOKEN'))
             ->get($baseUrl.$endpoint, $params);
+    }
+
+    private static function makeRequestPost(string $endpoint, array $params)
+    {
+        $baseUrl = env('CLOUDMARKET_CONNECTION_SERVICE_URL', 'https://cpq-poc-uat-api.cloudmarket.com');
+
+        return Http::withOptions([
+            'timeout' => self::$requestTimeout,
+            'connect_timeout' => 30,
+        ])
+            ->timeout(self::$requestTimeout)
+            ->withToken(env('ALPNET_API_TOKEN'))
+            ->post($baseUrl.$endpoint, $params);
     }
 
     private static function resolveApiAuth($api): array

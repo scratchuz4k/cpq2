@@ -302,7 +302,7 @@ window.addEventListener('beforeunload', () => {
 getArticles(false, true);
 </script>
 <template>
-    <div v-if="!quote.items?.find((x) => x.data.type == 'Failover Product')">
+    <div v-if="!quote.items?.find((x) => x.data?.type == 'Failover Product')">
         <div class="row mb-2">
             <div class="col position-relative">
                 <div class="row mb-3" v-if="errors.length">
@@ -975,7 +975,7 @@ getArticles(false, true);
     </Dialog>
 
     <QuoteConnectivityHardwareTable
-        v-if="props.needsAddons && quote.items?.find((x) => x.data.type == 'Failover Product')"
+        v-if="props.needsAddons && quote.items?.find((x) => x.data?.type == 'Failover Product')"
         v-model="props.modelValue"
         productType="Failover Hardware Product"
         :group="props.currentStep + 1"

@@ -15,15 +15,15 @@
                 </button>
             </div>
             <div>
-                <a
+                <button
                     v-if="connectivitySteps.length == currentStep + 1"
                     class="btn btn-primary continue-btn"
                     type="submit"
-                    :href="route('quotes.show', { quote: modelValue.id })"
+                    @click="saveQuote()"
                 >
                     Continue
                     <font-awesome-icon :icon="['fas', 'arrow-right']" class="ms-2"></font-awesome-icon>
-                </a>
+                </button>
                 <button
                     v-else
                     class="btn btn-primary continue-btn"
@@ -82,7 +82,9 @@
 <script setup>
 import { ref, watch } from 'vue';
 import { quote } from '@/Composables/useQuote';
+import { router } from '@inertiajs/vue3';
 import { remove, addons, isLoading, checks } from '@/Composables/useConnectivityItem';
+import axios from 'axios';
 
 const props = defineProps({
     modelValue: Object
@@ -145,7 +147,7 @@ const getPrimary = () => {
     if (!quote.items) {
         return null;
     }
-    return quote.items.find((x) => x.data.type == 'Primary Product');
+    return quote.items.find((x) => x.data?.type == 'Primary Product');
 };
 
 const getTitle = () => {
@@ -224,6 +226,11 @@ const scrollToDiv = () => {
     setTimeout(() => {
         el.classList.remove('blink');
     }, 1500);
+};
+
+const saveQuote = async () => {
+    await axios.get('/api/cloudmarket/products/save-quote?quote_id=' + props.modelValue.id);
+    router.get(route('quotes.show', { quote: props.modelValue.id }));
 };
 
 watch(

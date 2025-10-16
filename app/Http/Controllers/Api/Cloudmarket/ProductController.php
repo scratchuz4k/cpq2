@@ -10,6 +10,7 @@ use App\Jobs\CloudMarketAssignmentsProducts;
 use App\Jobs\CloudMarketConnectivityProducts;
 use App\Jobs\CloudMarketFailOverProducts;
 use App\Jobs\CloudMarketOptionsProducts;
+use App\Jobs\CloudMarketSaveQuote;
 use App\Models\Api;
 use App\Models\Cloudmarket\Product;
 use App\Models\Quote;
@@ -62,6 +63,21 @@ class ProductController extends BaseController
     public function assignments(Request $request)
     {
         return $this->handleProductRequest($request, 'assignments', CloudMarketAssignmentsProducts::class, true, true);
+    }
+
+    #[ExcludeRouteFromDocs]
+    public function saveQuote(Request $request)
+    {
+        if (! env('CLOUDMARKET_CONNECTION_LIVE_DATA')) {
+            return;
+        }
+
+        $quote = $this->getQuote($request);
+        $product = $this->getProduct($quote, 'Primary Product');
+        if ($product->data?->providerName !== 'ITS') {
+            return;
+        }
+        CloudMarketSaveQuote::dispatch($quote);
     }
 
     private function handleProductRequest(

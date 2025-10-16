@@ -61,6 +61,7 @@ Route::middleware(['api', 'auth:sanctum'])->group(function () {
         Route::get('products/addons', [CloudmarketProductController::class, 'addons']);
         Route::get('products/options', [CloudmarketProductController::class, 'options']);
         Route::get('products/assignments', [CloudmarketProductController::class, 'assignments']);
+        Route::get('products/save-quote', [CloudmarketProductController::class, 'saveQuote']);
     });
 
     Route::prefix('external')->group(function () {
