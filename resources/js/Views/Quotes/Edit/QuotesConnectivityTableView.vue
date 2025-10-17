@@ -368,7 +368,7 @@ const countItems = () => {
 };
 
 watch(
-    [filters, showQuoted, showLowestCost, showContended, showManaged, meta.perPage],
+    [filters, showQuoted, showLowestCost, showContended, showManaged],
     _.debounce(function () {
         meta.page = 1;
         getArticles();
