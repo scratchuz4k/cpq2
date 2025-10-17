@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use App\Helpers\Api\CloudMarketApi;
+use App\Models\Cloudmarket\Product;
 use App\Models\Quote;
 use Exception;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -36,6 +37,7 @@ class CloudMarketSaveQuote implements ShouldQueue, TenantAware
      */
     public function handle(): void
     {
+        $this->quote->refresh();
         $res = CloudMarketApi::saveQuote($this->quote);
         $temp = $res->toPsrResponse()->getBody()->getContents();
         $res = json_decode($temp, true);
@@ -52,6 +54,9 @@ class CloudMarketSaveQuote implements ShouldQueue, TenantAware
         }
 
         $data = $this->quote->data;
+        $filename = $data->filename.$res['quoteReference'];
+        Product::where('filename', $data->filename)->update(['filename' => $filename]);
+
         $product = self::getPrimaryProduct($this->quote);
         $data->quoteReference = $res['quoteReference'];
         $data->quoteId = $product->data?->quoteId;

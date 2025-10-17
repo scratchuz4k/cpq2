@@ -73,7 +73,13 @@ class ProductController extends BaseController
         }
 
         $quote = $this->getQuote($request);
+        $address = $this->generateAddress($quote);
+        $filename = $this->generateFilename($quote, $address);
+        $data = $quote->data;
+        $data->filename = $filename;
+        $quote->update(['data' => $data]);
         $product = $this->getProduct($quote, 'Primary Product');
+
         if ($product->data?->providerName !== 'ITS') {
             return;
         }
@@ -166,12 +172,16 @@ class ProductController extends BaseController
         $configs .= 'contract_length:'.(array_key_exists('contract_length', $quote->configs) ? $quote->configs['contract_length'] : '0');
         $configs .= 'managed:'.(array_key_exists('managed', $quote->configs) ? $quote->configs['managed'] : '0');
 
-        $filename = $address->toString().'_'.md5($apiCodes.$configs).'.json';
+        $filename = $address->toString().'_'.md5($apiCodes.$configs);
         if (! count($apiRecords)) {
             Product::write('live_prices', $filename, [], true, now(), now(), [], [[
                 'provider' => 'CPQ',
                 'response' => 'No provider is configured',
             ]]);
+        }
+
+        if ($quote->data?->quoteReference) {
+            $filename = $filename.$quote->data?->quoteReference;
         }
 
         return $filename;
