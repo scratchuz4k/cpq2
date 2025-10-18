@@ -215,6 +215,9 @@ describe('Creates a Connectivity quote', () => {
             .filter(':contains("1 Gb")')
             .filter(':contains("500 Mb")')
             .should('have.length', 2);
+
+        cy.get('tbody tr button').eq(0).click();
+        cy.get('tbody tr button').eq(0).contains('Added');
     });
 
     it('I can Create an order from a quote', () => {
