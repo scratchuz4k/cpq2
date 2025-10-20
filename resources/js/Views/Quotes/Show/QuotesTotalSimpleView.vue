@@ -62,7 +62,6 @@ const items = ref([
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div class="d-flex justify-content-between align-items-center">
             <p class="fs-4 me-3 mb-0"><b>Your quote</b></p>
-            <p class="mb-0 text-primary bold fs-5 pt-1">STEP 2/2</p>
         </div>
         <div class="d-flex justify-content-between align-items-center">
             <ActivityDialog
@@ -111,16 +110,6 @@ const items = ref([
         <div class="col">
             <!-- Product List -->
             <!-- In a real application, this would be dynamically generated based on the selected solution type -->
-            <div v-if="warningProviders.some((obj) => Object.values(obj).includes(true))">
-                <div class="row">
-                    <div class="col">
-                        <InfoBox class="mb-4 py-0" severity="danger">
-                            <WarningNote :warnings="warningProviders" />
-                        </InfoBox>
-                    </div>
-                </div>
-            </div>
-
             <TableCustom v-if="quote.solution_type.configurations?.has_custom_table == 1"></TableCustom>
             <TableSimple v-else :preview="preview"></TableSimple>
 
