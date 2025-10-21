@@ -58,6 +58,11 @@ class Quote extends Model
         ];
     }
 
+    public function getDataAttribute($value)
+    {
+        return $value ?? '{}';
+    }
+
     protected static function booted(): void
     {
         static::addGlobalScope(new TenantScope);

@@ -20,7 +20,7 @@ return new class extends Migration
         }
 
         Schema::table('quotes', function (Blueprint $table) {
-            $table->json('data')->default('{}')->change();
+            $table->json('data')->change();
         });
     }
 
