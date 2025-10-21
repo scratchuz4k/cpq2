@@ -6,6 +6,11 @@
                     Options
                     <span class="fw-normal">({{ meta.total }})</span>
                 </p>
+                <div v-if="isLoading">
+                    <div class="spinner-border spinner-border-sm" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
             </div>
         </div>
         <div class="row mb-4" v-if="options.length">
@@ -34,13 +39,13 @@
                 </div>
             </div>
         </div>
-        <div v-else>
+        <div v-else-if="!isLoading">
             <div class="col mb-3">No Options found</div>
         </div>
     </div>
 </template>
 <script setup>
-import { removeAddon, addAddon, isLoading } from '@/Composables/useConnectivityItem';
+import { removeAddon, addAddon } from '@/Composables/useConnectivityItem';
 import { watch, reactive, ref } from 'vue';
 import { quote } from '@/Composables/useQuote';
 import queryString from 'query-string';
@@ -50,6 +55,7 @@ const props = defineProps({
     currentStep: Number
 });
 
+const isLoading = ref(false);
 const options = ref([]);
 let timeoutId = null;
 const meta = reactive({
@@ -62,6 +68,7 @@ const meta = reactive({
 });
 
 const getOptions = async () => {
+    isLoading.value = true;
     let temp = [];
     let query = queryString.stringify({
         quote_id: props.modelValue.id,

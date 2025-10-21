@@ -30,7 +30,7 @@
                 </div>
             </div>
         </div>
-        <div v-else>
+        <div v-else-if="!isLoading">
             <div class="col mb-3">No hardware found</div>
         </div>
     </div>
@@ -83,13 +83,13 @@ const getAddons = async () => {
         meta.isRequestCompleted = !!res.data.finished_at;
     } catch (error) {
         isLoading.value = false;
-        meta.isRequestCompleted = false;
+        meta.isRequestCompleted = true;
     }
 
     if (!meta.isRequestCompleted) {
         timeoutId = setTimeout(() => {
             getAddons();
-        }, 2000);
+        }, 4000);
     } else {
         isLoading.value = false;
     }
@@ -102,12 +102,13 @@ const checkProduct = (article) => {
     return index == -1 ? addAddon(article) : removeAddon(item);
 };
 
-watch(
-    () => [quote.items],
-    () => {
-        getAddons();
-    }
-);
+emitter.on('primary-product:added', () => {
+    getAddons();
+});
+
+emitter.on('failover-product:added', () => {
+    getAddons();
+});
 
 window.addEventListener('beforeunload', () => {
     clearTimeout(timeoutId); // Cancel timeout on page navigation or refresh

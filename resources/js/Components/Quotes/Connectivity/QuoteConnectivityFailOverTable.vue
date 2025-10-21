@@ -273,7 +273,13 @@ const checkProduct = (article) => {
     let primaryProduct = quote.items.find((x) => x.data.type == 'Primary Product');
     article.type = 'Failover Product';
     article.contractTermMonths = article.contractTermMonths ?? primaryProduct.contract_length;
-    return index == -1 ? add(article) : remove(item);
+
+    if (index == -1) {
+        add(article);
+        emitter.emit('failover-product:added');
+    } else {
+        remove(item);
+    }
 };
 
 const hasProduct = () => {

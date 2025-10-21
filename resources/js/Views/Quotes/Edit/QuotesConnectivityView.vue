@@ -63,7 +63,12 @@
                             v-tooltip
                         />
                     </div>
-                    <button type="button " class="btn p-0 mt-2" data-mdb-ripple-init @click="removeItem(article)">
+                    <button
+                        type="button "
+                        class="btn btn-primary btn-sm btn-secondary mt-2"
+                        data-mdb-ripple-init
+                        @click="removeItem(article)"
+                    >
                         Remove
                     </button>
                 </div>
@@ -102,6 +107,7 @@ const setAltImg = (event) => {
 const removeItem = (article) => {
     remove(article);
     if (article.data?.type == 'Primary Product') {
+        emitter.emit('primary-product:removed');
         currentStep.value = 0;
     }
 };

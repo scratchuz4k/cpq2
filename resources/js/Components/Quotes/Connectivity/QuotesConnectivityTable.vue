@@ -2,7 +2,7 @@
 import _ from 'lodash';
 import axios from 'axios';
 import Paginator from 'primevue/paginator';
-import { ref, reactive, watch } from 'vue';
+import { ref, reactive, watch, onMounted } from 'vue';
 import MultiSelect from 'primevue/multiselect';
 import Dialog from 'primevue/dialog';
 import format from '@/Composables/format.js';
@@ -50,12 +50,12 @@ const filters = reactive({
     },
     bearer: {
         operator: 'greater_than_or_equal_to',
-        value: quote.configs?.bearer,
+        value: quote.configs?.bearer ?? null,
         name: 'Bearer'
     },
     speed: {
         operator: 'greater_than_or_equal_to',
-        value: quote.configs?.speed,
+        value: quote.configs?.speed ?? null,
         name: 'Speed'
     }
 });
@@ -222,6 +222,7 @@ const getArticles = async (clearCache = false, runTimeout = false) => {
 
         if (!meta.isRequestCompleted && runTimeout) {
             timeoutId = setTimeout(() => {
+                if (hasPrimaryProduct()) return;
                 getArticles(false, true);
             }, 15000);
             return;
@@ -270,11 +271,18 @@ const checkProduct = (article) => {
     let item = quote.items.find((item) => item.product_code == article.code);
     let index = quote.items.findIndex((item) => item.product_code == article.code);
     article.type = 'Primary Product';
-    return index == -1 ? add(article) : remove(item);
+
+    if (index == -1) {
+        add(article);
+        clearTimeout(timeoutId);
+        emitter.emit('primary-product:added');
+    } else {
+        remove(item);
+    }
 };
 
-const hasProduct = () => {
-    return quote.items.find((x) => x.data.type == 'Primary Product');
+const hasPrimaryProduct = () => {
+    return quote.items && quote.items.find((x) => x.data.type == 'Primary Product');
 };
 
 const removeFilter = (selectedFilter, value) => {
@@ -300,14 +308,17 @@ watch(
     }, 500)
 );
 
+emitter.on('primary-product:removed', () => getArticles(false, true));
 window.addEventListener('beforeunload', () => {
     clearTimeout(timeoutId); // Cancel timeout on page navigation or refresh
 });
 
-getArticles(false, true);
+onMounted(() => {
+    getArticles(false, true);
+});
 </script>
 <template>
-    <div v-if="!quote.items?.find((x) => x.data?.type == 'Primary Product')">
+    <div v-if="!hasPrimaryProduct()">
         <div class="row mb-2">
             <div class="col position-relative">
                 <div class="row mb-3" v-if="errors.length">
@@ -805,7 +816,7 @@ getArticles(false, true);
                                     </span>
                                 </th>
                                 <th
-                                    v-if="!hasProduct()"
+                                    v-if="!hasPrimaryProduct()"
                                     :style="{
                                         width: '130px'
                                     }"
@@ -940,7 +951,7 @@ getArticles(false, true);
                                     </span>
                                 </td>
                                 <td>{{ article.contractTermMonths }} Months</td>
-                                <td class="text-end" v-if="!hasProduct()">
+                                <td class="text-end" v-if="!hasPrimaryProduct()">
                                     <button class="btn btn-outline-primary me-2 py-1" @click="checkProduct(article)">
                                         <font-awesome-icon :icon="['fas', 'plus']" />
                                         Add
