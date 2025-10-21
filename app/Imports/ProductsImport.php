@@ -150,6 +150,7 @@ class ProductsImport implements ToCollection, WithBatchInserts, WithHeadingRow
                     ],
                     [
                         ...$productData['prices'],
+                        'tenant_id' => $this->tenant->id,
                     ]);
             }
 
