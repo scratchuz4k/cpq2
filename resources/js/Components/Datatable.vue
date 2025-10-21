@@ -251,7 +251,7 @@ getData();
                                 <div class="my-1" v-if="props.filters[column.data].type === 'checkbox'">
                                     <div class="form-check p-0">
                                         <Checkbox
-                                            id="active-filter"
+                                            inputId="active-filter"
                                             class="form-check-input"
                                             v-model="form.filters[key].value"
                                             :checked="!!form.filters[key].value"

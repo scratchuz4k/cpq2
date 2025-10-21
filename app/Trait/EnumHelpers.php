@@ -14,4 +14,18 @@ trait EnumHelpers
 
         return null;
     }
+
+    public static function randomName()
+    {
+        $key = array_rand(self::cases());
+
+        return self::cases()[$key]->name;
+    }
+
+    public static function randomValue()
+    {
+        $key = array_rand(self::cases());
+
+        return self::cases()[$key]->value;
+    }
 }

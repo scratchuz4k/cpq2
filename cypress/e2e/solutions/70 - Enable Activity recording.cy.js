@@ -83,7 +83,7 @@ describe('Creates a Mobile Quote', () => {
         cy.visit('/');
         cy.get('#my-account').click();
         cy.get('#link-tenant').click();
-        cy.get('#v-pills-orders-tab').click();
+        cy.get('#1-1').click();
         cy.get('#log-system-is-active> input').then(($checkbox) => {
             if (!$checkbox.is(':checked')) {
                 cy.wrap($checkbox).check();
@@ -152,7 +152,7 @@ describe('Creates a Mobile Quote', () => {
         cy.visit('/');
         cy.get('#my-account').click();
         cy.get('#link-tenant').click();
-        cy.get('#v-pills-orders-tab').click();
+        cy.get('#1-1').click();
         cy.get('#log-system-is-active> input').then(($checkbox) => {
             if ($checkbox.is(':checked')) {
                 cy.wrap($checkbox).uncheck();

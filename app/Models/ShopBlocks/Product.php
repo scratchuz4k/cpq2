@@ -2,22 +2,24 @@
 
 namespace App\Models\ShopBlocks;
 
-use App\Models\ShopBlocks\Model as ShopblocksModel;
-use MongoDB\Laravel\Eloquent\Model;
+use Illuminate\Database\Eloquent\Model as EloquentModel;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
-class Product extends Model
+class Product extends EloquentModel
 {
-    protected $connection = 'mongodb_shopblocks'; // Use the MongoDB connection
-
-    protected $collection = 'products'; // Specify the collection name
+    protected $connection = 'mysql_shopblocks'; // Use the MySQL connection
 
     protected $dates = ['expire_at']; // Ensure the field is treated as a DateTime
 
-    protected $guarded = [];
+    protected $fillable = ['sku', 'code', 'slug', 'name', 'description', 'stock', 'primary_image', 'images', 'price', 'price_plan_id', 'brand_id', 'model_id', 'category_id', 'updated', 'expire_at'];
 
-    public function features()
+    protected function casts(): array
     {
-        return $this->hasMany(ProductFeature::class);
+        return [
+            'stock' => 'float',
+            'images' => 'array',
+            'price' => 'array',
+        ];
     }
 
     public function brand()
@@ -32,6 +34,11 @@ class Product extends Model
 
     public function model()
     {
-        return $this->belongsTo(ShopblocksModel::class);
+        return $this->belongsTo(Model::class);
+    }
+
+    public function dimensions(): BelongsToMany
+    {
+        return $this->belongsToMany(Dimension::class, 'product_dimensions');
     }
 }

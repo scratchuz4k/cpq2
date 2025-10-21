@@ -3,6 +3,7 @@ import { ref } from 'vue';
 import Dialog from 'primevue/dialog';
 import { createOrder } from '@/Composables/useOrders.js';
 import { setQuote, quote } from '@composables/useQuote';
+import { getMarginThreshHoldWarning } from '@composables/useQuoteItem';
 import { usePage } from '@inertiajs/vue3';
 import WarningNote from '@/Components/WarningNote.vue';
 import { checkWarnings } from '@composables/warning.js';
@@ -21,6 +22,10 @@ let showModal = ref(false);
 const isLoading = ref(false);
 setQuote(props.modelValue);
 const group = quote.solution_type?.table?.group ?? null;
+
+const calc_layout = quote.solution_type.configurations?.calculator_layout ?? 'DEFAULT';
+const show_calc_margin = ['DEFAULT', 'MARGIN'].includes(calc_layout) || calc_layout === 'DEFAULT';
+const show_calc_commission = ['DEFAULT', 'COMMISSION'].includes(calc_layout) || calc_layout === 'DEFAULT';
 
 const warningProviders = ref([
     { its: quote.items.some((item) => item.data?.providerName === 'ITS') },
@@ -142,6 +147,16 @@ const items = ref([
                         </div>
                     </div>
                 </div>
+                <div v-if="quote.items.some((x) => !x.is_margin_valid)">
+                    <div class="row">
+                        <div class="col">
+                            <InfoBox class="mb-4 py-0" severity="danger">
+                                <WarningNote :warnings="warningProviders" />
+                                <i class="small">{{ getMarginThreshHoldWarning() }}</i>
+                            </InfoBox>
+                        </div>
+                    </div>
+                </div>
                 <TableCustom v-if="quote.solution_type.configurations?.has_custom_table == 1"></TableCustom>
                 <TableDealMaker v-else :pricePlans="pricePlans" :preview="preview"></TableDealMaker>
 
@@ -176,21 +191,30 @@ const items = ref([
                                     }
                                 ]"
                             ></ActivityDialog>
-                            <ShareableQuote></ShareableQuote>
+                            <ShareableQuote :disabled="quote.items.some((x) => !x.is_margin_valid)"></ShareableQuote>
                             <a
                                 class="btn btn-outline-primary me-2"
                                 :href="route('quotes.preview', { quote: quote.id })"
+                                v-if="!quote.items.some((x) => !x.is_margin_valid)"
                             >
                                 <font-awesome-icon :icon="['far', 'file-pdf']"></font-awesome-icon>
                                 Preview
                             </a>
-                            <button hidden class="btn btn-outline-primary me-2">
+                            <button class="btn btn-outline-primary me-2" v-else disabled="true">
+                                <font-awesome-icon :icon="['far', 'file-pdf']"></font-awesome-icon>
+                                Preview
+                            </button>
+                            <button
+                                hidden
+                                class="btn btn-outline-primary me-2"
+                                :disabled="quote.items.some((x) => !x.is_margin_valid)"
+                            >
                                 <font-awesome-icon class="me-2" :icon="['fas', 'envelope']"> </font-awesome-icon>
                                 Email this quote
                             </button>
                             <button
                                 :hidden="!(tenant.configurations.orders_flow_is_active === '1')"
-                                :disabled="disableButtonSendToOrder"
+                                :disabled="disableButtonSendToOrder || quote.items.some((x) => !x.is_margin_valid)"
                                 class="btn btn-primary"
                                 @click="createOrderAndRedirect(quote.id)"
                             >
@@ -256,15 +280,22 @@ const items = ref([
                     </button>
                 </div>
                 <div class="price-mobile-sidebar commission-calculator px-4 pt-4 pb-2 mb-3">
-                    <h3 class="mb-3">Commission Calculator</h3>
+                    <h3 class="mb-3">Profitability Calculator</h3>
                     <p class="mb-2" style="font-size: 14px">
-                        Currently, you will make <b>{{ format.GBP(quote.commission_value) }}</b>
-                        commission and
-                        <b>{{ format.decimalPlaces(quote.margin) }} %</b>
-                        margin on this quote.
+                        Currently, you will make
+                        <span id="commission_text" v-if="show_calc_commission">
+                            <b>{{ format.GBP(quote.commission_value) }}</b>
+                            commission
+                        </span>
+                        <span v-if="calc_layout === 'DEFAULT'"> and </span>
+                        <span id="margin_text" v-if="show_calc_margin">
+                            <b>{{ format.decimalPlaces(quote.margin) }} %</b>
+                            margin</span
+                        >
+                        on this quote.
                     </p>
                     <div class="p-3 mb-3" style="background: #e9edf0">
-                        <div class="mb-3">
+                        <div v-if="show_calc_margin" class="mb-3">
                             <label class="form-label">Margin</label>
                             <div class="input-group">
                                 <input
@@ -278,7 +309,7 @@ const items = ref([
                                 ></span>
                             </div>
                         </div>
-                        <div class="mb-3">
+                        <div v-if="show_calc_commission" class="mb-3">
                             <label class="form-label"
                                 >Commission
                                 <b

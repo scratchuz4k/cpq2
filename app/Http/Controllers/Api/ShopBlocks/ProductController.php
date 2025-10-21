@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\ShopBlocks;
 
 use App\Enums\PricePlanEnum;
 use App\Helpers\DataProvider;
+use App\Helpers\DimensionFilters;
 use App\Helpers\FilterProvider;
 use App\Helpers\Prices\PriceRules;
 use App\Http\Controllers\BaseController;
@@ -31,10 +32,11 @@ class ProductController extends BaseController
     public function index(IndexRequest $request)
     {
         $dataProvider = new DataProvider(Product::class);
+        $dataProvider->builder = DimensionFilters::build($dataProvider->builder);
         try {
             $items = $dataProvider->getCollection();
         } catch (Exception $e) {
-            return $e->getMessage();
+            return handleException($e);
         }
 
         $priceRules = new PriceRules;
@@ -47,8 +49,7 @@ class ProductController extends BaseController
             $item['price'] = [
                 'net' => $item->price['net'] ?? 0,
                 'net_spa' => $net_spa,
-                'tax' => $net_spa * 0.2,
-                'gross' => $net_spa * 1.2,
+                'gross' => $item->price['cost'] ?? 0,
                 'active_spas' => $priceRules->getAppliedSpas(),
             ];
 

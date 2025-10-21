@@ -70,6 +70,15 @@ if (! function_exists('formated_date_range')) {
     }
 }
 
+if (! function_exists('get_tenant_config')) {
+    function get_tenant_config(string $key): ?string
+    {
+        $configs = auth()->user()->currentTenant->configs ?? [];
+
+        return ! empty($configs[$key]) ? $configs[$key] : null;
+    }
+}
+
 if (! function_exists('safeXmlParse')) {
     function safeXmlParse(string $xmlString)
     {
@@ -96,5 +105,18 @@ if (! function_exists('safeXmlParse')) {
         }
 
         return simplexml_import_dom($dom)->asXML() ?: null;
+    }
+}
+
+if (! function_exists('handleException')) {
+    function handleException(\Exception $e, string $message = 'Something went wrong.')
+    {
+        Log::debug($e->getMessage());
+
+        if (config('app.debug')) {
+            return $e->getMessage();
+        }
+
+        return response()->json($message, 500);
     }
 }

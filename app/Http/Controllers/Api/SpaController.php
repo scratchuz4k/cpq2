@@ -14,7 +14,6 @@ use Dedoc\Scramble\Attributes\ExcludeRouteFromDocs;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class SpaController extends BaseController
 {
@@ -36,9 +35,7 @@ class SpaController extends BaseController
         try {
             $data = $dataProvider->get();
         } catch (\Exception $e) {
-            Log::debug($e->getMessage());
-
-            return $e->getMessage();
+            return handleException($e);
         }
 
         return SpaResource::collection($data);
