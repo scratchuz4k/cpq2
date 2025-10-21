@@ -24,8 +24,8 @@ setQuote(props.modelValue);
 const group = quote.solution_type?.table?.group ?? null;
 
 const warningProviders = ref([
-    { its: quote.items.some((item) => item.data?.providerName === 'ITS') },
-    { pxc: quote.items.some((item) => item.data?.providerName === 'PXC') }
+    { name: 'its', is_present: quote.items.some((item) => item.data?.providerName === 'ITS') },
+    { name: 'pxc', is_present: quote.items.some((item) => item.data?.providerName === 'PXC') }
 ]);
 
 checkWarnings(warningProviders.value, null);
@@ -134,23 +134,17 @@ const items = ref([
         <div class="row justify-content-between">
             <div class="col-lg-8 mb-5 price-summary">
                 <Header title="Build your deal" :breadcrumbs="items"></Header>
-                <div v-if="warningProviders.some((obj) => Object.values(obj).includes(true))">
-                    <div class="row">
-                        <div class="col">
-                            <InfoBox class="mb-4 py-0" severity="danger">
-                                <WarningNote :warnings="warningProviders" />
-                            </InfoBox>
-                        </div>
-                    </div>
-                </div>
-                <div v-if="quote.items.some((x) => !x.is_margin_valid)">
-                    <div class="row">
-                        <div class="col">
-                            <InfoBox class="mb-4 py-0" severity="danger">
-                                <WarningNote :warnings="warningProviders" />
-                                <i class="small">{{ getMarginThreshHoldWarning() }}</i>
-                            </InfoBox>
-                        </div>
+                <div
+                    class="row"
+                    v-if="warningProviders.find((x) => x.is_present) || quote.items.some((x) => !x.is_margin_valid)"
+                >
+                    <div class="col">
+                        <InfoBox class="mb-4 py-0" severity="danger">
+                            <WarningNote :warnings="warningProviders" />
+                            <p v-if="quote.items.some((x) => !x.is_margin_valid)" class="small">
+                                {{ getMarginThreshHoldWarning() }}
+                            </p>
+                        </InfoBox>
                     </div>
                 </div>
                 <TableCustom v-if="quote.solution_type.configurations?.has_custom_table == 1"></TableCustom>
