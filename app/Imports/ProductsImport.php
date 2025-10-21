@@ -4,6 +4,7 @@ namespace App\Imports;
 
 use App\Enums\ProductStatusesEnum;
 use App\Http\Requests\ProductCreateRequest;
+use App\Models\Price;
 use App\Models\PricePlan;
 use App\Models\Product;
 use App\Models\Tenant;
@@ -109,6 +110,12 @@ class ProductsImport implements ToCollection, WithBatchInserts, WithHeadingRow
                 'status' => (isset($product['status']) && ! empty($product['status'])) ? $product['status'] : ProductStatusesEnum::ACTIVE->name,
                 'supplier_id' => $product['supplier_id'] ?: null,
                 'price_plan_id' => (isset($product['price_plan_id']) && ! empty($product['price_plan_id'])) ? PricePlan::find($product['price_plan_id'])->id : null,
+                'prices' => [
+                    'code' => $product['price_code'],
+                    'net' => $product['price_net'],
+                    'cost' => $product['price_cost'],
+
+                ],
                 'category_id' => $product['category_id'] ?? null,
                 'parent_id' => $parentId,
                 'tenant_id' => $this->tenant->id,
@@ -116,25 +123,36 @@ class ProductsImport implements ToCollection, WithBatchInserts, WithHeadingRow
             ];
 
             if ($this->overwrite) {
-                Product::UpdateOrCreate(
+                $newProduct = Product::UpdateOrCreate(
                     [
                         'sku' => $product['sku'],
                     ],
                     $productData
                 );
             } else {
-                if (Product::where('sku', $product['sku'])->exists()) {
+                if ($newProduct = Product::where('sku', $product['sku'])->exists()) {
                     $this->results['skipped']++;
                     $this->results['errors'][] = ['row' => $product, 'error' => 'Product already exists'];
 
                     return;
                 }
 
-                Product::create([
+                $newProduct = Product::create([
                     'sku' => $product['sku'] ?? '',
                     ...$productData,
                 ]);
             }
+
+            if (in_array(! null, $productData['prices'])) {
+                $price = Price::UpdateOrCreate(
+                    [
+                        'product_id' => $newProduct->id,
+                    ],
+                    [
+                        ...$productData['prices'],
+                    ]);
+            }
+
             $this->results['success']++;
 
         } catch (ValidationException $e) {
