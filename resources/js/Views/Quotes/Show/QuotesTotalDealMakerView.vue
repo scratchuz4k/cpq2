@@ -23,6 +23,10 @@ const isLoading = ref(false);
 setQuote(props.modelValue);
 const group = quote.solution_type?.table?.group ?? null;
 
+const calc_layout = quote.solution_type.configurations?.calculator_layout ?? 'DEFAULT';
+const show_calc_margin = ['DEFAULT', 'MARGIN'].includes(calc_layout) || calc_layout === 'DEFAULT';
+const show_calc_commission = ['DEFAULT', 'COMMISSION'].includes(calc_layout) || calc_layout === 'DEFAULT';
+
 const warningProviders = ref([
     { name: 'its', is_present: quote.items.some((item) => item.data?.providerName === 'ITS') },
     { name: 'pxc', is_present: quote.items.some((item) => item.data?.providerName === 'PXC') }
@@ -270,15 +274,22 @@ const items = ref([
                     </button>
                 </div>
                 <div class="price-mobile-sidebar commission-calculator px-4 pt-4 pb-2 mb-3">
-                    <h3 class="mb-3">Commission Calculator</h3>
+                    <h3 class="mb-3">Profitability Calculator</h3>
                     <p class="mb-2" style="font-size: 14px">
-                        Currently, you will make <b>{{ format.GBP(quote.commission_value) }}</b>
-                        commission and
-                        <b>{{ format.decimalPlaces(quote.margin) }} %</b>
-                        margin on this quote.
+                        Currently, you will make
+                        <span id="commission_text" v-if="show_calc_commission">
+                            <b>{{ format.GBP(quote.commission_value) }}</b>
+                            commission
+                        </span>
+                        <span v-if="calc_layout === 'DEFAULT'"> and </span>
+                        <span id="margin_text" v-if="show_calc_margin">
+                            <b>{{ format.decimalPlaces(quote.margin) }} %</b>
+                            margin</span
+                        >
+                        on this quote.
                     </p>
                     <div class="p-3 mb-3" style="background: #e9edf0">
-                        <div class="mb-3">
+                        <div v-if="show_calc_margin" class="mb-3">
                             <label class="form-label">Margin</label>
                             <div class="input-group">
                                 <input
@@ -292,7 +303,7 @@ const items = ref([
                                 ></span>
                             </div>
                         </div>
-                        <div class="mb-3">
+                        <div v-if="show_calc_commission" class="mb-3">
                             <label class="form-label"
                                 >Commission
                                 <b
