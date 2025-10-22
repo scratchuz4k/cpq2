@@ -71,6 +71,7 @@ jobs:
             - name: Generate App Key
               run: |
                   php artisan key:generate
+                  php artisan migrate --path=database/shopblocks --database=mysql_shopblocks
                   php artisan migrate:fresh --seed
                   php artisan db:seed CategoryProductsSeeder
 

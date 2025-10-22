@@ -57,6 +57,13 @@ class ShopBlocksCategoriesJob implements NotTenantAware, ShouldQueue
             foreach ($res['data'] as $category) {
 
                 $code = $category['id'];
+                unset($category['id']);
+
+                if (! is_null($category['parent_id'])) {
+                    $temp = Category::where('code', $category['parent_id'])->first();
+
+                    $category['parent_id'] = $temp?->id;
+                }
 
                 Category::updateOrCreate(['code' => $code], $category);
             }
@@ -92,8 +99,8 @@ class ShopBlocksCategoriesJob implements NotTenantAware, ShouldQueue
         $message = '['.strtoupper((string) env('APP_ENV')).'] ShopBlocksProducts failed with error: '.json_encode($error);
 
         Log::error($message);
-        if (env('DISCORD_CLOUDMARKET_JOBS')) {
-            Http::post(env('DISCORD_CLOUDMARKET_JOBS'), ['content' => $message]);
+        if (env('DISCORD_SHOPBLOCKS_JOBS')) {
+            Http::post(env('DISCORD_SHOPBLOCKS_JOBS'), ['content' => $message]);
         }
     }
 }

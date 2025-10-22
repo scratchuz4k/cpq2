@@ -43,13 +43,11 @@ trait RegisterActivity
     protected static function bootRegisterActivity()
     {
         static::eventsToBeRecorded()->each(fn ($eventName) => static::$eventName(function (Model $model) use ($eventName) {
+            $user = auth()->user() ?? User::where('email', 'system@cpq.cloudmarket.com')->first();
+            $tenant = $user?->currentTenant ?? Tenant::current();
 
-            if (app()->bound('fromJob')) {
-                $user = User::where('email', 'system@cpq.cloudmarket.com')->first();
-                $tenant = Tenant::current();
-            } else {
-                $user = auth()->user();
-                $tenant = $user->currentTenant;
+            if (! $tenant || ! $user) {
+                throw new \Exception('No tenant or user found for activity logging');
             }
 
             if (! array_key_exists('log_system_is_active', $tenant->configs) || $tenant->configs['log_system_is_active'] == '0') {
