@@ -53,6 +53,7 @@ class RolePermissionSeeder extends Seeder
                 'token' => 'Token',
                 'quote' => 'Quote',
                 'quote_item' => 'Quote Item',
+                'quote_approval' => 'Quote Approval',
                 'solution_type' => 'Solution Type',
                 'email_template' => 'Email Template',
                 'email_history' => 'Email History',
@@ -78,7 +79,7 @@ class RolePermissionSeeder extends Seeder
                     'quote', 'quote_item', 'order', 'order_item', 'merchant', 'account', 'contact',
                     'price', 'product', 'category', 'region', 'tenant', 'brand', 'supplier',
                     'spa', 'user', 'solution_type', 'api', 'price_plan', 'activity', 'email_template', 'email_history',
-                    'group', 'blacklist', 'import',
+                    'group', 'blacklist', 'import', 'quote_approval',
                 ],
                 'simple_permission' => ['viewAny export'],
             ],
@@ -90,7 +91,7 @@ class RolePermissionSeeder extends Seeder
             ],
             'Sales Manager' => [
                 'parent' => 'Company Admin',
-                'permissions' => ['quote', 'quote_item', 'account', 'contact', 'brand', 'supplier', 'activity', 'price_plan', 'user', 'group'],
+                'permissions' => ['quote', 'quote_item', 'account', 'contact', 'brand', 'supplier', 'activity', 'price_plan', 'user', 'group', 'quote_approval'],
                 'simple_permission' => ['viewAny product', 'view product', 'viewAny category', 'view category'],
             ],
             'Sales Rep' => [

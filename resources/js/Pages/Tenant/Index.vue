@@ -24,7 +24,9 @@ const tenant = reactive({
         quote_margin_rules_value: props.tenant.configurations.quote_margin_rules_value
             ? Number(props.tenant.configurations.quote_margin_rules_value)
             : 0,
-        quote_margin_rules_operation: props.tenant.configurations.quote_margin_rules_operation ?? 'percentage'
+        quote_margin_rules_operation: props.tenant.configurations.quote_margin_rules_operation ?? 'percentage',
+        has_quote_approval: props.tenant.configurations.has_quote_approval ?? '0',
+        quote_approval_flow: props.tenant.configurations.quote_approval_flow ?? 'internal_flow'
     }
 });
 
@@ -416,7 +418,7 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'My Account', url: '/my
                                                     </template>
                                                 </ToggleSwitch>
                                             </div>
-                                            <p>Margin value:</p>
+                                            <label>Margin value:</label>
                                             <div class="row g-3 mb-3">
                                                 <div class="col">
                                                     <input
@@ -436,6 +438,54 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'My Account', url: '/my
                                                     >
                                                         <option value="percentage">%</option>
                                                         <option value="value">£</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="card bg-light border-0 settings-block h-100">
+                                    <div class="card-body">
+                                        <h6 class="fw-bold pe-5 mb-3">Quote Approvals</h6>
+                                        <div class="quote-expiration-days">
+                                            <div>
+                                                <label for="quote-expiration-days" class="form-label lh-sm small pb-2">
+                                                    <i> Activate this setting add approvals in quotes </i>
+                                                </label>
+                                            </div>
+                                            <div class="sidenote">
+                                                <ToggleSwitch
+                                                    id="active-margin-rules"
+                                                    v-model="tenant.configurations.has_quote_approval"
+                                                    @change="submitTenantSettings"
+                                                    trueValue="1"
+                                                    falseValue="0"
+                                                    binary
+                                                >
+                                                    <template #handle>
+                                                        <font-awesome-icon
+                                                            :icon="
+                                                                tenant.configurations.has_quote_approval === '1'
+                                                                    ? ['fas', 'circle-check']
+                                                                    : ['far', 'circle-xmark']
+                                                            "
+                                                            class="text-primary"
+                                                        />
+                                                    </template>
+                                                </ToggleSwitch>
+                                            </div>
+                                            <div class="row g-3 mb-3">
+                                                <div class="col">
+                                                    <label>Approvals Flow:</label>
+                                                    <select
+                                                        class="form-select"
+                                                        v-model="tenant.configurations.quote_approval_flow"
+                                                        @change="submitTenantSettings()"
+                                                    >
+                                                        <option value="internal_flow">Internal</option>
+                                                        <option value="client_flow">Client</option>
                                                     </select>
                                                 </div>
                                             </div>
