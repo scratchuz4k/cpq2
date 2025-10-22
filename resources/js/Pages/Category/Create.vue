@@ -3,18 +3,25 @@ import { reactive, ref } from 'vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, router } from '@inertiajs/vue3';
+import Select from 'primevue/select';
 import ToggleSwitch from 'primevue/toggleswitch';
 
-const props = defineProps({});
+const props = defineProps({
+    solution_types: Array
+});
 
 const category = reactive({
     name: null,
     code: null,
-    is_active: true
+    is_active: true,
+    solution_type_id: null
 });
 
 const saveCate = () => {
-    router.post(`/categories`, category, {
+    let temp = category;
+    temp.solution_type_id = category.solution_type ?? null;
+
+    router.post(`/categories`, temp, {
         onSuccess: (page) => {
             notyf.success('Created with Success');
         },
@@ -65,6 +72,21 @@ const items = ref([
                 <div class="mb-3">
                     <label for="category-name" class="form-label">Name:</label>
                     <input id="category-name" class="form-control" v-model="category.name" />
+                </div>
+
+                <h4>Relations</h4>
+                <hr />
+                <div class="mb-3">
+                    <label for="category-solution-type" class="form-label">Solution Type:</label>
+                    <Select
+                        inputId="category-solution-type"
+                        v-model="category.solution_type"
+                        :options="props.solution_types"
+                        optionLabel="name"
+                        optionValue="id"
+                        placeholder="Select a Solution Type"
+                        class="w-100"
+                    />
                 </div>
             </div>
         </div>

@@ -26,51 +26,51 @@ class CategoryProductsSeeder extends Seeder
                 'name' => 'Basic',
                 'description' => 'Basic / 5 GB / 100min',
                 'price' => 10,
-                'category' => 'plan',
             ],
             [
                 'code' => 'premium',
                 'name' => 'Premium',
                 'description' => 'Premium / 20 GB / 500min',
                 'price' => 20,
-                'category' => 'plan',
             ],
             [
                 'code' => 'traveller',
                 'name' => 'Traveller',
                 'description' => 'Traveller / Unlimited / 1000min',
                 'price' => 30,
-                'category' => 'plan',
             ],
             [
                 'code' => '500_uk_minute_bundle',
                 'name' => '500 UK minute bundle',
                 'description' => null,
                 'price' => 10,
-                'category' => 'plan',
             ],
             [
                 'code' => 'share_bundle',
                 'name' => 'Share bundle',
                 'description' => null,
                 'price' => 20,
-                'category' => 'plan',
             ],
         ];
 
         foreach (Tenant::all() as $tenant) {
-            $categories = [];
             $pricePlan = PricePlan::where('code', PricePlanEnum::MONTHLY->name)->first();
-            $categories['plan'] = Category::updateOrCreate(['code' => 'plan', 'tenant_id' => $tenant->id], ['name' => 'Plans']);
+            $solutionType = $tenant->solutionTypes()->where('code', 4)->first();
+            $category = Category::updateOrCreate(['code' => 'plan', 'tenant_id' => $tenant->id], [
+                'name' => 'Plans',
+                'solution_type_id' => $solutionType->id,
+            ]);
 
             foreach ($products as $temp) {
                 $product = Product::updateOrCreate([
-                    'code' => $temp['code'],
+                    'sku' => $temp['code'],
                     'tenant_id' => $tenant->id,
                 ], [
                     'name' => $temp['name'],
                     'description' => $temp['description'],
                     'price_plan_id' => $pricePlan->id,
+                    'category_id' => $category->id,
+                    'is_active' => 1,
                 ]);
 
                 $price = $product->prices()->updateOrCreate(
@@ -79,14 +79,9 @@ class CategoryProductsSeeder extends Seeder
                         'tenant_id' => $tenant->id,
                     ],
                     [
-                        'tax_rate' => 20,
                         'net' => $temp['price'] ?? 0,
                     ]
                 );
-
-                $price->calculate();
-
-                $product->categories()->attach($categories[$temp['category']]);
             }
         }
     }

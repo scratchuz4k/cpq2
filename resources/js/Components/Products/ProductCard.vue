@@ -170,7 +170,7 @@
                             <font-awesome-icon icon="fas fa-search" />
                         </InputIcon>
                         <InputText
-                            :id="'select-' + props.id + '-search'"
+                            :id="'select-' + proxyValue.id + '-search'"
                             v-model="searchInput"
                             placeholder="Search"
                             type="search"
@@ -283,9 +283,6 @@ const checkQuantity = _.debounce(async (product, temp) => {
         temp = product.stock;
     }
     product.quantity = temp;
-    if (product.quantity == 0) {
-        return;
-    }
 
     let item = quote.items.find((x) => x.product_code == product.code);
     if (!item) {

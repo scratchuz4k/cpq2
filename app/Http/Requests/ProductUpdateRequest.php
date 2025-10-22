@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Product;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
@@ -32,14 +33,37 @@ class ProductUpdateRequest extends FormRequest
         $user = Auth::user();
 
         return [
-            'code' => ['required', 'string', 'max:255',
+            'sku' => ['required', 'string', 'max:255',
                 Rule::unique('products')->where(fn ($query) => $query->where('tenant_id', $user->tenant_id)
-                    ->where('code', request('code')))->ignore($product_id),
+                    ->where('sku', request('sku')))->ignore($product_id),
             ],
-            'name' => 'required|string|max:255',
+            'name' => 'string|max:255',
+            'category_id' => 'exists:categories,id',
+            'price_plan_id' => 'exists:price_plans,id',
             'supplier_id' => 'nullable|exists:suppliers,id',
             'brand_id' => 'nullable|exists:brands,id',
-            'price_plan_id' => 'required|exists:price_plans,id',
         ];
+    }
+
+    /**
+     * Configure the validator instance.
+     */
+    public function withValidator($validator): void
+    {
+        $validator->after(function ($validator) {
+            $parentId = $this->input('parent_id');
+            $categoryId = $this->input('category_id');
+
+            if ($parentId) {
+                $parent = Product::find($parentId);
+
+                if ($parent && $parent->category_id === (int) $categoryId) {
+                    $validator->errors()->add(
+                        'parent_id',
+                        'The parent product cannot belong to the same category as the product.'
+                    );
+                }
+            }
+        });
     }
 }

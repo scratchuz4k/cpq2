@@ -5,15 +5,21 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, router } from '@inertiajs/vue3';
 import { Button } from 'primevue';
 import ToggleSwitch from 'primevue/toggleswitch';
+import Select from 'primevue/select';
+import Tabs from '@/Components/Tabs.vue';
+import Tab from '@/Components/Tab.vue';
 
 const props = defineProps({
-    category: Object
+    category: Object,
+    solution_types: Array
 });
 
 const product = ref(null);
 const category = reactive(props.category);
 
 const saveCate = () => {
+    let temp = category;
+    temp.solution_type_id = category.solution_type?.id ?? null;
     router.put(`/categories/${category.id}`, category, {
         onSuccess: (page) => {
             notyf.success('Updated with Success');
@@ -33,7 +39,7 @@ const setProductCategory = async (product_id, category_id, action) => {
         return;
     }
     try {
-        await axios.put('/api/categories/' + category_id, { product_id: product_id });
+        await axios.put('/api/products/' + product_id, { category_id: category_id });
         product.value = null;
 
         if (product_id) {
@@ -55,12 +61,12 @@ const items = ref([
 ]);
 </script>
 <template>
-    <Head title="New Product" />
+    <Head title="Edit Category" />
     <AuthenticatedLayout>
         <div class="panel">
-            <Header title="New Product" :breadcrumbs="items">
+            <Header title="Edit Category" :breadcrumbs="items">
                 <template #buttons>
-                    <PrimaryButton id="btn-save-product" @click="saveCate()">
+                    <PrimaryButton id="btn-save-category" @click="saveCate()">
                         <font-awesome-icon class="me-2" :icon="['fas', 'save']"></font-awesome-icon>
                         Save
                     </PrimaryButton>
@@ -81,17 +87,31 @@ const items = ref([
                             </ToggleSwitch>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label" for="product-code">Code:</label>
-                            <input id="product-code" v-model="category.code" class="form-control" />
+                            <label class="form-label" for="category-code">Code:</label>
+                            <input id="category-code" v-model="category.code" class="form-control" />
                         </div>
                         <div class="mb-3">
-                            <label class="form-label" for="product-name">Name:</label>
-                            <input id="product-name" v-model="category.name" class="form-control" />
+                            <label class="form-label" for="category-name">Name:</label>
+                            <input id="category-name" v-model="category.name" class="form-control" />
+                        </div>
+
+                        <h4>Relations</h4>
+                        <hr />
+                        <div class="mb-3">
+                            <label for="category-solution-type" class="form-label">Solution Type:</label>
+                            <Select
+                                inputId="category-solution-type"
+                                v-model="category.solution_type"
+                                :options="props.solution_types"
+                                optionLabel="name"
+                                placeholder="Select a Solution Type"
+                                class="w-100"
+                            />
                         </div>
                     </div>
                 </tab>
                 <tab title="Products">
-                    <form class="mt-3 d-flex" @submit.prevent="setProductCategory(product?.id, category.id, 'add')">
+                    <!-- <form class="mt-3 d-flex" @submit.prevent="setProductCategory(product?.id, category.id, 'add')">
                         <div class="me-3" style="width: 100%">
                             <label class="form-label">Add Products:</label>
                             <InputSelect
@@ -99,7 +119,7 @@ const items = ref([
                                 v-model="product"
                                 :fields="['name']"
                                 placeholder="Select a Product"
-                                :query="[{ column: 'categories.id', operator: 'is_null', value: 'category.id' }]"
+                                :query="[{ column: 'category.id', operator: 'is_null', value: 'category.id' }]"
                                 url="/products"
                             >
                             </InputSelect>
@@ -110,10 +130,10 @@ const items = ref([
                                 Add
                             </Button>
                         </div>
-                    </form>
+                    </form> -->
                     <div class="row mt-3">
                         <div class="col">
-                            <label class="form-label">Products:</label>
+                            <!-- <label class="form-label">Products:</label> -->
                             <Datatable
                                 id="group-products"
                                 :columns="[
@@ -125,7 +145,7 @@ const items = ref([
                                     { data: 'updated_at', title: 'Updated At', style: 'width:15%' },
                                     { data: 'actions', title: ' At', style: 'width:5%' }
                                 ]"
-                                :query="[{ column: 'categories.id', operator: 'equals', value: category.id }]"
+                                :query="[{ column: 'category.id', operator: 'equals', value: category.id }]"
                                 route="/products"
                             >
                                 <template #updated_at="{ value }">
@@ -134,7 +154,7 @@ const items = ref([
                                 <template #created_at="{ value }">
                                     {{ format.date(value) }}
                                 </template>
-                                <template #actions="{ data, value, index }">
+                                <!-- <template #actions="{ data, value, index }">
                                     <button
                                         class="btn px-2 py-0 mx-1 border-0"
                                         :id="'datatable-btn-' + index + '-delete'"
@@ -142,7 +162,7 @@ const items = ref([
                                     >
                                         <font-awesome-icon :icon="['fas', 'trash-alt']"></font-awesome-icon>
                                     </button>
-                                </template>
+                                </template> -->
                             </Datatable>
                         </div>
                     </div>

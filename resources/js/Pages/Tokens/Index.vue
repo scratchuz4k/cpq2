@@ -26,16 +26,21 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'My Account', url: '/my
                         link: true
                     }"
                     :columns="[
-                        { data: 'id', title: '#' },
-                        { data: 'is_active', title: 'Active' },
-                        { data: 'name', title: 'Name' },
-                        { data: 'entity.name', title: 'Entity' },
-                        { data: 'last_used_at', title: 'Last Used At' },
-                        { data: 'expires_at', title: 'Expires At' },
-                        { data: 'created_at', title: 'Created At' }
+                        { data: 'id', title: '#', style: 'width:5%' },
+                        { data: 'is_active', title: 'Active', style: 'width:5%' },
+                        { data: 'name', title: 'Name', style: 'width:20%' },
+                        { data: 'entity.name', title: 'Entity', style: 'width:15%' },
+                        { data: 'last_used_at', title: 'Last Used At', style: 'width:15%' },
+                        { data: 'expires_at', title: 'Expires At', style: 'width:15%' },
+                        { data: 'created_at', title: 'Created At', style: 'width:15%' }
                     ]"
                     route="/tokens"
                 >
+                    <template #entity.name="{ value }">
+                        <span class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm">{{
+                            value
+                        }}</span>
+                    </template>
                     <template #last_used_at="{ value }">
                         {{ format.date(value) }}
                     </template>

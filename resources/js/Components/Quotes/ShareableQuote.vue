@@ -1,5 +1,10 @@
 <template>
-    <button id="btn-shareable-open" class="btn btn-outline-primary me-2" @click="openShare()">
+    <button
+        id="btn-shareable-open"
+        class="btn btn-outline-primary me-2"
+        @click="openShare()"
+        :disabled="props.disabled"
+    >
         <font-awesome-icon :icon="['fas', 'share-nodes']"></font-awesome-icon>
         Share
     </button>
@@ -119,6 +124,12 @@ const isLoading = ref(false);
 const showShareDialog = ref(false);
 const dateNow = DateTime.now();
 
+const props = defineProps({
+    disabled: {
+        type: Boolean,
+        default: false
+    }
+});
 const shareLink = reactive({
     password: null,
     expires_at: quote.shared_link?.expires_at ?? null,
@@ -141,7 +152,7 @@ const createSharedLink = async () => {
         let res = await axios.post(`/api/shared-links`, {
             shareable_type: 'quotes',
             shareable_id: quote.id,
-            expires_at: shareLink.expires_at,
+            expires_at: DateTime.fromJSDate(shareLink.expires_at).toISO() ?? null,
             password: shareLink.password
         });
         shareLink.expires_at = res.data.data.expires_at;

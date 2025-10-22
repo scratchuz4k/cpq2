@@ -12,11 +12,15 @@ class CategoryResource extends JsonResource
      *
      * @return array<string, mixed>
      */
-    public function toArray(Request $request): array
+    public function toArray(Request $request): ?array
     {
+        if (is_null($this->resource)) {
+            return null;
+        }
+
         return [
             ...$this->resource->toArray(),
-            'products' => $this->products,
+            'solution_type' => SolutionTypeTenantResource::make($this->solutionType)->resolve(),
         ];
     }
 }

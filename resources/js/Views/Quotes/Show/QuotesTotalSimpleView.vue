@@ -3,8 +3,13 @@ import _ from 'lodash';
 import { ref } from 'vue';
 import { createOrder } from '@/Composables/useOrders.js';
 import { setQuote, quote } from '@composables/useQuote';
+import { getMarginThreshHoldWarning } from '@composables/useQuoteItem';
+import { usePage } from '@inertiajs/vue3';
 import { checkWarnings } from '@composables/warning.js';
 import WarningNote from '@/Components/WarningNote.vue';
+
+const page = usePage();
+const tenant = page.props.tenant;
 
 const props = defineProps({
     modelValue: Object,
@@ -16,11 +21,21 @@ setQuote(props.modelValue);
 
 let temp = quote.items;
 const warningProviders = ref([
-    { its: temp.some((item) => item.data?.providerName === 'ITS') },
-    { pxc: temp.some((item) => item.data?.providerName === 'PXC') }
+    { name: 'its', is_present: temp.some((item) => item.data?.providerName === 'ITS') },
+    { name: 'pxc', is_present: temp.some((item) => item.data?.providerName === 'PXC') }
 ]);
 
 checkWarnings(warningProviders.value, null);
+
+const disableButtonSendToOrder = ref(false);
+const createOrderAndRedirect = async (id) => {
+    disableButtonSendToOrder.value = true;
+    const res = await createOrder(id);
+    if (res) {
+        window.location = '/dashboard';
+    }
+    disableButtonSendToOrder.value = false;
+};
 
 const items = ref([
     { label: 'Home', url: '/dashboard' },
@@ -34,11 +49,19 @@ const items = ref([
 <template>
     <Header title="Create a quote" :breadcrumbs="items"></Header>
     <InfoConnectivity v-if="!preview" :quote="quote"></InfoConnectivity>
-
+    <div class="row" v-if="warningProviders.find((x) => x.is_present) || quote.items.some((x) => !x.is_margin_valid)">
+        <div class="col">
+            <InfoBox class="mb-4 py-0" severity="danger">
+                <WarningNote :warnings="warningProviders" />
+                <p v-if="quote.items.some((x) => !x.is_margin_valid)" class="small">
+                    {{ getMarginThreshHoldWarning() }}
+                </p>
+            </InfoBox>
+        </div>
+    </div>
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div class="d-flex justify-content-between align-items-center">
             <p class="fs-4 me-3 mb-0"><b>Your quote</b></p>
-            <p class="mb-0 text-primary bold fs-5 pt-1">STEP 2/2</p>
         </div>
         <div class="d-flex justify-content-between align-items-center">
             <ActivityDialog
@@ -57,23 +80,28 @@ const items = ref([
                     }
                 ]"
             ></ActivityDialog>
-            <ShareableQuote></ShareableQuote>
-            <button hidden class="btn btn-outline-primary me-2" @click="createOrder(quote.id)">
+            <ShareableQuote :disabled="quote.items.some((x) => !x.is_margin_valid)"></ShareableQuote>
+
+            <button
+                :hidden="!(tenant.configurations.orders_flow_is_active === '1')"
+                :disabled="disableButtonSendToOrder || quote.items.some((x) => !x.is_margin_valid)"
+                class="btn btn-primary me-2"
+                @click="createOrderAndRedirect(quote.id)"
+            >
                 <font-awesome-icon class="me-2" :icon="['fas', 'thumbtack']"> </font-awesome-icon>Send to Order
             </button>
-            <button v-if="modelValue.items.length == 0" class="btn btn-outline-primary me-2" type="button" disabled>
-                <font-awesome-icon :icon="['far', 'file-pdf']"></font-awesome-icon>
-                Preview PDF
-            </button>
             <a
-                v-else
                 class="btn btn-outline-primary me-2"
-                type="submit"
                 :href="route('quotes.preview', { quote: quote.id })"
+                v-if="!quote.items.some((x) => !x.is_margin_valid)"
             >
                 <font-awesome-icon :icon="['far', 'file-pdf']"></font-awesome-icon>
-                Preview PDF
+                Preview
             </a>
+            <button class="btn btn-outline-primary me-2" v-else disabled="true">
+                <font-awesome-icon :icon="['far', 'file-pdf']"></font-awesome-icon>
+                Preview
+            </button>
             <a :href="route('dashboard')" class="btn btn-primary" type="submit"> Save and close </a>
         </div>
     </div>
@@ -82,16 +110,6 @@ const items = ref([
         <div class="col">
             <!-- Product List -->
             <!-- In a real application, this would be dynamically generated based on the selected solution type -->
-            <div v-if="warningProviders.some((obj) => Object.values(obj).includes(true))">
-                <div class="row">
-                    <div class="col">
-                        <InfoBox class="mb-4 py-0" severity="danger">
-                            <WarningNote :warnings="warningProviders" />
-                        </InfoBox>
-                    </div>
-                </div>
-            </div>
-
             <TableCustom v-if="quote.solution_type.configurations?.has_custom_table == 1"></TableCustom>
             <TableSimple v-else :preview="preview"></TableSimple>
 
@@ -121,23 +139,27 @@ const items = ref([
                     }
                 ]"
             ></ActivityDialog>
-            <ShareableQuote></ShareableQuote>
-            <button hidden class="btn btn-outline-primary me-2" @click="createOrder(quote.id)">
+            <ShareableQuote :disabled="quote.items.some((x) => !x.is_margin_valid)"></ShareableQuote>
+            <button
+                :hidden="!(tenant.configurations.orders_flow_is_active === '1')"
+                :disabled="disableButtonSendToOrder || quote.items.some((x) => !x.is_margin_valid)"
+                class="btn btn-primary me-2"
+                @click="createOrderAndRedirect(quote.id)"
+            >
                 <font-awesome-icon class="me-2" :icon="['fas', 'thumbtack']"> </font-awesome-icon>Send to Order
             </button>
-            <button v-if="modelValue.items.length == 0" class="btn btn-outline-primary me-2" type="button" disabled>
-                <font-awesome-icon :icon="['far', 'file-pdf']"></font-awesome-icon>
-                Preview PDF
-            </button>
             <a
-                v-else
                 class="btn btn-outline-primary me-2"
-                type="submit"
                 :href="route('quotes.preview', { quote: quote.id })"
+                v-if="!quote.items.some((x) => !x.is_margin_valid)"
             >
                 <font-awesome-icon :icon="['far', 'file-pdf']"></font-awesome-icon>
-                Preview PDF
+                Preview
             </a>
+            <button class="btn btn-outline-primary me-2" v-else disabled="true">
+                <font-awesome-icon :icon="['far', 'file-pdf']"></font-awesome-icon>
+                Preview
+            </button>
             <a :href="route('dashboard')" class="btn btn-primary" type="submit"> Save and close </a>
         </div>
     </div>

@@ -21,6 +21,9 @@ enum CloudMarketSubprovidersEnum: string
     case VIRGIN = 'Virgin';
     case VODAFONE = 'Vodafone';
     case VIRTUAL1 = 'Virtual1';
+    case ELEVATE = 'Elevate';
+    case COMMUNITY_FIBRE = 'Community Fibre';
+    case NETOMNIA = 'Netomnia';
 
     public static function asArray(): array
     {

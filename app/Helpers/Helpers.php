@@ -70,6 +70,15 @@ if (! function_exists('formated_date_range')) {
     }
 }
 
+if (! function_exists('get_tenant_config')) {
+    function get_tenant_config(string $key): ?string
+    {
+        $configs = auth()->user()->currentTenant->configs ?? [];
+
+        return ! empty($configs[$key]) ? $configs[$key] : null;
+    }
+}
+
 if (! function_exists('safeXmlParse')) {
     function safeXmlParse(string $xmlString)
     {

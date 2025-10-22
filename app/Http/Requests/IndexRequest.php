@@ -40,10 +40,15 @@ class IndexRequest extends FormRequest
             'limit' => 'nullable|numeric',
             'search' => 'nullable|string',
             'filters' => 'nullable|array',
-            'filters.*.column' => 'required|string',
-            'filters.*.operator' => 'required|in:not_equals,equals,not_contains,contains,starts_with,ends_with,greater_than,less_than,greater_than_or_equal_to,less_than_or_equal_to,is_null,in,search,not_in',
+            'filters.*.group' => 'nullable|array',
+            'filters.*.column' => 'required_without:filters.*.group|string',
+            'filters.*.operator' => 'required_without:filters.*.group|in:not_equals,equals,not_contains,contains,starts_with,ends_with,greater_than,less_than,greater_than_or_equal_to,less_than_or_equal_to,is_null,in,search,not_in',
             'filters.*.value' => 'nullable',
             'filters.*.function' => 'nullable|in:where,orWhere',
+            'filters.*.group.*.column' => 'required|string',
+            'filters.*.group.*.operator' => 'required|in:not_equals,equals,not_contains,contains,starts_with,ends_with,greater_than,less_than,greater_than_or_equal_to,less_than_or_equal_to,is_null,in,search,not_in',
+            'filters.*.group.*.value' => 'nullable',
+            'filters.*.group.*.function' => 'nullable|in:where,orWhere',
         ];
     }
 }

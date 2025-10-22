@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Category;
 use App\Models\SolutionType;
 use App\Models\SolutionTypeTenant;
 use Illuminate\Support\Facades\Auth;
@@ -38,8 +39,11 @@ class SolutionTypeService
             'updated_at' => now(),
         ]);
 
-        if (array_key_exists('categories', $array)) {
-            $solution_type->categories()->sync($array['categories']);
+        if (array_key_exists('categories', $array) && is_array($array['categories'])) {
+            foreach ($array['categories'] as $id => $data) {
+                $category = Category::find($id);
+                $category->update(['solution_type_id' => $solution_type->id, 'sort_order' => $data['order']]);
+            }
         }
 
         if (array_key_exists('tables', $array)) {

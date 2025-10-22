@@ -2,12 +2,14 @@
 
 namespace App\Imports;
 
+use App\Models\Tenant;
 use App\Models\User;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 use Maatwebsite\Excel\Concerns\SkipsErrors;
 use Maatwebsite\Excel\Concerns\ToCollection;
@@ -26,6 +28,13 @@ class UsersImport implements ToCollection, WithBatchInserts, WithHeadingRow
     ];
 
     private $usersWithManagers = [];
+
+    private Tenant $tenant;
+
+    public function __construct(protected bool $overwrite = false)
+    {
+        $this->tenant = Tenant::current();
+    }
 
     /**
      * Recursively processes and inserts users with missing managers.
@@ -51,7 +60,8 @@ class UsersImport implements ToCollection, WithBatchInserts, WithHeadingRow
         if ($manager) {
             $this->insertUser($currentUser, $manager->id);
         } else {
-            $managerKey = array_search($currentUser['managername'], array_column($this->usersWithManagers, 'name'), false);
+            $managerKey = array_search($currentUser['managername'], array_column($this->usersWithManagers, 'name'),
+                false);
 
             if ($managerKey !== false) {
                 $this->processUsersWithManagers($managerKey);
@@ -61,11 +71,15 @@ class UsersImport implements ToCollection, WithBatchInserts, WithHeadingRow
                     $this->insertUser($currentUser, $newManager->id);
                 } else {
                     $this->results['skipped']++;
-                    $this->results['errors'][] = ['row' => $currentUser, 'error' => 'Manager "'.$currentUser['managername'].'" not found!'];
+                    $this->results['errors'][] = [
+                        'row' => $currentUser, 'error' => 'Manager "'.$currentUser['managername'].'" not found!',
+                    ];
                 }
             } else {
                 $this->results['skipped']++;
-                $this->results['errors'][] = ['row' => $currentUser, 'error' => 'Manager "'.$currentUser['managername'].'" not found!'];
+                $this->results['errors'][] = [
+                    'row' => $currentUser, 'error' => 'Manager "'.$currentUser['managername'].'" not found!',
+                ];
             }
         }
 
@@ -84,7 +98,9 @@ class UsersImport implements ToCollection, WithBatchInserts, WithHeadingRow
         try {
             $validator = Validator::make($user, [
                 'name' => 'required|string|max:255',
-                'email' => 'required|email|unique:users,email',
+                'email' => $this->overwrite
+                    ? 'required|email'
+                    : ['required', 'email', Rule::unique('users')],
             ]);
 
             if ($validator->fails()) {
@@ -100,6 +116,7 @@ class UsersImport implements ToCollection, WithBatchInserts, WithHeadingRow
                 'email' => $user['email'] ?? '',
                 'password' => ! empty($user['password']) ? Hash::make($user['password']) : Hash::make(Str::random(12)),
                 'sso' => isset($user['sso']) && (int) $user['sso'] === 1 ? 1 : 0,
+                'tenant_id' => $this->tenant->id,
             ]);
 
             $newUser->save();
@@ -108,7 +125,7 @@ class UsersImport implements ToCollection, WithBatchInserts, WithHeadingRow
 
                 $user = request()->user();
                 DB::table('tenant_user')->insert([
-                    'tenant_id' => $user->currentTenant->id,
+                    'tenant_id' => $this->tenant->id,
                     'user_id' => $newUser->id,
                 ]);
 
@@ -159,6 +176,16 @@ class UsersImport implements ToCollection, WithBatchInserts, WithHeadingRow
         return [
             '*.email' => 'required|email|unique:users,email',
             '*.name' => 'required|string|max:255',
+        ];
+    }
+
+    public static function getImportTemplate()
+    {
+        $template = require app_path('Helpers/Import/users_import_template.php');
+
+        return [
+            'data' => collect($template['data']),
+            'filename' => $template['filename'],
         ];
     }
 }

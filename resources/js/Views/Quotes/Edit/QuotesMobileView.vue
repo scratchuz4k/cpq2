@@ -66,6 +66,10 @@ const saveQuote = async () => {
     step.value++;
 };
 
+emitter.on('save-quote', () => {
+    saveQuote();
+});
+
 const getHardwareProductsCount = () => {
     let items = [...quote.items];
     return items.filter((x) => !x.product_id).reduce((acc, i) => (acc += i.quantity), 0);
@@ -137,16 +141,16 @@ getCategoriesWithProducts();
                                 </div>
                             </div>
                         </div>
-                        <h4>{{ active_categories.length + 1 }}. Add-ons</h4>
-                        <div class="sidebar_add_ons mb-3">
+                        <h4>{{ active_categories.length + 1 }}. Handsets</h4>
+                        <!--<div class="sidebar_add_ons mb-3">
                             <div class="item mb-2">
                                 <span>Hardware</span
                                 ><span class="badge bg-light-grey dark">
                                     {{ getHardwareProductsCount() }}
                                 </span>
                             </div>
-                        </div>
-                        <button class="btn btn-primary mt-2" @click="saveQuote()">Next</button>
+                        </div>-->
+                        <button id="next-step-btn" class="btn btn-primary mt-2" @click="saveQuote()">Next</button>
                     </div>
                 </div>
             </div>

@@ -34,10 +34,8 @@ class Price extends Model
 
     protected $fillable = [
         'code',
-        'tax_rate',
+        'cost',
         'net',
-        'tax',
-        'gross',
         'product_id',
         'tenant_id',
     ];
@@ -53,7 +51,6 @@ class Price extends Model
             static::$priceRules->find($model->product, $model->product->supplier, $account, $model->product->pricePlan);
             $model->setAttribute('net_spa', static::$priceRules->apply((float) $model->net));
             $model->setAttribute('active_spas', static::$priceRules->getAppliedSpas());
-            $model->calculate();
         });
 
         static::saving(function ($model) {
@@ -76,11 +73,5 @@ class Price extends Model
     {
         related:
         return $this->belongsTo(PricePlan::class);
-    }
-
-    public function calculate()
-    {
-        $this->tax = $this->net * ($this->tax_rate / 100);
-        $this->gross = $this->net_spa * (1 + ($this->tax_rate / 100));
     }
 }

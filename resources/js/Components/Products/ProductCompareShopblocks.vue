@@ -157,7 +157,7 @@
                                     <font-awesome-icon icon="fas fa-search" />
                                 </InputIcon>
                                 <InputText
-                                    :id="'select-' + props.id + '-search'"
+                                    id="'select-compare-search'"
                                     v-model="searchInput"
                                     placeholder="Search"
                                     type="search"
@@ -358,6 +358,7 @@ const getFeatures = () => {
         x.features = res.data?.data.reduce((acc, x) => acc.concat(x.items), []);
     });
     loadingFeatures.value = false;
+    getFeaturesTable();
 };
 
 const removeCompareItem = (index) => {
@@ -377,7 +378,6 @@ watch(props.modelValue, () => {
     }
     document.body.style.overflow = show.value ? 'hidden' : 'auto';
     getFeatures();
-    getFeaturesTable();
 });
 
 watch(show, () => {
