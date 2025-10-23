@@ -85,14 +85,7 @@ const getOptions = async () => {
     } catch (error) {
         meta.isRequestCompleted = false;
     }
-
-    if (!meta.isRequestCompleted) {
-        timeoutId = setTimeout(() => {
-            getOptions();
-        }, 2000);
-    } else {
-        isLoading.value = false;
-    }
+    isLoading.value = false;
 };
 const checkProduct = (article) => {
     let item = quote.items.find((item) => item.product_code == article.code);
