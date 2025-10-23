@@ -95,7 +95,14 @@ const items = ref([
                 </div>
                 <div class="mb-3">
                     <label for="user-password" class="form-label">Password:</label>
-                    <input id="user-password" type="password" class="form-control" v-model="form.password" required />
+                    <input
+                        id="user-password"
+                        type="password"
+                        autocomplete="off"
+                        class="form-control"
+                        v-model="form.password"
+                        required
+                    />
                     <div class="text-danger" v-if="form.errors?.password">{{ form.errors?.password }}</div>
                 </div>
                 <div class="mb-3">

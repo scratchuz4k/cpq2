@@ -122,13 +122,19 @@ const items = ref([
                         </div>
                         <div class="mb-3">
                             <label for="api-code" class="form-label">Password:</label>
-                            <input id="api-password" class="form-control" type="password" v-model="api.password" />
+                            <input
+                                id="api-password"
+                                class="form-control"
+                                type="password"
+                                autocomplete="off"
+                                v-model="api.password"
+                            />
                         </div>
                     </template>
                     <template v-if="api.auth_type == 'token'">
                         <div class="mb-3">
                             <label for="api-token" class="form-label">Token:</label>
-                            <input id="api-token" class="form-control" v-model="api.token" />
+                            <input id="api-token" autocomplete="off" class="form-control" v-model="api.token" />
                         </div>
                     </template>
                 </div>

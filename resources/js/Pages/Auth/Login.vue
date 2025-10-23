@@ -72,7 +72,7 @@ const submit = () => {
                                         type="password"
                                         v-model="form.password"
                                         required
-                                        autocomplete="current-password"
+                                        autocomplete="off"
                                     />
 
                                     <InputError class="invalid-feedback" :message="form.errors.password" />
