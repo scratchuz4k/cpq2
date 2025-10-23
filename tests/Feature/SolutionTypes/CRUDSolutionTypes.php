@@ -1,6 +1,5 @@
 <?php
 
-use App\Models\Merchant;
 use App\Models\Tenant;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -19,7 +18,6 @@ beforeEach(function () {
 });
 
 it('Solution Type CRUD', function () {
-    // Create Merchant
     $data = [
         'tenant_id' => 1,
         'solution_type_id' => 1,

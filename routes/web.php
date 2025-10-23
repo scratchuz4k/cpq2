@@ -11,7 +11,6 @@ use App\Http\Controllers\Web\General\BlacklistController;
 use App\Http\Controllers\Web\GroupAccountController;
 use App\Http\Controllers\Web\GroupController;
 use App\Http\Controllers\Web\ImportController;
-use App\Http\Controllers\Web\MerchantController;
 use App\Http\Controllers\Web\OrderController;
 use App\Http\Controllers\Web\ProductController;
 use App\Http\Controllers\Web\ProfileController;
@@ -85,7 +84,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
         'quotes' => QuoteController::class,
         'orders' => OrderController::class,
         'tenants' => TenantController::class,
-        'merchants' => MerchantController::class,
         'products' => ProductController::class,
         'suppliers' => SupplierController::class,
         'spas' => SpaController::class,
