@@ -57,7 +57,7 @@ class SpaController extends BaseController
         try {
             $spa = DB::transaction(fn () => $this->spasService->store($request->all()));
         } catch (\Exception $e) {
-            throw new \Exception($e);
+            return handleWebException($e);
         }
 
         return redirect()->route('spas.index');
@@ -95,7 +95,7 @@ class SpaController extends BaseController
         try {
             $spa = DB::transaction(fn () => $this->spasService->update($spa, $request->all()));
         } catch (\Exception $e) {
-            throw new \Exception($e);
+            return handleWebException($e);
         }
 
         return redirect()->route('spas.index');

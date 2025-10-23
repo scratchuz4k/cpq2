@@ -14,7 +14,6 @@ use App\Models\General\Blacklist;
 use App\Models\Product;
 use App\Services\BlacklistService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -66,10 +65,7 @@ class BlacklistController extends BaseController
         try {
             $this->blacklistService->store($request->all());
         } catch (\Exception $e) {
-            if (! env('APP_DEBUG')) {
-                Log::error($e->getMessage());
-            }
-            throw new \Exception($e);
+            return handleWebException($e);
         }
 
         return redirect()->route('blacklists.index');
@@ -91,10 +87,7 @@ class BlacklistController extends BaseController
         try {
             $item = $this->blacklistService->edit($request->route('blacklist'));
         } catch (\Exception $e) {
-            if (! env('APP_DEBUG')) {
-                Log::error($e->getMessage());
-            }
-            throw new \Exception($e);
+            return handleWebException($e);
         }
 
         return Inertia::render('Blacklists/Edit', [
@@ -124,10 +117,7 @@ class BlacklistController extends BaseController
                 $request->all()
             );
         } catch (\Exception $e) {
-            if (! env('APP_DEBUG')) {
-                Log::error($e->getMessage());
-            }
-            throw new \Exception($e);
+            return handleWebException($e);
         }
 
         return redirect()->route('blacklists.index');
