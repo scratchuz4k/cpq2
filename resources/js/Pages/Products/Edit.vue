@@ -42,7 +42,6 @@ const saveProduct = () => {
         ...product,
         expires_at: product.expires_at ? DateTime.fromJSDate(product.expires_at).toISO() : null,
         supplier_id: product.supplier?.id ?? null,
-        brand_id: product.brand?.id ?? null,
         parent_id: product.parent?.id ?? null,
         category_id: category.value?.id ?? null
     };
@@ -130,8 +129,8 @@ const items = ref([
                 <tab title="General" :selected="true">
                     <div class="my-3">
                         <p>
-                            This section provides an overview of the product, including general information, associated
-                            brands, and suppliers.
+                            This section provides an overview of the product, including general information and
+                            associated suppliers.
                         </p>
                     </div>
                     <div class="row my-4">
@@ -233,20 +232,6 @@ const items = ref([
                                 >
                                 </InputSelect>
                             </div>
-
-                            <div class="mb-3">
-                                <label for="product-brand" class="form-label">Brand:</label>
-                                <InputSelect
-                                    id="product-brand"
-                                    url="/brands"
-                                    :fields="['name']"
-                                    v-model="product.brand"
-                                    placeholder="Select a Brand"
-                                    :query="[{ column: 'is_active', operator: 'equals', value: 1 }]"
-                                >
-                                </InputSelect>
-                            </div>
-
                             <div class="mb-3">
                                 <label for="product-parent" class="form-label">Parent:</label>
                                 <div class="input-group p-0">

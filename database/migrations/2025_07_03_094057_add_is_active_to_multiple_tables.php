@@ -8,7 +8,6 @@ return new class extends Migration
 {
     protected $models = [
         'App\Models\Account',
-        'App\Models\Brand',
         'App\Models\Merchant',
         'App\Models\Product',
         'App\Models\Region',

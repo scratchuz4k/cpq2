@@ -3,7 +3,6 @@
 use App\Http\Controllers\Web\AccountController;
 use App\Http\Controllers\Web\ActivityController;
 use App\Http\Controllers\Web\ApiController;
-use App\Http\Controllers\Web\BrandController;
 use App\Http\Controllers\Web\CategoryController;
 use App\Http\Controllers\Web\DashboardController;
 use App\Http\Controllers\Web\EmailHistoryController;
@@ -87,7 +86,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
         'quotes' => QuoteController::class,
         'orders' => OrderController::class,
         'tenants' => TenantController::class,
-        'brands' => BrandController::class,
         'merchants' => MerchantController::class,
         'products' => ProductController::class,
         'suppliers' => SupplierController::class,

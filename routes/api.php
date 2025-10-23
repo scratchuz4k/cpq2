@@ -3,7 +3,6 @@
 use App\Http\Controllers\Api\AccountController;
 use App\Http\Controllers\Api\ActivityController;
 use App\Http\Controllers\Api\ApiController;
-use App\Http\Controllers\Api\BrandController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\ContactController;
 use App\Http\Controllers\Api\DashboardController;
@@ -84,7 +83,6 @@ Route::middleware(['api', 'auth:sanctum'])->group(function () {
         'order-items' => OrderItemController::class,
         'solution-types' => SolutionTypeController::class,
         'permissions' => PermissionController::class,
-        'brands' => BrandController::class,
         'merchants' => MerchantController::class,
         'prices' => PriceController::class,
         'suppliers' => SupplierController::class,
