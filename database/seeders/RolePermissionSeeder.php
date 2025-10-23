@@ -45,7 +45,6 @@ class RolePermissionSeeder extends Seeder
                 'price' => 'Price',
                 'category' => 'Category',
                 'product' => 'Product',
-                'region' => 'Region',
                 'supplier' => 'Supplier',
                 'spa' => 'Spa',
                 'user' => 'User',
@@ -75,7 +74,7 @@ class RolePermissionSeeder extends Seeder
                 'parent' => 'Super Admin',
                 'permissions' => [
                     'quote', 'quote_item', 'order', 'order_item', 'merchant', 'account', 'contact',
-                    'price', 'product', 'category', 'region', 'tenant', 'supplier',
+                    'price', 'product', 'category', 'tenant', 'supplier',
                     'spa', 'user', 'solution_type', 'api', 'price_plan', 'activity', 'email_template', 'email_history',
                     'group', 'blacklist', 'import',
                 ],
