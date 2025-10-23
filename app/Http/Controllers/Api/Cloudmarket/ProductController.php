@@ -18,6 +18,7 @@ use App\Services\External\CloudMarketService;
 use Dedoc\Scramble\Attributes\ExcludeRouteFromDocs;
 use Exception;
 use Illuminate\Http\Request;
+use stdClass;
 
 class ProductController extends BaseController
 {
@@ -75,7 +76,7 @@ class ProductController extends BaseController
         $quote = $this->getQuote($request);
         $address = $this->generateAddress($quote);
         $filename = $this->generateFilename($quote, $address);
-        $data = $quote->data;
+        $data = $quote->data ?? new stdClass;
         $data->filename = $filename;
         $quote->update(['data' => $data]);
         $product = $this->getProduct($quote, 'Primary Product');

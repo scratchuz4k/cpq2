@@ -86,7 +86,13 @@ const getAddons = async () => {
         meta.isRequestCompleted = true;
     }
 
-    isLoading.value = false;
+    if (!meta.isRequestCompleted) {
+        timeoutId = setTimeout(() => {
+            getAddons();
+        }, 4000);
+    } else {
+        isLoading.value = false;
+    }
 };
 const checkProduct = (article) => {
     let item = quote.items.find((item) => item.product_code == article.code);

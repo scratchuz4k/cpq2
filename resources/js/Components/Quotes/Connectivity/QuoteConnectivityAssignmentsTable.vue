@@ -83,9 +83,16 @@ const getOptions = async () => {
         meta.overallTotal = res.data.overall_total;
         meta.isRequestCompleted = !!res.data.finished_at;
     } catch (error) {
-        meta.isRequestCompleted = false;
+        meta.isRequestCompleted = true;
     }
-    isLoading.value = false;
+
+    if (!meta.isRequestCompleted) {
+        timeoutId = setTimeout(() => {
+            getOptions();
+        }, 2000);
+    } else {
+        isLoading.value = false;
+    }
 };
 const checkProduct = (article) => {
     let item = quote.items.find((item) => item.product_code == article.code);

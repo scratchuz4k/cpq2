@@ -238,7 +238,7 @@ const scrollToDiv = () => {
 
 const saveQuote = async () => {
     await axios.get('/api/cloudmarket/products/save-quote?quote_id=' + props.modelValue.id);
-    router.get(route('quotes.show', { quote: props.modelValue.id }));
+    router.visit(route('quotes.show', { quote: props.modelValue.id }));
 };
 
 watch(

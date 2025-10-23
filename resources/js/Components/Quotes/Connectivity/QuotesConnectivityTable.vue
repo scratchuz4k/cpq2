@@ -233,7 +233,7 @@ const getArticles = async (clearCache = false, runTimeout = false) => {
         console.error(error);
         notyf.error(error.message);
         isLoading.value = false;
-        meta.isRequestCompleted = false;
+        meta.isRequestCompleted = true;
         showLoadingModal.value = false;
     }
 };
