@@ -376,10 +376,7 @@ onMounted(() => {
                                                       : value
                                             "
                                             class="px-3 py-1"
-                                            data-bs-toggle="tooltip"
-                                            data-bs-placement="top"
-                                            :data-bs-original-title="selectedFilter.name"
-                                            v-tooltip
+                                            :title="selectedFilter.name"
                                         >
                                             <template #close-button>
                                                 <font-awesome-icon

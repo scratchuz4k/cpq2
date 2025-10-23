@@ -63,14 +63,16 @@
                             v-tooltip
                         />
                     </div>
-                    <button
-                        type="button "
-                        class="btn btn-primary btn-sm btn-secondary mt-2"
-                        data-mdb-ripple-init
-                        @click="removeItem(article)"
-                    >
-                        Remove
-                    </button>
+                    <div class="text-end">
+                        <button
+                            type="button "
+                            class="btn btn-primary btn-sm btn-secondary mt-2"
+                            data-mdb-ripple-init
+                            @click="removeItem(article)"
+                        >
+                            Remove
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>

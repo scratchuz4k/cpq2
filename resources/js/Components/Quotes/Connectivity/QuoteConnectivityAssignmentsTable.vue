@@ -16,8 +16,8 @@
         <div class="row mb-4" v-if="options.length">
             <div class="col-3 mb-3" v-for="addon in options">
                 <div
-                    class="card cursor-pointer h-100"
-                    :class="[quote.items.find((x) => x.product_code == addon.code) ? 'border-primary border-2' : null]"
+                    class="card bg-light cursor-pointer h-100"
+                    :class="[quote.items.find((x) => x.product_code == addon.code) ? 'border-primary' : null]"
                     @click="checkProduct(addon)"
                 >
                     <div class="card-body d-flex" style="flex-direction: column; justify-content: space-between">
@@ -116,7 +116,7 @@ window.addEventListener('beforeunload', () => {
 
 getOptions();
 </script>
-<style>
+<style scoped>
 .blink {
     transition: all ease-in-out;
     animation: blink-animation 1s linear infinite;
@@ -130,5 +130,13 @@ getOptions();
     50% {
         opacity: 0.3;
     }
+}
+.border-primary {
+    background-color: var(--color-purple-light) !important;
+    border-color: var(--color-purple) !important;
+    box-shadow:
+        inset 0 0 1px #fff,
+        inset 0 1px 7px #ebebeb,
+        0 3px 6px -3px #bbb;
 }
 </style>
