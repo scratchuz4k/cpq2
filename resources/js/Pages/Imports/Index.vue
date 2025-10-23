@@ -9,6 +9,8 @@ import { exportData } from '@/Composables/export.js';
 import queryString from 'query-string';
 import CountUp from 'vue-countup-v3';
 import Panel from 'primevue/panel';
+import Table from 'primevue/datatable';
+import Column from 'primevue/column';
 
 const page = usePage();
 const props = defineProps({
@@ -21,7 +23,18 @@ const props = defineProps({
 const showForm = ref(false);
 const showImportPreview = ref(false);
 const isLoading = ref(false);
-const previewData = reactive({});
+const previewData = ref(null);
+
+// SIMPLIFIED FUNCTION
+const rowClass = (rowData) => {
+    // Check for errors safely. If the path doesn't exist, default to an empty array [].
+    const errors = previewData.value.results?.errors ?? [];
+
+    // Now, `errors` is guaranteed to be an array, so .some() will never fail.
+    const hasError = errors.some((errorItem) => errorItem.row?.sku === rowData.sku);
+
+    return hasError ? 'row-has-error' : null;
+};
 
 const onFileChange = (event) => {
     form.file = event.target.files[0];
@@ -246,52 +259,36 @@ watch(
         >
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 pb-2">
                 <hr class="mt-0" />
-                <Panel class="mt-3" header="Import Details" :toggleable="true">
-                    <div class="mt-2 row row-cols-1 row-cols-md-2 g-3 mb-2">
-                        <p><b>File Uploaded By:</b><br />{{ previewData.value.user.name }}</p>
-                        <p>
-                            <b>Uploaded File:</b><br />
-                            <a class="btn p-0 text-decoration-underline" title="Download file">
-                                <font-awesome-icon :icon="['fas', 'download']" class="me-1" />
-                                {{ previewData.value.resource.title }}
-                            </a>
-                        </p>
-                        <p v-if="previewData.value.model === 'Product'">
-                            <b>Overwrite Existing Products:</b><br />
-                            <span class="text-secondary" v-if="previewData.value.overwrite">
-                                <font-awesome-icon
-                                    :icon="['fas', 'circle-check']"
-                                    class="me-1 text-primary"
-                                    size="lg"
-                                />
-                                <i>true</i>
-                            </span>
-                            <span class="text-secondary" v-else>
-                                <font-awesome-icon
-                                    :icon="['far', 'circle-xmark']"
-                                    class="me-1 text-secondary"
-                                    size="lg"
-                                />
-                                <i>false</i>
-                            </span>
-                        </p>
-                        <p>
-                            <b>Model:</b><br />
-                            <span class="badge border border-secondary text-secondary opacity-75 lh-sm text-uppercase">
-                                {{ previewData.value.model }}</span
-                            >
-                        </p>
+                <Panel v-if="previewData" class="mt-3" header="Results" :toggleable="true">
+                    <div class="mt-2 row row-cols-1 g-3 mb-2">
+                        <Table
+                            :value="previewData.results?.data"
+                            :rowClass="rowClass"
+                            tableStyle="min-width: 50rem"
+                            :size="'small'"
+                            class="p-datatable-sm preview-table"
+                        >
+                            <Column field="sku" header="Sku"></Column>
+                            <Column field="name" header="Name"></Column>
+                            <Column field="description" header="Description"></Column>
+                            <Column field="supplier_id" header="Supplier ID"></Column>
+                            <Column field="category_id" header="Category ID"></Column>
+                            <Column field="status" header="Status"></Column>
+                            <Column field="expires_at" header="Expires Date"></Column>
+                            <Column field="price_code" header="Price Code"></Column>
+                            <Column field="price_cost" header="Price Cost"></Column>
+                            <Column field="price_net" header="Price Net"></Column>
+                            <Column field="price_plan_id" header="Price Plan ID"></Column>
+                            <Column field="parent_sku" header="Parent Sku"></Column>
+                        </Table>
                     </div>
-                </Panel>
-
-                <Panel class="mt-3" header="Results" :toggleable="true">
                     <div class="mt-2 row row-cols-1 row-cols-md-3 g-3 mb-2">
                         <div class="col">
                             <div class="card py-4 bg-light border-0">
                                 <div class="card-body text-center p-2 text-decoration-none">
                                     <div class="fw-bold mb-1">Rows will be Processed</div>
                                     <span class="display-6">
-                                        <count-up :endVal="previewData.value.results?.processed ?? 0" />
+                                        <count-up :endVal="previewData.results?.processed ?? 0" />
                                     </span>
                                 </div>
                             </div>
@@ -301,7 +298,7 @@ watch(
                                 <div class="card-body text-center p-2 text-decoration-none">
                                     <div class="fw-bold mb-1">Rows will be Imported</div>
                                     <span class="display-6">
-                                        <count-up :endVal="previewData.value.results?.success ?? 0" />
+                                        <count-up :endVal="previewData.results?.success ?? 0" />
                                     </span>
                                 </div>
                             </div>
@@ -311,7 +308,7 @@ watch(
                                 <div class="card-body text-center p-2 text-decoration-none">
                                     <div class="fw-bold mb-1">Rows will be Skipped</div>
                                     <span class="display-6">
-                                        <count-up :endVal="previewData.value.results?.skipped ?? 0" />
+                                        <count-up :endVal="previewData.results?.skipped ?? 0" />
                                     </span>
                                 </div>
                             </div>
@@ -319,9 +316,9 @@ watch(
                     </div>
                     <br />
                     <p class="fw-semibold">Errors</p>
-                    <ul v-if="previewData.value.results?.errors?.length > 0">
-                        <li class="rows" v-for="(row, index) in previewData.value.results.errors" :key="index">
-                            {{ previewData.value.model }} {{ row.row?.name || 'Unknown' }}:
+                    <ul v-if="previewData.results?.errors?.length > 0">
+                        <li class="rows" v-for="(row, index) in previewData.results.errors" :key="index">
+                            {{ previewData.model }} {{ row.row?.name || 'Unknown' }}:
                             <ul>
                                 <li v-if="row.errors" v-for="(error, key) in row.errors" :key="key">
                                     {{ error }}
@@ -341,3 +338,14 @@ watch(
         </Dialog>
     </AuthenticatedLayout>
 </template>
+
+<style scoped>
+:deep(.row-has-error) {
+    background-color: #fff0f1 !important; /* A light pink/red */
+    color: #8c2b3a !important; /* A darker red for text */
+}
+
+:deep(.row-has-error:hover) {
+    background-color: #ffd9dd !important;
+}
+</style>

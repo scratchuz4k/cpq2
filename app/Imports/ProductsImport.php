@@ -29,6 +29,7 @@ class ProductsImport implements ToCollection, WithBatchInserts, WithHeadingRow
         'success' => 0,
         'skipped' => 0,
         'errors' => [],
+        'data' => [],
     ];
 
     protected Tenant $tenant;
@@ -176,6 +177,7 @@ class ProductsImport implements ToCollection, WithBatchInserts, WithHeadingRow
                 return $value === '' ? null : $value;
             })->toArray();
             $this->results['processed']++;
+            $this->results['data'][] = $row;
             if (empty($row['parent_sku'])) {
                 $this->insertProduct($row);
             } else {

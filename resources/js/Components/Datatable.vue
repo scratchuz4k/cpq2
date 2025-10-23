@@ -350,7 +350,7 @@ getData();
     >
     </Paginator>
 </template>
-<style>
+<style scoped>
 .p-select-option.p-select-option-selected {
     background-color: var(--color-purple) !important;
     color: white !important;
