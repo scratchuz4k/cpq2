@@ -2,28 +2,38 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Helpers\DataProvider;
 use App\Http\Controllers\BaseController;
+use App\Http\Resources\QuoteApprovalResource;
 use App\Models\QuoteApproval;
+use App\Services\QuoteApprovalService;
+use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class QuoteApprovalController extends BaseController
 {
     protected $model = QuoteApproval::class;
+
+    public function __construct(protected QuoteApprovalService $service)
+    {
+        parent::__construct();
+    }
 
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        //
-    }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
+        $dataProvider = new DataProvider($this->model);
+        try {
+            $data = $dataProvider->get();
+        } catch (Exception $e) {
+            return handleException($e);
+        }
+
+        return QuoteApprovalResource::collection($data);
     }
 
     /**
@@ -31,7 +41,14 @@ class QuoteApprovalController extends BaseController
      */
     public function store(Request $request)
     {
-        //
+
+        try {
+            $group = DB::transaction(fn () => $this->service->store($request->all()));
+        } catch (Exception $e) {
+            return handleException($e);
+        }
+
+        return response()->json(new QuoteApprovalResource($group));
     }
 
     /**

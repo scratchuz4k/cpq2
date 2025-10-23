@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Web;
 
+use App\Enums\QuoteApprovalFlow;
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\TenantUpdateRequest;
 use App\Http\Resources\TenantResource;
@@ -31,6 +32,7 @@ class TenantController extends BaseController
         return Inertia::render('Tenant/Index', [
             'isSuperAdmin' => $user->hasRole('Super Admin'),
             'tenant' => (new TenantResource($user->currentTenant))->resolve(),
+            'quote_approval_flows' => QuoteApprovalFlow::asArray(),
         ]);
     }
 

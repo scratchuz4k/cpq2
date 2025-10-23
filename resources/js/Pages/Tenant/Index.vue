@@ -9,7 +9,8 @@ import _ from 'lodash';
 
 const props = defineProps({
     isSuperAdmin: Boolean,
-    tenant: Object
+    tenant: Object,
+    quote_approval_flows: Array
 });
 
 const isLoading = ref(false);
@@ -26,7 +27,7 @@ const tenant = reactive({
             : 0,
         quote_margin_rules_operation: props.tenant.configurations.quote_margin_rules_operation ?? 'percentage',
         has_quote_approval: props.tenant.configurations.has_quote_approval ?? '0',
-        quote_approval_flow: props.tenant.configurations.quote_approval_flow ?? 'internal_flow'
+        quote_approval_flow: props.tenant.configurations.quote_approval_flow ?? 'internal'
     }
 });
 
@@ -243,44 +244,6 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'My Account', url: '/my
                             <div class="col">
                                 <div class="card bg-light border-0 settings-block h-100">
                                     <div class="card-body">
-                                        <h6 class="fw-bold pe-5 mb-3">Orders Flow</h6>
-                                        <div class="orders_flow_is_active">
-                                            <div>
-                                                <label for="active-orders-flow" class="form-label lh-sm small pb-2">
-                                                    <i
-                                                        >If this setting is active, the order management will be
-                                                        activated.</i
-                                                    >
-                                                </label>
-                                            </div>
-                                            <div class="sidenote">
-                                                <ToggleSwitch
-                                                    id="active-orders-flow"
-                                                    v-model="tenant.configurations.orders_flow_is_active"
-                                                    @change="submitTenantSettings"
-                                                    trueValue="1"
-                                                    falseValue="0"
-                                                    binary
-                                                >
-                                                    <template #handle>
-                                                        <font-awesome-icon
-                                                            :icon="
-                                                                tenant.configurations.orders_flow_is_active === '1'
-                                                                    ? ['fas', 'circle-check']
-                                                                    : ['far', 'circle-xmark']
-                                                            "
-                                                            class="text-primary"
-                                                        />
-                                                    </template>
-                                                </ToggleSwitch>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col">
-                                <div class="card bg-light border-0 settings-block h-100">
-                                    <div class="card-body">
                                         <h6 class="fw-bold pe-5 mb-3">Log System</h6>
                                         <div class="log_system_is_active">
                                             <div>
@@ -360,7 +323,7 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'My Account', url: '/my
                             <div class="col">
                                 <div class="card bg-light border-0 settings-block h-100">
                                     <div class="card-body">
-                                        <h6 class="fw-bold pe-5 mb-3">Quote expire days</h6>
+                                        <h6 class="fw-bold pe-5 mb-3">Expire days</h6>
                                         <div class="quote-expiration-days">
                                             <div>
                                                 <label for="quote-expiration-days" class="form-label lh-sm small pb-2">
@@ -388,7 +351,7 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'My Account', url: '/my
                             <div class="col">
                                 <div class="card bg-light border-0 settings-block h-100">
                                     <div class="card-body">
-                                        <h6 class="fw-bold pe-5 mb-3">Quote Margin Rules</h6>
+                                        <h6 class="fw-bold pe-5 mb-3">Margin Rules</h6>
                                         <div class="quote-expiration-days">
                                             <div>
                                                 <label for="quote-expiration-days" class="form-label lh-sm small pb-2">
@@ -448,7 +411,7 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'My Account', url: '/my
                             <div class="col">
                                 <div class="card bg-light border-0 settings-block h-100">
                                     <div class="card-body">
-                                        <h6 class="fw-bold pe-5 mb-3">Quote Approvals</h6>
+                                        <h6 class="fw-bold pe-5 mb-3">Approvals</h6>
                                         <div class="quote-expiration-days">
                                             <div>
                                                 <label for="quote-expiration-days" class="form-label lh-sm small pb-2">
@@ -484,8 +447,12 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'My Account', url: '/my
                                                         v-model="tenant.configurations.quote_approval_flow"
                                                         @change="submitTenantSettings()"
                                                     >
-                                                        <option value="internal_flow">Internal</option>
-                                                        <option value="client_flow">Client</option>
+                                                        <option
+                                                            :value="approval.value"
+                                                            v-for="approval in quote_approval_flows"
+                                                        >
+                                                            {{ approval.name }}
+                                                        </option>
                                                     </select>
                                                 </div>
                                             </div>

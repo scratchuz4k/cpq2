@@ -14,8 +14,6 @@ class QuotePolicy
     private string $model = 'quote';
 
     private array $statusToBlockQuotes = [
-        QuoteStatusesEnum::REGISTRY->name,
-        QuoteStatusesEnum::SUBMITTED->name,
         QuoteStatusesEnum::EXPIRED->name,
     ];
 
@@ -40,6 +38,7 @@ class QuotePolicy
         if (! $user->can("view $this->model")) {
             return false;
         }
+
         if (in_array($quote->status, $this->statusToBlockQuotes)) {
             return false;
         }
