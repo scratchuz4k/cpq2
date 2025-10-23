@@ -181,7 +181,7 @@ class ProductController extends BaseController
             ]]);
         }
 
-        if ($quote->data?->quoteReference) {
+        if (isset($quote->data?->quoteReference)) {
             $filename = $filename.$quote->data?->quoteReference;
         }
 
