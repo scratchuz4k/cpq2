@@ -36,7 +36,7 @@ class ImportJob implements ShouldQueue, TenantAware
 
         $this->import->update([
             'status' => ImportStatusesEnum::COMPLETED->name,
-            'data' => $this->importHandler->results,
+            'data' => $this->importHandler->getResults(),
         ]);
     }
 
@@ -44,7 +44,7 @@ class ImportJob implements ShouldQueue, TenantAware
     {
         $this->import->update([
             'status' => ImportStatusesEnum::FAILURE->name,
-            'data' => $this->importHandler->results,
+            'data' => $this->importHandler->getResults(),
         ]);
     }
 }

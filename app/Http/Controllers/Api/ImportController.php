@@ -47,7 +47,13 @@ class ImportController extends BaseController
     #[ExcludeRouteFromDocs]
     public function store(Request $request)
     {
-        //
+        try {
+            $data = $this->importService->preview($request->all());
+        } catch (\Exception $e) {
+            return handleException($e);
+        }
+
+        return response()->json($data);
     }
 
     /**

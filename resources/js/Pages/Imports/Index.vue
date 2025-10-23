@@ -7,6 +7,8 @@ import Datatable from '@/Components/Datatable.vue';
 import { Dialog, Button, Checkbox, Select } from 'primevue';
 import { exportData } from '@/Composables/export.js';
 import queryString from 'query-string';
+import CountUp from 'vue-countup-v3';
+import Panel from 'primevue/panel';
 
 const page = usePage();
 const props = defineProps({
@@ -17,7 +19,10 @@ const props = defineProps({
     }
 });
 const showForm = ref(false);
+const showImportPreview = ref(false);
 const isLoading = ref(false);
+const previewData = reactive({});
+
 const onFileChange = (event) => {
     form.file = event.target.files[0];
 };
@@ -47,6 +52,37 @@ const submitFile = async () => {
     formData.append('model', form.model);
 
     try {
+        let res = await axios.post('/api/imports', formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        });
+
+        notyf.success('File uploaded successfully');
+
+        if (res) {
+            previewData.value = res.data;
+        }
+        showImportPreview.value = true;
+    } catch (err) {
+        notyf.error(err?.response?.data?.message ?? 'Something went wrong');
+        return false;
+    } finally {
+        showForm.value = false;
+        isLoading.value = false;
+        isLoading.value = null;
+    }
+};
+
+const importData = async () => {
+    isLoading.value = true;
+
+    const formData = new FormData();
+    formData.append('file', form.file);
+    formData.append('overwrite', form.overwrite);
+    formData.append('model', form.model);
+
+    try {
         let res = await axios.post('/imports', formData, {
             headers: {
                 'Content-Type': 'multipart/form-data'
@@ -54,7 +90,6 @@ const submitFile = async () => {
         });
 
         notyf.success('File imported successfully');
-        showForm.value = false;
 
         if (res) {
             emitter.emit('datatable-refresh');
@@ -64,6 +99,8 @@ const submitFile = async () => {
         return false;
     } finally {
         form.overwrite = 0;
+        showForm.value = false;
+        showImportPreview.value = false;
         isLoading.value = false;
         isLoading.value = null;
     }
@@ -195,6 +232,111 @@ watch(
                         <span v-else>Upload</span>
                     </button>
                 </form>
+            </div>
+        </Dialog>
+        <Dialog
+            v-model:visible="showImportPreview"
+            id="import-preview"
+            modal
+            :style="{ marginTop: '4rem', width: '80vw' }"
+            :breakpoints="{ '1199px': '75vw', '575px': '90vw' }"
+            :draggable="false"
+            position="top"
+            header="Import Preview"
+        >
+            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 pb-2">
+                <hr class="mt-0" />
+                <Panel class="mt-3" header="Import Details" :toggleable="true">
+                    <div class="mt-2 row row-cols-1 row-cols-md-2 g-3 mb-2">
+                        <p><b>File Uploaded By:</b><br />{{ previewData.value.user.name }}</p>
+                        <p>
+                            <b>Uploaded File:</b><br />
+                            <a class="btn p-0 text-decoration-underline" title="Download file">
+                                <font-awesome-icon :icon="['fas', 'download']" class="me-1" />
+                                {{ previewData.value.resource.title }}
+                            </a>
+                        </p>
+                        <p v-if="previewData.value.model === 'Product'">
+                            <b>Overwrite Existing Products:</b><br />
+                            <span class="text-secondary" v-if="previewData.value.overwrite">
+                                <font-awesome-icon
+                                    :icon="['fas', 'circle-check']"
+                                    class="me-1 text-primary"
+                                    size="lg"
+                                />
+                                <i>true</i>
+                            </span>
+                            <span class="text-secondary" v-else>
+                                <font-awesome-icon
+                                    :icon="['far', 'circle-xmark']"
+                                    class="me-1 text-secondary"
+                                    size="lg"
+                                />
+                                <i>false</i>
+                            </span>
+                        </p>
+                        <p>
+                            <b>Model:</b><br />
+                            <span class="badge border border-secondary text-secondary opacity-75 lh-sm text-uppercase">
+                                {{ previewData.value.model }}</span
+                            >
+                        </p>
+                    </div>
+                </Panel>
+
+                <Panel class="mt-3" header="Results" :toggleable="true">
+                    <div class="mt-2 row row-cols-1 row-cols-md-3 g-3 mb-2">
+                        <div class="col">
+                            <div class="card py-4 bg-light border-0">
+                                <div class="card-body text-center p-2 text-decoration-none">
+                                    <div class="fw-bold mb-1">Rows will be Processed</div>
+                                    <span class="display-6">
+                                        <count-up :endVal="previewData.value.results?.processed ?? 0" />
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="card py-4 bg-light border-0">
+                                <div class="card-body text-center p-2 text-decoration-none">
+                                    <div class="fw-bold mb-1">Rows will be Imported</div>
+                                    <span class="display-6">
+                                        <count-up :endVal="previewData.value.results?.success ?? 0" />
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="card py-4 bg-light border-0">
+                                <div class="card-body text-center p-2 text-decoration-none">
+                                    <div class="fw-bold mb-1">Rows will be Skipped</div>
+                                    <span class="display-6">
+                                        <count-up :endVal="previewData.value.results?.skipped ?? 0" />
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <br />
+                    <p class="fw-semibold">Errors</p>
+                    <ul v-if="previewData.value.results?.errors?.length > 0">
+                        <li class="rows" v-for="(row, index) in previewData.value.results.errors" :key="index">
+                            {{ previewData.value.model }} {{ row.row?.name || 'Unknown' }}:
+                            <ul>
+                                <li v-if="row.errors" v-for="(error, key) in row.errors" :key="key">
+                                    {{ error }}
+                                </li>
+                                <li v-else>{{ row.error }}</li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <p v-else>No errors occurred.</p>
+                </Panel>
+                <hr />
+                <div class="d-flex justify-content-end mt-3">
+                    <div class="btn btn-secondary me-2" @click="showImportPreview = false">Cancel</div>
+                    <Button class="btn btn-primary" @click="importData"> Import </Button>
+                </div>
             </div>
         </Dialog>
     </AuthenticatedLayout>

@@ -12,7 +12,7 @@ class TenantUniqueRule implements ValidationRule
     public function __construct(
         protected string $table,
         protected string $column,
-        protected bool $ignoreId = true
+        protected ?int $ignoreId = null
     ) {}
 
     /**
