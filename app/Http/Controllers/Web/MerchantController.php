@@ -44,7 +44,7 @@ class MerchantController extends BaseController
         try {
             $merchant = DB::transaction(fn () => $this->merchantService->store($request->all()));
         } catch (\Exception $e) {
-            throw new \Exception($e);
+            return handleWebException($e);
         }
 
         return redirect()->route('merchants.index');
@@ -78,7 +78,7 @@ class MerchantController extends BaseController
         try {
             $merchant = DB::transaction(fn () => $this->merchantService->update($merchant, $request->all()));
         } catch (\Exception $e) {
-            throw new \Exception($e);
+            return handleWebException($e);
         }
 
         return redirect()->route('merchants.index');

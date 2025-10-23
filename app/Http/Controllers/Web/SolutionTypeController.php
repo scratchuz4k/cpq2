@@ -12,7 +12,6 @@ use App\Http\Resources\SolutionTypeResource;
 use App\Models\SolutionType;
 use App\Services\SolutionTypeService;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 
 class SolutionTypeController extends BaseController
@@ -52,10 +51,7 @@ class SolutionTypeController extends BaseController
         try {
             $solutionType = DB::transaction(fn () => $this->solutionTypeService->store($request->all()));
         } catch (\Exception $e) {
-            if (! env('APP_DEBUG')) {
-                Log::error($e->getMessage());
-            }
-            throw new \Exception($e);
+            return handleWebException($e);
         }
 
         return redirect()->route('solution-types.index');
@@ -94,7 +90,7 @@ class SolutionTypeController extends BaseController
         try {
             $solutionType = DB::transaction(fn () => $this->solutionTypeService->update($solutionType, $request->all()));
         } catch (\Exception $e) {
-            throw new \Exception($e);
+            return handleWebException($e);
         }
 
         return redirect()->route('solution-types.index');
