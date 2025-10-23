@@ -38,7 +38,7 @@ class GroupController extends BaseController
         try {
             $category = DB::transaction(fn () => $this->groupService->update($group, $request->all()));
         } catch (\Exception $e) {
-            throw new \Exception($e);
+            return handleWebException($e);
         }
 
         return redirect()->route('users.index');

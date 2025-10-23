@@ -47,7 +47,7 @@ class ApiController extends BaseController
         try {
             $api = DB::transaction(fn () => $this->apiService->store($request->all()));
         } catch (\Exception $e) {
-            throw new \Exception($e);
+            return handleWebException($e);
         }
 
         return redirect()->route('apis.index');
@@ -80,7 +80,7 @@ class ApiController extends BaseController
         try {
             $api = DB::transaction(fn () => $this->apiService->update($api, $request->all()));
         } catch (\Exception $e) {
-            throw new \Exception($e);
+            return handleWebException($e);
         }
 
         return redirect()->route('apis.index');

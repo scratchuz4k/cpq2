@@ -9,7 +9,6 @@ use App\Http\Resources\AccountResource;
 use App\Models\Account;
 use App\Services\AccountService;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 
 class AccountController extends BaseController
@@ -45,10 +44,7 @@ class AccountController extends BaseController
         try {
             $account = DB::transaction(fn () => $this->accountService->store($request->all()));
         } catch (\Exception $e) {
-            if (! env('APP_DEBUG')) {
-                Log::error($e->getMessage());
-            }
-            throw new \Exception($e);
+            return handleWebException($e);
         }
 
         return redirect()->route('accounts.index');
@@ -80,10 +76,7 @@ class AccountController extends BaseController
         try {
             $account = DB::transaction(fn () => $this->accountService->update($account, $request->all()));
         } catch (\Exception $e) {
-            if (! env(key: 'APP_DEBUG')) {
-                Log::error($e->getMessage());
-            }
-            throw new \Exception($e);
+            return handleWebException($e);
         }
 
         return redirect()->route('accounts.index');

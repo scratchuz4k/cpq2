@@ -7,7 +7,7 @@ const props = defineProps({
 });
 const getPdf = () => {
     axios
-        .post(`/quotes/${props.model.id}/download`, {}, { responseType: 'blob' })
+        .post(`/quotes/${props.model.hash}/download`, {}, { responseType: 'blob' })
         .then((response) => {
             const url = window.URL.createObjectURL(new Blob([response.data]));
             const link = document.createElement('a');
@@ -18,7 +18,7 @@ const getPdf = () => {
             document.body.removeChild(link);
         })
         .catch((error) => {
-            console.error('File download failed', error);
+            notyf.error(error?.response?.data?.message ?? 'Something went wrong');
         });
 };
 </script>

@@ -22,9 +22,9 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Inertia\Inertia;
+use Sqids\Sqids;
 
 class QuoteController extends BaseController
 {
@@ -84,10 +84,7 @@ class QuoteController extends BaseController
                 return $quote;
             });
         } catch (Exception $e) {
-            if (! env('APP_DEBUG')) {
-                Log::error($e->getMessage());
-            }
-            throw new Exception($e);
+            return handleWebException($e);
         }
 
         return redirect()->route('quotes.edit', ['quote' => $quote->id]);
@@ -124,10 +121,7 @@ class QuoteController extends BaseController
         try {
             $quote = DB::transaction(fn () => $this->quoteService->update($quote, $request->all()));
         } catch (Exception $e) {
-            if (! env('APP_DEBUG')) {
-                Log::error($e->getMessage());
-            }
-            throw new Exception($e);
+            return handleWebException($e);
         }
 
         return to_route('quotes.edit', ['quote' => $quote->id]);
@@ -166,8 +160,27 @@ class QuoteController extends BaseController
     /**
      * Remove the specified resource from storage.
      */
-    public function download(Request $request, Quote $quote)
+    public function download(Request $request, $hash)
     {
+        $decodedHash = app(Sqids::class)->decode($hash);
+        [$quoteId, $tenantId] = $decodedHash;
+
+        $user = Auth::user();
+        $quote = Quote::query()
+            ->withoutGlobalScopes()
+            ->with([
+                'account' => fn ($query) => $query->withoutGlobalScopes(),
+            ])
+            ->find($quoteId);
+
+        if (
+            ! $quote ||
+            (! $user && ! $quote->sharedLink()->exists()) ||
+            ($user && $user->tenant_id !== $tenantId && ! $quote->sharedLink()->exists())
+        ) {
+            return response()->json(['message' => 'Quote not available or not shared.'], 404);
+        }
+
         $pdf = $this->quoteService->generatePdf($request, $quote);
 
         return $pdf
