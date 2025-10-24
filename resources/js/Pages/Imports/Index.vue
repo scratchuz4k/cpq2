@@ -8,7 +8,6 @@ import { Dialog, Button, Checkbox, Select } from 'primevue';
 import { exportData } from '@/Composables/export.js';
 import queryString from 'query-string';
 import CountUp from 'vue-countup-v3';
-import Panel from 'primevue/panel';
 import Table from 'primevue/datatable';
 import Column from 'primevue/column';
 
@@ -25,15 +24,12 @@ const showImportPreview = ref(false);
 const isLoading = ref(false);
 const previewData = ref(null);
 
-// SIMPLIFIED FUNCTION
 const rowClass = (rowData) => {
-    // Check for errors safely. If the path doesn't exist, default to an empty array [].
     const errors = previewData.value.results?.errors ?? [];
-
-    // Now, `errors` is guaranteed to be an array, so .some() will never fail.
     const hasError = errors.some((errorItem) => errorItem.row?.sku === rowData.sku);
+    const rowClass = 'preview-table-row';
 
-    return hasError ? 'row-has-error' : null;
+    return hasError ? rowClass + ' row-has-error' : rowClass;
 };
 
 const onFileChange = (event) => {
@@ -259,77 +255,75 @@ watch(
         >
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 pb-2">
                 <hr class="mt-0" />
-                <Panel v-if="previewData" class="mt-3" header="Results" :toggleable="true">
-                    <div class="mt-2 row row-cols-1 g-3 mb-2">
-                        <Table
-                            :value="previewData.results?.data"
-                            :rowClass="rowClass"
-                            tableStyle="min-width: 50rem"
-                            :size="'small'"
-                            class="p-datatable-sm preview-table"
-                        >
-                            <Column field="sku" header="Sku"></Column>
-                            <Column field="name" header="Name"></Column>
-                            <Column field="description" header="Description"></Column>
-                            <Column field="supplier_id" header="Supplier ID"></Column>
-                            <Column field="category_id" header="Category ID"></Column>
-                            <Column field="status" header="Status"></Column>
-                            <Column field="expires_at" header="Expires Date"></Column>
-                            <Column field="price_code" header="Price Code"></Column>
-                            <Column field="price_cost" header="Price Cost"></Column>
-                            <Column field="price_net" header="Price Net"></Column>
-                            <Column field="price_plan_id" header="Price Plan ID"></Column>
-                            <Column field="parent_sku" header="Parent Sku"></Column>
-                        </Table>
-                    </div>
-                    <div class="mt-2 row row-cols-1 row-cols-md-3 g-3 mb-2">
-                        <div class="col">
-                            <div class="card py-4 bg-light border-0">
-                                <div class="card-body text-center p-2 text-decoration-none">
-                                    <div class="fw-bold mb-1">Rows will be Processed</div>
-                                    <span class="display-6">
-                                        <count-up :endVal="previewData.results?.processed ?? 0" />
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col">
-                            <div class="card py-4 bg-light border-0">
-                                <div class="card-body text-center p-2 text-decoration-none">
-                                    <div class="fw-bold mb-1">Rows will be Imported</div>
-                                    <span class="display-6">
-                                        <count-up :endVal="previewData.results?.success ?? 0" />
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col">
-                            <div class="card py-4 bg-light border-0">
-                                <div class="card-body text-center p-2 text-decoration-none">
-                                    <div class="fw-bold mb-1">Rows will be Skipped</div>
-                                    <span class="display-6">
-                                        <count-up :endVal="previewData.results?.skipped ?? 0" />
-                                    </span>
-                                </div>
+                <div v-if="previewData" class="mt-2 row row-cols-1 g-3 mb-2">
+                    <Table
+                        :value="previewData.results?.data"
+                        :rowClass="rowClass"
+                        tableStyle="min-width: 50rem"
+                        :size="'small'"
+                        class="p-datatable-sm preview-table"
+                    >
+                        <Column field="sku" header="Sku"></Column>
+                        <Column field="name" header="Name"></Column>
+                        <Column field="description" header="Description"></Column>
+                        <Column field="supplier_id" header="Supplier ID"></Column>
+                        <Column field="category_id" header="Category ID"></Column>
+                        <Column field="status" header="Status"></Column>
+                        <Column field="expires_at" header="Expires Date"></Column>
+                        <Column field="price_code" header="Price Code"></Column>
+                        <Column field="price_cost" header="Price Cost"></Column>
+                        <Column field="price_net" header="Price Net"></Column>
+                        <Column field="price_plan_id" header="Price Plan ID"></Column>
+                        <Column field="parent_sku" header="Parent Sku"></Column>
+                    </Table>
+                </div>
+                <div class="mt-2 row row-cols-1 row-cols-md-3 g-3 mb-2">
+                    <div class="col">
+                        <div class="card py-4 bg-light border-0">
+                            <div class="card-body text-center p-2 text-decoration-none">
+                                <div class="fw-bold mb-1">Rows will be Processed</div>
+                                <span class="display-6">
+                                    <count-up :endVal="previewData.results?.processed ?? 0" />
+                                </span>
                             </div>
                         </div>
                     </div>
-                    <br />
-                    <p class="fw-semibold">Errors</p>
-                    <ul v-if="previewData.results?.errors?.length > 0">
-                        <li class="rows" v-for="(row, index) in previewData.results.errors" :key="index">
-                            {{ previewData.model }} {{ row.row?.name || 'Unknown' }}:
-                            <ul>
-                                <li v-if="row.errors" v-for="(error, key) in row.errors" :key="key">
-                                    {{ error }}
-                                </li>
-                                <li v-else>{{ row.error }}</li>
-                            </ul>
-                        </li>
-                    </ul>
-                    <p v-else>No errors occurred.</p>
-                </Panel>
-                <hr />
+                    <div class="col">
+                        <div class="card py-4 bg-light border-0">
+                            <div class="card-body text-center p-2 text-decoration-none">
+                                <div class="fw-bold mb-1">Rows will be Imported</div>
+                                <span class="display-6">
+                                    <count-up :endVal="previewData.results?.success ?? 0" />
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="card py-4 bg-light border-0">
+                            <div class="card-body text-center p-2 text-decoration-none">
+                                <div class="fw-bold mb-1">Rows will be Skipped</div>
+                                <span class="display-6">
+                                    <count-up :endVal="previewData.results?.skipped ?? 0" />
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <br />
+                <p class="fw-semibold">Errors</p>
+                <ul v-if="previewData.results?.errors?.length > 0">
+                    <li class="rows" v-for="(row, index) in previewData.results.errors" :key="index">
+                        {{ previewData.model }} {{ row.row?.name || 'Unknown' }}:
+                        <ul>
+                            <li v-if="row.errors" v-for="(error, key) in row.errors" :key="key">
+                                {{ error }}
+                            </li>
+                            <li v-else>{{ row.error }}</li>
+                        </ul>
+                    </li>
+                </ul>
+                <p v-else>No errors occurred.</p>
+                <hr class="mt-0" />
                 <div class="d-flex justify-content-end mt-3">
                     <div class="btn btn-secondary me-2" @click="showImportPreview = false">Cancel</div>
                     <Button class="btn btn-primary" @click="importData"> Import </Button>
@@ -340,9 +334,19 @@ watch(
 </template>
 
 <style scoped>
+:deep(.preview-table-row) {
+    background-color: #d4edda !important;
+    color: #155724 !important;
+    font-size: 14px;
+}
+
+:deep(.preview-table-row:hover) {
+    background-color: #a7e5b5 !important;
+}
+
 :deep(.row-has-error) {
-    background-color: #fff0f1 !important; /* A light pink/red */
-    color: #8c2b3a !important; /* A darker red for text */
+    background-color: #fff0f1 !important;
+    color: #8c2b3a !important;
 }
 
 :deep(.row-has-error:hover) {
