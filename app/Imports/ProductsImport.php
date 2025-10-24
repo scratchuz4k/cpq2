@@ -150,6 +150,7 @@ class ProductsImport implements ToCollection, WithBatchInserts, WithHeadingRow
                     ],
                     [
                         ...$productData['prices'],
+                        'tenant_id' => $this->tenant->id,
                     ]);
             }
 
@@ -199,39 +200,11 @@ class ProductsImport implements ToCollection, WithBatchInserts, WithHeadingRow
 
     public static function getImportTemplate()
     {
-        $dummyProducts = Product::factory()->count(10)->make();
-
-        $dummyProducts->each(function ($item) {
-            $item->price_code = fake()->numberBetween(1, 999);
-            $item->price_cost = fake()->numberBetween(1, 999);
-            $item->price_net = fake()->numberBetween(1, 999);
-            $item->parent_sku = fake()->optional()->slug(2);
-            $item->supplier_id = fake()->numberBetween(1, 99);
-            $item->category_id = fake()->numberBetween(1, 99);
-        });
-
-        $data = $dummyProducts->map(function ($item) {
-            return [
-                'sku' => $item->sku,
-                'name' => $item->name,
-                'description' => $item->description,
-                'supplier_id' => $item->supplier_id,
-                'category_id' => $item->category_id,
-                'status' => $item->status,
-                'expires_at' => Carbon::parse($item->expires_at)->format('d/m/Y'),
-                'price_code' => $item->price_code,
-                'price_cost' => $item->price_cost,
-                'price_net' => $item->price_net,
-                'price_plan_id' => $item->price_plan_id,
-                'parent_sku' => $item->parent_sku,
-            ];
-        });
-
-        $filename = 'import_products_template.csv';
+        $template = require app_path('Helpers/Import/products_import_template.php');
 
         return [
-            'data' => $data,
-            'filename' => $filename,
+            'data' => collect($template['data']),
+            'filename' => $template['filename'],
         ];
     }
 

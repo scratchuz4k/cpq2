@@ -21,7 +21,6 @@ class Product extends Model
         'parent_id',
         'price_plan_id',
         'supplier_id',
-        'brand_id',
         'category_id',
         'sku',
         'name',
@@ -85,11 +84,6 @@ class Product extends Model
     public function supplier(): HasOne
     {
         return $this->hasOne(Supplier::class, 'id', 'supplier_id');
-    }
-
-    public function brand(): HasOne
-    {
-        return $this->hasOne(Brand::class, 'id', 'brand_id');
     }
 
     public static function resolveStatus(Product $product): string

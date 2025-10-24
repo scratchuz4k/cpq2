@@ -62,7 +62,7 @@ const updatePassword = () => {
                     v-model="form.current_password"
                     type="password"
                     class="mt-1 block w-full"
-                    autocomplete="current-password"
+                    autocomplete="off"
                 />
             </div>
 
