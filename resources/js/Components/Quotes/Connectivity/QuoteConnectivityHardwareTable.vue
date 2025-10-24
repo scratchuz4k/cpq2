@@ -38,7 +38,7 @@
 </template>
 <script setup>
 import { removeAddon, addAddon, addons, isLoading, checks } from '@/Composables/useConnectivityItem';
-import { reactive } from 'vue';
+import { onMounted, reactive } from 'vue';
 import { quote } from '@/Composables/useQuote';
 import queryString from 'query-string';
 
@@ -104,19 +104,12 @@ const checkProduct = (article) => {
     return index == -1 ? addAddon(article) : removeAddon(item);
 };
 
-emitter.on('primary-product:added', () => {
-    getAddons();
-});
-
-emitter.on('failover-product:added', () => {
-    getAddons();
-});
-
 window.addEventListener('beforeunload', () => {
     clearTimeout(timeoutId); // Cancel timeout on page navigation or refresh
 });
-
-getAddons();
+onMounted(() => {
+    getAddons();
+});
 </script>
 <style scoped>
 .blink {

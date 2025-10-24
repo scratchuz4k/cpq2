@@ -46,7 +46,7 @@
 </template>
 <script setup>
 import { removeAddon, addAddon } from '@/Composables/useConnectivityItem';
-import { watch, reactive, ref } from 'vue';
+import { watch, reactive, ref, onMounted } from 'vue';
 import { quote } from '@/Composables/useQuote';
 import queryString from 'query-string';
 
@@ -104,17 +104,13 @@ const checkProduct = (article) => {
     return index == -1 ? addAddon(article) : removeAddon(item);
 };
 
-watch(
-    () => [quote.items],
-    () => {
-        getOptions();
-    }
-);
 window.addEventListener('beforeunload', () => {
     clearTimeout(timeoutId); // Cancel timeout on page navigation or refresh
 });
 
-getOptions();
+onMounted(() => {
+    getOptions();
+});
 </script>
 <style scoped>
 .blink {

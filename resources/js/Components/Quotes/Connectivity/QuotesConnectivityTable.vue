@@ -280,7 +280,6 @@ const checkProduct = (article) => {
     if (index == -1) {
         add(article);
         clearTimeout(timeoutId);
-        emitter.emit('primary-product:added');
     } else {
         remove(item);
     }
