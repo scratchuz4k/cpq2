@@ -76,8 +76,8 @@ class CloudMarketApi
             'ProductId' => $product->data?->productCode,
             'QuoteId' => $product->data?->quoteId,
             'FailoverProductId' => $failover?->data?->productCode ?? null,
-            'PrimaryHardwareProductId' => $primaryHardware?->data?->productReference ?? null,
-            'FailoverHardwareProductId' => $failoverHardware?->data?->productReference ?? null,
+            'PrimaryHardwareProductId' => $primaryHardware?->data?->productCode ?? null,
+            'FailoverHardwareProductId' => $failoverHardware?->data?->productCode ?? null,
         ];
         Log::debug('CloudMarketApi::getOptions lookup:', $params);
 
@@ -99,8 +99,8 @@ class CloudMarketApi
             'ProductId' => $product->data?->productCode,
             'QuoteId' => $product->data?->quoteId,
             'FailoverProductId' => $failover?->data?->productCode ?? null,
-            'PrimaryHardwareProductId' => $primaryHardware?->data?->productReference ?? null,
-            'FailoverHardwareProductId' => $failoverHardware?->data?->productReference ?? null,
+            'PrimaryHardwareProductId' => $primaryHardware?->data?->productCode ?? null,
+            'FailoverHardwareProductId' => $failoverHardware?->data?->productCode ?? null,
         ];
         Log::debug('CloudMarketApi::getAssignments lookup:', $params);
 
@@ -182,7 +182,7 @@ class CloudMarketApi
                 'id' => isset($addon->data?->quoteId) ? data_get($addon->data, 'quoteId') : data_get($addon->data, 'id'),
                 'options' => [
                     [
-                        'id' => data_get($addon->data, 'productReference'),
+                        'id' => data_get($addon->data, 'productCode'),
                         'quantity' => data_get($addon, 'quantity', 0),
                     ],
                 ],

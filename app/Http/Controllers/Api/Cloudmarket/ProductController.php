@@ -81,9 +81,10 @@ class ProductController extends BaseController
         $quote->update(['data' => $data]);
         $product = $this->getProduct($quote, 'Primary Product');
 
-        if ($product->data?->providerName !== 'ITS') {
+        if (! $product || $product->data?->providerName !== 'ITS') {
             return;
         }
+
         CloudMarketSaveQuote::dispatch($quote);
     }
 

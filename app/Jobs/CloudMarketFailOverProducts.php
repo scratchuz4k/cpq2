@@ -48,7 +48,7 @@ class CloudMarketFailOverProducts implements ShouldQueue, TenantAware
      */
     public function handle(): void
     {
-        $res = CloudMarketApi::getFailover($this->quote, $this->address);
+        $res = CloudMarketApi::getFailover($this->quote);
         $time = Carbon::now()->addSeconds(86400);
 
         $this->started_at = now();

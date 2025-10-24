@@ -217,12 +217,12 @@ const checkGoPrevious = () => {
 const checkGoNext = () => {
     let check = currentStep.value == 0 ? checks.primaryHardwareRequired : checks.failoverHardwareRequired;
     let productType = currentStep.value == 0 ? 'Primary Hardware Product' : 'Failover Hardware Product';
+    checkAddons();
     if (check && !quote.items.find((x) => x.data.type == productType) && addons.value.length != 0) {
         scrollToDiv();
     } else {
         currentStep.value++;
     }
-    checkAddons();
 };
 
 const scrollToDiv = () => {

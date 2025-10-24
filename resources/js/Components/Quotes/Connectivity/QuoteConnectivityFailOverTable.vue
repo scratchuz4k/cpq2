@@ -993,7 +993,7 @@ getArticles(false, true);
         v-if="props.needsAddons && quote.items?.find((x) => x.data?.type == 'Failover Product')"
         v-model="props.modelValue"
         productType="Failover Hardware Product"
-        :group="props.currentStep + 1"
+        :currentStep="props.currentStep"
     ></QuoteConnectivityHardwareTable>
 </template>
 
