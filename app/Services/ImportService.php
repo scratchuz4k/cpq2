@@ -60,31 +60,4 @@ class ImportService
             'user' => $user,
         ];
     }
-
-    //    public function handleFileUpload(array $array)
-    //    {
-    //        $file = array_key_exists('file', $array) ? $array['file'] : null;
-    //        $model = array_key_exists('model', $array) ? $array['model'] : null;
-    //        $overwrite = array_key_exists('overwrite', $array) ? (int) $array['overwrite'] : 0;
-    //        $user = auth()->user();
-    //
-    //        if ($path = $file->store('imports', 'public')) {
-    //            $resource = Resource::create([
-    //                'title' => $file->getClientOriginalName(),
-    //                'mime_type' => $file->getClientMimeType(),
-    //                'route' => $path,
-    //                'size' => $file->getSize(),
-    //                'tenant_id' => $user->tenant_id,
-    //            ]);
-    //        }
-    //
-    //        $uploadData = new \stdClass;
-    //        $uploadData->file = $file;
-    //        $uploadData->resource = $resource;
-    //        $uploadData->overwrite = $overwrite;
-    //        $uploadData->model = $model;
-    //        $uploadData->user = $user;
-    //
-    //        return $uploadData;
-    //    }
 }
