@@ -526,6 +526,7 @@ getArticles(false, true);
                     <div class="col-lg-2 col-12 p-0 pe-1">
                         <label for="filter-contract" class="form-label">Contract Length</label>
                         <MultiSelect
+                            id="contract-length-multiselect"
                             v-model="filters['contractTermMonths'].value"
                             style="width: 100%"
                             :options="Object.keys(filterList.contractTermMonths)"
@@ -541,6 +542,7 @@ getArticles(false, true);
                     <div class="col-lg-2 col-12 p-0 pe-1">
                         <label for="filter-contract" class="form-label">Min. Bearer</label>
                         <Select
+                            id="bearer-multiselect"
                             v-model="filters['bearer'].value"
                             style="width: 100%"
                             :options="filterList.bearer"
@@ -560,6 +562,7 @@ getArticles(false, true);
                     <div class="col-lg-2 col-12 p-0 pe-1">
                         <label for="filter-contract" class="form-label">Min. Speed</label>
                         <Select
+                            id="speed-multiselect"
                             v-model="filters['speed'].value"
                             style="width: 100%"
                             :options="filterList.speed"
@@ -700,6 +703,7 @@ getArticles(false, true);
                         <thead>
                             <tr>
                                 <th
+                                    id="table-header-product"
                                     class="ps-3"
                                     :style="{
                                         whiteSpace: 'nowrap',
@@ -722,6 +726,7 @@ getArticles(false, true);
                                     </span>
                                 </th>
                                 <th
+                                    id="table-header-provider"
                                     class="text-center"
                                     :style="{ whiteSpace: 'nowrap' }"
                                     @click="orderBy('providerName')"
@@ -741,6 +746,7 @@ getArticles(false, true);
                                     </span>
                                 </th>
                                 <th
+                                    id="table-header-subprovider"
                                     class="text-center"
                                     :style="{ whiteSpace: 'nowrap' }"
                                     @click="orderBy('connectivitySupplierName')"
@@ -760,6 +766,7 @@ getArticles(false, true);
                                     </span>
                                 </th>
                                 <th
+                                    id="table-header-bearer"
                                     class="text-center"
                                     :style="{
                                         whiteSpace: 'nowrap'
@@ -781,6 +788,7 @@ getArticles(false, true);
                                     </span>
                                 </th>
                                 <th
+                                    id="table-header-speed"
                                     class="text-center"
                                     :style="{
                                         whiteSpace: 'nowrap'
@@ -824,6 +832,7 @@ getArticles(false, true);
                                     </span>
                                 </th>
                                 <th
+                                    id="table-header-monthly"
                                     class="text-center"
                                     :style="{
                                         whiteSpace: 'nowrap'
@@ -845,6 +854,7 @@ getArticles(false, true);
                                     </span>
                                 </th>
                                 <th
+                                    id="table-header-ecc"
                                     class="text-center"
                                     :style="{
                                         whiteSpace: 'nowrap'
@@ -866,6 +876,7 @@ getArticles(false, true);
                                     </span>
                                 </th>
                                 <th
+                                    id="table-header-contract-term"
                                     class="text-center"
                                     :style="{
                                         whiteSpace: 'nowrap'

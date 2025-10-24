@@ -139,6 +139,87 @@ describe('Creates a Connectivity quote', () => {
         });
     });
 
+    it("I can see one product per uploadSpeed with 'Show only lowest cost products' option selected", () => {
+        cy.visit('/');
+        cy.get('#create-tab').click();
+        cy.selectLazyOption('account_id', account.name);
+        cy.get('#btn-next-step').click();
+
+        cy.get('#solution_type-connectivity').click();
+        cy.get('#btn-next-step').click();
+
+        cy.get('#input_address').type('EH32 9NT');
+        cy.selectOption('#select_address', 1);
+        cy.get('#btn-next-step').click();
+        cy.get('#btn-create-quote').should('not.be.disabled').click();
+
+        cy.scrollTo('top');
+
+        cy.get('#btn-more-filters').click();
+        cy.get("#filter-lower-cost input[type='checkbox']").should('be.checked');
+        cy.wait(3000);
+
+        //Provider filter
+        cy.get('#provider-multiselect').click();
+        cy.wait(500);
+        cy.get('.p-multiselect-list-container')
+            .eq(0)
+            .within(() => {
+                cy.get('.p-multiselect-option').contains('Gamma').click();
+            });
+
+        //SubProvider filter
+        cy.get('#subprovider-multiselect').click();
+        cy.wait(500);
+        cy.get('.p-multiselect-list-container')
+            .eq(0)
+            .within(() => {
+                cy.get('.p-multiselect-option').contains('TalkTalk').click();
+            });
+
+        //Contact length filter
+        cy.get('#contract-length-multiselect').click();
+        cy.wait(500);
+        cy.get('.p-multiselect-list-container')
+            .eq(0)
+            .within(() => {
+                cy.get('.p-multiselect-option').contains('36').click();
+            });
+
+        //Bearer filter
+        cy.get('#bearer-multiselect').click();
+        cy.wait(500);
+        cy.get('.p-select-list-container')
+            .eq(0)
+            .within(() => {
+                cy.get('.p-select-option').contains('1 Gb').click();
+            });
+
+        //Speed filter
+        cy.get('#speed-multiselect').click();
+        cy.wait(500);
+        cy.get('.p-select-list-container')
+            .eq(0)
+            .within(() => {
+                cy.get('.p-select-option').contains('500 Mb').click();
+            });
+
+        cy.scrollTo('top');
+        cy.get('#table-header-speed').click();
+        cy.wait(1000);
+        cy.get('#table-header-speed').click();
+        cy.wait(1000);
+
+        cy.get('table tbody tr.connectivity-table-item')
+            .filter(':contains("Internet Access (Wires Only)")')
+            .filter(':contains("1 Gb")')
+            .filter(':contains("500 Mb")')
+            .should('have.length', 2);
+
+        cy.get('tbody tr button').eq(0).click();
+        cy.get('tbody tr button').eq(0).contains('Added');
+    });
+
     it('I can Create an order from a quote', () => {
         cy.visit('/');
         cy.get('#datatable-btn-0-crete-order').click();
