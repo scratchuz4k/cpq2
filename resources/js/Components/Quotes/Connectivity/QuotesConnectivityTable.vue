@@ -222,7 +222,12 @@ const getArticles = async (clearCache = false, runTimeout = false) => {
 
         if (!meta.isRequestCompleted && runTimeout) {
             timeoutId = setTimeout(() => {
-                if (hasPrimaryProduct()) return;
+                if (hasPrimaryProduct()) {
+                    isLoading.value = false;
+                    showLoadingModal.value = false;
+                    meta.isRequestCompleted = true;
+                    return;
+                }
                 getArticles(false, true);
             }, 15000);
             return;

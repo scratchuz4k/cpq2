@@ -52,6 +52,7 @@ class CloudMarketConnectivityProducts implements ShouldQueue, TenantAware
         $time = Carbon::now()->addSeconds(86400);
 
         $this->started_at = now();
+        $finished_at = null;
 
         $stream = StreamWrapper::getResource($res->toPsrResponse()->getBody());
         foreach (Items::fromStream($stream) as $value) {
@@ -85,10 +86,10 @@ class CloudMarketConnectivityProducts implements ShouldQueue, TenantAware
 
             $this->prices[] = [...$temp, 'code' => md5(Str::slug($temp['code']))];
             $this->tempFilters = FilterProvider::process($this->tempFilters, $temp);
-            Product::write('live_prices', $this->file, $this->prices, false, null, $this->started_at, $this->tempFilters, $this->errors, $time);
+            Product::write('live_prices', $this->file, $this->prices, false, $finished_at, $this->started_at, $this->tempFilters, $this->errors, $time);
         }
-
-        Product::write('live_prices', $this->file, $this->prices, false, now(), $this->started_at, $this->tempFilters, $this->errors, $time);
+        $finished_at = now();
+        Product::write('live_prices', $this->file, $this->prices, false, $finished_at, $this->started_at, $this->tempFilters, $this->errors, $time);
         Log::info($res->toPsrResponse()->getBody()->getContents());
     }
 
