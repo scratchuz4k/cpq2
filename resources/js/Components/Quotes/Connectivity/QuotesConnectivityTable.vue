@@ -633,6 +633,7 @@ onMounted(() => {
                         <thead>
                             <tr>
                                 <th
+                                    id="table-header-product"
                                     class="ps-3"
                                     :style="{
                                         whiteSpace: 'nowrap',
@@ -655,6 +656,7 @@ onMounted(() => {
                                     </span>
                                 </th>
                                 <th
+                                    id="table-header-provider"
                                     class="text-center"
                                     :style="{ whiteSpace: 'nowrap' }"
                                     @click="orderBy('providerName')"
@@ -674,6 +676,7 @@ onMounted(() => {
                                     </span>
                                 </th>
                                 <th
+                                    id="table-header-subprovider"
                                     class="text-center"
                                     :style="{ whiteSpace: 'nowrap' }"
                                     @click="orderBy('connectivitySupplierName')"
@@ -693,6 +696,7 @@ onMounted(() => {
                                     </span>
                                 </th>
                                 <th
+                                    id="table-header-bearer"
                                     class="text-center"
                                     :style="{
                                         whiteSpace: 'nowrap'
@@ -714,6 +718,7 @@ onMounted(() => {
                                     </span>
                                 </th>
                                 <th
+                                    id="table-header-speed"
                                     class="text-center"
                                     :style="{
                                         whiteSpace: 'nowrap'
@@ -757,6 +762,7 @@ onMounted(() => {
                                     </span>
                                 </th>
                                 <th
+                                    id="table-header-monthly"
                                     class="text-center"
                                     :style="{
                                         whiteSpace: 'nowrap'
@@ -778,6 +784,7 @@ onMounted(() => {
                                     </span>
                                 </th>
                                 <th
+                                    id="table-header-ecc"
                                     class="text-center"
                                     :style="{
                                         whiteSpace: 'nowrap'
@@ -799,6 +806,7 @@ onMounted(() => {
                                     </span>
                                 </th>
                                 <th
+                                    id="table-header-contract-term"
                                     class="text-center"
                                     :style="{
                                         whiteSpace: 'nowrap'
