@@ -75,7 +75,6 @@ class CloudMarketAssignmentsProducts implements ShouldQueue, TenantAware
         }
 
         Product::write('assignments', $this->file, $this->prices, false, now(), $this->started_at, $this->tempFilters, $this->errors, $time);
-        Log::info($res->toPsrResponse()->getBody()->getContents());
     }
 
     /**

@@ -46,7 +46,7 @@
 </template>
 <script setup>
 import { removeAddon, addAddon } from '@/Composables/useConnectivityItem';
-import { watch, reactive, ref } from 'vue';
+import { onMounted, reactive, ref } from 'vue';
 import { quote } from '@/Composables/useQuote';
 import queryString from 'query-string';
 
@@ -84,6 +84,7 @@ const getOptions = async () => {
         meta.isRequestCompleted = !!res.data.finished_at;
     } catch (error) {
         meta.isRequestCompleted = true;
+        notyf.error(error.response.data.message);
     }
 
     if (!meta.isRequestCompleted) {

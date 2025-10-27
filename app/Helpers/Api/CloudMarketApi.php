@@ -127,7 +127,7 @@ class CloudMarketApi
         if (isset($quote->data?->quoteReference)) { // && isset($quote->data?->quoteId) && $params['quoteId'] == $quote->data?->quoteId
             $params['quoteReference'] = $quote->data?->quoteReference;
         }
-        Log::debug('CloudMarketApi::getAssignments lookup:', $params);
+        Log::debug('CloudMarketApi::saveQuote request:', $params);
 
         $credentials = Arr::undot($credentials);
 

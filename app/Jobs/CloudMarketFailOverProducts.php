@@ -89,7 +89,6 @@ class CloudMarketFailOverProducts implements ShouldQueue, TenantAware
         }
 
         Product::write('fail_over', $this->file, $this->prices, false, now(), $this->started_at, $this->tempFilters, $this->errors, $time);
-        Log::info($res->toPsrResponse()->getBody()->getContents());
     }
 
     /**

@@ -4,7 +4,11 @@
             <div class="d-flex mb-2">
                 <p class="d-flex fs-5 bold me-2">
                     Hardware <span class="fw-normal ms-2">({{ meta.total }})</span>
-                    <span v-if="checks.primaryHardwareRequired || checks.failoverHardwareRequired">*</span>
+                    <span
+                        class="text-primary fw-bold ps-1"
+                        v-if="checks.primaryHardwareRequired || checks.failoverHardwareRequired"
+                        >*</span
+                    >
                 </p>
                 <div v-if="isLoading">
                     <div class="spinner-border spinner-border-sm" role="status">
@@ -86,6 +90,7 @@ const getAddons = async () => {
     } catch (error) {
         isLoading.value = false;
         meta.isRequestCompleted = true;
+        notyf.error(error.response.data.message);
     }
 
     if (!meta.isRequestCompleted) {

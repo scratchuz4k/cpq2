@@ -90,7 +90,6 @@ class CloudMarketConnectivityProducts implements ShouldQueue, TenantAware
         }
         $finished_at = now();
         Product::write('live_prices', $this->file, $this->prices, false, $finished_at, $this->started_at, $this->tempFilters, $this->errors, $time);
-        Log::info($res->toPsrResponse()->getBody()->getContents());
     }
 
     /**

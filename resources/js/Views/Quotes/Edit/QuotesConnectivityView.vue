@@ -237,8 +237,14 @@ const scrollToDiv = () => {
 };
 
 const saveQuote = async () => {
-    await axios.get('/api/cloudmarket/products/save-quote?quote_id=' + props.modelValue.id);
-    window.location.href = route('quotes.show', { quote: props.modelValue.id });
+    try {
+        isLoading.value = true;
+        await axios.get('/api/cloudmarket/products/save-quote?quote_id=' + props.modelValue.id);
+        window.location.href = route('quotes.show', { quote: props.modelValue.id });
+    } catch (error) {
+        isLoading.value = false;
+        notyf.error(error.response.data.message);
+    }
 };
 
 watch(

@@ -81,7 +81,6 @@ class CloudMarketAddonsProducts implements ShouldQueue, TenantAware
 
         Product::write('addons', $this->file, $this->prices, false, now(), $this->started_at, $this->tempFilters, $this->errors, $time);
         Product::addOptions('addons', $this->file, $this->options);
-        Log::info($res->toPsrResponse()->getBody()->getContents());
     }
 
     /**

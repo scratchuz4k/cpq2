@@ -84,6 +84,7 @@ const getOptions = async () => {
         meta.isRequestCompleted = !!res.data.finished_at;
     } catch (error) {
         meta.isRequestCompleted = true;
+        notyf.error(error.response.data.message);
     }
 
     if (!meta.isRequestCompleted) {
