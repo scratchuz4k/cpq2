@@ -469,6 +469,7 @@ onMounted(() => {
                     <div class="col-lg-2 col-12 p-0 pe-1">
                         <label for="filter-contract" class="form-label">Contract Length</label>
                         <MultiSelect
+                            id="contract-length-multiselect"
                             v-model="filters['contractTermMonths'].value"
                             style="width: 100%"
                             :options="Object.keys(filterList.contractTermMonths)"
@@ -484,6 +485,7 @@ onMounted(() => {
                     <div class="col-lg-2 col-12 p-0 pe-1">
                         <label for="filter-contract" class="form-label">Min. Bearer</label>
                         <Select
+                            id="bearer-multiselect"
                             v-model="filters['bearer'].value"
                             style="width: 100%"
                             :options="filterList.bearer"
@@ -503,6 +505,7 @@ onMounted(() => {
                     <div class="col-lg-2 col-12 p-0 pe-1">
                         <label for="filter-contract" class="form-label">Min. Speed</label>
                         <Select
+                            id="speed-multiselect"
                             v-model="filters['speed'].value"
                             style="width: 100%"
                             :options="filterList.speed"
