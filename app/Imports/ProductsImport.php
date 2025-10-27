@@ -177,6 +177,10 @@ class ProductsImport implements ToCollection, WithBatchInserts, WithHeadingRow
         $fileSkus = $collection->pluck('sku')->filter()->unique()->toArray();
 
         foreach ($collection as $row) {
+            if ($row->filter()->isEmpty()) {
+                continue;
+            }
+
             $row = collect($row)->map(function ($value) {
                 $value = trim((string) $value);
 
@@ -219,11 +223,17 @@ class ProductsImport implements ToCollection, WithBatchInserts, WithHeadingRow
                         $processedInLastIteration = true;
                     }
                 } else {
-                    $this->results['skipped']++;
-                    $this->results['errors'][] = ['row' => $row, 'error' => 'Parent Product with SKU: "'.$row['parent_sku'].'" not found!'];
+                    $remainingRows[] = $row;
                 }
             }
             $deferredRows = $remainingRows;
+        }
+
+        if (count($deferredRows) > 0) {
+            foreach ($deferredRows as $row) {
+                $this->results['skipped']++;
+                $this->results['errors'][] = ['row' => $row, 'error' => 'Parent Product with SKU: "'.$row['parent_sku'].'" not found!'];
+            }
         }
     }
 
