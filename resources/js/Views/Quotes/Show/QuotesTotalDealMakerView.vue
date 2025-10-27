@@ -8,6 +8,8 @@ import { usePage } from '@inertiajs/vue3';
 import WarningNote from '@/Components/WarningNote.vue';
 import { checkWarnings } from '@composables/warning.js';
 import format from '@/Composables/format.js';
+import { can, hasRole } from '@/Composables/useAuth';
+import { has } from 'lodash';
 
 const props = defineProps({
     modelValue: Object,
@@ -185,6 +187,12 @@ const items = ref([
                                     }
                                 ]"
                             ></ActivityDialog>
+                            <QuoteApprovals
+                                v-if="
+                                    tenant.configurations.has_quote_approval === '1' &&
+                                    (can('viewAny quote_approval') || hasRole('Super Admin'))
+                                "
+                            ></QuoteApprovals>
                             <ShareableQuote :disabled="quote.items.some((x) => !x.is_margin_valid)"></ShareableQuote>
                             <a
                                 class="btn btn-outline-primary me-2"

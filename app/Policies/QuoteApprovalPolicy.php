@@ -38,6 +38,12 @@ class QuoteApprovalPolicy
      */
     public function create(User $user): bool
     {
+        $hasPemission = get_tenant_config('has_quote_approval');
+
+        if (is_null($hasPemission) || $hasPemission == '0') {
+            return false;
+        }
+
         if (! $user->can("create $this->model")) {
             return false;
         }
@@ -50,6 +56,12 @@ class QuoteApprovalPolicy
      */
     public function update(User $user, QuoteApproval $quoteApproval): bool
     {
+        $hasPemission = get_tenant_config('has_quote_approval');
+
+        if (is_null($hasPemission) || $hasPemission == '0') {
+            return false;
+        }
+
         if (! $user->can("update $this->model")) {
             return false;
         }
@@ -62,6 +74,12 @@ class QuoteApprovalPolicy
      */
     public function delete(User $user, QuoteApproval $quoteApproval): bool
     {
+        $hasPemission = get_tenant_config('has_quote_approval');
+
+        if (is_null($hasPemission) || $hasPemission == '0') {
+            return false;
+        }
+
         if (! $user->can("delete $this->model")) {
             return false;
         }
@@ -74,6 +92,12 @@ class QuoteApprovalPolicy
      */
     public function restore(User $user, QuoteApproval $quoteApproval): bool
     {
+        $hasPemission = get_tenant_config('has_quote_approval');
+
+        if (is_null($hasPemission) || $hasPemission == '0') {
+            return false;
+        }
+
         if (! $user->can("restore $this->model")) {
             return false;
         }
@@ -86,6 +110,11 @@ class QuoteApprovalPolicy
      */
     public function forceDelete(User $user, QuoteApproval $quoteApproval): bool
     {
+        $hasPemission = get_tenant_config('has_quote_approval');
+
+        if (is_null($hasPemission) || $hasPemission == '0') {
+            return false;
+        }
 
         if (! $user->can("forceDelete $this->model")) {
             return false;
@@ -99,6 +128,13 @@ class QuoteApprovalPolicy
      */
     public function export(User $user): bool
     {
+
+        $hasPemission = get_tenant_config('has_quote_approval');
+
+        if (is_null($hasPemission) || $hasPemission == '0') {
+            return false;
+        }
+
         if (! $user->can("export $this->model")) {
             return false;
         }

@@ -2,11 +2,10 @@
 
 namespace App\Enums;
 
-enum QuoteApprovalFlow: string
+enum QuoteApprovalFlowEnum: string
 {
     case Internal = 'internal';
     case Margin = 'margin';
-    case Account = 'account';
 
     public static function asArray(): array
     {

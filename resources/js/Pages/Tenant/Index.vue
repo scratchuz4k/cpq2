@@ -351,66 +351,6 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'My Account', url: '/my
                             <div class="col">
                                 <div class="card bg-light border-0 settings-block h-100">
                                     <div class="card-body">
-                                        <h6 class="fw-bold pe-5 mb-3">Margin Rules</h6>
-                                        <div class="quote-expiration-days">
-                                            <div>
-                                                <label for="quote-expiration-days" class="form-label lh-sm small pb-2">
-                                                    <i>
-                                                        Activate this setting to set margin rules in the quote summary
-                                                    </i>
-                                                </label>
-                                            </div>
-                                            <div class="sidenote">
-                                                <ToggleSwitch
-                                                    id="active-margin-rules"
-                                                    v-model="tenant.configurations.quote_margin_rules_active"
-                                                    @change="submitTenantSettings"
-                                                    trueValue="1"
-                                                    falseValue="0"
-                                                    binary
-                                                >
-                                                    <template #handle>
-                                                        <font-awesome-icon
-                                                            :icon="
-                                                                tenant.configurations.quote_margin_rules_active === '1'
-                                                                    ? ['fas', 'circle-check']
-                                                                    : ['far', 'circle-xmark']
-                                                            "
-                                                            class="text-primary"
-                                                        />
-                                                    </template>
-                                                </ToggleSwitch>
-                                            </div>
-                                            <label>Margin value:</label>
-                                            <div class="row g-3 mb-3">
-                                                <div class="col">
-                                                    <input
-                                                        type="number"
-                                                        class="form-control"
-                                                        v-model="tenant.configurations.quote_margin_rules_value"
-                                                        @input="onQuoteDaysInput"
-                                                        min="0"
-                                                        max="100"
-                                                    />
-                                                </div>
-                                                <div class="col">
-                                                    <select
-                                                        class="form-select"
-                                                        v-model="tenant.configurations.quote_margin_rules_operation"
-                                                        @change="setMarginDefaults()"
-                                                    >
-                                                        <option value="percentage">%</option>
-                                                        <option value="value">£</option>
-                                                    </select>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col">
-                                <div class="card bg-light border-0 settings-block h-100">
-                                    <div class="card-body">
                                         <h6 class="fw-bold pe-5 mb-3">Approvals</h6>
                                         <div class="quote-expiration-days">
                                             <div>
@@ -441,19 +381,54 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'My Account', url: '/my
                                             </div>
                                             <div class="row g-3 mb-3">
                                                 <div class="col">
-                                                    <label>Approvals Flow:</label>
-                                                    <select
-                                                        class="form-select"
-                                                        v-model="tenant.configurations.quote_approval_flow"
-                                                        @change="submitTenantSettings()"
-                                                    >
-                                                        <option
-                                                            :value="approval.value"
-                                                            v-for="approval in quote_approval_flows"
+                                                    <div class="mb-3">
+                                                        <label>Approvals Flow:</label>
+                                                        <select
+                                                            class="form-select"
+                                                            v-model="tenant.configurations.quote_approval_flow"
+                                                            @change="submitTenantSettings()"
                                                         >
-                                                            {{ approval.name }}
-                                                        </option>
-                                                    </select>
+                                                            <option
+                                                                :value="approval.value"
+                                                                v-for="approval in quote_approval_flows"
+                                                            >
+                                                                {{ approval.name }}
+                                                            </option>
+                                                        </select>
+                                                    </div>
+                                                    <div
+                                                        class="mb-3"
+                                                        v-if="tenant.configurations.quote_approval_flow === 'margin'"
+                                                    >
+                                                        <label>Margin value:</label>
+                                                        <div class="row g-3 mb-3">
+                                                            <div class="col">
+                                                                <input
+                                                                    type="number"
+                                                                    class="form-control"
+                                                                    v-model="
+                                                                        tenant.configurations.quote_margin_rules_value
+                                                                    "
+                                                                    @input="onQuoteDaysInput"
+                                                                    min="0"
+                                                                    max="100"
+                                                                />
+                                                            </div>
+                                                            <div class="col">
+                                                                <select
+                                                                    class="form-select"
+                                                                    v-model="
+                                                                        tenant.configurations
+                                                                            .quote_margin_rules_operation
+                                                                    "
+                                                                    @change="setMarginDefaults()"
+                                                                >
+                                                                    <option value="percentage">%</option>
+                                                                    <option value="value">£</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>

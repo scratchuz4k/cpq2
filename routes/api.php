@@ -22,6 +22,7 @@ use App\Http\Controllers\Api\PermissionController;
 use App\Http\Controllers\Api\PriceController;
 use App\Http\Controllers\Api\PricePlanController;
 use App\Http\Controllers\Api\ProductController;
+use App\Http\Controllers\Api\QuoteApprovalController;
 use App\Http\Controllers\Api\QuoteController;
 use App\Http\Controllers\Api\QuoteItemController;
 use App\Http\Controllers\Api\RegionController;
@@ -80,6 +81,7 @@ Route::middleware(['api', 'auth:sanctum'])->group(function () {
         'products' => ProductController::class,
         'quotes' => QuoteController::class,
         'quote-items' => QuoteItemController::class,
+        'quote-approvals' => QuoteApprovalController::class,
         'orders' => OrderController::class,
         'order-items' => OrderItemController::class,
         'solution-types' => SolutionTypeController::class,

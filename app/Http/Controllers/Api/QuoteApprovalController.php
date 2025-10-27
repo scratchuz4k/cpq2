@@ -4,11 +4,12 @@ namespace App\Http\Controllers\Api;
 
 use App\Helpers\DataProvider;
 use App\Http\Controllers\BaseController;
+use App\Http\Requests\QuoteApprovalCreateRequest;
+use App\Http\Requests\QuoteApprovalUpdateRequest;
 use App\Http\Resources\QuoteApprovalResource;
 use App\Models\QuoteApproval;
 use App\Services\QuoteApprovalService;
 use Exception;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class QuoteApprovalController extends BaseController
@@ -39,16 +40,15 @@ class QuoteApprovalController extends BaseController
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(QuoteApprovalCreateRequest $request)
     {
-
         try {
-            $group = DB::transaction(fn () => $this->service->store($request->all()));
+            $quoteApproval = DB::transaction(fn () => $this->service->store($request->all()));
         } catch (Exception $e) {
             return handleException($e);
         }
 
-        return response()->json(new QuoteApprovalResource($group));
+        return response()->json(new QuoteApprovalResource($quoteApproval));
     }
 
     /**
@@ -56,23 +56,21 @@ class QuoteApprovalController extends BaseController
      */
     public function show(QuoteApproval $quoteApproval)
     {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(QuoteApproval $quoteApproval)
-    {
-        //
+        return response()->json(new QuoteApprovalResource($quoteApproval));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, QuoteApproval $quoteApproval)
+    public function update(QuoteApprovalUpdateRequest $request, QuoteApproval $quoteApproval)
     {
-        //
+        try {
+            $quoteApproval = DB::transaction(fn () => $this->service->update($quoteApproval, $request->all()));
+        } catch (Exception $e) {
+            return handleException($e);
+        }
+
+        return response()->json(new QuoteApprovalResource($quoteApproval));
     }
 
     /**

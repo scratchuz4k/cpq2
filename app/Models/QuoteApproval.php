@@ -10,6 +10,7 @@ class QuoteApproval extends Model
     protected $fillable = [
         'status',
         'comments',
+        'flow',
         'quote_id',
         'approver_id',
     ];
