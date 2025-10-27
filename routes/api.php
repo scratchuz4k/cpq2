@@ -3,7 +3,6 @@
 use App\Http\Controllers\Api\AccountController;
 use App\Http\Controllers\Api\ActivityController;
 use App\Http\Controllers\Api\ApiController;
-use App\Http\Controllers\Api\BrandController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\Cloudmarket\AddressController as CloudmarketAddressController;
 use App\Http\Controllers\Api\Cloudmarket\ProductController as CloudmarketProductController;
@@ -17,7 +16,6 @@ use App\Http\Controllers\Api\General\BlacklistController;
 use App\Http\Controllers\Api\GroupAccountController;
 use App\Http\Controllers\Api\GroupController;
 use App\Http\Controllers\Api\ImportController;
-use App\Http\Controllers\Api\MerchantController;
 use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\OrderItemController;
 use App\Http\Controllers\Api\PermissionController;
@@ -26,7 +24,6 @@ use App\Http\Controllers\Api\PricePlanController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\QuoteController;
 use App\Http\Controllers\Api\QuoteItemController;
-use App\Http\Controllers\Api\RegionController;
 use App\Http\Controllers\Api\ResourceController;
 use App\Http\Controllers\Api\SharedLinkController;
 use App\Http\Controllers\Api\ShopBlocks\BrandController as ShopBlocksBrandController;
@@ -95,11 +92,8 @@ Route::middleware(['api', 'auth:sanctum'])->group(function () {
         'order-items' => OrderItemController::class,
         'solution-types' => SolutionTypeController::class,
         'permissions' => PermissionController::class,
-        'brands' => BrandController::class,
-        'merchants' => MerchantController::class,
         'prices' => PriceController::class,
         'suppliers' => SupplierController::class,
-        'regions' => RegionController::class,
         'spas' => SpaController::class,
         'users' => UserController::class,
         'tokens' => TokenController::class,

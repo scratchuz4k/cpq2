@@ -4,6 +4,7 @@ namespace App\Imports;
 
 use App\Enums\ProductStatusesEnum;
 use App\Http\Requests\ProductCreateRequest;
+use App\Models\Price;
 use App\Models\PricePlan;
 use App\Models\Product;
 use App\Models\Tenant;
@@ -109,6 +110,12 @@ class ProductsImport implements ToCollection, WithBatchInserts, WithHeadingRow
                 'status' => (isset($product['status']) && ! empty($product['status'])) ? $product['status'] : ProductStatusesEnum::ACTIVE->name,
                 'supplier_id' => $product['supplier_id'] ?: null,
                 'price_plan_id' => (isset($product['price_plan_id']) && ! empty($product['price_plan_id'])) ? PricePlan::find($product['price_plan_id'])->id : null,
+                'prices' => [
+                    'code' => $product['price_code'],
+                    'net' => $product['price_net'],
+                    'cost' => $product['price_cost'],
+
+                ],
                 'category_id' => $product['category_id'] ?? null,
                 'parent_id' => $parentId,
                 'tenant_id' => $this->tenant->id,
@@ -116,25 +123,37 @@ class ProductsImport implements ToCollection, WithBatchInserts, WithHeadingRow
             ];
 
             if ($this->overwrite) {
-                Product::UpdateOrCreate(
+                $newProduct = Product::UpdateOrCreate(
                     [
                         'sku' => $product['sku'],
                     ],
                     $productData
                 );
             } else {
-                if (Product::where('sku', $product['sku'])->exists()) {
+                if ($newProduct = Product::where('sku', $product['sku'])->exists()) {
                     $this->results['skipped']++;
                     $this->results['errors'][] = ['row' => $product, 'error' => 'Product already exists'];
 
                     return;
                 }
 
-                Product::create([
+                $newProduct = Product::create([
                     'sku' => $product['sku'] ?? '',
                     ...$productData,
                 ]);
             }
+
+            if (in_array(! null, $productData['prices'])) {
+                $price = Price::UpdateOrCreate(
+                    [
+                        'product_id' => $newProduct->id,
+                    ],
+                    [
+                        ...$productData['prices'],
+                        'tenant_id' => $this->tenant->id,
+                    ]);
+            }
+
             $this->results['success']++;
 
         } catch (ValidationException $e) {
@@ -181,39 +200,11 @@ class ProductsImport implements ToCollection, WithBatchInserts, WithHeadingRow
 
     public static function getImportTemplate()
     {
-        $dummyProducts = Product::factory()->count(10)->make();
-
-        $dummyProducts->each(function ($item) {
-            $item->price_code = fake()->numberBetween(1, 999);
-            $item->price_cost = fake()->numberBetween(1, 999);
-            $item->price_net = fake()->numberBetween(1, 999);
-            $item->parent_sku = fake()->optional()->slug(2);
-            $item->supplier_id = fake()->numberBetween(1, 99);
-            $item->category_id = fake()->numberBetween(1, 99);
-        });
-
-        $data = $dummyProducts->map(function ($item) {
-            return [
-                'sku' => $item->sku,
-                'name' => $item->name,
-                'description' => $item->description,
-                'supplier_id' => $item->supplier_id,
-                'category_id' => $item->category_id,
-                'status' => $item->status,
-                'expires_at' => Carbon::parse($item->expires_at)->format('d/m/Y'),
-                'price_code' => $item->price_code,
-                'price_cost' => $item->price_cost,
-                'price_net' => $item->price_net,
-                'price_plan_id' => $item->price_plan_id,
-                'parent_sku' => $item->parent_sku,
-            ];
-        });
-
-        $filename = 'import_products_template.csv';
+        $template = require app_path('Helpers/Import/products_import_template.php');
 
         return [
-            'data' => $data,
-            'filename' => $filename,
+            'data' => collect($template['data']),
+            'filename' => $template['filename'],
         ];
     }
 

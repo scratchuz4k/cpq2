@@ -141,7 +141,6 @@ const items = ref([
                                     { data: 'code', title: 'Code', style: 'width:20%' },
                                     { data: 'name', title: 'Name', style: 'width:30%' },
                                     { data: 'supplier.name', title: 'Supplier', style: 'width:12%' },
-                                    { data: 'brand.name', title: 'Brand', style: 'width:12%' },
                                     { data: 'updated_at', title: 'Updated At', style: 'width:15%' },
                                     { data: 'actions', title: ' At', style: 'width:5%' }
                                 ]"

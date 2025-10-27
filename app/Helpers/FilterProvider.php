@@ -34,7 +34,7 @@ class FilterProvider
         $orderBy = request()->input('orderBy', $orderBy);
 
         $items = $order == 'asc' ? $items->sortBy($orderBy) : $items->sortByDesc($orderBy);
-        $limit = request()->input('limit', 10);
+        $limit = request()->input('perPage', 10);
         $currentPage = request()->input('page', 1);
         $temp = $items->slice(($currentPage - 1) * $limit, $limit)->values();
 
@@ -107,7 +107,8 @@ class FilterProvider
                             $item['speed'].
                             $item['priceInstall'].
                             $item['priceECC'].
-                            $item['contractTermMonths']
+                            $item['contractTermMonths'],
+                        $item['uploadSpeed'] ?? ''
                     );
                     if (in_array($key, $keys)) {
                         if ($item['priceMonthly'] < $carry[$key]['priceMonthly']) {

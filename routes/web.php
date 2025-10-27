@@ -3,7 +3,6 @@
 use App\Http\Controllers\Web\AccountController;
 use App\Http\Controllers\Web\ActivityController;
 use App\Http\Controllers\Web\ApiController;
-use App\Http\Controllers\Web\BrandController;
 use App\Http\Controllers\Web\CategoryController;
 use App\Http\Controllers\Web\DashboardController;
 use App\Http\Controllers\Web\EmailHistoryController;
@@ -12,12 +11,10 @@ use App\Http\Controllers\Web\General\BlacklistController;
 use App\Http\Controllers\Web\GroupAccountController;
 use App\Http\Controllers\Web\GroupController;
 use App\Http\Controllers\Web\ImportController;
-use App\Http\Controllers\Web\MerchantController;
 use App\Http\Controllers\Web\OrderController;
 use App\Http\Controllers\Web\ProductController;
 use App\Http\Controllers\Web\ProfileController;
 use App\Http\Controllers\Web\QuoteController;
-use App\Http\Controllers\Web\RegionController;
 use App\Http\Controllers\Web\SharedLinkController;
 use App\Http\Controllers\Web\SolutionTypeController;
 use App\Http\Controllers\Web\SpaController;
@@ -87,11 +84,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         'quotes' => QuoteController::class,
         'orders' => OrderController::class,
         'tenants' => TenantController::class,
-        'brands' => BrandController::class,
-        'merchants' => MerchantController::class,
         'products' => ProductController::class,
         'suppliers' => SupplierController::class,
-        'regions' => RegionController::class,
         'spas' => SpaController::class,
         'users' => UserController::class,
         'tokens' => TokenController::class,

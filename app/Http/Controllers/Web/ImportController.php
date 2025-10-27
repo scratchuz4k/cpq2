@@ -50,7 +50,7 @@ class ImportController extends BaseController
         try {
             DB::transaction(fn () => $this->importService->store($request->all()));
         } catch (\Exception $e) {
-            throw new \Exception($e);
+            return handleWebException($e);
         }
 
         return redirect()->route('imports.index');

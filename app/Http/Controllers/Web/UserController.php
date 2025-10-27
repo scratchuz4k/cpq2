@@ -60,7 +60,7 @@ class UserController extends BaseController
         try {
             $user = DB::transaction(fn () => $this->usersService->store($request->all()));
         } catch (\Exception $e) {
-            throw new \Exception($e);
+            return handleWebException($e);
         }
 
         return redirect()->route('users.index');
@@ -106,7 +106,7 @@ class UserController extends BaseController
         try {
             $user = DB::transaction(fn () => $this->usersService->update($user, $request->all()));
         } catch (\Exception $e) {
-            throw new \Exception($e);
+            return handleWebException($e);
         }
 
         return redirect()->route('users.index');
@@ -128,7 +128,7 @@ class UserController extends BaseController
         try {
             $results = DB::transaction(fn () => $this->usersService->import($request->all()));
         } catch (\Exception $e) {
-            throw new \Exception($e);
+            return handleWebException($e);
         }
 
         return Inertia::render('Users/Import', [
