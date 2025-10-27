@@ -210,7 +210,7 @@ describe('Creates a Connectivity quote', () => {
             .should('have.length', 2);
 
         cy.get('tbody tr button').eq(0).click();
-        cy.get('tbody tr button').eq(0).contains('Added');
+        cy.get('#connectivity-product-1').contains('Primary Product');
     });
 
     it('I can Create an order from a quote', () => {
