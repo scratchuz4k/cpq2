@@ -80,6 +80,12 @@ class ProductsImport implements ToCollection, WithBatchInserts, WithHeadingRow
                 }
             }
 
+            $product['prices'] = [
+                'code' => $product['price_code'],
+                'net' => $product['price_net'],
+                'cost' => $product['price_cost'],
+            ];
+
             $validator = Validator::make($product, $this->getValidationRules($ignoreProductId));
 
             if ($validator->fails()) {
@@ -189,7 +195,7 @@ class ProductsImport implements ToCollection, WithBatchInserts, WithHeadingRow
 
         if ($fileProductParentSkus->isNotEmpty() && $missingParentSkus = array_diff($fileProductParentSkus->toArray(), $fileSkus)) {
             $this->availableSkus = Product::query()->whereIn('sku', $missingParentSkus)->pluck('sku')->toArray();
-            $this->availableSkus = array_unique(array_merge($this->availableSkus, $fileProductParentSkus->toArray()));
+            $this->availableSkus = array_unique(array_merge($this->availableSkus, $fileSkus));
         }
 
         $this->processDeferredChildren($deferredRows, $fileSkus);
@@ -213,7 +219,8 @@ class ProductsImport implements ToCollection, WithBatchInserts, WithHeadingRow
                         $processedInLastIteration = true;
                     }
                 } else {
-                    $remainingRows[] = $row;
+                    $this->results['skipped']++;
+                    $this->results['errors'][] = ['row' => $row, 'error' => 'Parent Product with SKU: "'.$row['parent_sku'].'" not found!'];
                 }
             }
             $deferredRows = $remainingRows;
