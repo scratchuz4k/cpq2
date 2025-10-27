@@ -41,7 +41,7 @@
                         <td style="width: 50%">{{ item.comments }}</td>
                         <td class="text-center">
                             <p
-                                class="badge rounded-pill m-1"
+                                class="badge rounded-pill"
                                 :class="{
                                     'bg-success text-white': item.status === 'approved',
                                     'bg-danger text-white': item.status === 'rejected'
@@ -101,6 +101,9 @@ const meta = reactive({
 
 const getApprovals = async () => {
     let query = queryString.stringify({
+        limit: meta.limit,
+        page: meta.page,
+        filters: JSON.stringify([{ column: 'quote_id', operator: 'equals', value: quote.id }]),
         order: 'desc',
         orderBy: 'created_at'
     });
