@@ -254,7 +254,7 @@ class ProductsImport implements ToCollection, WithBatchInserts, WithHeadingRow
 
     public static function getImportTemplate()
     {
-        $template = require app_path('Helpers/Import/products_import_template.php');
+        $template = require app_path('Helpers/Import/product_import.php');
 
         return [
             'data' => collect($template['data']),

@@ -263,18 +263,7 @@ watch(
                         :size="'small'"
                         class="p-datatable-sm preview-table"
                     >
-                        <Column field="sku" header="Sku"></Column>
-                        <Column field="name" header="Name"></Column>
-                        <Column field="description" header="Description"></Column>
-                        <Column field="supplier_id" header="Supplier ID"></Column>
-                        <Column field="category_id" header="Category ID"></Column>
-                        <Column field="status" header="Status"></Column>
-                        <Column field="expires_at" header="Expires Date"></Column>
-                        <Column field="price_code" header="Price Code"></Column>
-                        <Column field="price_cost" header="Price Cost"></Column>
-                        <Column field="price_net" header="Price Net"></Column>
-                        <Column field="price_plan_id" header="Price Plan ID"></Column>
-                        <Column field="parent_sku" header="Parent Sku"></Column>
+                        <Column v-for="(column, key) in previewData.columns" :field="key" :header="column"></Column>
                     </Table>
                 </div>
                 <div class="mt-2 row row-cols-1 row-cols-md-3 g-3 mb-2">

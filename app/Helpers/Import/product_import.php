@@ -46,4 +46,18 @@ return [
         ],
     ],
     'filename' => 'import_products_template.csv',
+    'columns' => [
+        'sku' => 'Sku',
+        'name' => 'Name',
+        'description' => 'Description',
+        'supplier_id' => 'Supplier ID',
+        'category_id' => 'Category ID',
+        'status' => 'Status',
+        'expires_at' => 'Expires Date',
+        'price_code' => 'Price Code',
+        'price_cost' => 'Price Cost',
+        'price_net' => 'Price Net',
+        'price_plan_id' => 'Price Plan ID',
+        'parent_sku' => 'Parent Sku',
+    ],
 ];

@@ -47,6 +47,7 @@ class ImportService
         $overwrite = array_key_exists('overwrite', $array) ? $array['overwrite'] : 0;
         $model = array_key_exists('model', $array) ? $array['model'] : 0;
         $user = auth()->user();
+        $helperFile = require app_path('Helpers/Import/'.mb_strtolower($model).'_import.php');
 
         $importClass = ImportsEnum::tryFromName($model)->value;
         $importHandler = new $importClass($overwrite);
@@ -58,6 +59,7 @@ class ImportService
             'overwrite' => $overwrite,
             'results' => $results,
             'user' => $user,
+            'columns' => $helperFile['columns'],
         ];
     }
 }
