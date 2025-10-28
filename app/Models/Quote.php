@@ -171,4 +171,20 @@ class Quote extends Model
 
         return QuoteStatusesEnum::CONFIGURE->name;
     }
+
+    public function isBlocked(): string
+    {
+        $block_statuses = [
+            QuoteStatusesEnum::NEED_APPROVAL->name,
+            QuoteStatusesEnum::VALIDATED->name,
+            QuoteStatusesEnum::COMPLETED->name,
+            QuoteStatusesEnum::EXPIRED->name,
+        ];
+
+        if (in_array($this->status, $block_statuses)) {
+            return true;
+        }
+
+        return false;
+    }
 }

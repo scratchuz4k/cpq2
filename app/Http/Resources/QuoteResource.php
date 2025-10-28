@@ -18,6 +18,7 @@ class QuoteResource extends JsonResource
         return [
             ...$this->resource->toArray(),
             'user' => $this->user,
+            'is_blocked' => $this->isBlocked(),
             'commission_value' => format_currency($this->commission_value),
             'margin' => format_currency($this->margin),
             'total' => format_currency($this->total),

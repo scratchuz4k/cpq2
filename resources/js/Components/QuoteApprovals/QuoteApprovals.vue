@@ -1,4 +1,5 @@
 <template>
+    {{ quote.status }}
     <div class="approvals-group-button flex me-2 p-0">
         <button
             v-if="quote.status.toLowerCase() === 'completed'"
@@ -20,7 +21,9 @@
                 class="btn btn-primary"
                 :disabled="items.some((x) => x.status === 'pending')"
                 @click="sendToOrder()"
-                style="border-radius: 5px 0 0 5px"
+                :style="{
+                    borderRadius: can('viewAny quote_approval') || hasRole('Super Admin') ? '5px 0 0 5px' : '5px'
+                }"
             >
                 <font-awesome-icon :icon="['fas', 'thumbtack']" class="me-2" />
                 Send to Order
@@ -41,7 +44,12 @@
             </button>
         </template>
 
-        <button class="btn btn-primary" @click="toggleDialog()" style="border-radius: 0 5px 5px 0">
+        <button
+            v-if="can('viewAny quote_approval') || hasRole('Super Admin')"
+            class="btn btn-primary"
+            @click="toggleDialog()"
+            style="border-radius: 0 5px 5px 0"
+        >
             <font-awesome-icon :icon="['fas', 'ellipsis-vertical']" />
         </button>
     </div>
@@ -73,7 +81,10 @@
                         <td style="width: 15%">{{ format.date(item.updated_at) }}</td>
                         <td style="width: 15%">{{ item.approver?.name }}</td>
                         <td style="width: 10%">{{ item.flow }}</td>
-                        <td style="width: 50%">{{ item.comments }}</td>
+                        <td style="width: 50%">
+                            <p v-if="item.status !== 'pending'">{{ item.comments }}</p>
+                            <input v-else type="text" class="form-control" v-model="item.comments" />
+                        </td>
                         <td class="text-center">
                             <p
                                 class="badge rounded-pill"
@@ -89,13 +100,13 @@
                             <div class="flex" v-if="item.status === 'pending'">
                                 <button
                                     class="btn btn-sm btn-primary me-2"
-                                    @click="() => updateQuoteApproval(item.id, 'approved')"
+                                    @click="() => updateQuoteApproval(item, 'approved')"
                                 >
                                     <font-awesome-icon :icon="['fas', 'check']" />
                                 </button>
                                 <button
                                     class="btn btn-sm btn-secondary"
-                                    @click="() => updateQuoteApproval(item.id, 'rejected')"
+                                    @click="() => updateQuoteApproval(item, 'rejected')"
                                 >
                                     <font-awesome-icon :icon="['fas', 'x']" />
                                 </button>
@@ -123,6 +134,7 @@ import { quote, getQuote } from '@composables/useQuote';
 import queryString from 'query-string';
 import Paginator from 'primevue/paginator';
 import { usePage } from '@inertiajs/vue3';
+import { can, hasRole } from '@/Composables/useAuth';
 
 const { props } = usePage();
 
@@ -157,9 +169,10 @@ const startApproval = async () => {
     await getQuote(quote.id);
 };
 
-const updateQuoteApproval = async (id, status) => {
-    let res = await axios.put(route('api.quote-approvals.update', { id: id }), {
-        status: status
+const updateQuoteApproval = async (item, status) => {
+    let res = await axios.put(route('api.quote-approvals.update', { id: item.id }), {
+        status: status,
+        comments: item.comments
     });
     getApprovals();
     await getQuote(quote.id);
@@ -192,9 +205,7 @@ const sendToOrder = async () => {
 
     if (quote.status.toLowerCase() == 'validated') {
         try {
-            let res = await axios.put(`/api/quotes/${quote.id}`, {
-                status: 'COMPLETED'
-            });
+            let res = await axios.post(`/api/quotes/${quote.id}/complete`);
             await getQuote(quote.id);
         } catch (ex) {
             notyf.error(ex.response.data.message);
@@ -203,6 +214,9 @@ const sendToOrder = async () => {
 };
 
 const toggleDialog = () => {
+    if (!(can('viewAny quote_approval') || hasRole('Super Admin'))) {
+        return;
+    }
     showDialog.value = !showDialog.value;
     if (showDialog.value) {
         getApprovals();

@@ -9,11 +9,11 @@ use App\Http\Requests\QuoteItemCreateRequest;
 use App\Http\Requests\QuoteItemUpdateRequest;
 use App\Http\Resources\QuoteItemResource;
 use App\Models\Product;
+use App\Models\Quote;
 use App\Models\QuoteItem;
 use App\Services\QuoteItemService;
 use Exception;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class QuoteItemController extends BaseController
 {
@@ -42,9 +42,14 @@ class QuoteItemController extends BaseController
      */
     public function store(QuoteItemCreateRequest $request)
     {
+        $quote = Quote::find($request->quote_id);
+        if ($quote->isBlocked()) {
+            return handleBlockedQuote();
+        }
+
         try {
             $quoteItem = DB::transaction(fn () => $this->quoteItemService->store($request->all()), 2);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return handleException($e);
         }
 
@@ -64,13 +69,13 @@ class QuoteItemController extends BaseController
      */
     public function update(QuoteItemUpdateRequest $request, QuoteItem $quoteItem)
     {
+        if ($quoteItem->quote->isBlocked()) {
+            return handleBlockedQuote();
+        }
         try {
             $quoteItem = DB::transaction(fn () => $this->quoteItemService->update($quoteItem, $request->all()));
-        } catch (\Exception $e) {
-            if (! env('APP_DEBUG')) {
-                Log::error($e->getMessage());
-            }
-            throw new \Exception($e);
+        } catch (Exception $e) {
+            return handleException($e);
         }
 
         return new QuoteItemResource($quoteItem);
@@ -81,6 +86,10 @@ class QuoteItemController extends BaseController
      */
     public function destroy(QuoteItem $quoteItem)
     {
+        if ($quoteItem->quote->isBlocked()) {
+            return handleBlockedQuote();
+        }
+
         $quote = $quoteItem->quote;
         $descendants = ! is_null($quoteItem->product_id)
             ? Product::descendants($quoteItem->product_id)

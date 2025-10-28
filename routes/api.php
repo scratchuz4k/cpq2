@@ -70,6 +70,7 @@ Route::middleware(['api', 'auth:sanctum'])->group(function () {
         Route::get('/', [ExportController::class, 'export']);
         Route::get('/columns', [ExportController::class, 'getColumns']);
     });
+    Route::post('/quotes/{quote}/complete', [QuoteController::class, 'complete']);
 
     Route::apiResources([
         'apis' => ApiController::class,

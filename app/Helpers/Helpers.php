@@ -120,3 +120,10 @@ if (! function_exists('handleException')) {
         return response()->json($message, 500);
     }
 }
+
+if (! function_exists('handleBlockedQuote')) {
+    function handleBlockedQuote()
+    {
+        return response()->json(['message' => 'Quote is blocked'], 400);
+    }
+}
