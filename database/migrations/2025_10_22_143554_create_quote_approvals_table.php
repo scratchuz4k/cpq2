@@ -17,6 +17,7 @@ return new class extends Migration
             $table->enum('flow', ['internal', 'margin', 'account'])->default('internal');
             $table->text('comments')->nullable();
 
+            $table->foreignId('tenant_id')->constrained()->cascadeOnDelete();
             $table->foreignId('quote_id')->constrained()->cascadeOnDelete();
             $table->foreignId('approver_id')->nullable()->constrained('users', 'id')->nullOnDelete();
             $table->timestamps();

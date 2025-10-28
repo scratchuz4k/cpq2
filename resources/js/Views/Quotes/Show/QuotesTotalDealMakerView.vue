@@ -228,29 +228,31 @@ const items = ref([
                 </div>
             </div>
             <div class="col-xl-4 ps-xl-5">
-                <InfoBox>
-                    <div style="font-size: 14px">
-                        <b style="font-size: 16px">Quote {{ quote.id }} for {{ quote.account.name }}</b>
-                        <br />
-                        Contact Number: 0124567890<br />
-                        Email: firstname.lastname@gmail.com
-                    </div>
-                </InfoBox>
-                <InfoBox v-if="quote.orders.length > 0">
-                    <h6>
-                        An Order related to this Quote was
-                        <span class="badge text-bg-secondary">{{ quote.status }}</span>
-                    </h6>
-                    <button class="btn btn-sm btn-primary" @click="showModal = true">See Rejection Notes</button>
-                </InfoBox>
-                <InfoBox v-if="['QUOTE', 'PRICE', 'CONFIGURE'].includes(quote.status)">
-                    <div style="font-size: 14px">
-                        This quote will expire on
-                        <b style="font-size: 16px">
-                            {{ format.expireDate(quote.created_at, tenant.configurations?.quote_expiration_days) }}
-                        </b>
-                    </div>
-                </InfoBox>
+                <div class="mb-3">
+                    <InfoBox>
+                        <div style="font-size: 14px">
+                            <b style="font-size: 16px">Quote {{ quote.id }} for {{ quote.account.name }}</b>
+                            <br />
+                            Contact Number: 0124567890<br />
+                            Email: firstname.lastname@gmail.com
+                        </div>
+                    </InfoBox>
+                    <InfoBox v-if="quote.orders.length > 0">
+                        <h6>
+                            An Order related to this Quote was
+                            <span class="badge text-bg-secondary">{{ quote.status }}</span>
+                        </h6>
+                        <button class="btn btn-sm btn-primary" @click="showModal = true">See Rejection Notes</button>
+                    </InfoBox>
+                    <InfoBox v-if="['QUOTE', 'PRICE', 'CONFIGURE'].includes(quote.status)">
+                        <div style="font-size: 14px">
+                            This quote will expire on
+                            <b style="font-size: 16px">
+                                {{ format.expireDate(quote.created_at, tenant.configurations?.quote_expiration_days) }}
+                            </b>
+                        </div>
+                    </InfoBox>
+                </div>
                 <div class="price-mobile-sidebar total-quote-discount px-4 pt-4 pb-2 mb-3">
                     <h3 class="mb-3">Total Quote Discount</h3>
                     <div

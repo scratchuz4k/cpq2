@@ -1,8 +1,50 @@
 <template>
-    <button id="btn-shareable-open" class="btn btn-outline-primary me-2" @click="() => (showDialog = !showDialog)">
-        <font-awesome-icon :icon="['fas', 'thumbs-up']"></font-awesome-icon>
-        Approvals
-    </button>
+    <div class="approvals-group-button flex me-2 p-0">
+        <button
+            v-if="quote.status.toLowerCase() === 'completed'"
+            class="btn btn-primary"
+            :disabled="true"
+            style="border-radius: 5px 0 0 5px"
+        >
+            Quote Complete
+        </button>
+
+        <template v-else>
+            <button
+                v-if="
+                    tenant.configurations.has_quote_approval === '0' ||
+                    tenant.configurations.quote_approval_flow === 'margin' ||
+                    (tenant.configurations.quote_approval_flow === 'internal' &&
+                        quote.status.toLowerCase() === 'validated')
+                "
+                class="btn btn-primary"
+                :disabled="items.some((x) => x.status === 'pending')"
+                @click="sendToOrder()"
+                style="border-radius: 5px 0 0 5px"
+            >
+                <font-awesome-icon :icon="['fas', 'thumbtack']" class="me-2" />
+                Send to Order
+            </button>
+
+            <button
+                v-else-if="
+                    tenant.configurations.quote_approval_flow === 'internal' &&
+                    quote.status.toLowerCase() !== 'validated'
+                "
+                class="btn btn-primary"
+                :disabled="items.some((x) => x.status === 'pending')"
+                @click="startApproval()"
+                style="border-radius: 5px 0 0 5px"
+            >
+                <font-awesome-icon :icon="['fas', 'thumbs-up']" class="me-2" />
+                Send to Approval
+            </button>
+        </template>
+
+        <button class="btn btn-primary" @click="toggleDialog()" style="border-radius: 0 5px 5px 0">
+            <font-awesome-icon :icon="['fas', 'ellipsis-vertical']" />
+        </button>
+    </div>
     <Dialog
         v-model:visible="showDialog"
         modal
@@ -14,20 +56,12 @@
         <template #header>
             <h2>Quote Approval Flow</h2>
         </template>
-        <div class="mb-4">
-            <button
-                v-if="!items.find((x) => ['pending', 'approved'].includes(x.status))"
-                class="btn btn-primary"
-                @click="startApproval()"
-            >
-                Send to Approval
-            </button>
-        </div>
         <div>
             <table class="table">
                 <thead>
                     <tr class="border-bottom border-black">
-                        <th>Approved By</th>
+                        <th>Date</th>
+                        <th>Signed By</th>
                         <th>Flow</th>
                         <th>Comments</th>
                         <th class="text-center">Status</th>
@@ -36,6 +70,7 @@
                 </thead>
                 <tbody>
                     <tr v-for="item in items" :key="item.id" class="align-middle">
+                        <td style="width: 15%">{{ format.date(item.updated_at) }}</td>
                         <td style="width: 15%">{{ item.approver?.name }}</td>
                         <td style="width: 10%">{{ item.flow }}</td>
                         <td style="width: 50%">{{ item.comments }}</td>
@@ -84,13 +119,15 @@
 <script setup>
 import Dialog from 'primevue/dialog';
 import { ref, onMounted, reactive } from 'vue';
-import { quote } from '@composables/useQuote';
+import { quote, getQuote } from '@composables/useQuote';
 import queryString from 'query-string';
 import Paginator from 'primevue/paginator';
+import { usePage } from '@inertiajs/vue3';
 
+const { props } = usePage();
+
+const tenant = props.model?.tenant ?? props.tenant;
 const showDialog = ref(false);
-
-const props = defineProps({});
 const items = ref([]);
 const meta = reactive({
     limit: 10,
@@ -104,8 +141,7 @@ const getApprovals = async () => {
         limit: meta.limit,
         page: meta.page,
         filters: JSON.stringify([{ column: 'quote_id', operator: 'equals', value: quote.id }]),
-        order: 'desc',
-        orderBy: 'created_at'
+        order: 'desc'
     });
     let res = await axios.get(route('api.quote-approvals.index') + '?' + query);
     items.value = res.data.data;
@@ -118,6 +154,7 @@ const startApproval = async () => {
         quote_id: quote.id
     });
     getApprovals();
+    await getQuote(quote.id);
 };
 
 const updateQuoteApproval = async (id, status) => {
@@ -125,8 +162,52 @@ const updateQuoteApproval = async (id, status) => {
         status: status
     });
     getApprovals();
+    await getQuote(quote.id);
 };
 
+const sendToOrder = async () => {
+    if (tenant.configurations.has_quote_approval == '0') {
+        try {
+            let res = await axios.put(`/api/quotes/${quote.id}`, {
+                status: 'COMPLETED'
+            });
+            await getQuote(quote.id);
+        } catch (ex) {
+            notyf.error(ex.response.data.message);
+        }
+        return;
+    }
+
+    if (quote.status != 'validated' && !items.value.find((x) => ['pending'].includes(x.status))) {
+        try {
+            let res = await axios.post(route('api.quote-approvals.store'), {
+                quote_id: quote.id
+            });
+            await getQuote(quote.id);
+            getApprovals();
+        } catch (ex) {
+            notyf.error(ex.response.data.message);
+        }
+    }
+
+    if (quote.status.toLowerCase() == 'validated') {
+        try {
+            let res = await axios.put(`/api/quotes/${quote.id}`, {
+                status: 'COMPLETED'
+            });
+            await getQuote(quote.id);
+        } catch (ex) {
+            notyf.error(ex.response.data.message);
+        }
+    }
+};
+
+const toggleDialog = () => {
+    showDialog.value = !showDialog.value;
+    if (showDialog.value) {
+        getApprovals();
+    }
+};
 const handlePaginator = (ev) => {
     meta.limit = ev.rows;
     meta.page = ev.page + 1;
@@ -137,3 +218,13 @@ onMounted(() => {
     getApprovals();
 });
 </script>
+<style>
+.approvals-group-button {
+    display: inline-block;
+    gap: 0.5rem;
+    margin: 0;
+    padding: 0;
+    background-color: var(--color-purple);
+    border-radius: 5px;
+}
+</style>

@@ -8,7 +8,6 @@ enum QuoteStatusesEnum: string
     case PRICE = 'price';
     case QUOTE = 'quote';
     case NEED_APPROVAL = 'need_approval';
-    case APPROVAL_ENDED = 'approval_ended';
     case VALIDATED = 'validated';
     case COMPLETED = 'completed';
     case EXPIRED = 'expired';

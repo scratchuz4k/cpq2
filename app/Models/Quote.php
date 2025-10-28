@@ -96,6 +96,11 @@ class Quote extends Model
         return $this->hasMany(QuoteItem::class);
     }
 
+    public function approvals(): HasMany
+    {
+        return $this->hasMany(QuoteApproval::class);
+    }
+
     public function itemsTrashed(): HasMany
     {
         return $this->hasMany(QuoteItem::class)->withTrashed()->whereNotNull('deleted_at');
@@ -147,7 +152,7 @@ class Quote extends Model
     {
         $statuses_to_ignore = [
             QuoteStatusesEnum::NEED_APPROVAL->name,
-            QuoteStatusesEnum::APPROVAL_ENDED->name,
+            QuoteStatusesEnum::VALIDATED->name,
             QuoteStatusesEnum::COMPLETED->name,
             QuoteStatusesEnum::EXPIRED->name,
         ];
