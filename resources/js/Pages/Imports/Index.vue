@@ -67,8 +67,6 @@ const submitFile = async () => {
             }
         });
 
-        notyf.success('File uploaded successfully');
-
         if (res) {
             previewData.value = res.data;
         }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Helpers\DataProvider;
 use App\Http\Controllers\BaseController;
+use App\Http\Requests\ImportPreviewRequest;
 use App\Http\Requests\IndexRequest;
 use App\Http\Resources\ImportResource;
 use App\Models\Import;
@@ -45,7 +46,7 @@ class ImportController extends BaseController
      * Create a new Import
      */
     #[ExcludeRouteFromDocs]
-    public function store(Request $request)
+    public function store(ImportPreviewRequest $request)
     {
         try {
             $data = $this->importService->preview($request->all());
