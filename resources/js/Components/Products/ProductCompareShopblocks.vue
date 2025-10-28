@@ -250,29 +250,6 @@
                                     >
                                 </td>
                             </tr>
-                            <tr>
-                                <th>Gross</th>
-                                <td>
-                                    <template v-if="proxyValue.length >= 1">
-                                        {{ format.GBP(proxyValue[0].price.gross) }}</template
-                                    >
-                                </td>
-                                <td>
-                                    <template v-if="proxyValue.length >= 2">
-                                        {{ format.GBP(proxyValue[1].price.gross) }}</template
-                                    >
-                                </td>
-                                <td>
-                                    <template v-if="proxyValue.length >= 3">
-                                        {{ format.GBP(proxyValue[2].price.gross) }}</template
-                                    >
-                                </td>
-                                <td>
-                                    <template v-if="proxyValue.length >= 4">
-                                        {{ format.GBP(proxyValue[3].price.gross) }}</template
-                                    >
-                                </td>
-                            </tr>
                         </tbody>
                     </table>
                 </div>
@@ -313,23 +290,30 @@ const getFeaturesTable = () => {
             return;
         }
         let lowerSearch = searchInput.value.toLowerCase();
-        let features = x.features.filter(
-            (obj) => obj.value.toLowerCase().includes(lowerSearch) || obj.label.toLowerCase().includes(lowerSearch)
-        );
+        let features = x.features.filter((obj) => {
+            return (
+                obj.dimension.value.toLowerCase().includes(lowerSearch) ||
+                obj.dimension_type.label.toLowerCase().includes(lowerSearch)
+            );
+        });
 
         features.forEach((e) => {
-            let gIndex = temp.value.findIndex((t) => t.name == e.group);
+            let gIndex = temp.value.findIndex((t) => t.name == e.dimension_type.group);
             if (gIndex == -1) {
-                temp.value.push({ name: e.group, show: true, features: [] });
+                temp.value.push({ name: e.dimension_type.group, show: true, features: [] });
                 gIndex = temp.value.length - 1;
             }
 
-            let index = temp.value[gIndex].features.findIndex((t) => t.key == e.key);
+            let index = temp.value[gIndex].features.findIndex((t) => t.key == e.dimension_type.key);
             if (index == -1) {
-                temp.value[gIndex].features.push({ key: e.key, label: e.label, items: {} });
+                temp.value[gIndex].features.push({
+                    key: e.dimension_type.key,
+                    label: e.dimension_type.label,
+                    items: {}
+                });
                 index = temp.value[gIndex].features.length - 1;
             }
-            temp.value[gIndex].features[index].items[i] = e.value;
+            temp.value[gIndex].features[index].items[i] = e.dimension.value;
         });
     });
 };
@@ -351,11 +335,12 @@ const getFeatures = () => {
                     operator: 'equals',
                     value: x.id
                 }
-            ])
+            ]),
+            limit: 1000
         });
 
-        let res = await axios.get('/api/shop-blocks/product-features?' + query);
-        x.features = res.data?.data.reduce((acc, x) => acc.concat(x.items), []);
+        let res = await axios.get('/api/shop-blocks/product-dimensions?' + query);
+        x.features = res.data?.data;
     });
     loadingFeatures.value = false;
     getFeaturesTable();

@@ -2,11 +2,10 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Helpers\Api\CloudMarketAddress;
 use App\Helpers\Api\OpenreachLookupApi;
 use App\Helpers\Api\VirtualOneLookupApi;
 use App\Http\Controllers\Controller;
-use App\Models\Quote;
+use App\Models\Cloudmarket\Address;
 use App\Services\External\CloudMarketService;
 use App\Services\External\ShopBlocksService;
 use Illuminate\Http\Request;
@@ -40,8 +39,15 @@ class ExternalController extends Controller
             }
             */
         }
+        $addresses = [];
+        foreach ($addressesByPostCode as $item) {
+            $temp = Address::updateOrCreate([
+                'addressKey' => $item->addressKey,
+            ], (array) $item);
+            array_push($addresses, $temp);
+        }
 
-        return collect($addressesByPostCode)
+        return collect($addresses)
             ->sortBy('label')
             ->values()
             ->all();
@@ -87,39 +93,5 @@ class ExternalController extends Controller
 
             return $position;
         });
-    }
-
-    /**
-     * Request ShopBlock Api to get articles and services informations.
-     */
-    public function getArticlesFromCloudMarket(Request $request)
-    {
-        $request->validate([
-            'connectivityType' => 'required',
-            'quote_id' => 'required|exists:quotes,id',
-            'postCode' => 'required',
-            'uprn' => 'nullable',
-            'latitude' => 'nullable',
-            'longitude' => 'nullable',
-            'street' => 'nullable',
-            'town' => 'nullable',
-        ]);
-
-        $quote = Quote::find($request->get('quote_id'));
-
-        $address = new CloudMarketAddress(
-            postCode: $request->get('postCode'),
-            uprn: $request->input('uprn', null),
-            lat: $request->input('latitude', null),
-            lon: $request->input('longitude', null),
-            addressKey: $request->input('addressKey', null),
-            buildingName: $request->input('buildingName', null),
-            buildingNumber: $request->input('buildingNumber', null),
-            subPremises: $request->input('subPremises', null),
-            street: $request->input('street', null),
-            town: $request->input('town', null),
-        );
-
-        return $this->cloudMarketService->get($quote, $request->get('connectivityType'), $address, $request->input('filters', []));
     }
 }

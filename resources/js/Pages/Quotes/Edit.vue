@@ -9,7 +9,7 @@ const props = defineProps({
 });
 
 const solutionsViews = {
-    3: 'QuotesConnectivityTableView',
+    3: 'QuotesConnectivityView',
     4: 'QuotesMobileView',
     5: 'QuotesHardwareView',
     7: 'QuotesCloudView'
@@ -31,7 +31,7 @@ const items = ref([
             v-if="Object.keys(solutionsViews).includes(quote.solution_type.code)"
             :is="solutionsViews[quote.solution_type.code]"
             v-bind="{
-                modelValue: quote
+                modelValue: props.quote
             }"
         ></component>
         <div v-else class="py-3">

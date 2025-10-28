@@ -54,6 +54,18 @@ return [
             ],
         ],
 
+        'mongodb_cloudmarket' => [
+            'driver' => 'mongodb',
+            'host' => env('DB_MONGO_HOST', 'mongodb'),
+            'port' => env('DB_MONGO_PORT', 27017),
+            'database' => 'cloudmarket',
+            'username' => env('DB_MONGO_USERNAME', 'root'),
+            'password' => env('DB_MONGO_PASSWORD', 'secret'),
+            'options' => [
+                'authSource' => 'admin',
+            ],
+        ],
+
         'mongodb_general' => [
             'driver' => 'mongodb',
             'host' => env('DB_MONGO_HOST', 'mongodb'),
@@ -85,6 +97,25 @@ return [
             'database' => env('DB_DATABASE', 'laravel'),
             'username' => env('DB_USERNAME', 'root'),
             'password' => env('DB_PASSWORD', ''),
+            'unix_socket' => env('DB_SOCKET', ''),
+            'charset' => env('DB_CHARSET', 'utf8mb4'),
+            'collation' => env('DB_COLLATION', 'utf8mb4_unicode_ci'),
+            'prefix' => '',
+            'prefix_indexes' => true,
+            'strict' => true,
+            'engine' => null,
+            'options' => extension_loaded('pdo_mysql') ? array_filter([
+                PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
+            ]) : [],
+        ],
+        // ...existing connections...
+        'mysql_shopblocks' => [
+            'driver' => 'mysql',
+            'host' => env('DB_SHOPBLOCKS_HOST', '127.0.0.1'),
+            'port' => env('DB_SHOPBLOCKS_PORT', '3306'),
+            'database' => env('DB_SHOPBLOCKS_DATABASE', 'forge'),
+            'username' => env('DB_SHOPBLOCKS_USERNAME', 'forge'),
+            'password' => env('DB_SHOPBLOCKS_PASSWORD', ''),
             'unix_socket' => env('DB_SOCKET', ''),
             'charset' => env('DB_CHARSET', 'utf8mb4'),
             'collation' => env('DB_COLLATION', 'utf8mb4_unicode_ci'),

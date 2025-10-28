@@ -28,7 +28,6 @@ const product = reactive({
     name: null,
     price_plan_id: 1,
     supplier_id: null,
-    brand_id: null,
     parent_id: null,
     sku: null,
     description: null,
@@ -47,7 +46,6 @@ const saveProduct = () => {
             ...product,
             expires_at: DateTime.fromJSDate(product.expires_at).toISO() ?? null,
             supplier_id: product.supplier?.id,
-            brand_id: product.brand?.id,
             parent_id: product.parent?.id,
             category_id: category.value?.id
         },
@@ -114,8 +112,8 @@ const items = ref([
                 <tab title="General" :selected="true">
                     <div class="my-3">
                         <p>
-                            This section provides an overview of the product, including general information, associated
-                            brands, and suppliers.
+                            This section provides an overview of the product, including general information, and
+                            associated suppliers.
                         </p>
                     </div>
                     <div class="my-3 col-6">
@@ -199,20 +197,6 @@ const items = ref([
                             >
                             </InputSelect>
                         </div>
-
-                        <div class="mb-3">
-                            <label for="brand-name" class="form-label">Brand:</label>
-                            <InputSelect
-                                id="product-brand"
-                                url="/brands"
-                                :fields="['name']"
-                                v-model="product.brand"
-                                placeholder="Select a Brand"
-                                :query="[{ column: 'is_active', operator: 'equals', value: 1 }]"
-                            >
-                            </InputSelect>
-                        </div>
-
                         <div class="mb-3">
                             <label for="product-parent" class="form-label">Parent:</label>
                             <div class="input-group p-0">
