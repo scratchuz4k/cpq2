@@ -13,6 +13,7 @@ use App\Rules\ValidDateValidator;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 use Maatwebsite\Excel\Concerns\SkipsErrors;
 use Maatwebsite\Excel\Concerns\ToCollection;
@@ -264,12 +265,24 @@ class ProductsImport implements ToCollection, WithBatchInserts, WithHeadingRow
 
     private function getValidationRules($ignoreProductId = null): array
     {
+        $rules = (new ProductCreateRequest)->rules();
+
+        unset($rules['prices.*.code'], $rules['prices.*.cost'], $rules['prices.*.net']);
+
         return [
-            ...(new ProductCreateRequest)->rules(),
+            ...$rules,
             'expires_at' => new ValidDateValidator,
             'sku' => $this->overwrite
                 ? 'required|string|max:255'
                 : ['required', 'string', 'max:255', new TenantUniqueRule('products', 'sku', $ignoreProductId)],
+            'prices.code' => [
+                'nullable',
+                'numeric',
+                Rule::unique('prices')
+                    ->where(fn ($query) => $query->where('product_id', $ignoreProductId)),
+            ],
+            'prices.cost' => 'required|numeric',
+            'prices.net' => 'required|numeric',
         ];
     }
 }

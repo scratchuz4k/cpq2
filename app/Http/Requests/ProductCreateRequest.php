@@ -48,13 +48,14 @@ class ProductCreateRequest extends FormRequest
                 'nullable',
                 new TenantExistsRule('products'),
             ],
-            'prices.code' => [
+            'prices.*.code' => [
+                'nullable',
                 'numeric',
                 Rule::unique('prices')
                     ->where(fn ($query) => $query->where('product_id', $this->input('product_id'))),
             ],
-            'prices.cost' => 'required|numeric',
-            'prices.net' => 'required|numeric',
+            'prices.*.cost' => 'required|numeric',
+            'prices.*.net' => 'required|numeric',
         ];
     }
 
