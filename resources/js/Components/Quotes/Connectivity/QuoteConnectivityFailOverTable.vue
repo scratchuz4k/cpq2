@@ -10,9 +10,14 @@ import Spinner from '@/Components/Spinner.vue';
 import Select from 'primevue/select';
 import ToggleSwitch from 'primevue/toggleswitch';
 import TriStateToggle from '@/Components/TriStateToggle.vue';
+import queryString from 'query-string';
+import { remove, add } from '@/Composables/useConnectivityItem';
+import { quote } from '@/Composables/useQuote';
 
 const props = defineProps({
-    modelValue: Object
+    modelValue: Object,
+    needsAddons: Boolean,
+    currentStep: Number
 });
 
 let timeoutId = null;
@@ -42,17 +47,17 @@ const filters = reactive({
     },
     contractTermMonths: {
         operator: 'in',
-        value: props.modelValue.configs?.contract_length ? props.modelValue.configs.contract_length.split(',') : null,
+        value: quote.configs?.contract_length ? quote.configs.contract_length.split(',') : null,
         name: 'Contract Length'
     },
     bearer: {
         operator: 'greater_than_or_equal_to',
-        value: props.modelValue.configs?.bearer,
+        value: quote.configs?.bearer,
         name: 'Bearer'
     },
     speed: {
         operator: 'greater_than_or_equal_to',
-        value: props.modelValue.configs?.speed,
+        value: quote.configs?.speed,
         name: 'Speed'
     }
 });
@@ -85,8 +90,8 @@ const getArticles = async (clearCache = false, runTimeout = false) => {
         });
     });
     if (showQuoted.value) {
-        let items = props.modelValue.items.length
-            ? props.modelValue.items.filter((item) => item.product_code).map((item) => item.product_code)
+        let items = quote.items.length
+            ? quote.items.filter((item) => item.product_code).map((item) => item.product_code)
             : ['#'];
         temp.push({ column: 'code', operator: 'in', value: items });
     }
@@ -105,35 +110,18 @@ const getArticles = async (clearCache = false, runTimeout = false) => {
     if (clearCache) {
         showLoadingModal.value = true;
     }
-
-    let query = {
+    let query = queryString.stringify({
         quote_id: props.modelValue.id,
-        clearCache: clearCache,
-        connectivityType: 3,
-        postCode: props.modelValue.address_postcode,
-        latitude: props.modelValue.address_position?.lat,
-        longitude: props.modelValue.address_position?.lon,
-        uprn: props.modelValue.address_data?.uprn,
-        street:
-            props.modelValue.address_data?.thoroughfareName ?? props.modelValue.address_data?.dependentThoroughfareName,
-        town:
-            props.modelValue.address_city ??
-            props.modelValue.address_data?.locality ??
-            props.modelValue.address_data?.doubleDependentLocality,
-        addressKey: props.modelValue.address_data?.addressKey,
-        buildingNumber: props.modelValue.address_data?.thoroughfareNumber,
-        buildingName: props.modelValue.address_data?.premisesName ?? props.modelValue.address_data?.organisationName,
-        subPremises: props.modelValue.address_data?.subPremises,
+        filters: JSON.stringify(temp),
         page: meta.page,
         perPage: meta.limit,
-        filters: temp,
         order: sort.order,
         orderBy: sort.field,
         account_id: props.modelValue.account_id
-    };
+    });
 
     try {
-        let res = await axios.post('/api/external/get-articles-from-cloud-market', query);
+        let res = await axios.get('/api/cloudmarket/products/failover?' + query);
 
         const errorMessages = {
             BadGateway: 'A Bad Gateway error occurred, resulting in partial or no results.',
@@ -194,19 +182,17 @@ const getArticles = async (clearCache = false, runTimeout = false) => {
 
         Object.assign(filterList, res.data.filters);
 
-        const configSpeed = props.modelValue.configs?.speed;
+        const configSpeed = quote.configs?.speed;
         if (configSpeed && !Object.prototype.hasOwnProperty.call(filterList.speed, configSpeed)) {
             filterList.speed[configSpeed] = 0;
         }
 
-        const configBearer = props.modelValue.configs?.bearer;
+        const configBearer = quote.configs?.bearer;
         if (configBearer && !Object.prototype.hasOwnProperty.call(filterList.bearer, configBearer)) {
             filterList.bearer[configBearer] = 0;
         }
 
-        const contractLengths = props.modelValue.configs?.contract_length
-            ? props.modelValue.configs.contract_length.split(',')
-            : [];
+        const contractLengths = quote.configs?.contract_length ? quote.configs.contract_length.split(',') : [];
         contractLengths.forEach((length) => {
             if (length && !Object.prototype.hasOwnProperty.call(filterList.contractTermMonths, length)) {
                 filterList.contractTermMonths[length] = 0;
@@ -247,7 +233,7 @@ const getArticles = async (clearCache = false, runTimeout = false) => {
         console.error(error);
         notyf.error(error.message);
         isLoading.value = false;
-        meta.isRequestCompleted = false;
+        meta.isRequestCompleted = true;
         showLoadingModal.value = false;
     }
 };
@@ -282,66 +268,21 @@ const resetFilters = () => {
 };
 
 const checkProduct = (article) => {
-    let item = props.modelValue.items.find((item) => item.product_code == article.code);
-    let index = props.modelValue.items.findIndex((item) => item.product_code == article.code);
-    return index == -1 ? add(article) : remove(item);
-};
+    let item = quote.items.find((item) => item.product_code == article.code);
+    let index = quote.items.findIndex((item) => item.product_code == article.code);
+    let primaryProduct = quote.items.find((x) => x.data.type == 'Primary Product');
+    article.type = 'Failover Product';
+    article.contractTermMonths = article.contractTermMonths ?? primaryProduct.contract_length;
 
-const add = (article) => {
-    try {
-        let items = [];
-
-        let group = props.modelValue.items.reduce((max, item) => (item.group > max ? item.group : max), 0);
-
-        let item = {
-            group: group + 1,
-            quote_id: props.modelValue.id,
-            product_id: null,
-            quantity: 1,
-            product_code: article.code,
-            data: article
-        };
-
-        if (article.priceMonthly_spa) {
-            items.push({
-                ...item,
-                name: article.productName,
-                price_plan_code: 'monthly',
-                contract_length: article.contractTermMonths,
-                raw_price: article.priceMonthly,
-                price: article.priceMonthly_spa
-            });
-        }
-        if (article.priceInstall_spa) {
-            items.push({
-                ...item,
-                name: article.productName + ' (service install)',
-                price_plan_code: 'single',
-                raw_price: article.priceInstall,
-                price: article.priceInstall_spa
-            });
-        }
-
-        items.forEach(async (x) => {
-            let res = await axios.post('/api/quote-items', x);
-            props.modelValue.items.push(res.data);
-        });
-    } catch (ex) {
-        alert(ex.response.data.message);
+    if (index == -1) {
+        add(article);
+    } else {
+        remove(item);
     }
 };
 
-const remove = (item) => {
-    let items = props.modelValue.items.filter((x) => x.group == item.group);
-    try {
-        items.forEach(async (x) => {
-            await axios.delete(`/api/quote-items/${x.id}`);
-            let index = props.modelValue.items.findIndex((e) => e.id == x.id);
-            props.modelValue.items.splice(index, 1);
-        });
-    } catch (ex) {
-        alert(ex.response.data.message);
-    }
+const hasProduct = () => {
+    return quote.items.find((x) => x.data.type == 'Failover Product');
 };
 
 const removeFilter = (selectedFilter, value) => {
@@ -359,14 +300,6 @@ const handlePaginator = (ev) => {
     getArticles();
 };
 
-const countItems = () => {
-    let temp = props.modelValue.items.reduce((acc, item) => {
-        acc[item.group] = (acc[item.group] || 0) + 1;
-        return acc;
-    }, {});
-    return Object.keys(temp).length;
-};
-
 watch(
     [filters, showQuoted, showLowestCost, showContended, showManaged],
     _.debounce(function () {
@@ -382,34 +315,9 @@ window.addEventListener('beforeunload', () => {
 getArticles(false, true);
 </script>
 <template>
-    <div>
-        <InfoConnectivity :quote="modelValue"></InfoConnectivity>
+    <div v-if="!quote.items?.find((x) => x.data?.type == 'Failover Product')">
         <div class="row mb-2">
             <div class="col position-relative">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <p class="fs-4 me-3 mb-0"><b>Add products</b></p>
-                        <p class="mb-0 text-primary bold fs-5 pt-1">STEP 1/2</p>
-                    </div>
-                    <div class="d-flex justify-content-between align-items-center">
-                        <p class="fs-4 me-3 mb-0">
-                            <b>Add {{ countItems() }} products</b>
-                        </p>
-                        <button v-if="countItems() == 0" class="btn btn-primary continue-btn" type="button" disabled>
-                            Continue
-                            <font-awesome-icon :icon="['fas', 'arrow-right']" class="ms-2"></font-awesome-icon>
-                        </button>
-                        <a
-                            v-else
-                            class="btn btn-primary continue-btn"
-                            type="submit"
-                            :href="route('quotes.show', { quote: modelValue.id })"
-                        >
-                            Continue
-                            <font-awesome-icon :icon="['fas', 'arrow-right']" class="ms-2"></font-awesome-icon>
-                        </a>
-                    </div>
-                </div>
                 <div class="row mb-3" v-if="errors.length">
                     <div class="col">
                         <InfoBox class="mb-4 py-0" severity="info">
@@ -465,10 +373,7 @@ getArticles(false, true);
                                                       : value
                                             "
                                             class="px-3 py-1"
-                                            data-bs-toggle="tooltip"
-                                            data-bs-placement="top"
-                                            :data-bs-original-title="selectedFilter.name"
-                                            v-tooltip
+                                            :title="selectedFilter.name"
                                         >
                                             <template #close-button>
                                                 <font-awesome-icon
@@ -898,6 +803,7 @@ getArticles(false, true);
                                     </span>
                                 </th>
                                 <th
+                                    v-if="!hasProduct()"
                                     :style="{
                                         width: '130px'
                                     }"
@@ -1032,17 +938,9 @@ getArticles(false, true);
                                     </span>
                                 </td>
                                 <td>{{ article.contractTermMonths }} Months</td>
-                                <td class="text-end">
+                                <td class="text-end" v-if="!hasProduct()">
                                     <button
-                                        v-if="modelValue.items.find((item) => item.product_code == article.code)"
-                                        class="btn btn-primary me-2 py-1"
-                                        @click="checkProduct(article)"
-                                    >
-                                        <font-awesome-icon :icon="['fas', 'check']" />
-                                        Added
-                                    </button>
-                                    <button
-                                        v-else
+                                        v-if="!quote.items.find((x) => x.product_code == article.code)"
                                         class="btn btn-outline-primary me-2 py-1"
                                         @click="checkProduct(article)"
                                     >
@@ -1063,24 +961,6 @@ getArticles(false, true);
                         class="custom-paginator"
                     >
                     </Paginator>
-                </div>
-                <div class="d-flex justify-content-end align-items-center my-5">
-                    <p class="fs-4 me-3 mb-0">
-                        <b>Add {{ countItems() }} products</b>
-                    </p>
-                    <button v-if="countItems() == 0" class="btn btn-primary" type="button" disabled>
-                        Continue
-                        <font-awesome-icon :icon="['fas', 'arrow-right']" class="ms-2"></font-awesome-icon>
-                    </button>
-                    <a
-                        v-else
-                        class="btn btn-primary"
-                        type="submit"
-                        :href="route('quotes.show', { quote: modelValue.id })"
-                    >
-                        Continue
-                        <font-awesome-icon :icon="['fas', 'arrow-right']" class="ms-2"></font-awesome-icon>
-                    </a>
                 </div>
             </div>
         </div>
@@ -1115,6 +995,13 @@ getArticles(false, true);
             </div>
         </div>
     </Dialog>
+
+    <QuoteConnectivityHardwareTable
+        v-if="props.needsAddons && quote.items?.find((x) => x.data?.type == 'Failover Product')"
+        v-model="props.modelValue"
+        productType="Failover Hardware Product"
+        :group="props.currentStep + 1"
+    ></QuoteConnectivityHardwareTable>
 </template>
 
 <style scoped>

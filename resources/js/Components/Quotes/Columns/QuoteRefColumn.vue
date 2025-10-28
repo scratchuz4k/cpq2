@@ -1,4 +1,5 @@
 <script setup>
+import { quote } from '@composables/useQuote';
 defineProps({
     code: String,
     column: Object,
@@ -7,9 +8,16 @@ defineProps({
     index: Number
 });
 const item = defineModel();
+
+const getRef = (item) => {
+    if (quote.data?.quoteReference) {
+        return quote.data?.quoteReference;
+    }
+    return item.data?.quoteId;
+};
 </script>
 <template>
-    <p class="small" v-if="!isGroup">{{ item.data?.quoteId }}</p>
+    <p class="small" v-if="!isGroup">{{ getRef(item) }}</p>
     <p
         v-else
         v-tooltip
@@ -18,6 +26,6 @@ const item = defineModel();
         :title="column.name"
         class="badge border border-secondary"
     >
-        #{{ item.data?.quoteId }}
+        #{{ getRef(item) }}
     </p>
 </template>

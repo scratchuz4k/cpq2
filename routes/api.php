@@ -4,6 +4,8 @@ use App\Http\Controllers\Api\AccountController;
 use App\Http\Controllers\Api\ActivityController;
 use App\Http\Controllers\Api\ApiController;
 use App\Http\Controllers\Api\CategoryController;
+use App\Http\Controllers\Api\Cloudmarket\AddressController as CloudmarketAddressController;
+use App\Http\Controllers\Api\Cloudmarket\ProductController as CloudmarketProductController;
 use App\Http\Controllers\Api\ContactController;
 use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\EmailHistoryController;
@@ -54,10 +56,19 @@ Route::middleware(['api', 'auth:sanctum'])->group(function () {
         Route::get('categories', [ShopBlocksCategoryController::class, 'index']);
     });
 
+    Route::prefix('cloudmarket')->group(callback: function () {
+        Route::get('address', [CloudmarketAddressController::class, 'index']);
+        Route::get('products', [CloudmarketProductController::class, 'index']);
+        Route::get('products/failover', [CloudmarketProductController::class, 'failover']);
+        Route::get('products/addons', [CloudmarketProductController::class, 'addons']);
+        Route::get('products/options', [CloudmarketProductController::class, 'options']);
+        Route::get('products/assignments', [CloudmarketProductController::class, 'assignments']);
+        Route::get('products/save-quote', [CloudmarketProductController::class, 'saveQuote']);
+    });
+
     Route::prefix('external')->group(function () {
         Route::post('get-address-by-postcode', [ExternalController::class, 'getAddressesByPostCode']);
         Route::post('get-position-by-address', [ExternalController::class, 'getPositionByAddress']);
-        Route::post('get-articles-from-cloud-market', [ExternalController::class, 'getArticlesFromCloudMarket']);
     });
 
     Route::get('/reporting-data', [DashboardController::class, 'reporting']);
