@@ -22,7 +22,7 @@
                 :disabled="items.some((x) => x.status === 'pending')"
                 @click="sendToOrder()"
                 :style="{
-                    borderRadius: can('viewAny quote_approval') || hasRole('Super Admin') ? '5px 0 0 5px' : '5px'
+                    borderRadius: canToggleDialog() ? '5px 0 0 5px' : '5px'
                 }"
             >
                 <font-awesome-icon :icon="['fas', 'thumbtack']" class="me-2" />
@@ -45,7 +45,7 @@
         </template>
 
         <button
-            v-if="can('viewAny quote_approval') || hasRole('Super Admin')"
+            v-if="canToggleDialog()"
             class="btn btn-primary"
             @click="toggleDialog()"
             style="border-radius: 0 5px 5px 0"
@@ -213,8 +213,14 @@ const sendToOrder = async () => {
     }
 };
 
+const canToggleDialog = () => {
+    return (
+        tenant.configurations.has_quote_approval === '1' && (can('viewAny quote_approval') || hasRole('Super Admin'))
+    );
+};
+
 const toggleDialog = () => {
-    if (!(can('viewAny quote_approval') || hasRole('Super Admin'))) {
+    if (!canToggleDialog()) {
         return;
     }
     showDialog.value = !showDialog.value;
