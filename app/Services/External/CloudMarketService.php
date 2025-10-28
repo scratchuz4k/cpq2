@@ -2,15 +2,11 @@
 
 namespace App\Services\External;
 
-use App\Enums\CloudMarketSuppliersEnum;
 use App\Enums\PricePlanEnum;
-use App\Helpers\Api\CloudMarketAddress;
-use App\Helpers\Files\CloudMarketFile;
 use App\Helpers\FilterProvider;
 use App\Helpers\Prices\PriceRules;
-use App\Jobs\CloudMarketConnectivityProducts;
 use App\Models\Account;
-use App\Models\Api;
+use App\Models\Cloudmarket\Product;
 use App\Models\General\Blacklist;
 use App\Models\PricePlan;
 use App\Models\Quote;
@@ -18,72 +14,30 @@ use App\Models\SolutionType;
 use App\Models\Supplier;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Log;
 
 class CloudMarketService
 {
     protected $providers = [];
 
-    public function get(Quote $quote, $connectivityType, CloudMarketAddress $address, $filters = [])
+    public function handleProductJob($key, $filename, Quote $quote, $address, $dispatchJob)
     {
-        if (! env('CLOUDMARKET_CONNECTION_LIVE_DATA')) {
-            $mock_prices = storage_path('mocks/prices.json');
-            if (! is_file($mock_prices)) {
-                return [];
-            }
-
-            return $this->sendResponse(json_decode(file_get_contents($mock_prices), true), $filters, $connectivityType);
-        }
-
-        $apis = array_map(fn ($case) => $case->value, CloudMarketSuppliersEnum::cases());
-        $apiRecords = Api::active()->whereIn('code', $apis)->get();
-        $apiCodes = $apiRecords->pluck('code')->sort()->implode('');
-
-        $configs = '';
-        $configs .= 'speed:'.(array_key_exists('speed', $quote->configs) ? $quote->configs['speed'] : '10');
-        $configs .= 'bearer:'.(array_key_exists('bearer', $quote->configs) ? $quote->configs['bearer'] : '100');
-        $configs .= 'contract_length:'.(array_key_exists('contract_length', $quote->configs) ? $quote->configs['contract_length'] : '0');
-        $configs .= 'managed:'.(array_key_exists('managed', $quote->configs) ? $quote->configs['managed'] : '0');
-
-        $filename = 'live_prices_'.$address->toString().'_'.md5($apiCodes.$configs).'.json';
-        $path = storage_path('/app/products/');
-        $file = new CloudMarketFile($path, $filename);
-        $content = $file->getContent();
-        $createdAt = Carbon::parse($content['created_at']);
-
-        if (! count($apiRecords)) {
-            $file->write([], true, now(), now(), [], [[
-                'provider' => 'CPQ',
-                'response' => 'No provider is configured',
-            ]]);
-
-            return $this->sendResponse($content, $filters, $connectivityType);
-        }
-
-        if (request()->input('clearCache', false)) {
-            Cache::forget($filename);
-        }
-
         if (! Cache::has($filename)) {
-            $file->write([], true, null, now());
-            CloudMarketConnectivityProducts::dispatch($quote, $file, $connectivityType, $address);
+            Product::write($key, $filename, [], true, null, now());
+            $dispatchJob::dispatch($quote, $filename, $address);
         }
 
-        if (! $file->exists() || (is_null($content['finished_at']) && $createdAt->addMinutes(10)->isPast())) {
-            $file->write([], true, null, now());
-            CloudMarketConnectivityProducts::dispatch($quote, $file, $connectivityType, $address);
-        }
+        $content = Product::where('key', $key)->where('filename', $filename)->first();
+        $createdAt = Carbon::parse($content?->created_at);
 
-        return $this->sendResponse($file->getContent(), $filters, $connectivityType);
+        if (! $content || (is_null($content?->finished_at) && $createdAt->addMinutes(10)->isPast())) {
+            Product::write($key, $filename, [], true, null, now());
+            $dispatchJob::dispatch($quote, $filename, $address);
+        }
     }
 
-    private function sendResponse(array $file, $filters, $connectivityType)
+    public function sendResponse(array $content, $filters, $connectivityType)
     {
-        if (! is_array($file) || ! array_key_exists('data', $file)) {
-            Log::error('Empty or invalid file content.', context: ['file' => $file]);
-        }
-
-        $items = FilterProvider::get($file['data'], []);
+        $items = FilterProvider::get($content['data'] ?? [], []);
 
         $blacklist = new Blacklist;
         $blacklist_items = $blacklist->getBlacklistedData($items);
@@ -95,7 +49,7 @@ class CloudMarketService
         $items = FilterProvider::get($items->toArray(), $filters);
 
         foreach ($items as $key => $value) {
-            $file['filters'] = FilterProvider::process($file['filters'], $value, true);
+            $content['filters'] = FilterProvider::process($content['filters'], $value, true);
         }
 
         $solutionType = SolutionType::where('code', $connectivityType)->first();
@@ -144,11 +98,12 @@ class CloudMarketService
         return array_merge(
             $response,
             [
-                'overall_total' => $file['total'],
-                'finished_at' => $file['finished_at'],
-                'created_at' => $file['created_at'],
-                'filters' => $file['filters'],
-                'errors' => array_key_exists('errors', $file) ? $file['errors'] : [],
+                'options' => array_key_exists('options', $content) ? $content['options'] : [],
+                'overall_total' => $content['total'],
+                'finished_at' => $content['finished_at'],
+                'created_at' => $content['created_at'],
+                'filters' => $content['filters'],
+                'errors' => isset($content['errors']) ? $content['errors'] : [],
             ]
         );
     }

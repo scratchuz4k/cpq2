@@ -89,22 +89,6 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'My Account' }]);
                                 </a>
                             </div>
                         </div>
-                        <div class="col" v-if="hasRole('Super Admin') || can('viewAny brand')">
-                            <div class="card bg-light border-0">
-                                <a
-                                    id="link-brands"
-                                    :href="route('brands.index')"
-                                    class="card-body text-center p-2 text-decoration-none"
-                                >
-                                    <font-awesome-icon
-                                        class="py-3 opacity-25"
-                                        :icon="['far', 'registered']"
-                                        size="2x"
-                                    ></font-awesome-icon>
-                                    <span class="d-block h5">Brands</span>
-                                </a>
-                            </div>
-                        </div>
                         <div class="col" v-if="hasRole('Super Admin') || can('viewAny category')">
                             <div class="card bg-light border-0">
                                 <a
@@ -134,22 +118,6 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'My Account' }]);
                                         size="2x"
                                     ></font-awesome-icon>
                                     <span class="d-block h5">Products</span>
-                                </a>
-                            </div>
-                        </div>
-                        <div class="col" v-if="hasRole('Super Admin') || can('viewAny region')">
-                            <div class="card bg-light border-0">
-                                <a
-                                    id="link-regions"
-                                    :href="route('regions.index')"
-                                    class="card-body text-center p-2 text-decoration-none"
-                                >
-                                    <font-awesome-icon
-                                        class="py-3 opacity-25"
-                                        :icon="['far', 'map']"
-                                        size="2x"
-                                    ></font-awesome-icon>
-                                    <span class="d-block h5">Regions</span>
                                 </a>
                             </div>
                         </div>
@@ -198,18 +166,6 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'My Account' }]);
                                         size="2x"
                                     ></font-awesome-icon>
                                     <span class="d-block h5">Suppliers</span>
-                                </a>
-                            </div>
-                        </div>
-                        <div class="col" v-if="hasRole('Super Admin') || can('viewAny merchant')">
-                            <div class="card bg-light border-0">
-                                <a
-                                    id="link-merchants"
-                                    :href="route('merchants.index')"
-                                    class="card-body text-center p-2 text-decoration-none"
-                                >
-                                    <font-awesome-icon class="py-3 opacity-25" :icon="['fas', 'shop']" size="2x" />
-                                    <span class="d-block h5">Merchants</span>
                                 </a>
                             </div>
                         </div>

@@ -50,7 +50,7 @@ class TokenController extends BaseController
             $user = User::find($request->user_id);
             $token = $user->createTokenWithTenant($request->name, Auth::user()->tenant_id, $request->is_active);
         } catch (Exception $e) {
-            throw new Exception($e);
+            return handleWebException($e);
         }
 
         return redirect()->route('tokens.show', ['token' => $token->accessToken->id, 'plain-text-token' => $token->plainTextToken]);
