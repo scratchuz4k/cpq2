@@ -38,11 +38,13 @@ class Quote extends Model
         'margin',
         'status',
         'user_id',
+        'data',
     ];
 
     protected function casts(): array
     {
         return [
+            'data' => 'object',
             'address_position' => 'array',
             'address_data' => 'array',
             'margin' => 'float',

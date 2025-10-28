@@ -36,10 +36,6 @@ class ProductCreateRequest extends FormRequest
                 'nullable',
                 new TenantExistsRule('suppliers'),
             ],
-            'brand_id' => [
-                'nullable',
-                new TenantExistsRule('brands'),
-            ],
             'price_plan_id' => [
                 'required',
                 Rule::exists('price_plans', 'id'),
