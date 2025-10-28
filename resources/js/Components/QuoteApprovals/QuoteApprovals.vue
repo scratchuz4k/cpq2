@@ -1,5 +1,4 @@
 <template>
-    {{ quote.status }}
     <div class="approvals-group-button flex me-2 p-0">
         <button
             v-if="quote.status.toLowerCase() === 'completed'"

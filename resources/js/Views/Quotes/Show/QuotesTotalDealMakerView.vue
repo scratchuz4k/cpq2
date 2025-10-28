@@ -227,8 +227,7 @@ const items = ref([
                         <div style="font-size: 14px">
                             <b style="font-size: 16px">Quote {{ quote.id }} for {{ quote.account.name }}</b>
                             <br />
-                            Contact Number: 0124567890<br />
-                            Email: firstname.lastname@gmail.com
+                            Status: {{ quote.status }}
                         </div>
                     </InfoBox>
                     <InfoBox v-if="quote.orders.length > 0">
