@@ -112,7 +112,6 @@ const checkProduct = (article) => {
     } else {
         removeAddon(item);
     }
-    getQuote(quote.id);
 };
 
 window.addEventListener('beforeunload', () => {
