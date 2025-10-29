@@ -85,8 +85,18 @@
                         <td style="width: 15%">{{ item.approver?.name }}</td>
                         <td style="width: 10%">{{ item.flow }}</td>
                         <td style="width: 50%">
-                            <p v-if="item.status !== 'pending'">{{ item.comments }}</p>
-                            <input v-else type="text" class="form-control" v-model="item.comments" />
+                            <input
+                                v-if="
+                                    item.status === 'pending' &&
+                                    (can('update quote_approval') || hasRole('Super Admin'))
+                                "
+                                type="text"
+                                class="form-control"
+                                v-model="item.comments"
+                            />
+                            <p v-else>
+                                {{ item.comments }}
+                            </p>
                         </td>
                         <td class="text-center">
                             <p
@@ -100,7 +110,13 @@
                             </p>
                         </td>
                         <td style="width: 10%">
-                            <div class="flex" v-if="item.status === 'pending'">
+                            <div
+                                class="flex"
+                                v-if="
+                                    item.status === 'pending' &&
+                                    (can('update quote_approval') || hasRole('Super Admin'))
+                                "
+                            >
                                 <button
                                     class="btn btn-sm btn-primary me-2"
                                     @click="() => updateQuoteApproval(item, 'approved')"
@@ -161,10 +177,14 @@ const getApprovals = async () => {
         filters: JSON.stringify([{ column: 'quote_id', operator: 'equals', value: quote.id }]),
         order: 'desc'
     });
-    let res = await axios.get(route('api.quote-approvals.index') + '?' + query);
-    items.value = res.data.data;
-    meta.total = res.data.meta?.total ?? res.data.total;
-    meta.first = (meta.page - 1) * meta.limit;
+    try {
+        let res = await axios.get(route('api.quote-approvals.index') + '?' + query);
+        items.value = res.data.data;
+        meta.total = res.data.meta?.total ?? res.data.total;
+        meta.first = (meta.page - 1) * meta.limit;
+    } catch (ex) {
+        notyf.error(ex.response.data.message);
+    }
 };
 
 const startApproval = async () => {
@@ -228,10 +248,8 @@ const toggleDialog = () => {
         return;
     }
     showDialog.value = !showDialog.value;
-    if (showDialog.value) {
-        getApprovals();
-        getQuote(quote.id);
-    }
+    getApprovals();
+    getQuote(quote.id);
 };
 const handlePaginator = (ev) => {
     meta.limit = ev.rows;
