@@ -9,6 +9,8 @@ enum SolutionTypesEnum: string
     case Hardware = '5';
     case CloudAudit = '6';
     case Cloud = '7';
+    case HostedVoice = '8';
+    case Security = '9';
 
     public function getName(): string
     {
@@ -18,6 +20,8 @@ enum SolutionTypesEnum: string
             SolutionTypesEnum::Hardware => 'Hardware',
             SolutionTypesEnum::CloudAudit => 'Cloud Audit',
             SolutionTypesEnum::Cloud => 'Cloud',
+            SolutionTypesEnum::HostedVoice => 'Hosted Voice',
+            SolutionTypesEnum::Security => 'Security',
         };
     }
 
@@ -29,6 +33,8 @@ enum SolutionTypesEnum: string
             'Hardware' => [],
             'Cloud Audit' => ['StepCloudAuditTenant', 'StepCloudAuditTenantReview'],
             'Cloud' => [],
+            'Hosted Voice' => [],
+            'Security' => [],
         ];
     }
 }

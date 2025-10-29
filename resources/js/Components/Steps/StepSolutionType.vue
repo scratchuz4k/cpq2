@@ -21,7 +21,9 @@ const icons = {
     4: 'fas fa-mobile-screen-button',
     5: 'fas fa-microchip',
     6: 'fas fa-cloud-arrow-down',
-    7: 'fas fa-cloud'
+    7: 'fas fa-cloud',
+    8: 'fas fa-phone',
+    9: 'fas fa-shield-alt'
 };
 </script>
 
