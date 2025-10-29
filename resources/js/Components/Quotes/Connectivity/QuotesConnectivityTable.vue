@@ -12,7 +12,7 @@ import ToggleSwitch from 'primevue/toggleswitch';
 import TriStateToggle from '@/Components/TriStateToggle.vue';
 import queryString from 'query-string';
 import { remove, add } from '@/Composables/useConnectivityItem';
-import { quote } from '@/Composables/useQuote';
+import { quote, getQuote } from '@/Composables/useQuote';
 
 const props = defineProps({
     modelValue: Object,
@@ -283,6 +283,7 @@ const checkProduct = (article) => {
     } else {
         remove(item);
     }
+    getQuote(quote.id);
 };
 
 const hasPrimaryProduct = () => {

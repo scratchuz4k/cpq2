@@ -43,7 +43,7 @@
 <script setup>
 import { removeAddon, addAddon, addons, isLoading, checks } from '@/Composables/useConnectivityItem';
 import { onMounted, reactive } from 'vue';
-import { quote } from '@/Composables/useQuote';
+import { quote, getQuote } from '@/Composables/useQuote';
 import queryString from 'query-string';
 
 const props = defineProps({
@@ -106,7 +106,13 @@ const checkProduct = (article) => {
     let index = quote.items.findIndex((item) => item.product_code == article.code);
     article.type = props.productType;
     article.group = props.currentStep + 1;
-    return index == -1 ? addAddon(article) : removeAddon(item);
+
+    if (index == -1) {
+        addAddon(article);
+    } else {
+        removeAddon(item);
+    }
+    getQuote(quote.id);
 };
 
 window.addEventListener('beforeunload', () => {

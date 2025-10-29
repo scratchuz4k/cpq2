@@ -108,13 +108,15 @@ class CloudMarketConnectivityProducts implements ShouldQueue, TenantAware
         ];
 
         $file = Product::where('key', 'live_prices')->where('filename', $this->file)->first();
-        $file['errors'][] = $error;
+
+        $errors[] = $error;
+        $errors = array_merge($errors, $file?->errors ?? []);
 
         // Handle the failure, log exception details, etc.
-        $message = '['.strtoupper((string) env('APP_ENV')).'] CloudMarketConnectivityProducts failed with error: '.json_encode($file['errors']);
+        $message = '['.strtoupper((string) env('APP_ENV')).'] CloudMarketConnectivityProducts failed with error: '.json_encode($errors);
 
         if ($file) {
-            Product::write('live_prices', $this->file, $file['data'], false, now(), $file['created_at'], $file['filters'], $file['errors']);
+            Product::write('live_prices', $this->file, $file['data'], false, now(), $file['created_at'], $file['filters'], $errors);
         }
 
         Log::error($message);
