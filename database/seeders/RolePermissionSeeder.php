@@ -97,7 +97,7 @@ class RolePermissionSeeder extends Seeder
             'Sales Rep' => [
                 'parent' => 'Sales Manager',
                 'permissions' => ['quote', 'quote_item', 'account', 'contact', 'brand', 'supplier', 'activity', 'price_plan'],
-                'simple_permission' => ['viewAny product', 'view product', 'viewAny category', 'view category'],
+                'simple_permission' => ['viewAny product', 'view product', 'viewAny category', 'view category', 'create quote_approval'],
                 'deny_permission' => ['export'],
             ],
             'Order Manager' => [

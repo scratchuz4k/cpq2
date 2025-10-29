@@ -1,5 +1,8 @@
 <template>
-    <div class="approvals-group-button flex me-2 p-0">
+    <div
+        class="approvals-group-button flex me-2 p-0"
+        v-if="['quote', 'need_approval', 'validated', 'completed'].includes(quote.status.toLowerCase())"
+    >
         <button
             v-if="quote.status.toLowerCase() === 'completed'"
             class="btn btn-primary"
@@ -14,13 +17,12 @@
         <template v-else>
             <button
                 v-if="
-                    tenant.configurations.has_quote_approval === '0' ||
-                    tenant.configurations.quote_approval_flow === 'margin' ||
-                    (tenant.configurations.quote_approval_flow === 'internal' &&
-                        quote.status.toLowerCase() === 'validated')
+                    has_quote_approval === '0' ||
+                    quote_approval_flow === 'margin' ||
+                    (quote_approval_flow === 'internal' && quote.status.toLowerCase() === 'validated')
                 "
                 class="btn btn-primary"
-                :disabled="items.some((x) => x.status === 'pending')"
+                :disabled="items.some((x) => x.status === 'pending') || quote.user_id !== user.id"
                 @click="sendToOrder()"
                 :style="{
                     borderRadius: canToggleDialog() ? '5px 0 0 5px' : '5px'
@@ -139,7 +141,8 @@ import { can, hasRole } from '@/Composables/useAuth';
 
 const { props } = usePage();
 
-const tenant = props.model?.tenant ?? props.tenant;
+const tenant = props.tenant ?? null;
+const user = props.auth.user ?? null;
 const showDialog = ref(false);
 const items = ref([]);
 const meta = reactive({
@@ -148,6 +151,8 @@ const meta = reactive({
     total: 0,
     first: 1
 });
+const has_quote_approval = tenant.configurations.has_quote_approval ?? '0';
+const quote_approval_flow = tenant.configurations.quote_approval_flow ?? 'internal';
 
 const getApprovals = async () => {
     let query = queryString.stringify({
@@ -180,7 +185,7 @@ const updateQuoteApproval = async (item, status) => {
 };
 
 const sendToOrder = async () => {
-    if (tenant.configurations.has_quote_approval == '0') {
+    if (has_quote_approval == '0') {
         try {
             let res = await axios.put(`/api/quotes/${quote.id}`, {
                 status: 'COMPLETED'
@@ -191,7 +196,7 @@ const sendToOrder = async () => {
         }
         return;
     }
-
+    //  &&(can('create quote_approval') || hasRole('Super Admin'))
     if (quote.status != 'validated' && !items.value.find((x) => ['pending'].includes(x.status))) {
         try {
             let res = await axios.post(route('api.quote-approvals.store'), {
@@ -215,9 +220,7 @@ const sendToOrder = async () => {
 };
 
 const canToggleDialog = () => {
-    return (
-        tenant.configurations.has_quote_approval === '1' && (can('viewAny quote_approval') || hasRole('Super Admin'))
-    );
+    return has_quote_approval === '1' && (can('viewAny quote_approval') || hasRole('Super Admin'));
 };
 
 const toggleDialog = () => {
@@ -227,6 +230,7 @@ const toggleDialog = () => {
     showDialog.value = !showDialog.value;
     if (showDialog.value) {
         getApprovals();
+        getQuote(quote.id);
     }
 };
 const handlePaginator = (ev) => {
