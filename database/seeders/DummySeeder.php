@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Account;
 use App\Models\Tenant;
 use App\Models\User;
 use Illuminate\Database\Seeder;
@@ -19,6 +20,8 @@ class DummySeeder extends Seeder
             'domain' => 'example.com',
             'database' => 'cloudmarket',
         ]);
+
+        $accounts = Account::factory(10)->create();
 
         $support_user = User::updateOrCreate([
             'email' => 'support@example.com',

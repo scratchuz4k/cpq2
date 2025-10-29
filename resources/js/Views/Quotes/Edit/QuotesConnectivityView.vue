@@ -88,8 +88,7 @@
 </template>
 <script setup>
 import { ref, watch } from 'vue';
-import { quote } from '@/Composables/useQuote';
-import { router } from '@inertiajs/vue3';
+import { getQuote, quote } from '@/Composables/useQuote';
 import { remove, addons, isLoading, checks } from '@/Composables/useConnectivityItem';
 import axios from 'axios';
 
@@ -112,6 +111,7 @@ const removeItem = (article) => {
         emitter.emit('primary-product:removed');
         currentStep.value = 0;
     }
+    getQuote(props.modelValue.id);
 };
 
 const steps = {

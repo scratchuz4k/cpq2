@@ -19,7 +19,6 @@ export const remove = (item) => {
             let index = quote.items.findIndex((e) => e.id == x.id);
             quote.items.splice(index, 1);
         });
-        getQuote(quote.id);
     } catch (ex) {
         alert(ex.response.data.message);
     }
@@ -64,7 +63,6 @@ export const add = (article) => {
             let res = await axios.post('/api/quote-items', x);
             quote.items.push(res.data);
         });
-        getQuote(quote.id);
     } catch (ex) {
         alert(ex.response.data.message);
     }
@@ -104,7 +102,6 @@ export const addAddon = (article) => {
         items.forEach(async (x) => {
             let res = await axios.post('/api/quote-items', x);
         });
-        getQuote(quote.id);
     } catch (ex) {
         alert(ex.response.data.message);
     }
@@ -118,7 +115,6 @@ export const removeAddon = (item) => {
             let index = quote.items.findIndex((e) => e.id == x.id);
             quote.items.splice(index, 1);
         });
-        getQuote(quote.id);
     } catch (ex) {
         alert(ex.response.data.message);
     }
