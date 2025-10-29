@@ -4,7 +4,9 @@
             v-if="quote.status.toLowerCase() === 'completed'"
             class="btn btn-primary"
             :disabled="true"
-            style="border-radius: 5px 0 0 5px"
+            :style="{
+                borderRadius: canToggleDialog() ? '5px 0 0 5px' : '5px'
+            }"
         >
             Quote Complete
         </button>

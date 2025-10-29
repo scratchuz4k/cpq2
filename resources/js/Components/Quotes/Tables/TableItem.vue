@@ -91,7 +91,7 @@ emitter.on('quote-items:toggle:is-editing', () => (item.value.is_editing = false
                 </component>
             </td>
         </template>
-        <td v-if="!preview" class="text-center p-0">
+        <td v-if="!preview && !quote.is_blocked" class="text-center p-0">
             <div class="d-flex justify-content-end">
                 <template v-if="!item.is_editing">
                     <font-awesome-icon

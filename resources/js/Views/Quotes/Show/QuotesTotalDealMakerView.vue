@@ -264,17 +264,19 @@ const items = ref([
                             <span class="input-group-text">%</span>
                         </div>
                     </div>
-                    <button
-                        id="btn-apply-global-discount"
-                        class="btn btn-secondary w-100 mb-2"
-                        @click="saveQuote()"
-                        :disabled="isLoading"
-                    >
-                        Apply to quote
-                    </button>
-                    <button id="btn-reset-quote" class="btn w-100" @click="resetQuote()" :disabled="isLoading">
-                        Reset quote
-                    </button>
+                    <template v-if="!quote.is_blocked">
+                        <button
+                            id="btn-apply-global-discount"
+                            class="btn btn-secondary w-100 mb-2"
+                            @click="saveQuote()"
+                            :disabled="isLoading"
+                        >
+                            Apply to quote
+                        </button>
+                        <button id="btn-reset-quote" class="btn w-100" @click="resetQuote()" :disabled="isLoading">
+                            Reset quote
+                        </button>
+                    </template>
                 </div>
                 <div class="price-mobile-sidebar commission-calculator px-4 pt-4 pb-2 mb-3">
                     <h3 class="mb-3">Profitability Calculator</h3>
