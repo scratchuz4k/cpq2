@@ -279,7 +279,6 @@ const checkProduct = (article) => {
     } else {
         remove(item);
     }
-    getQuote(quote.id);
 };
 
 const hasProduct = () => {
