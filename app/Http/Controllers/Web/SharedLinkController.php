@@ -7,7 +7,10 @@ use App\Http\Resources\QuoteResource;
 use App\Models\PricePlan;
 use App\Models\Quote;
 use App\Models\SharedLink;
+use App\Models\Tenant;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 
 class SharedLinkController extends Controller
@@ -18,7 +21,14 @@ class SharedLinkController extends Controller
 
     public function show(Request $request, $token)
     {
-        $sharedLink = SharedLink::where('token', $token)->firstOrFail();
+        try {
+            $sharedLink = SharedLink::where('token', $token)->firstOrFail();
+        } catch (ModelNotFoundException $e) {
+            Log::error($e->getMessage());
+            abort(404, 'Something went wrong.');
+        } catch (\Exception $e) {
+            return handleWebException($e);
+        }
 
         $sharedLink->tenant?->makeCurrent();
 
@@ -63,6 +73,11 @@ class SharedLinkController extends Controller
 
     private function getResource($component, $item)
     {
+        if ($item->tenant !== Tenant::current()) {
+            $temp = Tenant::findOrFail($item->tenant->id);
+            $temp->makeCurrent();
+        }
+
         return match ($component) {
             'Quotes' => [
                 'pricePlans' => PricePlan::all(),
