@@ -28,8 +28,17 @@
                     borderRadius: canToggleDialog() ? '5px 0 0 5px' : '5px'
                 }"
             >
-                <font-awesome-icon :icon="['fas', 'thumbtack']" class="me-2" />
-                Send to Order
+                <font-awesome-icon
+                    v-if="quote.items.some((x) => !x.is_margin_valid)"
+                    :icon="['fas', 'thumbs-up']"
+                    class="me-2"
+                />
+                <font-awesome-icon v-else :icon="['fas', 'thumbtack']" class="me-2" />
+                {{
+                    quote.items.some((x) => !x.is_margin_valid) && quote.status == 'quoted'
+                        ? 'Send to Approval'
+                        : 'Send to Order'
+                }}
             </button>
 
             <button
