@@ -10,7 +10,6 @@ use App\Models\SharedLink;
 use App\Models\Tenant;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 
 class SharedLinkController extends Controller
@@ -24,7 +23,6 @@ class SharedLinkController extends Controller
         try {
             $sharedLink = SharedLink::where('token', $token)->firstOrFail();
         } catch (ModelNotFoundException $e) {
-            Log::error($e->getMessage());
             abort(404, 'Something went wrong.');
         } catch (\Exception $e) {
             return handleWebException($e);
