@@ -5,13 +5,13 @@ namespace Database\Seeders;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 use App\Enums\PricePlanEnum;
-use App\Models\Category;
 use App\Models\PricePlan;
 use App\Models\Product;
+use App\Models\Step;
 use App\Models\Tenant;
 use Illuminate\Database\Seeder;
 
-class CategoryProductsSeeder extends Seeder
+class StepProductsSeeder extends Seeder
 {
     /**
      * Seed the application"s database.
@@ -56,7 +56,7 @@ class CategoryProductsSeeder extends Seeder
         foreach (Tenant::all() as $tenant) {
             $pricePlan = PricePlan::where('code', PricePlanEnum::MONTHLY->name)->first();
             $solutionType = $tenant->solutionTypes()->where('code', 4)->first();
-            $category = Category::updateOrCreate(['code' => 'plan', 'tenant_id' => $tenant->id], [
+            $step = Step::updateOrCreate(['code' => 'plan', 'tenant_id' => $tenant->id], [
                 'name' => 'Plans',
                 'solution_type_id' => $solutionType->id,
             ]);
@@ -69,7 +69,7 @@ class CategoryProductsSeeder extends Seeder
                     'name' => $temp['name'],
                     'description' => $temp['description'],
                     'price_plan_id' => $pricePlan->id,
-                    'category_id' => $category->id,
+                    'step_id' => $step->id,
                     'is_active' => 1,
                 ]);
 

@@ -49,7 +49,8 @@ class SolutionTypeResource extends JsonResource
             ...$info,
             'configurations' => $this->configs,
             'table' => $table,
-            'categories' => $this->categories,
+            'categories' => $this->categories, // TODO: remove later
+            'steps' => $this->steps,
         ];
     }
 }

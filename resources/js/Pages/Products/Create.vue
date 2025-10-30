@@ -32,12 +32,14 @@ const product = reactive({
     sku: null,
     description: null,
     prices: [],
-    is_active: true
+    is_active: true,
+    step_id: null
 });
 
 const editingRows = ref([]);
 const showModal = ref(false);
 const category = ref(null);
+const step = ref(null);
 
 const saveProduct = () => {
     router.post(
@@ -47,7 +49,8 @@ const saveProduct = () => {
             expires_at: DateTime.fromJSDate(product.expires_at).toISO() ?? null,
             supplier_id: product.supplier?.id,
             parent_id: product.parent?.id,
-            category_id: category.value?.id
+            category_id: category.value?.id,
+            step_id: step.value?.id
         },
         {
             onSuccess: (page) => {
@@ -172,7 +175,18 @@ const items = ref([
                                 placeholder="Select an Price Plan"
                             />
                         </div>
-
+                        <div class="mb-3">
+                            <label for="product-categories" class="form-label">Step:</label>
+                            <InputSelect
+                                id="product-step"
+                                url="/steps"
+                                :fields="['name']"
+                                v-model="step"
+                                placeholder="Select a Step"
+                                :query="[{ column: 'is_active', operator: 'equals', value: 1 }]"
+                            >
+                            </InputSelect>
+                        </div>
                         <div class="mb-3">
                             <label for="product-categories" class="form-label">Category:</label>
                             <InputSelect

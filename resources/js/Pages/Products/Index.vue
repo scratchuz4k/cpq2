@@ -45,16 +45,17 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'My Account', url: '/my
                         { data: 'sku', title: 'SKU', style: 'width:10%' },
                         { data: 'name', title: 'Name', style: 'width:25%' },
                         { data: 'parent.name', title: 'Parent', style: 'width:12%' },
+                        { data: 'step.name', title: 'Step', style: 'width:12%' },
                         { data: 'category.name', title: 'Category', style: 'width:12%' },
                         {
-                            data: 'category.solution_type.name',
+                            data: 'step.solution_type.name',
                             title: 'Solution Type',
                             style: 'width:12%'
                         },
                         { data: 'updated_at', title: 'Updated At', style: 'width:15%' }
                     ]"
                     :filters="{
-                        'category.solution_type.name': {
+                        'step.solution_type.name': {
                             type: 'options',
                             options: solution_types.map((x) => x.name)
                         }

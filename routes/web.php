@@ -18,6 +18,7 @@ use App\Http\Controllers\Web\QuoteController;
 use App\Http\Controllers\Web\SharedLinkController;
 use App\Http\Controllers\Web\SolutionTypeController;
 use App\Http\Controllers\Web\SpaController;
+use App\Http\Controllers\Web\StepController;
 use App\Http\Controllers\Web\SupplierController;
 use App\Http\Controllers\Web\TenantController;
 use App\Http\Controllers\Web\TokenController;
@@ -95,7 +96,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         'group-accounts' => GroupAccountController::class,
         'activities' => ActivityController::class,
         'imports' => ImportController::class,
-
+        'steps' => StepController::class,
     ]);
 
     Route::middleware('auth')->group(function () {

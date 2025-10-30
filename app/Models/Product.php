@@ -22,6 +22,7 @@ class Product extends Model
         'price_plan_id',
         'supplier_id',
         'category_id',
+        'step_id',
         'sku',
         'name',
         'status',
@@ -79,6 +80,11 @@ class Product extends Model
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
+    }
+
+    public function step(): BelongsTo
+    {
+        return $this->belongsTo(Step::class);
     }
 
     public function supplier(): HasOne
