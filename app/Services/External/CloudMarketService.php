@@ -29,7 +29,7 @@ class CloudMarketService
         $content = Product::where('key', $key)->where('filename', $filename)->first();
         $createdAt = Carbon::parse($content?->created_at);
 
-        if (! $content || (is_null($content?->finished_at) && $createdAt->addMinutes(10)->isPast())) {
+        if (! $content || (is_null($content?->finished_at) && $createdAt->addMinutes(20)->isPast())) {
             Product::write($key, $filename, [], true, null, now());
             $dispatchJob::dispatch($quote, $filename, $address);
         }

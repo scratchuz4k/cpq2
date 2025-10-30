@@ -17,7 +17,7 @@
                 </div>
             </div>
         </div>
-        <div class="row mb-4" v-if="!isLoading && addons.length">
+        <div class="row mb-4" v-if="addons.length">
             <div class="col-3 mb-3" v-for="addon in addons">
                 <div
                     class="card bg-light cursor-pointer"
@@ -45,6 +45,7 @@ import { removeAddon, addAddon, addons, isLoading, checks } from '@/Composables/
 import { onMounted, reactive } from 'vue';
 import { quote, getQuote } from '@/Composables/useQuote';
 import queryString from 'query-string';
+import _ from 'lodash';
 
 const props = defineProps({
     modelValue: Object,
@@ -102,6 +103,8 @@ const getAddons = async () => {
     }
 };
 const checkProduct = (article) => {
+    if (isLoading.value) return;
+
     let item = quote.items.find((item) => item.product_code == article.code);
     let index = quote.items.findIndex((item) => item.product_code == article.code);
     article.type = props.productType;
