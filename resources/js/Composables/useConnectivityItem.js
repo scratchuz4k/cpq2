@@ -68,6 +68,7 @@ export const add = async (article) => {
 };
 
 export const addAddon = async (article) => {
+    isLoading.value = true;
     try {
         let items = [];
 
@@ -105,9 +106,11 @@ export const addAddon = async (article) => {
         alert(ex.response.data.message);
     }
     await getQuote(quote.id);
+    isLoading.value = false;
 };
 
 export const removeAddon = async (item) => {
+    isLoading.value = true;
     let items = quote.items.filter((x) => x.product_code == item.product_code);
     try {
         for (const x of items) {
@@ -117,4 +120,5 @@ export const removeAddon = async (item) => {
         alert(ex.response.data.message);
     }
     await getQuote(quote.id);
+    isLoading.value = false;
 };
