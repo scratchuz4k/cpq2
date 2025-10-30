@@ -22,7 +22,7 @@
                     (quote_approval_flow === 'internal' && quote.status.toLowerCase() === 'validated')
                 "
                 class="btn btn-primary"
-                :disabled="items.some((x) => x.status === 'pending') || quote.user_id !== user.id"
+                :disabled="items.some((x) => x.status === 'pending')"
                 @click="sendToOrder()"
                 :style="{
                     borderRadius: canToggleDialog() ? '5px 0 0 5px' : '5px'
