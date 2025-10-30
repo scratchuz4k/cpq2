@@ -7,6 +7,7 @@ use App\Http\Resources\QuoteResource;
 use App\Models\PricePlan;
 use App\Models\Quote;
 use App\Models\SharedLink;
+use App\Models\Tenant;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -63,6 +64,11 @@ class SharedLinkController extends Controller
 
     private function getResource($component, $item)
     {
+        if ($item->tenant !== Tenant::current()) {
+            $temp = Tenant::findOrFail($item->tenant->id);
+            $temp->makeCurrent();
+        }
+
         return match ($component) {
             'Quotes' => [
                 'pricePlans' => PricePlan::all(),
