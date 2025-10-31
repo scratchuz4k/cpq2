@@ -48,10 +48,10 @@ const dragOptions = {
     ghostClass: 'ghost'
 };
 
-const categories = ref([]);
+const steps = ref([]);
 
-props.solution_type.categories.forEach((x) => {
-    categories.value.push({ id: uuid(), category: x });
+props.solution_type.steps.forEach((x) => {
+    steps.value.push({ id: uuid(), step: x });
 });
 
 const saveSolutionType = () => {
@@ -64,11 +64,11 @@ const saveSolutionType = () => {
     table.code = !table.code ? 'custom' : table.code;
 
     let temp = {};
-    categories.value.forEach((item, index) => {
-        if (item.category == null) {
+    steps.value.forEach((item, index) => {
+        if (item.step == null) {
             return;
         }
-        temp[item.category.id] = { order: index };
+        temp[item.step.id] = { order: index };
     });
 
     router.put(
@@ -80,7 +80,7 @@ const saveSolutionType = () => {
                 amortisation: JSON.stringify(configurations.amortisation)
             },
             tables: [table],
-            categories: temp
+            steps: temp
         },
         {
             onSuccess: (page) => {
@@ -122,42 +122,6 @@ const clearAllColumns = async (table) => {
     }
 
     table.columns = [];
-};
-
-const addCategory = () => {
-    categories.value.push({ category: null, id: uuid() });
-};
-
-const deleteCategory = (element) => {
-    let index = categories.value.findIndex((x) => x.value == element.value);
-    if (index != -1) {
-        categories.value.splice(index, 1);
-    }
-};
-
-const clearAllCategories = async () => {
-    let result = await swal.fire({
-        title: 'Are you sure?',
-        text: 'This action removes all categories'
-    });
-
-    if (['cancel', 'backdrop'].includes(result.dismiss)) {
-        return;
-    }
-    categories.value = [];
-};
-
-const checkCategories = (index) => {
-    let selected_category = categories.value[index];
-
-    let duplicated_category = categories.value.findIndex((x, i) => {
-        return i !== index && x?.id === selected_category.id;
-    });
-
-    if (duplicated_category != -1) {
-        notyf.error('Category already selected');
-        categories.value[index] = {};
-    }
 };
 
 const items = ref([
@@ -212,18 +176,18 @@ const items = ref([
                         </div>
                     </tab>
                     <tab title="Price" v-if="solution_type.code != 3">
-                        <Panel class="mt-3" header="Categories" :toggleable="true">
+                        <Panel class="mt-3" header="Steps" :toggleable="true">
                             <div class="mb-3">
-                                <label class="form-label">Order Categories:</label>
+                                <label class="form-label">Order Steps:</label>
                                 <table class="table">
                                     <thead>
                                         <tr>
                                             <th style="width: 5%"></th>
-                                            <th style="text-align: left">Category</th>
+                                            <th style="text-align: left">Step</th>
                                         </tr>
                                     </thead>
                                     <draggable
-                                        v-model="categories"
+                                        v-model="steps"
                                         item-key="id"
                                         tag="tbody"
                                         v-bind="dragOptions"
@@ -237,7 +201,7 @@ const items = ref([
                                                     </button>
                                                 </td>
                                                 <td style="text-align: left">
-                                                    {{ categories[index].category.name }}
+                                                    {{ steps[index].step.name }}
                                                 </td>
                                             </tr>
                                         </template>
