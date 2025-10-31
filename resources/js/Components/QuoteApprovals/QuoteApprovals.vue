@@ -4,14 +4,14 @@
         v-if="['quote', 'need_approval', 'validated', 'completed'].includes(quote.status.toLowerCase())"
     >
         <button
-            v-if="quote.status.toLowerCase() === 'completed'"
+            v-if="quote.status.toLowerCase() === 'completed' && canToggleDialog()"
             class="btn btn-primary"
             :disabled="true"
             :style="{
                 borderRadius: canToggleDialog() ? '5px 0 0 5px' : '5px'
             }"
         >
-            Quote Complete
+            History
         </button>
 
         <template v-else>

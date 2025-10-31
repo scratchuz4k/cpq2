@@ -7,6 +7,7 @@ use App\Http\Controllers\BaseController;
 use App\Http\Requests\QuoteApprovalCreateRequest;
 use App\Http\Requests\QuoteApprovalUpdateRequest;
 use App\Http\Resources\QuoteApprovalResource;
+use App\Models\Quote;
 use App\Models\QuoteApproval;
 use App\Services\QuoteApprovalService;
 use Exception;
@@ -42,6 +43,11 @@ class QuoteApprovalController extends BaseController
      */
     public function store(QuoteApprovalCreateRequest $request)
     {
+        $error = $this->service->validateStore(Quote::find($request->quote_id));
+        if ($error != null) {
+            return $error;
+        }
+
         try {
             $quoteApproval = DB::transaction(fn () => $this->service->store($request->all()));
         } catch (Exception $e) {
@@ -64,6 +70,11 @@ class QuoteApprovalController extends BaseController
      */
     public function update(QuoteApprovalUpdateRequest $request, QuoteApproval $quoteApproval)
     {
+        $error = $this->service->validateUpdate($quoteApproval);
+        if ($error != null) {
+            return $error;
+        }
+
         try {
             $quoteApproval = DB::transaction(fn () => $this->service->update($quoteApproval, $request->all()));
         } catch (Exception $e) {
