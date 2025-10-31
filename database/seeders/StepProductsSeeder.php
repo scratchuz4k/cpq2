@@ -56,8 +56,7 @@ class StepProductsSeeder extends Seeder
         foreach (Tenant::all() as $tenant) {
             $pricePlan = PricePlan::where('code', PricePlanEnum::MONTHLY->name)->first();
             $solutionType = $tenant->solutionTypes()->where('code', 4)->first();
-            $step = Step::updateOrCreate(['code' => 'plan', 'tenant_id' => $tenant->id], [
-                'name' => 'Plans',
+            $step = Step::updateOrCreate(['name' => 'Plans', 'tenant_id' => $tenant->id], [
                 'solution_type_id' => $solutionType->id,
             ]);
 
