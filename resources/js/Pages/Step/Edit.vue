@@ -34,6 +34,25 @@ const saveStep = () => {
     });
 };
 
+const setStepProduct = async (product_id, step_id) => {
+    if (!product_id) {
+        return;
+    }
+    try {
+        await axios.put('/api/products/' + product_id, { step_id: step_id });
+        product.value = null;
+
+        if (step_id) {
+            notyf.success('Created with Success');
+        }
+        emitter.emit('datatable-refresh:step-products');
+        emitter.emit('input-select-refresh:select-product');
+    } catch (ex) {
+        product.value = null;
+        notyf.error(ex.response?.data?.message ?? ex.response?.data);
+    }
+};
+
 const items = ref([
     { label: 'Home', url: '/' },
     { label: 'My Account', url: '/myaccount' },
@@ -88,10 +107,33 @@ const items = ref([
                     </div>
                 </tab>
                 <tab title="Products">
+                    <form @submit.prevent="setStepProduct(product?.id, step.id)" class="mt-3 d-flex">
+                        <div class="me-3" style="width: 100%">
+                            <label class="form-label">Add Products without step:</label>
+                            <InputSelect
+                                id="select-product"
+                                url="/products"
+                                :fields="['name']"
+                                v-model="product"
+                                placeholder="Select an Product"
+                                :query="[
+                                    { column: 'step_id', operator: 'is_null', value: '' },
+                                    { column: 'is_active', operator: 'equals', value: 1 }
+                                ]"
+                            >
+                            </InputSelect>
+                        </div>
+                        <div class="d-flex align-items-end justify-content-end">
+                            <Button id="button-add-product-to-step" type="submit" class="btn btn-secondary">
+                                <font-awesome-icon :icon="['fas', 'plus']"></font-awesome-icon>
+                                Add
+                            </Button>
+                        </div>
+                    </form>
                     <div class="row mt-3">
                         <div class="col">
                             <Datatable
-                                id="group-products"
+                                id="step-products"
                                 :columns="[
                                     { data: 'id', title: '#', style: 'width:5%' },
                                     { data: 'code', title: 'Code', style: 'width:20%' },
@@ -108,6 +150,11 @@ const items = ref([
                                 </template>
                                 <template #created_at="{ value }">
                                     {{ format.date(value) }}
+                                </template>
+                                <template #actions="{ data, value, index }">
+                                    <button class="btn px-2 py-0 mx-1 border-0" @click="setStepProduct(data.id, null)">
+                                        <font-awesome-icon :icon="['fas', 'trash-alt']"></font-awesome-icon>
+                                    </button>
                                 </template>
                             </Datatable>
                         </div>
