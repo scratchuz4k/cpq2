@@ -41,7 +41,6 @@ class ProductUpdateRequest extends FormRequest
             'category_id' => 'exists:categories,id',
             'price_plan_id' => 'exists:price_plans,id',
             'supplier_id' => 'nullable|exists:suppliers,id',
-            'brand_id' => 'nullable|exists:brands,id',
         ];
     }
 

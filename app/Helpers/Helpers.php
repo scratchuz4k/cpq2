@@ -114,10 +114,23 @@ if (! function_exists('handleException')) {
         Log::debug($e->getMessage());
 
         if (config('app.debug')) {
-            return $e->getMessage();
+            $message = $e->getMessage();
         }
 
-        return response()->json($message, 500);
+        return response()->json(['message' => $message], 500);
+    }
+}
+
+if (! function_exists('handleWebException')) {
+    function handleWebException(\Exception $e, string $message = 'Something went wrong.')
+    {
+        Log::error($e->getMessage());
+
+        if (config('app.debug')) {
+            $message = $e->getMessage();
+        }
+
+        return redirect()->back()->withErrors([$message]);
     }
 }
 

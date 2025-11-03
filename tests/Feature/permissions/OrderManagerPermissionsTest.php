@@ -1,7 +1,6 @@
 <?php
 
 use App\Models\Account;
-use App\Models\Brand;
 use App\Models\Supplier;
 use App\Models\Tenant;
 use App\Models\User;
@@ -16,7 +15,6 @@ beforeEach(function () {
     $this->user->tenants()->attach(Tenant::find(1));
     $this->user->assignRole('Order Manager');
     $this->account = Account::factory()->create();
-    Brand::factory()->create();
     Supplier::factory()->create();
 
     Auth::login($this->user);
@@ -31,7 +29,6 @@ it('Run Permissions for Order Manager', function () {
         'api/accounts' => ['index' => true, 'create' => false, 'show' => true, 'store' => false, 'edit' => false, 'update' => false, 'destroy' => false],
         'api/prices' => ['index' => false, 'create' => false, 'show' => false, 'store' => false, 'edit' => false, 'update' => false, 'destroy' => false],
         'products' => ['index' => true, 'create' => false, 'show' => true, 'store' => false, 'edit' => false, 'update' => false, 'destroy' => false],
-        'brands' => ['index' => true, 'create' => false, 'show' => true, 'store' => false, 'edit' => false, 'update' => false, 'destroy' => false],
         'suppliers' => ['index' => true, 'create' => false, 'show' => true, 'store' => false, 'edit' => false, 'update' => false, 'destroy' => false],
         'spas' => ['index' => false, 'create' => false, 'show' => false, 'store' => false, 'edit' => false, 'update' => false, 'destroy' => false],
         'users' => ['index' => false, 'create' => false, 'show' => false, 'store' => false, 'edit' => false, 'update' => false, 'destroy' => false],

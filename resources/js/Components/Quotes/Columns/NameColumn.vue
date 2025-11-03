@@ -12,7 +12,7 @@ const item = defineModel();
     <p class="small">
         {{ item[column.value] }}
         <span
-            v-if="item.data && item.data?.additionalInfo['router']"
+            v-if="item.data && item.data?.additionalInfo?.router"
             v-tooltip
             data-bs-toggle="tooltip"
             data-bs-placement="top"

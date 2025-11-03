@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\Account;
-use App\Models\Merchant;
 use App\Models\Tenant;
 use App\Models\User;
 use Illuminate\Database\Seeder;
@@ -15,8 +14,6 @@ class DummySeeder extends Seeder
     {
         $dummy_tenants = Tenant::factory(3)->create([]);
 
-        $merchant = Merchant::factory(10)->create([]);
-
         $tenant = Tenant::updateOrCreate([
             'name' => 'CloudMarket',
         ], [
@@ -24,7 +21,7 @@ class DummySeeder extends Seeder
             'database' => 'cloudmarket',
         ]);
 
-        $merchant = Account::factory(10)->create();
+        $accounts = Account::factory(10)->create();
 
         $support_user = User::updateOrCreate([
             'email' => 'support@example.com',

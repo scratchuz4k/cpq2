@@ -1,5 +1,7 @@
 const { isSymbol } = require('lodash');
-const { getCurrentDate, generateHash } = require('../../support/utils.js');
+
+const provider = 'Giacom';
+const subprovider = 'BT';
 
 describe('Creates a Mobile Quote', () => {
     beforeEach(() => {
@@ -39,6 +41,25 @@ describe('Creates a Mobile Quote', () => {
         cy.selectOption('#select_address', 1);
         cy.get('#btn-next-step').click();
         cy.get('#btn-create-quote').should('not.be.disabled').click();
+
+        //Provider filter
+        cy.get('#provider-multiselect').click();
+        cy.wait(500);
+        cy.get('.p-multiselect-list-container')
+            .eq(0)
+            .within(() => {
+                cy.get('.p-multiselect-option').contains(provider).click();
+            });
+
+        //SubProvider filter
+        cy.get('#subprovider-multiselect').click();
+        cy.wait(500);
+        cy.get('.p-multiselect-list-container')
+            .eq(0)
+            .within(() => {
+                cy.get('.p-multiselect-option').contains(subprovider).click();
+            });
+
         // Scroll back to top
         cy.scrollTo('top');
         cy.get('#table-header-setup').click();
@@ -47,14 +68,13 @@ describe('Creates a Mobile Quote', () => {
         cy.wait(1000);
 
         //Add products to quote
-        let keys = [0, 1, 2];
-        keys.forEach((key) => {
-            cy.get('tbody tr button').eq(key).click();
-            cy.get('tbody tr button').eq(key).contains('Added');
-        });
+
+        cy.get('tbody tr button').eq(0).click();
+        cy.get('#connectivity-product-1').contains('Primary Product');
+
         //Save quote
         cy.get('.continue-btn').eq(0).click();
-        cy.get('.Simple-item').its('length').should('eq', 6);
+        cy.get('.Simple-item').its('length').should('eq', 2);
         cy.get('#table-simple > thead').contains('Quote Reference');
         cy.get('#table-simple > thead').contains('Speed');
         cy.get('#table-simple > thead').contains('Bearer');
@@ -86,7 +106,7 @@ describe('Creates a Mobile Quote', () => {
         cy.visit('/');
         cy.get('#datatable-btn-0-show').click();
 
-        cy.get('.recurring-item').its('length').should('eq', 3);
+        cy.get('.recurring-item').its('length').should('eq', 1);
         cy.get('#table-recurring > thead').contains('Provider');
         cy.get('#table-recurring > thead').contains('SubProvider');
         cy.get('#table-recurring > thead').contains('Name');

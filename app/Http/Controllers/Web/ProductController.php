@@ -13,7 +13,6 @@ use App\Models\Resource;
 use App\Services\ProductsService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -58,10 +57,7 @@ class ProductController extends BaseController
         try {
             $product = DB::transaction(fn () => $this->productsService->store($request->all()));
         } catch (\Exception $e) {
-            if (! env('APP_DEBUG')) {
-                Log::error($e->getMessage());
-            }
-            throw new \Exception($e);
+            return handleWebException($e);
         }
 
         return redirect()->route('products.index');
@@ -95,10 +91,7 @@ class ProductController extends BaseController
         try {
             $product = DB::transaction(fn () => $this->productsService->update($product, $request->all()));
         } catch (\Exception $e) {
-            if (! env('APP_DEBUG')) {
-                Log::error($e->getMessage());
-            }
-            throw new \Exception($e);
+            return handleWebException($e);
         }
 
         return redirect()->route('products.index');

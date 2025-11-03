@@ -54,7 +54,7 @@ class CategoryController extends BaseController
         try {
             $category = DB::transaction(fn () => $this->categoryService->store($request->all()));
         } catch (\Exception $e) {
-            throw new \Exception($e);
+            return handleWebException($e);
         }
 
         return redirect()->route('categories.index');
@@ -89,7 +89,7 @@ class CategoryController extends BaseController
         try {
             $category = DB::transaction(fn () => $this->categoryService->update($category, $request->all()));
         } catch (\Exception $e) {
-            throw new \Exception($e);
+            return handleWebException($e);
         }
 
         return redirect()->route('categories.index');
