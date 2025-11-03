@@ -40,8 +40,12 @@ class ProductCreateRequest extends FormRequest
                 'required',
                 Rule::exists('price_plans', 'id'),
             ],
+            'step_id' => [
+                'nullable',
+                new TenantExistsRule('steps'),
+            ],
             'category_id' => [
-                'required',
+                'nullable',
                 new TenantExistsRule('categories'),
             ],
             'parent_id' => [

@@ -42,9 +42,8 @@ const setStepProduct = async (product_id, step_id) => {
         await axios.put('/api/products/' + product_id, { step_id: step_id });
         product.value = null;
 
-        if (step_id) {
-            notyf.success('Created with Success');
-        }
+        notyf.success(step_id ? 'Product added with Success' : 'Product removed with success');
+
         emitter.emit('datatable-refresh:step-products');
         emitter.emit('input-select-refresh:select-product');
     } catch (ex) {

@@ -46,7 +46,6 @@ describe('Creates a Mobile Quote', () => {
 
                 cy.get('#category-name').type(category.name);
                 cy.get('#category-code').type(category.code);
-                cy.selectOption('#category-solution-type', 'Mobile');
                 cy.get('#btn-save-category').click();
                 cy.get('.notyf').contains('Created with Success');
             }

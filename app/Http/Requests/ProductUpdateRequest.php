@@ -38,6 +38,7 @@ class ProductUpdateRequest extends FormRequest
                     ->where('sku', request('sku')))->ignore($product_id),
             ],
             'name' => 'string|max:255',
+            'step_id' => 'exists:steps,id',
             'category_id' => 'exists:categories,id',
             'price_plan_id' => 'exists:price_plans,id',
             'supplier_id' => 'nullable|exists:suppliers,id',

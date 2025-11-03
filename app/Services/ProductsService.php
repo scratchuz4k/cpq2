@@ -32,9 +32,6 @@ class ProductsService
             'expires_at' => array_key_exists('expires_at', $array) && ! is_null($array['expires_at'])
                 ? Carbon::parse($array['expires_at'])->endOfDay()
                 : $product->expires_at,
-            'category_id' => array_key_exists('category_id', $array) && ! is_null($array['category_id'])
-                ? $array['category_id']
-                : $product->category_id,
         ]);
 
         return $product->refresh();
