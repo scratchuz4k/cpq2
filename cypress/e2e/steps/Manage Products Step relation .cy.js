@@ -2,10 +2,7 @@ import { generateHash, getCurrentDate } from '../../support/utils.js';
 import { forEach } from 'lodash';
 
 const temp = getCurrentDate();
-const steps = [
-    { code: 'step-1' + generateHash(temp), name: 'step-1' + temp },
-    { code: 'step-2' + generateHash(temp), name: 'step-2' + temp }
-];
+const steps = [{ name: 'step-1' + temp }, { name: 'step-2' + temp }];
 const products = [
     { sku: 'procuct-1' + generateHash(temp), name: 'Procuct 1' + temp },
     { sku: 'procuct-2' + generateHash(temp), name: 'Procuct 2' + temp }
@@ -71,10 +68,10 @@ describe('Manage Products Step relation', () => {
         cy.get('#datatable-search').type(steps[0].name);
         cy.wait(1000);
         cy.get('#datatable-btn-0-edit').click();
-        cy.selectOption('#step-solution-type', 'Hardware');
+        cy.selectOption('#step-solution-type', 'Cloud Audit');
         cy.get('#btn-save-step').click();
         cy.get('#datatable-search').type(steps[0].name);
         cy.get('.p-datatable-table').contains(steps[0].name);
-        cy.get('.p-datatable-table').contains('Hardware');
+        cy.get('.p-datatable-table').contains('Cloud Audit');
     });
 });
