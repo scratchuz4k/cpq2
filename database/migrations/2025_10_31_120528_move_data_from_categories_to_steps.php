@@ -48,6 +48,11 @@ return new class extends Migration
     public function down(): void
     {
         Schema::disableForeignKeyConstraints();
+
+        Schema::table('categories', function (Blueprint $table) {
+            $table->foreignId('solution_type_id')->nullable()->constrained('solution_types', 'id')->nullOnDelete();
+        });
+
         DB::table('steps')->orderBy('id')->chunk(100, function ($steps) {
             $categories = [];
             foreach ($steps as $step) {
@@ -66,10 +71,6 @@ return new class extends Migration
             if (! empty($categories)) {
                 DB::table('categories')->insert($categories);
             }
-        });
-
-        Schema::table('categories', function (Blueprint $table) {
-            $table->foreignId('solution_type_id')->nullable()->constrained('solution_types', 'id')->nullOnDelete();
         });
 
         DB::table('steps')->truncate();
