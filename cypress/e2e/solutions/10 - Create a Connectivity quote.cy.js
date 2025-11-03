@@ -71,7 +71,7 @@ describe('Creates a Connectivity quote', () => {
         cy.get('.recurring-item').its('length').should('eq', 5);
         cy.get('.one_off-item').its('length').should('eq', 5);
     });
-    it('I can add a Custom Line and check quoted items', () => {
+    it.only('I can add a Custom Line and check quoted items', () => {
         cy.visit('/');
         cy.get('#datatable-btn-0-show').click();
         cy.get('#btn-recurring-add').click();

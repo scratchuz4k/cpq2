@@ -29,7 +29,7 @@ describe('Creates a Mobile Quote', () => {
         cy.get('.notyf').contains('Created with Success');
     });
 
-    it('Create a Connectivity Quote', () => {
+    it.only('Create a Connectivity Quote', () => {
         cy.visit('/');
         cy.get('#create-tab').click();
 

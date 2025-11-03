@@ -384,6 +384,7 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'My Account', url: '/my
                                                     <div class="mb-3">
                                                         <label>Approvals Flow:</label>
                                                         <select
+                                                            id="quote-approval-flow"
                                                             class="form-select"
                                                             v-model="tenant.configurations.quote_approval_flow"
                                                             @change="submitTenantSettings()"
@@ -404,6 +405,7 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'My Account', url: '/my
                                                         <div class="row g-3 mb-3">
                                                             <div class="col">
                                                                 <input
+                                                                    id="margin-value"
                                                                     type="number"
                                                                     class="form-control"
                                                                     v-model="
@@ -416,6 +418,7 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'My Account', url: '/my
                                                             </div>
                                                             <div class="col">
                                                                 <select
+                                                                    id="margin-operation"
                                                                     class="form-select"
                                                                     v-model="
                                                                         tenant.configurations

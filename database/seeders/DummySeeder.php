@@ -55,6 +55,7 @@ class DummySeeder extends Seeder
         ], [
             'name' => 'Sales Rep',
             'tenant_id' => $tenant->id,
+            'parent_id' => $sales_manager_user->id,
             'password' => Hash::make('werwerwer'),
         ]);
 

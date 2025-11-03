@@ -4,6 +4,7 @@
         v-if="['quote', 'need_approval', 'validated', 'completed'].includes(quote.status.toLowerCase())"
     >
         <button
+            id="quote-approval-history"
             v-if="quote.status.toLowerCase() === 'completed' && canToggleDialog()"
             class="btn btn-primary"
             :disabled="true"
@@ -16,6 +17,7 @@
 
         <template v-else>
             <button
+                id="quote-approval-start"
                 v-if="
                     has_quote_approval === '0' ||
                     quote_approval_flow === 'margin' ||
@@ -42,6 +44,7 @@
             </button>
 
             <button
+                id="quote-approval-start"
                 v-else-if="
                     tenant.configurations.quote_approval_flow === 'internal' &&
                     quote.status.toLowerCase() !== 'validated'
@@ -57,6 +60,7 @@
         </template>
 
         <button
+            id="quote-approval-show-dialog"
             v-if="canToggleDialog()"
             class="btn btn-primary"
             @click="toggleDialog()"
@@ -89,11 +93,18 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="item in items" :key="item.id" class="align-middle">
-                        <td style="width: 15%">{{ format.date(item.updated_at) }}</td>
-                        <td style="width: 15%">{{ item.approver?.name }}</td>
-                        <td style="width: 10%">{{ item.flow }}</td>
-                        <td style="width: 50%">
+                    <tr
+                        v-for="(item, index) in items"
+                        :key="item.id"
+                        class="quote-approval-row align-middle"
+                        :id="'quote-approval-row-' + index"
+                    >
+                        <td style="width: 15%" :id="'quote-approval-date-' + index">
+                            {{ format.date(item.updated_at) }}
+                        </td>
+                        <td style="width: 15%" :id="'quote-approval-approver-' + index">{{ item.approver?.name }}</td>
+                        <td style="width: 10%" :id="'quote-approval-flow-' + index">{{ item.flow }}</td>
+                        <td style="width: 50%" :id="'quote-approval-comments-' + index">
                             <input
                                 v-if="
                                     item.status === 'pending' &&
@@ -107,7 +118,7 @@
                                 {{ item.comments }}
                             </p>
                         </td>
-                        <td class="text-center">
+                        <td class="text-center" :id="'quote-approval-status-' + index" style="width: 10%">
                             <p
                                 class="badge rounded-pill"
                                 :class="{
@@ -127,12 +138,14 @@
                                 "
                             >
                                 <button
+                                    :id="'quote-approval-approve-' + index"
                                     class="btn btn-sm btn-primary me-2"
                                     @click="() => updateQuoteApproval(item, 'approved')"
                                 >
                                     <font-awesome-icon :icon="['fas', 'check']" />
                                 </button>
                                 <button
+                                    :id="'quote-approval-reject-' + index"
                                     class="btn btn-sm btn-secondary"
                                     @click="() => updateQuoteApproval(item, 'rejected')"
                                 >
