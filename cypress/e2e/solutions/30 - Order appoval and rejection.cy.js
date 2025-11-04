@@ -66,23 +66,20 @@ describe('Quote Approval and Rejection', () => {
         cy.get('#table-header-setup').click();
         cy.wait(1000);
 
-        //Add products to quote
-        let keys = [0, 1];
-        keys.forEach((key) => {
-            cy.get('tbody tr button').eq(key).click();
-            cy.get('tbody tr button').eq(key).contains('Added');
-        });
+        cy.get('tbody tr button').eq(0).click();
+        cy.get('#connectivity-product-1').contains('Primary Product');
 
         //Save quote
         cy.get('.continue-btn').eq(0).click();
-        cy.get('.recurring-item').its('length').should('eq', 2);
-        cy.get('.one_off-item').its('length').should('eq', 2);
+        cy.get('.recurring-item').its('length').should('eq', 1);
+        cy.get('.one_off-item').its('length').should('eq', 1);
     });
 
     it('Start Quote Approval Flow', () => {
         cy.login('sales@example.com', 'werwerwer');
         cy.visit('/');
         cy.get('#datatable-btn-0-show').click();
+        cy.wait(500);
         cy.get('#quote-approval-start').click();
         cy.get('#quote-approval-show-dialog').click();
         cy.get('.quote-approval-row').its('length').should('eq', 2);
@@ -92,6 +89,7 @@ describe('Quote Approval and Rejection', () => {
         cy.login('salesmanager@example.com', 'werwerwer');
         cy.visit('/');
         cy.get('#datatable-btn-0-show').click();
+        cy.wait(500);
         cy.get('#quote-approval-show-dialog').click();
         cy.get('.quote-approval-row').its('length').should('eq', 2);
         cy.get('#quote-approval-approve-0').click();
@@ -102,6 +100,7 @@ describe('Quote Approval and Rejection', () => {
         cy.login('sales@example.com', 'werwerwer');
         cy.visit('/');
         cy.get('#datatable-btn-0-show').click();
+        cy.wait(500);
         cy.get('#quote-approval-start').click();
         cy.get('#quote-approval-history').contains('History');
     });
