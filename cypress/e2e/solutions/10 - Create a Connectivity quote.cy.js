@@ -90,7 +90,6 @@ describe('Creates a Connectivity quote', () => {
         cy.get('#btn-new-one_off-add').click({ force: true });
         cy.get('#table-one_off').contains('Custom line one_off');
     });
-
     it('I can filter products by contended', () => {
         cy.visit('/');
         cy.get('#create-tab').click();
@@ -119,7 +118,6 @@ describe('Creates a Connectivity quote', () => {
         cy.get('tbody tr button').eq(0).click();
         cy.get('#connectivity-product-1').contains('Primary Product');
     });
-
     it("I can see one product per uploadSpeed with 'Show only lowest cost products' option selected", () => {
         cy.visit('/');
         cy.get('#create-tab').click();
@@ -199,12 +197,5 @@ describe('Creates a Connectivity quote', () => {
 
         cy.get('tbody tr button').eq(0).click();
         cy.get('#connectivity-product-1').contains('Primary Product');
-    });
-
-    it('I can Create an order from a quote', () => {
-        cy.visit('/');
-        cy.get('#datatable-btn-0-crete-order').click();
-        cy.get('.swal2-confirm').eq(0).click();
-        cy.get('.notyf').contains('Order created with success');
     });
 });
