@@ -360,6 +360,11 @@ body {
             background-color: var(--color-purple);
             border-color: var(--color-purple);
         }
+
+        .form-check-input:indeterminate {
+            background-color: var(--color-secondary);
+            border-color: var(--color-secondary);
+        }
     }
 
     .footer {
