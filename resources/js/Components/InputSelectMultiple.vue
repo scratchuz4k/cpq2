@@ -185,14 +185,10 @@ search();
                     v-else
                     v-for="option in options"
                     class="option"
-                    :class="{ selected: proxyValue.find((x) => console.log(x, option)) }"
+                    :class="{ selected: proxyValue.find((x) => x.id === option.id) }"
                     @click="selectOption(option)"
                     style="cursor: pointer"
                 >
-                    {{ proxyValue }}
-                    <hr />
-                    {{ option }}
-
                     <template v-for="(field, index) in props.fields">
                         {{ index !== 0 ? ` (${option?.[field] ?? ''})` : (option?.[field] ?? '') }}
                     </template>

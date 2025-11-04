@@ -39,7 +39,7 @@ const setStepProduct = async (product_id, step_id) => {
         return;
     }
     try {
-        await axios.put('/api/products/' + product_id, { steps: [step_id] });
+        await axios.put('/api/products/' + product_id, { steps: step_id });
         product.value = null;
 
         notyf.success(step_id ? 'Product added with Success' : 'Product removed with success');
@@ -151,7 +151,11 @@ const items = ref([
                                     {{ format.date(value) }}
                                 </template>
                                 <template #actions="{ data, value, index }">
-                                    <button class="btn px-2 py-0 mx-1 border-0" @click="setStepProduct(data.id, null)">
+                                    <button
+                                        class="btn px-2 py-0 mx-1 border-0"
+                                        :id="'datatable-btn-' + index + '-delete'"
+                                        @click="setStepProduct(data.id, null)"
+                                    >
                                         <font-awesome-icon :icon="['fas', 'trash-alt']"></font-awesome-icon>
                                     </button>
                                 </template>

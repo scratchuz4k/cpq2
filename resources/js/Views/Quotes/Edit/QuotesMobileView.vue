@@ -96,7 +96,7 @@ getStepsWithProducts();
                     <HandsetProductsView
                         v-if="
                             (current_step == active_steps.length && current_step > 0) ||
-                            (active_steps.length == 0 && step == 0)
+                            (active_steps.length == 0 && current_step == 0)
                         "
                         :current_step="current_step"
                         :quote="quote"

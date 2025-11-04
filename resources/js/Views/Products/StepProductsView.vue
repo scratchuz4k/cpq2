@@ -44,7 +44,7 @@ const getProducts = async () => {
 
     let filters = [
         {
-            column: 'step_id',
+            column: 'steps.id',
             operator: 'equals',
             value: props.step.id
         },

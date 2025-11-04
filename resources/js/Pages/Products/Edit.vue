@@ -210,7 +210,6 @@ const items = ref([
                             </div>
 
                             <div class="mb-3">
-                                {{ categories }}
                                 <label for="product-categories" class="form-label">Category:</label>
                                 <InputSelectMultiple
                                     id="product-categories"
@@ -224,7 +223,6 @@ const items = ref([
                             </div>
                             <div class="mb-3">
                                 <label for="product-step" class="form-label">Step:</label>
-                                {{ steps }}
                                 <InputSelectMultiple
                                     id="product-step"
                                     url="/steps"

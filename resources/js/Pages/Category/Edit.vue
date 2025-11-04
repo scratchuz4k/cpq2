@@ -37,7 +37,7 @@ const setProductCategory = async (product_id, category_id) => {
         return;
     }
     try {
-        await axios.put('/api/products/' + product_id, { category_id: category_id });
+        await axios.put('/api/products/' + product_id, { categories: category_id });
         product.value = null;
 
         notyf.success(category_id ? 'Product added with Success' : 'Product removed with success');
@@ -102,7 +102,10 @@ const items = ref([
                                 v-model="product"
                                 :fields="['name']"
                                 placeholder="Select a Product"
-                                :query="[{ column: 'category.id', operator: 'is_null', value: 'category.id' }]"
+                                :query="[
+                                    { column: 'categories.id', operator: 'is_null', value: 'category.id' },
+                                    { column: 'is_active', operator: 'equals', value: 1 }
+                                ]"
                                 url="/products"
                             >
                             </InputSelect>
@@ -127,7 +130,7 @@ const items = ref([
                                     { data: 'updated_at', title: 'Updated At', style: 'width:15%' },
                                     { data: 'actions', title: ' At', style: 'width:5%' }
                                 ]"
-                                :query="[{ column: 'category.id', operator: 'equals', value: category.id }]"
+                                :query="[{ column: 'categories.id', operator: 'equals', value: category.id }]"
                                 route="/products"
                             >
                                 <template #updated_at="{ value }">
