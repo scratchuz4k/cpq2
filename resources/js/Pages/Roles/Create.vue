@@ -1,5 +1,6 @@
 <script setup>
 import { reactive, ref } from 'vue';
+import { Panel } from 'primevue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, router, useForm } from '@inertiajs/vue3';
@@ -78,10 +79,9 @@ const items = ref([
                     </div>
                 </div>
             </div>
-            <div>
-                <label for="region-name" class="form-label">Permissions:</label>
+            <Panel class="mt-4" header="Permissions" :toggleable="true">
                 <PermissionsTree v-model="form.temp_permissions"></PermissionsTree>
-            </div>
+            </Panel>
         </div>
     </AuthenticatedLayout>
 </template>

@@ -4,6 +4,7 @@ import PrimaryButton from '@/Components/PrimaryButton.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, router } from '@inertiajs/vue3';
 import { hasRole } from '@/Composables/useAuth';
+import { Panel } from 'primevue';
 
 const props = defineProps({
     role: Object
@@ -92,10 +93,9 @@ const items = ref([
                     </div>
                 </div>
             </div>
-            <div class="mt-3">
-                <label for="region-name" class="form-label">Permissions:</label>
+            <Panel class="mt-4" header="Permissions" :toggleable="true">
                 <PermissionsTree v-model="form.temp_permissions"></PermissionsTree>
-            </div>
+            </Panel>
         </div>
     </AuthenticatedLayout>
 </template>

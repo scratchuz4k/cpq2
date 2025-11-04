@@ -132,39 +132,48 @@ watch(search, () => {
     </div>
     <div>
         <div class="row row-cols-4">
-            <div v-for="section in permissions">
-                <div class="d-flex align-items-center">
-                    <p>{{ section.title }}</p>
-                </div>
-                <ul class="mt-2 p-0">
-                    <li v-for="group in section.children" :key="'group-' + format.toLowerCase(group.title)">
-                        <div class="d-flex align-items-center">
-                            <button class="btn p-0 me-2" @click="group.is_visble = !group.is_visble">
-                                <font-awesome-icon
-                                    :icon="['fas', group.is_visble ? 'minus' : 'plus']"
-                                ></font-awesome-icon>
-                            </button>
+            <div v-for="section in permissions" class="col">
+                <div class="card bg-light border-0 h-100">
+                    <div class="card-header d-flex align-items-center border-bottom-0">
+                        <span class="fw-bold py-1 small">{{ section.title }}</span>
+                    </div>
+                    <ul class="mt-2 px-4 py-2 card-body">
+                        <li v-for="group in section.children" :key="'group-' + format.toLowerCase(group.title)">
+                            <div class="d-flex align-items-center">
+                                <button class="btn p-0 me-2 text-secondary" @click="group.is_visble = !group.is_visble">
+                                    <font-awesome-icon
+                                        :icon="['fas', group.is_visble ? 'minus' : 'plus']"
+                                    ></font-awesome-icon>
+                                </button>
 
-                            <Checkbox
-                                class="form-check-input me-2"
-                                @click="checkGroup(group)"
-                                :checked="getGroupCheck(group)"
-                            />
-                            <p>{{ group.title }}</p>
-                        </div>
-                        <ul class="ms-2 mt-2" v-if="group.is_visble">
-                            <li v-for="item in group.children" :key="'permission-' + group.id">
                                 <Checkbox
-                                    class="form-check-input"
-                                    v-model="item.is_checked"
-                                    @click="check(item)"
-                                    :checked="!!proxyValue.find((x) => x.id == item.id)"
+                                    class="form-check-input me-2"
+                                    @click="checkGroup(group)"
+                                    :checked="getGroupCheck(group)"
                                 />
-                                {{ item.name.split(' ')[0] }}
-                            </li>
-                        </ul>
-                    </li>
-                </ul>
+                                <p>{{ group.title }}</p>
+                            </div>
+                            <ul class="ms-2 my-2 tree-childs" v-if="group.is_visble">
+                                <li class="ms-3" v-for="item in group.children" :key="'permission-' + group.id">
+                                    <Checkbox
+                                        class="form-check-input me-1"
+                                        v-model="item.is_checked"
+                                        @click="check(item)"
+                                        :checked="!!proxyValue.find((x) => x.id == item.id)"
+                                    />
+                                    <span
+                                        class="ps-1"
+                                        v-tooltip
+                                        data-bs-toggle="tooltip"
+                                        data-bs-placement="top"
+                                        :title="item.name.split(' ')[0]"
+                                        >{{ item.name.split(' ')[0] }}</span
+                                    >
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
             </div>
             <div v-if="!permissions.length">No Permissions to show</div>
         </div>
@@ -173,5 +182,29 @@ watch(search, () => {
 <style scoped>
 ul {
     list-style: none;
+}
+.tree-childs,
+.tree-childs li {
+    position: relative;
+}
+.tree-childs:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 1.5rem;
+    height: 100%;
+    width: 1px;
+    background: var(--color-secondary);
+    overflow: hidden;
+}
+.tree-childs li:before {
+    content: '';
+    position: absolute;
+    top: 0.675rem;
+    left: -1.5rem;
+    height: 1px;
+    width: 1rem;
+    background: var(--color-secondary);
+    overflow: hidden;
 }
 </style>

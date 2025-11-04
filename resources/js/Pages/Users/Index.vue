@@ -212,6 +212,11 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'My Account', url: '/my
                                     :eventName="'treetable-refresh'"
                                 />
                             </template>
+                            <template #roles.name="{ value }">
+                                <span class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm">
+                                    {{ value }}
+                                </span>
+                            </template>
                             <template #group.name="{ value }">
                                 <span class="badge text-bg-secondary">{{ value }}</span>
                             </template>

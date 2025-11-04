@@ -26,11 +26,18 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'My Account', url: '/my
                     }"
                     :columns="[
                         { data: 'id', title: '#', style: 'width:5%' },
-                        { data: 'name', title: 'Name' },
-                        { data: 'parent.name', title: 'Parent' }
+                        { data: 'name', title: 'Name', style: 'width:40%' },
+                        { data: 'parent.name', title: 'Parent', style: 'width:25%' },
+                        { data: 'created_at', title: 'Created At', style: 'width:15%' },
+                        { data: 'updated_at', title: 'Updated At', style: 'width:15%' }
                     ]"
                     route="/roles"
                 >
+                    <template #parent.name="{ value }">
+                        <span class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm">
+                            {{ value }}
+                        </span>
+                    </template>
                     <template #updated_at="{ value }">
                         {{ format.date(value) }}
                     </template>
