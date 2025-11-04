@@ -22,6 +22,14 @@ class ProductsService
             }
         }
 
+        if (array_key_exists('categories', $array)) {
+            $product->categories()->sync($array['categories']);
+        }
+
+        if (array_key_exists('steps', $array)) {
+            $product->steps()->sync($array['steps']);
+        }
+
         return $product;
     }
 
@@ -33,6 +41,14 @@ class ProductsService
                 ? Carbon::parse($array['expires_at'])->endOfDay()
                 : $product->expires_at,
         ]);
+
+        if (array_key_exists('categories', $array)) {
+            $product->categories()->sync($array['categories']);
+        }
+
+        if (array_key_exists('steps', $array)) {
+            $product->steps()->sync($array['steps']);
+        }
 
         return $product->refresh();
     }

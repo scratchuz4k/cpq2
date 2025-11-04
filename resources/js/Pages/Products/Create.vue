@@ -13,6 +13,7 @@ import Button from 'primevue/button';
 import ToggleSwitch from 'primevue/toggleswitch';
 import Select from 'primevue/select';
 import { DateTime } from 'luxon';
+import InputSelectMultiple from '@/Components/InputSelectMultiple.vue';
 
 const props = defineProps({
     price_plans: Object
@@ -32,14 +33,13 @@ const product = reactive({
     sku: null,
     description: null,
     prices: [],
-    is_active: true,
-    step_id: null
+    is_active: true
 });
 
 const editingRows = ref([]);
 const showModal = ref(false);
-const category = ref(null);
-const step = ref(null);
+const categories = ref([]);
+const steps = ref([]);
 
 const saveProduct = () => {
     router.post(
@@ -49,8 +49,8 @@ const saveProduct = () => {
             expires_at: DateTime.fromJSDate(product.expires_at).toISO() ?? null,
             supplier_id: product.supplier?.id,
             parent_id: product.parent?.id,
-            category_id: category.value?.id,
-            step_id: step.value?.id
+            categories: categories.value.map((item) => item.id),
+            steps: steps.value.map((item) => item.id)
         },
         {
             onSuccess: (page) => {
@@ -176,28 +176,28 @@ const items = ref([
                             />
                         </div>
                         <div class="mb-3">
-                            <label for="product-categories" class="form-label">Step:</label>
-                            <InputSelect
-                                id="product-step"
+                            <label for="product-categories" class="form-label">Steps:</label>
+                            <InputSelectMultiple
+                                id="product-steps"
                                 url="/steps"
                                 :fields="['name']"
-                                v-model="step"
-                                placeholder="Select a Step"
+                                v-model="steps"
+                                placeholder="Select Steps"
                                 :query="[{ column: 'is_active', operator: 'equals', value: 1 }]"
                             >
-                            </InputSelect>
+                            </InputSelectMultiple>
                         </div>
                         <div class="mb-3">
-                            <label for="product-categories" class="form-label">Category:</label>
-                            <InputSelect
+                            <label for="product-categories" class="form-label">Categories:</label>
+                            <InputSelectMultiple
                                 id="product-categories"
                                 url="/categories"
                                 :fields="['name']"
-                                v-model="category"
-                                placeholder="Select a Category"
+                                v-model="categories"
+                                placeholder="Select a Categories"
                                 :query="[{ column: 'is_active', operator: 'equals', value: 1 }]"
                             >
-                            </InputSelect>
+                            </InputSelectMultiple>
                         </div>
                         <div class="mb-3">
                             <label for="supplier-name" class="form-label">Supplier:</label>

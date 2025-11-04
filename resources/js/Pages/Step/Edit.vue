@@ -39,7 +39,7 @@ const setStepProduct = async (product_id, step_id) => {
         return;
     }
     try {
-        await axios.put('/api/products/' + product_id, { step_id: step_id });
+        await axios.put('/api/products/' + product_id, { steps: [step_id] });
         product.value = null;
 
         notyf.success(step_id ? 'Product added with Success' : 'Product removed with success');
@@ -116,7 +116,7 @@ const items = ref([
                                 v-model="product"
                                 placeholder="Select an Product"
                                 :query="[
-                                    { column: 'step_id', operator: 'is_null', value: '' },
+                                    { column: 'steps.id', operator: 'is_null', value: 'steps.id' },
                                     { column: 'is_active', operator: 'equals', value: 1 }
                                 ]"
                             >
@@ -141,7 +141,7 @@ const items = ref([
                                     { data: 'updated_at', title: 'Updated At', style: 'width:15%' },
                                     { data: 'actions', title: ' At', style: 'width:5%' }
                                 ]"
-                                :query="[{ column: 'step.id', operator: 'equals', value: step.id }]"
+                                :query="[{ column: 'steps.id', operator: 'equals', value: step.id }]"
                                 route="/products"
                             >
                                 <template #updated_at="{ value }">

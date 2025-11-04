@@ -4,6 +4,7 @@ import { IconField, InputIcon, InputText } from 'primevue';
 import queryString from 'query-string';
 import { ref, watch, computed, reactive, onMounted } from 'vue';
 import { v4 as uuidv4 } from 'uuid';
+import op from 'quill-delta/src/Op.ts';
 
 const props = defineProps({
     id: {
@@ -184,10 +185,14 @@ search();
                     v-else
                     v-for="option in options"
                     class="option"
-                    :class="{ selected: proxyValue.find((x) => x === option) }"
+                    :class="{ selected: proxyValue.find((x) => console.log(x, option)) }"
                     @click="selectOption(option)"
                     style="cursor: pointer"
                 >
+                    {{ proxyValue }}
+                    <hr />
+                    {{ option }}
+
                     <template v-for="(field, index) in props.fields">
                         {{ index !== 0 ? ` (${option?.[field] ?? ''})` : (option?.[field] ?? '') }}
                     </template>
