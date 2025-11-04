@@ -30,12 +30,12 @@ describe('Create a Shareable Link.cy', () => {
         cy.wait(1000);
         cy.get('#btn-plan-1-add-25').click();
         cy.wait(1000);
-        cy.get('#btn-step-1-next').click();
+        cy.get('#btn-step-next').click();
         cy.wait(1000);
         cy.get('#btn-plan-0-add-25').click();
 
         cy.wait(1000);
-        cy.get('#btn-step-2-next').click();
+        cy.get('#btn-step-next').click();
 
         cy.get('#current-step')
             .invoke('text')
@@ -47,7 +47,7 @@ describe('Create a Shareable Link.cy', () => {
                         const last_step = parseInt(lastStepText.trim());
 
                         for (let i = current_step; i < last_step; i++) {
-                            cy.get(`#btn-step-${i}-next`).click();
+                            cy.get(`#btn-step-next`).click();
                         }
                     });
             });
@@ -77,7 +77,7 @@ describe('Create a Shareable Link.cy', () => {
             cy.wait(500);
         } while (hardwareCount == 0 && current_page <= max_pages);
 
-        cy.get('#btn-step-2-next').click();
+        cy.get('#btn-step-next').click();
         cy.get('.recurring-item').should('have.length', 3);
         cy.get('.one_off-item').then(($items) => {
             cy.then(() => {

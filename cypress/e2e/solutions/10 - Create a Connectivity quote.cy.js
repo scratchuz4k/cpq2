@@ -67,7 +67,7 @@ describe('Creates a Connectivity quote', () => {
         cy.get('.recurring-item').its('length').should('eq', 1);
         cy.get('.one_off-item').its('length').should('eq', 1);
     });
-    it.only('I can add a Custom Line and check quoted items', () => {
+    it('I can add a Custom Line and check quoted items', () => {
         cy.visit('/');
         cy.get('#datatable-btn-0-show').click();
         cy.get('#btn-recurring-add').click();
@@ -89,18 +89,6 @@ describe('Creates a Connectivity quote', () => {
         cy.get('#input-new-one_off-discount').type(10, { force: true });
         cy.get('#btn-new-one_off-add').click({ force: true });
         cy.get('#table-one_off').contains('Custom line one_off');
-
-        // cy.get('#btn-previous').click();
-        // cy.get('#btn-more-filters').click();
-        // cy.get('#filter-show-quoted .p-toggleswitch-input').click({
-        //     force: true
-        // });
-        // cy.wait(3000);
-        // cy.get('.connectivity-table-item')
-        //     .its('length')
-        //     .then((items) => {
-        //         expect(items).to.equal(1);
-        //     });
     });
 
     it('I can filter products by contended', () => {

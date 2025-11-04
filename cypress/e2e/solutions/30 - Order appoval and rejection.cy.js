@@ -18,63 +18,47 @@ describe('Quote Approval and Rejection', () => {
                 cy.get('.notyf').contains('Content updated successfully');
             }
         });
-        cy.get('#quote-approval-flow').select('margin');
+        cy.get('#quote-approval-flow').select('Margin');
         cy.get('#margin-value').clear().type('99999999');
         cy.get('#margin-operation').select('value');
         cy.wait(2000);
         cy.get('.notyf').contains('Content updated successfully');
     });
 
-    it('Create a Connectivity Quote', () => {
+    it('Creates Mobile Quote', () => {
         cy.login('sales@example.com', 'werwerwer');
         cy.visit('/');
         cy.get('#create-tab').click();
-
         cy.selectFirstOption('account_id');
         cy.get('#btn-next-step').click();
 
-        cy.get('#solution_type-connectivity').click();
-        cy.get('#btn-next-step').click();
-
-        cy.get('#input_address').type('EH32 9NT');
-        cy.selectOption('#select_address', 1);
-        cy.get('#btn-next-step').click();
-        cy.get('#btn-create-quote').should('not.be.disabled').click();
-
-        //Provider filter
-        cy.get('#provider-multiselect').click();
-        cy.wait(500);
-        cy.get('.p-multiselect-list-container')
-            .eq(0)
-            .within(() => {
-                cy.get('.p-multiselect-option').contains(provider).click();
-            });
-
-        //SubProvider filter
-        cy.get('#subprovider-multiselect').click();
-        cy.wait(500);
-        cy.get('.p-multiselect-list-container')
-            .eq(0)
-            .within(() => {
-                cy.get('.p-multiselect-option').contains(subprovider).click();
-            });
-
-        // Scroll back to top
-        cy.scrollTo('top');
-        cy.get('#table-header-setup').click();
+        cy.get('#solution_type-mobile').click();
+        cy.get('#btn-create-quote').click();
         cy.wait(1000);
-        cy.get('#table-header-setup').click();
+        cy.get('#btn-plan-0-add-25').click();
+        cy.wait(1000);
+        cy.get('#btn-plan-1-add-25').click();
         cy.wait(1000);
 
-        cy.get('tbody tr button').eq(0).click();
-        cy.get('#connectivity-product-1').contains('Primary Product');
+        cy.get('#current-step')
+            .invoke('text')
+            .then((currentStepText) => {
+                cy.get('#last-step')
+                    .invoke('text')
+                    .then((lastStepText) => {
+                        const current_step = parseInt(currentStepText.trim());
+                        const last_step = parseInt(lastStepText.trim());
 
-        //Save quote
-        cy.get('.continue-btn').eq(0).click();
-        cy.get('.recurring-item').its('length').should('eq', 1);
-        cy.get('.one_off-item').its('length').should('eq', 1);
+                        for (let i = current_step; i < last_step; i++) {
+                            cy.get(`#btn-step-next`).click();
+                        }
+                    });
+            });
+
+        cy.get('#btn-step-next').click();
+
+        cy.get('.recurring-item').should('have.length', 2);
     });
-
     it('Start Quote Approval Flow', () => {
         cy.login('sales@example.com', 'werwerwer');
         cy.visit('/');
