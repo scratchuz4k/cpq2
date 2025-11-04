@@ -5,7 +5,7 @@
     >
         <button
             id="quote-approval-history"
-            v-if="quote.status.toLowerCase() === 'completed' && canToggleDialog()"
+            v-if="quote.status.toLowerCase() === 'completed'"
             class="btn btn-primary"
             :disabled="true"
             :style="{
