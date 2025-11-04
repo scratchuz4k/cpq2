@@ -128,7 +128,7 @@ it('Managers and Owner can update the quote', function () {
         $this->actingAs($user);
 
         $response = $this->put('api/quotes/'.$this->quotes[$index]['id'], [
-            'status' => QuoteStatusesEnum::REGISTRY->name,
+            'status' => QuoteStatusesEnum::COMPLETED->name,
         ]);
         $response->assertSuccessful();
     }
