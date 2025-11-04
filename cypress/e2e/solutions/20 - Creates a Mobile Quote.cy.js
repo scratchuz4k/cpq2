@@ -23,16 +23,6 @@ describe('Creates a Mobile Quote', () => {
         cy.login(Cypress.env('SUPERUSER_EMAIL'), Cypress.env('SUPERUSER_PASSWORD'));
     });
 
-    it('Creates an Account', () => {
-        cy.visit('/');
-        cy.get('#create-tab').click();
-        cy.get('#link-to-create-account').click();
-        cy.get('#account-name').type(account.name);
-        cy.get('#account-reference').type(account.ref);
-        cy.get('#btn-save-account').click();
-        cy.get('.notyf').contains('Created with Success');
-    });
-
     it('Creates a Category', () => {
         cy.visit('/');
         cy.get('#my-account').click();
@@ -78,7 +68,7 @@ describe('Creates a Mobile Quote', () => {
     it('Creates Mobile Quote', () => {
         cy.visit('/');
         cy.get('#create-tab').click();
-        cy.selectLazyOption('account_id', account.name);
+        cy.selectFirstOption('account_id');
         cy.get('#btn-next-step').click();
 
         cy.get('#solution_type-mobile').click();
