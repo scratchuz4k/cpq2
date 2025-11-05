@@ -23,7 +23,6 @@ describe('Manage Products Category relation', () => {
             cy.get('#category-create-btn').click();
             cy.get('#category-code').type(category.code);
             cy.get('#category-name').type(category.name);
-            cy.selectOption('#category-solution-type', 'Mobile');
             cy.get('#btn-save-category').click();
             cy.get('#datatable-search').type(category.name);
             cy.get('.p-datatable-table').contains(category.name);
@@ -41,7 +40,9 @@ describe('Manage Products Category relation', () => {
             cy.get('#product-sku').type(product.sku);
             cy.get('#product-name').type(product.name);
 
-            cy.selectLazyOption('product-categories', categories[index].name);
+            cy.selectLazyOption('product-categories', categories[0].name);
+            cy.get('#input-select-product-categories').click();
+            cy.selectLazyOption('product-categories', categories[1].name);
 
             cy.get('#btn-save-product').click();
             cy.get('.notyf').contains('Created with Success');
@@ -63,19 +64,5 @@ describe('Manage Products Category relation', () => {
             cy.get('#1-1').click();
             cy.get('.p-datatable-table').contains(products[index].name);
         });
-    });
-
-    it('Update Category solution type', () => {
-        cy.visit('/');
-        cy.get('#my-account').click();
-        cy.get('#link-categories').click();
-        cy.get('#datatable-search').type(categories[0].name);
-        cy.wait(1000);
-        cy.get('#datatable-btn-0-edit').click();
-        cy.selectOption('#category-solution-type', 'Hardware');
-        cy.get('#btn-save-category').click();
-        cy.get('#datatable-search').type(categories[0].name);
-        cy.get('.p-datatable-table').contains(categories[0].name);
-        cy.get('.p-datatable-table').contains('Hardware');
     });
 });

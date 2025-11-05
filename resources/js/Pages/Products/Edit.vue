@@ -34,7 +34,8 @@ const price = reactive({
 
 const showModal = ref(false);
 const prices = ref(product.prices);
-const category = ref(product.category ?? null);
+const categories = ref(product.categories ?? []);
+const steps = ref(product.steps ?? []);
 const editingRows = ref([]);
 
 const saveProduct = () => {
@@ -43,7 +44,8 @@ const saveProduct = () => {
         expires_at: product.expires_at ? DateTime.fromJSDate(product.expires_at).toISO() : null,
         supplier_id: product.supplier?.id ?? null,
         parent_id: product.parent?.id ?? null,
-        category_id: category.value?.id ?? null
+        categories: categories.value.map((item) => item.id),
+        steps: steps.value.map((item) => item.id)
     };
 
     router.put(`/products/${product.id}`, temp, {
@@ -209,17 +211,28 @@ const items = ref([
 
                             <div class="mb-3">
                                 <label for="product-categories" class="form-label">Category:</label>
-                                <InputSelect
+                                <InputSelectMultiple
                                     id="product-categories"
                                     url="/categories"
                                     :fields="['name']"
-                                    v-model="category"
+                                    v-model="categories"
                                     placeholder="Select a Category"
                                     :query="[{ column: 'is_active', operator: 'equals', value: 1 }]"
                                 >
-                                </InputSelect>
+                                </InputSelectMultiple>
                             </div>
-
+                            <div class="mb-3">
+                                <label for="product-step" class="form-label">Step:</label>
+                                <InputSelectMultiple
+                                    id="product-step"
+                                    url="/steps"
+                                    :fields="['name']"
+                                    v-model="steps"
+                                    placeholder="Select a Step"
+                                    :query="[{ column: 'is_active', operator: 'equals', value: 1 }]"
+                                >
+                                </InputSelectMultiple>
+                            </div>
                             <div class="mb-3">
                                 <label for="product-supplier" class="form-label">Supplier:</label>
                                 <InputSelect

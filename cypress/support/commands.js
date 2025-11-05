@@ -47,7 +47,9 @@ Cypress.Commands.add('selectLazyOption', (id, option = null) => {
     cy.get(inputSelect).click();
     cy.wait(200);
     if (option) {
-        cy.get('#select-' + id + '-search').type(option);
+        cy.get('#select-' + id + '-search')
+            .clear()
+            .type(option);
         cy.wait(1000);
     }
     const scrollToOption = (retries = 10) => {

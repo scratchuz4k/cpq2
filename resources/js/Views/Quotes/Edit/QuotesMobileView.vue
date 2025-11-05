@@ -15,10 +15,10 @@ const page = usePage();
 const tenant = page.props.tenant;
 
 const solution_type = props.modelValue.solution_type;
-const active_categories = ref([]);
+const active_steps = ref([]);
 const loading = ref(true);
 
-const getCategoriesWithProducts = async () => {
+const getStepsWithProducts = async () => {
     loading.value = true;
     let query = queryString.stringify({
         limit: 200,
@@ -26,7 +26,7 @@ const getCategoriesWithProducts = async () => {
             {
                 column: 'id',
                 operator: 'in',
-                value: solution_type.categories.map((x) => x.id).join(',')
+                value: solution_type.steps.map((x) => x.id).join(',')
             },
             {
                 column: 'products.id',
@@ -40,12 +40,12 @@ const getCategoriesWithProducts = async () => {
             }
         ])
     });
-    let res = await axios.get('/api/categories' + '?' + query);
+    let res = await axios.get('/api/steps' + '?' + query);
 
-    const categories_order = solution_type.categories.map((x) => x.id);
+    const steps_order = solution_type.steps.map((x) => x.id);
 
-    active_categories.value = res.data.data.sort((a, b) => {
-        return categories_order.indexOf(a.id) - categories_order.indexOf(b.id);
+    active_steps.value = res.data.data.sort((a, b) => {
+        return steps_order.indexOf(a.id) - steps_order.indexOf(b.id);
     });
     loading.value = false;
 };
@@ -54,16 +54,16 @@ const urlParams = new URLSearchParams(window.location.search);
 const params = new Proxy(urlParams, {
     get: (searchParams, prop) => searchParams.get(prop)
 });
-const step = ref(params['step'] ?? 0);
+const current_step = ref(params['current_step'] ?? 0);
 
 setQuote(props.modelValue);
 
 const saveQuote = async () => {
-    if (step.value == active_categories.value.length) {
+    if (current_step.value == active_steps.value.length) {
         router.get(`/quotes/${props.modelValue.id}`);
         return;
     }
-    step.value++;
+    current_step.value++;
 };
 
 emitter.on('save-quote', () => {
@@ -75,32 +75,32 @@ const getHardwareProductsCount = () => {
     return items.filter((x) => !x.product_id).reduce((acc, i) => (acc += i.quantity), 0);
 };
 
-getCategoriesWithProducts();
+getStepsWithProducts();
 </script>
 <template>
     <div class="panel panel-mobile">
         <div class="row justify-content-between">
             <div class="col-lg-7">
                 <div v-if="!loading">
-                    <div v-for="(category, index) in active_categories">
-                        <CategoryProductsView
-                            :category="category"
+                    <div v-for="(step, index) in active_steps">
+                        <StepProductsView
+                            :step="step"
                             :account="props.modelValue.account"
-                            v-model="step"
+                            v-model="current_step"
                             :index="index"
-                            :total_categories="active_categories.length + 1"
+                            :total_steps="active_steps.length + 1"
                         >
-                        </CategoryProductsView>
+                        </StepProductsView>
                     </div>
 
                     <HandsetProductsView
                         v-if="
-                            (step == active_categories.length && step > 0) ||
-                            (active_categories.length == 0 && step == 0)
+                            (current_step == active_steps.length && current_step > 0) ||
+                            (active_steps.length == 0 && current_step == 0)
                         "
-                        :step="step"
+                        :current_step="current_step"
                         :quote="quote"
-                        v-model="step"
+                        v-model="current_step"
                         @save="saveQuote"
                     >
                     </HandsetProductsView>
@@ -130,10 +130,10 @@ getCategoriesWithProducts();
                         </div>
                     </InfoBox>
                     <div class="configure-mobile-sidebar px-4 py-4">
-                        <div v-for="(category, index) in active_categories">
-                            <h4 id="sidebar_products" data-total="0">{{ index + 1 }}. {{ category.name }}</h4>
+                        <div v-for="(step, index) in active_steps">
+                            <h4 id="sidebar_products" data-total="0">{{ index + 1 }}. {{ step.name }}</h4>
                             <div class="sidebar_items mb-3">
-                                <div v-for="product in category.products" class="item mb-2">
+                                <div v-for="product in step.products" class="item mb-2">
                                     <span>{{ product.name }}</span>
                                     <span class="badge bg-light-grey dark">
                                         {{ quote.items.find((x) => x.product_id == product.id)?.quantity ?? 0 }}
@@ -141,7 +141,7 @@ getCategoriesWithProducts();
                                 </div>
                             </div>
                         </div>
-                        <h4>{{ active_categories.length + 1 }}. Handsets</h4>
+                        <h4>{{ active_steps.length + 1 }}. Handsets</h4>
                         <!--<div class="sidebar_add_ons mb-3">
                             <div class="item mb-2">
                                 <span>Hardware</span

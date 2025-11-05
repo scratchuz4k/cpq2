@@ -43,6 +43,11 @@ class SolutionType extends Model
         return $this->hasMany(Category::class)->orderBy('sort_order');
     }
 
+    public function steps(): HasMany
+    {
+        return $this->hasMany(Step::class)->orderBy('sort_order');
+    }
+
     public function quotes(): HasMany
     {
         return $this->hasMany(Quote::class);

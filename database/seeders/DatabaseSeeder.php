@@ -26,7 +26,7 @@ class DatabaseSeeder extends Seeder
                 DummySeeder::class,
                 ApiConfigurationSeeder::class,
                 SolutionTenantSeeder::class,
-                CategoryProductsSeeder::class,
+                StepProductsSeeder::class,
                 ShopBlocksSeeder::class,
             ]);
         }
