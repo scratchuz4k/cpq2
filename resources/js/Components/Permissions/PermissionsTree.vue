@@ -3,6 +3,7 @@ import IconField from 'primevue/iconfield';
 import InputIcon from 'primevue/inputicon';
 import InputText from 'primevue/inputtext';
 import { ref, watch, computed } from 'vue';
+import { permissions, groupedPermissions } from '@composables/usePermissions';
 
 import queryString from 'query-string';
 
@@ -20,7 +21,6 @@ const proxyValue = computed({
 });
 
 const search = ref(null);
-const permissions = ref([]);
 
 const getPermissions = async () => {
     let string = queryString.stringify({
@@ -31,7 +31,8 @@ const getPermissions = async () => {
     });
     try {
         const res = await axios.get('/api/permissions?' + string);
-        permissions.value = groupPermissions(res.data.data);
+        permissions.value = res.data.data;
+        groupedPermissions.value = groupPermissions(res.data.data);
     } catch (ex) {
         notyf.error(ex.response?.data?.message ?? 'Something went wrong!');
     }
@@ -47,8 +48,8 @@ const groupPermissions = (permissions) => {
             let title = element.title;
 
             item.children.push({
-                title: title.split(' ').slice(1).join(' '),
-                children: [{ ...element, title: title.split(' ')[1] }]
+                title: title.split(' ').slice(1).pop(),
+                children: [{ ...element, title: title }]
             });
             temp.push(item);
 
@@ -56,14 +57,14 @@ const groupPermissions = (permissions) => {
         }
 
         let title = element.title;
-        let child = temp[i].children.find((x) => x.title == title.split(' ').slice(1).join(' '));
+        let child = temp[i].children.find((x) => x.title == title.split(' ').slice(1).pop());
 
         if (child) {
-            child.children.push({ ...element, title: title.split(' ')[1] });
+            child.children.push(element);
         } else {
             temp[i].children.push({
-                title: title.split(' ').slice(1).join(' '),
-                children: [{ ...element, title: title.split(' ')[1] }]
+                title: title.split(' ').slice(1).pop(),
+                children: [element]
             });
         }
     });
@@ -91,10 +92,11 @@ const checkGroup = (group) => {
         });
     } else {
         group.children.forEach((x) => {
-            let temp = proxyValue.value.push(x);
+            proxyValue.value.push(x);
         });
     }
 };
+
 const getGroupCheck = (group) => {
     let allInSelected = false;
     group.children.forEach((x) => {
@@ -115,6 +117,23 @@ const getGroupCheck = (group) => {
     return false;
 };
 
+const getTooltip = (item) => {
+    let perm = item.name.split(' ')[0];
+    let name = item.title;
+    let text = {
+        viewOwn: `Allows viewing the list of own ${name}.`,
+        viewAny: `Allows viewing the list of all ${name}.`,
+        view: `Allows viewing detailed info of a specific ${name}.`,
+        create: `Allows adding new ${name} to the system.`,
+        update: `Allows editing ${name} details or settings.`,
+        delete: `Allows soft-deleting (or archiving) ${name}.`,
+        restore: `Allows restoring deleted ${name}.`,
+        forceDelete: `Allows permanently deleting ${name} (cannot be undone).`,
+        export: `Allows exporting ${name} data to a file (e.g. CSV, Excel).`
+    };
+    return text[perm];
+};
+
 getPermissions();
 
 watch(search, () => {
@@ -122,17 +141,28 @@ watch(search, () => {
 });
 </script>
 <template>
-    <div class="mb-3">
-        <IconField>
-            <InputIcon>
-                <font-awesome-icon :icon="['fas', 'search']" />
-            </InputIcon>
-            <InputText id="datatable-search" v-model="search" type="search" placeholder="Keyword Search" />
-        </IconField>
+    <div class="row row-cols-4 mb-3">
+        <div class="col">
+            <IconField>
+                <InputIcon>
+                    <font-awesome-icon :icon="['fas', 'search']" />
+                </InputIcon>
+                <InputText
+                    id="datatable-search"
+                    v-model="search"
+                    type="search"
+                    class="w-100"
+                    placeholder="Keyword Search"
+                />
+            </IconField>
+        </div>
+        <div class="col">
+            <SecondaryButton @click="() => (proxyValue = [])">Clear</SecondaryButton>
+        </div>
     </div>
     <div>
         <div class="row row-cols-4">
-            <div v-for="section in permissions" class="col">
+            <div v-for="section in groupedPermissions" class="col">
                 <div class="card bg-light border-0 h-100">
                     <div class="card-header d-flex align-items-center border-bottom-0">
                         <span class="fw-bold py-1 small">{{ section.title }}</span>
@@ -146,29 +176,25 @@ watch(search, () => {
                                     ></font-awesome-icon>
                                 </button>
 
-                                <Checkbox
-                                    class="form-check-input me-2"
-                                    @click="checkGroup(group)"
-                                    :checked="getGroupCheck(group)"
-                                />
+                                <Checkbox @click="checkGroup(group)" :checked="getGroupCheck(group)" />
                                 <p>{{ group.title }}</p>
                             </div>
                             <ul class="ms-2 my-2 tree-childs" v-if="group.is_visble">
-                                <li class="ms-3" v-for="item in group.children" :key="'permission-' + group.id">
+                                <li class="ms-3 d-flex" v-for="item in group.children" :key="'permission-' + group.id">
                                     <Checkbox
-                                        class="form-check-input me-1"
                                         v-model="item.is_checked"
                                         @click="check(item)"
                                         :checked="!!proxyValue.find((x) => x.id == item.id)"
                                     />
-                                    <span
-                                        class="ps-1"
+                                    <p
+                                        class="ps-1 cursor-pointer"
                                         v-tooltip
                                         data-bs-toggle="tooltip"
                                         data-bs-placement="top"
-                                        :title="item.name.split(' ')[0]"
-                                        >{{ item.name.split(' ')[0] }}</span
+                                        :title="getTooltip(item)"
                                     >
+                                        {{ item.title.split(' ').slice(0, -1).join(' ') }}
+                                    </p>
                                 </li>
                             </ul>
                         </li>

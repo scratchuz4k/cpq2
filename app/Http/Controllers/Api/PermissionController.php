@@ -11,7 +11,6 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 
 #[ExcludeAllRoutesFromDocs]
 class PermissionController extends BaseController
@@ -36,9 +35,7 @@ class PermissionController extends BaseController
         try {
             return $dataProvider->group(JsonResource::class);
         } catch (Exception $e) {
-            Log::debug($e->getMessage());
-
-            return $e->getMessage();
+            return handleException($e);
         }
     }
 

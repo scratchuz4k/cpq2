@@ -10,9 +10,7 @@ import ToggleSwitch from 'primevue/toggleswitch';
 const page = usePage();
 
 const props = defineProps({
-    roles: Object,
-    managers: Object,
-    parent_id: Number
+    roles: Object
 });
 
 const form = reactive({
@@ -21,7 +19,6 @@ const form = reactive({
     password: null,
     role: null,
     role_id: null,
-    parent: props.parent_id ? props.managers.find((user) => user.id === props.parent_id) : null,
     commission_rate: 0,
     sso: false,
     is_active: true
@@ -32,8 +29,7 @@ const saveUser = () => {
     router.post(
         `/users`,
         {
-            ...form,
-            parent_id: form.parent?.id
+            ...form
         },
         {
             onSuccess: (page) => {
@@ -119,20 +115,6 @@ const items = ref([
                             {{ form.errors?.commission_rate }}
                         </div>
                         <span class="input-group-text">%</span>
-                    </div>
-                </div>
-                <div class="mb-3">
-                    <label for="user-manager" class="form-label">Manager:</label>
-                    <div class="input-group p-0">
-                        <InputSelect
-                            id="user-manager"
-                            url="/users"
-                            :fields="['name']"
-                            class="w-100"
-                            v-model="form.parent"
-                            placeholder="Select an Manager"
-                            :query="[{ column: 'is_active', operator: 'equals', value: 1 }]"
-                        />
                     </div>
                 </div>
                 <div class="mb-3">

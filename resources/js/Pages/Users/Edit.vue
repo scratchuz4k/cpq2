@@ -11,7 +11,6 @@ import InputSelect from '@/Components/InputSelect.vue';
 const props = defineProps({
     user: Object,
     roles: Object,
-    managers: Object,
     permissions: Array
 });
 
@@ -27,13 +26,11 @@ const proxyValue = computed({
 
 const page = usePage();
 const form = reactive({
-    parent: props.user.parent ?? null,
     role: props.user.roles.length ? props.user.roles[0] : null,
     role_id: props.user.roles.length ? props.user.roles[0].id : null
 });
 
 const saveUser = () => {
-    proxyValue.value.parent_id = form.parent?.id ?? null;
     proxyValue.value.role_id = form.role ? [form.role.id] : [];
 
     router.put(`/users/${proxyValue.value.id}`, proxyValue.value, {
@@ -121,23 +118,6 @@ const items = ref([
                                 v-model="user.commission_rate"
                             />
                             <span class="input-group-text">%</span>
-                        </div>
-                    </div>
-                    <div class="mb-3">
-                        <label for="user-name" class="form-label">Manager:</label>
-                        <div class="input-group p-0">
-                            <InputSelect
-                                id="user-manager"
-                                url="/users"
-                                :fields="['name']"
-                                class="w-100"
-                                v-model="form.parent"
-                                placeholder="Select an Manager"
-                                :query="[
-                                    { column: 'is_active', operator: 'equals', value: 1 },
-                                    { column: 'id', operator: 'not_equals', value: proxyValue.id }
-                                ]"
-                            />
                         </div>
                     </div>
                     <div class="mb-3" v-if="user.group">

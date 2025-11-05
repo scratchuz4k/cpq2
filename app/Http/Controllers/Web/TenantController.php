@@ -10,7 +10,6 @@ use App\Services\TenantService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 
 class TenantController extends BaseController
@@ -51,10 +50,7 @@ class TenantController extends BaseController
         try {
             $tenant = DB::transaction(fn () => $this->tenantService->create($request->all()));
         } catch (\Exception $e) {
-            if (! env('APP_DEBUG')) {
-                Log::error($e->getMessage());
-            }
-            throw new \Exception($e);
+            return handleException($e);
         }
 
         return Inertia::location('tenants');
@@ -84,10 +80,7 @@ class TenantController extends BaseController
         try {
             $tenant = DB::transaction(fn () => $this->tenantService->update($tenant, $request->all()));
         } catch (\Exception $e) {
-            if (! env('APP_DEBUG')) {
-                Log::error($e->getMessage());
-            }
-            throw new \Exception($e);
+            return handleException($e);
         }
 
         return Inertia::location('tenants');

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\BaseController;
 use App\Policies\ExportPolicy;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class DashboardController extends BaseController
@@ -13,7 +14,16 @@ class DashboardController extends BaseController
      */
     public function index()
     {
-        return Inertia::render('Dashboard');
+        $user = Auth::user();
+        if ($user->can('viewAny quote')) {
+            return Inertia::location(route('quotes.index'));
+        }
+
+        if ($user->can('viewAny order')) {
+            return Inertia::location(route('orders.index'));
+        }
+
+        return Inertia::location(route('dashboard'));
     }
 
     /**

@@ -14,7 +14,6 @@ use Exception;
 use Illuminate\Http\Client\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class TenantController extends BaseController
 {
@@ -50,10 +49,7 @@ class TenantController extends BaseController
         try {
             $tenant = DB::transaction(fn () => $this->tenantService->create($request->all()));
         } catch (\Exception $e) {
-            if (! env('APP_DEBUG')) {
-                Log::error($e->getMessage());
-            }
-            throw new \Exception($e);
+            return handleException($e);
         }
 
         return JsonResource::make($tenant)->resolve();
@@ -80,10 +76,7 @@ class TenantController extends BaseController
                 return $tenant;
             });
         } catch (\Exception $e) {
-            if (! env('APP_DEBUG')) {
-                Log::error($e->getMessage());
-            }
-            throw new \Exception($e);
+            return handleException($e);
         }
 
         return response()->json((new TenantResource($tenant))->resolve());

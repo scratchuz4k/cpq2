@@ -19,18 +19,18 @@ class RolePermissionSeeder extends Seeder
 
         $simplePermissions = [
             'Website' => [
-                'viewOwn quote' => 'ListOwn Quote',
+                'viewOwn quote' => 'View Own Quote',
             ],
         ];
 
         $permissions = [
-            'viewAny' => 'List',
-            'view' => 'Show',
+            'viewAny' => 'View All',
+            'view' => 'View Details',
             'create' => 'Create',
-            'update' => 'Update',
+            'update' => 'Edit',
             'delete' => 'Delete',
             'restore' => 'Restore',
-            'forceDelete' => 'Remove',
+            'forceDelete' => 'Force Delete',
             'export' => 'Export',
         ];
 
@@ -171,7 +171,7 @@ class RolePermissionSeeder extends Seeder
                     'Sales Manager' => [
                         'parent' => 'Company Admin',
                         'tenant' => 1,
-                        'permissions' => ['quote', 'quote_item', 'account', 'contact', 'brand', 'supplier', 'activity', 'price_plan', 'user', 'group', 'role'],
+                        'permissions' => ['quote', 'quote_item', 'account', 'contact', 'brand', 'supplier', 'activity', 'price_plan', 'user', 'group', 'role', 'permission'],
                         'simple_permission' => ['viewAny product', 'view product', 'viewAny category', 'view category'],
                     ],
                     'Sales Rep' => [

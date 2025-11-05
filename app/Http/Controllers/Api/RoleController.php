@@ -14,7 +14,6 @@ use Dedoc\Scramble\Attributes\ExcludeRouteFromDocs;
 use Exception;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class RoleController extends BaseController
 {
@@ -40,9 +39,7 @@ class RoleController extends BaseController
         try {
             $data = $dataProvider->get();
         } catch (Exception $e) {
-            Log::debug($e->getMessage());
-
-            return $e->getMessage();
+            return handleException($e);
         }
 
         return RoleResource::collection($data);
@@ -57,8 +54,7 @@ class RoleController extends BaseController
         try {
             $role = DB::transaction(fn () => $this->service->store($request->all()));
         } catch (Exception $e) {
-            Log::debug($e->getMessage());
-            throw new Exception($e);
+            return handleException($e);
         }
 
         return new RoleResource($role);
@@ -82,8 +78,7 @@ class RoleController extends BaseController
         try {
             $role = DB::transaction(fn () => $this->service->update($role, $request->all()));
         } catch (Exception $e) {
-            Log::debug($e->getMessage());
-            throw new Exception($e);
+            return handleException($e);
         }
 
         return new RoleResource($role);

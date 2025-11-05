@@ -16,6 +16,7 @@ const props = defineProps({
         required: true
     }
 });
+
 const proxyChecked = computed({
     get() {
         if (typeof props.checked === 'number') {
@@ -33,23 +34,6 @@ const proxyChecked = computed({
         }
     }
 });
-onMounted(() => {
-    // Select the checkbox
-    const checkbox = document.getElementById(props.id);
-    // Set its indeterminate (intermediate) state
-    if (props.checked == null && checkbox) {
-        checkbox.indeterminate = true;
-    }
-});
-
-watch(proxyChecked, () => {
-    // Select the checkbox
-    const checkbox = document.getElementById(props.id);
-    // Set its indeterminate (intermediate) state
-    if (props.checked == null && checkbox) {
-        checkbox.indeterminate = true;
-    }
-});
 </script>
 
 <template>
@@ -57,6 +41,7 @@ watch(proxyChecked, () => {
         :id="props.id"
         type="checkbox"
         v-model="proxyChecked"
-        class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500"
+        :indeterminate="proxyChecked === null"
+        class="form-check-input me-2 rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500"
     />
 </template>
