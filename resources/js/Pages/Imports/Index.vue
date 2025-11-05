@@ -7,6 +7,9 @@ import Datatable from '@/Components/Datatable.vue';
 import { Dialog, Button, Checkbox, Select } from 'primevue';
 import { exportData } from '@/Composables/export.js';
 import queryString from 'query-string';
+import CountUp from 'vue-countup-v3';
+import Table from 'primevue/datatable';
+import Column from 'primevue/column';
 
 const page = usePage();
 const props = defineProps({
@@ -17,7 +20,18 @@ const props = defineProps({
     }
 });
 const showForm = ref(false);
+const showImportPreview = ref(false);
 const isLoading = ref(false);
+const previewData = ref(null);
+
+const rowClass = (rowData) => {
+    const errors = previewData.value.results?.errors ?? [];
+    const hasError = errors.some((errorItem) => errorItem.row?.sku === rowData.sku);
+    const rowClass = 'preview-table-row';
+
+    return hasError ? rowClass + ' row-has-error' : rowClass;
+};
+
 const onFileChange = (event) => {
     form.file = event.target.files[0];
 };
@@ -47,6 +61,35 @@ const submitFile = async () => {
     formData.append('model', form.model);
 
     try {
+        let res = await axios.post('/api/imports', formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        });
+
+        if (res) {
+            previewData.value = res.data;
+        }
+        showImportPreview.value = true;
+    } catch (err) {
+        notyf.error(err?.response?.data?.message ?? 'Something went wrong');
+        return false;
+    } finally {
+        showForm.value = false;
+        isLoading.value = false;
+        isLoading.value = null;
+    }
+};
+
+const importData = async () => {
+    isLoading.value = true;
+
+    const formData = new FormData();
+    formData.append('file', form.file);
+    formData.append('overwrite', form.overwrite);
+    formData.append('model', form.model);
+
+    try {
         let res = await axios.post('/imports', formData, {
             headers: {
                 'Content-Type': 'multipart/form-data'
@@ -54,7 +97,6 @@ const submitFile = async () => {
         });
 
         notyf.success('File imported successfully');
-        showForm.value = false;
 
         if (res) {
             emitter.emit('datatable-refresh');
@@ -64,6 +106,8 @@ const submitFile = async () => {
         return false;
     } finally {
         form.overwrite = 0;
+        showForm.value = false;
+        showImportPreview.value = false;
         isLoading.value = false;
         isLoading.value = null;
     }
@@ -197,5 +241,102 @@ watch(
                 </form>
             </div>
         </Dialog>
+        <Dialog
+            v-model:visible="showImportPreview"
+            id="import-preview"
+            modal
+            :style="{ marginTop: '4rem', width: '80vw' }"
+            :breakpoints="{ '1199px': '75vw', '575px': '90vw' }"
+            :draggable="false"
+            position="top"
+            header="Import Preview"
+        >
+            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 pb-2">
+                <hr class="mt-0" />
+                <div v-if="previewData" class="mt-2 row row-cols-1 g-3 mb-2">
+                    <Table
+                        :value="previewData.results?.data"
+                        :rowClass="rowClass"
+                        tableStyle="min-width: 50rem"
+                        :size="'small'"
+                        class="p-datatable-sm preview-table"
+                    >
+                        <Column v-for="(column, key) in previewData.columns" :field="key" :header="column"></Column>
+                    </Table>
+                </div>
+                <div class="mt-2 row row-cols-1 row-cols-md-3 g-3 mb-2">
+                    <div class="col">
+                        <div class="card py-4 bg-light border-0">
+                            <div class="card-body text-center p-2 text-decoration-none">
+                                <div class="fw-bold mb-1">Rows will be Processed</div>
+                                <span class="display-6">
+                                    <count-up :endVal="previewData.results?.processed ?? 0" />
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="card py-4 bg-light border-0">
+                            <div class="card-body text-center p-2 text-decoration-none">
+                                <div class="fw-bold mb-1">Rows will be Imported</div>
+                                <span class="display-6">
+                                    <count-up :endVal="previewData.results?.success ?? 0" />
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="card py-4 bg-light border-0">
+                            <div class="card-body text-center p-2 text-decoration-none">
+                                <div class="fw-bold mb-1">Rows will be Skipped</div>
+                                <span class="display-6">
+                                    <count-up :endVal="previewData.results?.skipped ?? 0" />
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <br />
+                <p class="fw-semibold">Errors</p>
+                <ul v-if="previewData.results?.errors?.length > 0">
+                    <li class="rows" v-for="(row, index) in previewData.results.errors" :key="index">
+                        {{ previewData.model }} {{ row.row?.name || 'Unknown' }}:
+                        <ul>
+                            <li v-if="row.errors" v-for="(error, key) in row.errors" :key="key">
+                                {{ error }}
+                            </li>
+                            <li v-else>{{ row.error }}</li>
+                        </ul>
+                    </li>
+                </ul>
+                <p v-else>No errors occurred.</p>
+                <hr class="mt-0" />
+                <div class="d-flex justify-content-end mt-3">
+                    <div class="btn btn-secondary me-2" @click="showImportPreview = false">Cancel</div>
+                    <Button class="btn btn-primary" @click="importData"> Import </Button>
+                </div>
+            </div>
+        </Dialog>
     </AuthenticatedLayout>
 </template>
+
+<style scoped>
+:deep(.preview-table-row) {
+    background-color: #d4edda !important;
+    color: #155724 !important;
+    font-size: 14px;
+}
+
+:deep(.preview-table-row:hover) {
+    background-color: #a7e5b5 !important;
+}
+
+:deep(.row-has-error) {
+    background-color: #fff0f1 !important;
+    color: #8c2b3a !important;
+}
+
+:deep(.row-has-error:hover) {
+    background-color: #ffd9dd !important;
+}
+</style>

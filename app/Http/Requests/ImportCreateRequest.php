@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class ImportCreateRequest extends FormRequest
 {
@@ -22,8 +23,13 @@ class ImportCreateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'file' => 'required|file|mimes:csv,txt',
+            'file' => 'required|file|mimetypes:text/csv,application/csv|extensions:csv',
             'overwrite' => 'required|boolean',
+            'model' => [
+                'required',
+                'string',
+                Rule::in(['Product', 'User']),
+            ],
         ];
     }
 }
