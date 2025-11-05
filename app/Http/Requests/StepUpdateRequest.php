@@ -23,20 +23,22 @@ class StepUpdateRequest extends FormRequest
      */
     public function rules(): array
     {
-        $category_id = null;
-        if (array_key_exists('category', $this->route()->parameters())) {
-            $category_id = $this->route()->parameters()['category']->id;
+        $step_id = null;
+        if (array_key_exists('step', $this->route()->parameters())) {
+            $step_id = $this->route()->parameters()['step']->id;
         }
 
         $user = Auth::user();
 
         return [
-            'name' => 'string|max:255',
-            'code' => ['string', 'max:255',
-                Rule::unique('categories')->where(fn ($query) => $query->where('tenant_id', $user->tenant_id)
-                    ->where('code', request('code')))->ignore($category_id),
+            'name' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('steps')->where(fn ($query) => $query->where('tenant_id', $user->tenant_id)
+                    ->where('name', request('name')))->ignore($step_id),
             ],
-            'solution_type_id' => 'exists:solution_type_tenant,id',
+            'solution_type_id' => 'required|exists:solution_type_tenant,solution_type_id',
         ];
     }
 }

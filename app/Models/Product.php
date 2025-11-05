@@ -22,7 +22,6 @@ class Product extends Model
         'parent_id',
         'price_plan_id',
         'supplier_id',
-        'step_id',
         'sku',
         'name',
         'status',

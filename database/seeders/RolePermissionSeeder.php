@@ -60,6 +60,7 @@ class RolePermissionSeeder extends Seeder
                 'group' => 'Groups',
                 'blacklist' => 'Blacklists',
                 'import' => 'Import',
+                'step' => 'Step',
             ],
         ];
 
@@ -75,25 +76,25 @@ class RolePermissionSeeder extends Seeder
                     'quote', 'quote_item', 'order', 'order_item', 'account', 'contact',
                     'price', 'product', 'category', 'tenant', 'supplier',
                     'spa', 'user', 'solution_type', 'api', 'price_plan', 'activity', 'email_template', 'email_history',
-                    'group', 'blacklist', 'import',
+                    'group', 'blacklist', 'import', 'step',
                 ],
                 'simple_permission' => ['viewAny export'],
             ],
             'Support Agent' => [
                 'parent' => 'Company Admin',
                 'permissions' => ['account', 'contact', 'token', 'quote', 'quote_item', 'order', 'order_item', 'activity', 'price_plan'],
-                'simple_permission' => ['viewAny product', 'view product', 'viewAny category', 'view category'],
+                'simple_permission' => ['viewAny product', 'view product', 'viewAny category', 'view category', 'viewAny step', 'view step'],
                 'deny_permission' => ['export'],
             ],
             'Sales Manager' => [
                 'parent' => 'Company Admin',
                 'permissions' => ['quote', 'quote_item', 'account', 'contact', 'supplier', 'activity', 'price_plan', 'user', 'group'],
-                'simple_permission' => ['viewAny product', 'view product', 'viewAny category', 'view category'],
+                'simple_permission' => ['viewAny product', 'view product', 'viewAny category', 'view category', 'viewAny step', 'view step'],
             ],
             'Sales Rep' => [
                 'parent' => 'Sales Manager',
                 'permissions' => ['quote', 'quote_item', 'account', 'contact', 'supplier', 'activity', 'price_plan'],
-                'simple_permission' => ['viewAny product', 'view product', 'viewAny category', 'view category'],
+                'simple_permission' => ['viewAny product', 'view product', 'viewAny category', 'view category', 'viewAny step', 'view step'],
                 'deny_permission' => ['export'],
             ],
             'Order Manager' => [
@@ -104,6 +105,8 @@ class RolePermissionSeeder extends Seeder
                     'view product',
                     'viewAny category',
                     'view category',
+                    'viewAny step',
+                    'view step',
                     'viewAny account',
                     'view account',
                     'viewAny contact',
