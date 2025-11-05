@@ -40,7 +40,9 @@ describe('Manage Products Category relation', () => {
             cy.get('#product-sku').type(product.sku);
             cy.get('#product-name').type(product.name);
 
-            cy.selectLazyOption('product-categories', categories[index].name);
+            cy.selectLazyOption('product-categories', categories[0].name);
+            cy.get('#input-select-product-categories').click();
+            cy.selectLazyOption('product-categories', categories[1].name);
 
             cy.get('#btn-save-product').click();
             cy.get('.notyf').contains('Created with Success');

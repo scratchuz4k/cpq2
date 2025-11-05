@@ -37,13 +37,18 @@ describe('Manage Products Step relation', () => {
             cy.get('#product-sku').type(product.sku);
             cy.get('#product-name').type(product.name);
 
-            cy.selectLazyOption('product-step', steps[index].name);
+            cy.selectLazyOption('product-step', steps[0].name);
+            cy.get('#input-select-product-step').click();
+            cy.selectLazyOption('product-step', steps[1].name);
 
             cy.get('#btn-save-product').click();
             cy.get('.notyf').contains('Created with Success');
 
             cy.get('#datatable-search').type(product.sku);
             cy.get('.p-datatable-table').contains(product.name);
+            cy.get('.p-datatable-table').contains(steps[0].name);
+            cy.get('.p-datatable-table').contains(steps[1].name);
+            cy.get('.p-datatable-table').contains('Mobile');
         });
     });
 
