@@ -68,7 +68,6 @@ class StepProductsSeeder extends Seeder
                     'name' => $temp['name'],
                     'description' => $temp['description'],
                     'price_plan_id' => $pricePlan->id,
-                    'step_id' => $step->id,
                     'is_active' => 1,
                 ]);
 
@@ -81,6 +80,8 @@ class StepProductsSeeder extends Seeder
                         'net' => $temp['price'] ?? 0,
                     ]
                 );
+
+                $step->products()->attach($product->id);
             }
         }
     }

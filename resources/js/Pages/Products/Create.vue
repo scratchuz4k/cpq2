@@ -178,7 +178,7 @@ const items = ref([
                         <div class="mb-3">
                             <label for="product-categories" class="form-label">Steps:</label>
                             <InputSelectMultiple
-                                id="product-steps"
+                                id="product-step"
                                 url="/steps"
                                 :fields="['name']"
                                 v-model="steps"
