@@ -39,7 +39,7 @@ class User extends Authenticatable
             if ($user && $user->group()) {
                 try {
                     $temp = [];
-                    $temp[$user->group()->id] = ['is_default' => true];
+                    $temp[$user->group()->id] = ['is_default' => true, 'tenant_id' => $user->tenant_id];
                     $model->groups()->sync($temp);
                 } catch (Exception $e) {
                     if (! env('APP_DEBUG')) {
