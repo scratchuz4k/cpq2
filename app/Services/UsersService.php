@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Imports\UsersImport;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -44,7 +45,10 @@ class UsersService
 
         if (array_key_exists('group_id', $array)) {
             $temp = [];
-            $temp[$array['group_id']] = ['is_default' => true];
+            $temp[$array['group_id']] = [
+                'is_default' => true,
+                'tenant_id' => Auth::user()->tenant_id,
+            ];
             $user->groups()->sync($temp);
         }
 
