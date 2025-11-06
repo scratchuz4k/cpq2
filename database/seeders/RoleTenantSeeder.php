@@ -55,7 +55,7 @@ class RoleTenantSeeder extends Seeder
                     $temp = Role::withoutGlobalScopes()->where('name', $item['parent'])->firstOrFail();
                 }
 
-                $role = Role::updateOrCreate(['name' => $role], ['guard_name' => 'web', 'parent_id' => $temp?->id, 'tenant_id' => $tenant->id]);
+                $role = Role::updateOrCreate(['name' => $role, 'tenant_id' => $tenant->id], ['guard_name' => 'web', 'parent_id' => $temp?->id]);
                 foreach ($item['permissions'] as $group) {
                     if (array_key_exists($group, $insertPermissions->toArray())) {
                         $permissions = array_merge($permissions, $insertPermissions->toArray()[$group]);
