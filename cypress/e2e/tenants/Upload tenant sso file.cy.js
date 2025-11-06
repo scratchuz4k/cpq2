@@ -59,7 +59,6 @@ describe('Update tenant SSO', () => {
         cy.get('#user-email').type(user.email);
         cy.get('#user-password').type(user.password);
         cy.selectLazyOption('user-role', 'Sales Rep');
-        cy.selectLazyOption('user-manager', 'Sales Rep');
         cy.get('#btn-save-user').click();
         cy.get('#datatable-search').type(user.name);
         cy.get('#users-table').contains(user.name);
