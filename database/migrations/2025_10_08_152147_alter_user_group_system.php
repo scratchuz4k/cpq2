@@ -26,7 +26,7 @@ return new class extends Migration
             if (! $item->group_id) {
                 continue;
             }
-            $item = DB::table('group_user')->insert(['group_id' => $item->group_id, 'user_id' => $item->id]);
+            $item = DB::table('group_user')->insert(['group_id' => $item->group_id, 'user_id' => $item->id, 'tenant_id' => $item->tenant_id]);
         }
 
         Schema::table('users', function (Blueprint $table) {
