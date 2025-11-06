@@ -22,12 +22,6 @@ const options = [
         icon: ['far', 'address-card']
     },
     {
-        title: 'Brands',
-        url: route('brands.index'),
-        has_permission: hasRole('Super Admin') || can('viewAny brand'),
-        icon: ['far', 'registered']
-    },
-    {
         title: 'Categories',
         url: route('categories.index'),
         has_permission: hasRole('Super Admin') || can('viewAny category'),
@@ -38,12 +32,6 @@ const options = [
         url: route('products.index'),
         has_permission: hasRole('Super Admin') || can('viewAny product'),
         icon: ['far', 'rectangle-list']
-    },
-    {
-        title: 'Regions',
-        url: route('regions.index'),
-        has_permission: hasRole('Super Admin') || can('viewAny region'),
-        icon: ['far', 'map']
     },
     {
         title: 'Solutions',
@@ -62,12 +50,6 @@ const options = [
         url: route('suppliers.index'),
         has_permission: hasRole('Super Admin') || can('viewAny supplier'),
         icon: ['fas', 'industry']
-    },
-    {
-        title: 'Merchants',
-        url: route('merchants.index'),
-        has_permission: hasRole('Super Admin') || can('viewAny merchant'),
-        icon: ['fas', 'shop']
     },
     {
         title: 'Tenant',
