@@ -69,7 +69,7 @@ class EmailTemplateController extends BaseController
         try {
             $emailTemplate = DB::transaction(fn () => $this->emailService->update($emailTemplate, $request->all()));
         } catch (\Exception $e) {
-            throw new \Exception($e);
+            return handleWebException($e);
         }
 
         return redirect()->route('email-templates.index');

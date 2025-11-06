@@ -224,7 +224,7 @@ return [
 
         'staging' => [
             'supervisor-1' => [
-                'maxProcesses' => 3,
+                'maxProcesses' => 5,
             ],
             'supervisor-2' => [
                 'maxProcesses' => 5,

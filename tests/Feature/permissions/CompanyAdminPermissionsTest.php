@@ -23,7 +23,6 @@ it('Run Permissions for Company Admin', function () {
     $permissions = [
         'tenants' => ['index' => true,  'create' => false, 'store' => false, 'show' => true, 'edit' => true, 'update' => true, 'destroy' => true],
         'products' => ['index' => true,  'create' => true, 'store' => true, 'show' => true, 'edit' => true, 'update' => true, 'destroy' => true],
-        'brands' => ['index' => true,  'create' => true, 'store' => true, 'show' => true, 'edit' => true, 'update' => true, 'destroy' => true],
         'suppliers' => ['index' => true,  'create' => true, 'store' => true, 'show' => true, 'edit' => true, 'update' => true, 'destroy' => true],
         'spas' => ['index' => true,  'create' => true, 'store' => true, 'show' => true, 'edit' => true, 'update' => true, 'destroy' => true],
         'users' => ['index' => true,  'create' => true, 'store' => true, 'show' => true, 'edit' => true, 'update' => true, 'destroy' => true],

@@ -80,7 +80,7 @@ class TenantController extends BaseController
         try {
             $tenant = DB::transaction(fn () => $this->tenantService->update($tenant, $request->all()));
         } catch (\Exception $e) {
-            return handleException($e);
+            return handleWebException($e);
         }
 
         return Inertia::location('tenants');

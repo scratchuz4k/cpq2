@@ -82,7 +82,7 @@ class GroupAccountController extends BaseController
 
         try {
             if (! $data->count()) {
-                throw new \Exception('No data Found!');
+                handleWebException(new \Exception, 'No data Found!');
             }
 
             return Excel::download(new Export($this->model, new Collection($data)), $filename);

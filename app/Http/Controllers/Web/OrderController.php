@@ -14,7 +14,6 @@ use App\Models\User;
 use App\Services\OrderService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
@@ -70,10 +69,7 @@ class OrderController extends BaseController
         try {
             $order = DB::transaction(fn () => $this->orderService->store($request->all()));
         } catch (\Exception $e) {
-            if (! env('APP_DEBUG')) {
-                Log::error($e->getMessage());
-            }
-            throw new \Exception($e);
+            return handleWebException($e);
         }
 
         return redirect()->route('orders.edit', ['order' => $order->id]);
@@ -111,10 +107,7 @@ class OrderController extends BaseController
         try {
             $order = DB::transaction(fn () => $this->orderService->update($order, $request->all()));
         } catch (\Exception $e) {
-            if (! env('APP_DEBUG')) {
-                Log::error($e->getMessage());
-            }
-            throw new \Exception($e);
+            return handleWebException($e);
         }
 
         return to_route('orders.edit', ['order' => $order->id]);
@@ -156,7 +149,7 @@ class OrderController extends BaseController
         $dir = 'pdf/'.$user->currentTenant->id;
 
         if (! Storage::makeDirectory($dir)) {
-            throw new \Exception('Could not create directory for PDFs');
+            handleWebException(new \Exception, 'Could not create directory for PDFs');
         }
 
         // return view('pdf.invoice', compact('order', 'totals', 'solution_types'));

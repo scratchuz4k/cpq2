@@ -179,23 +179,11 @@ class UsersImport implements ToCollection, WithBatchInserts, WithHeadingRow
 
     public static function getImportTemplate()
     {
-        $dummyUsers = User::factory()->count(10)->make();
-
-        $data = $dummyUsers->map(function ($item) {
-            return [
-                'name' => $item->name,
-                'email' => $item->email,
-                'password' => $item->password,
-                'sso' => $item->sso,
-                'managername' => fake()->optional()->word(),
-            ];
-        });
-
-        $filename = 'import_users_template.csv';
+        $template = require app_path('Helpers/Import/users_import_template.php');
 
         return [
-            'data' => $data,
-            'filename' => $filename,
+            'data' => collect($template['data']),
+            'filename' => $template['filename'],
         ];
     }
 }

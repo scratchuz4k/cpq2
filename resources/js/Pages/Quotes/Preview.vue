@@ -49,7 +49,7 @@ const items = ref([
             <div class="col" style="text-align: right">
                 <div>
                     <a
-                        @click="checkWarnings(warningProviders, route('quotes.download', { quote: quote.id }))"
+                        @click="checkWarnings(warningProviders, route('quotes.download', { quote: quote.hash }))"
                         class="btn btn-secondary mx-2"
                     >
                         <font-awesome-icon :icon="['fas', 'file-pdf']"></font-awesome-icon>

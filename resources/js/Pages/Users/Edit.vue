@@ -91,6 +91,7 @@ const items = ref([
                         <input
                             id="user-password"
                             type="password"
+                            autocomplete="off"
                             class="form-control"
                             v-model="proxyValue.password"
                             required
