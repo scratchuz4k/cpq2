@@ -22,7 +22,8 @@ class QuoteApprovalUpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'status' => 'required|in:approved,rejected',
+            'status' => 'in:approved,rejected',
+            'blocker_id' => 'exists:users,id',
         ];
     }
 }

@@ -72,7 +72,7 @@
     <Dialog
         v-model:visible="showDialog"
         modal
-        :style="{ marginTop: '4rem', minWidth: '60vw' }"
+        :style="{ marginTop: '4rem', minWidth: '80vw' }"
         :breakpoints="{ '1199px': '75vw', '575px': '90vw' }"
         :draggable="false"
         position="top"
@@ -85,6 +85,7 @@
                 <thead>
                     <tr class="border-bottom border-black">
                         <th>Date</th>
+                        <th>Blocked By</th>
                         <th>Signed By</th>
                         <th>Flow</th>
                         <th>Comments</th>
@@ -102,6 +103,7 @@
                         <td style="width: 15%" :id="'quote-approval-date-' + index">
                             {{ format.date(item.updated_at) }}
                         </td>
+                        <td style="width: 15%" :id="'quote-approval-blocker-' + index">{{ item.blocker?.name }}</td>
                         <td style="width: 15%" :id="'quote-approval-approver-' + index">{{ item.approver?.name }}</td>
                         <td style="width: 10%" :id="'quote-approval-flow-' + index">{{ item.flow }}</td>
                         <td style="width: 50%" :id="'quote-approval-comments-' + index">
@@ -131,8 +133,9 @@
                         </td>
                         <td style="width: 10%">
                             <div
-                                class="flex"
+                                class="d-flex"
                                 v-if="
+                                    (!item.blocker || item.blocker?.id === user.id) &&
                                     item.status === 'pending' &&
                                     (can('update quote_approval') || hasRole('Super Admin'))
                                 "
@@ -218,10 +221,14 @@ const startApproval = async () => {
 };
 
 const updateQuoteApproval = async (item, status) => {
-    let res = await axios.put(route('api.quote-approvals.update', { id: item.id }), {
-        status: status,
-        comments: item.comments
-    });
+    try {
+        let res = await axios.put(route('api.quote-approvals.update', { id: item.id }), {
+            status: status,
+            comments: item.comments
+        });
+    } catch (ex) {
+        notyf.error(ex.response.data.message);
+    }
     getApprovals();
     await getQuote(quote.id);
 };

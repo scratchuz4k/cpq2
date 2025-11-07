@@ -100,7 +100,7 @@ class Quote extends Model
 
     public function approvals(): HasMany
     {
-        return $this->hasMany(QuoteApproval::class);
+        return $this->hasMany(QuoteApproval::class)->orderBy('quote_approvals.id', 'desc');
     }
 
     public function itemsTrashed(): HasMany
