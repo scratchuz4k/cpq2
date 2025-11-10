@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\ProductStatusesEnum;
 use App\Models\Product;
 use App\Rules\TenantExistsRule;
 use App\Rules\TenantUniqueRule;
@@ -25,28 +26,42 @@ class ProductCreateRequest extends FormRequest
      */
     public function rules(): array
     {
+        $statuses = array_map(
+            static fn ($case) => $case->value,
+            ProductStatusesEnum::cases()
+        );
+
         return [
             'sku' => [
                 'required',
                 'string',
                 'max:255',
-                new TenantUniqueRule('products', 'sku')],
+                new TenantUniqueRule('products', 'sku'),
+            ],
             'name' => 'required|string|max:255',
             'supplier_id' => [
                 'nullable',
+                'numeric',
                 new TenantExistsRule('suppliers'),
             ],
             'price_plan_id' => [
                 'required',
+                'numeric',
                 Rule::exists('price_plans', 'id'),
             ],
             'category_id' => [
                 'required',
+                'numeric',
                 new TenantExistsRule('categories'),
             ],
             'parent_id' => [
                 'nullable',
                 new TenantExistsRule('products'),
+            ],
+            'status' => [
+                'nullable',
+                'string',
+                Rule::in($statuses),
             ],
             'prices.*.code' => [
                 'nullable',

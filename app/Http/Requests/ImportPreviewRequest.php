@@ -23,7 +23,7 @@ class ImportPreviewRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'file' => 'required|file|mimetypes:text/csv,application/csv|extensions:csv',
+            'file' => 'required|file|mimetypes:text/csv,application/csv,text/plain|extensions:csv',
             'overwrite' => 'required|boolean',
             'model' => [
                 'required',

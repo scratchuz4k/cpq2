@@ -72,6 +72,15 @@ class ProductsImport implements ToCollection, WithBatchInserts, WithHeadingRow
     private function insertProduct(array $product, ?int $parentId = null): bool
     {
         try {
+            if (isset($product['status'])) {
+                $matchingCase = collect(ProductStatusesEnum::cases())
+                    ->first(fn ($case) => strtoupper($case->value) === strtoupper($product['status']));
+
+                if ($matchingCase) {
+                    $product['status'] = $matchingCase->value;
+                }
+            }
+
             $ignoreProductId = null;
 
             if ($this->overwrite && ! empty($product['sku'])) {
@@ -82,9 +91,9 @@ class ProductsImport implements ToCollection, WithBatchInserts, WithHeadingRow
             }
 
             $product['prices'] = [
-                'code' => $product['price_code'],
-                'net' => $product['price_net'],
-                'cost' => $product['price_cost'],
+                'code' => $product['price_code'] ?? null,
+                'net' => $product['price_net'] ?? null,
+                'cost' => $product['price_cost'] ?? null,
             ];
 
             $validator = Validator::make($product, $this->getValidationRules($ignoreProductId));
@@ -111,12 +120,12 @@ class ProductsImport implements ToCollection, WithBatchInserts, WithHeadingRow
                     ? Carbon::createFromFormat('d/m/Y', $product['expires_at'])->endOfDay()
                     : null,
                 'status' => (isset($product['status']) && ! empty($product['status'])) ? $product['status'] : ProductStatusesEnum::ACTIVE->name,
-                'supplier_id' => $product['supplier_id'] ?: null,
+                'supplier_id' => $product['supplier_id'] ?? null,
                 'price_plan_id' => (isset($product['price_plan_id']) && ! empty($product['price_plan_id'])) ? PricePlan::find($product['price_plan_id'])->id : null,
                 'prices' => [
-                    'code' => $product['price_code'],
-                    'net' => $product['price_net'],
-                    'cost' => $product['price_cost'],
+                    'code' => $product['price_code'] ?? null,
+                    'net' => $product['price_net'] ?? null,
+                    'cost' => $product['price_cost'] ?? null,
 
                 ],
                 'category_id' => $product['category_id'] ?? null,
