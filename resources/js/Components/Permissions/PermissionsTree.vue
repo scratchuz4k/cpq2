@@ -48,7 +48,7 @@ const groupPermissions = (permissions) => {
             let title = element.title;
 
             item.children.push({
-                title: title.split(' ').slice(1).pop(),
+                title: excludeText(title),
                 children: [{ ...element, title: title }]
             });
             temp.push(item);
@@ -57,13 +57,13 @@ const groupPermissions = (permissions) => {
         }
 
         let title = element.title;
-        let child = temp[i].children.find((x) => x.title == title.split(' ').slice(1).pop());
+        let child = temp[i].children.find((x) => x.title == excludeText(title));
 
         if (child) {
             child.children.push(element);
         } else {
             temp[i].children.push({
-                title: title.split(' ').slice(1).pop(),
+                title: excludeText(title),
                 children: [element]
             });
         }
@@ -71,6 +71,39 @@ const groupPermissions = (permissions) => {
 
     return temp;
 };
+
+const textToExclude = [
+    'View Own',
+    'View All',
+    'View Details',
+    'Create',
+    'Edit',
+    'Delete',
+    'Restore',
+    'Force Delete',
+    'Export'
+];
+
+function excludeText(inputString) {
+    // Create a regex that matches any of the textToExclude items
+    const pattern = textToExclude.map((text) => text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|');
+    const regex = new RegExp(`\\b(${pattern})\\b`, 'g');
+
+    // Replace occurrences with empty string and trim leftover spaces
+    return inputString
+        .replace(regex, '')
+        .replace(/\s{2,}/g, ' ')
+        .trim();
+}
+function keepExcludedText(inputString) {
+    // Build a regex pattern for all phrases in the list
+    const pattern = textToExclude.map((text) => text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|');
+    const regex = new RegExp(`\\b(${pattern})\\b`, 'g');
+
+    // Match and return all occurrences
+    const matches = inputString.match(regex);
+    return matches ? matches.join(' ') : '';
+}
 
 const check = (item) => {
     let temp = proxyValue.value.findIndex((x) => x.id == item.id);
@@ -193,7 +226,7 @@ watch(search, () => {
                                         data-bs-placement="top"
                                         :title="getTooltip(item)"
                                     >
-                                        {{ item.title.split(' ').slice(0, -1).join(' ') }}
+                                        {{ keepExcludedText(item.title) }}
                                     </p>
                                 </li>
                             </ul>
