@@ -23,7 +23,7 @@ class DashboardController extends BaseController
             return Inertia::location(route('orders.index'));
         }
 
-        return Inertia::location(route('dashboard'));
+        return Inertia::render('Dashboard');
     }
 
     /**
