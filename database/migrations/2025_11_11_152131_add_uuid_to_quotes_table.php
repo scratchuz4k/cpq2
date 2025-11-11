@@ -22,9 +22,6 @@ return new class extends Migration
             $quote->save();
         });
 
-        Schema::table('quotes', function (Blueprint $table) {
-            $table->uuid('uuid')->nullable(false)->change();
-        });
     }
 
     /**
