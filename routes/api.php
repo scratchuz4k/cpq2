@@ -71,7 +71,11 @@ Route::middleware(['api', 'auth:sanctum'])->group(function () {
         Route::post('get-position-by-address', [ExternalController::class, 'getPositionByAddress']);
     });
 
-    Route::get('/reporting-data', [ReportController::class, 'index']);
+    Route::prefix('report')->group(function () {
+        Route::get('/', [ReportController::class, 'index']);
+        Route::get('/export', [ReportController::class, 'export']);
+        Route::get('/columns', [ReportController::class, 'getColumns']);
+    });
 
     Route::apiResources([
         'apis' => ApiController::class,
