@@ -24,7 +24,6 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Inertia\Inertia;
-use Sqids\Sqids;
 
 class QuoteController extends BaseController
 {
@@ -40,14 +39,7 @@ class QuoteController extends BaseController
      */
     public function index()
     {
-        $user = request()->user();
-
-        if (! $user->hasRole('Sales Rep')) {
-            $users = User::whereHas('quotes')->get();
-        } else {
-            $users = $this->descendantsWithQuotes();
-        }
-
+        $users = User::getChildAndOrphansUser()->get();
         $users = $users->filter(fn ($user) => $user->quotes->count() > 0);
         $solutionTypes = SolutionType::whereHas('quotes', fn ($query) => $query->whereIn('user_id', $users->pluck('id')))->get();
 
@@ -160,23 +152,21 @@ class QuoteController extends BaseController
     /**
      * Remove the specified resource from storage.
      */
-    public function download(Request $request, $hash)
+    public function download(Request $request, $uuid)
     {
-        $decodedHash = app(Sqids::class)->decode($hash);
-        [$quoteId, $tenantId] = $decodedHash;
-
         $user = Auth::user();
         $quote = Quote::query()
             ->withoutGlobalScopes()
             ->with([
                 'account' => fn ($query) => $query->withoutGlobalScopes(),
             ])
-            ->find($quoteId);
+            ->where('uuid', $uuid)
+            ->first();
 
         if (
             ! $quote ||
             (! $user && ! $quote->sharedLink()->exists()) ||
-            ($user && $user->tenant_id !== $tenantId && ! $quote->sharedLink()->exists())
+            ($user && $user->tenant_id !== $quote->tenant_id && ! $quote->sharedLink()->exists())
         ) {
             return response()->json(['message' => 'Quote not available or not shared.'], 404);
         }

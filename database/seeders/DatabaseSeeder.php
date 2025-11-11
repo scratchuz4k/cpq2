@@ -21,13 +21,14 @@ class DatabaseSeeder extends Seeder
             EmailTemplateSeeder::class,
         ]);
 
-        if (config('app.env') === 'local') {
+        if (in_array(config('app.env'), ['local'])) {
             $this->call([
                 DummySeeder::class,
                 ApiConfigurationSeeder::class,
                 SolutionTenantSeeder::class,
                 CategoryProductsSeeder::class,
                 ShopBlocksSeeder::class,
+                DummyRoles::class,
             ]);
         }
 

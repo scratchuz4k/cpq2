@@ -12,7 +12,6 @@ const props = defineProps({
     }
 });
 
-const showModal = ref(false);
 const showGroupModel = ref(false);
 const showForm = ref(false);
 const selectedItems = ref([]);
@@ -52,27 +51,6 @@ const submitFileForm = () => {
     );
 };
 
-const saveCommission = async (data, commission, toggleModal = null) => {
-    try {
-        let res = await axios.put(`/api/users/${data.id}`, { commission_rate: commission });
-        data.commission_rate = commission;
-        if (toggleModal !== null) toggleModal();
-    } catch (e) {
-        notyf.error(e.message);
-        if (toggleModal !== null) toggleModal();
-    }
-};
-
-const saveCommissionBulk = (items, toggleModal = null) => {
-    items.forEach((item) => {
-        saveCommission(item, commission.value, toggleModal);
-    });
-    showModal.value = false;
-    commission.value = 0;
-
-    notyf.success('Updated with Success');
-};
-
 const saveNewGroup = async () => {
     try {
         await axios.post('/api/groups', { name: newGroup.value });
@@ -97,12 +75,6 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'My Account', url: '/my
             <tabs>
                 <tab title="Users" :selected="true">
                     <div class="d-flex mt-3 justify-content-end">
-                        <Button
-                            class="btn btn-secondary me-2"
-                            @click="showModal = true"
-                            :disabled="!(selectedItems.length > 0)"
-                            >Add Commission
-                        </Button>
                         <Link href="/imports?model=User" id="product-import-btn" class="btn btn-secondary me-2">
                             <font-awesome-icon :icon="['fas', 'file-import']"></font-awesome-icon>
                             Import Users
@@ -143,7 +115,8 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'My Account', url: '/my
                         </div>
                     </Dialog>
                     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 mt-3">
-                        <TreeTable
+                        <Datatable
+                            :tableProps="{ id: 'users-table' }"
                             id="users-table"
                             :allow="{
                                 update: true,
@@ -163,7 +136,6 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'My Account', url: '/my
                                 { data: 'group.name', title: 'Group' }
                             ]"
                             route="/users"
-                            v-model="selectedItems"
                         >
                             <template #dialog_content="{ data, toggleModal }">
                                 <div class="panel">
@@ -212,45 +184,17 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'My Account', url: '/my
                                     :eventName="'treetable-refresh'"
                                 />
                             </template>
+                            <template #roles.name="{ value }">
+                                <span class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm">
+                                    {{ value }}
+                                </span>
+                            </template>
                             <template #group.name="{ value }">
                                 <span class="badge text-bg-secondary">{{ value }}</span>
                             </template>
                             <template #commission_rate="{ value }"> {{ value }}%</template>
-                        </TreeTable>
+                        </Datatable>
                     </div>
-                    <Dialog
-                        v-model:visible="showModal"
-                        modal
-                        :style="{ marginTop: '4rem' }"
-                        :breakpoints="{ '1199px': '75vw', '575px': '90vw' }"
-                        :draggable="false"
-                        position="top"
-                    >
-                        <div class="panel">
-                            <div class="row">
-                                <label for="user-bulk-commission-rate" class="form-label">Commission Rate:</label>
-                                <div class="input-group">
-                                    <input
-                                        id="user-bulk-commission-rate"
-                                        type="number"
-                                        class="form-control"
-                                        v-model="commission"
-                                    />
-                                    <span class="input-group-text">%</span>
-                                </div>
-                                <div class="d-flex justify-content-end mt-3">
-                                    <div class="btn btn-secondary me-2" @click="showModal = false">Cancel</div>
-                                    <Button
-                                        class="btn btn-primary"
-                                        @click="saveCommissionBulk(selectedItems)"
-                                        :disabled="!(selectedItems.length > 0)"
-                                    >
-                                        Save
-                                    </Button>
-                                </div>
-                            </div>
-                        </div>
-                    </Dialog>
                 </tab>
                 <tab title="Groups" v-if="hasRole('Super Admin') || can('viewAny group')">
                     <div class="d-flex mt-3 justify-content-end">
@@ -264,6 +208,7 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'My Account', url: '/my
                         </Button>
                     </div>
                     <Datatable
+                        :tableProps="{ id: 'roles-table' }"
                         :allow="{
                             update: true,
                             delete: true,

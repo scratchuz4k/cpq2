@@ -4,7 +4,7 @@ describe('Solution Types CRUD', () => {
     });
 
     it('Edit Connectivity Solution add custom table', () => {
-        cy.visit('/');
+        cy.visit('/quotes');
         cy.get('#my-account').click();
         cy.get('#link-solutions').click();
 
@@ -55,7 +55,7 @@ describe('Solution Types CRUD', () => {
     });
 
     it('Delete Connectivity Solution', () => {
-        cy.visit('/');
+        cy.visit('/quotes');
         cy.get('#my-account').click();
         cy.get('#link-solutions').click();
 
@@ -68,7 +68,7 @@ describe('Solution Types CRUD', () => {
     });
 
     it('Create a Connectivity - Solution', () => {
-        cy.visit('/');
+        cy.visit('/quotes');
         cy.get('#my-account').click();
         cy.get('#link-solutions').click();
         cy.get('#solution-create-btn').click();

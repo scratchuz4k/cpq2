@@ -224,6 +224,10 @@ class CloudMarketApi
             'ConnectionSpeeds.MaxSpeed' => 100000,
         ];
 
+        if (! in_array(config('app.env'), ['local', 'testing'], true)) {
+            $quoteAddress = array_merge(['RequestId' => $quote->uuid], $quoteAddress);
+        }
+
         return $quoteAddress;
     }
 

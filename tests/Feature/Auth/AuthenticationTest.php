@@ -17,6 +17,7 @@ it('login screen can be rendered', function () {
 });
 
 it('users can authenticate using the login screen', function () {
+    setTenantForPermissions();
     $user = User::factory()->create();
     $user->tenants()->attach(Tenant::find(1));
     $user->assignRole('Company Admin');
@@ -42,6 +43,7 @@ it('users can not authenticate with invalid password', function () {
 });
 
 it('users can logout', function () {
+    setTenantForPermissions();
     $user = User::factory()->create();
     $user->tenants()->attach(Tenant::find(1));
     $user->assignRole('Company Admin');

@@ -12,6 +12,7 @@ uses(RefreshDatabase::class);
 
 beforeEach(function () {
     $this->artisan('db:seed');
+    setTenantForPermissions();
     $this->user = User::factory()->create();
     $this->user->tenants()->attach(Tenant::find(1));
     $this->user->assignRole('Sales Rep');
@@ -92,7 +93,7 @@ beforeEach(function () {
         'price_monthly' => 13.59,
     ];
 
-    $this->post('api/quote-items', $quote_item);
+    $response = $this->post('api/quote-items', $quote_item);
     $this->quote = $this->get('api/quotes')->json();
 });
 
