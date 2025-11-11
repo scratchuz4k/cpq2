@@ -23,7 +23,7 @@ class SharedLinkController extends Controller
         try {
             $sharedLink = SharedLink::where('token', $token)->firstOrFail();
         } catch (ModelNotFoundException $e) {
-            abort(404, 'Something went wrong.');
+            abort(404, 'The quote you are looking for could not be found.');
         } catch (\Exception $e) {
             return handleWebException($e);
         }

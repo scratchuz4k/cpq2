@@ -12,7 +12,7 @@ describe('Creates products and associates Category.cy', () => {
     });
 
     it('Creates a Category', () => {
-        cy.visit('/');
+        cy.visit('/quotes');
         cy.get('#my-account').click();
         cy.get('#link-categories').click();
 
@@ -32,7 +32,7 @@ describe('Creates products and associates Category.cy', () => {
     });
 
     it('Creates a Product and add category', () => {
-        cy.visit('/');
+        cy.visit('/quotes');
         cy.get('#my-account').click();
         cy.get('#link-products').click();
 

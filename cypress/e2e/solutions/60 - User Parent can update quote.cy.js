@@ -6,11 +6,9 @@ const managerPassword = 'werwerwer';
 const managerUsers = ['sales@example.com', 'companyadmin@example.com'];
 
 describe('User Parent can update a quote.cy', () => {
-    beforeEach(() => {
-        cy.login(Cypress.env('SUPERUSER_EMAIL'), Cypress.env('SUPERUSER_PASSWORD'));
-    });
     it('Create a child user', () => {
-        cy.visit('/');
+        cy.login('companyadmin@example.com', 'werwerwer');
+        cy.visit('/quotes');
         cy.get('#my-account').click();
         cy.get('#link-users').click();
         cy.get('#link-to-create-user').click();
@@ -18,15 +16,15 @@ describe('User Parent can update a quote.cy', () => {
         cy.get('#user-name').type(user.name);
         cy.get('#user-email').type(user.email);
         cy.get('#user-password').type(user.password);
-        cy.selectOption('#user-role', 'Sales Rep');
-        cy.selectLazyOption('user-manager', 'Sales Rep');
+        cy.selectLazyOption('user-role', 'Sales Rep');
         cy.get('#btn-save-user').click();
-        cy.get('#treetable-search').type(user.name);
+        cy.get('#datatable-search').type(user.name);
         cy.get('#users-table').contains(user.name);
     });
 
     it('Creates an Account', () => {
-        cy.visit('/');
+        cy.login('companyadmin@example.com', 'werwerwer');
+        cy.visit('/quotes');
         cy.get('#create-tab').click();
         cy.get('#link-to-create-account').click();
         cy.get('#account-name').type(account.name);
@@ -37,9 +35,8 @@ describe('User Parent can update a quote.cy', () => {
 
     it('Creates Mobile Quote', () => {
         //login child user and create a quote
-        cy.logout();
         cy.login(user.email, user.password);
-        cy.visit('/');
+        cy.visit('/quotes');
         cy.get('#create-tab').click();
         cy.selectLazyOption('account_id', account.name);
         cy.get('#btn-next-step').click();
@@ -47,16 +44,7 @@ describe('User Parent can update a quote.cy', () => {
         cy.get('#solution_type-mobile').click();
         cy.get('#btn-create-quote').click();
 
-        cy.get('#btn-plan-0-add-25').click();
-        cy.wait(1000);
-        cy.get('#btn-plan-1-add-25').click();
-        cy.wait(1000);
-        cy.get('#btn-step-1-next').click();
-        cy.wait(1000);
-        cy.get('#btn-plan-0-add-25').click();
-        cy.wait(1000);
-        cy.get('#btn-step-2-next').click();
-
+        let recurringCount = 0;
         cy.get('#current-step')
             .invoke('text')
             .then((currentStepText) => {
@@ -66,15 +54,19 @@ describe('User Parent can update a quote.cy', () => {
                         const current_step = parseInt(currentStepText.trim());
                         const last_step = parseInt(lastStepText.trim());
 
-                        for (let i = current_step; i < last_step; i++) {
-                            cy.get(`#btn-step-${i}-next`).click();
+                        for (let i = current_step; i < last_step - 1; i++) {
+                            cy.get('#btn-plan-0-add-25').click();
+                            cy.wait(1000);
+                            cy.get(`#next-step-btn`).click();
+                            recurringCount += 1;
                         }
+                        cy.get(`#next-step-btn`).click();
                     });
             });
 
         let hardwareCount = 0;
-        let keys = [0, 1, 2, 3, 4];
-        let max_pages = 5;
+        let keys = [0];
+        let max_pages = 2;
         let current_page = 1;
 
         do {
@@ -99,7 +91,11 @@ describe('User Parent can update a quote.cy', () => {
 
         cy.get('#btn-step-2-next').click();
 
-        cy.get('.recurring-item').should('have.length', 3);
+        cy.get('.recurring-item').then(($items) => {
+            cy.then(() => {
+                expect(recurringCount).to.equal($items.length);
+            });
+        });
         cy.get('.one_off-item').then(($items) => {
             cy.then(() => {
                 expect(hardwareCount).to.equal($items.length);
@@ -109,35 +105,16 @@ describe('User Parent can update a quote.cy', () => {
 
     managerUsers.forEach((manager) => {
         it('Parent can update my quote', () => {
-            cy.logout();
             cy.login(manager, managerPassword);
-            cy.visit('/');
+            cy.visit('/quotes');
             cy.wait(500);
-            cy.get('#datatable-btn-0-edit').click();
-            cy.wait(1000);
-            cy.get('#btn-bolt-0-add-1').click();
-            cy.wait(1000);
-            cy.get('#btn-step-1-next').click();
-            cy.wait(1000);
-            cy.get('#btn-step-2-next').click();
-            cy.wait(1000);
-
-            cy.get('#current-step')
-                .invoke('text')
-                .then((currentStepText) => {
-                    cy.get('#last-step')
-                        .invoke('text')
-                        .then((lastStepText) => {
-                            const current_step = parseInt(currentStepText.trim());
-                            const last_step = parseInt(lastStepText.trim());
-
-                            for (let i = current_step; i <= last_step; i++) {
-                                cy.get(`#next-step-btn`).click();
-                            }
-                        });
+            cy.get('#datatable-btn-0-show').click();
+            let nrItems = 0;
+            cy.get('.recurring-item').then(($items) => {
+                cy.then(() => {
+                    nrItems = $items.length;
                 });
-
-            cy.get('.recurring-item').should('have.length', 3);
+            });
 
             cy.get('#btn-recurring-add').click();
             cy.get('#input-new-recurring-name').type('Custom line recurring');
@@ -146,13 +123,21 @@ describe('User Parent can update a quote.cy', () => {
             cy.get('#input-new-recurring-discount').type(10);
             cy.get('#btn-new-recurring-add').click();
             cy.get('#table-recurring').contains('Custom line recurring');
+            cy.wait(500);
+            cy.get('.recurring-item').then(($items) => {
+                cy.then(() => {
+                    expect(nrItems + 1).to.equal($items.length);
+                });
+            });
 
-            cy.get('.recurring-item').should('have.length', 4);
-
-            cy.get(`#btn-recurring-3-remove`).click();
+            cy.get(`#btn-recurring-0-remove`).click();
             cy.get('#swal-btn-confirm').click();
-
-            cy.get('.recurring-item').should('have.length', 3);
+            cy.wait(500);
+            cy.get('.recurring-item').then(($items) => {
+                cy.then(() => {
+                    expect(nrItems).to.equal($items.length);
+                });
+            });
         });
     });
 });

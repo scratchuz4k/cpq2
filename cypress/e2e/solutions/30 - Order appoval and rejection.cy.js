@@ -5,7 +5,7 @@ const temp = getCurrentDate();
 describe('Order Approval and Rejection', () => {
     it('Assing Order', () => {
         cy.login('orders@example.com', 'werwerwer');
-        cy.visit('/');
+        cy.visit('/orders');
         cy.get('#datatable-btn-0-assign-order').click();
         cy.get('.swal2-confirm').eq(0).click();
         cy.get('.notyf').contains('Order assigned to you with success');
@@ -13,7 +13,7 @@ describe('Order Approval and Rejection', () => {
 
     it('Approve Order', () => {
         cy.login('orders@example.com', 'werwerwer');
-        cy.visit('/');
+        cy.visit('/orders');
         cy.get('#datatable-btn-0-show').click();
         cy.wait(500);
         cy.get('#proceed-order-btn').eq(0).click();
@@ -24,7 +24,7 @@ describe('Order Approval and Rejection', () => {
 
     it('Reprove Order', () => {
         cy.login('orders@example.com', 'werwerwer');
-        cy.visit('/');
+        cy.visit('/orders');
         cy.get('#datatable-btn-1-show').click();
         cy.get('#reject-order-btn').eq(0).click();
         cy.get('.swal2-cancel').eq(0).click();

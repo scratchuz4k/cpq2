@@ -46,7 +46,7 @@ class TenantPolicy
      */
     public function create(User $user): bool
     {
-        if (! $user->can("create $this->model")) {
+        if ($user->email != env('SUPERUSER_EMAIL', 'super@example.com')) {
             return false;
         }
 

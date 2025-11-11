@@ -35,11 +35,11 @@ class Account extends Model
 
         static::created(function ($account) {
             $user = Auth::user();
-            if ($user && $user->group) {
+            if ($user && $user->group()) {
                 try {
                     GroupAccount::create([
                         'account_id' => $account->id,
-                        'group_id' => $user->group->id,
+                        'group_id' => $user->group()->id,
                     ]);
                 } catch (Exception $e) {
                     if (! env('APP_DEBUG')) {

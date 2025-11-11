@@ -3,6 +3,7 @@
 use App\Http\Middleware\CheckUserActive;
 use App\Http\Middleware\HandleInertiaRequests;
 use App\Http\Middleware\SetTenantBySession;
+use App\Http\Middleware\TenantPermission;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -32,6 +33,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
 
         $middleware->web(append: [
+            TenantPermission::class,
             HandleInertiaRequests::class,
             AddLinkHeadersForPreloadedAssets::class,
             SetTenantBySession::class,
@@ -40,6 +42,7 @@ return Application::configure(basePath: dirname(__DIR__))
             // EnsureValidTenantSession::class
         ]);
         $middleware->api(append: [
+            TenantPermission::class,
             EnsureFrontendRequestsAreStateful::class,
             SubstituteBindings::class,
             SetTenantBySession::class,
