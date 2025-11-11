@@ -28,6 +28,7 @@ const props = defineProps({
 });
 
 const page = usePage();
+const workbasketTotal = ref(0);
 const user = page.props.auth.user;
 const tenant = page.props.tenant;
 const createOrderAndRefresh = async (id) => {
@@ -36,6 +37,23 @@ const createOrderAndRefresh = async (id) => {
         emitter.emit('datatable-refresh');
     }
 };
+
+const getWorkbasketTotal = async () => {
+    let string = queryString.stringify({
+        filters: JSON.stringify([
+            { column: 'status', operator: 'in', value: 'pending', function: 'orWhere' },
+            {
+                group: [
+                    { column: 'blocker_id', operator: 'is_null', value: '', function: 'orWhere' },
+                    { column: 'blocker_id', operator: 'equals', value: user.id }
+                ]
+            }
+        ])
+    });
+    let res = await axios.get('/api/quote-approvals?' + string);
+    workbasketTotal.value = res.data.meta.total;
+};
+getWorkbasketTotal();
 
 const expirableStatuses = ['QUOTE', 'PRICE', 'CONFIGURE'];
 
@@ -173,7 +191,10 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Quotes' }]);
                         </template>
                     </Datatable>
                 </tab>
-                <tab title="Workbasket" v-if="hasRole('Super Admin') || can('update quote_approval')">
+                <tab
+                    :title="`Workbasket (${workbasketTotal})`"
+                    v-if="hasRole('Super Admin') || can('update quote_approval')"
+                >
                     <Datatable
                         id="workbasket-table"
                         :allow="{}"
