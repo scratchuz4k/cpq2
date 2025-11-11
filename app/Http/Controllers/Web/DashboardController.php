@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\BaseController;
-use App\Policies\ExportPolicy;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
@@ -46,8 +45,6 @@ class DashboardController extends BaseController
      */
     public function reporting()
     {
-        //        $this->authorize('viewAny export', ExportPolicy::class);
-
         return Inertia::render('MyAccount/Reporting');
     }
 }
