@@ -92,7 +92,7 @@ const options = [
     {
         title: 'Reporting',
         url: route('reporting'),
-        has_permission: hasRole('Super Admin') || can('viewAny export'),
+        has_permission: hasRole('Super Admin') || can('viewAny report'),
         icon: ['fas', 'gauge']
     }
 ];

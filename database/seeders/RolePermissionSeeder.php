@@ -14,6 +14,9 @@ class RolePermissionSeeder extends Seeder
         'Website' => [
             'viewOwn quote' => 'View Own Quote',
         ],
+        'Managament' => [
+            'viewAny report' => 'View All Report',
+        ],
     ];
 
     public static $permissions = [
@@ -59,7 +62,6 @@ class RolePermissionSeeder extends Seeder
         'Managament' => [
             'group' => 'Groups',
             'user' => 'User',
-            'export' => 'Export',
             'tenant' => 'Tenant',
             'token' => 'Token',
             'api' => 'API',
@@ -80,7 +82,7 @@ class RolePermissionSeeder extends Seeder
                     'spa', 'user', 'solution_type', 'api', 'price_plan', 'activity', 'email_template', 'email_history',
                     'group', 'blacklist', 'role', 'permission',
                 ],
-                'simple_permission' => ['viewAny export'],
+                'simple_permission' => ['viewAny report'],
             ],
             'Support Agent' => [
                 'parent' => 'Company Admin',

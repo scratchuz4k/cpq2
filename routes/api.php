@@ -7,10 +7,8 @@ use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\Cloudmarket\AddressController as CloudmarketAddressController;
 use App\Http\Controllers\Api\Cloudmarket\ProductController as CloudmarketProductController;
 use App\Http\Controllers\Api\ContactController;
-use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\EmailHistoryController;
 use App\Http\Controllers\Api\EmailTemplateController;
-use App\Http\Controllers\Api\ExportController;
 use App\Http\Controllers\Api\ExternalController;
 use App\Http\Controllers\Api\General\BlacklistController;
 use App\Http\Controllers\Api\GroupAccountController;
@@ -24,6 +22,7 @@ use App\Http\Controllers\Api\PricePlanController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\QuoteController;
 use App\Http\Controllers\Api\QuoteItemController;
+use App\Http\Controllers\Api\ReportController;
 use App\Http\Controllers\Api\ResourceController;
 use App\Http\Controllers\Api\RoleController;
 use App\Http\Controllers\Api\SharedLinkController;
@@ -72,12 +71,7 @@ Route::middleware(['api', 'auth:sanctum'])->group(function () {
         Route::post('get-position-by-address', [ExternalController::class, 'getPositionByAddress']);
     });
 
-    Route::get('/reporting-data', [DashboardController::class, 'reporting']);
-
-    Route::prefix('export')->group(function () {
-        Route::get('/', [ExportController::class, 'export']);
-        Route::get('/columns', [ExportController::class, 'getColumns']);
-    });
+    Route::get('/reporting-data', [ReportController::class, 'index']);
 
     Route::apiResources([
         'apis' => ApiController::class,
