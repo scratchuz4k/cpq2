@@ -3,7 +3,6 @@
 namespace Database\Factories;
 
 use App\Models\Contact;
-use App\Models\Region;
 use App\Models\Tenant;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -23,7 +22,6 @@ class AccountFactory extends Factory
 
         return [
             'tenant_id' => Tenant::where('name', 'CloudMarket')->value('id'),
-            'region_id' => Region::factory()->create(),
             'reference' => strtoupper(substr($company_name, 0, 3)).fake()->randomNumber(5, true),
             'name' => $company_name,
         ];

@@ -13,7 +13,6 @@
 
 use App\Models\Account;
 use App\Models\Api;
-use App\Models\Brand;
 use App\Models\Price;
 use App\Models\Product;
 use App\Models\Quote;
@@ -94,7 +93,6 @@ function generateModelsData()
     return [
         'tenants' => Tenant::factory()->make()->toArray(),
         'products' => Product::factory()->make()->toArray(),
-        'brands' => Brand::factory()->make()->toArray(),
         'suppliers' => Supplier::factory()->make()->toArray(),
         'spas' => Spa::factory()->make()->toArray(),
         'users' => User::factory()->make()->toArray(),
