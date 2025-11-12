@@ -4,16 +4,19 @@ use App\Enums\QuoteStatusesEnum;
 use App\Models\Account;
 use App\Models\Tenant;
 use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Auth;
+
+uses(RefreshDatabase::class);
 
 beforeEach(function () {
     $this->artisan('db:seed');
-
+    setTenantForPermissions();
     $this->sales_manager = User::factory()->create();
     $this->sales_manager->tenants()->attach(Tenant::find(1));
     $this->sales_manager->assignRole('Sales Manager');
 
-    $this->sales_rep = User::factory(['parent_id' => $this->sales_manager->id])->create();
+    $this->sales_rep = User::factory()->create();
     $this->sales_rep->tenants()->attach(Tenant::find(1));
     $this->sales_rep->assignRole('Sales Rep');
 
