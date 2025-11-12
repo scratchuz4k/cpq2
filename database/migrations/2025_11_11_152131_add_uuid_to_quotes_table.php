@@ -21,7 +21,6 @@ return new class extends Migration
             $quote->uuid = (string) Str::uuid();
             $quote->save();
         });
-
     }
 
     /**
