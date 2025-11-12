@@ -78,7 +78,7 @@ describe('User Parent can update a quote.cy', () => {
             cy.wait(500);
         } while (hardwareCount === 0 && current_page <= max_pages);
 
-        cy.get('#btn-step-2-next').click();
+        cy.get('#next-step-btn').click();
 
         cy.get('.recurring-item').then(($items) => {
             cy.then(() => {
