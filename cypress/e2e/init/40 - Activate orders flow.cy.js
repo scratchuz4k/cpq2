@@ -7,7 +7,7 @@ const account = { ref: generateHash(temp), name: temp };
 describe('Activate orders flow.cy', () => {
     it('Activate orders flow', () => {
         cy.login(Cypress.env('SUPERUSER_EMAIL'), Cypress.env('SUPERUSER_PASSWORD'));
-        cy.visit('/');
+        cy.visit('/quotes');
         cy.get('#my-account').click();
         cy.get('#link-tenant').click();
         cy.get('#1-1').click();
@@ -16,6 +16,7 @@ describe('Activate orders flow.cy', () => {
                 cy.wrap($checkbox).check();
             }
         });
+        cy.wait(500);
         cy.get('.notyf').contains('Content updated successfully');
     });
 });

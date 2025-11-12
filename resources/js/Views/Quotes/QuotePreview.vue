@@ -17,8 +17,8 @@ const props = defineProps({
 setQuote(props.modelValue);
 
 const warningProviders = ref([
-    { its: quote.items.some((item) => item.data?.providerName === 'ITS') },
-    { pxc: quote.items.some((item) => item.data?.providerName === 'PXC') }
+    { name: 'its', is_present: quote.items.some((item) => item.data?.providerName === 'ITS') },
+    { name: 'pxc', is_present: quote.items.some((item) => item.data?.providerName === 'PXC') }
 ]);
 
 const showDate = (days = 0) => {

@@ -16,10 +16,10 @@ const subprovider = 'BT';
 
 describe('Creates a Mobile Quote', () => {
     beforeEach(() => {
-        cy.login('super@example.com', 'werwerwer');
+        cy.login('companyadmin@example.com', 'werwerwer');
     });
 
-    it.only('Create a Connectivity Quote', () => {
+    it('Create a Connectivity Quote', () => {
         cy.visit('/');
         cy.get('#create-tab').click();
 
@@ -70,7 +70,7 @@ describe('Creates a Mobile Quote', () => {
     });
     it('Enable Activity recording', () => {
         cy.login('super@example.com', 'werwerwer');
-        cy.visit('/');
+        cy.visit('/quotes');
         cy.get('#my-account').click();
         cy.get('#link-tenant').click();
         cy.get('#1-1').click();
@@ -83,7 +83,7 @@ describe('Creates a Mobile Quote', () => {
     });
 
     it('I can edit a line and check activity change', () => {
-        cy.visit('/');
+        cy.visit('/quotes');
         cy.get('#datatable-btn-0-show').click();
 
         let items = ['recurring'];
@@ -139,7 +139,7 @@ describe('Creates a Mobile Quote', () => {
 
     it('Disabling Activity recording', () => {
         cy.login('super@example.com', 'werwerwer');
-        cy.visit('/');
+        cy.visit('/quotes');
         cy.get('#my-account').click();
         cy.get('#link-tenant').click();
         cy.get('#1-1').click();

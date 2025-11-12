@@ -282,7 +282,10 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'My Account', url: '/my
                                         <h6 class="fw-bold pe-5 mb-3">Account Management</h6>
                                         <div class="restrict_account_management_is_active">
                                             <div>
-                                                <label for="active-orders-flow" class="form-label lh-sm small pb-2">
+                                                <label
+                                                    for="active-account-management"
+                                                    class="form-label lh-sm small pb-2"
+                                                >
                                                     <i>
                                                         If this setting is active, users will be restricted from
                                                         managing accounts
@@ -291,7 +294,7 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'My Account', url: '/my
                                             </div>
                                             <div class="sidenote">
                                                 <ToggleSwitch
-                                                    id="active-orders-flow"
+                                                    id="active-account-management"
                                                     v-model="
                                                         tenant.configurations.restrict_account_management_is_active
                                                     "

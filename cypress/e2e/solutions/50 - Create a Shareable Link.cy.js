@@ -5,10 +5,10 @@ let url = '';
 
 describe('Create a Shareable Link.cy', () => {
     beforeEach(() => {
-        cy.login(Cypress.env('SUPERUSER_EMAIL'), Cypress.env('SUPERUSER_PASSWORD'));
+        cy.login('companyadmin@example.com', 'werwerwer');
     });
     it('Creates Mobile Quote', () => {
-        cy.visit('/');
+        cy.visit('/quotes');
         cy.get('#create-tab').click();
         cy.selectFirstOption('account_id');
         cy.get('#btn-next-step').click();
@@ -76,7 +76,7 @@ describe('Create a Shareable Link.cy', () => {
         });
     });
     it('I can create the link', () => {
-        cy.visit('/');
+        cy.visit('/quotes');
         cy.get('#datatable-btn-0-show').click();
         cy.get('#btn-shareable-open').click();
         cy.get('#btn-shareable-create').click();
@@ -90,7 +90,7 @@ describe('Create a Shareable Link.cy', () => {
 
     it('I can access the link', () => {
         cy.logout();
-        cy.visit('/');
+        cy.visit('/quotes');
         cy.log(url);
         cy.visit(url);
         cy.get('.item-row')

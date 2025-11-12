@@ -11,6 +11,7 @@ uses(RefreshDatabase::class);
 
 beforeEach(function () {
     $this->artisan('db:seed');
+    setTenantForPermissions();
     $this->super_user = User::find(1);
     $this->tenant = Tenant::find(1);
 
@@ -22,7 +23,7 @@ beforeEach(function () {
     $this->sales_user->tenants()->attach($this->tenant->id);
     $this->sales_user->assignRole('Sales Rep');
 
-    $this->sales_user_child = User::factory()->create(['parent_id' => $this->sales_user->id]);
+    $this->sales_user_child = User::factory()->create();
     $this->sales_user_child->tenants()->attach($this->tenant->id);
     $this->sales_user_child->assignRole('Sales Rep');
 

@@ -18,11 +18,12 @@ class AccountPolicy
 
     public function userCanManageAccount(User $user, Account $account)
     {
-        if (! $user->group()->exists()) {
+        /* bug fix */
+        if (! $user->group()) {
             return true;
         }
 
-        if (! $user->hasRole('Super Admin') && ! $user->hasRole('Company Admin')) {
+        if (! $user->hasRole('Super Admin')) {
             return $user->group->accounts->contains('id', $account->id);
         }
 

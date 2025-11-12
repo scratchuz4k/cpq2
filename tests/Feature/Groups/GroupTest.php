@@ -11,10 +11,11 @@ uses(RefreshDatabase::class);
 
 beforeEach(function () {
     $this->artisan('db:seed');
+    setTenantForPermissions();
     $this->user = User::factory()->create();
     $this->tenant = Tenant::find(1);
     $this->user->tenants()->attach($this->tenant);
-    $this->user->assignRole('Sales Manager');
+    $this->user->assignRole('Company Admin');
 
     $this->account = Account::factory()->create();
     $this->group = Group::factory()->create();
@@ -30,7 +31,7 @@ it('Relate Account and User with Group, ', function () {
     ]);
     $response->assertSuccessful();
     $this->user->refresh();
-    expect($this->user->group()->count())->toBe(1);
+    expect($this->user->groups()->count())->toBe(1);
 
     $response = $this->post('api/group-accounts/', [
         'account_id' => $this->account->id,
@@ -48,7 +49,7 @@ it('Add user to Group and create new Account and User ', function () {
     ]);
     $response->assertSuccessful();
     $this->user->refresh();
-    expect($this->user->group()->count())->toBe(1);
+    expect($this->user->groups()->count())->toBe(1);
 
     $response = $this->post('accounts', [
         'name' => 'name',
@@ -56,8 +57,6 @@ it('Add user to Group and create new Account and User ', function () {
     ]);
     $response->assertRedirect();
     expect(Account::count())->toBe(2);
-
-    $account = Account::find(1);
 
     $user_data = [
         'name' => 'Test User',
@@ -73,7 +72,12 @@ it('Add user to Group and create new Account and User ', function () {
     $user = User::where('email', $user_data['email'])->first();
     expect($user->name)->toBe($user_data['name']);
 
+    $response = $this->put('api/users/'.$user->id, [
+        'group_id' => $this->group->id,
+    ]);
+    $response->assertSuccessful();
+
     // Check relations
     expect($this->group->accounts()->count())->toBe(1);
-    expect($user->group()->count())->toBe(1);
+    expect($user->groups()->count())->toBe(1);
 });

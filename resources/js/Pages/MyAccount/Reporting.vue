@@ -25,7 +25,7 @@ const getData = async () => {
     let query = queryString.stringify(dateRange.value);
 
     try {
-        let res = await axios.get('api/reporting-data?' + query);
+        let res = await axios.get('api/report?' + query);
         data.value = res.data;
     } catch (err) {
         notyf.error(err?.response?.data?.message ?? 'Something went wrong');

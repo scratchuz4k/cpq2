@@ -20,16 +20,16 @@ const category = { code: generateHash(temp2), name: temp2 };
 
 describe('Creates a Mobile Quote', () => {
     beforeEach(() => {
-        cy.login(Cypress.env('SUPERUSER_EMAIL'), Cypress.env('SUPERUSER_PASSWORD'));
+        cy.login('companyadmin@example.com', 'werwerwer');
     });
 
     it('Creates a Category', () => {
-        cy.visit('/');
+        cy.visit('/quotes');
         cy.get('#my-account').click();
         cy.get('#link-categories').click();
 
         cy.get('#datatable-search').type(category.code);
-        cy.wait(3000);
+        cy.wait(1000);
         cy.get('#categories-table').then(($table) => {
             if ($table.text().includes('No records found')) {
                 cy.get('#category-create-btn').click();
@@ -44,12 +44,12 @@ describe('Creates a Mobile Quote', () => {
     });
 
     it('Creates a Product and add category', () => {
-        cy.visit('/');
+        cy.visit('/quotes');
         cy.get('#my-account').click();
         cy.get('#link-products').click();
 
         cy.get('#datatable-search').type(product.sku);
-        cy.wait(3000);
+        cy.wait(1000);
         cy.get('#products-table').then(($table) => {
             if ($table.text().includes('No records found')) {
                 cy.get('#product-create-btn').click();
@@ -66,7 +66,7 @@ describe('Creates a Mobile Quote', () => {
     });
 
     it('Creates Mobile Quote', () => {
-        cy.visit('/');
+        cy.visit('/quotes');
         cy.get('#create-tab').click();
         cy.selectFirstOption('account_id');
         cy.get('#btn-next-step').click();
@@ -134,7 +134,7 @@ describe('Creates a Mobile Quote', () => {
     });
 
     it('I can change Margin and Discount', () => {
-        cy.visit('/');
+        cy.visit('/quotes');
         cy.get('#datatable-btn-0-show').click();
 
         let items = ['recurring', 'one_off'];
@@ -186,7 +186,7 @@ describe('Creates a Mobile Quote', () => {
     });
 
     it('I can change and reset Global Discount', () => {
-        cy.visit('/');
+        cy.visit('/quotes');
         cy.get('#datatable-btn-0-show').click();
         let quote = { margin: null, commission: null, global: null };
 
@@ -221,7 +221,7 @@ describe('Creates a Mobile Quote', () => {
     });
 
     it('I can add and delete a Custom Line', () => {
-        cy.visit('/');
+        cy.visit('/quotes');
         cy.get('#datatable-btn-0-show').click();
         cy.get('#btn-recurring-add').click();
         cy.get('#input-new-recurring-name').type('Custom line recurring');

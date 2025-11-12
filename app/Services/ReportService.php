@@ -10,7 +10,7 @@ use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Illuminate\Support\Collection;
 
-class DashboardService
+class ReportService
 {
     public $model;
 

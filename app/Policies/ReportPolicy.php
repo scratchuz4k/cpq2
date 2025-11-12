@@ -4,7 +4,7 @@ namespace App\Policies;
 
 use App\Models\User;
 
-class ExportPolicy
+class ReportPolicy
 {
     public function export(User $user): bool
     {
