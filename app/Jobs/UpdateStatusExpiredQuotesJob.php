@@ -36,8 +36,6 @@ class UpdateStatusExpiredQuotesJob implements ShouldQueue
                 : 30;
             $expirationDate = today()->subDays($expirationDays)->format('Y-m-d');
 
-            Log::info('UpdateStatusExpiredQuotesJob | ---------------------------------------------------------------');
-
             DB::transaction(function () use (
                 &$quotesUpdated,
                 $expiredStatus,
@@ -62,6 +60,5 @@ class UpdateStatusExpiredQuotesJob implements ShouldQueue
         }
 
         Log::info("UpdateStatusExpiredQuotesJob | {$quotesUpdated} quotes expired at {$expirationDate} ({$expirationDays} days ago)");
-        Log::info('UpdateStatusExpiredQuotesJob | ---------------------------------------------------------------');
     }
 }
