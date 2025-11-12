@@ -45,7 +45,7 @@ class Quote extends Model
     protected function casts(): array
     {
         return [
-            'data' => 'object',
+            'data' => 'array',
             'address_position' => 'array',
             'address_data' => 'array',
             'margin' => 'float',

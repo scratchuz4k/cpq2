@@ -162,7 +162,7 @@
                                                         @endif
                                                     </div>
                                                     <div class="me-3">
-                                                        @if ($group['data']?->connectivitySupplierGroup)
+                                                        @if (isset($group['data']?->connectivitySupplierGroup))
                                                             <img class="img-provider"
                                                                 style="max-width: 60px; max-height: 20px; width: auto; height: auto;"
                                                                 src="{{ $group['image'] ?? public_path() . '/images/providers/' . str_replace(' ', '', strtolower($group['data']?->connectivitySupplierGroup)) . '.png' }}"
@@ -226,10 +226,14 @@
                                                         {{ $item['data']?->quoteId }}
                                                     </td>
                                                     <td class="column-speed-body">
-                                                        {{ formatBytes($item['data']?->speed) }}
+                                                        @if (isset($item['data']?->speed))
+                                                            {{ formatBytes($item['data']?->speed) }}
+                                                        @endif
                                                     </td>
                                                     <td class="column-bearer-body">
-                                                        {{ formatBytes($item['data']?->bearer) }}
+                                                        @if (isset($item['data']?->bearer))
+                                                            {{ formatBytes($item['data']?->bearer) }}
+                                                        @endif
                                                     </td>
                                                     <td class="column-price_plan-body">
                                                         {{ $item['price_plan']?->name }}

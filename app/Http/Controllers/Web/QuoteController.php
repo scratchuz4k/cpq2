@@ -209,20 +209,4 @@ class QuoteController extends BaseController
             )
         );
     }
-
-    private function descendantsWithQuotes()
-    {
-        $users = collect([]);
-        if (is_null(Auth::user())) {
-            return $users;
-        }
-        $userDescedents = collect([Auth::user()]);
-        do {
-            $current = $userDescedents->pop();
-            $users->push($current);
-            $userDescedents->push(...$current->children()->whereHas('quotes')->get());
-        } while (count($userDescedents));
-
-        return $users;
-    }
 }
