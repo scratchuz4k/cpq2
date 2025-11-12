@@ -33,16 +33,7 @@ describe('User Parent can update a quote.cy', () => {
         cy.get('#solution_type-mobile').click();
         cy.get('#btn-create-quote').click();
 
-        cy.get('#btn-plan-0-add-25').click();
-        cy.wait(1000);
-        cy.get('#btn-plan-1-add-25').click();
-        cy.wait(1000);
-        cy.get('#btn-step-next').click();
-        cy.wait(1000);
-        cy.get('#btn-plan-0-add-25').click();
-        cy.wait(1000);
-        cy.get('#btn-step-next').click();
-
+        let recurringCount = 0;
         cy.get('#current-step')
             .invoke('text')
             .then((currentStepText) => {
@@ -52,8 +43,11 @@ describe('User Parent can update a quote.cy', () => {
                         const current_step = parseInt(currentStepText.trim());
                         const last_step = parseInt(lastStepText.trim());
 
-                        for (let i = current_step; i < last_step; i++) {
-                            cy.get(`#btn-step-next`).click();
+                        for (let i = current_step; i < last_step - 1; i++) {
+                            cy.get('#btn-plan-0-add-25').click();
+                            cy.wait(1000);
+                            cy.get(`#next-step-btn`).click();
+                            recurringCount += 1;
                         }
                         cy.get(`#next-step-btn`).click();
                     });
@@ -84,7 +78,7 @@ describe('User Parent can update a quote.cy', () => {
             cy.wait(500);
         } while (hardwareCount === 0 && current_page <= max_pages);
 
-        cy.get('#btn-step-next').click();
+        cy.get('#btn-step-2-next').click();
 
         cy.get('.recurring-item').then(($items) => {
             cy.then(() => {
@@ -103,51 +97,35 @@ describe('User Parent can update a quote.cy', () => {
             cy.login(manager, managerPassword);
             cy.visit('/quotes');
             cy.wait(500);
-            cy.get('#datatable-btn-0-edit').click();
-            cy.wait(1000);
-            cy.get('#btn-bolt-0-add-1').click();
-            cy.wait(1000);
-            cy.get('#btn-step-next').click();
-            cy.wait(1000);
-            cy.get('#btn-step-next').click();
-            cy.wait(1000);
-
-            cy.get('#current-step')
-                .invoke('text')
-                .then((currentStepText) => {
-                    cy.get('#last-step')
-                        .invoke('text')
-                        .then((lastStepText) => {
-                            const current_step = parseInt(currentStepText.trim());
-                            const last_step = parseInt(lastStepText.trim());
-
-                            for (let i = current_step; i <= last_step; i++) {
-                                cy.get(`#next-step-btn`).click();
-                            }
-                        });
+            cy.get('#datatable-btn-0-show').click();
+            let nrItems = 0;
+            cy.get('.recurring-item').then(($items) => {
+                cy.then(() => {
+                    nrItems = $items.length;
                 });
-        });
-
-        cy.get('#btn-recurring-add').click();
-        cy.get('#input-new-recurring-name').type('Custom line recurring');
-        cy.get('#input-new-recurring-quantity').type(10);
-        cy.get('#input-new-recurring-price').type(10);
-        cy.get('#input-new-recurring-discount').type(10);
-        cy.get('#btn-new-recurring-add').click();
-        cy.get('#table-recurring').contains('Custom line recurring');
-        cy.wait(500);
-        cy.get('.recurring-item').then(($items) => {
-            cy.then(() => {
-                expect(nrItems + 1).to.equal($items.length);
             });
-        });
 
-        cy.get(`#btn-recurring-0-remove`).click();
-        cy.get('#swal-btn-confirm').click();
-        cy.wait(500);
-        cy.get('.recurring-item').then(($items) => {
-            cy.then(() => {
-                expect(nrItems).to.equal($items.length);
+            cy.get('#btn-recurring-add').click();
+            cy.get('#input-new-recurring-name').type('Custom line recurring');
+            cy.get('#input-new-recurring-quantity').type(10);
+            cy.get('#input-new-recurring-price').type(10);
+            cy.get('#input-new-recurring-discount').type(10);
+            cy.get('#btn-new-recurring-add').click();
+            cy.get('#table-recurring').contains('Custom line recurring');
+            cy.wait(500);
+            cy.get('.recurring-item').then(($items) => {
+                cy.then(() => {
+                    expect(nrItems + 1).to.equal($items.length);
+                });
+            });
+
+            cy.get(`#btn-recurring-0-remove`).click();
+            cy.get('#swal-btn-confirm').click();
+            cy.wait(500);
+            cy.get('.recurring-item').then(($items) => {
+                cy.then(() => {
+                    expect(nrItems).to.equal($items.length);
+                });
             });
         });
     });
