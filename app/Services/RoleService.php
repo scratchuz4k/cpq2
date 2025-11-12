@@ -40,6 +40,6 @@ class RoleService
 
         $roles = Role::descendants();
 
-        return $query->whereIn('id', $roles->pluck('id'));
+        return $query->whereIn('roles.id', $roles->pluck('id'));
     }
 }
