@@ -24,19 +24,24 @@
         'its' => array_reduce(
             $quote['items'],
             function ($carry, $item) {
-                return $carry || (isset($item['data']) && $item['data']->providerName === 'ITS');
+                return $carry ||
+                    (isset($item['data']) &&
+                        isset($item['data']->providerName) &&
+                        $item['data']->providerName === 'ITS');
             },
             false,
         ),
         'pxc' => array_reduce(
             $quote['items'],
             function ($carry, $item) {
-                return $carry || (isset($item['data']) && $item['data']->providerName === 'PXC');
+                return $carry ||
+                    (isset($item['data']) &&
+                        isset($item['data']->providerName) &&
+                        $item['data']->providerName === 'PXC');
             },
             false,
         ),
     ];
-
 @endphp
 
 <!doctype html>
@@ -156,7 +161,7 @@
                                                 @endif
                                             </td>
                                             <td class="column-subprovider-body ">
-                                                @if ($item['data']?->connectivitySupplierGroup)
+                                                @if (isset($item['data']?->connectivitySupplierGroup))
                                                     <img class="img-provider"
                                                         style="max-width: 60px; max-height: 20px; width: auto; height: auto;"
                                                         src="{{ $item['image'] ?? public_path() . '/images/providers/' . str_replace(' ', '', strtolower($item['data']?->connectivitySupplierGroup)) . '.png' }}" />
@@ -207,10 +212,14 @@
                                         </td>
                                         @if ($isConnectivity)
                                             <td class="column-speed-body">
-                                                {{ formatBytes($item['data']?->speed) }}
+                                                @if (isset($item['data']?->speed))
+                                                    {{ formatBytes($item['data']?->speed) }}
+                                                @endif
                                             </td>
                                             <td class="column-bearer-body">
-                                                {{ formatBytes($item['data']?->bearer) }}
+                                                @if (isset($item['data']?->bearer))
+                                                    {{ formatBytes($item['data']?->bearer) }}
+                                                @endif
                                             </td>
                                         @endif
                                         <td class="column-quantity-body">
@@ -262,14 +271,14 @@
                                     <tr class="item-row" style="vertical-align: middle;">
                                         @if ($isConnectivity)
                                             <td class="column-provider-body">
-                                                @if ($item['data']?->providerKey)
+                                                @if (isset($item['data']?->providerKey))
                                                     <img class="img-provider"
                                                         style="max-width: 60px; max-height: 20px; width: auto; height: auto;"
                                                         src="{{ $item['image'] ?? public_path() . '/images/providers/' . $item['data']?->providerKey . '.png' }}" />
                                                 @endif
                                             </td>
                                             <td class="column-subprovider-body ">
-                                                @if ($item['data']?->connectivitySupplierGroup)
+                                                @if (isset($item['data']?->connectivitySupplierGroup))
                                                     <img class="img-provider"
                                                         style="max-width: 60px; max-height: 20px; width: auto; height: auto;"
                                                         src="{{ $item['image'] ?? public_path() . '/images/providers/' . str_replace(' ', '', strtolower($item['data']?->connectivitySupplierGroup)) . '.png' }}" />
@@ -308,10 +317,14 @@
                                         </td>
                                         @if ($isConnectivity)
                                             <td class="column-speed-body">
-                                                {{ formatBytes($item['data']?->speed) }}
+                                                @if (isset($item['data']?->speed))
+                                                    {{ formatBytes($item['data']?->speed) }}
+                                                @endif
                                             </td>
                                             <td class="column-bearer-body">
-                                                {{ formatBytes($item['data']?->bearer) }}
+                                                @if (isset($item['data']?->bearer))
+                                                    {{ formatBytes($item['data']?->bearer) }}
+                                                @endif
                                             </td>
                                         @endif
                                         <td class="column-quantity-body">
