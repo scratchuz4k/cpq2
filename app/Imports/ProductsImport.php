@@ -13,107 +13,119 @@ use App\Rules\ValidDateValidator;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 use Maatwebsite\Excel\Concerns\SkipsErrors;
 use Maatwebsite\Excel\Concerns\ToCollection;
 use Maatwebsite\Excel\Concerns\WithBatchInserts;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ProductsImport implements ToCollection, WithBatchInserts, WithHeadingRow
 {
     use SkipsErrors;
 
-    public $results = [
+    protected $results = [
         'processed' => 0,
         'success' => 0,
         'skipped' => 0,
         'errors' => [],
+        'data' => [],
     ];
 
-    private Tenant $tenant;
+    protected Tenant $tenant;
 
-    public function __construct(protected bool $overwrite = false)
+    protected bool $isDryRun;
+
+    protected array $availableSkus = [];
+
+    public function __construct(protected bool $overwrite = false, bool $isDryRun = false)
     {
         $this->tenant = Tenant::current();
+        $this->isDryRun = $isDryRun;
     }
 
-    /**
-     * Recursively processes and inserts products with missing parent_id.
-     *
-     * @param  array  $productsWhithParent
-     * @return void
-     */
-    private function processProductsWithParent(?int $parentIndex = null)
+    public function getResults(): array
     {
+        return $this->results;
+    }
 
-        if (empty($this->productsWithParent)) {
-            return;
-        }
-        if ($parentIndex !== null) {
-            $currentProduct = $this->productsWithParent[$parentIndex];
-            array_splice($this->productsWithParent, $parentIndex, 1);
-        } else {
-            $currentProduct = array_shift($this->productsWithParent);
-        }
-
-        $parent = Product::where('sku', $currentProduct['parent_sku'])->first();
-
-        if ($parent) {
-            $this->insertProduct($currentProduct, $parent->id);
-        } else {
-            $productKey = array_search($currentProduct['parent_sku'], array_column($this->productsWithParent, 'id'), false);
-
-            if ($productKey !== false) {
-                $this->processProductsWithParent($productKey);
-
-                $newParent = Product::find($currentProduct['parent_sku']);
-                if (! empty($newParent)) {
-                    $this->insertProduct($currentProduct, $newParent->id);
-                } else {
-                    $this->results['skipped']++;
-                    $this->results['errors'][] = ['row' => $currentProduct, 'error' => 'Parent Product with SKU: "'.$currentProduct['parent_sku'].'" not found!'];
-                }
-            } else {
-                $this->results['skipped']++;
-                $this->results['errors'][] = ['row' => $currentProduct, 'error' => 'Parent Product with SKU: "'.$currentProduct['parent_sku'].'" not found!'];
-            }
-        }
-
-        if ($parentIndex === null) {
-            $this->processProductsWithParent();
-        }
+    public function setDryRun(bool $isDryRun): void
+    {
+        $this->isDryRun = $isDryRun;
     }
 
     /**
-     * Insert a new product with a specific product.
-     *
-     * @return void
+     * Validate the import file.
      */
-    private function insertProduct(array $product, ?int $parentId = null)
+    public static function validateFile($file, bool $overwrite): array
+    {
+        $import = new self($overwrite, true);
+        Excel::import($import, $file);
+
+        return $import->results;
+    }
+
+    /**
+     * Insert a new product
+     */
+    private function insertProduct(array $product, ?int $parentId = null): bool
     {
         try {
-            $validator = Validator::make($product, $this->getValidationRules());
+            if (isset($product['status'])) {
+                $matchingCase = collect(ProductStatusesEnum::cases())
+                    ->first(fn ($case) => strtoupper($case->value) === strtoupper($product['status']));
+
+                if ($matchingCase) {
+                    $product['status'] = $matchingCase->value;
+                }
+            }
+
+            $ignoreProductId = null;
+
+            if ($this->overwrite && ! empty($product['sku'])) {
+                $existingProduct = Product::where('sku', $product['sku'])->first();
+                if ($existingProduct) {
+                    $ignoreProductId = $existingProduct->id;
+                }
+            }
+
+            $product['prices'] = [
+                'code' => $product['price_code'] ?? null,
+                'net' => $product['price_net'] ?? null,
+                'cost' => $product['price_cost'] ?? null,
+            ];
+
+            $validator = Validator::make($product, $this->getValidationRules($ignoreProductId));
 
             if ($validator->fails()) {
                 $this->results['skipped']++;
                 $this->results['errors'][] = ['row' => $product, 'errors' => $validator->errors()->all()];
 
-                return null;
+                return false;
+            }
+
+            $this->availableSkus[] = $product['sku'];
+
+            if ($this->isDryRun) {
+                $this->results['success']++;
+
+                return true;
             }
 
             $productData = [
                 'name' => $product['name'] ?? '',
                 'description' => $product['description'] ?? '',
                 'expires_at' => (isset($product['expires_at']) && ! empty($product['expires_at']))
-                     ? Carbon::createFromFormat('d/m/Y', $product['expires_at'])->endOfDay()
+                    ? Carbon::createFromFormat('d/m/Y', $product['expires_at'])->endOfDay()
                     : null,
                 'status' => (isset($product['status']) && ! empty($product['status'])) ? $product['status'] : ProductStatusesEnum::ACTIVE->name,
-                'supplier_id' => $product['supplier_id'] ?: null,
+                'supplier_id' => $product['supplier_id'] ?? null,
                 'price_plan_id' => (isset($product['price_plan_id']) && ! empty($product['price_plan_id'])) ? PricePlan::find($product['price_plan_id'])->id : null,
                 'prices' => [
-                    'code' => $product['price_code'],
-                    'net' => $product['price_net'],
-                    'cost' => $product['price_cost'],
+                    'code' => $product['price_code'] ?? null,
+                    'net' => $product['price_net'] ?? null,
+                    'cost' => $product['price_cost'] ?? null,
 
                 ],
                 'category_id' => $product['category_id'] ?? null,
@@ -130,11 +142,11 @@ class ProductsImport implements ToCollection, WithBatchInserts, WithHeadingRow
                     $productData
                 );
             } else {
-                if ($newProduct = Product::where('sku', $product['sku'])->exists()) {
+                if (Product::where('sku', $product['sku'])->exists()) {
                     $this->results['skipped']++;
                     $this->results['errors'][] = ['row' => $product, 'error' => 'Product already exists'];
 
-                    return;
+                    return false;
                 }
 
                 $newProduct = Product::create([
@@ -143,8 +155,8 @@ class ProductsImport implements ToCollection, WithBatchInserts, WithHeadingRow
                 ]);
             }
 
-            if (in_array(! null, $productData['prices'])) {
-                $price = Price::UpdateOrCreate(
+            if (count(array_filter($productData['prices'])) > 0) {
+                Price::UpdateOrCreate(
                     [
                         'product_id' => $newProduct->id,
                     ],
@@ -156,31 +168,83 @@ class ProductsImport implements ToCollection, WithBatchInserts, WithHeadingRow
 
             $this->results['success']++;
 
+            return true;
+
         } catch (ValidationException $e) {
+            $this->results['skipped']++;
             $this->results['errors'][] = ['row' => $product, 'error' => $e->errors()];
         } catch (\Exception $e) {
+            $this->results['skipped']++;
             $this->results['errors'][] = ['row' => $product, 'error' => $e->getMessage()];
         }
 
-        return null;
+        return false;
     }
 
-    public function collection(Collection $rows): void
+    public function collection(Collection $collection): void
     {
-        foreach ($rows as $row) {
+        $deferredRows = [];
+        $fileSkus = $collection->pluck('sku')->filter()->unique()->toArray();
+
+        foreach ($collection as $row) {
+            if ($row->filter()->isEmpty()) {
+                continue;
+            }
+
             $row = collect($row)->map(function ($value) {
                 $value = trim((string) $value);
 
                 return $value === '' ? null : $value;
             })->toArray();
             $this->results['processed']++;
+            $this->results['data'][] = $row;
             if (empty($row['parent_sku'])) {
                 $this->insertProduct($row);
             } else {
-                $this->productsWithParent[] = $row;
+                $deferredRows[] = $row;
             }
         }
-        $this->processProductsWithParent();
+
+        $fileProductParentSkus = collect($deferredRows)->pluck('parent_sku')->unique()->filter();
+
+        if ($fileProductParentSkus->isNotEmpty() && $missingParentSkus = array_diff($fileProductParentSkus->toArray(), $fileSkus)) {
+            $this->availableSkus = Product::query()->whereIn('sku', $missingParentSkus)->pluck('sku')->toArray();
+            $this->availableSkus = array_unique(array_merge($this->availableSkus, $fileSkus));
+        }
+
+        $this->processDeferredChildren($deferredRows, $fileSkus);
+    }
+
+    private function processDeferredChildren(array $deferredRows, array $fileSkus): void
+    {
+        $processedInLastIteration = true;
+        while (count($deferredRows) > 0 && $processedInLastIteration) {
+            $processedInLastIteration = false;
+            $remainingRows = [];
+
+            foreach ($deferredRows as $row) {
+                $parent = null;
+                if (in_array($row['parent_sku'], $this->availableSkus)) {
+                    if (! $this->isDryRun) {
+                        $parent = Product::where('sku', $row['parent_sku'])->first();
+                    }
+
+                    if ($this->insertProduct($row, $parent ? $parent->id : null)) {
+                        $processedInLastIteration = true;
+                    }
+                } else {
+                    $remainingRows[] = $row;
+                }
+            }
+            $deferredRows = $remainingRows;
+        }
+
+        if (count($deferredRows) > 0) {
+            foreach ($deferredRows as $row) {
+                $this->results['skipped']++;
+                $this->results['errors'][] = ['row' => $row, 'error' => 'Parent Product with SKU: "'.$row['parent_sku'].'" not found!'];
+            }
+        }
     }
 
     public function batchSize(): int
@@ -200,7 +264,7 @@ class ProductsImport implements ToCollection, WithBatchInserts, WithHeadingRow
 
     public static function getImportTemplate()
     {
-        $template = require app_path('Helpers/Import/products_import_template.php');
+        $template = require app_path('Helpers/Import/product_import.php');
 
         return [
             'data' => collect($template['data']),
@@ -208,14 +272,26 @@ class ProductsImport implements ToCollection, WithBatchInserts, WithHeadingRow
         ];
     }
 
-    private function getValidationRules(): array
+    private function getValidationRules($ignoreProductId = null): array
     {
+        $rules = (new ProductCreateRequest)->rules();
+
+        unset($rules['prices.*.code'], $rules['prices.*.cost'], $rules['prices.*.net']);
+
         return [
-            ...(new ProductCreateRequest)->rules(),
+            ...$rules,
             'expires_at' => new ValidDateValidator,
             'sku' => $this->overwrite
                 ? 'required|string|max:255'
-                : ['required', 'string', 'max:255', new TenantUniqueRule('products', 'sku')],
+                : ['required', 'string', 'max:255', new TenantUniqueRule('products', 'sku', $ignoreProductId)],
+            'prices.code' => [
+                'nullable',
+                'numeric',
+                Rule::unique('prices')
+                    ->where(fn ($query) => $query->where('product_id', $ignoreProductId)),
+            ],
+            'prices.cost' => 'required|numeric',
+            'prices.net' => 'required|numeric',
         ];
     }
 }
