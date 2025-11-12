@@ -39,6 +39,7 @@ const createOrderAndRefresh = async (id) => {
 };
 
 const getWorkbasketTotal = async () => {
+    if (!can('viewAny quote_approval')) return;
     let string = queryString.stringify({
         filters: JSON.stringify([
             { column: 'status', operator: 'in', value: 'pending', function: 'orWhere' },

@@ -81,7 +81,7 @@ class RolePermissionSeeder extends Seeder
                     'quote', 'quote_item', 'order', 'order_item', 'merchant', 'account', 'contact',
                     'price', 'product', 'category', 'region', 'tenant', 'brand', 'supplier',
                     'spa', 'user', 'solution_type', 'api', 'price_plan', 'activity', 'email_template', 'email_history',
-                    'group', 'blacklist', 'role', 'permission', '',
+                    'group', 'blacklist', 'role', 'permission', 'quote_approval',
                 ],
                 'simple_permission' => ['viewAny report'],
             ],
