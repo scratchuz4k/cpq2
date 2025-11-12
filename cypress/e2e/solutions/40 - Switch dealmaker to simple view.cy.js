@@ -5,11 +5,11 @@ const subprovider = 'BT';
 
 describe('Creates a Mobile Quote', () => {
     beforeEach(() => {
-        cy.login(Cypress.env('SUPERUSER_EMAIL'), Cypress.env('SUPERUSER_PASSWORD'));
+        cy.login('companyadmin@example.com', 'werwerwer');
     });
 
     it('Formats connectivity table to simple view', () => {
-        cy.visit('/');
+        cy.visit('/quotes');
         cy.get('#my-account').click();
         cy.get('#link-solutions').click();
         cy.get('#datatable-search').type('Connectivity');
@@ -29,7 +29,7 @@ describe('Creates a Mobile Quote', () => {
     });
 
     it('Creates Connectivity quote and has simple Table', () => {
-        cy.visit('/');
+        cy.visit('/quotes');
         cy.get('#create-tab').click();
         cy.selectLazyOption('account_id');
         cy.get('#btn-next-step').click();
@@ -84,7 +84,7 @@ describe('Creates a Mobile Quote', () => {
         cy.get('#table-simple > thead').contains('Total');
     });
     it('Formats connectivity table to DealMaker view', () => {
-        cy.visit('/');
+        cy.visit('/quotes');
         cy.get('#my-account').click();
         cy.get('#link-solutions').click();
         cy.get('#datatable-search').type('Connectivity');
@@ -103,7 +103,7 @@ describe('Creates a Mobile Quote', () => {
         cy.get('.notyf').contains('Updated with Success');
     });
     it('Creates Connectivity quote and has DealMaker Table', () => {
-        cy.visit('/');
+        cy.visit('/quotes');
         cy.get('#datatable-btn-0-show').click();
 
         cy.get('.recurring-item').its('length').should('eq', 1);

@@ -17,7 +17,7 @@ describe('Manage Products Category relation', () => {
 
     categories.forEach((category, index) => {
         it('Create a Category', () => {
-            cy.visit('/');
+            cy.visit('/quotes');
             cy.get('#my-account').click();
             cy.get('#link-categories').click();
             cy.get('#category-create-btn').click();
@@ -31,7 +31,7 @@ describe('Manage Products Category relation', () => {
 
     products.forEach((product, index) => {
         it('Creates a Product', () => {
-            cy.visit('/');
+            cy.visit('/quotes');
             cy.get('#my-account').click();
             cy.get('#link-products').click();
 
@@ -54,7 +54,7 @@ describe('Manage Products Category relation', () => {
 
     categories.forEach((category, index) => {
         it('Check Category has related product', () => {
-            cy.visit('/');
+            cy.visit('/quotes');
             cy.get('#my-account').click();
             cy.get('#link-categories').click();
             cy.get('#datatable-search').type(category.name);
@@ -64,5 +64,19 @@ describe('Manage Products Category relation', () => {
             cy.get('#1-1').click();
             cy.get('.p-datatable-table').contains(products[index].name);
         });
+    });
+
+    it('Update Category solution type', () => {
+        cy.visit('/quotes');
+        cy.get('#my-account').click();
+        cy.get('#link-categories').click();
+        cy.get('#datatable-search').type(categories[0].name);
+        cy.wait(1000);
+        cy.get('#datatable-btn-0-edit').click();
+        cy.selectOption('#category-solution-type', 'Hardware');
+        cy.get('#btn-save-category').click();
+        cy.get('#datatable-search').type(categories[0].name);
+        cy.get('.p-datatable-table').contains(categories[0].name);
+        cy.get('.p-datatable-table').contains('Hardware');
     });
 });

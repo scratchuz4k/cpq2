@@ -53,7 +53,7 @@ it('Create Quote and download PDF', function () {
     $response = $this->actingAs($user)->post('api/quotes', $this->quote_data);
     $quote = $response->json();
 
-    $pdfResponse = $this->actingAs($user)->get('quotes/'.$quote['hash'].'/download');
+    $pdfResponse = $this->actingAs($user)->get('quotes/'.$quote['uuid'].'/download');
     $pdfResponse->assertSuccessful();
     $pdfResponse->assertHeader('Content-Type', 'application/pdf');
     $this->assertTrue(
@@ -79,7 +79,7 @@ it('Download shared Quote PDF without login ', function () {
 
     $response = $this->actingAs($user)->post('/logout');
 
-    $pdfResponse = $this->actingAsGuest('web')->post('quotes/'.$quote['hash'].'/download');
+    $pdfResponse = $this->actingAsGuest('web')->post('quotes/'.$quote['uuid'].'/download');
     $pdfResponse->assertSuccessful();
     $pdfResponse->assertHeader('Content-Type', 'application/pdf');
     $this->assertTrue(
@@ -99,7 +99,7 @@ it('Download not shared Quote PDF without login', function () {
 
     $this->actingAs($user)->post('/logout');
 
-    $pdfResponse = $this->actingAsGuest('web')->post('quotes/'.$quote['hash'].'/download');
+    $pdfResponse = $this->actingAsGuest('web')->post('quotes/'.$quote['uuid'].'/download');
     $pdfResponse->assertNotFound();
     $pdfResponse->assertHeader('Content-Type', 'application/json');
     expect($pdfResponse->json()['message'])->toBe('Quote not available or not shared.');
@@ -119,7 +119,7 @@ it('Download not shared Quote PDF from another tenant', function () {
 
     $this->actingAs($user_t1)->post('/logout');
 
-    $pdfResponse = $this->actingAs($user_t2)->post('quotes/'.$quote['hash'].'/download');
+    $pdfResponse = $this->actingAs($user_t2)->post('quotes/'.$quote['uuid'].'/download');
     $pdfResponse->assertNotFound();
     $pdfResponse->assertHeader('Content-Type', 'application/json');
     expect($pdfResponse->json()['message'])->toBe('Quote not available or not shared.');

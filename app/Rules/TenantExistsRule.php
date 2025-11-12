@@ -28,7 +28,7 @@ class TenantExistsRule implements ValidationRule
             ->exists();
 
         if (! $exists) {
-            $fail("The selected {$attribute} doesn't exist for this tenant.");
+            $fail("The selected {$attribute} doesn't exist.");
         }
     }
 }

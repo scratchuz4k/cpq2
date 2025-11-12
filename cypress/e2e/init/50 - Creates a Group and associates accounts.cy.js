@@ -14,14 +14,14 @@ describe('Creates a Group and associates accounts.cy', () => {
         cy.get('#user-name').type(user.name);
         cy.get('#user-email').type(user.email);
         cy.get('#user-password').type(user.password);
-        cy.selectOption('#user-role', 'Sales Rep');
+        cy.selectLazyOption('user-role', 'Sales Rep');
         cy.get('#btn-save-user').click();
-        cy.get('#treetable-search').type(user.name);
+        cy.get('#datatable-search').type(user.name);
         cy.get('#users-table').contains(user.name);
     });
     it('Creates Accounts', () => {
         cy.login(Cypress.env('SUPERUSER_EMAIL'), Cypress.env('SUPERUSER_PASSWORD'));
-        cy.visit('/');
+        cy.visit('/quotes');
         cy.get('#create-tab').click();
         cy.get('#link-to-create-account').click();
         cy.get('#account-name').type(account1.name);
@@ -36,7 +36,7 @@ describe('Creates a Group and associates accounts.cy', () => {
     });
     it('Creates an Group, associates users and accounts', () => {
         cy.login(Cypress.env('SUPERUSER_EMAIL'), Cypress.env('SUPERUSER_PASSWORD'));
-        cy.visit('/');
+        cy.visit('/quotes');
         cy.get('#my-account').click();
         cy.get('#link-users').click();
         cy.get('#1-1').click();
@@ -45,7 +45,8 @@ describe('Creates a Group and associates accounts.cy', () => {
         cy.get('#group-create-name').type(group.name);
         cy.get('#group-create-submit').click();
         cy.get('.notyf').contains('Created with Success');
-        cy.wait(1000);
+        cy.get('#datatable-search').type(group.name);
+        cy.get('#roles-table').contains(group.name);
         cy.get('#datatable-btn-0-edit').click();
         cy.wait(1000);
         cy.get('#1-1').click();
@@ -59,7 +60,7 @@ describe('Creates a Group and associates accounts.cy', () => {
     });
     it('check if user has correct accounts', () => {
         cy.login(user.email, user.password);
-        cy.visit('/');
+        cy.visit('/quotes');
         cy.get('#create-tab').click();
         cy.get('#input-select-account_id').click();
         cy.get('#select-account_id-search').type(account1.name);
