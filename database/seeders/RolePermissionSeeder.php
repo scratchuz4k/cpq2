@@ -74,7 +74,7 @@ class RolePermissionSeeder extends Seeder
     public static $roles =
         [
             'Company Admin' => [
-                'parent' => 'Super Admin',
+                'parent' => null,
                 'tenant' => 1,
                 'permissions' => [
                     'quote', 'quote_item', 'order', 'order_item', 'merchant', 'account', 'contact',
