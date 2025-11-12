@@ -20,8 +20,9 @@ describe('Quote Approval and Rejection', () => {
         });
         cy.get('#quote-approval-flow').select('Margin');
         cy.get('#margin-operation').select('value');
-        cy.get('#margin-value').clear().type('99999').should('have.value', '99999');
-        cy.wait(2000);
+        cy.get('#margin-value').clear().type('99999');
+        cy.wait(1000);
+        cy.get('#margin-value').should('have.value', '99999');
         cy.get('.notyf').contains('Content updated successfully');
     });
 
