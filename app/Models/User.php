@@ -173,8 +173,8 @@ class User extends Authenticatable
     public static function getChildAndOrphansUser(): Builder
     {
         $query = User::query();
-        $superUsers = User::whereHas('roles', fn ($query) => $query->whereIn('name', ['Super Admin']))->get();
-        $query = $query->whereNotIn('id', $superUsers->pluck('id'));
+        $superUsers = User::whereHas('roles', fn ($query) => $query->whereIn('roles.name', ['Super Admin']))->get();
+        $query = $query->whereNotIn('users.id', $superUsers->pluck('id'));
 
         $role = Auth::user()->roles()->first();
 
@@ -185,7 +185,7 @@ class User extends Authenticatable
         $roles = Role::descendants();
 
         return $query->whereHas('roles', function ($query) use ($roles) {
-            $query->whereIn('id', $roles->pluck('id'));
+            $query->whereIn('roles.id', $roles->pluck('id'));
         });
 
     }
