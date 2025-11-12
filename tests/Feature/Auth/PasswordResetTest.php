@@ -23,6 +23,7 @@ test('reset password link screen can be rendered', function () {
 test('reset password link can be requested', function () {
     Mail::fake();
 
+    setTenantForPermissions();
     $user = User::factory()->create();
     $user->tenants()->attach(Tenant::find(1));
     $user->assignRole('Company Admin');
@@ -36,6 +37,7 @@ test('reset password link can be requested', function () {
 test('reset password screen can be rendered', function () {
     Notification::fake();
 
+    setTenantForPermissions();
     $user = User::factory()->create();
     $user->tenants()->attach(Tenant::find(1));
     $user->assignRole('Company Admin');
@@ -50,6 +52,7 @@ test('reset password screen can be rendered', function () {
 test('password can be reset with valid token', function () {
     Notification::fake();
 
+    setTenantForPermissions();
     $user = User::factory()->create();
     $user->tenants()->attach(Tenant::find(1));
     $user->assignRole('Company Admin');

@@ -15,9 +15,7 @@ const props = defineProps({
                     </a>
                 </div>
                 <div class="flex items-center">
-                    <div class="error-text text-center fs-4 text-uppercase">
-                        {{ props.message }}
-                    </div>
+                    <div class="error-text text-center fs-4 text-uppercase">{{ props.message }}</div>
                 </div>
                 <br />
                 <div class="flex items-center justify-center">

@@ -104,7 +104,7 @@ class ProductController extends BaseController
         if ($requirePrimary) {
             $product = $this->getProduct($quote, 'Primary Product');
             if (! $product) {
-                throw new Exception('Primary Product not found!');
+                return response()->json(['message' => 'Primary Product not found!'], 400);
             }
             $filename = $product->product_code.$filename;
 

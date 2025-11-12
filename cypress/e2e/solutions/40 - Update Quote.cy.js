@@ -4,7 +4,7 @@ describe('40 - Update Quote.cy', () => {
     });
 
     it('Check Quote Update Buttons', () => {
-        cy.visit('/');
+        cy.visit('/quotes');
         cy.get('#datatable-btn-0-crete-order').should('not.exist');
         cy.get('#datatable-btn-0-edit').should('not.exist');
         cy.get('#datatable-btn-0-delete').should('not.exist');

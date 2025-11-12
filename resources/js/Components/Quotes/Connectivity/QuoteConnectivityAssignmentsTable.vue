@@ -6,7 +6,7 @@
                     IP Assignments
                     <span class="fw-normal">({{ meta.total }})</span>
                 </p>
-                <div v-if="isLoading">
+                <div v-if="isLoadingLocal">
                     <div class="spinner-border spinner-border-sm" role="status">
                         <span class="visually-hidden">Loading...</span>
                     </div>
@@ -39,23 +39,24 @@
                 </div>
             </div>
         </div>
-        <div v-else-if="!isLoading">
+        <div v-else-if="!isLoadingLocal">
             <div class="col mb-3">No Ip Assignments found</div>
         </div>
     </div>
 </template>
 <script setup>
-import { removeAddon, addAddon } from '@/Composables/useConnectivityItem';
+import { removeAddon, addAddon, isLoading } from '@/Composables/useConnectivityItem';
 import { watch, reactive, ref, onMounted } from 'vue';
-import { quote } from '@/Composables/useQuote';
+import { quote, getQuote } from '@/Composables/useQuote';
 import queryString from 'query-string';
+import _ from 'lodash';
 
 const props = defineProps({
     modelValue: Object,
     currentStep: Number
 });
 
-const isLoading = ref(false);
+const isLoadingLocal = ref(false);
 const options = ref([]);
 let timeoutId = null;
 const meta = reactive({
@@ -68,7 +69,7 @@ const meta = reactive({
 });
 
 const getOptions = async () => {
-    isLoading.value = true;
+    isLoadingLocal.value = true;
     let temp = [];
     let query = queryString.stringify({
         quote_id: props.modelValue.id,
@@ -92,17 +93,23 @@ const getOptions = async () => {
             getOptions();
         }, 2000);
     } else {
-        isLoading.value = false;
+        isLoadingLocal.value = false;
     }
 };
 const checkProduct = (article) => {
+    if (isLoading.value) return;
     let item = quote.items.find((item) => item.product_code == article.code);
     let index = quote.items.findIndex((item) => item.product_code == article.code);
     let primaryProduct = quote.items.find((x) => x.data.type == 'Primary Product');
     article.type = 'Option Product';
     article.group = props.currentStep + 1;
     article.contractTermMonths = article.contractTermMonths ?? primaryProduct.contract_length;
-    return index == -1 ? addAddon(article) : removeAddon(item);
+
+    if (index == -1) {
+        addAddon(article);
+    } else {
+        removeAddon(item);
+    }
 };
 
 window.addEventListener('beforeunload', () => {

@@ -37,13 +37,21 @@ class AuthenticatedSessionController extends Controller
             ]);
         }
 
-        $request->session()->regenerate();
+        $request->session()->regenerate(); // Clear the permission cache to access fresh roles/permissions
+        app(\Spatie\Permission\PermissionRegistrar::class)->forgetCachedPermissions();
 
-        if (auth()->user()->hasRole('Order Manager')) {
+        $user = Auth::user();
+        setPermissionsTeamId(Auth::user()->tenant_id);
+
+        if ($user->can('viewAny quote')) {
+            return Inertia::location(route('quotes.index'));
+        }
+
+        if ($user->can('viewAny order')) {
             return Inertia::location(route('orders.index'));
         }
 
-        return Inertia::location(route('quotes.index'));
+        return Inertia::location(route('dashboard'));
     }
 
     /**

@@ -8,24 +8,22 @@ export const checks = reactive({
     failoverHardwareRequired: false
 });
 
-export const remove = (item) => {
+export const remove = async (item) => {
     let items = quote.items.filter((x) => x.group == item.group);
     if (item.data?.type == 'Primary Product') {
         items = quote.items;
     }
     try {
-        items.forEach(async (x) => {
+        for (const x of items) {
             await axios.delete(`/api/quote-items/${x.id}`);
-            let index = quote.items.findIndex((e) => e.id == x.id);
-            quote.items.splice(index, 1);
-        });
-        getQuote(quote.id);
+        }
     } catch (ex) {
         alert(ex.response.data.message);
     }
+    await getQuote(quote.id);
 };
 
-export const add = (article) => {
+export const add = async (article) => {
     try {
         let items = [];
 
@@ -60,17 +58,17 @@ export const add = (article) => {
             });
         }
 
-        items.forEach(async (x) => {
+        for (const x of items) {
             let res = await axios.post('/api/quote-items', x);
-            quote.items.push(res.data);
-        });
-        getQuote(quote.id);
+        }
     } catch (ex) {
         alert(ex.response.data.message);
     }
+    await getQuote(quote.id);
 };
 
-export const addAddon = (article) => {
+export const addAddon = async (article) => {
+    isLoading.value = true;
     try {
         let items = [];
 
@@ -101,25 +99,26 @@ export const addAddon = (article) => {
             });
         }
 
-        items.forEach(async (x) => {
+        for (const x of items) {
             let res = await axios.post('/api/quote-items', x);
-        });
-        getQuote(quote.id);
+        }
     } catch (ex) {
         alert(ex.response.data.message);
     }
+    await getQuote(quote.id);
+    isLoading.value = false;
 };
 
-export const removeAddon = (item) => {
+export const removeAddon = async (item) => {
+    isLoading.value = true;
     let items = quote.items.filter((x) => x.product_code == item.product_code);
     try {
-        items.forEach(async (x) => {
+        for (const x of items) {
             await axios.delete(`/api/quote-items/${x.id}`);
-            let index = quote.items.findIndex((e) => e.id == x.id);
-            quote.items.splice(index, 1);
-        });
-        getQuote(quote.id);
+        }
     } catch (ex) {
         alert(ex.response.data.message);
     }
+    await getQuote(quote.id);
+    isLoading.value = false;
 };

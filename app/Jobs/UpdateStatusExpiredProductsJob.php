@@ -26,9 +26,6 @@ class UpdateStatusExpiredProductsJob implements ShouldQueue
         try {
             $productsUpdated = 0;
 
-            Log::info("UpdateStatusExpiredProductsJob | ------------------- TENANT:  ({$tenant->id}) {$tenant->name} -------------------");
-            Log::info('UpdateStatusExpiredProductsJob | ---------------------------------------------------------------');
-
             $startOfCurrentDay = Carbon::now()->startOfDay();
 
             DB::transaction(function () use ($startOfCurrentDay, &$productsUpdated) {
@@ -52,6 +49,5 @@ class UpdateStatusExpiredProductsJob implements ShouldQueue
         }
 
         Log::info("UpdateStatusExpiredProductsJob | {$productsUpdated} products updated for ({$tenant->id}) {$tenant->name}");
-        Log::info('UpdateStatusExpiredProductsJob | ---------------------------------------------------------------');
     }
 }
