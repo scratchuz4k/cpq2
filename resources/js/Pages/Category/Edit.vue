@@ -17,19 +17,25 @@ const product = ref(null);
 const category = reactive(props.category);
 
 const saveCate = () => {
-    let temp = category;
-    router.put(`/categories/${category.id}`, category, {
-        onSuccess: (page) => {
-            notyf.success('Updated with Success');
+    router.put(
+        `/categories/${category.id}`,
+        {
+            ...category,
+            parent_id: category.parent.id ?? null
         },
-        onError: (errors) => {
-            let string = '';
-            Object.keys(errors).forEach((key) => {
-                string += errors[key] + '<br>';
-            });
-            notyf.error(string);
+        {
+            onSuccess: (page) => {
+                notyf.success('Updated with Success');
+            },
+            onError: (errors) => {
+                let string = '';
+                Object.keys(errors).forEach((key) => {
+                    string += errors[key] + '<br>';
+                });
+                notyf.error(string);
+            }
         }
-    });
+    );
 };
 
 const setProductCategory = async (product_id, category_id) => {
@@ -90,6 +96,20 @@ const items = ref([
                         <div class="mb-3">
                             <label class="form-label" for="category-name">Name:</label>
                             <input id="category-name" v-model="category.name" class="form-control" />
+                        </div>
+                        <div class="mb-3">
+                            <label for="category-parent" class="form-label">Parent:</label>
+                            <div class="input-group p-0">
+                                <InputSelect
+                                    id="category-parent"
+                                    url="/categories"
+                                    :fields="['name']"
+                                    class="w-100"
+                                    v-model="category.parent"
+                                    placeholder="Select a Parent"
+                                    :query="[{ column: 'is_active', operator: 'equals', value: 1 }]"
+                                />
+                            </div>
                         </div>
                     </div>
                 </tab>
