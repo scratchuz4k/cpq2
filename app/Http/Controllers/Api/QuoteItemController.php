@@ -13,7 +13,6 @@ use App\Models\QuoteItem;
 use App\Services\QuoteItemService;
 use Exception;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class QuoteItemController extends BaseController
 {
@@ -67,10 +66,7 @@ class QuoteItemController extends BaseController
         try {
             $quoteItem = DB::transaction(fn () => $this->quoteItemService->update($quoteItem, $request->all()));
         } catch (\Exception $e) {
-            if (! env('APP_DEBUG')) {
-                Log::error($e->getMessage());
-            }
-            throw new \Exception($e);
+            return handleException($e);
         }
 
         return new QuoteItemResource($quoteItem);

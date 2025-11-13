@@ -79,9 +79,9 @@ class ReportController extends BaseController
         $filename = "Export{$export}_export_{$date}.xlsx";
 
         try {
-            return Excel::download(new $export_class($date_range, $columns), $filename);
-        } catch (\Exception) {
-            return response()->json(null, 204);
+            return Excel::downloads(new $export_class($date_range, $columns), $filename);
+        } catch (\Exception $e) {
+            return handleException($e);
         }
     }
 }

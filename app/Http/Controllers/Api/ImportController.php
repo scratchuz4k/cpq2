@@ -12,7 +12,6 @@ use App\Services\ImportService;
 use Dedoc\Scramble\Attributes\ExcludeRouteFromDocs;
 use Exception;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 
 class ImportController extends BaseController
 {
@@ -34,9 +33,7 @@ class ImportController extends BaseController
         try {
             $data = $dataProvider->get();
         } catch (Exception $e) {
-            Log::debug($e->getMessage());
-
-            return $e->getMessage();
+            return handleException($e);
         }
 
         return ImportResource::collection($data);

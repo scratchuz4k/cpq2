@@ -12,7 +12,6 @@ use Dedoc\Scramble\Attributes\ExcludeRouteFromDocs;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class BlacklistController extends BaseController
 {
@@ -44,10 +43,7 @@ class BlacklistController extends BaseController
         try {
             $blacklist = DB::transaction(fn () => $this->blacklistService->update($blacklist, $request->all()));
         } catch (Exception $e) {
-            if (! env('APP_DEBUG')) {
-                Log::error($e->getMessage());
-            }
-            throw new Exception($e);
+            return handleException($e);
         }
 
         return new BlacklistResource($blacklist);

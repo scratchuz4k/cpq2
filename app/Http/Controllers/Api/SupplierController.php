@@ -12,7 +12,6 @@ use Dedoc\Scramble\Attributes\ExcludeRouteFromDocs;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class SupplierController extends BaseController
 {
@@ -67,8 +66,7 @@ class SupplierController extends BaseController
         try {
             $supplier = DB::transaction(fn () => $this->service->update($supplier, $request->all()));
         } catch (Exception $e) {
-            Log::debug($e->getMessage());
-            throw new Exception($e);
+            return handleException($e);
         }
 
         return new SupplierResource($supplier);
