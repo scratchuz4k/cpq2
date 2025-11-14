@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\TenantExistsRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -27,6 +28,11 @@ class CategoryCreateRequest extends FormRequest
             'code' => [
                 'required',
                 Rule::unique('categories'),
+            ],
+            'parent_id' => [
+                'nullable',
+                'integer',
+                new TenantExistsRule('categories'),
             ],
         ];
     }

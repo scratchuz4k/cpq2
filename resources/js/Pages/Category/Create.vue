@@ -18,7 +18,7 @@ const saveCate = () => {
         `/categories`,
         {
             ...category,
-            parent_id: category.parent.id
+            parent_id: category.parent?.id
         },
         {
             onSuccess: (page) => {

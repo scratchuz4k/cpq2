@@ -107,7 +107,10 @@ const items = ref([
                                     class="w-100"
                                     v-model="category.parent"
                                     placeholder="Select a Parent"
-                                    :query="[{ column: 'is_active', operator: 'equals', value: 1 }]"
+                                    :query="[
+                                        { column: 'is_active', operator: 'equals', value: 1 },
+                                        { column: 'id', operator: 'not_equals', value: category.id }
+                                    ]"
                                 />
                             </div>
                         </div>
