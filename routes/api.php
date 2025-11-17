@@ -35,6 +35,7 @@ use App\Http\Controllers\Api\ShopBlocks\ProductController as ShopBlocksProductCo
 use App\Http\Controllers\Api\ShopBlocks\ProductDimensionController;
 use App\Http\Controllers\Api\SolutionTypeController;
 use App\Http\Controllers\Api\SpaController;
+use App\Http\Controllers\Api\StepController;
 use App\Http\Controllers\Api\SupplierController;
 use App\Http\Controllers\Api\TenantController;
 use App\Http\Controllers\Api\TokenController;
@@ -107,5 +108,6 @@ Route::middleware(['api', 'auth:sanctum'])->group(function () {
         'permissions' => PermissionController::class,
         'roles' => RoleController::class,
         'imports' => ImportController::class,
+        'steps' => StepController::class,
     ]);
 });

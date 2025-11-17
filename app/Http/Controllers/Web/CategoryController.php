@@ -6,10 +6,8 @@ use App\Http\Controllers\BaseController;
 use App\Http\Requests\CategoryCreateRequest;
 use App\Http\Requests\CategoryUpdateRequest;
 use App\Http\Resources\CategoryResource;
-use App\Http\Resources\SolutionTypeTenantResource;
 use App\Models\Category;
 use App\Services\CategoryService;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
@@ -27,11 +25,7 @@ class CategoryController extends BaseController
      */
     public function index()
     {
-        $solutionTypes = Auth::user()->currentTenant->solutionTypes->filter(fn ($solutionType) => $solutionType->pivot->is_active === 1)->makeHidden('pivot');
-
-        return Inertia::render('Category/Index', [
-            'solution_types' => (SolutionTypeTenantResource::collection($solutionTypes))->resolve(),
-        ]);
+        return Inertia::render('Category/Index');
     }
 
     /**
@@ -39,11 +33,7 @@ class CategoryController extends BaseController
      */
     public function create()
     {
-        $solutionTypes = Auth::user()->currentTenant->solutionTypes->filter(fn ($solutionType) => $solutionType->pivot->is_active === 1)->makeHidden('pivot');
-
-        return Inertia::render('Category/Create', [
-            'solution_types' => (SolutionTypeTenantResource::collection($solutionTypes))->resolve(),
-        ]);
+        return Inertia::render('Category/Create');
     }
 
     /**
@@ -73,11 +63,8 @@ class CategoryController extends BaseController
      */
     public function edit(Category $category)
     {
-        $solutionTypes = Auth::user()->currentTenant->solutionTypes->filter(fn ($solutionType) => $solutionType->pivot->is_active === 1)->makeHidden('pivot');
-
         return Inertia::render('Category/Edit', [
             'category' => (new CategoryResource($category))->resolve(),
-            'solution_types' => (SolutionTypeTenantResource::collection($solutionTypes))->resolve(),
         ]);
     }
 

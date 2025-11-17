@@ -12,7 +12,6 @@ use App\Models\OrderItem;
 use App\Services\OrderItemService;
 use Exception;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class OrderItemController extends BaseController
 {
@@ -46,10 +45,7 @@ class OrderItemController extends BaseController
         try {
             $orderItem = DB::transaction(fn () => $this->orderItemService->store($request->all()));
         } catch (\Exception $e) {
-            if (! env('APP_DEBUG')) {
-                Log::error($e->getMessage());
-            }
-            throw new \Exception($e);
+            return handleException($e);
         }
 
         return response()->json($orderItem);
@@ -71,10 +67,7 @@ class OrderItemController extends BaseController
         try {
             $orderItem = DB::transaction(fn () => $this->orderItemService->update($orderItem, $request->all()));
         } catch (\Exception $e) {
-            if (! env('APP_DEBUG')) {
-                Log::error($e->getMessage());
-            }
-            throw new \Exception($e);
+            return handleException($e);
         }
 
         return response()->json($orderItem);

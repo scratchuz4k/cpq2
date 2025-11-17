@@ -19,6 +19,7 @@ use App\Http\Controllers\Web\RoleController;
 use App\Http\Controllers\Web\SharedLinkController;
 use App\Http\Controllers\Web\SolutionTypeController;
 use App\Http\Controllers\Web\SpaController;
+use App\Http\Controllers\Web\StepController;
 use App\Http\Controllers\Web\SupplierController;
 use App\Http\Controllers\Web\TenantController;
 use App\Http\Controllers\Web\TokenController;
@@ -97,6 +98,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         'activities' => ActivityController::class,
         'roles' => RoleController::class,
         'imports' => ImportController::class,
+        'steps' => StepController::class,
     ]);
 
     Route::middleware('auth')->group(function () {
