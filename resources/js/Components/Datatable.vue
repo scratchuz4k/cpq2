@@ -354,7 +354,7 @@ getData();
     >
     </Paginator>
 </template>
-<style scoped>
+<style>
 .p-datatable {
     z-index: 1;
 }

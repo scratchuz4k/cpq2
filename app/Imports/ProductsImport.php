@@ -76,6 +76,14 @@ class ProductsImport implements ToCollection, WithBatchInserts, WithHeadingRow
     private function insertProduct(array $product, ?int $parentId = null): bool
     {
         try {
+            if (isset($product['status'])) {
+                $matchingCase = collect(ProductStatusesEnum::cases())
+                    ->first(fn ($case) => strtoupper($case->value) === strtoupper($product['status']));
+
+                if ($matchingCase) {
+                    $product['status'] = $matchingCase->value;
+                }
+            }
             if ($this->overwrite && ! empty($product['sku'])) {
                 $existingProduct = Product::where('sku', $product['sku'])->first();
                 if ($existingProduct) {
@@ -88,9 +96,9 @@ class ProductsImport implements ToCollection, WithBatchInserts, WithHeadingRow
             }
 
             $product['prices'] = [
-                'code' => $product['price_code'],
-                'net' => $product['price_net'],
-                'cost' => $product['price_cost'],
+                'code' => $product['price_code'] ?? null,
+                'net' => $product['price_net'] ?? null,
+                'cost' => $product['price_cost'] ?? null,
             ];
 
             if (isset($product['categories']) && is_string($product['categories'])) {
