@@ -51,12 +51,18 @@ const proxyValue = computed({
 const search = _.debounce(async (clearOptions = false) => {
     if (!props.url) return;
 
-    let string = queryString.stringify({
+    const columns = Array.isArray(props.fields) ? props.fields.filter(Boolean).join(',') : props.fields;
+    const queryParams = {
         filters: JSON.stringify(props.query),
         page: page.value,
-        search: inputSearch.value,
-        columns: props.fields
-    });
+        search: inputSearch.value
+    };
+
+    if (columns) {
+        queryParams.columns = columns;
+    }
+
+    let string = queryString.stringify(queryParams);
 
     isLoading.value = true;
     let res = await axios.get(`/api${props.url}?${string}`);
