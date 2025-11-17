@@ -65,7 +65,7 @@ describe('Creates a Mobile Quote', () => {
                 cy.get('#product-name').type(product.name);
                 cy.get('#product-sku').type(product.sku);
 
-                cy.selectLazyOption('product-step', step.name);
+                cy.selectLazyOption('product-steps', step.name);
 
                 cy.get('#btn-save-product').click();
                 cy.get('.notyf').contains('Created with Success');
