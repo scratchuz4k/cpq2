@@ -176,18 +176,6 @@ const items = ref([
                             />
                         </div>
                         <div class="mb-3">
-                            <label for="product-categories" class="form-label">Steps:</label>
-                            <InputSelectMultiple
-                                id="product-step"
-                                url="/steps"
-                                :fields="['name']"
-                                v-model="steps"
-                                placeholder="Select Steps"
-                                :query="[{ column: 'is_active', operator: 'equals', value: 1 }]"
-                            >
-                            </InputSelectMultiple>
-                        </div>
-                        <div class="mb-3">
                             <label for="product-categories" class="form-label">Categories:</label>
                             <InputSelectMultiple
                                 id="product-categories"
@@ -195,6 +183,18 @@ const items = ref([
                                 :fields="['name']"
                                 v-model="categories"
                                 placeholder="Select a Categories"
+                                :query="[{ column: 'is_active', operator: 'equals', value: 1 }]"
+                            >
+                            </InputSelectMultiple>
+                        </div>
+                        <div class="mb-3">
+                            <label for="product-steps" class="form-label">Steps:</label>
+                            <InputSelectMultiple
+                                id="product-steps"
+                                url="/steps"
+                                :fields="['name', 'solution_type.name']"
+                                v-model="steps"
+                                placeholder="Select Steps"
                                 :query="[{ column: 'is_active', operator: 'equals', value: 1 }]"
                             >
                             </InputSelectMultiple>

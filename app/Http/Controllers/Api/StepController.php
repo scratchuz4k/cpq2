@@ -60,7 +60,7 @@ class StepController extends BaseController
         try {
             $step = DB::transaction(fn () => $this->stepService->update($step, $request->all()));
         } catch (\Exception $e) {
-            throw new \Exception($e);
+            return handleException($e);
         }
 
         return new StepResource($step);

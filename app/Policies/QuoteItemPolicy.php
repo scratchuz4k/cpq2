@@ -129,10 +129,9 @@ class QuoteItemPolicy
      */
     private function canManageQuoteItem(User $user, Quote $quote): bool
     {
-        $userAncestors = User::ancestors($quote->user);
+        $userAncestors = User::getChildAndOrphansUser()->get();
 
         return $user->id === $quote->user_id
-            || $userAncestors->contains('id', $user->id)
-            || $user->hasRole('Company Admin');
+            || $userAncestors->contains('id', $user->id);
     }
 }

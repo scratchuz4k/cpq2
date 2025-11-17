@@ -4,7 +4,6 @@ import { IconField, InputIcon, InputText } from 'primevue';
 import queryString from 'query-string';
 import { ref, watch, computed, reactive, onMounted } from 'vue';
 import { v4 as uuidv4 } from 'uuid';
-import op from 'quill-delta/src/Op.ts';
 
 const props = defineProps({
     id: {
@@ -52,12 +51,18 @@ const proxyValue = computed({
 const search = _.debounce(async (clearOptions = false) => {
     if (!props.url) return;
 
-    let string = queryString.stringify({
+    const columns = Array.isArray(props.fields) ? props.fields.filter(Boolean).join(',') : props.fields;
+    const queryParams = {
         filters: JSON.stringify(props.query),
         page: page.value,
-        search: inputSearch.value,
-        columns: props.fields
-    });
+        search: inputSearch.value
+    };
+
+    if (columns) {
+        queryParams.columns = columns;
+    }
+
+    let string = queryString.stringify(queryParams);
 
     isLoading.value = true;
     let res = await axios.get(`/api${props.url}?${string}`);
@@ -93,7 +98,7 @@ onMounted(() => {
 });
 
 const selectOption = (option) => {
-    let index = proxyValue.value.findIndex((x) => x === option);
+    let index = proxyValue.value.findIndex((x) => x.id === option.id);
     if (index === -1) {
         proxyValue.value.push(option);
         return;
@@ -127,8 +132,8 @@ search();
             <template v-else-if="proxyValue.length == 1">
                 <p v-for="(items, index) in proxyValue" class="w-100 d-flex justify-content-between">
                     <span>
-                        <template v-for="(field, index) in fields">
-                            {{ index !== 0 ? ` (${items?.[field] ?? ''})` : (items?.[field] ?? '') }}
+                        <template v-for="(field, index) in props.fields">
+                            {{ index !== 0 ? ` (${_.get(items, field, '')})` : _.get(items, field, '') }}
                         </template>
                     </span>
 
@@ -190,7 +195,7 @@ search();
                     style="cursor: pointer"
                 >
                     <template v-for="(field, index) in props.fields">
-                        {{ index !== 0 ? ` (${option?.[field] ?? ''})` : (option?.[field] ?? '') }}
+                        {{ index !== 0 ? ` (${_.get(option, field, '')})` : _.get(option, field, '') }}
                     </template>
                 </div>
                 <div class="m-auto" v-if="page < meta.total_pages">

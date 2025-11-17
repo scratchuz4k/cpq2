@@ -37,9 +37,9 @@ describe('Manage Products Step relation', () => {
             cy.get('#product-sku').type(product.sku);
             cy.get('#product-name').type(product.name);
 
-            cy.selectLazyOption('product-step', steps[0].name);
-            cy.get('#input-select-product-step').click();
-            cy.selectLazyOption('product-step', steps[1].name);
+            cy.selectLazyOption('product-steps', steps[0].name);
+            cy.get('#input-select-product-steps').click();
+            cy.selectLazyOption('product-steps', steps[1].name);
 
             cy.get('#btn-save-product').click();
             cy.get('.notyf').contains('Created with Success');

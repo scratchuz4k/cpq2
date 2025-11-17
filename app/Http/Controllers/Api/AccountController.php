@@ -14,7 +14,6 @@ use Exception;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class AccountController extends BaseController
 {
@@ -35,8 +34,8 @@ class AccountController extends BaseController
         $dataProvider = new DataProvider(Account::class);
 
         $user = request()->user();
-        if ($user->group && ! $user->hasRole('Super Admin') && ! $user->hasRole('Company Admin')) {
-            $ids = $user->group->accounts->pluck('id');
+        if ($user->group()) {
+            $ids = $user->group()->accounts->pluck('id');
             $dataProvider->builder = $dataProvider->builder->whereIn('id', $ids);
         }
 
@@ -57,8 +56,7 @@ class AccountController extends BaseController
         try {
             $account = DB::transaction(fn () => $this->accountService->store($request->all()));
         } catch (Exception $e) {
-            Log::debug($e->getMessage());
-            throw new Exception($e);
+            return handleException($e);
         }
 
         return new AccountResource($account);
@@ -80,8 +78,7 @@ class AccountController extends BaseController
         try {
             $account = DB::transaction(fn () => $this->accountService->update($account, $request->all()));
         } catch (Exception $e) {
-            Log::debug($e->getMessage());
-            throw new Exception($e);
+            return handleException($e);
         }
 
         return new AccountResource($account);

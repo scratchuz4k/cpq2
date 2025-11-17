@@ -119,7 +119,7 @@ const items = ref([
                                 v-model="user"
                                 placeholder="Select an User"
                                 :query="[
-                                    { column: 'group_id', operator: 'is_null', value: '' },
+                                    { column: 'groups.id', operator: 'is_null', value: '' },
                                     { column: 'is_active', operator: 'equals', value: 1 }
                                 ]"
                             >
@@ -137,7 +137,7 @@ const items = ref([
                             <label class="form-label">Users:</label>
                             <Datatable
                                 id="group-users"
-                                :query="[{ column: 'group_id', operator: 'equals', value: group.id }]"
+                                :query="[{ column: 'groups.id', operator: 'equals', value: group.id }]"
                                 :columns="[
                                     { data: 'id', title: '#', style: 'width:5%' },
                                     { data: 'name', title: 'Name', style: 'width:50%' },

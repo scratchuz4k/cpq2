@@ -33,7 +33,7 @@ class TenantUniqueRule implements ValidationRule
         }
 
         if ($query->exists()) {
-            $fail("The {$attribute} has already been taken for this tenant.");
+            $fail("The {$attribute} has already been taken.");
         }
     }
 }

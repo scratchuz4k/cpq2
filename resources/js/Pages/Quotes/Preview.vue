@@ -13,9 +13,11 @@ const props = defineProps({
 setQuote(props.quote);
 
 const warningProviders = ref([
-    { its: quote.items.some((item) => item.data?.providerName === 'ITS') },
-    { pxc: quote.items.some((item) => item.data?.providerName === 'PXC') }
+    { name: 'its', is_present: quote.items.some((item) => item.data?.providerName === 'ITS') },
+    { name: 'pxc', is_present: quote.items.some((item) => item.data?.providerName === 'PXC') }
 ]);
+
+//checkWarnings(warningProviders.value, null);
 
 const items = ref([
     { label: 'Home', url: '/dashboard' },
@@ -49,7 +51,7 @@ const items = ref([
             <div class="col" style="text-align: right">
                 <div>
                     <a
-                        @click="checkWarnings(warningProviders, route('quotes.download', { quote: quote.hash }))"
+                        @click="checkWarnings(warningProviders, route('quotes.download', { quote: quote.uuid }))"
                         class="btn btn-secondary mx-2"
                     >
                         <font-awesome-icon :icon="['fas', 'file-pdf']"></font-awesome-icon>

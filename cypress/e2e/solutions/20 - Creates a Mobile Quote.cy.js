@@ -20,11 +20,11 @@ const step = { name: 'step-1' + temp2 };
 
 describe('Creates a Mobile Quote', () => {
     beforeEach(() => {
-        cy.login(Cypress.env('SUPERUSER_EMAIL'), Cypress.env('SUPERUSER_PASSWORD'));
+        cy.login('companyadmin@example.com', 'werwerwer');
     });
 
     it('Creates an Account', () => {
-        cy.visit('/');
+        cy.visit('/quotes');
         cy.get('#create-tab').click();
         cy.get('#link-to-create-account').click();
         cy.get('#account-name').type(account.name);
@@ -39,7 +39,7 @@ describe('Creates a Mobile Quote', () => {
         cy.get('#link-steps').click();
 
         cy.get('#datatable-search').type(step.name);
-        cy.wait(3000);
+        cy.wait(1000);
         cy.get('#steps-table').then(($table) => {
             if ($table.text().includes('No records found')) {
                 cy.get('#step-create-btn').click();
@@ -57,7 +57,7 @@ describe('Creates a Mobile Quote', () => {
         cy.get('#link-products').click();
 
         cy.get('#datatable-search').type(product.sku);
-        cy.wait(3000);
+        cy.wait(1000);
         cy.get('#products-table').then(($table) => {
             if ($table.text().includes('No records found')) {
                 cy.get('#product-create-btn').click();
@@ -65,7 +65,7 @@ describe('Creates a Mobile Quote', () => {
                 cy.get('#product-name').type(product.name);
                 cy.get('#product-sku').type(product.sku);
 
-                cy.selectLazyOption('product-step', step.name);
+                cy.selectLazyOption('product-steps', step.name);
 
                 cy.get('#btn-save-product').click();
                 cy.get('.notyf').contains('Created with Success');
@@ -74,7 +74,7 @@ describe('Creates a Mobile Quote', () => {
     });
 
     it('Creates Mobile Quote', () => {
-        cy.visit('/');
+        cy.visit('/quotes');
         cy.get('#create-tab').click();
         cy.selectLazyOption('account_id', account.name);
         cy.get('#btn-next-step').click();
@@ -142,7 +142,7 @@ describe('Creates a Mobile Quote', () => {
     });
 
     it('I can change Margin and Discount', () => {
-        cy.visit('/');
+        cy.visit('/quotes');
         cy.get('#datatable-btn-0-show').click();
 
         let items = ['recurring', 'one_off'];
@@ -194,7 +194,7 @@ describe('Creates a Mobile Quote', () => {
     });
 
     it('I can change and reset Global Discount', () => {
-        cy.visit('/');
+        cy.visit('/quotes');
         cy.get('#datatable-btn-0-show').click();
         let quote = { margin: null, commission: null, global: null };
 
@@ -229,7 +229,7 @@ describe('Creates a Mobile Quote', () => {
     });
 
     it('I can add and delete a Custom Line', () => {
-        cy.visit('/');
+        cy.visit('/quotes');
         cy.get('#datatable-btn-0-show').click();
         cy.get('#btn-recurring-add').click();
         cy.get('#input-new-recurring-name').type('Custom line recurring');
@@ -262,7 +262,7 @@ describe('Creates a Mobile Quote', () => {
     });
 
     it('I can Create an order from a quote', () => {
-        cy.visit('/');
+        cy.visit('/quotes');
         cy.get('#datatable-btn-0-crete-order').click();
         cy.get('.swal2-confirm').eq(0).click();
         cy.get('.notyf').contains('Order created with success');

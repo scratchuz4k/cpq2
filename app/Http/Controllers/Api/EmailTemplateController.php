@@ -11,7 +11,6 @@ use App\Services\EmailService;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class EmailTemplateController extends BaseController
 {
@@ -64,8 +63,7 @@ class EmailTemplateController extends BaseController
         try {
             $emailTemplate = DB::transaction(fn () => $this->emailService->update($emailTemplate, $request->all()));
         } catch (Exception $e) {
-            Log::debug($e->getMessage());
-            throw new Exception($e);
+            return handleException($e);
         }
 
         return new EmailTemplateResource($emailTemplate);

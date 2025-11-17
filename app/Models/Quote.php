@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Str;
 
 class Quote extends Model
 {
@@ -44,7 +45,7 @@ class Quote extends Model
     protected function casts(): array
     {
         return [
-            'data' => 'object',
+            'data' => 'array',
             'address_position' => 'array',
             'address_data' => 'array',
             'margin' => 'float',
@@ -61,6 +62,12 @@ class Quote extends Model
     protected static function booted(): void
     {
         static::addGlobalScope(new TenantScope);
+
+        static::creating(function ($quote) {
+            if (! $quote->uuid) {
+                $quote->uuid = (string) Str::uuid();
+            }
+        });
 
         static::saving(function (Quote $quote) {
             $quote->status = Quote::resolveStatus($quote);

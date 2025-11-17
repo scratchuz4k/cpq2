@@ -1,15 +1,19 @@
 <script setup>
-import { computed } from 'vue';
+import { v4 as uuidv4 } from 'uuid';
+import { computed, onMounted, watch } from 'vue';
 
 const emit = defineEmits(['update:checked']);
 
 const props = defineProps({
-    checked: {
-        type: [Array, Boolean, Number],
-        required: true
+    id: {
+        required: false,
+        default: () => {
+            return `${uuidv4()}`;
+        }
     },
-    value: {
-        default: null
+    checked: {
+        type: [Boolean, Number, null],
+        required: true
     }
 });
 
@@ -34,9 +38,10 @@ const proxyChecked = computed({
 
 <template>
     <input
+        :id="props.id"
         type="checkbox"
-        :value="value"
         v-model="proxyChecked"
-        class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500"
+        :indeterminate="proxyChecked === null"
+        class="form-check-input me-2 rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500"
     />
 </template>

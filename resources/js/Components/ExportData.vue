@@ -24,7 +24,7 @@ const export_data = reactive({
 
 const getColumns = async () => {
     try {
-        const res = await axios.get('/api/export/columns?export=' + props.export);
+        const res = await axios.get('/api/report/columns?export=' + props.export);
         columns.value = [res.data.columns, []];
     } catch (err) {
         notyf.error(err?.response?.data?.message ?? 'Something went wrong');
@@ -40,7 +40,7 @@ const exportData = async () => {
             export: props.export
         });
         let res = await axios
-            .get('/api/export?' + query, {
+            .get('/api/report/export?' + query, {
                 responseType: 'blob'
             })
             .then((res) => {
@@ -63,7 +63,11 @@ const exportData = async () => {
         emit('close-dialog');
         return true;
     } catch (err) {
-        notyf.error(err?.response?.data?.message ?? 'Something went wrong');
+        let errorMessage = 'Something went wrong';
+        if (err.response && err.response.data instanceof Blob) {
+            errorMessage = JSON.parse(await err.response.data.text());
+        }
+        notyf.error(errorMessage);
         return false;
     }
 };
