@@ -1,5 +1,6 @@
 <?php
 
+use App\Helpers\Api\Cloudaudit\CloudAuditApiAccount;
 use App\Http\Controllers\Web\AccountController;
 use App\Http\Controllers\Web\ActivityController;
 use App\Http\Controllers\Web\ApiController;
@@ -98,6 +99,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
         'roles' => RoleController::class,
         'imports' => ImportController::class,
     ]);
+
+    Route::get('test', function () {
+        $api = new CloudAuditApiAccount;
+
+        return $api->getAccounts();
+    });
 
     Route::middleware('auth')->group(function () {
         Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

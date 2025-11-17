@@ -89,8 +89,8 @@ const tenant_reviewed = ref(false);
             <div class="panel mb-3">
                 <div class="row">
                     <div class="col-12">
-                        <h5 class="font-bold mb-2">Select a organization to review</h5>
                         <div class="d-flex justify-content-between mt-3">
+                            <h5 class="font-bold mb-2">Select a organization to review</h5>
                             <button
                                 id="link-to-request-permission"
                                 type="button"
@@ -101,7 +101,8 @@ const tenant_reviewed = ref(false);
                                 <font-awesome-icon :icon="['fas', 'plus']" />
                                 Add new
                             </button>
-
+                        </div>
+                        <div class="d-flex justify-content-end mt-3">
                             <IconField>
                                 <InputIcon>
                                     <font-awesome-icon :icon="['fas', 'search']" />
@@ -117,7 +118,19 @@ const tenant_reviewed = ref(false);
                         <div class="row row-cols-1 row-cols-md-3 g-3 mt-1 mb-3">
                             <div class="col" v-for="(org, index) in organizations">
                                 <RadioCard v-model="organization" :value="org" name="cloud-selected-option">
-                                    <p class="font-bold mb-2">{{ org.name }}</p>
+                                    <div class="d-flex justify-content-between">
+                                        <p class="font-bold mb-2">{{ org.name }}</p>
+                                        <div v-if="Object.keys(org.data).includes('errors')" class="org-tooltip">
+                                            <font-awesome-icon
+                                                icon="fas fa-info"
+                                                class="badge bg-danger"
+                                            ></font-awesome-icon>
+                                            <div class="org-tooltip-info rounded border p-2 px-4">
+                                                <p>Some errors have occurred trying to sync this organization</p>
+                                            </div>
+                                        </div>
+                                    </div>
+
                                     <p>{{ org.email }}</p>
                                     <p class="badge w-100 bg-secondary text-white mt-2">
                                         {{ format.capitalizeFirstLetter(org.status) }}
@@ -245,5 +258,25 @@ const tenant_reviewed = ref(false);
     height: 100%;
     z-index: 1;
     background: rgba(255, 255, 255, 0.75);
+}
+
+.org-tooltip {
+    position: relative;
+}
+
+.org-tooltip-info {
+    position: absolute;
+    z-index: 100;
+    background: white;
+    width: 300px;
+    visibility: hidden;
+    pointer-events: none;
+    opacity: 0;
+    transition: all 0.3s ease-in-out;
+}
+.org-tooltip:hover > .org-tooltip-info {
+    visibility: visible;
+    pointer-events: auto;
+    opacity: 1;
 }
 </style>
