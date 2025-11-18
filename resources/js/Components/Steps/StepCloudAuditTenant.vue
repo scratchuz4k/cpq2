@@ -24,7 +24,7 @@ const showModal = ref(false);
 const showLodingLogin = ref(false);
 const tenant_review_active = ref(false);
 const meta = reactive({
-    limit: 9,
+    limit: 12,
     page: 1,
     total: 0,
     first: 1,
@@ -95,7 +95,7 @@ const tenant_reviewed = ref(false);
 </script>
 <template>
     <div class="row mb-3" v-if="!tenant_review_active">
-        <div class="col-lg-8">
+        <div class="col-lg-12">
             <div class="panel mb-3">
                 <div class="row">
                     <div class="col-12">
@@ -139,7 +139,7 @@ const tenant_reviewed = ref(false);
                                 />
                             </IconField>
                         </div>
-                        <div class="row row-cols-1 row-cols-md-3 g-3 mt-1 mb-3">
+                        <div class="row row-cols-1 row-cols-md-3 row-cols-lg-4 g-3 mt-1 mb-3">
                             <div class="col" v-for="(org, index) in organizations">
                                 <RadioCard v-model="organization" :value="org" name="cloud-selected-option">
                                     <div class="d-flex justify-content-between">
@@ -167,7 +167,7 @@ const tenant_reviewed = ref(false);
                             v-model:first="meta.first"
                             :rows="meta.limit"
                             :totalRecords="meta.total"
-                            :rowsPerPageOptions="[9, 18, 27]"
+                            :rowsPerPageOptions="[12, 20, 28]"
                             @page="handlePaginator"
                         >
                         </Paginator>
@@ -177,7 +177,7 @@ const tenant_reviewed = ref(false);
         </div>
     </div>
     <div class="row mb-3" v-if="!tenant_review_active && !tenant_reviewed">
-        <div class="col-lg-8 d-flex justify-content-between">
+        <div class="col-lg-12 d-flex justify-content-between">
             <button
                 id="btn-previous-step"
                 class="btn"
@@ -266,7 +266,7 @@ const tenant_reviewed = ref(false);
                     </IconField>
                 </div>
                 <div class="mb-4">
-                    <button class="btn btn-primary w-100">Login</button>
+                    <button class="btn btn-primary w-100">Create</button>
                 </div>
             </form>
         </div>

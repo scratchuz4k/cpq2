@@ -17,6 +17,7 @@ class OrganizationResource extends JsonResource
         return [
             ...$this->resource->toArray(),
             'data' => [
+                'account' => $this->account(),
                 'email' => $this->email(),
                 'report' => $this->report(),
             ],
