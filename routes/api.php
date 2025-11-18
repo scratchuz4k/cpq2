@@ -68,6 +68,7 @@ Route::middleware(['api', 'auth:sanctum'])->group(function () {
     });
 
     Route::prefix('cloudaudit')->group(callback: function () {
+        Route::get('/organizations/sync', [OrganizationController::class, 'sync']);
         Route::apiResource('organizations', OrganizationController::class);
     });
 

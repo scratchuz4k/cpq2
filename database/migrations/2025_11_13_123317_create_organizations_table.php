@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('status');
             $table->json('data')->nullable();
             $table->timestamps();
+            $table->unique(['code', 'tenant_id']);
         });
     }
 

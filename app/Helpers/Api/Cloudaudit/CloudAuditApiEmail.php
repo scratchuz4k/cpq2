@@ -13,18 +13,27 @@ class CloudAuditApiEmail extends CloudAuditApi
     {
         $accessToken = $this->tokenRequest();
 
-        $res = Http::withToken($accessToken)->get(env('CLOUDAUDIT_API_URL').'authorizationEmail');
+        $res = Http::withToken($accessToken)->get(env('CLOUDAUDIT_API_URL').'authorisationEmail');
 
-        return $res;
+        return $res->json();
     }
 
     public function getEmail($id)
     {
         $accessToken = $this->tokenRequest();
 
-        $res = Http::withToken($accessToken)->get(env('CLOUDAUDIT_API_URL').'authorizationEmail/'.$id);
+        $res = Http::withToken($accessToken)->get(env('CLOUDAUDIT_API_URL').'authorisationEmail/'.$id);
 
-        return $res;
+        return $res->json();
+    }
+
+    public function getEmailByAccount($account)
+    {
+        $accessToken = $this->tokenRequest();
+
+        $res = Http::withToken($accessToken)->get(env('CLOUDAUDIT_API_URL').'authorisationEmail?limit=1&accountId='.$account);
+
+        return $res->json();
     }
 
     public function storeEmail($id, $name, $rEmail, $rName, $message)
@@ -33,7 +42,7 @@ class CloudAuditApiEmail extends CloudAuditApi
 
         $res = Http::withToken($accessToken)
             ->withHeaders(['idempotencyKey' => Hash::make(now())])
-            ->post(env('CLOUDAUDIT_API_URL').'cloudAccount', [
+            ->post(env('CLOUDAUDIT_API_URL').'authorisationEmail', [
                 'accountId' => $id,
                 'senderName' => $name,
                 'recipientEmail' => $rEmail,

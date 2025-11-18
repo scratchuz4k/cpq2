@@ -2,6 +2,7 @@
 
 namespace App\Models\Cloudaudit;
 
+use App\Enums\CloudAuditOperationEnum;
 use App\Models\Scopes\TenantScope;
 use App\Models\Tenant;
 use App\Trait\SetTenantId;
@@ -36,5 +37,20 @@ class Organization extends Model
     public function logs(): HasMany
     {
         return $this->hasMany(OrganizationLog::class);
+    }
+
+    public function account()
+    {
+        return $this->logs->where('code', CloudAuditOperationEnum::ACCOUNT)->first();
+    }
+
+    public function email()
+    {
+        return $this->logs->where('code', CloudAuditOperationEnum::EMAIL)->first();
+    }
+
+    public function report()
+    {
+        return $this->logs->where('code', CloudAuditOperationEnum::REPORT)->first();
     }
 }

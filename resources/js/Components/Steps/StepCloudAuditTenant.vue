@@ -13,7 +13,7 @@ const props = defineProps({
 });
 
 const emit = defineEmits(['update:modelValue', 'nextStep']);
-
+const isLoading = ref(false);
 const form = reactive({
     email: null,
     password: null
@@ -40,6 +40,7 @@ const getOrganizations = async (email) => {
         order: 'desc',
         orderBy: 'updated_at',
         page: meta.page,
+        limit: meta.limit,
         search: meta.search
     });
     let res = await axios.get('/api/cloudaudit/organizations?' + string);
@@ -63,6 +64,15 @@ const submit = async () => {
         showLodingLogin.value = false;
         notyf.error(ex.response?.data?.message ?? ex.response?.data);
     }
+};
+
+const syncCloudaudit = async () => {
+    isLoading.value = true;
+    let res = await axios.get('/api/cloudaudit/organizations/sync');
+    setTimeout(() => {
+        isLoading.value = false;
+        getOrganizations();
+    }, 3000);
 };
 
 const handlePaginator = (ev) => {
@@ -91,16 +101,30 @@ const tenant_reviewed = ref(false);
                     <div class="col-12">
                         <div class="d-flex justify-content-between mt-3">
                             <h5 class="font-bold mb-2">Select a organization to review</h5>
-                            <button
-                                id="link-to-request-permission"
-                                type="button"
-                                class="btn btn-primary"
-                                @click="showModal = true"
-                                style="border-style: dashed"
-                            >
-                                <font-awesome-icon :icon="['fas', 'plus']" />
-                                Add new
-                            </button>
+                            <div>
+                                <button
+                                    id="link-to-request-permission"
+                                    type="button"
+                                    class="btn me-2"
+                                    @click="syncCloudaudit()"
+                                    style="border-style: dashed"
+                                >
+                                    <div v-if="isLoading" class="spinner-border spinner-border-sm" role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
+                                    <font-awesome-icon v-else :icon="['fas', 'sync']" />
+                                </button>
+                                <button
+                                    id="link-to-request-permission"
+                                    type="button"
+                                    class="btn btn-primary"
+                                    @click="showModal = true"
+                                    style="border-style: dashed"
+                                >
+                                    <font-awesome-icon :icon="['fas', 'plus']" />
+                                    Add new
+                                </button>
+                            </div>
                         </div>
                         <div class="d-flex justify-content-end mt-3">
                             <IconField>

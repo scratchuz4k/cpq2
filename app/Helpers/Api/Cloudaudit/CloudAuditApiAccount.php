@@ -15,7 +15,7 @@ class CloudAuditApiAccount extends CloudAuditApi
 
         $res = Http::withToken($accessToken)->get(env('CLOUDAUDIT_API_URL').'cloudAccount');
 
-        return $res;
+        return $res->json();
     }
 
     public function getAccount($id)

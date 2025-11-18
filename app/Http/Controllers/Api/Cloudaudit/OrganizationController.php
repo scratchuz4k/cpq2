@@ -4,12 +4,14 @@ namespace App\Http\Controllers\Api\Cloudaudit;
 
 use App\Helpers\DataProvider;
 use App\Http\Controllers\BaseController;
+use App\Http\Requests\OrganizationCreateRequest;
+use App\Http\Requests\OrganizationUpdateRequest;
+use App\Http\Resources\Cloudaudit\OrganizationResource;
+use App\Jobs\CloudauditAccountSyncJob;
 use App\Models\Cloudaudit\Organization;
 use App\Services\OrganizationService;
 use Dedoc\Scramble\Attributes\ExcludeRouteFromDocs;
 use Exception;
-use Illuminate\Http\Request;
-use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\DB;
 
 class OrganizationController extends BaseController
@@ -32,13 +34,13 @@ class OrganizationController extends BaseController
             return handleException($e);
         }
 
-        return JsonResource::collection($data);
+        return OrganizationResource::collection($data);
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(OrganizationCreateRequest $request)
     {
         try {
             $organization = DB::transaction(fn () => $this->service->store($request->all()));
@@ -46,7 +48,7 @@ class OrganizationController extends BaseController
             return handleException($e);
         }
 
-        return response()->json(new JsonResource($organization->refresh()));
+        return response()->json(new OrganizationResource($organization->refresh()));
     }
 
     /**
@@ -60,7 +62,7 @@ class OrganizationController extends BaseController
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Organization $organization)
+    public function update(OrganizationUpdateRequest $request, Organization $organization)
     {
         //
     }
@@ -71,5 +73,16 @@ class OrganizationController extends BaseController
     public function destroy(Organization $organization)
     {
         //
+    }
+
+    /**
+     * Display a listing of the resource.
+     */
+    #[ExcludeRouteFromDocs]
+    public function sync()
+    {
+        CloudauditAccountSyncJob::dispatch();
+
+        return response()->json([], 200);
     }
 }
