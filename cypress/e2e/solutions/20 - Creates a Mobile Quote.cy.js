@@ -16,7 +16,7 @@ const temp1 = getCurrentDate();
 const product = { sku: generateHash(temp1), name: temp1 };
 
 const temp2 = getCurrentDate();
-const category = { code: generateHash(temp2), name: temp2 };
+const step = { name: 'step-1' + temp2 };
 
 describe('Creates a Mobile Quote', () => {
     beforeEach(() => {
@@ -26,25 +26,23 @@ describe('Creates a Mobile Quote', () => {
     it('Creates a Category', () => {
         cy.visit('/quotes');
         cy.get('#my-account').click();
-        cy.get('#link-categories').click();
+        cy.get('#link-steps').click();
 
-        cy.get('#datatable-search').type(category.code);
+        cy.get('#datatable-search').type(step.name);
         cy.wait(1000);
-        cy.get('#categories-table').then(($table) => {
+        cy.get('#steps-table').then(($table) => {
             if ($table.text().includes('No records found')) {
-                cy.get('#category-create-btn').click();
-
-                cy.get('#category-name').type(category.name);
-                cy.get('#category-code').type(category.code);
-                cy.selectOption('#category-solution-type', 'Mobile');
-                cy.get('#btn-save-category').click();
+                cy.get('#step-create-btn').click();
+                cy.get('#step-name').type(step.name);
+                cy.selectOption('#step-solution-type', 'Mobile');
+                cy.get('#btn-save-step').click();
                 cy.get('.notyf').contains('Created with Success');
             }
         });
     });
 
-    it('Creates a Product and add category', () => {
-        cy.visit('/quotes');
+    it('Creates a Product and add step', () => {
+        cy.visit('/');
         cy.get('#my-account').click();
         cy.get('#link-products').click();
 
@@ -57,7 +55,7 @@ describe('Creates a Mobile Quote', () => {
                 cy.get('#product-name').type(product.name);
                 cy.get('#product-sku').type(product.sku);
 
-                cy.selectLazyOption('product-categories', category.name);
+                cy.selectLazyOption('product-steps', step.name);
 
                 cy.get('#btn-save-product').click();
                 cy.get('.notyf').contains('Created with Success');

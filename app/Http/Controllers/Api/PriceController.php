@@ -14,7 +14,6 @@ use Exception;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class PriceController extends BaseController
 {
@@ -50,10 +49,7 @@ class PriceController extends BaseController
         try {
             $price = DB::transaction(fn () => $this->priceService->store($request->all()));
         } catch (Exception $e) {
-            if (! env('APP_DEBUG')) {
-                Log::error($e->getMessage());
-            }
-            throw new Exception($e);
+            return handleException($e);
         }
 
         return new PriceResource($price->refresh());
@@ -75,10 +71,7 @@ class PriceController extends BaseController
         try {
             $price = DB::transaction(fn () => $this->priceService->update($price, $request->all()));
         } catch (Exception $e) {
-            if (! env('APP_DEBUG')) {
-                Log::error($e->getMessage());
-            }
-            throw new Exception($e);
+            return handleException($e);
         }
 
         return new PriceResource($price->refresh());

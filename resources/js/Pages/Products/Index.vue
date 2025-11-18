@@ -10,6 +10,14 @@ const props = defineProps({
     }
 });
 
+const getUniqueSolutionTypes = (steps) => {
+    if (!steps) {
+        return [];
+    }
+    const solutionTypes = steps.map((step) => step.solution_type?.name).filter(Boolean);
+    return [...new Set(solutionTypes)];
+};
+
 const items = ref([{ label: 'Home', url: '/' }, { label: 'My Account', url: '/myaccount' }, { label: 'Products' }]);
 </script>
 <template>
@@ -45,16 +53,16 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'My Account', url: '/my
                         { data: 'sku', title: 'SKU', style: 'width:10%' },
                         { data: 'name', title: 'Name', style: 'width:25%' },
                         { data: 'parent.name', title: 'Parent', style: 'width:12%' },
-                        { data: 'category.name', title: 'Category', style: 'width:12%' },
+                        { data: 'steps.name', title: 'Steps', style: 'width:12%' },
                         {
-                            data: 'category.solution_type.name',
-                            title: 'Solution Type',
+                            data: 'steps.solution_type.name',
+                            title: 'Solution Types',
                             style: 'width:12%'
                         },
                         { data: 'updated_at', title: 'Updated At', style: 'width:15%' }
                     ]"
                     :filters="{
-                        'category.solution_type.name': {
+                        'steps.solution_type.name': {
                             type: 'options',
                             options: solution_types.map((x) => x.name)
                         }
@@ -68,6 +76,25 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'My Account', url: '/my
                         <span class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm">{{
                             value
                         }}</span>
+                    </template>
+                    <template #steps.name="{ data, value }">
+                        <span>
+                            {{
+                                data.steps
+                                    .map((step) => step.name)
+                                    .filter(Boolean)
+                                    .join(', ')
+                            }}
+                        </span>
+                    </template>
+                    <template #steps.solution_type.name="{ data, value }">
+                        <span>
+                            {{
+                                [...new Set(data.steps.map((step) => step.solution_type?.name).filter(Boolean))].join(
+                                    ', '
+                                )
+                            }}
+                        </span>
                     </template>
                     <template #updated_at="{ value }">
                         {{ format.date(value) }}

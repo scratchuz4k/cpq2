@@ -40,6 +40,12 @@ const options = [
         icon: ['fas', 'circle-nodes']
     },
     {
+        title: 'Steps',
+        url: route('steps.index'),
+        has_permission: hasRole('Super Admin') || can('viewAny step'),
+        icon: ['fa', 'stairs']
+    },
+    {
         title: 'SPAs',
         url: route('spas.index'),
         has_permission: hasRole('Super Admin') || can('viewAny spa'),

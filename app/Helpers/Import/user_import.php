@@ -34,4 +34,10 @@ return [
         ],
     ],
     'filename' => 'import_users_template.csv',
+    'columns' => [
+        'name' => 'Name',
+        'email' => 'Email',
+        'password' => 'Password',
+        'sso' => 'SSO',
+    ],
 ];

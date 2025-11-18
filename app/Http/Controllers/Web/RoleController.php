@@ -13,7 +13,6 @@ use Dedoc\Scramble\Attributes\ExcludeRouteFromDocs;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 
 class RoleController extends BaseController
@@ -44,8 +43,7 @@ class RoleController extends BaseController
         try {
             $role = DB::transaction(fn () => $this->service->store($request->all()));
         } catch (Exception $e) {
-            Log::debug($e->getMessage());
-            throw new Exception($e);
+            return handleWebException($e);
         }
 
         return Inertia::render(component: 'Roles/Index');
@@ -79,8 +77,7 @@ class RoleController extends BaseController
         try {
             $role = DB::transaction(fn () => $this->service->update($role, $request->all()));
         } catch (Exception $e) {
-            Log::debug($e->getMessage());
-            throw new Exception($e);
+            return handleWebException($e);
         }
 
         return redirect()->route('roles.index');

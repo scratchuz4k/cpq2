@@ -12,7 +12,6 @@ use App\Services\ContactService;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class ContactController extends BaseController
 {
@@ -48,8 +47,7 @@ class ContactController extends BaseController
         try {
             $contact = DB::transaction(fn () => $this->contactService->store($request->all()));
         } catch (Exception $e) {
-            Log::debug($e->getMessage());
-            throw new Exception($e);
+            return handleException($e);
         }
 
         return new ContactResource($contact);
@@ -71,8 +69,7 @@ class ContactController extends BaseController
         try {
             $contact = DB::transaction(fn () => $this->contactService->update($contact, $request->all()));
         } catch (Exception $e) {
-            Log::debug($e->getMessage());
-            throw new Exception($e);
+            return handleException($e);
         }
 
         return new ContactResource($contact);

@@ -7,14 +7,20 @@
         'its' => array_reduce(
             $quote['items'],
             function ($carry, $item) {
-                return $carry || (isset($item['data']) && $item['data']->providerName === 'ITS');
+                return $carry ||
+                    (isset($item['data']) &&
+                        isset($item['data']->providerName) &&
+                        $item['data']->providerName === 'ITS');
             },
             false,
         ),
         'pxc' => array_reduce(
             $quote['items'],
             function ($carry, $item) {
-                return $carry || (isset($item['data']) && $item['data']->providerName === 'PXC');
+                return $carry ||
+                    (isset($item['data']) &&
+                        isset($item['data']->providerName) &&
+                        $item['data']->providerName === 'PXC');
             },
             false,
         ),

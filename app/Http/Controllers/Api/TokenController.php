@@ -12,7 +12,6 @@ use Dedoc\Scramble\Attributes\ExcludeRouteFromDocs;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 
 class TokenController extends BaseController
 {
@@ -68,8 +67,7 @@ class TokenController extends BaseController
         try {
             $token = Auth::user()->updateTokenWithTenant($token, $request->is_active);
         } catch (Exception $e) {
-            Log::debug($e->getMessage());
-            throw new Exception($e);
+            return handleException($e);
         }
 
         return new TokenResource($token);

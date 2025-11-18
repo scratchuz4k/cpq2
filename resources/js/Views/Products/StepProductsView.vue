@@ -19,11 +19,11 @@ const meta = reactive({
 const disableButton = ref(false);
 
 const props = defineProps({
-    category: Object,
+    step: Object,
     account: Object,
     modelValue: Number,
     index: Number,
-    total_categories: Number
+    total_steps: Number
 });
 
 const emit = defineEmits(['update:modelValue']);
@@ -44,9 +44,9 @@ const getProducts = async () => {
 
     let filters = [
         {
-            column: 'category_id',
+            column: 'steps.id',
             operator: 'equals',
-            value: props.category.id
+            value: props.step.id
         },
         {
             column: 'status',
@@ -137,10 +137,10 @@ getProducts();
 <template>
     <div v-if="proxyValue == props.index" :id="'step-' + (props.index + 1)" class="step">
         <div class="d-flex justify-content-between mb-3">
-            <h3 class="mb-0">{{ props.index + 1 }}. {{ category?.name }}</h3>
+            <h3 class="mb-0">{{ props.index + 1 }}. {{ step?.name }}</h3>
             <p class="bigger bold text-primary">
                 STEP <span id="current-step">{{ props.index + 1 }}</span> /
-                <span id="last-step">{{ total_categories }}</span>
+                <span id="last-step">{{ total_steps }}</span>
             </p>
         </div>
         <div v-if="!meta.isLoading">
@@ -194,7 +194,7 @@ getProducts();
                 </div>
             </div>
             <div v-else>
-                <p class="h5 text-center my-4">No products available for this Category!</p>
+                <p class="h5 text-center my-4">No products available for this Step!</p>
             </div>
         </div>
         <div v-else v-for="n in meta.limit" class="mobile-item mobile-product mb-3">
