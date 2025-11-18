@@ -4,8 +4,7 @@ import { computed, reactive, ref, watch } from 'vue';
 import { quote, getQuote } from '@composables/useQuote';
 import _ from 'lodash';
 import { updateQuoteItem, removeQuoteItem, createQuoteItem } from '@composables/useQuoteItem';
-import Paginator from 'primevue/paginator';
-import { Skeleton } from 'primevue';
+import { Paginator, Select, Skeleton } from 'primevue';
 
 const meta = reactive({
     page: 1,
@@ -37,7 +36,47 @@ const proxyValue = computed({
 });
 
 const products = ref([]);
+const categories = ref([]);
 const selectedParent = ref(null);
+const currentStep = ref(props.index);
+const showCards = ref(false);
+
+const sortOptions = [
+    {
+        label: 'Alphabetical (A-Z)',
+        order: 'asc',
+        orderBy: 'model.name'
+    },
+    {
+        label: 'Alphabetical (Z-A) ',
+        order: 'desc',
+        orderBy: 'model.name'
+    },
+    {
+        label: 'Lowest Price',
+        order: 'asc',
+        orderBy: 'price.net_spa'
+    },
+    {
+        label: 'Highest Price',
+        order: 'desc',
+        orderBy: 'price.net_spa'
+    },
+    {
+        label: 'Lowest Stock',
+        order: 'asc',
+        orderBy: 'stock'
+    },
+    {
+        label: 'Highest Stock',
+        order: 'desc',
+        orderBy: 'stock'
+    }
+];
+
+const sort = ref(sortOptions[3]);
+
+const search = ref(null);
 
 const getProducts = async () => {
     meta.isLoading = true;
@@ -79,6 +118,22 @@ const getProducts = async () => {
     meta.total = res.data.total;
     meta.overallTotal = res.data.overall_total;
     meta.isLoading = false;
+};
+
+const getCategories = async () => {
+    categories.value = [];
+    let current_page = 1;
+    let last_page = 1;
+    do {
+        let string = queryString.stringify({
+            limit: 500,
+            page: current_page
+        });
+        let res = await axios.get('/api/categories?' + string);
+        categories.value.push(...res.data.data);
+        last_page = res.data.meta?.last_page;
+        current_page++;
+    } while (current_page != last_page + 1);
 };
 
 const handlePaginator = (ev) => {
@@ -132,10 +187,111 @@ watch(proxyValue, () => {
     getProducts();
 });
 getProducts();
+getCategories();
 </script>
 
 <template>
-    <div v-if="proxyValue == props.index" :id="'step-' + (props.index + 1)" class="step">
+    <div v-if="proxyValue == currentStep" :id="'step-' + (currentStep + 1)" class="step">
+        <div class="step">
+            <div class="row">
+                <div class="d-flex justify-content-between mb-3">
+                    <h2>Select some products</h2>
+                    <p class="bigger text-primary bold">
+                        STEP
+                        <span id="current-step">{{ currentStep + 1 }}</span>
+                        /
+                        <span id="last-step">{{ props.total_steps }}</span>
+                    </p>
+                </div>
+            </div>
+            <div class="row justify-content-end">
+                <div class="col-3">
+                    <div class="d-flex justify-content-between mb-3">
+                        <div class="d-flex">
+                            <h2>Products ({{ meta.total }})</h2>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-9">
+                    <div class="d-flex justify-content-end align-items-end mb-3">
+                        <div class="d-flex justify-content-end text-nowrap flex-shrink-0">
+                            <span class="me-2 align-self-center">Sort by</span>
+                            <Select v-model="sort" :options="sortOptions" optionLabel="label" placeholder="All">
+                            </Select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-3">
+                    <div class="rounded bg-white p-3">
+                        <div class="mb-4">
+                            <h2>Search</h2>
+                            <input type="search" class="form-control" placeholder="" v-model="search" />
+                        </div>
+                        <div class="mb-4">
+                            <h2>Categories</h2>
+                            <CategoriesTree v-model="categories" :categories="categories"></CategoriesTree>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <template v-if="meta.isLoading">
+                        <ProductSkeleton v-for="item in [0, 1, 2, 3, 4]"></ProductSkeleton>
+                    </template>
+                    <template v-else>
+                        <div class="text-center pt-2 pb-4" v-if="!products.length">No Results Found</div>
+                        <div class="row" :class="[showCards ? 'row-cols-4' : 'row-cols-1']">
+                            <ProductCard
+                                v-for="(product, index) in products"
+                                :hasSelect="true"
+                                :showAsColumn="showCards"
+                                :index="index"
+                                v-model="products[index]"
+                            >
+                            </ProductCard>
+                        </div>
+                        <Paginator
+                            v-model:first="meta.first"
+                            :rows="meta.limit"
+                            :totalRecords="meta.total"
+                            :rowsPerPageOptions="[12, 24, 48]"
+                            @page="handlePaginator"
+                        >
+                        </Paginator>
+                        <div class="d-flex justify-content-between align-items-center mt-3">
+                            <div>
+                                <button
+                                    :disabled="meta.isLoading"
+                                    v-if="props.index > 0"
+                                    :id="'btn-step-{{ props.index + 1}}-previous'"
+                                    class="btn text-primary step-nav btn-sm me-3"
+                                    type="button"
+                                    @click="() => proxyValue--"
+                                >
+                                    <font-awesome-icon :icon="['fas', 'arrow-left']" /> Previous
+                                </button>
+                            </div>
+                            <div>
+                                <button
+                                    :disabled="disableButton"
+                                    :id="'btn-step-' + (props.index + 1) + '-next'"
+                                    class="ms-3 btn btn-primary step-nav"
+                                    type="button"
+                                    @click="() => emitSaveQuote()"
+                                >
+                                    Next
+                                    <font-awesome-icon :icon="['fas', 'arrow-right']" />
+                                </button>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- <div v-if="proxyValue == props.index" :id="'step-' + (props.index + 1)" class="step">
         <div class="d-flex justify-content-between mb-3">
             <h3 class="mb-0">{{ props.index + 1 }}. {{ step?.name }}</h3>
             <p class="bigger bold text-primary">
@@ -247,7 +403,7 @@ getProducts();
                 </button>
             </div>
         </div>
-    </div>
+    </div> -->
 </template>
 
 <style></style>

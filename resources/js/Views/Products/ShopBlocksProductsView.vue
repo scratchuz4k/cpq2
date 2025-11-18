@@ -341,7 +341,7 @@ watch(
                 <template v-else>
                     <div class="text-center pt-2 pb-4" v-if="!productsHardware.length">No Results Found</div>
                     <div class="row" :class="[showCards ? 'row-cols-4' : 'row-cols-1']">
-                        <ProductCard
+                        <ShopBlocksProductCard
                             v-for="(product, index) in productsHardware"
                             @select="(item) => addSelected(item)"
                             :hasSelect="true"
@@ -349,7 +349,7 @@ watch(
                             :index="index"
                             v-model="productsHardware[index]"
                         >
-                        </ProductCard>
+                        </ShopBlocksProductCard>
                     </div>
                     <Paginator
                         v-model:first="meta.first"

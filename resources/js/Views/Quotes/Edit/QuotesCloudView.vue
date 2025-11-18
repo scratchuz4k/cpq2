@@ -14,6 +14,11 @@ const props = defineProps({
 const page = usePage();
 const tenant = page.props.tenant;
 
+const urlParams = new URLSearchParams(window.location.search);
+const params = new Proxy(urlParams, {
+    get: (searchParams, prop) => searchParams.get(prop)
+});
+const current_step = ref(params['current_step'] ?? 0);
 const solution_type = props.modelValue.solution_type;
 const active_steps = ref([]);
 const loading = ref(true);
@@ -50,12 +55,6 @@ const getStepsWithProducts = async () => {
     loading.value = false;
 };
 
-const urlParams = new URLSearchParams(window.location.search);
-const params = new Proxy(urlParams, {
-    get: (searchParams, prop) => searchParams.get(prop)
-});
-const current_step = ref(params['current_step'] ?? 0);
-
 setQuote(props.modelValue);
 
 const saveQuote = async () => {
@@ -84,7 +83,6 @@ getStepsWithProducts();
                             v-model="current_step"
                             :index="index"
                             :total_steps="active_steps.length"
-                            :solution_type="props.modelValue.solution_type"
                         >
                         </StepProductsView>
                     </div>

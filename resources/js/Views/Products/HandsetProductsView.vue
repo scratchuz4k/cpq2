@@ -5,6 +5,7 @@ import Select from 'primevue/select';
 import Paginator from 'primevue/paginator';
 import { quote } from '@/Composables/useQuote';
 import { computed, onMounted, reactive, ref, watch } from 'vue';
+import ShopBlocksProductCard from '@/Components/Products/ShopBlocksProductCard.vue';
 
 const emit = defineEmits(['save', 'update:modelValue']);
 const proxyValue = computed({
@@ -280,7 +281,7 @@ getDimensionStorage();
         <div v-if="!meta.isLoading">
             <div class="text-center pt-2 pb-4" v-if="!productsHardware.length">No Results Found</div>
             <div class="row" :class="[showCards ? 'row-cols-3' : 'row-cols-1']">
-                <ProductCard
+                <ShopBlocksProductCard
                     v-for="(product, index) in productsHardware"
                     @select="(item) => addSelected(item)"
                     :hasSelect="true"
@@ -288,7 +289,7 @@ getDimensionStorage();
                     :index="index"
                     v-model="productsHardware[index]"
                 >
-                </ProductCard>
+                </ShopBlocksProductCard>
             </div>
         </div>
         <div v-else>

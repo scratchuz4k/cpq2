@@ -81,6 +81,7 @@
                                 width: showAsColumn ? '100%' : '150px'
                             }"
                         >
+                            {{ proxyValue }}
                             <InputQuantity
                                 :id="'hardware-' + index"
                                 v-model="proxyValue.quantity"
