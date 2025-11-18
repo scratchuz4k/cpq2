@@ -39,7 +39,7 @@ class CloudauditAccountSyncJob implements NotTenantAware, ShouldQueue
 
         foreach ($accs as $acc) {
             $org = Organization::where('code', $acc['accountExternalId'])->first();
-            if (! $org) {
+            if (! $org || in_array($org->status, [CloudAuditStatusEnum::GRANTED, CloudAuditStatusEnum::REVOKED])) {
                 continue;
             }
 
@@ -63,6 +63,7 @@ class CloudauditAccountSyncJob implements NotTenantAware, ShouldQueue
                 $data = $apiReport->getReportByAccount($acc['id']);
                 if (array_key_exists('errors', $data)) {
                     Log::error($data);
+                    $org->update(['status' => CloudAuditStatusEnum::PENDING]);
 
                     continue;
                 }
