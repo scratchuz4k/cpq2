@@ -2,7 +2,7 @@
 import { computed, ref } from 'vue';
 
 const props = defineProps({
-    categories: Object,
+    categories: Array,
     level: {
         default: 0,
         type: Number
@@ -10,7 +10,6 @@ const props = defineProps({
     modelValue: Object
 });
 
-const categories = ref(props.categories);
 const drillDown = ref([]);
 const emit = defineEmits(['update:modelValue']);
 const proxyValue = computed({

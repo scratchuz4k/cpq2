@@ -28,7 +28,7 @@ const checkQuantity = _.debounce(async (product, temp) => {
     if (!item) {
         await createQuoteItem({
             quote_id: quote.id,
-            product_code: product.code,
+            product_code: product.sku,
             product_id: product.id,
             quantity: product.quantity,
             contract_length: product.contract_length,

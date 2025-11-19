@@ -123,15 +123,35 @@ const getProducts = async () => {
         page: meta.page,
         limit: meta.limit,
         filters: JSON.stringify(filters),
-        account_id: props.account.id
+        account_id: props.account.id,
+        order: sort.value.order,
+        orderBy: sort.value.orderBy,
+        search: search.value
     });
+    let tempCategoryIds = [];
     let res = await axios.get('/api/products' + '?' + query);
     res.data.data.forEach((e) => {
         let temp = quote.items.find((x) => x.product_code == e.sku);
         e.quantity = temp ? temp.quantity : 0;
         e.contract_length = e.price_plan.code == 'SINGLE' ? 1 : 12;
+
+        (e.categories || []).forEach((cat) => {
+            if (!tempCategoryIds.includes(cat.id)) {
+                tempCategoryIds.push(cat.id);
+            }
+
+            let current = cat.parent;
+            while (current && current.id) {
+                if (!tempCategoryIds.includes(current.id)) {
+                    tempCategoryIds.push(current.id);
+                }
+                current = current.parent;
+            }
+        });
     });
     products.value = res.data.data;
+
+    await getCategories(tempCategoryIds);
 
     meta.first = (meta.page - 1) * meta.limit;
     meta.total = res.data.total;
@@ -139,20 +159,30 @@ const getProducts = async () => {
     meta.isLoading = false;
 };
 
-const getCategories = async () => {
-    categories.value = [];
-    let current_page = 1;
-    let last_page = 1;
-    do {
-        let string = queryString.stringify({
-            limit: 500,
-            page: current_page
-        });
-        let res = await axios.get('/api/categories?' + string);
-        categories.value.push(...res.data.data);
-        last_page = res.data.meta?.last_page;
-        current_page++;
-    } while (current_page != last_page + 1);
+const getCategories = async (categoryIds = []) => {
+    if (!categoryIds.length) {
+        return;
+    }
+
+    const filters = [
+        {
+            column: 'id',
+            operator: 'in',
+            value: categoryIds
+        },
+        {
+            column: 'is_active',
+            operator: 'equals',
+            value: 1
+        }
+    ];
+
+    const query = queryString.stringify({
+        filters: JSON.stringify(filters)
+    });
+
+    const res = await axios.get('/api/categories' + '?' + query);
+    categories.value = res.data.data ?? [];
 };
 
 const handlePaginator = (ev) => {
@@ -174,8 +204,8 @@ watch(
     { deep: true }
 );
 
-watch(proxyValue, () => {
-    getProducts();
+watch(proxyValue, async () => {
+    await getProducts();
 });
 
 watch(
@@ -189,7 +219,6 @@ watch(
 );
 
 getProducts();
-getCategories();
 </script>
 
 <template>
