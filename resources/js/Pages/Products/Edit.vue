@@ -210,7 +210,7 @@ const items = ref([
                             </div>
 
                             <div class="mb-3">
-                                <label for="product-categories" class="form-label">Category:</label>
+                                <label for="product-categories" class="form-label">Categories:</label>
                                 <InputSelectMultiple
                                     id="product-categories"
                                     url="/categories"
@@ -222,11 +222,11 @@ const items = ref([
                                 </InputSelectMultiple>
                             </div>
                             <div class="mb-3">
-                                <label for="product-step" class="form-label">Step:</label>
+                                <label for="product-steps" class="form-label">Steps:</label>
                                 <InputSelectMultiple
-                                    id="product-step"
+                                    id="product-steps"
                                     url="/steps"
-                                    :fields="['name']"
+                                    :fields="['name', 'solution_type.name']"
                                     v-model="steps"
                                     placeholder="Select a Step"
                                     :query="[{ column: 'is_active', operator: 'equals', value: 1 }]"

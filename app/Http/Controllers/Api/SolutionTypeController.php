@@ -15,7 +15,6 @@ use Dedoc\Scramble\Attributes\ExcludeRouteFromDocs;
 use Exception;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class SolutionTypeController extends BaseController
 {
@@ -71,8 +70,7 @@ class SolutionTypeController extends BaseController
         try {
             $solutionType = DB::transaction(fn () => $this->service->update($solutionType, $request->all()));
         } catch (Exception $e) {
-            Log::debug($e->getMessage());
-            throw new Exception($e);
+            return handleException($e);
         }
 
         return new SolutionTypeTenantResource($solutionType);

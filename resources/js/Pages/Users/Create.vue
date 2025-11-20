@@ -10,33 +10,26 @@ import ToggleSwitch from 'primevue/toggleswitch';
 const page = usePage();
 
 const props = defineProps({
-    roles: Object,
-    managers: Object,
-    parent_id: Number
+    roles: Object
 });
 
 const form = reactive({
     name: null,
     email: null,
     password: null,
-    role_id: props.roles.find((role) => role.name.toLowerCase() === 'sales rep').id,
-    parent: props.parent_id ? props.managers.find((user) => user.id === props.parent_id) : null,
+    role: null,
+    role_id: null,
     commission_rate: 0,
     sso: false,
     is_active: true
 });
 
-const showCommissionRate = computed(() => {
-    let temp = props.roles.find((item) => item.name.toLowerCase() === 'sales rep');
-    return temp.id === form.role_id;
-});
-
 const saveUser = () => {
+    form.role_id = form.role?.id;
     router.post(
         `/users`,
         {
-            ...form,
-            parent_id: form.parent?.id
+            ...form
         },
         {
             onSuccess: (page) => {
@@ -107,17 +100,16 @@ const items = ref([
                 </div>
                 <div class="mb-3">
                     <label for="user-role" class="form-label">Role:</label>
-                    <Select
-                        v-model="form.role_id"
-                        :inputId="'user-role'"
-                        :options="roles"
-                        class="w-100"
-                        optionLabel="name"
-                        optionValue="id"
-                        placeholder="Select an option"
-                    />
+                    <InputSelect
+                        id="user-role"
+                        v-model="form.role"
+                        url="/roles"
+                        :fields="['name']"
+                        :placeholder="'Select an Role'"
+                    >
+                    </InputSelect>
                 </div>
-                <div v-if="showCommissionRate" class="mb-3">
+                <div class="mb-3">
                     <label for="user-commission-rate" class="form-label">Commission Rate:</label>
                     <div class="input-group p-0">
                         <input
@@ -130,20 +122,6 @@ const items = ref([
                             {{ form.errors?.commission_rate }}
                         </div>
                         <span class="input-group-text">%</span>
-                    </div>
-                </div>
-                <div class="mb-3">
-                    <label for="user-manager" class="form-label">Manager:</label>
-                    <div class="input-group p-0">
-                        <InputSelect
-                            id="user-manager"
-                            url="/users"
-                            :fields="['name']"
-                            class="w-100"
-                            v-model="form.parent"
-                            placeholder="Select an Manager"
-                            :query="[{ column: 'is_active', operator: 'equals', value: 1 }]"
-                        />
                     </div>
                 </div>
                 <div class="mb-3">

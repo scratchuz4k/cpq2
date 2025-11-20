@@ -104,7 +104,6 @@ class UsersImport implements ToCollection, WithBatchInserts, WithHeadingRow
                     'user_id' => $newUser->id,
                 ]);
 
-                $newUser->assignRole(User::$default_role);
                 $this->results['success']++;
 
                 return true;

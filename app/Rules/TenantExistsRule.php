@@ -33,10 +33,10 @@ class TenantExistsRule implements ValidationRule
                 $attrs = explode('.', $attribute);
 
                 $fail(
-                    'The '.Str::singular($attrs[0]).' with ID '.$value.' doesn\'t exist for this tenant.'
+                    'The '.Str::singular($attrs[0]).' with ID '.$value.' doesn\'t exist.'
                 );
             } else {
-                $fail("The selected {$attribute} doesn't exist for this tenant.");
+                $fail("The selected {$attribute} doesn't exist.");
             }
         }
     }

@@ -26,7 +26,6 @@ class UserFactory extends Factory
             'tenant_id' => 1,
             'sso' => 0,
             'commission_rate' => 0,
-            'parent_id' => null,
             'is_active' => true,
         ];
     }

@@ -9,6 +9,13 @@ class TenantService
 {
     public function __construct(protected TenantRepository $tenantRepository) {}
 
+    public function create(array $data)
+    {
+        $tenant = Tenant::create($data);
+
+        return $tenant;
+    }
+
     public function update(Tenant $tenant, array $data)
     {
         if (array_key_exists('sso_text_area', $data) && ! is_null($data['sso_text_area'])) {

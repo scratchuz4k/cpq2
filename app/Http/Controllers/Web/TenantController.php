@@ -8,6 +8,7 @@ use App\Http\Resources\TenantResource;
 use App\Models\Tenant;
 use App\Services\TenantService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
@@ -46,7 +47,13 @@ class TenantController extends BaseController
      */
     public function store(Request $request)
     {
-        //
+        try {
+            $tenant = DB::transaction(fn () => $this->tenantService->create($request->all()));
+        } catch (\Exception $e) {
+            return handleWebException($e);
+        }
+
+        return Inertia::location('tenants');
     }
 
     /**
@@ -92,7 +99,7 @@ class TenantController extends BaseController
      */
     public function switch(Request $request, Tenant $tenant)
     {
-        $request->user()->update(['tenant_id' => $tenant->id]);
+        Auth::user()->update(['tenant_id' => $tenant->id]);
         $tenant->makeCurrent();
 
         return Inertia::location(route('index'));
