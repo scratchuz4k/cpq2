@@ -4,7 +4,6 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-use Sqids\Sqids;
 
 class QuoteResource extends JsonResource
 {
@@ -34,11 +33,6 @@ class QuoteResource extends JsonResource
             'updated_at' => $this->updated_at,
             'configs' => $this->configs,
             'approvals' => $this->approvals,
-            'hash' => app(Sqids::class)->encode([
-                $this->id,
-                $this->tenant_id,
-                $this->user_id,
-            ]),
         ];
     }
 }
