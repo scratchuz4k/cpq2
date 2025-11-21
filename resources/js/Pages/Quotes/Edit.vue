@@ -12,9 +12,9 @@ const solutionsViews = {
     3: 'QuotesConnectivityView',
     4: 'QuotesMobileView',
     5: 'QuotesHardwareView',
-    7: 'QuotesCloudView',
-    8: 'QuotesHostedVoiceView',
-    9: 'QuotesSecurityView'
+    7: 'QuotesDefaultView',
+    8: 'QuotesDefaultView',
+    9: 'QuotesDefaultView'
 };
 
 getQuote(props.quote.id);

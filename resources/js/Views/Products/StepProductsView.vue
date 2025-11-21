@@ -46,12 +46,12 @@ const sortOptions = [
     {
         label: 'Alphabetical (A-Z)',
         order: 'asc',
-        orderBy: 'model.name'
+        orderBy: 'name'
     },
     {
         label: 'Alphabetical (Z-A) ',
         order: 'desc',
-        orderBy: 'model.name'
+        orderBy: 'name'
     },
     {
         label: 'Lowest Price',
@@ -62,16 +62,6 @@ const sortOptions = [
         label: 'Highest Price',
         order: 'desc',
         orderBy: 'price.net_spa'
-    },
-    {
-        label: 'Lowest Stock',
-        order: 'asc',
-        orderBy: 'stock'
-    },
-    {
-        label: 'Highest Stock',
-        order: 'desc',
-        orderBy: 'stock'
     }
 ];
 
@@ -195,6 +185,10 @@ const emitSaveQuote = () => {
     emitter.emit('save-quote');
 };
 
+watch(sort, () => {
+    getProducts();
+});
+
 watch(
     currentCategory,
     _.debounce(() => {
@@ -226,7 +220,7 @@ getProducts();
         <div class="step">
             <div class="row">
                 <div class="d-flex justify-content-between mb-3">
-                    <h2>Select some products</h2>
+                    <h2>{{ currentStep + 1 }}. {{ step.name }}</h2>
                     <p class="bigger text-primary bold">
                         STEP
                         <span id="current-step">{{ currentStep + 1 }}</span>
@@ -278,7 +272,7 @@ getProducts();
                             <h2>Search</h2>
                             <input type="search" class="form-control" placeholder="" v-model="search" />
                         </div>
-                        <div class="mb-4">
+                        <div v-if="categories.length" class="mb-4">
                             <h2>Categories</h2>
                             <CategoriesTree v-model="currentCategory" :categories="categories"></CategoriesTree>
                         </div>
