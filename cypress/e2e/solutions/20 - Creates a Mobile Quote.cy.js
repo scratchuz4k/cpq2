@@ -82,13 +82,13 @@ describe('Creates a Mobile Quote', () => {
         cy.get('#solution_type-mobile').click();
         cy.get('#btn-create-quote').click();
         cy.wait(1000);
-        cy.get('#btn-plan-0-add-25').click();
+        cy.get('#btn-product-0-add-25').click();
         cy.wait(1000);
-        cy.get('#btn-plan-1-add-25').click();
+        cy.get('#btn-product-1-add-25').click();
         cy.wait(1000);
         cy.get('#btn-step-1-next').click();
         cy.wait(1000);
-        cy.get('#btn-plan-0-add-25').click();
+        cy.get('#btn-product-0-add-25').click();
         cy.wait(1000);
         cy.get('#btn-step-2-next').click();
 

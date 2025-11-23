@@ -12,7 +12,11 @@ const props = defineProps({
         default: 0,
         type: Number
     },
-    modelValue: Object
+    modelValue: Object,
+    defaultCategory: {
+        type: Number,
+        default: 0
+    }
 });
 
 const emit = defineEmits(['update:modelValue']);
@@ -25,10 +29,25 @@ const getShopBlocksCategories = async () => {
     categories.value = [];
     let current_page = 1;
     let last_page = 1;
+    let filters = props.defaultCategory
+        ? [
+              {
+                  column: 'id',
+                  operator: 'equals',
+                  value: props.defaultCategory
+              }
+          ]
+        : [];
+
+    if (props.defaultCategory) {
+        filters.push({ column: 'id', operator: 'equals', value: props.defaultCategory });
+    }
+
     do {
         let string = queryString.stringify({
             limit: 500,
-            page: current_page
+            page: current_page,
+            filters: JSON.stringify(filters)
         });
         let res = await axios.get('/api/shop-blocks/categories?' + string);
         categories.value.push(...res.data.data);
@@ -74,6 +93,7 @@ getShopBlocksCategories();
 </script>
 <template>
     <ul style="margin: 0; padding: 5px 0; list-style: none" v-if="!!drillDown.length">
+        teste
         <li class="me-1 border-1 mb-1">
             <div class="btn btn-category d-flex justify-content-between py-1" @click="rollback(null)">
                 <p class="m-0">All</p>
@@ -90,13 +110,23 @@ getShopBlocksCategories();
         </li>
     </ul>
     <ul style="padding: 0; list-style: none" :style="styles[props.level]">
-        <template v-for="category in categories.filter((x) => x.parent_id == proxyValue?.id)">
+        <template
+            v-if="categories.length > 1"
+            v-for="category in categories.filter((x) => x.parent_id == proxyValue?.id)"
+        >
             <li>
                 <div class="btn btn-light d-flex justify-content-between pointer" @click="selectCategory(category)">
                     <p class="m-0 text-left">{{ category.name }}</p>
                     <div class="" v-if="categories.find((x) => x.parent_id == category.id)">
                         <font-awesome-icon :icon="['fas', 'arrow-right']" />
                     </div>
+                </div>
+            </li>
+        </template>
+        <template v-else>
+            <li>
+                <div class="btn btn-light d-flex justify-content-between pointer">
+                    <p class="m-0 text-left">{{ categories[0]?.name }}</p>
                 </div>
             </li>
         </template>

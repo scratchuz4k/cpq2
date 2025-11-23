@@ -5,6 +5,7 @@ import { Paginator, Select } from 'primevue';
 import { quote } from '@/Composables/useQuote';
 import { categories } from '@composables/custom/shopblocks';
 import { computed, onMounted, reactive, ref, watch } from 'vue';
+import ShopBlocksStorages from '@/Components/ShopBlocks/ShopBlocksStorages.vue';
 
 const emit = defineEmits(['save', 'update:modelValue']);
 const proxyValue = computed({
@@ -18,8 +19,14 @@ const proxyValue = computed({
 
 const props = defineProps({
     modelValue: Number,
-    quote: Object
+    quote: Object,
+    category: {
+        type: Number,
+        default: 0
+    },
+    current_step: Number
 });
+
 const selectedItems = ref([]);
 const meta = reactive({
     page: 1,
@@ -48,6 +55,7 @@ const filters = reactive({
 const currentCategory = ref(null);
 const currentBrand = ref([]);
 const currentModel = ref([]);
+const currentStorage = ref([]);
 
 const filterList = reactive({
     models: [],
@@ -116,6 +124,14 @@ const getProductsShopBlocks = async () => {
         value: 1
     });
 
+    if (props.category) {
+        filters.push({
+            column: 'category.id',
+            operator: 'equals',
+            value: props.category
+        });
+    }
+
     if (currentCategory.value) {
         let array = [currentCategory.value];
         let items = [];
@@ -150,6 +166,16 @@ const getProductsShopBlocks = async () => {
         });
     }
 
+    let dimensions = currentStorage.value.length
+        ? [
+              {
+                  column: 'internal-storage-capacity',
+                  operator: 'in',
+                  value: currentStorage.value.map((x) => x.value)
+              }
+          ]
+        : [];
+
     let query = queryString.stringify({
         page: meta.page,
         limit: meta.limit,
@@ -158,7 +184,8 @@ const getProductsShopBlocks = async () => {
         orderBy: sort.value.orderBy,
         columns: 'description,name',
         search: search.value,
-        account_id: quote.account_id
+        account_id: quote.account_id,
+        dimensions: JSON.stringify(dimensions)
     });
     try {
         let res = await axios.get('/api/shop-blocks/products?' + query, {
@@ -221,7 +248,7 @@ watch([filters, sort], () => {
 });
 
 watch(
-    [currentCategory, currentBrand, currentModel],
+    [currentCategory, currentBrand, currentModel, currentStorage],
     _.debounce(() => {
         meta.page = 1;
         getProductsShopBlocks();
@@ -240,10 +267,11 @@ watch(
 );
 </script>
 <template>
+    <h1>{{ props.categor }}</h1>
     <div id="mobile_step_shopblocks" class="step">
         <div class="row">
             <div class="d-flex justify-content-between mb-3">
-                <h2>Select some products</h2>
+                <h2>{{ quote.solution_type.code == 4 ? 'Handsets' : 'Hardware' }}</h2>
                 <p class="bigger text-primary bold">
                     STEP
                     <span id="current-step">{{ step }}</span>
@@ -321,16 +349,24 @@ watch(
 
                     <div class="mb-4">
                         <h2>Categories</h2>
-                        <ShopBlocksCategoriesTree v-model="currentCategory"></ShopBlocksCategoriesTree>
+                        <ShopBlocksCategoriesTree
+                            v-model="currentCategory"
+                            :defaultCategory="category"
+                        ></ShopBlocksCategoriesTree>
                     </div>
                     <div class="mb-4">
                         <h2>Brands</h2>
                         <ShopBlocksBrands v-model="currentBrand" :category="currentCategory"></ShopBlocksBrands>
                     </div>
 
-                    <div class="mb-4">
+                    <div v-if="!category > 0" class="mb-4">
                         <h2>Models</h2>
                         <ShopBlocksModels v-model="currentModel" :category="currentCategory"></ShopBlocksModels>
+                    </div>
+
+                    <div class="mb-4">
+                        <h2>Stoage</h2>
+                        <ShopBlocksStorages v-model="currentStorage" :category="currentCategory"></ShopBlocksStorages>
                     </div>
                 </div>
             </div>

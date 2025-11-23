@@ -90,21 +90,21 @@
 
                         <template v-if="!showAsColumn">
                             <button
-                                :id="'btn-hardware-' + index + '-add-25'"
+                                :id="'btn-product-' + index + '-add-25'"
                                 class="btn btn-sm ms-4 btn-add-custom-quantity"
                                 @click="checkQuantity(proxyValue, proxyValue.quantity + 25, true)"
                             >
                                 +25
                             </button>
                             <button
-                                :id="'btn-hardware-' + index + '-add-50'"
+                                :id="'btn-product-' + index + '-add-50'"
                                 class="btn btn-sm ms-2 btn-add-custom-quantity"
                                 @click="checkQuantity(proxyValue, proxyValue.quantity + 50, true)"
                             >
                                 +50
                             </button>
                             <button
-                                :id="'btn-hardware-' + index + '-add-100'"
+                                :id="'btn-product-' + index + '-add-100'"
                                 class="btn btn-sm ms-2 me-4 btn-add-custom-quantity"
                                 @click="checkQuantity(proxyValue, proxyValue.quantity + 100, true)"
                             >

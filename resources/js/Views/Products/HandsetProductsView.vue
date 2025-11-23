@@ -33,6 +33,9 @@ const meta = reactive({
 const showCards = ref(false);
 const search = ref(null);
 const productsHardware = ref([]);
+const currentCategory = ref(null);
+const currentBrand = ref([]);
+const currentModel = ref([]);
 
 const filters = reactive({
     brands: [],
@@ -93,6 +96,25 @@ const getDimensionStorage = async () => {
 
     res = await axios.get('/api/shop-blocks/dimensions?' + query);
     storage.value = res.data.data;
+};
+
+const getShopBlocksMobileCategory = async () => {
+    // categories.value = [];
+    // let current_page = 1;
+    // let last_page = 1;
+    // do {
+    //     let string = queryString.stringify({
+    //         limit: 500,
+    //         page: current_page
+    //     });
+    debugger;
+    let res = await axios.get('/api/shop-blocks/categories/22');
+    let test = res.data.data;
+
+    //     categories.value.push(...res.data.data);
+    //     last_page = res.data.meta?.last_page;
+    //     current_page++;
+    // } while (current_page != last_page + 1);
 };
 
 const getProductsShopBlocks = async () => {
@@ -194,9 +216,144 @@ watch(
     }, 300)
 );
 getDimensionStorage();
+getShopBlocksMobileCategory();
 </script>
 <template>
     <div id="mobile_step_shopblocks" class="step">
+        <div class="row">
+            <div class="d-flex justify-content-between mb-3">
+                <h2>Select some products</h2>
+                <p class="bigger text-primary bold">
+                    STEP
+                    <span id="current-step">{{ step }}</span>
+                    /
+                    <span id="last-step">{{ step }}</span>
+                </p>
+            </div>
+        </div>
+        <div class="row justify-content-end">
+            <div class="col-3">
+                <div class="d-flex justify-content-between mb-3">
+                    <div class="d-flex">
+                        <h2>Products ({{ meta.total }})</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-9">
+                <div class="d-flex justify-content-between align-items-end mb-3">
+                    <div class="d-flex flex-fill justify-content-start">
+                        <button
+                            class="btn border"
+                            :class="[showCards ? 'btn-dark' : '']"
+                            @click="() => (showCards = !showCards)"
+                            style="border-radius: 5px 0 0 5px"
+                        >
+                            <font-awesome-icon :icon="['fas', 'grip']"></font-awesome-icon>
+                        </button>
+                        <button
+                            class="btn border"
+                            :class="[showCards ? '' : 'btn-dark']"
+                            @click="() => (showCards = !showCards)"
+                            style="border-radius: 0 5px 5px 0"
+                        >
+                            <font-awesome-icon :icon="['fas', 'grip-lines']"></font-awesome-icon>
+                        </button>
+                    </div>
+                    <div class="d-flex justify-content-end text-nowrap flex-shrink-0">
+                        <span class="me-2 align-self-center">Sort by</span>
+                        <Select v-model="sort" :options="sorts" optionLabel="label" placeholder="All"> </Select>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-3">
+                <div class="rounded bg-white p-3">
+                    <div class="mb-4">
+                        <h2>Search</h2>
+                        <input type="search" class="form-control" placeholder="" v-model="search" />
+                    </div>
+                    <ul class="d-flex list-unstyled">
+                        <li>
+                            <Badge v-for="(brand, index) in currentBrand" :value="brand.name">
+                                <template #close-button>
+                                    <font-awesome-icon
+                                        :icon="['fas', 'x']"
+                                        role="button"
+                                        class="me-1 fs-7"
+                                        @click="() => currentBrand.splice(index, 1)"
+                                    />
+                                </template>
+                            </Badge>
+                        </li>
+                    </ul>
+
+                    <div class="mb-4">
+                        <h2>Categories</h2>
+                        <ShopBlocksCategoriesTree v-model="currentCategory"></ShopBlocksCategoriesTree>
+                    </div>
+                    <div class="mb-4">
+                        <h2>Brands</h2>
+                        <ShopBlocksBrands v-model="currentBrand" :category="currentCategory"></ShopBlocksBrands>
+                    </div>
+
+                    <div class="mb-4">
+                        <h2>Storage</h2>
+                        <ShopBlocksStorages v-model="currentStorage" :category="currentCategory"></ShopBlocksStorages>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <template v-if="meta.isLoading">
+                    <ProductSkeleton v-for="item in [0, 1, 2, 3, 4]"></ProductSkeleton
+                ></template>
+                <template v-else>
+                    <div class="text-center pt-2 pb-4" v-if="!productsHardware.length">No Results Found</div>
+                    <div class="row" :class="[showCards ? 'row-cols-4' : 'row-cols-1']">
+                        <ShopBlocksProductCard
+                            v-for="(product, index) in productsHardware"
+                            @select="(item) => addSelected(item)"
+                            :hasSelect="true"
+                            :showAsColumn="showCards"
+                            :index="index"
+                            v-model="productsHardware[index]"
+                        >
+                        </ShopBlocksProductCard>
+                    </div>
+                    <Paginator
+                        v-model:first="meta.first"
+                        :rows="meta.limit"
+                        :totalRecords="meta.total"
+                        :rowsPerPageOptions="[12, 24, 48]"
+                        @page="handlePaginator"
+                    >
+                    </Paginator
+                ></template>
+            </div>
+        </div>
+        <div class="d-flex justify-content-between align-items-center mt-3">
+            <div>
+                <button
+                    v-if="step != 1"
+                    id="btn-step-2-previous"
+                    class="btn text-primary step-nav btn-sm me-3"
+                    type="button"
+                    @click="() => proxyValue--"
+                >
+                    <font-awesome-icon :icon="['fas', 'arrow-left']" /> Previous
+                </button>
+            </div>
+            <div>
+                <button id="btn-step-2-next" class="ms-3 btn btn-primary step-nav" type="button" @click="emit('save')">
+                    Next
+                    <font-awesome-icon :icon="['fas', 'arrow-right']" />
+                </button>
+            </div>
+        </div>
+        <ProductCompareShopblocks v-if="selectedItems.length" v-model="selectedItems"></ProductCompareShopblocks>
+    </div>
+
+    <!--<div id="mobile_step_shopblocks" class="step">
         <div class="d-flex justify-content-between mb-3">
             <h3 class="mb-0">{{ step }}. Handsets</h3>
             <p class="bigger text-primary bold">
@@ -310,7 +467,7 @@ getDimensionStorage();
                     id="btn-step-2-previous"
                     class="btn text-primary step-nav btn-sm me-3"
                     type="button"
-                    @click="() => proxyValue--"
+                    @click="() => proxyValue&#45;&#45;"
                 >
                     <font-awesome-icon :icon="['fas', 'arrow-left']" /> Previous
                 </button>
@@ -324,7 +481,7 @@ getDimensionStorage();
         </div>
 
         <ProductCompareShopblocks v-if="selectedItems.length" v-model="selectedItems"></ProductCompareShopblocks>
-    </div>
+    </div>-->
 </template>
 <style scoped>
 .truncate-1-line {

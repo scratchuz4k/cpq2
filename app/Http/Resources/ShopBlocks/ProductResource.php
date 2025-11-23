@@ -17,6 +17,7 @@ class ProductResource extends JsonResource
         return [
             ...$this->resource->toArray(),
             'model' => $this->model,
+            'category' => $this->category,
         ];
     }
 }

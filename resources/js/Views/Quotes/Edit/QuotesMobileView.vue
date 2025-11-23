@@ -88,17 +88,18 @@ getStepsWithProducts();
                         </StepProductsView>
                     </div>
 
-                    <HandsetProductsView
+                    <ShopBlocksProductsView
                         v-if="
                             (current_step == active_steps.length && current_step > 0) ||
                             (active_steps.length == 0 && current_step == 0)
                         "
                         :current_step="current_step"
                         :quote="quote"
+                        :category="22"
                         v-model="current_step"
                         @save="saveQuote"
                     >
-                    </HandsetProductsView>
+                    </ShopBlocksProductsView>
                 </div>
             </div>
         </div>
