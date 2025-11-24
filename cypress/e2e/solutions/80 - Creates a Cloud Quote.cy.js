@@ -92,7 +92,6 @@ describe('Creates a Cloud Quote', () => {
                         const last_step = parseInt(lastStepText.trim());
 
                         for (let i = current_step; i <= last_step; i++) {
-                            console.log(current_step, last_step, i);
                             cy.get(`#btn-step-${i}-next`).click();
                         }
                     });

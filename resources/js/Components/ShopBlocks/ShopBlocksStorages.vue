@@ -34,23 +34,7 @@ const getFilters = async () => {
         { column: 'dimension_type_id', operator: 'equals', value: res.data.data[0].id },
         { column: 'products.category.code', operator: 'equals', value: 22 }
     ];
-
-    // let array = props.category ? [props.category] : [];
-    // let items = [];
-    // if (props.category) {
-    //     do {
-    //         let current = array.pop();
-    //         items.push(current);
-    //         let temp = categories.value.filter((x) => x.parent_id == current.id);
-    //         array.push(...temp);
-    //     } while (array.length != 0);
-    // }
-    // return items.length ? [{ column: 'products.category.id', operator: 'in', value: items.map((x) => x.id) }] : [];
 };
-
-// onMounted(() => {
-//     getFilters();
-// });
 
 watch(
     () => props.category,
@@ -60,7 +44,6 @@ watch(
     { immediate: true }
 );
 </script>
-{{ proxyValue }}
 <template>
     <InputSelectMultiple
         id="select-storage"
