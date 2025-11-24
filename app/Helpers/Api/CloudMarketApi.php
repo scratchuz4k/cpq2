@@ -134,6 +134,15 @@ class CloudMarketApi
         return self::makeRequestPost('/PartnerQuoteService/SaveQuote', array_merge($params, $credentials));
     }
 
+    public static function getStatistics(string $createdSince)
+    {
+        $params = [
+            'CreatedSince' => $createdSince,
+        ];
+
+        return self::makeRequest('/PartnerQuoteService/GetResponseStats', $params);
+    }
+
     private static function collectCredentials($apis = null): array
     {
         if (! $apis) {
