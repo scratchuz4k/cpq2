@@ -99,7 +99,7 @@ it('Complete Quote With Margin Flow', function () {
         ->assertJsonCount(2, 'data');
 
     $quote = $this->get('api/quotes/1')->json();
-    $this->assertEquals('NEED_APPROVAL', $quote['status']);
+    $this->assertEquals('PENDING_APPROVAL', $quote['status']);
     $this->actingAs($this->sales_rep)->post('/logout');
 
     $quoteApproval = $this->actingAs($this->sales_manager->refresh())

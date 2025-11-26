@@ -1,7 +1,7 @@
 <template>
     <div
         class="approvals-group-button flex me-2 p-0"
-        v-if="['quote', 'need_approval', 'validated', 'completed'].includes(quote.status.toLowerCase())"
+        v-if="['quote', 'pending_approval', 'validated', 'completed'].includes(quote.status.toLowerCase())"
     >
         <button
             id="quote-approval-history"

@@ -4,8 +4,9 @@ namespace App\Enums;
 
 enum QuoteApprovalFlowEnum: string
 {
-    case Internal = 'internal';
-    case Margin = 'margin';
+    case INTERNAL = 'Internal review';
+    case MARGIN = 'Margin review';
+    case CLIENT = 'Client review';
 
     public static function asArray(): array
     {

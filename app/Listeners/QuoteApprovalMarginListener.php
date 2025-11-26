@@ -31,22 +31,22 @@ class QuoteApprovalMarginListener
     public function handle(QuoteApprovalEvent $event): void
     {
         $quoteApproval = $event->quoteApproval;
-        if (($quoteApproval->flow !== QuoteApprovalFlowEnum::Margin->value || $quoteApproval->status !== QuoteApprovalStatus::Pending->value)) {
+        if (($quoteApproval->flow !== QuoteApprovalFlowEnum::MARGIN->value || $quoteApproval->status !== QuoteApprovalStatus::PENDING->value)) {
             return;
         }
 
         $isMarginValid = $quoteApproval->quote->items->every(fn ($item) => $item->isWithinMarginThresholds());
         if (! $isMarginValid) {
-            $quoteApproval->status = QuoteApprovalStatus::Rejected->value;
+            $quoteApproval->status = QuoteApprovalStatus::REJECTED->value;
             $quoteApproval->comments = 'Margin requirements not met.';
             $quoteApproval->saveQuietly();
-            $this->quoteApprovalService->store(['quote_id' => $quoteApproval->quote_id, 'flow' => QuoteApprovalFlowEnum::Internal->value]);
+            $this->quoteApprovalService->store(['quote_id' => $quoteApproval->quote_id, 'flow' => QuoteApprovalFlowEnum::INTERNAL->value]);
 
             return;
         }
 
         if ($isMarginValid) {
-            $quoteApproval->status = QuoteApprovalStatus::Approved->value;
+            $quoteApproval->status = QuoteApprovalStatus::APPROVED->value;
             $quoteApproval->saveQuietly();
             $this->quoteService->update($quoteApproval->quote, ['status' => QuoteStatusesEnum::VALIDATED->name]);
         }

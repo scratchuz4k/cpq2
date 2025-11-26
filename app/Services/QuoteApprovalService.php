@@ -13,10 +13,10 @@ class QuoteApprovalService
 {
     public function store(array $array): QuoteApproval
     {
-        $array['status'] = QuoteApprovalStatus::Pending->value;
+        $array['status'] = QuoteApprovalStatus::PENDING->value;
         $array['flow'] = array_key_exists('flow', $array) ? $array['flow'] : get_tenant_config('quote_approval_flow');
         $quote = Quote::find($array['quote_id']);
-        $quote->update(['status' => QuoteStatusesEnum::NEED_APPROVAL->name]);
+        $quote->update(['status' => QuoteStatusesEnum::PENDING_APPROVAL->name]);
         $quoteApproval = QuoteApproval::create($array);
 
         return $quoteApproval;
@@ -45,7 +45,7 @@ class QuoteApprovalService
             return response()->json(['message' => 'Quote is already validated or completed.'], 422);
         }
 
-        $hasActiveFlow = $quote->approvals->some(fn ($item) => $item->status == QuoteApprovalStatus::Pending->value);
+        $hasActiveFlow = $quote->approvals->some(fn ($item) => $item->status == QuoteApprovalStatus::PENDING->value);
         if ($hasActiveFlow) {
             return response()->json(['message' => 'An active approval flow already exists for this quote.'], 422);
         }
@@ -55,11 +55,11 @@ class QuoteApprovalService
 
     public function validateUpdate(QuoteApproval $quoteApproval): ?JsonResponse
     {
-        if (in_array($quoteApproval->status, [QuoteApprovalStatus::Approved->value, QuoteApprovalStatus::Rejected->value])) {
+        if (in_array($quoteApproval->status, [QuoteApprovalStatus::APPROVED->value, QuoteApprovalStatus::REJECTED->value])) {
             return response()->json(['message' => 'This approval has already been finalized.'], 422);
         }
 
-        if ($quoteApproval->blocker && $quoteApproval->status != Auth::id()) {
+        if ($quoteApproval->blocker && $quoteApproval->blocker->id != Auth::id()) {
             return response()->json(['message' => 'This Quote Approval is blocked by another user'], 422);
         }
 

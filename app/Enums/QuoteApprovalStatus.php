@@ -4,7 +4,7 @@ namespace App\Enums;
 
 enum QuoteApprovalStatus: string
 {
-    case Pending = 'pending';
-    case Approved = 'approved';
-    case Rejected = 'rejected';
+    case PENDING = 'pending';
+    case APPROVED = 'approved';
+    case REJECTED = 'rejected';
 }

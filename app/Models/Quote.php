@@ -160,7 +160,7 @@ class Quote extends Model
     public static function resolveStatus(Quote $quote): string
     {
         $statuses_to_ignore = [
-            QuoteStatusesEnum::NEED_APPROVAL->name,
+            QuoteStatusesEnum::PENDING_APPROVAL->name,
             QuoteStatusesEnum::VALIDATED->name,
             QuoteStatusesEnum::COMPLETED->name,
             QuoteStatusesEnum::EXPIRED->name,
@@ -184,7 +184,7 @@ class Quote extends Model
     public function isBlocked(): string
     {
         $block_statuses = [
-            QuoteStatusesEnum::NEED_APPROVAL->name,
+            QuoteStatusesEnum::PENDING_APPROVAL->name,
             QuoteStatusesEnum::VALIDATED->name,
             QuoteStatusesEnum::COMPLETED->name,
             QuoteStatusesEnum::EXPIRED->name,

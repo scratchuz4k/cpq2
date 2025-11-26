@@ -119,7 +119,7 @@ class QuoteItem extends Model
     public function isWithinMarginThresholds(): bool
     {
         $hasPemission = get_tenant_config('has_quote_approval');
-        $isActive = get_tenant_config('quote_approval_flow') === QuoteApprovalFlowEnum::Margin->value;
+        $isActive = get_tenant_config('quote_approval_flow') === QuoteApprovalFlowEnum::MARGIN->value;
 
         if (! is_null($hasPemission) && $hasPemission == '1' && $isActive) {
             $margin = $this->price ? ($this->margin / $this->price) * 100 : 0;

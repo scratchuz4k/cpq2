@@ -7,7 +7,7 @@ enum QuoteStatusesEnum: string
     case CONFIGURE = 'configure';
     case PRICE = 'price';
     case QUOTE = 'quote';
-    case NEED_APPROVAL = 'need_approval';
+    case PENDING_APPROVAL = 'pending approval';
     case VALIDATED = 'validated';
     case COMPLETED = 'completed';
     case EXPIRED = 'expired';

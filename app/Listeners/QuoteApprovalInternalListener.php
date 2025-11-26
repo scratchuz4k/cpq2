@@ -28,13 +28,15 @@ class QuoteApprovalInternalListener
     {
         $quoteApproval = $event->quoteApproval;
 
-        if ($quoteApproval->flow === QuoteApprovalFlowEnum::Internal->value && $quoteApproval->status === QuoteApprovalStatus::Rejected->value) {
+        if ($quoteApproval->flow === QuoteApprovalFlowEnum::INTERNAL
+            ->value && $quoteApproval->status === QuoteApprovalStatus::REJECTED->value) {
             $this->quoteService->update($quoteApproval->quote, ['status' => QuoteStatusesEnum::QUOTE->name]);
 
             return;
         }
 
-        if ($quoteApproval->flow === QuoteApprovalFlowEnum::Internal->value && $quoteApproval->status === QuoteApprovalStatus::Approved->value) {
+        if ($quoteApproval->flow === QuoteApprovalFlowEnum::INTERNAL
+            ->value && $quoteApproval->status === QuoteApprovalStatus::APPROVED->value) {
             $this->quoteService->update($quoteApproval->quote, ['status' => QuoteStatusesEnum::VALIDATED->name]);
 
             return;
