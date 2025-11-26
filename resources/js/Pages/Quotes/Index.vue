@@ -4,9 +4,8 @@ import { Head, Link, usePage } from '@inertiajs/vue3';
 import { ref } from 'vue';
 import { createOrder } from '@/Composables/useOrders.js';
 import dayjs from 'dayjs';
-import { can, hasRole } from '@/Composables/useAuth';
-import queryString from 'query-string';
 import axios from 'axios';
+import Datatable from '@/Components/Datatable.vue';
 
 const props = defineProps({
     users: {
@@ -28,33 +27,8 @@ const props = defineProps({
 });
 
 const page = usePage();
-const workbasketTotal = ref(0);
 const user = page.props.auth.user;
 const tenant = page.props.tenant;
-const createOrderAndRefresh = async (id) => {
-    const res = await createOrder(id);
-    if (res) {
-        emitter.emit('datatable-refresh');
-    }
-};
-
-const getWorkbasketTotal = async () => {
-    if (!can('viewAny quote_approval')) return;
-    let string = queryString.stringify({
-        filters: JSON.stringify([
-            { column: 'status', operator: 'in', value: 'pending', function: 'orWhere' },
-            {
-                group: [
-                    { column: 'blocker_id', operator: 'is_null', value: '', function: 'orWhere' },
-                    { column: 'blocker_id', operator: 'equals', value: user.id }
-                ]
-            }
-        ])
-    });
-    let res = await axios.get('/api/quote-approvals?' + string);
-    workbasketTotal.value = res.data.meta.total;
-};
-getWorkbasketTotal();
 
 const expirableStatuses = ['QUOTE', 'PRICE', 'CONFIGURE'];
 
@@ -85,7 +59,7 @@ const deleteRecord = (id) => {
 
 const saveApproval = async (data) => {
     axios.put(`/api/quote-approvals/${data.id}`, { blocker_id: user.id });
-    emitter.emit('datatable-refresh:workbasket-table');
+    emitter.emit('datatable-refresh');
 };
 
 const items = ref([{ label: 'Home', url: '/' }, { label: 'Quotes' }]);
@@ -96,185 +70,99 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Quotes' }]);
     <AuthenticatedLayout>
         <div class="panel">
             <Header :breadcrumbs="items" title="Quotes"></Header>
-            <tabs>
-                <tab :selected="true" title="General">
-                    <Datatable
-                        :allow="{}"
-                        :columns="[
-                            { data: 'id', title: '#', style: 'width:5%' },
-                            { data: 'account.name', title: 'Account', style: 'width:13%' },
-                            { data: 'solution_type.name', title: 'Solution', style: 'width:16%' },
-                            { data: 'address_postcode', title: 'Postcode', style: 'width:8%' },
-                            { data: 'user.name', title: 'Owner', style: 'width:15%' },
-                            { data: 'status', title: 'Status', style: 'width:10%' },
-                            { data: 'updated_at', title: 'Updated At', style: 'width:15%' },
-                            { data: 'actions', title: '', style: 'width:13%' },
-                            { data: 'items.data', title: 'Data', hide: true },
-                            { data: 'items.name', title: 'Name', hide: true },
-                            { data: 'address_data', title: 'Address', hide: true },
-                            { data: 'account.contacts.email', title: 'Email', hide: true }
-                        ]"
-                        :filters="{
-                            'user.name': { type: 'options', options: users.map((x) => x.name) },
-                            'solution_type.name': {
-                                type: 'options',
-                                options: solutions.map((x) => x.name)
-                            },
-                            status: { type: 'options', options: status }
-                        }"
-                        :tableProps="{ id: 'dashboard-table' }"
-                        route="/quotes"
-                        :sort="{ orderBy: 'id', order: 'desc' }"
-                    >
-                        <template #status="{ data, value }">
-                            <span
-                                v-if="expirableStatuses.includes(data.status)"
-                                class="badge text-bg-secondary"
-                                v-tooltip
-                                data-bs-toggle="tooltip"
-                                data-bs-placement="top"
-                                :title="'This quote will expire on ' + dateToExpire(data.created_at)"
-                                >{{ value }}</span
-                            >
-                            <span v-else class="badge text-bg-secondary">{{ value }}</span>
-                        </template>
-                        <template #updated_at="{ value }">
-                            {{ format.date(value) }}
-                        </template>
-                        <template #actions="{ data, value, index }">
-                            <div
-                                v-if="!['COMPLETED', 'EXPIRED'].includes(data.status)"
-                                class="d-flex justify-content-end"
-                            >
-                                <button
-                                    v-if="['QUOTE', 'REJECTED'].includes(data.status)"
-                                    :id="'datatable-btn-' + index + '-crete-order'"
-                                    :hidden="!(tenant.configurations.orders_flow_is_active === '1')"
-                                    class="btn px-2 py-0 mx-1 border-0"
-                                    title="Send to Order"
-                                    type="button"
-                                    @click="createOrderAndRefresh(data.id)"
-                                >
-                                    <font-awesome-icon :icon="['fas', 'thumbtack']" />
-                                </button>
-                                <Link
-                                    :id="'datatable-btn-' + index + '-edit'"
-                                    :href="'quotes/' + data.id + '/edit'"
-                                    class="btn px-2 py-0 mx-1 border-0"
-                                >
-                                    <font-awesome-icon :icon="['fas', 'edit']" />
-                                </Link>
-                                <Link
-                                    v-if="data.status !== ''"
-                                    :id="'datatable-btn-' + index + '-show'"
-                                    :href="'quotes/' + data.id"
-                                    class="btn px-2 py-0 mx-1 border-0"
-                                >
-                                    <font-awesome-icon :icon="['fas', 'eye']" />
-                                </Link>
-                                <button
-                                    :id="'datatable-btn-' + index + '-delete'"
-                                    class="btn px-2 py-0 mx-1 border-0"
-                                    @click="deleteRecord(data.id)"
-                                >
-                                    <font-awesome-icon icon="fas fa-trash-alt" />
-                                </button>
-                            </div>
-                            <div v-else class="d-flex justify-content-end">
-                                <Link
-                                    :id="'datatable-btn-' + index + '-show'"
-                                    :href="'quotes/' + data.id + '/preview'"
-                                    class="btn px-2 py-0 mx-1 border-0"
-                                >
-                                    <font-awesome-icon :icon="['fas', 'eye']" />
-                                </Link>
-                            </div>
-                        </template>
-                    </Datatable>
-                </tab>
-                <tab
-                    :title="`Workbasket (${workbasketTotal})`"
-                    v-if="hasRole('Super Admin') || can('update quote_approval')"
+            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+                <Datatable
+                    :allow="{}"
+                    :columns="[
+                        { data: 'id', title: '#', style: 'width:5%' },
+                        { data: 'account.name', title: 'Account', style: 'width:13%' },
+                        { data: 'solution_type.name', title: 'Solution', style: 'width:16%' },
+                        { data: 'address_postcode', title: 'Postcode', style: 'width:8%' },
+                        { data: 'user.name', title: 'Owner', style: 'width:15%' },
+                        { data: 'approval_blocker.name', title: 'Blocker', style: 'width:15%' },
+                        { data: 'status', title: 'Status', style: 'width:10%' },
+                        { data: 'updated_at', title: 'Updated At', style: 'width:15%' },
+                        { data: 'actions', title: '', style: 'width:13%' },
+                        { data: 'items.data', title: 'Data', hide: true },
+                        { data: 'items.name', title: 'Name', hide: true },
+                        { data: 'address_data', title: 'Address', hide: true },
+                        { data: 'account.contacts.email', title: 'Email', hide: true }
+                    ]"
+                    :filters="{
+                        'user.name': { type: 'options', options: users.map((x) => x.name) },
+                        'solution_type.name': {
+                            type: 'options',
+                            options: solutions.map((x) => x.name)
+                        },
+                        status: { type: 'options', options: status }
+                    }"
+                    :tableProps="{ id: 'dashboard-table' }"
+                    route="/quotes"
+                    :sort="{ orderBy: 'id', order: 'desc' }"
                 >
-                    <Datatable
-                        id="workbasket-table"
-                        :allow="{}"
-                        :columns="[
-                            { data: 'quote.id', title: '#', style: 'width:5%' },
-                            { data: 'quote.account.name', title: 'Account', style: 'width:13%' },
-                            { data: 'quote.address_postcode', title: 'Postcode', style: 'width:8%', hide: true },
-                            { data: 'quote.user.name', title: 'Owner', style: 'width:15%' },
-                            { data: 'quote.solution_type.name', title: 'Solution', style: 'width:10%' },
-                            { data: 'blocker.name', title: 'Blocker', style: 'width:13%' },
-                            { data: 'status', title: 'Last State', style: 'width:15%' },
-                            { data: 'updated_at', title: 'Updated', style: 'width:15%' },
-                            { data: 'actions', title: '', style: 'width:13%' },
-                            { data: 'quote.items.data', title: 'Data', hide: true },
-                            { data: 'quote.items.name', title: 'Name', hide: true },
-                            { data: 'quote.address_data', title: 'Address', hide: true },
-                            { data: 'quote.account.contacts.email', title: 'Email', hide: true }
-                        ]"
-                        :filters="{
-                            'user.name': { type: 'options', options: users.map((x) => x.name) },
-                            'solution_type.name': {
-                                type: 'options',
-                                options: solutions.map((x) => x.name)
-                            },
-                            status: { type: 'options', options: status }
-                        }"
-                        :query="[
-                            { column: 'status', operator: 'in', value: 'pending', function: 'orWhere' },
-                            {
-                                group: [
-                                    { column: 'blocker_id', operator: 'is_null', value: '', function: 'orWhere' },
-                                    { column: 'blocker_id', operator: 'equals', value: user.id }
-                                ]
-                            }
-                        ]"
-                        :tableProps="{ id: 'workbasket-table' }"
-                        route="/quote-approvals"
-                        :sort="{ orderBy: 'id', order: 'desc' }"
-                    >
-                        <template #status="{ data, value }">
-                            <span
-                                v-if="expirableStatuses.includes(data.status)"
-                                class="badge text-bg-secondary"
-                                v-tooltip
-                                data-bs-toggle="tooltip"
-                                data-bs-placement="top"
-                                :title="'This quote will expire on ' + dateToExpire(data.created_at)"
-                                >{{ value }}</span
+                    <template #status="{ data, value }">
+                        <span
+                            v-if="expirableStatuses.includes(data.status)"
+                            class="badge text-bg-secondary"
+                            v-tooltip
+                            data-bs-toggle="tooltip"
+                            data-bs-placement="top"
+                            :title="'This quote will expire on ' + dateToExpire(data.created_at)"
+                            >{{ value }}</span
+                        >
+                        <span v-else class="badge text-bg-secondary">{{ data.approvals[0].status ?? value }}</span>
+                    </template>
+                    <template #updated_at="{ data, value }">
+                        {{ format.date(data.approvals[0].updated_at ?? value) }}
+                    </template>
+                    <template #actions="{ data, value, index }">
+                        <div
+                            v-if="!['COMPLETED', 'EXPIRED', 'PENDING_APPROVAL'].includes(data.status)"
+                            class="d-flex justify-content-end"
+                        >
+                            <Link
+                                :id="'datatable-btn-' + index + '-edit'"
+                                :href="'quotes/' + data.id + '/edit'"
+                                class="btn px-2 py-0 mx-1 border-0"
                             >
-                            <span v-else class="badge text-bg-secondary">{{ value }}</span>
-                        </template>
-                        <template #approvals.status="{ data, value }">
-                            <span class="badge text-bg-secondary">{{ value }}</span>
-                        </template>
-                        <template #updated_at="{ value }">
-                            {{ format.date(value) }}
-                        </template>
-                        <template #actions="{ data, value, index }">
-                            <div class="d-flex justify-content-end">
-                                <button
-                                    v-if="!data.blocker"
-                                    :id="'datatable-workbasket-btn-' + index + '-delete'"
-                                    class="btn px-2 py-0 mx-1 border-0"
-                                    @click="saveApproval(data)"
-                                >
-                                    <font-awesome-icon icon="fas fa-user-plus" />
-                                </button>
-                                <Link
-                                    :id="'datatable-workbasket-btn-' + index + '-edit'"
-                                    :href="'quotes/' + data.quote.id"
-                                    class="btn px-2 py-0 mx-1 border-0"
-                                >
-                                    <font-awesome-icon :icon="['fas', 'eye']" />
-                                </Link>
-                            </div>
-                        </template>
-                    </Datatable>
-                </tab>
-            </tabs>
+                                <font-awesome-icon :icon="['fas', 'edit']" />
+                            </Link>
+                            <Link
+                                v-if="data.status !== ''"
+                                :id="'datatable-btn-' + index + '-show'"
+                                :href="'quotes/' + data.id"
+                                class="btn px-2 py-0 mx-1 border-0"
+                            >
+                                <font-awesome-icon :icon="['fas', 'eye']" />
+                            </Link>
+                            <button
+                                :id="'datatable-btn-' + index + '-delete'"
+                                class="btn px-2 py-0 mx-1 border-0"
+                                @click="deleteRecord(data.id)"
+                            >
+                                <font-awesome-icon icon="fas fa-trash-alt" />
+                            </button>
+                        </div>
+                        <div v-else class="d-flex justify-content-end">
+                            <button
+                                v-if="!data.approvals[0]?.blocker"
+                                :id="'datatable-workbasket-btn-' + index + '-delete'"
+                                class="btn px-2 py-0 mx-1 border-0"
+                                @click="saveApproval(data)"
+                            >
+                                <font-awesome-icon icon="fas fa-user-plus" />
+                            </button>
+                            <Link
+                                :id="'datatable-btn-' + index + '-show'"
+                                :href="'quotes/' + data.id"
+                                class="btn px-2 py-0 mx-1 border-0"
+                            >
+                                <font-awesome-icon :icon="['fas', 'eye']" />
+                            </Link>
+                        </div>
+                    </template>
+                </Datatable>
+            </div>
         </div>
     </AuthenticatedLayout>
 </template>
