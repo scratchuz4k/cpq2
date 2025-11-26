@@ -5,14 +5,14 @@
     >
         <button
             id="quote-approval-history"
-            v-if="quote.status.toLowerCase() === 'completed'"
+            v-if="['completed', 'pending_approval'].includes(quote.status.toLowerCase()) && canToggleDialog()"
+            @click="toggleDialog()"
             class="btn btn-primary"
-            :disabled="true"
             :style="{
                 borderRadius: canToggleDialog() ? '5px 0 0 5px' : '5px'
             }"
         >
-            History
+            Workflow History
         </button>
 
         <template v-else>
@@ -217,6 +217,7 @@ const startApproval = async () => {
         quote_id: quote.id
     });
     getApprovals();
+    notyf.success(`Quote successfully sent for approval!`);
     await getQuote(quote.id);
 };
 
@@ -256,6 +257,7 @@ const sendToOrder = async () => {
             });
             await getQuote(quote.id);
             getApprovals();
+            notyf.success(`Quote successfully sent for approval!`);
         } catch (ex) {
             notyf.error(ex.response.data.message);
         }

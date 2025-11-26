@@ -2,7 +2,7 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link, usePage } from '@inertiajs/vue3';
 import { ref } from 'vue';
-import { createOrder } from '@/Composables/useOrders.js';
+import { can } from '@composables/useAuth';
 import dayjs from 'dayjs';
 import axios from 'axios';
 import Datatable from '@/Components/Datatable.vue';
@@ -58,8 +58,14 @@ const deleteRecord = (id) => {
 };
 
 const saveApproval = async (data) => {
-    axios.put(`/api/quote-approvals/${data.id}`, { blocker_id: user.id });
-    emitter.emit('datatable-refresh');
+    try {
+        axios.put(`/api/quote-approvals/${data.id}`, { blocker_id: user.id });
+
+        emitter.emit('datatable-refresh');
+        notyf.success('Quote assigned with success');
+    } catch (err) {
+        notyf.error(err?.response?.data?.message ?? 'Something went wrong');
+    }
 };
 
 const items = ref([{ label: 'Home', url: '/' }, { label: 'Quotes' }]);
@@ -108,9 +114,11 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Quotes' }]);
                             data-bs-toggle="tooltip"
                             data-bs-placement="top"
                             :title="'This quote will expire on ' + dateToExpire(data.created_at)"
-                            >{{ value }}</span
+                            >{{ value.toUpperCase() }}</span
                         >
-                        <span v-else class="badge text-bg-secondary">{{ data.approvals[0].status ?? value }}</span>
+                        <span v-else class="badge text-bg-secondary">{{
+                            data.approvals[0].status.toUpperCase() ?? value
+                        }}</span>
                     </template>
                     <template #updated_at="{ data, value }">
                         {{ format.date(data.approvals[0]?.updated_at ?? value) }}
@@ -145,7 +153,7 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Quotes' }]);
                         </div>
                         <div v-else class="d-flex justify-content-end">
                             <button
-                                v-if="!data.approvals[0]?.blocker"
+                                v-if="!data.approvals[0]?.blocker && can('update quote_approval')"
                                 :id="'datatable-workbasket-btn-' + index + '-delete'"
                                 class="btn px-2 py-0 mx-1 border-0"
                                 @click="saveApproval(data)"
