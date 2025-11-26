@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('quote_approvals', function (Blueprint $table) {
             $table->id();
             $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending');
-            $table->enum('flow', ['internal', 'margin', 'account'])->default('internal');
+            $table->enum('flow', ['Internal review', 'Margin review', 'Account review'])->default('Internal review');
             $table->text('comments')->nullable();
 
             $table->foreignId('tenant_id')->constrained()->cascadeOnDelete();

@@ -20,8 +20,8 @@
                 id="quote-approval-start"
                 v-if="
                     has_quote_approval === '0' ||
-                    quote_approval_flow === 'margin' ||
-                    (quote_approval_flow === 'internal' && quote.status.toLowerCase() === 'validated')
+                    quote_approval_flow === 'Margin review' ||
+                    (quote_approval_flow === 'Internal review' && quote.status.toLowerCase() === 'validated')
                 "
                 class="btn btn-primary"
                 :disabled="items.some((x) => x.status === 'pending')"
@@ -46,7 +46,7 @@
             <button
                 id="quote-approval-start"
                 v-else-if="
-                    tenant.configurations.quote_approval_flow === 'internal' &&
+                    tenant.configurations.quote_approval_flow === 'Internal review' &&
                     quote.status.toLowerCase() !== 'validated'
                 "
                 class="btn btn-primary"
@@ -193,7 +193,7 @@ const meta = reactive({
     first: 1
 });
 const has_quote_approval = tenant.configurations.has_quote_approval ?? '0';
-const quote_approval_flow = tenant.configurations.quote_approval_flow ?? 'internal';
+const quote_approval_flow = tenant.configurations.quote_approval_flow ?? 'Internal review';
 
 const getApprovals = async () => {
     let query = queryString.stringify({
@@ -226,6 +226,8 @@ const updateQuoteApproval = async (item, status) => {
             status: status,
             comments: item.comments
         });
+        notyf.success(`Quote ${status} with success!`);
+        showDialog.value = !showDialog.value;
     } catch (ex) {
         notyf.error(ex.response.data.message);
     }
@@ -240,6 +242,7 @@ const sendToOrder = async () => {
                 status: 'COMPLETED'
             });
             await getQuote(quote.id);
+            notyf.success(`Quote completed with success!`);
         } catch (ex) {
             notyf.error(ex.response.data.message);
         }

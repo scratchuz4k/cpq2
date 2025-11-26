@@ -113,7 +113,7 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Quotes' }]);
                         <span v-else class="badge text-bg-secondary">{{ data.approvals[0].status ?? value }}</span>
                     </template>
                     <template #updated_at="{ data, value }">
-                        {{ format.date(data.approvals[0].updated_at ?? value) }}
+                        {{ format.date(data.approvals[0]?.updated_at ?? value) }}
                     </template>
                     <template #actions="{ data, value, index }">
                         <div

@@ -27,7 +27,7 @@ const tenant = reactive({
             : 0,
         quote_margin_rules_operation: props.tenant.configurations.quote_margin_rules_operation ?? 'percentage',
         has_quote_approval: props.tenant.configurations.has_quote_approval ?? '0',
-        quote_approval_flow: props.tenant.configurations.quote_approval_flow ?? 'internal'
+        quote_approval_flow: props.tenant.configurations.quote_approval_flow ?? 'Internal review'
     }
 });
 
