@@ -249,7 +249,7 @@ const sendToOrder = async () => {
         return;
     }
     //  &&(can('create quote_approval') || hasRole('Super Admin'))
-    if (quote.status != 'validated' && !items.value.find((x) => ['pending'].includes(x.status))) {
+    if (quote.status.toLowerCase() != 'validated' && !items.value.find((x) => ['pending'].includes(x.status))) {
         try {
             let res = await axios.post(route('api.quote-approvals.store'), {
                 quote_id: quote.id
@@ -265,6 +265,7 @@ const sendToOrder = async () => {
         try {
             let res = await axios.post(`/api/quotes/${quote.id}/complete`);
             await getQuote(quote.id);
+            notyf.success(`Quote validated with success!`);
         } catch (ex) {
             notyf.error(ex.response.data.message);
         }
