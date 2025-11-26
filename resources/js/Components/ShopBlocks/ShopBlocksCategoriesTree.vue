@@ -93,7 +93,6 @@ getShopBlocksCategories();
 </script>
 <template>
     <ul style="margin: 0; padding: 5px 0; list-style: none" v-if="!!drillDown.length">
-        teste
         <li class="me-1 border-1 mb-1">
             <div class="btn btn-category d-flex justify-content-between py-1" @click="rollback(null)">
                 <p class="m-0">All</p>

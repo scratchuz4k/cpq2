@@ -99,7 +99,7 @@ describe('Creates a Cloud Quote', () => {
 
         cy.wait(2000);
 
-        cy.get('.one_off-item').should('have.length', 3);
+        cy.get('.recurring-item').should('have.length', 3);
     });
 
     it('I can add and delete a Custom Line', () => {
