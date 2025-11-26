@@ -86,7 +86,7 @@ const temp = ref([]);
                         </div>
                     </div>
                 </div>
-                <p :class="[showAsColumn ? 'truncate-3-lines' : null]" v-html="proxyValue.name"></p>
+                <p :class="[showAsColumn ? 'truncate-3-lines' : null]" v-html="proxyValue.description"></p>
                 <a
                     class="fw-bold small"
                     type="button"
