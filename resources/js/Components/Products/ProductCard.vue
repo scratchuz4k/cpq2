@@ -57,28 +57,22 @@ const temp = ref([]);
             :class="[!showAsColumn ? 'w-100 d-flex ' : 'p-3']"
             style="position: relative; top: 0; right: 0"
         >
-            <div :class="[!showAsColumn ? 'me-4' : '']">
+            <div v-if="proxyValue.primary_image" :class="[!showAsColumn ? 'me-4' : '']">
                 <div class="d-flex justify-content-center align-items-middle">
-                    <template v-if="proxyValue.primary_image">
-                        <a class="product-gallery-link" @click="() => (displayBasic = !displayBasic)">
-                            <img
-                                :src="proxyValue.primary_image"
-                                style="object-fit: contain"
-                                :style="{
-                                    width: '140px',
-                                    height: '140px'
-                                }"
-                            />
-                            <span
-                                ><font-awesome-icon :icon="['fas', 'magnifying-glass']" style="font-size: 1.5rem"
-                            /></span>
-                        </a>
-                    </template>
-                    <template v-else>
-                        <div class="no_image"></div>
-                    </template>
+                    <a class="product-gallery-link" @click="() => (displayBasic = !displayBasic)">
+                        <img
+                            :src="proxyValue.primary_image"
+                            style="object-fit: contain"
+                            :style="{
+                                width: '140px',
+                                height: '140px'
+                            }"
+                        />
+                        <span><font-awesome-icon :icon="['fas', 'magnifying-glass']" style="font-size: 1.5rem" /></span>
+                    </a>
                 </div>
             </div>
+
             <div class="w-100">
                 <div class="d-flex justify-content-between">
                     <p class="bold truncate-1-lines" :class="[showAsColumn ? 'truncate-2-lines mb-2' : 'me-3']">
@@ -92,7 +86,7 @@ const temp = ref([]);
                         </div>
                     </div>
                 </div>
-                <p :class="'truncate-3-lines'" v-html="proxyValue.description"></p>
+                <p :class="[showAsColumn ? 'truncate-3-lines' : null]" v-html="proxyValue.name"></p>
                 <a
                     class="fw-bold small"
                     type="button"
@@ -169,12 +163,6 @@ const temp = ref([]);
                             <th>Sku</th>
                             <td>
                                 {{ proxyValue.sku }}
-                            </td>
-                        </tr>
-                        <tr>
-                            <th>Model</th>
-                            <td>
-                                {{ proxyValue.model?.name }}
                             </td>
                         </tr>
                         <tr>

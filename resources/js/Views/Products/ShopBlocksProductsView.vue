@@ -178,7 +178,7 @@ const getProductsShopBlocks = async () => {
 
     let query = queryString.stringify({
         page: meta.page,
-        limit: meta.limit,
+        perPage: meta.limit,
         filters: JSON.stringify(filters),
         order: sort.value.order,
         orderBy: sort.value.orderBy,
@@ -267,11 +267,10 @@ watch(
 );
 </script>
 <template>
-    <h1>{{ props.categor }}</h1>
     <div id="mobile_step_shopblocks" class="step">
         <div class="row">
             <div class="d-flex justify-content-between mb-3">
-                <h2>{{ quote.solution_type.code == 4 ? 'Handsets' : 'Hardware' }}</h2>
+                <h3>{{ quote.solution_type.code == 4 ? 'Handsets' : 'Hardware' }}</h3>
                 <p class="bigger text-primary bold">
                     STEP
                     <span id="current-step">{{ step }}</span>
@@ -365,14 +364,14 @@ watch(
                     </div>
 
                     <div class="mb-4">
-                        <h2>Stoage</h2>
+                        <h2>Storage</h2>
                         <ShopBlocksStorages v-model="currentStorage" :category="currentCategory"></ShopBlocksStorages>
                     </div>
                 </div>
             </div>
             <div class="col">
                 <template v-if="meta.isLoading">
-                    <ProductSkeleton v-for="item in [0, 1, 2, 3, 4]"></ProductSkeleton
+                    <ShopblocksProductSkeleton v-for="item in [0, 1, 2, 3, 4]"></ShopblocksProductSkeleton
                 ></template>
                 <template v-else>
                     <div class="text-center pt-2 pb-4" v-if="!productsHardware.length">No Results Found</div>

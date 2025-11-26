@@ -115,10 +115,14 @@ class StepProductsSeeder extends Seeder
                             [
                                 'name' => 'Microsoft 365 Apps for Business',
                                 'steps' => $newSteps[0]->id,
+                                'cost' => 80,
+                                'net' => 100,
                             ],
                             [
                                 'name' => 'Microsoft 365 Apps for Enterprise',
                                 'steps' => $newSteps[0]->id,
+                                'cost' => 120,
+                                'net' => 150,
                             ],
                         ],
                     ],
@@ -128,6 +132,8 @@ class StepProductsSeeder extends Seeder
                             [
                                 'name' => 'Office Web Apps',
                                 'steps' => $newSteps[0]->id,
+                                'cost' => 125,
+                                'net' => 145,
                             ],
                         ],
                     ],
@@ -143,10 +149,14 @@ class StepProductsSeeder extends Seeder
                             [
                                 'name' => 'Exchange Online Plan 1',
                                 'steps' => $newSteps[1]->id,
+                                'cost' => 57,
+                                'net' => 68,
                             ],
                             [
                                 'name' => 'Exchange Online Plan 2',
                                 'steps' => $newSteps[1]->id,
+                                'cost' => 94,
+                                'net' => 110,
                             ],
                         ],
                     ],
@@ -156,10 +166,14 @@ class StepProductsSeeder extends Seeder
                             [
                                 'name' => 'Microsoft Teams Standard',
                                 'steps' => $newSteps[1]->id,
+                                'cost' => 45,
+                                'net' => 50,
                             ],
                             [
                                 'name' => 'Teams Phone System Add-on',
                                 'steps' => $newSteps[1]->id,
+                                'cost' => 25,
+                                'net' => 35,
                             ],
                         ],
                     ],
@@ -175,6 +189,8 @@ class StepProductsSeeder extends Seeder
                             [
                                 'name' => 'OneDrive 1TB',
                                 'steps' => $newSteps[1]->id,
+                                'cost' => 15,
+                                'net' => 20,
                             ],
                         ],
                     ],
@@ -186,6 +202,8 @@ class StepProductsSeeder extends Seeder
                     [
                         'name' => 'Loop',
                         'steps' => $newSteps[1]->id,
+                        'cost' => 41,
+                        'net' => 48,
                     ],
                 ],
             ],
@@ -199,10 +217,14 @@ class StepProductsSeeder extends Seeder
                             [
                                 'name' => 'Azure AD Premium P1',
                                 'steps' => $newSteps[2]->id,
+                                'cost' => 24,
+                                'net' => 36,
                             ],
                             [
                                 'name' => 'Azure AD Premium P2',
                                 'steps' => $newSteps[2]->id,
+                                'cost' => 32,
+                                'net' => 45,
                             ],
                         ],
                     ],
@@ -212,6 +234,8 @@ class StepProductsSeeder extends Seeder
                             [
                                 'name' => 'Intune Device Standard License',
                                 'steps' => $newSteps[2]->id,
+                                'cost' => 12,
+                                'net' => 15,
                             ],
                         ],
                     ],
@@ -227,10 +251,14 @@ class StepProductsSeeder extends Seeder
                             [
                                 'name' => 'Microsoft 365 Business Basic',
                                 'steps' => $newSteps[3]->id,
+                                'cost' => 340,
+                                'net' => 370,
                             ],
                             [
                                 'name' => 'Microsoft 365 Business Premium',
                                 'steps' => $newSteps[3]->id,
+                                'cost' => 480,
+                                'net' => 520,
                             ],
                         ],
                     ],
@@ -251,6 +279,7 @@ class StepProductsSeeder extends Seeder
                         'sku' => Str::random(12),
                         'name' => $product['name'],
                         'description' => $product['name'],
+                        'price_plan_id' => $product['price_plan_id'] ?? 1,
                         'tenant_id' => 1,
                         'is_active' => 1,
                     ]);
@@ -258,10 +287,11 @@ class StepProductsSeeder extends Seeder
                     $newProd->prices()->updateOrCreate(
                         [
                             'code' => 1,
-                            'tenant_id' => $tenant->id,
+                            'tenant_id' => 1,
                         ],
                         [
-                            'net' => $newProd['price'] ?? 0,
+                            'cost' => $product['cost'] ?? 0,
+                            'net' => $product['net'] ?? 0,
                         ]
                     );
 
@@ -285,6 +315,7 @@ class StepProductsSeeder extends Seeder
                                 'sku' => Str::random(12),
                                 'name' => $product['name'],
                                 'description' => $product['name'],
+                                'price_plan_id' => $product['price_plan_id'] ?? 1,
                                 'tenant_id' => 1,
                                 'is_active' => 1,
                             ]);
@@ -292,10 +323,11 @@ class StepProductsSeeder extends Seeder
                             $newProd->prices()->updateOrCreate(
                                 [
                                     'code' => 1,
-                                    'tenant_id' => $tenant->id,
+                                    'tenant_id' => 1,
                                 ],
                                 [
-                                    'net' => $newProd['price'] ?? 0,
+                                    'cost' => $product['cost'] ?? 0,
+                                    'net' => $product['net'] ?? 0,
                                 ]
                             );
 

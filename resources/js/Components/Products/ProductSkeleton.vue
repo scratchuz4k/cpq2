@@ -10,14 +10,10 @@ const props = defineProps({
 <template>
     <div class="mobile-item mobile-product p-4 mb-3">
         <div class="row">
-            <div class="col-2">
-                <Skeleton width="100%" height="8.5rem" />
-            </div>
-            <div class="col-10">
+            <div class="col-12">
                 <div class="d-flex w-100 justify-content-between">
                     <Skeleton width="10rem" height="1.5rem" />
                     <div class="d-flex justify-content-end">
-                        <Skeleton width="5rem" height="1.5rem" class="me-2" />
                         <Skeleton width="5rem" height="1.5rem" />
                     </div>
                 </div>

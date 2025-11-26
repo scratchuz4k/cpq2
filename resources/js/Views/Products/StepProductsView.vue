@@ -11,7 +11,7 @@ const meta = reactive({
     total: 0,
     overallTotal: 0,
     first: 1,
-    limit: 5,
+    limit: 12,
     isLoading: false
 });
 
@@ -111,7 +111,7 @@ const getProducts = async () => {
 
     let query = queryString.stringify({
         page: meta.page,
-        limit: meta.limit,
+        perPage: meta.limit,
         filters: JSON.stringify(filters),
         account_id: props.account.id,
         order: sort.value.order,
@@ -220,7 +220,7 @@ getProducts();
         <div class="step">
             <div class="row">
                 <div class="d-flex justify-content-between mb-3">
-                    <h2>{{ currentStep + 1 }}. {{ step.name }}</h2>
+                    <h3>{{ currentStep + 1 }}. {{ step.name }}</h3>
                     <p class="bigger text-primary bold">
                         STEP
                         <span id="current-step">{{ currentStep + 1 }}</span>

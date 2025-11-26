@@ -1,3 +1,140 @@
+<script setup>
+import queryString from 'query-string';
+import { Dialog, IconField, Galleria, InputIcon, InputText } from 'primevue';
+import { ref, computed, watch } from 'vue';
+import _ from 'lodash';
+import { updateQuoteItem, removeQuoteItem, createQuoteItem } from '@composables/useQuoteItem';
+import { quote, getQuote } from '@/Composables/useQuote';
+const props = defineProps({
+    index: Number,
+    hasSelect: Boolean,
+    showAsColumn: Boolean,
+    modelValue: Object
+});
+
+const displayBasic = ref(false);
+const showModal = ref(false);
+const loadingFeatures = ref(false);
+const emit = defineEmits(['update:modelValue', 'select']);
+const proxyValue = computed({
+    get: () => props.modelValue,
+    set: (value) => emit('update:modelValue', value)
+});
+
+const checkQuantity = _.debounce(async (product, temp) => {
+    if (product.stock <= temp) {
+        temp = product.stock;
+    }
+    product.quantity = temp;
+
+    let item = quote.items.find((x) => x.product_code == product.code);
+    if (!item) {
+        await createQuoteItem({
+            quote_id: quote.id,
+            product_code: product.code,
+            quantity: product.quantity,
+            contract_length: product.contract_length,
+            name: product.name,
+            raw_price: product.price ? product.price.net : 0,
+            price: product.price ? product.price.net_spa : 0,
+            price_plan_id: product.price_plan_id
+        });
+    } else {
+        if (product.quantity == 0) {
+            await removeQuoteItem(item.id);
+        } else {
+            await updateQuoteItem(item.id, { quantity: product.quantity });
+        }
+    }
+
+    await getQuote(quote.id);
+}, 500);
+
+const select = () => {
+    if (!props.hasSelect) {
+        return;
+    }
+    emit('select', proxyValue);
+};
+
+const searchInput = ref('');
+const temp = ref([]);
+const getFeaturesTable = () => {
+    temp.value = [];
+    if (!proxyValue.value.features) {
+        return;
+    }
+    let lowerSearch = searchInput.value.toLowerCase();
+    let features = proxyValue.value.features.filter((obj) => {
+        return (
+            obj.dimension.value.toLowerCase().includes(lowerSearch) ||
+            obj.dimension_type.label.toLowerCase().includes(lowerSearch)
+        );
+    });
+
+    features.forEach((e) => {
+        let gIndex = temp.value.findIndex((t) => t.name == e.dimension_type.group);
+        if (gIndex == -1) {
+            temp.value.push({ name: e.dimension_type.group, show: true, features: [] });
+            gIndex = temp.value.length - 1;
+        }
+
+        let index = temp.value[gIndex].features.findIndex((t) => t.key == e.dimension_type.key);
+        if (index == -1) {
+            temp.value[gIndex].features.push({ key: e.dimension_type.key, label: e.dimension_type.label, items: [] });
+            index = temp.value[gIndex].features.length - 1;
+        }
+        temp.value[gIndex].features[index].items.push(e.dimension.value);
+    });
+};
+
+const openModal = async () => {
+    loadingFeatures.value = true;
+    showModal.value = !showModal.value;
+    if (!proxyValue.value.features) {
+        let query = queryString.stringify({
+            limit: 500,
+            filters: JSON.stringify([
+                {
+                    column: 'product_id',
+                    operator: 'equals',
+                    value: proxyValue.value.id
+                }
+            ])
+        });
+
+        let res = await axios.get('/api/shop-blocks/product-dimensions?' + query);
+        proxyValue.value.features = res.data?.data;
+    }
+    await getFeaturesTable();
+    loadingFeatures.value = false;
+};
+const handleGalleriaKeyUp = (e) => {
+    if (e.key === 'Escape') {
+        displayBasic.value = false;
+    }
+};
+
+const handleGalleriaOverlayClick = (e) => {
+    if (e.target.classList.contains('p-overlay-mask')) {
+        displayBasic.value = false;
+    }
+};
+
+watch(displayBasic, (newVal) => {
+    if (newVal) {
+        document.addEventListener('keyup', handleGalleriaKeyUp);
+        document.addEventListener('click', handleGalleriaOverlayClick, true);
+    } else {
+        document.removeEventListener('keyup', handleGalleriaKeyUp);
+        document.removeEventListener('click', handleGalleriaOverlayClick, true);
+    }
+});
+
+watch(searchInput, () => {
+    getFeaturesTable();
+});
+</script>
 <template>
     <div class="col" :style="{ flexDirection: showAsColumn ? 'column' : 'row' }">
         <div
@@ -255,143 +392,6 @@
         </Galleria>
     </div>
 </template>
-<script setup>
-import queryString from 'query-string';
-import { Dialog, IconField, Galleria, InputIcon, InputText } from 'primevue';
-import { ref, computed, watch } from 'vue';
-import _ from 'lodash';
-import { updateQuoteItem, removeQuoteItem, createQuoteItem } from '@composables/useQuoteItem';
-import { quote, getQuote } from '@/Composables/useQuote';
-const props = defineProps({
-    index: Number,
-    hasSelect: Boolean,
-    showAsColumn: Boolean,
-    modelValue: Object
-});
-
-const displayBasic = ref(false);
-const showModal = ref(false);
-const loadingFeatures = ref(false);
-const emit = defineEmits(['update:modelValue', 'select']);
-const proxyValue = computed({
-    get: () => props.modelValue,
-    set: (value) => emit('update:modelValue', value)
-});
-
-const checkQuantity = _.debounce(async (product, temp) => {
-    if (product.stock <= temp) {
-        temp = product.stock;
-    }
-    product.quantity = temp;
-
-    let item = quote.items.find((x) => x.product_code == product.code);
-    if (!item) {
-        await createQuoteItem({
-            quote_id: quote.id,
-            product_code: product.code,
-            quantity: product.quantity,
-            contract_length: product.contract_length,
-            name: product.name,
-            raw_price: product.price ? product.price.net : 0,
-            price: product.price ? product.price.net_spa : 0,
-            price_plan_id: product.price_plan_id
-        });
-    } else {
-        if (product.quantity == 0) {
-            await removeQuoteItem(item.id);
-        } else {
-            await updateQuoteItem(item.id, { quantity: product.quantity });
-        }
-    }
-
-    await getQuote(quote.id);
-}, 500);
-
-const select = () => {
-    if (!props.hasSelect) {
-        return;
-    }
-    emit('select', proxyValue);
-};
-
-const searchInput = ref('');
-const temp = ref([]);
-const getFeaturesTable = () => {
-    temp.value = [];
-    if (!proxyValue.value.features) {
-        return;
-    }
-    let lowerSearch = searchInput.value.toLowerCase();
-    let features = proxyValue.value.features.filter((obj) => {
-        return (
-            obj.dimension.value.toLowerCase().includes(lowerSearch) ||
-            obj.dimension_type.label.toLowerCase().includes(lowerSearch)
-        );
-    });
-
-    features.forEach((e) => {
-        let gIndex = temp.value.findIndex((t) => t.name == e.dimension_type.group);
-        if (gIndex == -1) {
-            temp.value.push({ name: e.dimension_type.group, show: true, features: [] });
-            gIndex = temp.value.length - 1;
-        }
-
-        let index = temp.value[gIndex].features.findIndex((t) => t.key == e.dimension_type.key);
-        if (index == -1) {
-            temp.value[gIndex].features.push({ key: e.dimension_type.key, label: e.dimension_type.label, items: [] });
-            index = temp.value[gIndex].features.length - 1;
-        }
-        temp.value[gIndex].features[index].items.push(e.dimension.value);
-    });
-};
-
-const openModal = async () => {
-    loadingFeatures.value = true;
-    showModal.value = !showModal.value;
-    if (!proxyValue.value.features) {
-        let query = queryString.stringify({
-            limit: 500,
-            filters: JSON.stringify([
-                {
-                    column: 'product_id',
-                    operator: 'equals',
-                    value: proxyValue.value.id
-                }
-            ])
-        });
-
-        let res = await axios.get('/api/shop-blocks/product-dimensions?' + query);
-        proxyValue.value.features = res.data?.data;
-    }
-    await getFeaturesTable();
-    loadingFeatures.value = false;
-};
-const handleGalleriaKeyUp = (e) => {
-    if (e.key === 'Escape') {
-        displayBasic.value = false;
-    }
-};
-
-const handleGalleriaOverlayClick = (e) => {
-    if (e.target.classList.contains('p-overlay-mask')) {
-        displayBasic.value = false;
-    }
-};
-
-watch(displayBasic, (newVal) => {
-    if (newVal) {
-        document.addEventListener('keyup', handleGalleriaKeyUp);
-        document.addEventListener('click', handleGalleriaOverlayClick, true);
-    } else {
-        document.removeEventListener('keyup', handleGalleriaKeyUp);
-        document.removeEventListener('click', handleGalleriaOverlayClick, true);
-    }
-});
-
-watch(searchInput, () => {
-    getFeaturesTable();
-});
-</script>
 <style scoped>
 .table tbody th {
     width: 30%;
