@@ -20,7 +20,7 @@ class StepProductsSeeder extends Seeder
      */
     public function run()
     {
-        // Migratieng from categories to steps
+        // Migrating from categories to steps
         $products = [
             [
                 'code' => 'basic',
