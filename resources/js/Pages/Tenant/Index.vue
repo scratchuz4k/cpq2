@@ -402,7 +402,10 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'My Account', url: '/my
                                                     </div>
                                                     <div
                                                         class="mb-3"
-                                                        v-if="tenant.configurations.quote_approval_flow === 'margin'"
+                                                        v-if="
+                                                            tenant.configurations.quote_approval_flow ===
+                                                            'Margin review'
+                                                        "
                                                     >
                                                         <label>Margin value:</label>
                                                         <div class="row g-3 mb-3">

@@ -37,7 +37,7 @@
                 />
                 <font-awesome-icon v-else :icon="['fas', 'thumbtack']" class="me-2" />
                 {{
-                    quote.items.some((x) => !x.is_margin_valid) && quote.status == 'quoted'
+                    quote.items.some((x) => !x.is_margin_valid) && quote.status.toLowerCase() == 'quote'
                         ? 'Send to Approval'
                         : 'Send to Order'
                 }}
