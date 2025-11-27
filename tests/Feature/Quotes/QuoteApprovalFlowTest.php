@@ -63,7 +63,7 @@ it('Complete Quote With Margin Flow', function () {
         ->put('api/tenants/1', [
             'configurations' => [
                 'has_quote_approval' => '1',
-                'quote_approval_flow' => 'margin',
+                'quote_approval_flow' => 'Margin review',
                 'quote_margin_rules_operation' => 'value',
                 'quote_margin_rules_value' => '50',
             ],

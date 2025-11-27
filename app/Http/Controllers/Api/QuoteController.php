@@ -12,8 +12,6 @@ use App\Models\Quote;
 use App\Models\User;
 use App\Services\QuoteService;
 use Exception;
-use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
-use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 

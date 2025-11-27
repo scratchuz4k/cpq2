@@ -34,8 +34,6 @@ class RolePermissionSeeder extends Seeder
 
     public static $permissionsByGroup = [
         'Website' => [
-            'order' => 'Order',
-            'order_item' => 'Order Item',
             'quote' => 'Quote',
             'quote_item' => 'Quote Item',
             'quote_approval' => 'Quote Approval',
@@ -79,7 +77,7 @@ class RolePermissionSeeder extends Seeder
                 'parent' => null,
                 'tenant' => 1,
                 'permissions' => [
-                    'quote', 'quote_item', 'order', 'order_item', 'merchant', 'account', 'contact',
+                    'quote', 'quote_item', 'merchant', 'account', 'contact',
                     'price', 'product', 'category', 'region', 'tenant', 'brand', 'supplier',
                     'spa', 'user', 'solution_type', 'api', 'price_plan', 'activity', 'email_template', 'email_history',
                     'group', 'blacklist', 'role', 'permission', 'step', 'quote_approval',
@@ -89,7 +87,7 @@ class RolePermissionSeeder extends Seeder
             'Support Agent' => [
                 'parent' => 'Company Admin',
                 'tenant' => 1,
-                'permissions' => ['merchant', 'account', 'contact', 'token', 'quote', 'quote_item', 'order', 'order_item', 'activity', 'price_plan'],
+                'permissions' => ['merchant', 'account', 'contact', 'token', 'quote', 'quote_item', 'activity', 'price_plan'],
                 'simple_permission' => ['viewAny product', 'view product', 'viewAny category', 'view category', 'viewAny step', 'view step'],
                 'deny_permission' => ['export'],
             ],
@@ -106,28 +104,7 @@ class RolePermissionSeeder extends Seeder
                 'simple_permission' => ['viewAny product', 'view product', 'viewAny category', 'view category', 'viewAny step', 'view step', 'viewAny quote_approval', 'view quote_approval', 'create quote_approval'],
                 'deny_permission' => ['export'],
             ],
-            'Order Manager' => [
-                'parent' => 'Company Admin',
-                'tenant' => 1,
-                'permissions' => ['order', 'order_item', 'activity'],
-                'simple_permission' => [
-                    'viewAny product',
-                    'view product',
-                    'viewAny category',
-                    'view category',
-                    'viewAny step',
-                    'view step',
-                    'viewAny account',
-                    'view account',
-                    'viewAny contact',
-                    'view contact',
-                    'viewAny brand',
-                    'view brand',
-                    'viewAny supplier',
-                    'view supplier',
-                ],
-                'deny_permission' => ['export'],
-            ]];
+        ];
 
     public function run()
     {

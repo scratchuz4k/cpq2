@@ -14,8 +14,6 @@ use App\Http\Controllers\Api\General\BlacklistController;
 use App\Http\Controllers\Api\GroupAccountController;
 use App\Http\Controllers\Api\GroupController;
 use App\Http\Controllers\Api\ImportController;
-use App\Http\Controllers\Api\OrderController;
-use App\Http\Controllers\Api\OrderItemController;
 use App\Http\Controllers\Api\PermissionController;
 use App\Http\Controllers\Api\PriceController;
 use App\Http\Controllers\Api\PricePlanController;
@@ -91,8 +89,6 @@ Route::middleware(['api', 'auth:sanctum'])->group(function () {
         'quotes' => QuoteController::class,
         'quote-items' => QuoteItemController::class,
         'quote-approvals' => QuoteApprovalController::class,
-        'orders' => OrderController::class,
-        'order-items' => OrderItemController::class,
         'solution-types' => SolutionTypeController::class,
         'permissions' => PermissionController::class,
         'prices' => PriceController::class,

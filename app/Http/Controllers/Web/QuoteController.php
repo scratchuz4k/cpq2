@@ -89,7 +89,7 @@ class QuoteController extends BaseController
     {
         return Inertia::render('Quotes/Show', [
             'pricePlans' => PricePlan::all(),
-            'quote' => new QuoteResource($quote->load(['items', 'orders'])),
+            'quote' => new QuoteResource($quote->load(['items'])),
         ]);
     }
 
@@ -141,11 +141,11 @@ class QuoteController extends BaseController
 
     public function preview(Quote $quote)
     {
-        $t = new QuoteResource($quote->load(['items', 'orders']));
+        $t = new QuoteResource($quote->load(['items']));
 
         return Inertia::render('Quotes/Preview', [
             'pricePlans' => PricePlan::all(),
-            'quote' => new QuoteResource($quote->load(['items', 'orders'])),
+            'quote' => new QuoteResource($quote->load(['items'])),
         ]);
     }
 

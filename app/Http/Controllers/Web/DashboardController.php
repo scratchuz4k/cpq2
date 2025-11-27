@@ -18,10 +18,6 @@ class DashboardController extends BaseController
             return Inertia::location(route('quotes.index'));
         }
 
-        if ($user->can('viewAny order')) {
-            return Inertia::location(route('orders.index'));
-        }
-
         return Inertia::render('Dashboard');
     }
 

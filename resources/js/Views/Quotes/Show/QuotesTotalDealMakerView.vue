@@ -1,7 +1,5 @@
 <script setup>
 import { ref } from 'vue';
-import Dialog from 'primevue/dialog';
-import { createOrder } from '@/Composables/useOrders.js';
 import { setQuote, quote } from '@composables/useQuote';
 import { getMarginThreshHoldWarning } from '@composables/useQuoteItem';
 import { usePage } from '@inertiajs/vue3';
@@ -19,7 +17,6 @@ const props = defineProps({
 const page = usePage();
 const tenant = page.props.tenant;
 
-let showModal = ref(false);
 const isLoading = ref(false);
 setQuote(props.modelValue);
 const group = quote.solution_type?.table?.group ?? null;
@@ -115,16 +112,6 @@ const quoteQuantityPrice = (price_plan) => {
     return total + tax;
 };
 
-const disableButtonSendToOrder = ref(false);
-const createOrderAndRedirect = async (id) => {
-    disableButtonSendToOrder.value = true;
-    const res = await createOrder(id);
-    if (res) {
-        window.location = '/dashboard';
-    }
-    disableButtonSendToOrder.value = false;
-};
-
 const items = ref([
     { label: 'Home', url: '/' },
     {
@@ -208,15 +195,6 @@ const items = ref([
                                 <font-awesome-icon class="me-2" :icon="['fas', 'envelope']"> </font-awesome-icon>
                                 Email this quote
                             </button>
-                            <button
-                                :hidden="!(tenant.configurations.orders_flow_is_active === '1')"
-                                :disabled="disableButtonSendToOrder || quote.items.some((x) => !x.is_margin_valid)"
-                                class="btn btn-primary"
-                                @click="createOrderAndRedirect(quote.id)"
-                            >
-                                <font-awesome-icon class="me-2" :icon="['fas', 'thumbtack']"> </font-awesome-icon>Send
-                                to Order
-                            </button>
                         </div>
                     </div>
                 </div>
@@ -229,13 +207,6 @@ const items = ref([
                             <br />
                             Status: {{ quote.status }}
                         </div>
-                    </InfoBox>
-                    <InfoBox v-if="quote.orders.length > 0">
-                        <h6>
-                            An Order related to this Quote was
-                            <span class="badge text-bg-secondary">{{ quote.status }}</span>
-                        </h6>
-                        <button class="btn btn-sm btn-primary" @click="showModal = true">See Rejection Notes</button>
                     </InfoBox>
                     <InfoBox v-if="['QUOTE', 'PRICE', 'CONFIGURE'].includes(quote.status)">
                         <div style="font-size: 14px">
@@ -334,32 +305,6 @@ const items = ref([
                 </div>
             </div>
         </div>
-        <Dialog v-model:visible="showModal" modal :style="{ width: '40rem' }" :draggable="false">
-            <template #header>
-                <h2>Rejected Reasons</h2>
-            </template>
-            <div class="panel px-3">
-                <div class="row">
-                    <table class="table reject-reasons-table">
-                        <thead>
-                            <tr>
-                                <th style="width: 5%">Order</th>
-                                <th>Note</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr v-for="order in quote.orders">
-                                <td>#{{ order.id }}</td>
-                                <td>
-                                    <pre class="custom-pre">{{ order.note }}</pre>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <button class="btn btn-primary" @click="showModal = false">Close</button>
-                </div>
-            </div>
-        </Dialog>
     </div>
 </template>
 <style>
