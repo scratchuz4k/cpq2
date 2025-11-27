@@ -18,7 +18,7 @@ describe('Quote Approval and Rejection', () => {
                 cy.get('.notyf').contains('Content updated successfully');
             }
         });
-        cy.get('#quote-approval-flow').select('Margin');
+        cy.get('#quote-approval-flow').select('Margin review');
         cy.get('#margin-operation').select('value');
         cy.wait(1000);
         cy.get('#margin-value').clear().type('99999');
@@ -79,7 +79,7 @@ describe('Quote Approval and Rejection', () => {
         cy.get('#quote-approval-show-dialog').click();
         cy.get('.quote-approval-row').its('length').should('eq', 2);
         cy.get('#quote-approval-approve-0').click();
-        cy.get('#quote-approval-status-0').contains('Approved');
+        cy.get('.notyf').contains('Quote approved with success!');
     });
 
     it('Send Quote to Order', () => {

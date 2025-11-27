@@ -117,7 +117,7 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Quotes' }]);
                             >{{ value.toUpperCase() }}</span
                         >
                         <span v-else class="badge text-bg-secondary">{{
-                            data.approvals[0].status.toUpperCase() ?? value
+                            data.approvals[0]?.status.toUpperCase() ?? value
                         }}</span>
                     </template>
                     <template #updated_at="{ data, value }">
@@ -152,11 +152,12 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Quotes' }]);
                             </button>
                         </div>
                         <div v-else class="d-flex justify-content-end">
+                            teste2
                             <button
                                 v-if="!data.approvals[0]?.blocker && can('update quote_approval')"
                                 :id="'datatable-workbasket-btn-' + index + '-delete'"
                                 class="btn px-2 py-0 mx-1 border-0"
-                                @click="saveApproval(data)"
+                                @click="saveApproval(data.approvals[0])"
                             >
                                 <font-awesome-icon icon="fas fa-user-plus" />
                             </button>
