@@ -274,7 +274,7 @@ const sendToOrder = async () => {
         try {
             let res = await axios.post(`/api/quotes/${quote.id}/complete`);
             await getQuote(quote.id);
-            notyf.success(`Quote validated with success!`);
+            notyf.success(`Quote completed with success!`);
             //window.location = '/dashboard';
         } catch (ex) {
             notyf.error(ex.response.data.message);
