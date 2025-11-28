@@ -23,7 +23,7 @@ class QuoteApprovalUpdateRequest extends FormRequest
     {
         return [
             'status' => 'in:approved,rejected',
-            'blocker_id' => 'exists:users,id',
+            'approver_id' => 'exists:users,id',
         ];
     }
 }

@@ -87,7 +87,6 @@
                     <tr class="border-bottom border-black">
                         <th>Date</th>
                         <th>Approver</th>
-                        <th>Signed By</th>
                         <th>Flow</th>
                         <th>Comments</th>
                         <th class="text-center">Status</th>
@@ -104,10 +103,9 @@
                         <td style="width: 15%" :id="'quote-approval-date-' + index">
                             {{ format.date(item.updated_at) }}
                         </td>
-                        <td style="width: 15%" :id="'quote-approval-blocker-' + index">{{ item.blocker?.name }}</td>
-                        <td style="width: 15%" :id="'quote-approval-approver-' + index">{{ item.approver?.name }}</td>
+                        <td style="width: 20%" :id="'quote-approval-approver-' + index">{{ item.approver?.name }}</td>
                         <td style="width: 10%" :id="'quote-approval-flow-' + index">{{ item.flow }}</td>
-                        <td style="width: 50%" :id="'quote-approval-comments-' + index">
+                        <td style="width: 60%" :id="'quote-approval-comments-' + index">
                             <input
                                 v-if="
                                     item.status === 'pending' &&
@@ -136,7 +134,7 @@
                             <div
                                 class="d-flex"
                                 v-if="
-                                    (!item.blocker || item.blocker?.id === user.id) &&
+                                    (!item.approver || item.approver?.id === user.id) &&
                                     item.status === 'pending' &&
                                     (can('update quote_approval') || hasRole('Super Admin'))
                                 "
@@ -214,13 +212,17 @@ const getApprovals = async () => {
 };
 
 const startApproval = async () => {
-    let res = await axios.post(route('api.quote-approvals.store'), {
-        quote_id: quote.id
-    });
-    getApprovals();
-    notyf.success(`Quote successfully sent for approval!`);
-    await getQuote(quote.id);
-    window.location = '/dashboard';
+    try {
+        let res = await axios.post(route('api.quote-approvals.store'), {
+            quote_id: quote.id
+        });
+        notyf.success(`Quote successfully sent for approval!`);
+        getApprovals();
+        await getQuote(quote.id);
+        //window.location = '/dashboard';
+    } catch (ex) {
+        notyf.error(ex.response.data.message);
+    }
 };
 
 const updateQuoteApproval = async (item, status) => {
@@ -231,12 +233,12 @@ const updateQuoteApproval = async (item, status) => {
         });
         notyf.success(`Quote ${status} with success!`);
         showDialog.value = !showDialog.value;
-        window.location = '/dashboard';
+        getApprovals();
+        await getQuote(quote.id);
+        //window.location = '/dashboard';
     } catch (ex) {
         notyf.error(ex.response.data.message);
     }
-    getApprovals();
-    await getQuote(quote.id);
 };
 
 const sendToOrder = async () => {

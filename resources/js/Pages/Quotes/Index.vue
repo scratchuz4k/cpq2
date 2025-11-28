@@ -60,7 +60,7 @@ const deleteRecord = (id) => {
 
 const saveApproval = async (data) => {
     try {
-        axios.put(`/api/quote-approvals/${data.id}`, { blocker_id: user.id });
+        axios.put(`/api/quote-approvals/${data.id}`, { approver_id: user.id });
 
         emitter.emit('datatable-refresh');
         notyf.success('Quote assigned with success');
@@ -87,7 +87,7 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Quotes' }]);
                         { data: 'address_postcode', title: 'Postcode', style: 'width:8%' },
                         { data: 'user.name', title: 'Owner', style: 'width:15%' },
                         {
-                            data: 'approval_blocker.name',
+                            data: 'approvals.approver.name',
                             title: 'Approver',
                             style: 'width:15%',
                             hide: has_quote_approval === '0'
@@ -164,7 +164,7 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Quotes' }]);
                                 v-if="
                                     data.status === 'PENDING_APPROVAL' &&
                                     can('update quote_approval') &&
-                                    !data.approvals[0]?.blocker
+                                    !data.approvals[0]?.approver
                                 "
                                 :id="'datatable-workbasket-btn-' + index + '-delete'"
                                 class="btn px-2 py-0 mx-1 border-0"

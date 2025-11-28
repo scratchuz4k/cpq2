@@ -18,7 +18,6 @@ class QuoteApproval extends Model
         'flow',
         'quote_id',
         'approver_id',
-        'blocker_id',
     ];
 
     protected static function booted(): void
@@ -40,10 +39,5 @@ class QuoteApproval extends Model
     public function approver(): BelongsTo
     {
         return $this->belongsTo(User::class, 'approver_id', 'id');
-    }
-
-    public function blocker(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'blocker_id', 'id');
     }
 }

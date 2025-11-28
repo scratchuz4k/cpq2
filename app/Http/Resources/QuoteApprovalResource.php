@@ -17,7 +17,6 @@ class QuoteApprovalResource extends JsonResource
         return [
             ...$this->resource->toArray(),
             'approver' => new UserResource($this->approver),
-            'blocker' => new UserResource($this->blocker),
             'quote' => new QuoteResource($this->quote),
         ];
     }

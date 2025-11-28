@@ -32,8 +32,8 @@ class QuoteResource extends JsonResource
             'updated_at' => $this->updated_at,
             'configs' => $this->configs,
             'approvals' => $this->approvals,
-            'approval_blocker' => $this->whenLoaded('approvals', function () {
-                return $this->approvals->first()?->blocker;
+            'approval_approver' => $this->whenLoaded('approvals', function () {
+                return $this->approvals->first()?->approver;
             }),
         ];
     }

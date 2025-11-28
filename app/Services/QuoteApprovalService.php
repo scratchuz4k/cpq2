@@ -24,11 +24,8 @@ class QuoteApprovalService
 
     public function update(QuoteApproval $quoteApproval, array $array): QuoteApproval
     {
-        // martelations on the house: remove this when implementing Quote Approval Workflows pls
-        // with this i mean the BLOCKER_ID
-        if (! array_key_exists('blocker_id', $array)) {
+        if (! array_key_exists('approver_id', $array)) {
             $array['approver_id'] = Auth::id();
-            $array['blocker_id'] = Auth::id();
         }
 
         $quoteApproval->update($array);
@@ -60,7 +57,7 @@ class QuoteApprovalService
             return response()->json(['message' => 'This approval has already been finalized.'], 422);
         }
 
-        if ($quoteApproval->blocker && $quoteApproval->blocker->id != Auth::id()) {
+        if ($quoteApproval->approver && $quoteApproval->approver->id != Auth::id()) {
             return response()->json(['message' => 'This Quote Approval is assigned to another user'], 422);
         }
 
