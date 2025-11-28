@@ -88,7 +88,7 @@ describe('Quote Approval and Rejection', () => {
         cy.get('#datatable-btn-0-show').click();
         cy.wait(500);
         cy.get('#quote-approval-start').click();
-        cy.get('#quote-approval-history').contains('History');
+        cy.get('.notyf').contains('Quote completed with success!');
     });
 
     it('Disable Quote Approval', () => {

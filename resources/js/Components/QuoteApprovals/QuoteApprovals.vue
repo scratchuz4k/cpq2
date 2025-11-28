@@ -249,7 +249,7 @@ const sendToOrder = async () => {
             });
             await getQuote(quote.id);
             notyf.success(`Quote completed with success!`);
-            window.location = '/dashboard';
+            //window.location = '/dashboard';
         } catch (ex) {
             notyf.error(ex.response.data.message);
         }
@@ -264,7 +264,7 @@ const sendToOrder = async () => {
             await getQuote(quote.id);
             getApprovals();
             notyf.success(`Quote successfully sent for approval!`);
-            window.location = '/dashboard';
+            //window.location = '/dashboard';
         } catch (ex) {
             notyf.error(ex.response.data.message);
         }
@@ -275,7 +275,7 @@ const sendToOrder = async () => {
             let res = await axios.post(`/api/quotes/${quote.id}/complete`);
             await getQuote(quote.id);
             notyf.success(`Quote validated with success!`);
-            window.location = '/dashboard';
+            //window.location = '/dashboard';
         } catch (ex) {
             notyf.error(ex.response.data.message);
         }
