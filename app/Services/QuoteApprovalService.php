@@ -28,6 +28,7 @@ class QuoteApprovalService
         // with this i mean the BLOCKER_ID
         if (! array_key_exists('blocker_id', $array)) {
             $array['approver_id'] = Auth::id();
+            $array['blocker_id'] = Auth::id();
         }
 
         $quoteApproval->update($array);
@@ -60,7 +61,7 @@ class QuoteApprovalService
         }
 
         if ($quoteApproval->blocker && $quoteApproval->blocker->id != Auth::id()) {
-            return response()->json(['message' => 'This Quote Approval is blocked by another user'], 422);
+            return response()->json(['message' => 'This Quote Approval is assigned to another user'], 422);
         }
 
         return null;

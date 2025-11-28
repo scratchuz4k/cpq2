@@ -29,6 +29,7 @@ const props = defineProps({
 const page = usePage();
 const user = page.props.auth.user;
 const tenant = page.props.tenant;
+const has_quote_approval = tenant.configurations.has_quote_approval ?? '0';
 
 const expirableStatuses = ['QUOTE', 'PRICE', 'CONFIGURE'];
 
@@ -85,7 +86,12 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Quotes' }]);
                         { data: 'solution_type.name', title: 'Solution', style: 'width:16%' },
                         { data: 'address_postcode', title: 'Postcode', style: 'width:8%' },
                         { data: 'user.name', title: 'Owner', style: 'width:15%' },
-                        { data: 'approval_blocker.name', title: 'Blocker', style: 'width:15%' },
+                        {
+                            data: 'approval_blocker.name',
+                            title: 'Approver',
+                            style: 'width:15%',
+                            hide: has_quote_approval === '0'
+                        },
                         { data: 'status', title: 'Status', style: 'width:10%' },
                         { data: 'updated_at', title: 'Updated At', style: 'width:15%' },
                         { data: 'actions', title: '', style: 'width:13%' },
@@ -117,7 +123,9 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Quotes' }]);
                             >{{ value.toUpperCase() }}</span
                         >
                         <span v-else class="badge text-bg-secondary">{{
-                            data.approvals[0]?.status.toUpperCase() ?? value
+                            data.approvals[0] && !['PENDING_APPROVAL', 'DECLINED'].includes(value)
+                                ? data.approvals[0]?.status.toUpperCase()
+                                : value
                         }}</span>
                     </template>
                     <template #updated_at="{ data, value }">
@@ -125,7 +133,7 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Quotes' }]);
                     </template>
                     <template #actions="{ data, value, index }">
                         <div
-                            v-if="!['COMPLETED', 'EXPIRED', 'PENDING_APPROVAL'].includes(data.status)"
+                            v-if="!['COMPLETED', 'EXPIRED', 'PENDING_APPROVAL', 'VALIDATED'].includes(data.status)"
                             class="d-flex justify-content-end"
                         >
                             <Link
@@ -152,9 +160,12 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Quotes' }]);
                             </button>
                         </div>
                         <div v-else class="d-flex justify-content-end">
-                            teste2
                             <button
-                                v-if="!data.approvals[0]?.blocker && can('update quote_approval')"
+                                v-if="
+                                    data.status === 'PENDING_APPROVAL' &&
+                                    can('update quote_approval') &&
+                                    !data.approvals[0]?.blocker
+                                "
                                 :id="'datatable-workbasket-btn-' + index + '-delete'"
                                 class="btn px-2 py-0 mx-1 border-0"
                                 @click="saveApproval(data.approvals[0])"

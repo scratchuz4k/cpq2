@@ -152,11 +152,17 @@ const items = ref([
                         </p>
                     </div>
                     <div class="d-flex justify-content-between">
-                        <a id="btn-previous" class="btn text-primary" :href="route('quotes.edit', { quote: quote.id })">
+                        <a
+                            v-if="!quote.is_blocked"
+                            id="btn-previous"
+                            class="btn text-primary"
+                            :href="route('quotes.edit', { quote: quote.id })"
+                        >
                             <font-awesome-icon class="me-2" :icon="['fas', 'arrow-left']"></font-awesome-icon>
                             Edit Quote</a
                         >
-                        <div>
+                        <div class="ms-auto">
+                            <QuoteApprovals></QuoteApprovals>
                             <ActivityDialog
                                 :filters="[
                                     { entity: 'Quote', values: quote.id },
@@ -173,7 +179,6 @@ const items = ref([
                                     }
                                 ]"
                             ></ActivityDialog>
-                            <QuoteApprovals></QuoteApprovals>
                             <ShareableQuote :disabled="quote.items.some((x) => !x.is_margin_valid)"></ShareableQuote>
                             <a
                                 class="btn btn-outline-primary me-2"

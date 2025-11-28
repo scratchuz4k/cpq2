@@ -19,7 +19,7 @@
             <button
                 id="quote-approval-start"
                 v-if="
-                    has_quote_approval === '0' ||
+                    (has_quote_approval === '0' && quote.status.toLowerCase() !== 'completed') ||
                     quote_approval_flow === 'Margin review' ||
                     (quote_approval_flow === 'Internal review' && quote.status.toLowerCase() === 'validated')
                 "
@@ -47,7 +47,8 @@
                 id="quote-approval-start"
                 v-else-if="
                     tenant.configurations.quote_approval_flow === 'Internal review' &&
-                    quote.status.toLowerCase() !== 'validated'
+                    quote.status.toLowerCase() !== 'validated' &&
+                    !(has_quote_approval === '0' && quote.status.toLowerCase() === 'completed')
                 "
                 class="btn btn-primary"
                 :disabled="items.some((x) => x.status === 'pending')"
@@ -85,7 +86,7 @@
                 <thead>
                     <tr class="border-bottom border-black">
                         <th>Date</th>
-                        <th>Blocked By</th>
+                        <th>Approver</th>
                         <th>Signed By</th>
                         <th>Flow</th>
                         <th>Comments</th>
@@ -219,6 +220,7 @@ const startApproval = async () => {
     getApprovals();
     notyf.success(`Quote successfully sent for approval!`);
     await getQuote(quote.id);
+    window.location = '/dashboard';
 };
 
 const updateQuoteApproval = async (item, status) => {
@@ -229,6 +231,7 @@ const updateQuoteApproval = async (item, status) => {
         });
         notyf.success(`Quote ${status} with success!`);
         showDialog.value = !showDialog.value;
+        window.location = '/dashboard';
     } catch (ex) {
         notyf.error(ex.response.data.message);
     }
@@ -244,6 +247,7 @@ const sendToOrder = async () => {
             });
             await getQuote(quote.id);
             notyf.success(`Quote completed with success!`);
+            window.location = '/dashboard';
         } catch (ex) {
             notyf.error(ex.response.data.message);
         }
@@ -258,6 +262,7 @@ const sendToOrder = async () => {
             await getQuote(quote.id);
             getApprovals();
             notyf.success(`Quote successfully sent for approval!`);
+            window.location = '/dashboard';
         } catch (ex) {
             notyf.error(ex.response.data.message);
         }
@@ -268,6 +273,7 @@ const sendToOrder = async () => {
             let res = await axios.post(`/api/quotes/${quote.id}/complete`);
             await getQuote(quote.id);
             notyf.success(`Quote validated with success!`);
+            window.location = '/dashboard';
         } catch (ex) {
             notyf.error(ex.response.data.message);
         }

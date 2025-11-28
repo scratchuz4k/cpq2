@@ -11,6 +11,7 @@ enum QuoteStatusesEnum: string
     case VALIDATED = 'validated';
     case COMPLETED = 'completed';
     case EXPIRED = 'expired';
+    case DECLINED = 'declined';
 
     public static function names(): array
     {

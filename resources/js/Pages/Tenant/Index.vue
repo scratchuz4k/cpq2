@@ -396,7 +396,7 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'My Account', url: '/my
                                                                 :value="approval.value"
                                                                 v-for="approval in quote_approval_flows"
                                                             >
-                                                                {{ approval.name }}
+                                                                {{ approval.value }}
                                                             </option>
                                                         </select>
                                                     </div>
