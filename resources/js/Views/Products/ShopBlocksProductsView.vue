@@ -343,6 +343,16 @@ watch(
                                     />
                                 </template>
                             </Badge>
+                            <Badge v-for="(model, index) in currentStorage" :value="model.value">
+                                <template #close-button>
+                                    <font-awesome-icon
+                                        :icon="['fas', 'x']"
+                                        role="button"
+                                        class="me-1 fs-7"
+                                        @click="() => currentStorage.splice(index, 1)"
+                                    />
+                                </template>
+                            </Badge>
                         </li>
                     </ul>
 

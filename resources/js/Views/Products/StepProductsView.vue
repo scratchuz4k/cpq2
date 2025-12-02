@@ -36,7 +36,8 @@ const proxyValue = computed({
 });
 
 const products = ref([]);
-const categories = ref([]);
+const categories = ref([]); // categories for the current result set (for CategoriesTree)
+const allCategories = ref([]); // full category tree seen so far (from initial run)
 const currentCategory = ref(null);
 const selectedParent = ref(null);
 const currentStep = ref(props.index);
@@ -66,9 +67,47 @@ const sortOptions = [
 ];
 
 const sort = ref(sortOptions[3]);
-
 const search = ref(null);
 
+// Build allCategories once from the categories you get back on products.
+const buildAllCategories = (productsData) => {
+    const map = new Map();
+
+    productsData.forEach((p) => {
+        (p.categories || []).forEach((cat) => {
+            // add the category itself
+            if (!map.has(cat.id)) {
+                map.set(cat.id, {
+                    id: cat.id,
+                    name: cat.name,
+                    parent_id: cat.parent_id,
+                    // add any other fields you need in CategoriesTree
+                    ...cat
+                });
+            }
+
+            // walk up parents from the payload (if present)
+            let current = cat.parent;
+            while (current && current.id) {
+                if (!map.has(current.id)) {
+                    map.set(current.id, {
+                        id: current.id,
+                        name: current.name,
+                        parent_id: current.parent_id,
+                        ...current
+                    });
+                }
+                current = current.parent;
+            }
+        });
+    });
+
+    allCategories.value = Array.from(map.values());
+};
+
+/**
+ * Main: get products
+ */
 const getProducts = async () => {
     meta.isLoading = true;
 
@@ -91,6 +130,7 @@ const getProducts = async () => {
         }
     ];
 
+    // Use allCategories here to get selected category + its descendants
     if (currentCategory.value) {
         let array = [currentCategory.value];
         let items = [];
@@ -98,7 +138,8 @@ const getProducts = async () => {
         do {
             let current = array.pop();
             items.push(current);
-            let temp = categories.value.filter((x) => x.parent_id == current.id);
+            // IMPORTANT: use allCategories for traversal, not just categories for current result
+            let temp = allCategories.value.filter((x) => x.parent_id == current.id);
             array.push(...temp);
         } while (array.length != 0);
 
@@ -141,7 +182,13 @@ const getProducts = async () => {
     });
     products.value = res.data.data;
 
-    await getCategories(tempCategoryIds);
+    // First run: build the allCategories from the initial products
+    if (!allCategories.value.length && products.value.length) {
+        buildAllCategories(products.value);
+    }
+
+    // categories for the CategoriesTree - only those that have products in this result
+    categories.value = allCategories.value.filter((c) => tempCategoryIds.includes(c.id));
 
     meta.first = (meta.page - 1) * meta.limit;
     meta.total = res.data.total;
