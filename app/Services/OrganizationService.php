@@ -29,7 +29,7 @@ class OrganizationService
             }
 
             $emailApi = new CloudAuditApiEmail;
-            $data = $emailApi->storeEmail($data['id'], $organization->name, $organization->email, $organization->name, '');
+            $data = $emailApi->storeEmail($data['id'], Auth::user()->name, $organization->email, $organization->name, '');
             $organization->update(['status' => CloudAuditStatusEnum::SENT_EMAIL]);
             $organization->logs()->create(['code' => CloudAuditOperationEnum::EMAIL, 'data' => $data, 'synced_at' => now()]);
         }

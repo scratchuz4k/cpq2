@@ -72,7 +72,7 @@ const syncCloudaudit = async () => {
     setTimeout(() => {
         isLoading.value = false;
         getOrganizations();
-    }, 3000);
+    }, 200);
 };
 
 const handlePaginator = (ev) => {
@@ -102,18 +102,22 @@ const tenant_reviewed = ref(false);
                         <div class="d-flex justify-content-between mt-3">
                             <h5 class="font-bold mb-2">Select a organization to review</h5>
                             <div>
+                                <div class="btn me-2" v-if="isLoading">
+                                    <div class="spinner-border spinner-border-sm" role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
+                                </div>
                                 <button
-                                    id="link-to-request-permission"
+                                    v-else
+                                    id="link-to-refresh-permission"
                                     type="button"
                                     class="btn me-2"
                                     @click="syncCloudaudit()"
                                     style="border-style: dashed"
                                 >
-                                    <div v-if="isLoading" class="spinner-border spinner-border-sm" role="status">
-                                        <span class="visually-hidden">Loading...</span>
-                                    </div>
-                                    <font-awesome-icon v-else :icon="['fas', 'sync']" />
+                                    <font-awesome-icon :icon="['fas', 'sync']" />
                                 </button>
+
                                 <button
                                     id="link-to-request-permission"
                                     type="button"
@@ -141,9 +145,14 @@ const tenant_reviewed = ref(false);
                         </div>
                         <div class="row row-cols-1 row-cols-md-3 row-cols-lg-4 g-3 mt-1 mb-3">
                             <div class="col" v-for="(org, index) in organizations">
-                                <RadioCard v-model="organization" :value="org" name="cloud-selected-option">
+                                <RadioCard
+                                    v-model="organization"
+                                    :value="org"
+                                    :allow-deselect="true"
+                                    name="cloud-selected-option"
+                                >
                                     <div class="d-flex justify-content-between">
-                                        <p class="font-bold mb-2">{{ org.name }}</p>
+                                        <p class="h5 mb-0 font-bold">{{ org.name }}</p>
                                         <div v-if="Object.keys(org.data).includes('errors')" class="org-tooltip">
                                             <font-awesome-icon
                                                 icon="fas fa-info"
@@ -155,7 +164,7 @@ const tenant_reviewed = ref(false);
                                         </div>
                                     </div>
 
-                                    <p>{{ org.email }}</p>
+                                    <p class="small mb-2">{{ org.email }}</p>
                                     <p class="badge w-100 bg-secondary text-white mt-2">
                                         {{ format.capitalizeFirstLetter(org.status) }}
                                     </p>
