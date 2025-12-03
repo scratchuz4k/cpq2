@@ -61,6 +61,7 @@ class QuoteItemPolicy
      */
     public function update(User $user, QuoteItem $quoteItem): bool
     {
+
         if (! $this->canManageQuoteItem($user, $quoteItem->quote)) {
             return false;
         }
@@ -77,6 +78,7 @@ class QuoteItemPolicy
      */
     public function delete(User $user, QuoteItem $quoteItem): bool
     {
+
         if (! $this->canManageQuoteItem($user, $quoteItem->quote)) {
             return false;
         }
@@ -105,6 +107,7 @@ class QuoteItemPolicy
      */
     public function forceDelete(User $user, QuoteItem $quoteItem): bool
     {
+
         if ($user->can("forceDelete $this->model")) {
             return true;
         }

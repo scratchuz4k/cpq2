@@ -7,20 +7,10 @@ describe('Create a Shareable Link.cy', () => {
     beforeEach(() => {
         cy.login('companyadmin@example.com', 'werwerwer');
     });
-    it('Creates an Account', () => {
-        cy.visit('/quotes');
-        cy.get('#create-tab').click();
-        cy.get('#link-to-create-account').click();
-        cy.get('#account-name').type(account.name);
-        cy.get('#account-reference').type(account.ref);
-        cy.get('#btn-save-account').click();
-        cy.get('.notyf').contains('Created with Success');
-    });
-
     it('Creates Mobile Quote', () => {
         cy.visit('/quotes');
         cy.get('#create-tab').click();
-        cy.selectLazyOption('account_id', account.name);
+        cy.selectFirstOption('account_id');
         cy.get('#btn-next-step').click();
 
         cy.get('#solution_type-mobile').click();
@@ -30,12 +20,12 @@ describe('Create a Shareable Link.cy', () => {
         cy.wait(1000);
         cy.get('#btn-product-1-add-25').click();
         cy.wait(1000);
-        cy.get('#btn-step-1-next').click();
+        cy.get('#btn-step-next').click();
         cy.wait(1000);
         cy.get('#btn-product-0-add-25').click();
 
         cy.wait(1000);
-        cy.get('#btn-step-2-next').click();
+        cy.get('#btn-step-next').click();
 
         cy.get('#current-step')
             .invoke('text')
@@ -47,7 +37,7 @@ describe('Create a Shareable Link.cy', () => {
                         const last_step = parseInt(lastStepText.trim());
 
                         for (let i = current_step; i < last_step; i++) {
-                            cy.get(`#btn-step-${i}-next`).click();
+                            cy.get(`#btn-step-next`).click();
                         }
                     });
             });
@@ -77,7 +67,7 @@ describe('Create a Shareable Link.cy', () => {
             cy.wait(500);
         } while (hardwareCount == 0 && current_page <= max_pages);
 
-        cy.get('#btn-step-2-next').click();
+        cy.get('#btn-step-next').click();
         cy.get('.recurring-item').should('have.length', 3);
         cy.get('.one_off-item').then(($items) => {
             cy.then(() => {

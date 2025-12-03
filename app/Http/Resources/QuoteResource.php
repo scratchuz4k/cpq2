@@ -17,6 +17,7 @@ class QuoteResource extends JsonResource
         return [
             ...$this->resource->toArray(),
             'user' => $this->user,
+            'is_blocked' => $this->isBlocked(),
             'commission_value' => format_currency($this->commission_value),
             'margin' => format_currency($this->margin),
             'total' => format_currency($this->total),
@@ -28,9 +29,12 @@ class QuoteResource extends JsonResource
             'discounts' => QuoteDiscountResource::collection($this->discounts)->resolve(),
             'items' => QuoteItemResource::collection($this->items)->resolve(),
             'items_trashed' => QuoteItemResource::collection($this->itemsTrashed)->resolve(),
-            'orders' => $this->whenLoaded('orders'),
             'updated_at' => $this->updated_at,
             'configs' => $this->configs,
+            'approvals' => $this->approvals,
+            'approval_approver' => $this->whenLoaded('approvals', function () {
+                return $this->approvals->first()?->approver;
+            }),
         ];
     }
 }

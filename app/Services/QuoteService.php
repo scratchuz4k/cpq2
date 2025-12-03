@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enums\QuoteStatusesEnum;
 use App\Helpers\DataProvider;
 use App\Http\Resources\QuoteItemResource;
 use App\Http\Resources\QuoteResource;
@@ -68,6 +69,15 @@ class QuoteService
             && is_array($array['configurations'])
         ) {
             $quote->syncConfigurations($array['configurations']);
+        }
+
+        if (
+            array_key_exists('status', $array)
+            && $array['status'] === QuoteStatusesEnum::DECLINED->name
+        ) {
+            $quote->updateQuietly($array);
+
+            return $quote->refresh();
         }
 
         $quote->update($array);

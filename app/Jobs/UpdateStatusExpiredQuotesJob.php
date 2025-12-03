@@ -18,6 +18,8 @@ class UpdateStatusExpiredQuotesJob implements ShouldQueue
         QuoteStatusesEnum::QUOTE->name,
         QuoteStatusesEnum::PRICE->name,
         QuoteStatusesEnum::CONFIGURE->name,
+        QuoteStatusesEnum::VALIDATED->name,
+        QuoteStatusesEnum::PENDING_APPROVAL->name,
     ];
 
     /**

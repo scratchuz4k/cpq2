@@ -4,20 +4,14 @@ namespace App\Enums;
 
 enum QuoteStatusesEnum: string
 {
-    case QUOTE = 'quote';
-    case PRICE = 'price';
     case CONFIGURE = 'configure';
-    case REGISTRY = 'registry';
-    case ORDERED = 'ordered';
-    case APPROVED = 'approved';
-    case SUBMITTED = 'submitted';
-    case REJECTED = 'rejected';
-    case PROCESSING = 'processing';
+    case PRICE = 'price';
+    case QUOTE = 'quote';
+    case PENDING_APPROVAL = 'pending approval';
+    case VALIDATED = 'validated';
     case COMPLETED = 'completed';
-    case CANCELLED = 'cancelled';
-    case FAILED = 'failed';
-    case ON_HOLD = 'on hold';
     case EXPIRED = 'expired';
+    case DECLINED = 'declined';
 
     public static function names(): array
     {
