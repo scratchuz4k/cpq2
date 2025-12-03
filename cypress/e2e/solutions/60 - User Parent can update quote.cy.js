@@ -43,13 +43,12 @@ describe('User Parent can update a quote.cy', () => {
                         const current_step = parseInt(currentStepText.trim());
                         const last_step = parseInt(lastStepText.trim());
 
-                        for (let i = current_step; i < last_step - 1; i++) {
-                            cy.get('#btn-plan-0-add-25').click();
+                        for (let i = current_step; i <= last_step - 1; i++) {
+                            cy.get('#btn-product-0-add-25').click();
                             cy.wait(1000);
-                            cy.get(`#next-step-btn`).click();
+                            cy.get(`#btn-step-${i}-next`).click();
                             recurringCount += 1;
                         }
-                        cy.get(`#next-step-btn`).click();
                     });
             });
 

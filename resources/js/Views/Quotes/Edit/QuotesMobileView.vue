@@ -75,7 +75,7 @@ getStepsWithProducts();
 <template>
     <div class="panel panel-mobile">
         <div class="row justify-content-between">
-            <div class="col-lg-7">
+            <div class="col">
                 <div v-if="!loading">
                     <div v-for="(step, index) in active_steps">
                         <StepProductsView
@@ -88,65 +88,18 @@ getStepsWithProducts();
                         </StepProductsView>
                     </div>
 
-                    <HandsetProductsView
+                    <ShopBlocksProductsView
                         v-if="
                             (current_step == active_steps.length && current_step > 0) ||
                             (active_steps.length == 0 && current_step == 0)
                         "
                         :current_step="current_step"
                         :quote="quote"
+                        :category="22"
                         v-model="current_step"
                         @save="saveQuote"
                     >
-                    </HandsetProductsView>
-                </div>
-            </div>
-            <div class="col-lg-4 order-first order-lg-last mb-5">
-                <div style="position: sticky; top: 25px; max-width: 82%; margin-right: 0; margin-left: auto">
-                    <InfoBox>
-                        <div style="font-size: 14px">
-                            <b style="font-size: 16px">Quote {{ modelValue.id }} for {{ modelValue.account.name }}</b>
-                            <br />
-                            Contact Number: 0124567890<br />
-                            Email: firstname.lastname@gmail.com
-                        </div>
-                    </InfoBox>
-                    <InfoBox v-if="['QUOTE', 'PRICE', 'CONFIGURE'].includes(modelValue.status)">
-                        <div style="font-size: 14px">
-                            This quote will expire on
-                            <b style="font-size: 16px">
-                                {{
-                                    format.expireDate(
-                                        modelValue.created_at,
-                                        tenant.configurations?.quote_expiration_days
-                                    )
-                                }}
-                            </b>
-                        </div>
-                    </InfoBox>
-                    <div class="configure-mobile-sidebar px-4 py-4">
-                        <div v-for="(step, index) in active_steps">
-                            <h4 id="sidebar_products" data-total="0">{{ index + 1 }}. {{ step.name }}</h4>
-                            <div class="sidebar_items mb-3">
-                                <div v-for="product in step.products" class="item mb-2">
-                                    <span>{{ product.name }}</span>
-                                    <span class="badge bg-light-grey dark">
-                                        {{ quote.items.find((x) => x.product_id == product.id)?.quantity ?? 0 }}
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                        <h4>{{ active_steps.length + 1 }}. Handsets</h4>
-                        <!--<div class="sidebar_add_ons mb-3">
-                            <div class="item mb-2">
-                                <span>Hardware</span
-                                ><span class="badge bg-light-grey dark">
-                                    {{ getHardwareProductsCount() }}
-                                </span>
-                            </div>
-                        </div>-->
-                        <button id="next-step-btn" class="btn btn-primary mt-2" @click="saveQuote()">Next</button>
-                    </div>
+                    </ShopBlocksProductsView>
                 </div>
             </div>
         </div>

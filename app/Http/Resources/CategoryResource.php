@@ -21,6 +21,7 @@ class CategoryResource extends JsonResource
         return [
             ...$this->resource->toArray(),
             'solution_type' => SolutionTypeTenantResource::make($this->solutionType)->resolve(),
+            'parent' => CategoryResource::make($this->parent)->resolve(),
         ];
     }
 }

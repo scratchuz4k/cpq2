@@ -2,14 +2,14 @@
 
 namespace Database\Seeders;
 
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-
 use App\Enums\PricePlanEnum;
+use App\Models\Category;
 use App\Models\PricePlan;
 use App\Models\Product;
 use App\Models\Step;
 use App\Models\Tenant;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Str;
 
 class StepProductsSeeder extends Seeder
 {
@@ -20,6 +20,7 @@ class StepProductsSeeder extends Seeder
      */
     public function run()
     {
+        // Migrating from categories to steps
         $products = [
             [
                 'code' => 'basic',
@@ -82,6 +83,259 @@ class StepProductsSeeder extends Seeder
                 );
 
                 $step->products()->attach($product->id);
+            }
+        }
+
+        // crate new steps, categories and products
+        $cloudSolutionType = $tenant->solutionTypes()->where('code', 7)->first();
+        $newSteps = [];
+        $steps = [
+            'Productivity Apps',
+            'Collaboration & Communication',
+            'Security & Compliance',
+            'Enterprise Suites',
+        ];
+
+        foreach ($steps as $step) {
+            $newSteps[] = Step::updateOrCreate([
+                'name' => $step,
+                'tenant_id' => 1,
+                'solution_type_id' => $cloudSolutionType->id,
+            ]);
+        }
+
+        $categories = [
+            [
+                'category' => 'Office Apps',
+                'products' => [],
+                'children' => [
+                    [
+                        'category' => 'Desktop Apps',
+                        'products' => [
+                            [
+                                'name' => 'Microsoft 365 Apps for Business',
+                                'steps' => $newSteps[0]->id,
+                                'cost' => 80,
+                                'net' => 100,
+                            ],
+                            [
+                                'name' => 'Microsoft 365 Apps for Enterprise',
+                                'steps' => $newSteps[0]->id,
+                                'cost' => 120,
+                                'net' => 150,
+                            ],
+                        ],
+                    ],
+                    [
+                        'category' => 'Web Apps',
+                        'products' => [
+                            [
+                                'name' => 'Office Web Apps',
+                                'steps' => $newSteps[0]->id,
+                                'cost' => 125,
+                                'net' => 145,
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+            [
+                'category' => 'Communication Tools',
+                'products' => [],
+                'children' => [
+                    [
+                        'category' => 'Email & Calendars',
+                        'products' => [
+                            [
+                                'name' => 'Exchange Online Plan 1',
+                                'steps' => $newSteps[1]->id,
+                                'cost' => 57,
+                                'net' => 68,
+                            ],
+                            [
+                                'name' => 'Exchange Online Plan 2',
+                                'steps' => $newSteps[1]->id,
+                                'cost' => 94,
+                                'net' => 110,
+                            ],
+                        ],
+                    ],
+                    [
+                        'category' => 'Meetings & Chat',
+                        'products' => [
+                            [
+                                'name' => 'Microsoft Teams Standard',
+                                'steps' => $newSteps[1]->id,
+                                'cost' => 45,
+                                'net' => 50,
+                            ],
+                            [
+                                'name' => 'Teams Phone System Add-on',
+                                'steps' => $newSteps[1]->id,
+                                'cost' => 25,
+                                'net' => 35,
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+            [
+                'category' => 'File Storage',
+                'products' => [],
+                'children' => [
+                    [
+                        'category' => 'Personal Storage',
+                        'products' => [
+                            [
+                                'name' => 'OneDrive 1TB',
+                                'steps' => $newSteps[1]->id,
+                                'cost' => 15,
+                                'net' => 20,
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+            [
+                'category' => 'Extras',
+                'products' => [
+                    [
+                        'name' => 'Loop',
+                        'steps' => $newSteps[1]->id,
+                        'cost' => 41,
+                        'net' => 48,
+                    ],
+                ],
+            ],
+            [
+                'category' => 'Identity & Access',
+                'products' => [],
+                'children' => [
+                    [
+                        'category' => 'Authentication',
+                        'products' => [
+                            [
+                                'name' => 'Azure AD Premium P1',
+                                'steps' => $newSteps[2]->id,
+                                'cost' => 24,
+                                'net' => 36,
+                            ],
+                            [
+                                'name' => 'Azure AD Premium P2',
+                                'steps' => $newSteps[2]->id,
+                                'cost' => 32,
+                                'net' => 45,
+                            ],
+                        ],
+                    ],
+                    [
+                        'category' => 'Endpoint Management',
+                        'products' => [
+                            [
+                                'name' => 'Intune Device Standard License',
+                                'steps' => $newSteps[2]->id,
+                                'cost' => 12,
+                                'net' => 15,
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+            [
+                'category' => 'Bundles',
+                'products' => [],
+                'children' => [
+                    [
+                        'category' => 'Business Plans',
+                        'products' => [
+                            [
+                                'name' => 'Microsoft 365 Business Basic',
+                                'steps' => $newSteps[3]->id,
+                                'cost' => 340,
+                                'net' => 370,
+                            ],
+                            [
+                                'name' => 'Microsoft 365 Business Premium',
+                                'steps' => $newSteps[3]->id,
+                                'cost' => 480,
+                                'net' => 520,
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ];
+
+        foreach ($categories as $category) {
+            $newCategory = Category::updateOrCreate([
+                'code' => str_replace(' ', '_', strtolower($category['category'])),
+                'name' => $category['category'],
+                'tenant_id' => 1,
+            ]);
+
+            if (isset($category['products']) and ! empty($category['products'])) {
+                foreach ($category['products'] as $product) {
+                    $newProd = Product::updateOrCreate([
+                        'sku' => Str::random(12),
+                        'name' => $product['name'],
+                        'description' => $product['name'],
+                        'price_plan_id' => $product['price_plan_id'] ?? 1,
+                        'tenant_id' => 1,
+                        'is_active' => 1,
+                    ]);
+
+                    $newProd->prices()->updateOrCreate(
+                        [
+                            'code' => 1,
+                            'tenant_id' => 1,
+                        ],
+                        [
+                            'cost' => $product['cost'] ?? 0,
+                            'net' => $product['net'] ?? 0,
+                        ]
+                    );
+
+                    $newProd->categories()->sync($newCategory->id);
+                    $newProd->steps()->sync($product['steps']);
+                }
+            }
+
+            if (isset($category['children']) and ! empty($category['children'])) {
+                foreach ($category['children'] as $childCategory) {
+                    $newChildCategory = Category::updateOrCreate([
+                        'code' => str_replace(' ', '_', strtolower($childCategory['category'])),
+                        'name' => $childCategory['category'],
+                        'tenant_id' => 1,
+                        'parent_id' => $newCategory->id,
+                    ]);
+
+                    if (isset($childCategory['products']) and ! empty($childCategory['products'])) {
+                        foreach ($childCategory['products'] as $product) {
+                            $newProd = Product::updateOrCreate([
+                                'sku' => Str::random(12),
+                                'name' => $product['name'],
+                                'description' => $product['name'],
+                                'price_plan_id' => $product['price_plan_id'] ?? 1,
+                                'tenant_id' => 1,
+                                'is_active' => 1,
+                            ]);
+
+                            $newProd->prices()->updateOrCreate(
+                                [
+                                    'code' => 1,
+                                    'tenant_id' => 1,
+                                ],
+                                [
+                                    'cost' => $product['cost'] ?? 0,
+                                    'net' => $product['net'] ?? 0,
+                                ]
+                            );
+
+                            $newProd->categories()->sync($newChildCategory->id);
+                            $newProd->steps()->sync($product['steps']);
+                        }
+                    }
+                }
             }
         }
     }

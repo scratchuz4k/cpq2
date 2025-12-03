@@ -12,7 +12,7 @@ class Category extends Model
 {
     use HasFactory, SetTenantId;
 
-    protected $fillable = ['code', 'name', 'sort_order', 'tenant_id', 'is_active'];
+    protected $fillable = ['code', 'name', 'sort_order', 'tenant_id', 'is_active', 'parent_id'];
 
     protected $casts = [
         'is_active' => 'boolean',
@@ -26,5 +26,15 @@ class Category extends Model
     public function products(): BelongsToMany
     {
         return $this->belongsToMany(Product::class, 'category_product', 'category_id');
+    }
+
+    public function parent()
+    {
+        return $this->hasOne(Category::class, 'id', 'parent_id');
+    }
+
+    public function children()
+    {
+        return $this->hasMany(Category::class, 'parent_id', 'id');
     }
 }

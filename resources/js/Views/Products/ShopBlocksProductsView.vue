@@ -5,6 +5,7 @@ import { Paginator, Select } from 'primevue';
 import { quote } from '@/Composables/useQuote';
 import { categories } from '@composables/custom/shopblocks';
 import { computed, onMounted, reactive, ref, watch } from 'vue';
+import ShopBlocksStorages from '@/Components/ShopBlocks/ShopBlocksStorages.vue';
 
 const emit = defineEmits(['save', 'update:modelValue']);
 const proxyValue = computed({
@@ -18,8 +19,14 @@ const proxyValue = computed({
 
 const props = defineProps({
     modelValue: Number,
-    quote: Object
+    quote: Object,
+    category: {
+        type: Number,
+        default: 0
+    },
+    current_step: Number
 });
+
 const selectedItems = ref([]);
 const meta = reactive({
     page: 1,
@@ -48,6 +55,7 @@ const filters = reactive({
 const currentCategory = ref(null);
 const currentBrand = ref([]);
 const currentModel = ref([]);
+const currentStorage = ref([]);
 
 const filterList = reactive({
     models: [],
@@ -116,6 +124,14 @@ const getProductsShopBlocks = async () => {
         value: 1
     });
 
+    if (props.category) {
+        filters.push({
+            column: 'category.id',
+            operator: 'equals',
+            value: props.category
+        });
+    }
+
     if (currentCategory.value) {
         let array = [currentCategory.value];
         let items = [];
@@ -150,15 +166,26 @@ const getProductsShopBlocks = async () => {
         });
     }
 
+    let dimensions = currentStorage.value.length
+        ? [
+              {
+                  column: 'internal-storage-capacity',
+                  operator: 'in',
+                  value: currentStorage.value.map((x) => x.value)
+              }
+          ]
+        : [];
+
     let query = queryString.stringify({
         page: meta.page,
-        limit: meta.limit,
+        perPage: meta.limit,
         filters: JSON.stringify(filters),
         order: sort.value.order,
         orderBy: sort.value.orderBy,
         columns: 'description,name',
         search: search.value,
-        account_id: quote.account_id
+        account_id: quote.account_id,
+        dimensions: JSON.stringify(dimensions)
     });
     try {
         let res = await axios.get('/api/shop-blocks/products?' + query, {
@@ -221,7 +248,7 @@ watch([filters, sort], () => {
 });
 
 watch(
-    [currentCategory, currentBrand, currentModel],
+    [currentCategory, currentBrand, currentModel, currentStorage],
     _.debounce(() => {
         meta.page = 1;
         getProductsShopBlocks();
@@ -243,7 +270,7 @@ watch(
     <div id="mobile_step_shopblocks" class="step">
         <div class="row">
             <div class="d-flex justify-content-between mb-3">
-                <h2>Select some products</h2>
+                <h3>{{ quote.solution_type.code == 4 ? 'Handsets' : 'Hardware' }}</h3>
                 <p class="bigger text-primary bold">
                     STEP
                     <span id="current-step">{{ step }}</span>
@@ -316,32 +343,50 @@ watch(
                                     />
                                 </template>
                             </Badge>
+                            <Badge v-for="(model, index) in currentStorage" :value="model.value">
+                                <template #close-button>
+                                    <font-awesome-icon
+                                        :icon="['fas', 'x']"
+                                        role="button"
+                                        class="me-1 fs-7"
+                                        @click="() => currentStorage.splice(index, 1)"
+                                    />
+                                </template>
+                            </Badge>
                         </li>
                     </ul>
 
                     <div class="mb-4">
                         <h2>Categories</h2>
-                        <ShopBlocksCategoriesTree v-model="currentCategory"></ShopBlocksCategoriesTree>
+                        <ShopBlocksCategoriesTree
+                            v-model="currentCategory"
+                            :defaultCategory="category"
+                        ></ShopBlocksCategoriesTree>
                     </div>
                     <div class="mb-4">
                         <h2>Brands</h2>
                         <ShopBlocksBrands v-model="currentBrand" :category="currentCategory"></ShopBlocksBrands>
                     </div>
 
-                    <div class="mb-4">
+                    <div v-if="!category > 0" class="mb-4">
                         <h2>Models</h2>
                         <ShopBlocksModels v-model="currentModel" :category="currentCategory"></ShopBlocksModels>
+                    </div>
+
+                    <div class="mb-4">
+                        <h2>Storage</h2>
+                        <ShopBlocksStorages v-model="currentStorage" :category="currentCategory"></ShopBlocksStorages>
                     </div>
                 </div>
             </div>
             <div class="col">
                 <template v-if="meta.isLoading">
-                    <ProductSkeleton v-for="item in [0, 1, 2, 3, 4]"></ProductSkeleton
+                    <ShopblocksProductSkeleton v-for="item in [0, 1, 2, 3, 4]"></ShopblocksProductSkeleton
                 ></template>
                 <template v-else>
                     <div class="text-center pt-2 pb-4" v-if="!productsHardware.length">No Results Found</div>
                     <div class="row" :class="[showCards ? 'row-cols-4' : 'row-cols-1']">
-                        <ProductCard
+                        <ShopBlocksProductCard
                             v-for="(product, index) in productsHardware"
                             @select="(item) => addSelected(item)"
                             :hasSelect="true"
@@ -349,7 +394,7 @@ watch(
                             :index="index"
                             v-model="productsHardware[index]"
                         >
-                        </ProductCard>
+                        </ShopBlocksProductCard>
                     </div>
                     <Paginator
                         v-model:first="meta.first"

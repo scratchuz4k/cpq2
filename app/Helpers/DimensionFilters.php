@@ -4,7 +4,6 @@ namespace App\Helpers;
 
 use App\Models\ShopBlocks\Dimension;
 use App\Models\ShopBlocks\DimensionType;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 
 class DimensionFilters
@@ -32,8 +31,24 @@ class DimensionFilters
                     ->get()->pluck('id');
             } else {
                 $queryParts = self::resolveQueryParts($dim['operator'], $dim['value']);
-                $dims = Dimension::where('dimension_type_id', $dimType->id)
-                    ->where('value', $queryParts['operator'], $queryParts['value'])->get()->pluck('id');
+                $dimsQuery = Dimension::where('dimension_type_id', $dimType->id);
+
+                if ($queryParts['operator'] === 'in') {
+                    $dims = $dimsQuery
+                        ->whereIn('value', $queryParts['value'])
+                        ->get()
+                        ->pluck('id');
+                } elseif ($queryParts['operator'] === 'not_in') {
+                    $dims = $dimsQuery
+                        ->whereNotIn('value', $queryParts['value'])
+                        ->get()
+                        ->pluck('id');
+                } else {
+                    $dims = $dimsQuery
+                        ->where('value', $queryParts['operator'], $queryParts['value'])
+                        ->get()
+                        ->pluck('id');
+                }
             }
 
             $query = $query->whereHas('dimensions', function ($query) use ($dims) {
@@ -46,63 +61,79 @@ class DimensionFilters
 
     protected static function resolveQueryParts($operator, $value)
     {
-        return Arr::get([
-            'not_equals' => [
-                'operator' => '!=',
-                'value' => $value,
-            ],
-            'equals' => [
-                'operator' => '=',
-                'value' => $value,
-            ],
-            'not_contains' => [
-                'operator' => 'NOT LIKE',
-                'value' => "%{$value}%",
-            ],
-            'contains' => [
-                'operator' => 'LIKE',
-                'value' => "%{$value}%",
-            ],
-            'starts_with' => [
-                'operator' => 'LIKE',
-                'value' => "{$value}%",
-            ],
-            'ends_with' => [
-                'operator' => 'LIKE',
-                'value' => "%{$value}",
-            ],
-            'greater_than' => [
-                'operator' => '>',
-                'value' => $value,
-            ],
-            'less_than' => [
-                'operator' => '<',
-                'value' => $value,
-            ],
-            'greater_than_or_equal_to' => [
-                'operator' => '>=',
-                'value' => $value,
-            ],
-            'less_than_or_equal_to' => [
-                'operator' => '<=',
-                'value' => $value,
-            ],
-            'is_null' => [
-                'operator' => 'is_null',
-                'value' => '',
-            ],
-            'in' => [
-                'operator' => 'in',
-                'value' => explode(',', $value),
-            ],
-            'not_in' => [
-                'operator' => 'not_in',
-                'value' => explode(',', $value),
-            ],
-            'search' => [
-                'operator' => 'search',
-                'value' => $value,
-            ],
-        ], Str::snake($operator));
+        $op = Str::snake($operator);
+
+        switch ($op) {
+            case 'not_equals':
+                return [
+                    'operator' => '!=',
+                    'value' => $value,
+                ];
+            case 'equals':
+                return [
+                    'operator' => '=',
+                    'value' => $value,
+                ];
+            case 'not_contains':
+                return [
+                    'operator' => 'NOT LIKE',
+                    'value' => "%{$value}%",
+                ];
+            case 'contains':
+                return [
+                    'operator' => 'LIKE',
+                    'value' => "%{$value}%",
+                ];
+            case 'starts_with':
+                return [
+                    'operator' => 'LIKE',
+                    'value' => "{$value}%",
+                ];
+            case 'ends_with':
+                return [
+                    'operator' => 'LIKE',
+                    'value' => "%{$value}",
+                ];
+            case 'greater_than':
+                return [
+                    'operator' => '>',
+                    'value' => $value,
+                ];
+            case 'less_than':
+                return [
+                    'operator' => '<',
+                    'value' => $value,
+                ];
+            case 'greater_than_or_equal_to':
+                return [
+                    'operator' => '>=',
+                    'value' => $value,
+                ];
+            case 'less_than_or_equal_to':
+                return [
+                    'operator' => '<=',
+                    'value' => $value,
+                ];
+            case 'is_null':
+                return [
+                    'operator' => 'is_null',
+                    'value' => '',
+                ];
+            case 'in':
+                return [
+                    'operator' => 'in',
+                    'value' => $value,
+                ];
+            case 'not_in':
+                return [
+                    'operator' => 'not_in',
+                    'value' => $value,
+                ];
+            case 'search':
+                return [
+                    'operator' => 'search',
+                    'value' => $value,
+                ];
+        }
     }
 }

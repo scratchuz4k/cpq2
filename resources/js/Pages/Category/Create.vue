@@ -9,24 +9,30 @@ import ToggleSwitch from 'primevue/toggleswitch';
 const category = reactive({
     name: null,
     code: null,
-    is_active: true
+    is_active: true,
+    parent_id: null
 });
 
 const saveCate = () => {
-    let temp = category;
-
-    router.post(`/categories`, temp, {
-        onSuccess: (page) => {
-            notyf.success('Created with Success');
+    router.post(
+        `/categories`,
+        {
+            ...category,
+            parent_id: category.parent?.id
         },
-        onError: (errors) => {
-            let string = '';
-            Object.keys(errors).forEach((key) => {
-                string += errors[key] + '<br>';
-            });
-            notyf.error(string);
+        {
+            onSuccess: (page) => {
+                notyf.success('Created with Success');
+            },
+            onError: (errors) => {
+                let string = '';
+                Object.keys(errors).forEach((key) => {
+                    string += errors[key] + '<br>';
+                });
+                notyf.error(string);
+            }
         }
-    });
+    );
 };
 const items = ref([
     { label: 'Home', url: '/' },
@@ -66,6 +72,20 @@ const items = ref([
                 <div class="mb-3">
                     <label for="category-name" class="form-label">Name:</label>
                     <input id="category-name" class="form-control" v-model="category.name" />
+                </div>
+                <div class="mb-3">
+                    <label for="category-parent" class="form-label">Parent:</label>
+                    <div class="input-group p-0">
+                        <InputSelect
+                            id="category-parent"
+                            url="/categories"
+                            :fields="['name']"
+                            class="w-100"
+                            v-model="category.parent"
+                            placeholder="Select a Parent"
+                            :query="[{ column: 'is_active', operator: 'equals', value: 1 }]"
+                        />
+                    </div>
                 </div>
             </div>
         </div>
