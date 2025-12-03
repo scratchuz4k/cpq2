@@ -2,12 +2,10 @@
 
 namespace Database\Seeders;
 
-use App\Enums\OrderStatusesEnum;
 use App\Enums\PricePlanEnum;
 use App\Enums\SolutionTypesEnum;
 use App\Enums\SpaOperationsEnum;
 use App\Enums\SpaRulesEnum;
-use App\Models\OrderStatus;
 use App\Models\PricePlan;
 use App\Models\Role;
 use App\Models\SolutionType;
@@ -83,10 +81,6 @@ class InitTableSeeder extends Seeder
 
         foreach (PricePlanEnum::cases() as $case) {
             PricePlan::updateOrCreate(['code' => $case->name], ['name' => $case->value]);
-        }
-
-        foreach (OrderStatusesEnum::cases() as $status) {
-            OrderStatus::updateOrCreate(['code' => $status->name], ['name' => $status->value]);
         }
     }
 }

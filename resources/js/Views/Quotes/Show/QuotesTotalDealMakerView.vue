@@ -1,13 +1,12 @@
 <script setup>
 import { ref } from 'vue';
-import Dialog from 'primevue/dialog';
-import { createOrder } from '@/Composables/useOrders.js';
 import { setQuote, quote } from '@composables/useQuote';
 import { getMarginThreshHoldWarning } from '@composables/useQuoteItem';
 import { usePage } from '@inertiajs/vue3';
 import WarningNote from '@/Components/WarningNote.vue';
 import { checkWarnings } from '@composables/warning.js';
 import format from '@/Composables/format.js';
+import { has } from 'lodash';
 
 const props = defineProps({
     modelValue: Object,
@@ -18,7 +17,6 @@ const props = defineProps({
 const page = usePage();
 const tenant = page.props.tenant;
 
-let showModal = ref(false);
 const isLoading = ref(false);
 setQuote(props.modelValue);
 const group = quote.solution_type?.table?.group ?? null;
@@ -114,16 +112,6 @@ const quoteQuantityPrice = (price_plan) => {
     return total + tax;
 };
 
-const disableButtonSendToOrder = ref(false);
-const createOrderAndRedirect = async (id) => {
-    disableButtonSendToOrder.value = true;
-    const res = await createOrder(id);
-    if (res) {
-        window.location = '/dashboard';
-    }
-    disableButtonSendToOrder.value = false;
-};
-
 const items = ref([
     { label: 'Home', url: '/' },
     {
@@ -164,11 +152,17 @@ const items = ref([
                         </p>
                     </div>
                     <div class="d-flex justify-content-between">
-                        <a id="btn-previous" class="btn text-primary" :href="route('quotes.edit', { quote: quote.id })">
+                        <a
+                            v-if="!quote.is_blocked"
+                            id="btn-previous"
+                            class="btn text-primary"
+                            :href="route('quotes.edit', { quote: quote.id })"
+                        >
                             <font-awesome-icon class="me-2" :icon="['fas', 'arrow-left']"></font-awesome-icon>
                             Edit Quote</a
                         >
-                        <div>
+                        <div class="ms-auto">
+                            <QuoteApprovals></QuoteApprovals>
                             <ActivityDialog
                                 :filters="[
                                     { entity: 'Quote', values: quote.id },
@@ -206,43 +200,28 @@ const items = ref([
                                 <font-awesome-icon class="me-2" :icon="['fas', 'envelope']"> </font-awesome-icon>
                                 Email this quote
                             </button>
-                            <button
-                                :hidden="!(tenant.configurations.orders_flow_is_active === '1')"
-                                :disabled="disableButtonSendToOrder || quote.items.some((x) => !x.is_margin_valid)"
-                                class="btn btn-primary"
-                                @click="createOrderAndRedirect(quote.id)"
-                            >
-                                <font-awesome-icon class="me-2" :icon="['fas', 'thumbtack']"> </font-awesome-icon>Send
-                                to Order
-                            </button>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="col-xl-4 ps-xl-5">
-                <InfoBox>
-                    <div style="font-size: 14px">
-                        <b style="font-size: 16px">Quote {{ quote.id }} for {{ quote.account.name }}</b>
-                        <br />
-                        Contact Number: 0124567890<br />
-                        Email: firstname.lastname@gmail.com
-                    </div>
-                </InfoBox>
-                <InfoBox v-if="quote.orders.length > 0">
-                    <h6>
-                        An Order related to this Quote was
-                        <span class="badge text-bg-secondary">{{ quote.status }}</span>
-                    </h6>
-                    <button class="btn btn-sm btn-primary" @click="showModal = true">See Rejection Notes</button>
-                </InfoBox>
-                <InfoBox v-if="['QUOTE', 'PRICE', 'CONFIGURE'].includes(quote.status)">
-                    <div style="font-size: 14px">
-                        This quote will expire on
-                        <b style="font-size: 16px">
-                            {{ format.expireDate(quote.created_at, tenant.configurations?.quote_expiration_days) }}
-                        </b>
-                    </div>
-                </InfoBox>
+                <div class="mb-3">
+                    <InfoBox>
+                        <div style="font-size: 14px">
+                            <b style="font-size: 16px">Quote {{ quote.id }} for {{ quote.account.name }}</b>
+                            <br />
+                            Status: {{ quote.status }}
+                        </div>
+                    </InfoBox>
+                    <InfoBox v-if="['QUOTE', 'PRICE', 'CONFIGURE'].includes(quote.status)">
+                        <div style="font-size: 14px">
+                            This quote will expire on
+                            <b style="font-size: 16px">
+                                {{ format.expireDate(quote.created_at, tenant.configurations?.quote_expiration_days) }}
+                            </b>
+                        </div>
+                    </InfoBox>
+                </div>
                 <div class="price-mobile-sidebar total-quote-discount px-4 pt-4 pb-2 mb-3">
                     <h3 class="mb-3">Total Quote Discount</h3>
                     <div
@@ -261,17 +240,19 @@ const items = ref([
                             <span class="input-group-text">%</span>
                         </div>
                     </div>
-                    <button
-                        id="btn-apply-global-discount"
-                        class="btn btn-secondary w-100 mb-2"
-                        @click="saveQuote()"
-                        :disabled="isLoading"
-                    >
-                        Apply to quote
-                    </button>
-                    <button id="btn-reset-quote" class="btn w-100" @click="resetQuote()" :disabled="isLoading">
-                        Reset quote
-                    </button>
+                    <template v-if="!quote.is_blocked">
+                        <button
+                            id="btn-apply-global-discount"
+                            class="btn btn-secondary w-100 mb-2"
+                            @click="saveQuote()"
+                            :disabled="isLoading"
+                        >
+                            Apply to quote
+                        </button>
+                        <button id="btn-reset-quote" class="btn w-100" @click="resetQuote()" :disabled="isLoading">
+                            Reset quote
+                        </button>
+                    </template>
                 </div>
                 <div class="price-mobile-sidebar commission-calculator px-4 pt-4 pb-2 mb-3">
                     <h3 class="mb-3">Profitability Calculator</h3>
@@ -329,32 +310,6 @@ const items = ref([
                 </div>
             </div>
         </div>
-        <Dialog v-model:visible="showModal" modal :style="{ width: '40rem' }" :draggable="false">
-            <template #header>
-                <h2>Rejected Reasons</h2>
-            </template>
-            <div class="panel px-3">
-                <div class="row">
-                    <table class="table reject-reasons-table">
-                        <thead>
-                            <tr>
-                                <th style="width: 5%">Order</th>
-                                <th>Note</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr v-for="order in quote.orders">
-                                <td>#{{ order.id }}</td>
-                                <td>
-                                    <pre class="custom-pre">{{ order.note }}</pre>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <button class="btn btn-primary" @click="showModal = false">Close</button>
-                </div>
-            </div>
-        </Dialog>
     </div>
 </template>
 <style>

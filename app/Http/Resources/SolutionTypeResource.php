@@ -49,7 +49,7 @@ class SolutionTypeResource extends JsonResource
             ...$info,
             'configurations' => $this->configs,
             'table' => $table,
-            'categories' => $this->categories,
+            'steps' => $this->steps,
         ];
     }
 }

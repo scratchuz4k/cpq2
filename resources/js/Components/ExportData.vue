@@ -63,7 +63,11 @@ const exportData = async () => {
         emit('close-dialog');
         return true;
     } catch (err) {
-        notyf.error(err?.response?.data?.message ?? 'Something went wrong');
+        let errorMessage = 'Something went wrong';
+        if (err.response && err.response.data instanceof Blob) {
+            errorMessage = JSON.parse(await err.response.data.text());
+        }
+        notyf.error(errorMessage);
         return false;
     }
 };

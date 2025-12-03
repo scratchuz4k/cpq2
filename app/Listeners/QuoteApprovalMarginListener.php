@@ -1,0 +1,55 @@
+<?php
+
+namespace App\Listeners;
+
+use App\Enums\QuoteApprovalFlowEnum;
+use App\Enums\QuoteApprovalStatus;
+use App\Enums\QuoteStatusesEnum;
+use App\Events\QuoteApprovalEvent;
+use App\Services\QuoteApprovalService;
+use App\Services\QuoteItemService;
+use App\Services\QuoteService;
+
+class QuoteApprovalMarginListener
+{
+    protected QuoteService $quoteService;
+
+    protected QuoteApprovalService $quoteApprovalService;
+
+    /**
+     * Create the event listener.
+     */
+    public function __construct()
+    {
+        $this->quoteService = new QuoteService(new QuoteItemService);
+        $this->quoteApprovalService = new QuoteApprovalService;
+    }
+
+    /**
+     * Handle the event.
+     */
+    public function handle(QuoteApprovalEvent $event): void
+    {
+        $quoteApproval = $event->quoteApproval;
+        if (($quoteApproval->flow !== QuoteApprovalFlowEnum::MARGIN->value || $quoteApproval->status !== QuoteApprovalStatus::PENDING->value)) {
+            return;
+        }
+
+        $isMarginValid = $quoteApproval->quote->items->every(fn ($item) => $item->isWithinMarginThresholds());
+        if (! $isMarginValid) {
+            $quoteApproval->status = QuoteApprovalStatus::REJECTED->value;
+            $quoteApproval->comments = 'Margin requirements not met.';
+            $quoteApproval->saveQuietly();
+            $this->quoteApprovalService->store(['quote_id' => $quoteApproval->quote_id, 'flow' => QuoteApprovalFlowEnum::INTERNAL->value]);
+
+            return;
+        }
+
+        if ($isMarginValid) {
+            $quoteApproval->status = QuoteApprovalStatus::APPROVED->value;
+            $quoteApproval->saveQuietly();
+            $this->quoteService->update($quoteApproval->quote, ['status' => QuoteStatusesEnum::VALIDATED->name]);
+        }
+
+    }
+}

@@ -15,6 +15,7 @@ use Maatwebsite\Excel\Concerns\SkipsErrors;
 use Maatwebsite\Excel\Concerns\ToCollection;
 use Maatwebsite\Excel\Concerns\WithBatchInserts;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
+use Maatwebsite\Excel\Facades\Excel;
 
 class UsersImport implements ToCollection, WithBatchInserts, WithHeadingRow
 {
@@ -25,75 +26,44 @@ class UsersImport implements ToCollection, WithBatchInserts, WithHeadingRow
         'success' => 0,
         'skipped' => 0,
         'errors' => [],
+        'data' => [],
     ];
 
-    private $usersWithManagers = [];
+    protected Tenant $tenant;
 
-    private Tenant $tenant;
+    protected $isDryRun;
 
-    public function __construct(protected bool $overwrite = false)
+    public function __construct(protected bool $overwrite = false, bool $isDryRun = false)
     {
         $this->tenant = Tenant::current();
+        $this->isDryRun = $isDryRun;
+    }
+
+    public function getResults(): array
+    {
+        return $this->results;
+    }
+
+    public function setDryRun(bool $isDryRun): void
+    {
+        $this->isDryRun = $isDryRun;
     }
 
     /**
-     * Recursively processes and inserts users with missing managers.
-     *
-     * @param  array  $usersWithManagers
-     * @return void
+     * Validate the import file.
      */
-    private function processUsersWithManagers(?int $managerIndex = null)
+    public static function validateFile($file, bool $overwrite): array
     {
+        $import = new self($overwrite, true);
+        Excel::import($import, $file);
 
-        if (empty($this->usersWithManagers)) {
-            return;
-        }
-        if ($managerIndex !== null) {
-            $currentUser = $this->usersWithManagers[$managerIndex];
-            array_splice($this->usersWithManagers, $managerIndex, 1);
-        } else {
-            $currentUser = array_shift($this->usersWithManagers);
-        }
-
-        $manager = User::where('name', $currentUser['managername'])->first();
-
-        if ($manager) {
-            $this->insertUser($currentUser, $manager->id);
-        } else {
-            $managerKey = array_search($currentUser['managername'], array_column($this->usersWithManagers, 'name'),
-                false);
-
-            if ($managerKey !== false) {
-                $this->processUsersWithManagers($managerKey);
-
-                $newManager = User::where('name', $currentUser['managername'])->first();
-                if (! empty($newManager)) {
-                    $this->insertUser($currentUser, $newManager->id);
-                } else {
-                    $this->results['skipped']++;
-                    $this->results['errors'][] = [
-                        'row' => $currentUser, 'error' => 'Manager "'.$currentUser['managername'].'" not found!',
-                    ];
-                }
-            } else {
-                $this->results['skipped']++;
-                $this->results['errors'][] = [
-                    'row' => $currentUser, 'error' => 'Manager "'.$currentUser['managername'].'" not found!',
-                ];
-            }
-        }
-
-        if ($managerIndex === null) {
-            $this->processUsersWithManagers();
-        }
+        return $import->results;
     }
 
     /**
      * Insert a new user with a specific manager.
-     *
-     * @return void
      */
-    private function insertUser(array $user, ?int $managerId = null)
+    private function insertUser(array $user, ?int $managerId = null): bool
     {
         try {
             $validator = Validator::make($user, [
@@ -107,7 +77,13 @@ class UsersImport implements ToCollection, WithBatchInserts, WithHeadingRow
                 $this->results['skipped']++;
                 $this->results['errors'][] = ['row' => $user, 'error' => 'User has already been added!'];
 
-                return null;
+                return false;
+            }
+
+            if ($this->isDryRun) {
+                $this->results['success']++;
+
+                return true;
             }
 
             $newUser = User::create([
@@ -122,7 +98,6 @@ class UsersImport implements ToCollection, WithBatchInserts, WithHeadingRow
             $newUser->save();
 
             if (! empty($newUser->id)) {
-
                 $user = request()->user();
                 DB::table('tenant_user')->insert([
                     'tenant_id' => $this->tenant->id,
@@ -130,28 +105,28 @@ class UsersImport implements ToCollection, WithBatchInserts, WithHeadingRow
                 ]);
 
                 $this->results['success']++;
+
+                return true;
             }
         } catch (ValidationException $e) {
+            $this->results['skipped']++;
             $this->results['errors'][] = ['row' => $user, 'error' => $e->errors()];
         } catch (\Exception $e) {
+            $this->results['skipped']++;
             $this->results['errors'][] = ['row' => $user, 'error' => $e->getMessage()];
         }
 
-        return null;
+        return false;
     }
 
-    public function collection(Collection $rows): void
+    public function collection(Collection $collection): void
     {
-        foreach ($rows as $row) {
+        foreach ($collection as $row) {
             $row = array_map(fn ($value) => trim((string) $value), $row->toArray());
+            $this->results['data'][] = $row;
             $this->results['processed']++;
-            if (empty($row['managername'])) {
-                $this->insertUser($row);
-            } else {
-                $this->usersWithManagers[] = $row;
-            }
+            $this->insertUser($row);
         }
-        $this->processUsersWithManagers();
     }
 
     public function batchSize(): int
@@ -179,7 +154,7 @@ class UsersImport implements ToCollection, WithBatchInserts, WithHeadingRow
 
     public static function getImportTemplate()
     {
-        $template = require app_path('Helpers/Import/users_import_template.php');
+        $template = require app_path('Helpers/Import/user_import.php');
 
         return [
             'data' => collect($template['data']),

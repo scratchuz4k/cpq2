@@ -6,33 +6,33 @@ import { Head, router } from '@inertiajs/vue3';
 import Select from 'primevue/select';
 import ToggleSwitch from 'primevue/toggleswitch';
 
-const props = defineProps({
-    solution_types: Array
-});
-
 const category = reactive({
     name: null,
     code: null,
     is_active: true,
-    solution_type_id: null
+    parent_id: null
 });
 
 const saveCate = () => {
-    let temp = category;
-    temp.solution_type_id = category.solution_type ?? null;
-
-    router.post(`/categories`, temp, {
-        onSuccess: (page) => {
-            notyf.success('Created with Success');
+    router.post(
+        `/categories`,
+        {
+            ...category,
+            parent_id: category.parent?.id
         },
-        onError: (errors) => {
-            let string = '';
-            Object.keys(errors).forEach((key) => {
-                string += errors[key] + '<br>';
-            });
-            notyf.error(string);
+        {
+            onSuccess: (page) => {
+                notyf.success('Created with Success');
+            },
+            onError: (errors) => {
+                let string = '';
+                Object.keys(errors).forEach((key) => {
+                    string += errors[key] + '<br>';
+                });
+                notyf.error(string);
+            }
         }
-    });
+    );
 };
 const items = ref([
     { label: 'Home', url: '/' },
@@ -73,20 +73,19 @@ const items = ref([
                     <label for="category-name" class="form-label">Name:</label>
                     <input id="category-name" class="form-control" v-model="category.name" />
                 </div>
-
-                <h4>Relations</h4>
-                <hr />
                 <div class="mb-3">
-                    <label for="category-solution-type" class="form-label">Solution Type:</label>
-                    <Select
-                        inputId="category-solution-type"
-                        v-model="category.solution_type"
-                        :options="props.solution_types"
-                        optionLabel="name"
-                        optionValue="id"
-                        placeholder="Select a Solution Type"
-                        class="w-100"
-                    />
+                    <label for="category-parent" class="form-label">Parent:</label>
+                    <div class="input-group p-0">
+                        <InputSelect
+                            id="category-parent"
+                            url="/categories"
+                            :fields="['name']"
+                            class="w-100"
+                            v-model="category.parent"
+                            placeholder="Select a Parent"
+                            :query="[{ column: 'is_active', operator: 'equals', value: 1 }]"
+                        />
+                    </div>
                 </div>
             </div>
         </div>

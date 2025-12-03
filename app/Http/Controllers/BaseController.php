@@ -9,7 +9,6 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
-use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Facades\Excel;
 
 class BaseController extends Controller
@@ -32,9 +31,7 @@ class BaseController extends Controller
         try {
             $data = $dataProvider->getCollection();
         } catch (\Exception $e) {
-            Log::debug($e->getMessage());
-
-            return $e->getMessage();
+            return handleException($e);
         }
 
         $data = $this->transformExportData($data);
@@ -45,14 +42,12 @@ class BaseController extends Controller
 
         try {
             if (! $data->count()) {
-                throw new \Exception('No data Found!');
+                return handleException(new \Exception, 'No data Found!');
             }
 
             return Excel::download(new Export($this->model, $data), $filename);
         } catch (\Exception $e) {
-            Log::debug($e->getMessage());
-
-            return response()->json(null, 204);
+            return handleException($e);
         }
     }
 

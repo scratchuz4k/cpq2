@@ -65,7 +65,7 @@ class UserController extends BaseController
         try {
             $user = DB::transaction(fn () => $this->usersService->update($user, $request->all()));
         } catch (\Exception $e) {
-            throw new \Exception($e);
+            return handleException($e);
         }
 
         return new UserResource($user);
