@@ -89,7 +89,7 @@ watch(
     }, 200)
 );
 
-getOrganizations();
+syncCloudaudit();
 
 const tenant_reviewed = ref(false);
 </script>
