@@ -19,21 +19,11 @@ describe('Creates a Mobile Quote', () => {
         cy.login('companyadmin@example.com', 'werwerwer');
     });
 
-    it('Creates an Account', () => {
-        cy.visit('/quotes');
-        cy.get('#create-tab').click();
-        cy.get('#link-to-create-account').click();
-        cy.get('#account-name').type(account.name);
-        cy.get('#account-reference').type(account.ref);
-        cy.get('#btn-save-account').click();
-        cy.get('.notyf').contains('Created with Success');
-    });
-
     it('Create a Connectivity Quote', () => {
-        cy.visit('/quotes');
+        cy.visit('/');
         cy.get('#create-tab').click();
 
-        cy.selectLazyOption('account_id', account.name);
+        cy.selectFirstOption('account_id');
         cy.get('#btn-next-step').click();
 
         cy.get('#solution_type-connectivity').click();

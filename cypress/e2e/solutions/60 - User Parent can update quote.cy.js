@@ -22,23 +22,12 @@ describe('User Parent can update a quote.cy', () => {
         cy.get('#users-table').contains(user.name);
     });
 
-    it('Creates an Account', () => {
-        cy.login('companyadmin@example.com', 'werwerwer');
-        cy.visit('/quotes');
-        cy.get('#create-tab').click();
-        cy.get('#link-to-create-account').click();
-        cy.get('#account-name').type(account.name);
-        cy.get('#account-reference').type(account.ref);
-        cy.get('#btn-save-account').click();
-        cy.get('.notyf').contains('Created with Success');
-    });
-
     it('Creates Mobile Quote', () => {
         //login child user and create a quote
         cy.login(user.email, user.password);
         cy.visit('/quotes');
         cy.get('#create-tab').click();
-        cy.selectLazyOption('account_id', account.name);
+        cy.selectFirstOption('account_id');
         cy.get('#btn-next-step').click();
 
         cy.get('#solution_type-mobile').click();
@@ -89,7 +78,7 @@ describe('User Parent can update a quote.cy', () => {
             cy.wait(500);
         } while (hardwareCount === 0 && current_page <= max_pages);
 
-        cy.get('#btn-step-2-next').click();
+        cy.get('#next-step-btn').click();
 
         cy.get('.recurring-item').then(($items) => {
             cy.then(() => {

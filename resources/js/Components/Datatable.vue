@@ -76,7 +76,7 @@ const getData = async () => {
             .filter((column) => column.data !== 'actions')
             .map((x) => x.data)
             .join(','),
-        filters: JSON.stringify([...form.filters, ...props.query]),
+        filters: JSON.stringify([...form.filters.filter((x) => x.value != null), ...props.query]),
         search: global.value
     });
 

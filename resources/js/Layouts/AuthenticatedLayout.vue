@@ -60,15 +60,6 @@ const currentTenant = ref(page.props.tenant);
                         >
                     </li>
                     <li class="nav-item d-md-none d-lg-block">
-                        <a
-                            class="nav-link"
-                            :class="{ active: activeTab === 'orders' }"
-                            aria-current="page"
-                            :href="route('orders.index')"
-                            >ORDER</a
-                        >
-                    </li>
-                    <li class="nav-item d-md-none d-lg-block">
                         <a class="nav-link" href="#">BILLING</a>
                     </li>
                     <li v-if="hasRole('Super Admin')" class="nav-item dropdown">

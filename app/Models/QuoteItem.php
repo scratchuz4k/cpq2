@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\QuoteApprovalFlowEnum;
 use App\Models\Scopes\TenantScope;
 use App\Trait\RegisterActivity;
 use App\Trait\SetTenantId;
@@ -117,9 +118,10 @@ class QuoteItem extends Model
 
     public function isWithinMarginThresholds(): bool
     {
-        $isActive = get_tenant_config('quote_margin_rules_active');
+        $hasPemission = get_tenant_config('has_quote_approval');
+        $isActive = get_tenant_config('quote_approval_flow') === QuoteApprovalFlowEnum::MARGIN->value;
 
-        if (! is_null($isActive) || $isActive == '0') {
+        if (! is_null($hasPemission) && $hasPemission == '1' && $isActive) {
             $margin = $this->price ? ($this->margin / $this->price) * 100 : 0;
             $operation = get_tenant_config('quote_margin_rules_operation');
             $value = (float) get_tenant_config('quote_margin_rules_value');

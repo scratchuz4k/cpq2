@@ -306,7 +306,7 @@ getDimensionStorage();
             <div>
                 <button
                     v-if="step > 1"
-                    id="btn-step-2-previous"
+                    id="btn-step-previous"
                     class="btn text-primary step-nav btn-sm me-3"
                     type="button"
                     @click="() => proxyValue--"
@@ -315,7 +315,7 @@ getDimensionStorage();
                 </button>
             </div>
             <div>
-                <button id="btn-step-2-next" class="ms-3 btn btn-primary step-nav" type="button" @click="emit('save')">
+                <button id="btn-step-next" class="ms-3 btn btn-primary step-nav" type="button" @click="emit('save')">
                     Next
                     <font-awesome-icon :icon="['fas', 'arrow-right']" />
                 </button>

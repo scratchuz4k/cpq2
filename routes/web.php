@@ -11,7 +11,6 @@ use App\Http\Controllers\Web\General\BlacklistController;
 use App\Http\Controllers\Web\GroupAccountController;
 use App\Http\Controllers\Web\GroupController;
 use App\Http\Controllers\Web\ImportController;
-use App\Http\Controllers\Web\OrderController;
 use App\Http\Controllers\Web\ProductController;
 use App\Http\Controllers\Web\ProfileController;
 use App\Http\Controllers\Web\QuoteController;
@@ -71,9 +70,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/quotes/{quote}/configure', [QuoteController::class, 'configure'])->name('quotes.configure');
     Route::post('/quotes/{quote}/email', [QuoteController::class, 'email'])->name('quotes.email');
 
-    Route::get('/orders/{order}/preview', [OrderController::class, 'preview'])->name('orders.preview');
-    Route::get('/orders/{order}/download', [OrderController::class, 'download'])->name('orders.download');
-
     Route::get('/users/import', [UserController::class, 'index'])->name('users.index');
     Route::post('/users/import', [UserController::class, 'importUsers'])->name('users.import');
 
@@ -84,7 +80,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
         'categories' => CategoryController::class,
         'apis' => ApiController::class,
         'quotes' => QuoteController::class,
-        'orders' => OrderController::class,
         'tenants' => TenantController::class,
         'products' => ProductController::class,
         'suppliers' => SupplierController::class,

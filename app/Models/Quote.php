@@ -105,14 +105,14 @@ class Quote extends Model
         return $this->hasMany(QuoteItem::class);
     }
 
+    public function approvals(): HasMany
+    {
+        return $this->hasMany(QuoteApproval::class)->orderBy('quote_approvals.id', 'desc');
+    }
+
     public function itemsTrashed(): HasMany
     {
         return $this->hasMany(QuoteItem::class)->withTrashed()->whereNotNull('deleted_at');
-    }
-
-    public function orders(): HasMany
-    {
-        return $this->hasMany(Order::class);
     }
 
     public function discounts(): HasMany
@@ -155,9 +155,9 @@ class Quote extends Model
     public static function resolveStatus(Quote $quote): string
     {
         $statuses_to_ignore = [
-            QuoteStatusesEnum::REJECTED->name,
-            QuoteStatusesEnum::REGISTRY->name,
-            QuoteStatusesEnum::SUBMITTED->name,
+            QuoteStatusesEnum::PENDING_APPROVAL->name,
+            QuoteStatusesEnum::VALIDATED->name,
+            QuoteStatusesEnum::COMPLETED->name,
             QuoteStatusesEnum::EXPIRED->name,
         ];
 
@@ -174,5 +174,21 @@ class Quote extends Model
         }
 
         return QuoteStatusesEnum::CONFIGURE->name;
+    }
+
+    public function isBlocked(): string
+    {
+        $block_statuses = [
+            QuoteStatusesEnum::PENDING_APPROVAL->name,
+            QuoteStatusesEnum::VALIDATED->name,
+            QuoteStatusesEnum::COMPLETED->name,
+            QuoteStatusesEnum::EXPIRED->name,
+        ];
+
+        if (in_array($this->status, $block_statuses)) {
+            return true;
+        }
+
+        return false;
     }
 }

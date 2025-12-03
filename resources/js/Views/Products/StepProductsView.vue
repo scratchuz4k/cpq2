@@ -226,7 +226,7 @@ getProducts();
                 <button
                     :disabled="meta.isLoading"
                     v-if="props.index > 0"
-                    :id="'btn-step-{{ props.index + 1}}-previous'"
+                    :id="'btn-step-previous'"
                     class="btn text-primary step-nav btn-sm me-3"
                     type="button"
                     @click="() => proxyValue--"
@@ -237,7 +237,7 @@ getProducts();
             <div>
                 <button
                     :disabled="disableButton"
-                    :id="'btn-step-' + (props.index + 1) + '-next'"
+                    :id="'btn-step-next'"
                     class="ms-3 btn btn-primary step-nav"
                     type="button"
                     @click="() => emitSaveQuote()"

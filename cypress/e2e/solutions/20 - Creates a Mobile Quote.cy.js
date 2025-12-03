@@ -23,18 +23,8 @@ describe('Creates a Mobile Quote', () => {
         cy.login('companyadmin@example.com', 'werwerwer');
     });
 
-    it('Creates an Account', () => {
+    it('Creates a Category', () => {
         cy.visit('/quotes');
-        cy.get('#create-tab').click();
-        cy.get('#link-to-create-account').click();
-        cy.get('#account-name').type(account.name);
-        cy.get('#account-reference').type(account.ref);
-        cy.get('#btn-save-account').click();
-        cy.get('.notyf').contains('Created with Success');
-    });
-
-    it('Creates a Step', () => {
-        cy.visit('/');
         cy.get('#my-account').click();
         cy.get('#link-steps').click();
 
@@ -76,7 +66,7 @@ describe('Creates a Mobile Quote', () => {
     it('Creates Mobile Quote', () => {
         cy.visit('/quotes');
         cy.get('#create-tab').click();
-        cy.selectLazyOption('account_id', account.name);
+        cy.selectFirstOption('account_id');
         cy.get('#btn-next-step').click();
 
         cy.get('#solution_type-mobile').click();
@@ -86,11 +76,11 @@ describe('Creates a Mobile Quote', () => {
         cy.wait(1000);
         cy.get('#btn-plan-1-add-25').click();
         cy.wait(1000);
-        cy.get('#btn-step-1-next').click();
+        cy.get('#btn-step-next').click();
         cy.wait(1000);
         cy.get('#btn-plan-0-add-25').click();
         cy.wait(1000);
-        cy.get('#btn-step-2-next').click();
+        cy.get('#btn-step-next').click();
 
         cy.get('#current-step')
             .invoke('text')
@@ -102,7 +92,7 @@ describe('Creates a Mobile Quote', () => {
                         const last_step = parseInt(lastStepText.trim());
 
                         for (let i = current_step; i < last_step; i++) {
-                            cy.get(`#btn-step-${i}-next`).click();
+                            cy.get(`#btn-step-next`).click();
                         }
                     });
             });
@@ -131,7 +121,7 @@ describe('Creates a Mobile Quote', () => {
             cy.wait(500);
         });
 
-        cy.get('#btn-step-2-next').click();
+        cy.get('#btn-step-next').click();
 
         cy.get('.recurring-item').should('have.length', 3);
         cy.get('.one_off-item').then(($items) => {
@@ -259,12 +249,5 @@ describe('Creates a Mobile Quote', () => {
                 cy.get(`#btn-one_off-${count - 1}-remove`).click();
             });
         cy.get('#swal-btn-confirm').click();
-    });
-
-    it('I can Create an order from a quote', () => {
-        cy.visit('/quotes');
-        cy.get('#datatable-btn-0-crete-order').click();
-        cy.get('.swal2-confirm').eq(0).click();
-        cy.get('.notyf').contains('Order created with success');
     });
 });

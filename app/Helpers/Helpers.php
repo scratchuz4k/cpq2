@@ -1,6 +1,5 @@
 <?php
 
-use App\Models\Order;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 
@@ -30,20 +29,6 @@ if (! function_exists('format_date')) {
         ]);
 
         return $dt;
-    }
-}
-
-if (! function_exists('get_order_status')) {
-    function get_order_status(Order $order)
-    {
-        if ($order->items->count()) {
-            return 'QUOTE';
-        }
-        if (! empty($order->address_data)) {
-            return 'PRICE';
-        }
-
-        return 'CONFIGURE';
     }
 }
 
@@ -131,5 +116,12 @@ if (! function_exists('handleWebException')) {
         }
 
         return redirect()->back()->withErrors([$message]);
+    }
+}
+
+if (! function_exists('handleBlockedQuote')) {
+    function handleBlockedQuote()
+    {
+        return response()->json(['message' => 'Quote is blocked'], 400);
     }
 }

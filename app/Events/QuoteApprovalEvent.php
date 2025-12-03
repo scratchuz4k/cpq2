@@ -2,16 +2,19 @@
 
 namespace App\Events;
 
-use App\Models\Order;
+use App\Models\QuoteApproval;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class OrderStatusEvent
+class QuoteApprovalEvent
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
+    /**
+     * Create a new event instance.
+     */
     public function __construct(
-        public Order $order
+        public QuoteApproval $quoteApproval
     ) {}
 }

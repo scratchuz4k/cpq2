@@ -14,12 +14,11 @@ use App\Http\Controllers\Api\General\BlacklistController;
 use App\Http\Controllers\Api\GroupAccountController;
 use App\Http\Controllers\Api\GroupController;
 use App\Http\Controllers\Api\ImportController;
-use App\Http\Controllers\Api\OrderController;
-use App\Http\Controllers\Api\OrderItemController;
 use App\Http\Controllers\Api\PermissionController;
 use App\Http\Controllers\Api\PriceController;
 use App\Http\Controllers\Api\PricePlanController;
 use App\Http\Controllers\Api\ProductController;
+use App\Http\Controllers\Api\QuoteApprovalController;
 use App\Http\Controllers\Api\QuoteController;
 use App\Http\Controllers\Api\QuoteItemController;
 use App\Http\Controllers\Api\ReportController;
@@ -77,6 +76,7 @@ Route::middleware(['api', 'auth:sanctum'])->group(function () {
         Route::get('/export', [ReportController::class, 'export']);
         Route::get('/columns', [ReportController::class, 'getColumns']);
     });
+    Route::post('/quotes/{quote}/complete', [QuoteController::class, 'complete']);
 
     Route::apiResources([
         'apis' => ApiController::class,
@@ -88,8 +88,7 @@ Route::middleware(['api', 'auth:sanctum'])->group(function () {
         'products' => ProductController::class,
         'quotes' => QuoteController::class,
         'quote-items' => QuoteItemController::class,
-        'orders' => OrderController::class,
-        'order-items' => OrderItemController::class,
+        'quote-approvals' => QuoteApprovalController::class,
         'solution-types' => SolutionTypeController::class,
         'permissions' => PermissionController::class,
         'prices' => PriceController::class,

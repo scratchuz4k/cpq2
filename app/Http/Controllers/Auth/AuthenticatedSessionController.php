@@ -47,10 +47,6 @@ class AuthenticatedSessionController extends Controller
             return Inertia::location(route('quotes.index'));
         }
 
-        if ($user->can('viewAny order')) {
-            return Inertia::location(route('orders.index'));
-        }
-
         return Inertia::location(route('dashboard'));
     }
 
