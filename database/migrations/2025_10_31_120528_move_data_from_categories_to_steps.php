@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Product;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
@@ -12,12 +13,20 @@ return new class extends Migration
      */
     public function up(): void
     {
+        Schema::create('product_step', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('product_id');
+            $table->foreign('product_id')->references('id')->on('products')->cascadeOnDelete();
+            $table->unsignedBigInteger('step_id');
+            $table->foreign('step_id')->references('id')->on('steps')->cascadeOnDelete();
+        });
+
         Schema::disableForeignKeyConstraints();
+
         DB::table('categories')->orderBy('id')->chunk(100, function ($categories) {
-            $steps = [];
 
             foreach ($categories as $category) {
-                $steps[] = [
+                $stepId = DB::table('steps')->insertGetId([
                     'name' => $category->name,
                     'tenant_id' => $category->tenant_id,
                     'sort_order' => $category->sort_order,
@@ -25,11 +34,15 @@ return new class extends Migration
                     'is_active' => $category->is_active,
                     'created_at' => $category->created_at,
                     'updated_at' => $category->updated_at,
-                ];
-            }
+                ]);
 
-            if (! empty($steps)) {
-                DB::table('steps')->insert($steps);
+                $products = Product::query()->where('category_id', $category->id)->get();
+                foreach ($products as $product) {
+                    DB::table('product_step')->insert([
+                        'step_id' => $stepId,
+                        'product_id' => $product->id,
+                    ]);
+                }
             }
         });
 
@@ -75,5 +88,11 @@ return new class extends Migration
 
         DB::table('steps')->truncate();
         Schema::disableForeignKeyConstraints();
+
+        Schema::table('product_step', function (Blueprint $table) {
+            $table->dropForeign(['product_id']);
+            $table->dropForeign(['step_id']);
+        });
+        Schema::dropIfExists('product_step');
     }
 };
