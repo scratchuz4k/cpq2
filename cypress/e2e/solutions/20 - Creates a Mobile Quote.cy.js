@@ -9,9 +9,6 @@ const rand = (notAllowedNumber, max = 101) => {
     return randomNumber;
 };
 
-const temp = getCurrentDate();
-const account = { ref: generateHash(temp), name: temp };
-
 const temp1 = getCurrentDate();
 const product = { sku: generateHash(temp1), name: temp1 };
 
@@ -76,11 +73,11 @@ describe('Creates a Mobile Quote', () => {
         cy.wait(1000);
         cy.get('#btn-product-1-add-25').click();
         cy.wait(1000);
-        cy.get('#btn-step-next').click();
+        cy.get('#btn-step-1-next').click();
         cy.wait(1000);
         cy.get('#btn-product-0-add-25').click();
         cy.wait(1000);
-        cy.get('#btn-step-next').click();
+        cy.get('#btn-step-2-next').click();
 
         cy.get('#current-step')
             .invoke('text')
@@ -92,7 +89,7 @@ describe('Creates a Mobile Quote', () => {
                         const last_step = parseInt(lastStepText.trim());
 
                         for (let i = current_step; i < last_step; i++) {
-                            cy.get(`#btn-step-next`).click();
+                            cy.get(`#btn-step-${i}-next`).click();
                         }
                     });
             });

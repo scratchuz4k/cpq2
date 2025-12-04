@@ -32,13 +32,12 @@ class StepUpdateRequest extends FormRequest
 
         return [
             'name' => [
-                'required',
                 'string',
                 'max:255',
                 Rule::unique('steps')->where(fn ($query) => $query->where('tenant_id', $user->tenant_id)
                     ->where('name', request('name')))->ignore($step_id),
             ],
-            'solution_type_id' => 'required|exists:solution_type_tenant,solution_type_id',
+            'solution_type_id' => 'exists:solution_type_tenant,solution_type_id',
         ];
     }
 }

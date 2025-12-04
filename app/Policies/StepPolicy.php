@@ -2,12 +2,12 @@
 
 namespace App\Policies;
 
-use App\Models\Category;
+use App\Models\Step;
 use App\Models\User;
 
 class StepPolicy
 {
-    private string $model = 'category';
+    private string $model = 'step';
 
     /**
      * Determine whether the user can view any models.
@@ -24,7 +24,7 @@ class StepPolicy
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, Category $category): bool
+    public function view(User $user, Step $step): bool
     {
         if ($user->can("view $this->model")) {
             return true;
@@ -48,7 +48,7 @@ class StepPolicy
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, Category $category): bool
+    public function update(User $user, Step $step): bool
     {
         if ($user->can("update $this->model")) {
             return true;
@@ -60,13 +60,13 @@ class StepPolicy
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, Category $category): bool
+    public function delete(User $user, Step $step): bool
     {
         if (! $user->can("delete $this->model")) {
             return false;
         }
 
-        if (count($category->products)) {
+        if (count($step->products)) {
             return false;
         }
 
@@ -76,7 +76,7 @@ class StepPolicy
     /**
      * Determine whether the user can restore the model.
      */
-    public function restore(User $user, Category $category): bool
+    public function restore(User $user, Step $step): bool
     {
         if ($user->can("restore $this->model")) {
             return true;
@@ -88,7 +88,7 @@ class StepPolicy
     /**
      * Determine whether the user can permanently delete the model.
      */
-    public function forceDelete(User $user, Category $category): bool
+    public function forceDelete(User $user, Step $step): bool
     {
         if (! $user->can("forceDelete $this->model")) {
             return false;

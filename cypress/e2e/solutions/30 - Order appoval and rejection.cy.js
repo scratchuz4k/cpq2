@@ -37,9 +37,9 @@ describe('Quote Approval and Rejection', () => {
         cy.get('#solution_type-mobile').click();
         cy.get('#btn-create-quote').click();
         cy.wait(1000);
-        cy.get('#btn-plan-0-add-25').click();
+        cy.get('#btn-product-0-add-25').click();
         cy.wait(1000);
-        cy.get('#btn-plan-1-add-25').click();
+        cy.get('#btn-product-1-add-25').click();
         cy.wait(1000);
 
         cy.get('#current-step')
@@ -52,7 +52,7 @@ describe('Quote Approval and Rejection', () => {
                         const last_step = parseInt(lastStepText.trim());
 
                         for (let i = current_step; i < last_step; i++) {
-                            cy.get(`#btn-step-next`).click();
+                            cy.get(`#btn-step-${i}-next`).click();
                         }
                     });
             });

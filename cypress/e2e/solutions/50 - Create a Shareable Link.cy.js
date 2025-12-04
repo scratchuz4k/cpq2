@@ -1,12 +1,10 @@
-const { getCurrentDate, generateHash } = require('../../support/utils.js');
-const temp = getCurrentDate();
-const account = { ref: generateHash(temp), name: temp };
 let url = '';
 
 describe('Create a Shareable Link.cy', () => {
     beforeEach(() => {
         cy.login('companyadmin@example.com', 'werwerwer');
     });
+
     it('Creates Mobile Quote', () => {
         cy.visit('/quotes');
         cy.get('#create-tab').click();
@@ -20,12 +18,12 @@ describe('Create a Shareable Link.cy', () => {
         cy.wait(1000);
         cy.get('#btn-product-1-add-25').click();
         cy.wait(1000);
-        cy.get('#btn-step-next').click();
+        cy.get('#btn-step-1-next').click();
         cy.wait(1000);
         cy.get('#btn-product-0-add-25').click();
 
         cy.wait(1000);
-        cy.get('#btn-step-next').click();
+        cy.get('#btn-step-2-next').click();
 
         cy.get('#current-step')
             .invoke('text')
@@ -37,7 +35,7 @@ describe('Create a Shareable Link.cy', () => {
                         const last_step = parseInt(lastStepText.trim());
 
                         for (let i = current_step; i < last_step; i++) {
-                            cy.get(`#btn-step-next`).click();
+                            cy.get(`#btn-step-${i}-next`).click();
                         }
                     });
             });
