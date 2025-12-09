@@ -19,15 +19,19 @@ class SolutionTypeResource extends JsonResource
             return [];
         }
 
-        $code = 'Mobile';
+        $solutionType = null;
         foreach (SolutionTypesEnum::cases() as $case) {
             if ($case->value == $this->code) {
-                $code = $case->name;
+                $solutionType = $case;
+                break;
             }
-
         }
+
+        $code = $solutionType ? $solutionType->getName() : 'Mobile';
         $steps = SolutionTypesEnum::getSteps()[$code] ?? [];
-        $fileName = empty($steps) ? 'Default.php' : "$code.php";
+        $fileName = (! empty($steps) && file_exists(app_path("Helpers/Tables/$solutionType->name.php")))
+            ? "$solutionType->name.php"
+            : 'Default.php';
         $file = app_path("Helpers/Tables/$fileName");
         $columns = [];
         if (file_exists($file)) {
