@@ -182,17 +182,18 @@ class RolePermissionSeeder extends Seeder
         $this->removeOldPermissions();
     }
 
-    public function removeOldPermissions()
+    public function removeOldPermissions(): void
     {
         $permissions = array_reduce(self::$simplePermissions, function ($carry, $item) {
             return array_merge($carry, array_keys($item));
         }, []);
 
         foreach (self::$permissionsByGroup as $permissionGroup) {
-            $permissions = [
-                ...array_keys($permissionGroup),
-                ...$permissions,
-            ];
+            foreach (array_keys($permissionGroup) as $groupPermissionKey) {
+                foreach (array_keys(self::$permissions) as $permission) {
+                    $permissions[] = $permission.' '.$groupPermissionKey;
+                }
+            }
         }
 
         Log::info($permissions);
