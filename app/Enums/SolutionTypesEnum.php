@@ -11,6 +11,8 @@ enum SolutionTypesEnum: string
     case Cloud = '7';
     case HostedVoice = '8';
     case Security = '9';
+    case Microsoft = '10';
+    case MicrosoftSecurity = '11';
 
     public function getName(): string
     {
@@ -22,6 +24,8 @@ enum SolutionTypesEnum: string
             SolutionTypesEnum::Cloud => 'Cloud',
             SolutionTypesEnum::HostedVoice => 'Hosted Voice',
             SolutionTypesEnum::Security => 'Security',
+            SolutionTypesEnum::Microsoft => 'Microsoft',
+            SolutionTypesEnum::MicrosoftSecurity => 'Microsoft vs Security',
         };
     }
 
@@ -35,6 +39,8 @@ enum SolutionTypesEnum: string
             'Cloud' => [],
             'Hosted Voice' => [],
             'Security' => [],
+            'Microsoft' => [],
+            'MicrosoftSecurity' => [],
         ];
     }
 }
