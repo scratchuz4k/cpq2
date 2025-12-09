@@ -23,7 +23,9 @@ const icons = {
     6: 'fas fa-cloud-arrow-down',
     7: 'fas fa-cloud',
     8: 'fas fa-phone',
-    9: 'fas fa-shield-alt'
+    9: 'fas fa-shield-alt',
+    10: 'fab fa-microsoft',
+    11: 'fas fa-shield-virus'
 };
 </script>
 

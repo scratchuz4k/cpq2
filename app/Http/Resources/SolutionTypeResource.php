@@ -26,8 +26,9 @@ class SolutionTypeResource extends JsonResource
             }
 
         }
-
-        $file = app_path("Helpers/Tables/$code.php");
+        $steps = SolutionTypesEnum::getSteps()[$code] ?? [];
+        $fileName = empty($steps) ? 'Default.php' : "$code.php";
+        $file = app_path("Helpers/Tables/$fileName");
         $columns = [];
         if (file_exists($file)) {
             $data = require $file;

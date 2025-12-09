@@ -73,7 +73,7 @@ watch(
             quote.solution_type = props.solution_types[0];
         }
 
-        if (quote.solution_type) {
+        if (quote.solution_type && temp[quote.solution_type.name]) {
             steps.value = [...steps.value, ...temp[quote.solution_type.name]];
         }
     }
