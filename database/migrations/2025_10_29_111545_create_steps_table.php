@@ -19,7 +19,7 @@ return new class extends Migration
                 ->references('id')
                 ->on('tenants')
                 ->onDelete('cascade');
-            $table->unique(['name', 'tenant_id']);
+            $table->unique(['name', 'tenant_id', 'solution_type_id']);
             $table->integer('sort_order')->default(0);
             $table->foreignId('solution_type_id')->nullable()->constrained('solution_types', 'id')->nullOnDelete();
             $table->boolean('is_active')->default(true);
@@ -33,7 +33,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('steps', function (Blueprint $table) {
-            $table->dropUnique(['name', 'tenant_id']);
+            $table->dropUnique(['name', 'tenant_id', 'solution_type_id']);
             $table->dropForeign(['tenant_id']);
         });
         Schema::dropIfExists('steps');
