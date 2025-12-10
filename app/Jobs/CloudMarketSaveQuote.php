@@ -54,8 +54,13 @@ class CloudMarketSaveQuote implements ShouldQueue, TenantAware
         }
 
         $data = $this->quote->data;
-        $filename = $data->filename.$res['quoteReference'];
-        Product::where('filename', $data->filename)->update(['filename' => $filename]);
+        if (is_array($data)) {
+            $data = json_decode(json_encode($data), false);
+        }
+
+        $filename = $data->filename ?? null;
+        $newFilename = ($filename ?? '').$res['quoteReference'];
+        Product::where('filename', $filename)->update(['filename' => $newFilename]);
 
         $product = self::getPrimaryProduct($this->quote);
         $data->quoteReference = $res['quoteReference'];
