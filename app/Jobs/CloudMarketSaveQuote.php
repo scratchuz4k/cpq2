@@ -37,6 +37,12 @@ class CloudMarketSaveQuote implements ShouldQueue, TenantAware
      */
     public function handle(): void
     {
+        // Keep original behavior for queued execution.
+        $this->runSync();
+    }
+
+    public function runSync(): void
+    {
         $this->quote->refresh();
         $res = CloudMarketApi::saveQuote($this->quote);
         $temp = $res->toPsrResponse()->getBody()->getContents();

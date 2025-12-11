@@ -84,7 +84,12 @@ class ProductController extends BaseController
             return;
         }
 
-        CloudMarketSaveQuote::dispatch($quote);
+        try {
+            $job = new CloudMarketSaveQuote($quote);
+            $results = $job->runSync();
+        } catch (Exception $e) {
+            return handleException($e);
+        }
     }
 
     private function handleProductRequest(
