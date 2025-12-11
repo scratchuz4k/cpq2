@@ -6,7 +6,6 @@ use App\Models\Permission;
 use App\Models\Role;
 use App\Models\Tenant;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\Log;
 use Spatie\Permission\PermissionRegistrar;
 
 class RolePermissionSeeder extends Seeder
@@ -200,8 +199,5 @@ class RolePermissionSeeder extends Seeder
         $deletedCount = Permission::query()
             ->whereNotIn('name', $validPermissions)
             ->delete();
-
-        Log::info('======================================================================================================');
-        Log::info($deletedCount);
     }
 }
