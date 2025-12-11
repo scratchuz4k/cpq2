@@ -110,6 +110,9 @@ const removeItem = (article) => {
     if (article.data?.type == 'Primary Product') {
         emitter.emit('primary-product:removed');
         currentStep.value = 0;
+    } else if (article.data?.type == 'Failover Product') {
+        emitter.emit('failover-product:removed');
+        currentStep.value = 1;
     }
     getQuote(props.modelValue.id);
 };
