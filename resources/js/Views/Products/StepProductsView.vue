@@ -91,7 +91,7 @@ const buildAllCategories = async () => {
     ];
 
     let query = queryString.stringify({
-        page: meta.page,
+        page: 1,
         perPage: 99999999,
         filters: JSON.stringify(filters),
         account_id: props.account.id,
