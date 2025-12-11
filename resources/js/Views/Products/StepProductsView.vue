@@ -70,10 +70,41 @@ const sort = ref(sortOptions[3]);
 const search = ref(null);
 
 // Build allCategories once from the categories you get back on products.
-const buildAllCategories = (productsData) => {
+const buildAllCategories = async () => {
+    let filters = [
+        {
+            column: 'steps.id',
+            operator: 'equals',
+            value: props.step.id
+        },
+        {
+            column: 'status',
+            operator: 'equals',
+            value: 'Active'
+        },
+        {
+            group: [
+                { column: 'parent_id', operator: 'in', value: quote.items.map((x) => x.product_id) },
+                { column: 'parent_id', operator: 'is_null', value: '', function: 'orWhere' }
+            ]
+        }
+    ];
+
+    let query = queryString.stringify({
+        page: meta.page,
+        perPage: 99999999,
+        filters: JSON.stringify(filters),
+        account_id: props.account.id,
+        order: sort.value.order,
+        orderBy: sort.value.orderBy,
+        search: search.value
+    });
+
+    let res = await axios.get('/api/products' + '?' + query);
+
     const map = new Map();
 
-    productsData.forEach((p) => {
+    res.data.data.forEach((p) => {
         (p.categories || []).forEach((cat) => {
             // add the category itself
             if (!map.has(cat.id)) {
@@ -103,6 +134,7 @@ const buildAllCategories = (productsData) => {
     });
 
     allCategories.value = Array.from(map.values());
+    categories.value = allCategories.value;
 };
 
 /**
@@ -110,7 +142,7 @@ const buildAllCategories = (productsData) => {
  */
 const getProducts = async () => {
     meta.isLoading = true;
-
+    buildAllCategories();
     let filters = [
         {
             column: 'steps.id',
@@ -159,36 +191,36 @@ const getProducts = async () => {
         orderBy: sort.value.orderBy,
         search: search.value
     });
-    let tempCategoryIds = [];
+    // let tempCategoryIds = [];
     let res = await axios.get('/api/products' + '?' + query);
     res.data.data.forEach((e) => {
         let temp = quote.items.find((x) => x.product_code == e.sku);
         e.quantity = temp ? temp.quantity : 0;
         e.contract_length = e.price_plan.code == 'SINGLE' ? 1 : 12;
-
-        (e.categories || []).forEach((cat) => {
-            if (!tempCategoryIds.includes(cat.id)) {
-                tempCategoryIds.push(cat.id);
-            }
-
-            let current = cat.parent;
-            while (current && current.id) {
-                if (!tempCategoryIds.includes(current.id)) {
-                    tempCategoryIds.push(current.id);
-                }
-                current = current.parent;
-            }
-        });
+        //
+        //     (e.categories || []).forEach((cat) => {
+        //         if (!tempCategoryIds.includes(cat.id)) {
+        //             tempCategoryIds.push(cat.id);
+        //         }
+        //
+        //         let current = cat.parent;
+        //         while (current && current.id) {
+        //             if (!tempCategoryIds.includes(current.id)) {
+        //                 tempCategoryIds.push(current.id);
+        //             }
+        //             current = current.parent;
+        //         }
+        //     });
     });
     products.value = res.data.data;
 
     // First run: build the allCategories from the initial products
-    if (!allCategories.value.length && products.value.length) {
-        buildAllCategories(products.value);
-    }
+    // if (!allCategories.value.length && products.value.length) {
+    //     buildAllCategories(products.value);
+    // }
 
     // categories for the CategoriesTree - only those that have products in this result
-    categories.value = allCategories.value.filter((c) => tempCategoryIds.includes(c.id));
+    // categories.value = allCategories.value.filter((c) => tempCategoryIds.includes(c.id));
 
     meta.first = (meta.page - 1) * meta.limit;
     meta.total = res.data.total;
@@ -258,7 +290,6 @@ watch(
         getProducts();
     }, 500)
 );
-
 getProducts();
 </script>
 
