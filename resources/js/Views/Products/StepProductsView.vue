@@ -278,6 +278,7 @@ watch(
 );
 
 watch(proxyValue, async () => {
+    currentCategory.value = null;
     await getProducts();
 });
 
