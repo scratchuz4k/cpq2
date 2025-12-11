@@ -53,14 +53,10 @@ class CloudMarketSaveQuote implements ShouldQueue, TenantAware
             throw new Exception($res['errors']);
         }
 
-        $data = $this->quote->data;
-        if (is_array($data)) {
-            $data = json_decode(json_encode($data), false);
-        }
+        $data = (object) ($this->quote->data ?? []);
 
-        $filename = $data->filename ?? null;
-        $newFilename = ($filename ?? '').$res['quoteReference'];
-        Product::where('filename', $filename)->update(['filename' => $newFilename]);
+        $filename = $data->filename.$res['quoteReference'];
+        Product::where('filename', $data->filename)->update(['filename' => $filename]);
 
         $product = self::getPrimaryProduct($this->quote);
         $data->quoteReference = $res['quoteReference'];
