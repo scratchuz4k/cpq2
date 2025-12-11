@@ -6,6 +6,7 @@ use App\Models\Permission;
 use App\Models\Role;
 use App\Models\Tenant;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Log;
 use Spatie\Permission\PermissionRegistrar;
 
 class RolePermissionSeeder extends Seeder
@@ -176,5 +177,31 @@ class RolePermissionSeeder extends Seeder
                 $role->givePermissionTo($simplePermission);
             }
         }
+
+        $this->removeOldPermissions();
+    }
+
+    public function removeOldPermissions(): void
+    {
+        $validPermissions = array_reduce(
+            self::$simplePermissions,
+            fn ($carry, $item) => array_merge($carry, array_keys($item)),
+            []
+        );
+
+        foreach (self::$permissionsByGroup as $permissionGroup) {
+            foreach (array_keys($permissionGroup) as $groupKey) {
+                foreach (array_keys(self::$permissions) as $action) {
+                    $validPermissions[] = "{$action} {$groupKey}";
+                }
+            }
+        }
+
+        $deletedCount = Permission::query()
+            ->whereNotIn('name', $validPermissions)
+            ->delete();
+
+        Log::info('======================================================================================================');
+        Log::info($deletedCount);
     }
 }
