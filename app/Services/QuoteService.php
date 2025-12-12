@@ -26,6 +26,13 @@ class QuoteService
 
     public function store(array $array): Quote
     {
+        if (
+            array_key_exists('organization', $array)
+            && is_array($array['organization'])
+        ) {
+            $array['data']['organization'] = $array['organization'];
+        }
+
         $quote = Quote::create($array);
 
         if (
