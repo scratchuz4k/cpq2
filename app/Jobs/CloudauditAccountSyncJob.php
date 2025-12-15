@@ -32,6 +32,12 @@ class CloudauditAccountSyncJob implements NotTenantAware, ShouldQueue
      */
     public function handle(): void
     {
+        // Keep original behavior for queued execution.
+        $this->runSync();
+    }
+
+    public function runSync(): void
+    {
         $apiAccount = new CloudAuditApiAccount;
         $apiEmail = new CloudAuditApiEmail;
         $apiReport = new CloudAuditApiReport;

@@ -81,7 +81,12 @@ class OrganizationController extends BaseController
     #[ExcludeRouteFromDocs]
     public function sync()
     {
-        CloudauditAccountSyncJob::dispatch();
+        try {
+            $job = new CloudauditAccountSyncJob;
+            $results = $job->runSync();
+        } catch (Exception $e) {
+            return handleException($e);
+        }
 
         return response()->json([], 200);
     }
