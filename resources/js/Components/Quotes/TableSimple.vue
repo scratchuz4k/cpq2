@@ -41,7 +41,7 @@ emitter.on('quote-items:updated', async () => {
                         {{ column.name }}
                     </th>
                 </template>
-                <th style="width: 5%" v-if="!preview"></th>
+                <th style="width: 5%" v-if="!preview && !quote.is_blocked"></th>
             </tr>
         </thead>
         <tbody>

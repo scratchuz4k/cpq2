@@ -12,8 +12,6 @@ use App\Models\Quote;
 use App\Models\User;
 use App\Services\QuoteService;
 use Exception;
-use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
-use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -83,7 +81,12 @@ class QuoteController extends BaseController
      */
     public function update(QuoteUpdateRequest $request, Quote $quote)
     {
+        if ($quote->isBlocked()) {
+            return handleBlockedQuote();
+        }
+
         try {
+
             $quote = DB::transaction(function () use ($request, $quote) {
                 $quote = $this->quoteService->update($quote, $request->all());
 
@@ -101,6 +104,28 @@ class QuoteController extends BaseController
      */
     public function destroy(Quote $quote)
     {
+        if ($quote->isBlocked()) {
+            return handleBlockedQuote();
+        }
+
         $quote->delete();
+    }
+
+    /**
+     * Complete Quote
+     */
+    public function complete(Quote $quote)
+    {
+        try {
+            $quote = DB::transaction(function () use ($quote) {
+                $quote = $this->quoteService->update($quote, ['status' => 'COMPLETED']);
+
+                return $quote;
+            });
+        } catch (Exception $e) {
+            return handleException($e);
+        }
+
+        return response()->json(new QuoteResource($quote->refresh()));
     }
 }

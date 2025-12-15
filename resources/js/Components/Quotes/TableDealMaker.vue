@@ -91,7 +91,7 @@ emitter.on('quote-items:updated', () => {
                         >
                             {{ column.name }}
                         </th>
-                        <th style="width: 60px" class="text-center" v-if="!preview"></th>
+                        <th style="width: 60px" class="text-center" v-if="!preview && !quote.is_blocked"></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -107,7 +107,7 @@ emitter.on('quote-items:updated', () => {
                         </TableItem>
                     </template>
                 </tbody>
-                <tfoot v-if="!preview">
+                <tfoot v-if="!preview && !quote.is_blocked">
                     <tr v-if="newLine.show && newLine.price_plan_code == pricePlan.code">
                         <th v-for="column in editableColumns(columns, pricePlan.code)">
                             <input

@@ -55,20 +55,11 @@ class DummySeeder extends Seeder
             'password' => Hash::make('werwerwer'),
         ]);
 
-        $order_manager_user = User::updateOrCreate([
-            'email' => 'orders@example.com',
-        ], [
-            'name' => 'Order Manager',
-            'tenant_id' => $tenant->id,
-            'password' => Hash::make('werwerwer'),
-        ]);
-
         $tenant->users()->sync([
             $support_user->id,
             $company_admin_user->id,
             $sales_manager_user->id,
             $sales_user->id,
-            $order_manager_user->id,
         ]);
 
         $super_user = User::where('email', env('SUPERUSER_EMAIL', 'super@example.com'))->first();

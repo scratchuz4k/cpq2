@@ -26,12 +26,6 @@ return [
             'password' => 'password',
             'sso' => 0,
         ],
-        [
-            'name' => 'Order Manager',
-            'email' => 'ordermanager@test.com',
-            'password' => 'password',
-            'sso' => 0,
-        ],
     ],
     'filename' => 'import_users_template.csv',
     'columns' => [

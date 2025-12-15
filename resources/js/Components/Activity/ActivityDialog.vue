@@ -26,6 +26,7 @@ const options = props.filters.map((x) => ({
 }));
 const entities = ref([]);
 const has_export_permission = can(`export activity`) || hasRole('Super Admin');
+const has_viewAny_permission = can(`viewAny activity`) || hasRole('Super Admin');
 const meta = reactive({
     page: 1,
     total: 0,
@@ -106,6 +107,9 @@ const emit = defineEmits(['update:modelValue']);
 const visible = ref(false);
 const activityLog = ref([]);
 const getActivity = async () => {
+    if (!(tenant.configurations.log_system_is_active === '1') || !has_viewAny_permission) {
+        return;
+    }
     let string = queryString.stringify({
         page: meta.page,
         filters: JSON.stringify(getFilters()),
@@ -168,7 +172,7 @@ function getEntityLabel(type) {
 </script>
 <template>
     <button
-        :hidden="!(tenant.configurations.log_system_is_active === '1')"
+        :hidden="!(tenant.configurations.log_system_is_active === '1') || !has_viewAny_permission"
         id="btn-activity-open"
         class="btn btn-outline-primary me-2"
         @click="() => (visible = !visible)"

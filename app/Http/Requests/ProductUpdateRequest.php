@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Models\Product;
+use App\Rules\TenantExistsRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
@@ -38,7 +39,14 @@ class ProductUpdateRequest extends FormRequest
                     ->where('sku', request('sku')))->ignore($product_id),
             ],
             'name' => 'string|max:255',
-            'category_id' => 'exists:categories,id',
+            'categories.*' => [
+                'integer',
+                new TenantExistsRule('categories'),
+            ],
+            'steps.*' => [
+                'integer',
+                new TenantExistsRule('steps'),
+            ],
             'price_plan_id' => 'exists:price_plans,id',
             'supplier_id' => 'nullable|exists:suppliers,id',
         ];

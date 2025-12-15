@@ -3,6 +3,7 @@ import { getQuote } from '@/Composables/useQuote';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link } from '@inertiajs/vue3';
 import { ref } from 'vue';
+import QuotesDefaultView from '@/Views/Quotes/Edit/QuotesDefaultView.vue';
 
 const props = defineProps({
     quote: Object
@@ -12,10 +13,7 @@ const solutionsViews = {
     3: 'QuotesConnectivityView',
     4: 'QuotesMobileView',
     5: 'QuotesHardwareView',
-    6: 'QuotesCloudAuditView',
-    7: 'QuotesCloudView',
-    8: 'QuotesHostedVoiceView',
-    9: 'QuotesSecurityView'
+    6: 'QuotesCloudAuditView'
 };
 
 getQuote(props.quote.id);
@@ -37,9 +35,6 @@ const items = ref([
                 modelValue: props.quote
             }"
         ></component>
-        <div v-else class="py-3">
-            <p class="text-center font-bold">Solution not implemented yet</p>
-            <p class="text-center">Come back later</p>
-        </div>
+        <QuotesDefaultView v-else v-bind="{ modelValue: props.quote }"> </QuotesDefaultView>
     </AuthenticatedLayout>
 </template>

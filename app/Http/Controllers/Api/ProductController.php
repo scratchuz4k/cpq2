@@ -15,7 +15,6 @@ use Dedoc\Scramble\Attributes\ExcludeRouteFromDocs;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class ProductController extends BaseController
 {
@@ -61,7 +60,7 @@ class ProductController extends BaseController
 
             return $product;
         });
-        $data = ProductResource::collection($data)->toArray(request());
+        $data = ProductResource::collection($data->load(['prices', 'categories', 'steps']))->toArray(request());
 
         return FilterProvider::paginate(collect($data));
     }
@@ -93,8 +92,7 @@ class ProductController extends BaseController
         try {
             $product = DB::transaction(fn () => $this->service->update($product, $request->all()));
         } catch (Exception $e) {
-            Log::debug($e->getMessage());
-            throw new Exception($e);
+            return handleException($e);
         }
 
         return new ProductResource($product);

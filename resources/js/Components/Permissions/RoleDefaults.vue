@@ -30,6 +30,8 @@ const defaults = ref([
             'view product',
             'viewAny category',
             'view category',
+            'viewAny step',
+            'view step',
             'viewAny price_plan',
             'view price_plan',
             'viewAny price',
@@ -37,7 +39,9 @@ const defaults = ref([
             'viewAny account',
             'view account',
             'viewAny spa',
-            'view spa'
+            'view spa',
+            'viewAny activity',
+            'view activity'
         ]
     },
     {

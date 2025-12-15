@@ -63,7 +63,7 @@ class ApiController extends BaseController
         try {
             $api = DB::transaction(fn () => $this->apiService->update($api, $request->all()));
         } catch (\Exception $e) {
-            throw new \Exception($e);
+            return handleException($e);
         }
 
         return new ApiResource($api);

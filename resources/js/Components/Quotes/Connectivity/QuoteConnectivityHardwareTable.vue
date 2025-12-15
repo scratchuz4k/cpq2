@@ -75,6 +75,7 @@ const meta = reactive({
 const getAddons = async () => {
     isLoading.value = true;
     let temp = [];
+    addons.value = [];
     temp.push({
         column: 'isPrimaryCircuitHardware',
         operator: 'equals',

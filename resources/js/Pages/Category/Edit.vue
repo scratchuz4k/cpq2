@@ -10,42 +10,45 @@ import Tabs from '@/Components/Tabs.vue';
 import Tab from '@/Components/Tab.vue';
 
 const props = defineProps({
-    category: Object,
-    solution_types: Array
+    category: Object
 });
 
 const product = ref(null);
 const category = reactive(props.category);
 
 const saveCate = () => {
-    let temp = category;
-    temp.solution_type_id = category.solution_type?.id ?? null;
-    router.put(`/categories/${category.id}`, category, {
-        onSuccess: (page) => {
-            notyf.success('Updated with Success');
+    router.put(
+        `/categories/${category.id}`,
+        {
+            ...category,
+            parent_id: category.parent.id ?? null
         },
-        onError: (errors) => {
-            let string = '';
-            Object.keys(errors).forEach((key) => {
-                string += errors[key] + '<br>';
-            });
-            notyf.error(string);
+        {
+            onSuccess: (page) => {
+                notyf.success('Updated with Success');
+            },
+            onError: (errors) => {
+                let string = '';
+                Object.keys(errors).forEach((key) => {
+                    string += errors[key] + '<br>';
+                });
+                notyf.error(string);
+            }
         }
-    });
+    );
 };
 
-const setProductCategory = async (product_id, category_id, action) => {
+const setProductCategory = async (product_id, category_id) => {
     if (!product_id) {
         return;
     }
     try {
-        await axios.put('/api/products/' + product_id, { category_id: category_id });
+        await axios.put('/api/products/' + product_id, { categories: category_id });
         product.value = null;
 
-        if (product_id) {
-            notyf.success(action === 'remove' ? 'Product removed with success' : 'Product added with Success');
-        }
-        emitter.emit('datatable-refresh:group-products');
+        notyf.success(category_id ? 'Product added with Success' : 'Product removed with success');
+
+        emitter.emit('datatable-refresh:category-products');
         emitter.emit('input-select-refresh:select-product');
     } catch (ex) {
         product.value = null;
@@ -94,24 +97,27 @@ const items = ref([
                             <label class="form-label" for="category-name">Name:</label>
                             <input id="category-name" v-model="category.name" class="form-control" />
                         </div>
-
-                        <h4>Relations</h4>
-                        <hr />
                         <div class="mb-3">
-                            <label for="category-solution-type" class="form-label">Solution Type:</label>
-                            <Select
-                                inputId="category-solution-type"
-                                v-model="category.solution_type"
-                                :options="props.solution_types"
-                                optionLabel="name"
-                                placeholder="Select a Solution Type"
-                                class="w-100"
-                            />
+                            <label for="category-parent" class="form-label">Parent:</label>
+                            <div class="input-group p-0">
+                                <InputSelect
+                                    id="category-parent"
+                                    url="/categories"
+                                    :fields="['name']"
+                                    class="w-100"
+                                    v-model="category.parent"
+                                    placeholder="Select a Parent"
+                                    :query="[
+                                        { column: 'is_active', operator: 'equals', value: 1 },
+                                        { column: 'id', operator: 'not_equals', value: category.id }
+                                    ]"
+                                />
+                            </div>
                         </div>
                     </div>
                 </tab>
                 <tab title="Products">
-                    <!-- <form class="mt-3 d-flex" @submit.prevent="setProductCategory(product?.id, category.id, 'add')">
+                    <form class="mt-3 d-flex" @submit.prevent="setProductCategory(product?.id, category.id, 'add')">
                         <div class="me-3" style="width: 100%">
                             <label class="form-label">Add Products:</label>
                             <InputSelect
@@ -119,7 +125,10 @@ const items = ref([
                                 v-model="product"
                                 :fields="['name']"
                                 placeholder="Select a Product"
-                                :query="[{ column: 'category.id', operator: 'is_null', value: 'category.id' }]"
+                                :query="[
+                                    { column: 'categories.id', operator: 'is_null', value: 'category.id' },
+                                    { column: 'is_active', operator: 'equals', value: 1 }
+                                ]"
                                 url="/products"
                             >
                             </InputSelect>
@@ -130,21 +139,21 @@ const items = ref([
                                 Add
                             </Button>
                         </div>
-                    </form> -->
+                    </form>
                     <div class="row mt-3">
                         <div class="col">
                             <!-- <label class="form-label">Products:</label> -->
                             <Datatable
-                                id="group-products"
+                                id="category-products"
                                 :columns="[
                                     { data: 'id', title: '#', style: 'width:5%' },
-                                    { data: 'code', title: 'Code', style: 'width:20%' },
+                                    { data: 'sku', title: 'Sku', style: 'width:20%' },
                                     { data: 'name', title: 'Name', style: 'width:30%' },
                                     { data: 'supplier.name', title: 'Supplier', style: 'width:12%' },
                                     { data: 'updated_at', title: 'Updated At', style: 'width:15%' },
                                     { data: 'actions', title: ' At', style: 'width:5%' }
                                 ]"
-                                :query="[{ column: 'category.id', operator: 'equals', value: category.id }]"
+                                :query="[{ column: 'categories.id', operator: 'equals', value: category.id }]"
                                 route="/products"
                             >
                                 <template #updated_at="{ value }">
@@ -153,15 +162,15 @@ const items = ref([
                                 <template #created_at="{ value }">
                                     {{ format.date(value) }}
                                 </template>
-                                <!-- <template #actions="{ data, value, index }">
+                                <template #actions="{ data, value, index }">
                                     <button
                                         class="btn px-2 py-0 mx-1 border-0"
                                         :id="'datatable-btn-' + index + '-delete'"
-                                        @click="setProductCategory(data.id, category.id, 'remove')"
+                                        @click="setProductCategory(data.id, null)"
                                     >
                                         <font-awesome-icon :icon="['fas', 'trash-alt']"></font-awesome-icon>
                                     </button>
-                                </template> -->
+                                </template>
                             </Datatable>
                         </div>
                     </div>

@@ -1,7 +1,6 @@
 <script setup>
 import _ from 'lodash';
 import { ref } from 'vue';
-import { createOrder } from '@/Composables/useOrders.js';
 import { setQuote, quote } from '@composables/useQuote';
 import { getMarginThreshHoldWarning } from '@composables/useQuoteItem';
 import { usePage } from '@inertiajs/vue3';
@@ -26,16 +25,6 @@ const warningProviders = ref([
 ]);
 
 checkWarnings(warningProviders.value, null);
-
-const disableButtonSendToOrder = ref(false);
-const createOrderAndRedirect = async (id) => {
-    disableButtonSendToOrder.value = true;
-    const res = await createOrder(id);
-    if (res) {
-        window.location = '/dashboard';
-    }
-    disableButtonSendToOrder.value = false;
-};
 
 const items = ref([
     { label: 'Home', url: '/dashboard' },
@@ -82,14 +71,6 @@ const items = ref([
             ></ActivityDialog>
             <ShareableQuote :disabled="quote.items.some((x) => !x.is_margin_valid)"></ShareableQuote>
 
-            <button
-                :hidden="!(tenant.configurations.orders_flow_is_active === '1')"
-                :disabled="disableButtonSendToOrder || quote.items.some((x) => !x.is_margin_valid)"
-                class="btn btn-primary me-2"
-                @click="createOrderAndRedirect(quote.id)"
-            >
-                <font-awesome-icon class="me-2" :icon="['fas', 'thumbtack']"> </font-awesome-icon>Send to Order
-            </button>
             <a
                 class="btn btn-outline-primary me-2"
                 :href="route('quotes.preview', { quote: quote.id })"
@@ -140,14 +121,6 @@ const items = ref([
                 ]"
             ></ActivityDialog>
             <ShareableQuote :disabled="quote.items.some((x) => !x.is_margin_valid)"></ShareableQuote>
-            <button
-                :hidden="!(tenant.configurations.orders_flow_is_active === '1')"
-                :disabled="disableButtonSendToOrder || quote.items.some((x) => !x.is_margin_valid)"
-                class="btn btn-primary me-2"
-                @click="createOrderAndRedirect(quote.id)"
-            >
-                <font-awesome-icon class="me-2" :icon="['fas', 'thumbtack']"> </font-awesome-icon>Send to Order
-            </button>
             <a
                 class="btn btn-outline-primary me-2"
                 :href="route('quotes.preview', { quote: quote.id })"

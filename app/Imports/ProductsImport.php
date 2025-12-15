@@ -39,6 +39,10 @@ class ProductsImport implements ToCollection, WithBatchInserts, WithHeadingRow
 
     protected array $availableSkus = [];
 
+    protected ?int $ignoreProductId = null;
+
+    protected ?int $ignorePriceId = null;
+
     public function __construct(protected bool $overwrite = false, bool $isDryRun = false)
     {
         $this->tenant = Tenant::current();
@@ -80,13 +84,14 @@ class ProductsImport implements ToCollection, WithBatchInserts, WithHeadingRow
                     $product['status'] = $matchingCase->value;
                 }
             }
-
-            $ignoreProductId = null;
-
             if ($this->overwrite && ! empty($product['sku'])) {
                 $existingProduct = Product::where('sku', $product['sku'])->first();
                 if ($existingProduct) {
-                    $ignoreProductId = $existingProduct->id;
+                    $this->ignoreProductId = $existingProduct->id;
+
+                    if ($existingPrice = Price::firstWhere('product_id', $existingProduct['id'])) {
+                        $this->ignorePriceId = $existingPrice->id;
+                    }
                 }
             }
 
@@ -96,7 +101,15 @@ class ProductsImport implements ToCollection, WithBatchInserts, WithHeadingRow
                 'cost' => $product['price_cost'] ?? null,
             ];
 
-            $validator = Validator::make($product, $this->getValidationRules($ignoreProductId));
+            if (isset($product['categories']) && is_string($product['categories'])) {
+                $product['categories'] = array_filter(array_map('trim', explode(',', $product['categories'])));
+            }
+
+            if (isset($product['steps']) && is_string($product['steps'])) {
+                $product['steps'] = array_filter(array_map('trim', explode(',', $product['steps'])));
+            }
+
+            $validator = Validator::make($product, $this->getValidationRules());
 
             if ($validator->fails()) {
                 $this->results['skipped']++;
@@ -128,7 +141,8 @@ class ProductsImport implements ToCollection, WithBatchInserts, WithHeadingRow
                     'cost' => $product['price_cost'] ?? null,
 
                 ],
-                'category_id' => $product['category_id'] ?? null,
+                'categories' => $product['categories'] ?? null,
+                'steps' => $product['steps'] ?? null,
                 'parent_id' => $parentId,
                 'tenant_id' => $this->tenant->id,
                 'is_active' => ucfirst(mb_strtolower($product['status'])) === ProductStatusesEnum::ACTIVE->value ? 1 : 0,
@@ -164,6 +178,14 @@ class ProductsImport implements ToCollection, WithBatchInserts, WithHeadingRow
                         ...$productData['prices'],
                         'tenant_id' => $this->tenant->id,
                     ]);
+            }
+
+            if (array_key_exists('categories', $product) && ! empty($product['categories'])) {
+                $newProduct->categories()->sync(array_map('intval', $product['categories']));
+            }
+
+            if (array_key_exists('steps', $product) && ! empty($product['steps'])) {
+                $newProduct->steps()->sync(array_map('intval', $product['steps']));
             }
 
             $this->results['success']++;
@@ -283,12 +305,13 @@ class ProductsImport implements ToCollection, WithBatchInserts, WithHeadingRow
             'expires_at' => new ValidDateValidator,
             'sku' => $this->overwrite
                 ? 'required|string|max:255'
-                : ['required', 'string', 'max:255', new TenantUniqueRule('products', 'sku', $ignoreProductId)],
+                : ['required', 'string', 'max:255', new TenantUniqueRule('products', 'sku', $this->ignoreProductId)],
             'prices.code' => [
                 'nullable',
                 'numeric',
-                Rule::unique('prices')
-                    ->where(fn ($query) => $query->where('product_id', $ignoreProductId)),
+                Rule::unique('prices', 'code')
+                    ->ignore($this->ignorePriceId)
+                    ->where(fn ($q) => $q->where('product_id', $this->ignoreProductId)),
             ],
             'prices.cost' => 'required|numeric',
             'prices.net' => 'required|numeric',

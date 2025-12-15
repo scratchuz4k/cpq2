@@ -80,8 +80,8 @@ class ReportController extends BaseController
 
         try {
             return Excel::download(new $export_class($date_range, $columns), $filename);
-        } catch (\Exception) {
-            return response()->json(null, 204);
+        } catch (\Exception $e) {
+            return handleException($e);
         }
     }
 }

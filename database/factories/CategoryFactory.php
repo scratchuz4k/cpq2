@@ -2,7 +2,6 @@
 
 namespace Database\Factories;
 
-use App\Models\SolutionType;
 use App\Models\Tenant;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -24,7 +23,6 @@ class CategoryFactory extends Factory
             'code' => $word,
             'name' => ucfirst($word),
             'tenant_id' => Tenant::where('name', 'CloudMarket')->value('id'),
-            'solution_type_id' => SolutionType::first()->id,
         ];
     }
 }

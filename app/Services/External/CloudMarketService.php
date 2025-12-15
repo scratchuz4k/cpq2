@@ -82,7 +82,7 @@ class CloudMarketService
             }
 
             $product['active_spas'] = $priceRules->getAppliedSpas();
-            if (array_key_exists($product['providerKey'], $amortisation) && in_array($product['contractTermMonths'], $amortisation[$product['providerKey']])) {
+            if (array_key_exists($product['providerKey'], $amortisation) && in_array($product['contractTermMonths'] ?? null, $amortisation[$product['providerKey']])) {
                 $product['amortisation_install'] = $product['priceInstall_spa'];
                 $product['amortisation'] = $product['priceInstall_spa'] / $product['contractTermMonths'];
                 $product['priceMonthly_spa'] += $product['amortisation'];

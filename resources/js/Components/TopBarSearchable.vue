@@ -50,29 +50,6 @@
                         </div>
                     </a>
                 </template>
-                <template v-if="results.orders.length">
-                    <p class="search-title">Orders</p>
-                    <a
-                        class="search-option"
-                        v-for="order in results.orders"
-                        :href="route('orders.show', { order: order.id })"
-                    >
-                        <font-awesome-icon class="search-option-icon me-3" :icon="['far', 'file']"></font-awesome-icon>
-                        <div class="w-100 m-0 d-flex justify-content-between">
-                            <p class="m-0">
-                                {{ order.user?.name }}
-                                <b>#{{ order.id }} - {{ order.account?.name }} </b> / {{ order.solution_type.name }}
-                                <br />
-                                <span style="font-size: 12px">
-                                    {{ order.user?.name }} - {{ format.date(order.updated_at) }}</span
-                                >
-                            </p>
-                            <p class="m-0">
-                                <span class="badge text-bg-secondary">{{ order.status }}</span>
-                            </p>
-                        </div>
-                    </a>
-                </template>
                 <template v-if="results.accounts.length">
                     <p class="search-title">Accounts</p>
                     <a
@@ -93,7 +70,7 @@
                         </div>
                     </a>
                 </template>
-                <template v-if="!results.accounts.length && !results.quotes.length && !results.orders.length">
+                <template v-if="!results.accounts.length && !results.quotes.length">
                     <p class="m-0">
                         <b>No results found!</b>
                     </p>
@@ -128,7 +105,6 @@ const search = ref('');
 const results = reactive({
     isLoading: false,
     quotes: [],
-    orders: [],
     accounts: []
 });
 
@@ -137,19 +113,6 @@ const searchCloudMarket = _.debounce(async (page) => {
         return;
     }
     results.isLoading = true;
-
-    if (hasRole('Super Admin') || can('viewAny order')) {
-        let queryOrder = queryString.stringify({
-            columns:
-                'id,address_data,items.data,items.name,account.name,account.contacts.email,solution_type.name,user.name,status,updated_at',
-            search: search.value,
-            limit: 5,
-            order: 'desc',
-            orderBy: 'updated_at'
-        });
-        let resOrder = await axios.get('/api/orders?' + queryOrder);
-        results.orders = resOrder.data.data;
-    }
 
     if (hasRole('Super Admin') || can('viewAny quote')) {
         let queryQuote = queryString.stringify({
