@@ -148,11 +148,6 @@ const dynamicSavings = computed(() => {
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>Microsoft 365 Business Premium</td>
-                        <td>x67</td>
-                        <td>£1,206.00</td>
-                    </tr>
                     <tr v-for="item in items">
                         <td>{{ item.name ?? item.skuPartNumber }}</td>
                         <td>x{{ item.subscribedUnits }}</td>

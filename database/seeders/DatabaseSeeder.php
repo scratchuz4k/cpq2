@@ -29,6 +29,7 @@ class DatabaseSeeder extends Seeder
                 CategoryProductsSeeder::class,
                 ShopBlocksSeeder::class,
                 DummyRoles::class,
+                CloudAuditSeeder::class,
             ]);
         }
 
