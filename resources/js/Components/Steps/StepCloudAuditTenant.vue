@@ -111,7 +111,7 @@ watch(
     }, 200)
 );
 
-syncCloudaudit();
+getOrganizations();
 
 const tenant_reviewed = ref(false);
 </script>
