@@ -1,11 +1,12 @@
 <script setup>
 import _ from 'lodash';
 import { IconField, InputText, InputIcon, Dialog } from 'primevue';
-import { watch, ref, reactive } from 'vue';
+import { watch, ref, reactive, computed } from 'vue';
 import queryString from 'query-string';
 import { currentStep } from '@composables/useQuoteSteps';
 import Paginator from 'primevue/paginator';
 import axios from 'axios';
+import { router } from '@inertiajs/vue3';
 
 const props = defineProps({
     solutionType: Array,
@@ -13,12 +14,21 @@ const props = defineProps({
 });
 
 const emit = defineEmits(['update:modelValue', 'nextStep']);
+const proxyValue = computed({
+    get() {
+        return props.modelValue;
+    },
+    set(val) {
+        emit('update:modelValue', val);
+    }
+});
 const isLoading = ref(false);
 const form = reactive({
     email: null,
     password: null
 });
-const organization = ref(null);
+
+const organization = ref(props.modelValue?.organization || null);
 const organizations = ref([]);
 const showModal = ref(false);
 const showLodingLogin = ref(false);
@@ -31,9 +41,21 @@ const meta = reactive({
     search: null
 });
 
-const activateTiming = () => {
-    tenant_review_active.value = !tenant_review_active.value;
-    currentStep.value++;
+const activateTiming = async () => {
+    try {
+        await router.post('/quotes', {
+            account_id: proxyValue.value.account?.id,
+            address_position: proxyValue.value.position,
+            address_city: proxyValue.value.address?.postTown,
+            address_data: proxyValue.value.address,
+            address_line1: proxyValue.value.address?.label,
+            address_postcode: proxyValue.value.address?.postCode,
+            solution_type_id: proxyValue.value.solution_type?.id,
+            organization: organization.value
+        });
+    } catch (ex) {
+        notyf.error(ex.response.data.message);
+    }
 };
 const getOrganizations = async (email) => {
     let string = queryString.stringify({
