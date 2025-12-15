@@ -1,5 +1,5 @@
 <script setup>
-import { computed } from 'vue';
+import { computed, watch } from 'vue';
 
 const emit = defineEmits(['update:modelValue']);
 
@@ -11,7 +11,11 @@ const props = defineProps({
         default: null
     },
     name: String,
-    id: String
+    id: String,
+    allowDeselect: {
+        type: Boolean,
+        default: false
+    }
 });
 
 const proxyValue = computed({
@@ -22,11 +26,17 @@ const proxyValue = computed({
         emit('update:modelValue', val);
     }
 });
+
+function onClick() {
+    if (props.allowDeselect && props.modelValue === props.value) {
+        emit('update:modelValue', null);
+    }
+}
 </script>
 
 <template>
     <label class="card bg-light w-100" :class="{ 'border-primary': proxyValue === value }">
-        <input type="radio" class="d-none" :name="name" :value="value" v-model="proxyValue" />
+        <input type="radio" class="d-none" :name="name" :value="value" v-model="proxyValue" @click="onClick" />
         <div class="card-body p-3 text-decoration-none" :id="props.id">
             <slot />
         </div>
