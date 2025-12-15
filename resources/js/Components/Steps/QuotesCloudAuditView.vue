@@ -137,7 +137,7 @@ const dynamicSavings = computed(() => {
                 <h3>£1,746.00</h3>
             </div>
             <hr class="m-0" />
-            <table id="table-simple " class="table table-dealmaker table-bordered table-hover mt-3">
+            <table id="table-simple" class="table table-dealmaker table-bordered table-hover mt-3">
                 <!-- Headers -->
                 <thead>
                     <tr>
