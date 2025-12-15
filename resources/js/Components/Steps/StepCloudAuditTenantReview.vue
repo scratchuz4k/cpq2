@@ -1,13 +1,9 @@
 <script setup>
-import { quote, setQuote } from '@composables/useQuote';
-import axios from 'axios';
-import { router, usePage } from '@inertiajs/vue3';
-import { computed, reactive, ref, watch } from 'vue';
-import queryString from 'query-string';
-import format from '@/Composables/format.js';
 import { Checkbox } from 'primevue';
-
+import { computed, ref, reactive, watch } from 'vue';
+import format from '@/Composables/format.js';
 const props = defineProps({
+    solutionType: Array,
     modelValue: Object
 });
 
@@ -21,30 +17,6 @@ const proxyValue = computed({
     }
 });
 
-const page = usePage();
-const tenant = page.props.tenant;
-
-const solution_type = props.modelValue.solution_type;
-const loading = ref(true);
-
-setQuote(props.modelValue);
-
-const saveQuote = async () => {
-    if (step.value == active_categories.value.length - 1) {
-        router.get(`/quotes/${props.modelValue.id}`);
-        return;
-    }
-    step.value++;
-};
-
-emitter.on('save-quote', () => {
-    saveQuote();
-});
-
-const organization = ref(quote.data?.organization ?? null);
-const report = ref(organization.value.data?.report ?? null);
-const items = ref(report.value ? report.value.data?.items : []);
-const itemPrices = ref({});
 const configs = reactive({
     unassigned_licenses: 0,
     under_5_utilized_licenses: 0,
@@ -77,44 +49,6 @@ function handleUnder5UtilizedClick(event) {
     }
 }
 
-const loadItem = async (itemsList) => {
-    if (!itemsList || !itemsList.length) {
-        return;
-    }
-
-    const skuIds = itemsList.map((i) => i.skuId).filter(Boolean);
-
-    if (!skuIds.length) {
-        return;
-    }
-
-    const string = queryString.stringify({
-        filters: JSON.stringify([
-            {
-                column: 'sku',
-                operator: 'in',
-                value: skuIds
-            }
-        ])
-    });
-
-    const res = await axios.get('/api/products?' + string);
-
-    (res.data.data || []).forEach((p) => {
-        itemsList
-            .filter((item) => item.skuId === p.sku)
-            .forEach((item) => {
-                Object.assign(item, {
-                    ...p,
-                    status_license: item.status,
-                    subscribedUnits: item.subscribedUnits,
-                    assignedUnits: item.assignedUnits,
-                    unassignedUnits: item.unassignedUnits
-                });
-            });
-    });
-};
-
 watch(
     () => [configs.turnoff_1_in_1_month, configs.turnoff_4_in_3_month],
     ([val1, val4]) => {
@@ -126,18 +60,11 @@ watch(
     }
 );
 
-watch(
-    items,
-    async (newItems) => {
-        loadItem(newItems);
-    },
-    { immediate: true }
-);
-
 const dynamicSavings = computed(() => {
     return 1746 * 0.1 * checkedCount.value;
 });
 </script>
+
 <template>
     <div class="row justify-content-between mb-3">
         <div class="col-lg-8">
@@ -150,18 +77,21 @@ const dynamicSavings = computed(() => {
                 <!-- Headers -->
                 <thead>
                     <tr>
-                        <th style="width: 65%">Products</th>
+                        <th style="width: 70%">Products</th>
                         <th style="width: 15%">Qty</th>
                         <th style="width: 15%">Price</th>
-                        <th style="width: 15%">Total Price</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="item in items">
-                        <td>{{ item.name ?? item.skuPartNumber }}</td>
-                        <td>x{{ item.subscribedUnits }}</td>
-                        <td>{{ item.price ? format.GBP(item.price.net_spa) : 'N/A' }}</td>
-                        <td>{{ item.price ? format.GBP(item.price.net_spa * item.subscribedUnits) : 'N/A' }}</td>
+                    <tr>
+                        <td>Microsoft 365 Business Premium</td>
+                        <td>x67</td>
+                        <td>£1,206.00</td>
+                    </tr>
+                    <tr>
+                        <td>Microsoft Visio Plan 2</td>
+                        <td>x45</td>
+                        <td>£540.00</td>
                     </tr>
                 </tbody>
             </table>

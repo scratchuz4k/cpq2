@@ -49,7 +49,7 @@ class CloudauditAccountSyncJob implements NotTenantAware, ShouldQueue
             }
             $email = is_array($email) ? $email[0] : $email;
             $orgEmail = $org->email();
-            if ($orgEmail && $email['status'] != $orgEmail->data['status']) {
+            if ($email['status'] != $orgEmail->data['status']) {
                 $orgEmail->update(['data' => $email, 'synced_at' => now()]);
                 $org->update(['status' => $email['status']]);
             }

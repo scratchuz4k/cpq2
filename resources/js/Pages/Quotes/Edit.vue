@@ -12,7 +12,6 @@ const solutionsViews = {
     3: 'QuotesConnectivityView',
     4: 'QuotesMobileView',
     5: 'QuotesHardwareView',
-    6: 'QuotesCloudAuditView',
     7: 'QuotesCloudView',
     8: 'QuotesHostedVoiceView',
     9: 'QuotesSecurityView'
