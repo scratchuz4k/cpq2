@@ -87,6 +87,11 @@ const loadItem = async (itemsList) => {
                 column: 'sku',
                 operator: 'in',
                 value: skuIds
+            },
+            {
+                column: 'status',
+                operator: 'equals',
+                value: 'Active'
             }
         ])
     });
