@@ -29,7 +29,6 @@ class DatabaseSeeder extends Seeder
                 StepProductsSeeder::class,
                 ShopBlocksSeeder::class,
                 DummyRoles::class,
-                CloudAuditSeeder::class,
             ]);
         }
 
