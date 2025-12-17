@@ -135,7 +135,7 @@ const items = ref([
                                 id="step-products"
                                 :columns="[
                                     { data: 'id', title: '#', style: 'width:5%' },
-                                    { data: 'code', title: 'Code', style: 'width:20%' },
+                                    { data: 'sku', title: 'Code', style: 'width:20%' },
                                     { data: 'name', title: 'Name', style: 'width:30%' },
                                     { data: 'supplier.name', title: 'Supplier', style: 'width:12%' },
                                     { data: 'updated_at', title: 'Updated At', style: 'width:15%' },
