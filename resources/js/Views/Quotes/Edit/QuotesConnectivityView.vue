@@ -117,6 +117,8 @@ const removeItem = (article) => {
     getQuote(props.modelValue.id);
 };
 
+const steps = {};
+/*
 const steps = {
     pxc: [
         {
@@ -153,7 +155,7 @@ const steps = {
         }
     ]
 };
-
+*/
 const getPrimary = () => {
     if (!quote.items) {
         return null;
