@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers\Web;
 
+use App\Enums\QuoteApprovalFlowEnum;
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\TenantUpdateRequest;
 use App\Http\Resources\TenantResource;
 use App\Models\Tenant;
 use App\Services\TenantService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
@@ -30,6 +32,7 @@ class TenantController extends BaseController
         return Inertia::render('Tenant/Index', [
             'isSuperAdmin' => $user->hasRole('Super Admin'),
             'tenant' => (new TenantResource($user->currentTenant))->resolve(),
+            'quote_approval_flows' => QuoteApprovalFlowEnum::asArray(),
         ]);
     }
 
@@ -46,7 +49,13 @@ class TenantController extends BaseController
      */
     public function store(Request $request)
     {
-        //
+        try {
+            $tenant = DB::transaction(fn () => $this->tenantService->create($request->all()));
+        } catch (\Exception $e) {
+            return handleWebException($e);
+        }
+
+        return Inertia::location('tenants');
     }
 
     /**
@@ -92,7 +101,7 @@ class TenantController extends BaseController
      */
     public function switch(Request $request, Tenant $tenant)
     {
-        $request->user()->update(['tenant_id' => $tenant->id]);
+        Auth::user()->update(['tenant_id' => $tenant->id]);
         $tenant->makeCurrent();
 
         return Inertia::location(route('index'));

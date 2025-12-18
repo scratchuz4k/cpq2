@@ -10,20 +10,10 @@ describe('Creates a Connectivity quote', () => {
         cy.login(Cypress.env('SUPERUSER_EMAIL'), Cypress.env('SUPERUSER_PASSWORD'));
     });
 
-    it('Creates an Account', () => {
-        cy.visit('/');
-        cy.get('#create-tab').click();
-        cy.get('#link-to-create-account').click();
-        cy.get('#account-name').type(account.name);
-        cy.get('#account-reference').type(account.ref);
-        cy.get('#btn-save-account').click();
-        cy.get('.notyf').contains('Created with Success');
-    });
-
     it('Get Price From Gamma Product', () => {
-        cy.visit('/');
+        cy.visit('/quotes');
         cy.get('#create-tab').click();
-        cy.selectLazyOption('account_id', account.name);
+        cy.selectFirstOption('account_id');
         cy.get('#btn-next-step').click();
 
         cy.get('#solution_type-connectivity').click();
@@ -60,7 +50,7 @@ describe('Creates a Connectivity quote', () => {
     });
 
     it('Create Supplier Gamma Products', () => {
-        cy.visit('/');
+        cy.visit('/quotes');
         cy.get('#my-account').click();
         cy.get('#link-suppliers').click();
         cy.get('#datatable-search').type(supplier);
@@ -76,7 +66,7 @@ describe('Creates a Connectivity quote', () => {
         });
     });
     it('Create SPA for Gamma Products', () => {
-        cy.visit('/');
+        cy.visit('/quotes');
         cy.get('#my-account').click();
         cy.get('#link-spas').click();
         cy.get('#create-spa').click();
@@ -89,7 +79,7 @@ describe('Creates a Connectivity quote', () => {
     });
 
     it('Check Price New Price For Gamma Product', () => {
-        cy.visit('/');
+        cy.visit('/quotes');
         cy.get('#datatable-btn-0-edit').click();
 
         cy.wait(1000);
@@ -115,7 +105,7 @@ describe('Creates a Connectivity quote', () => {
     });
 
     it('Delete SPA ', () => {
-        cy.visit('/');
+        cy.visit('/quotes');
         cy.get('#my-account').click();
         cy.get('#link-spas').click();
         cy.get('#datatable-btn-0-delete').click();

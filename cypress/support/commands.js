@@ -47,7 +47,9 @@ Cypress.Commands.add('selectLazyOption', (id, option = null) => {
     cy.get(inputSelect).click();
     cy.wait(200);
     if (option) {
-        cy.get('#select-' + id + '-search').type(option);
+        cy.get('#select-' + id + '-search')
+            .clear()
+            .type(option);
         cy.wait(1000);
     }
     const scrollToOption = (retries = 10) => {
@@ -82,6 +84,36 @@ Cypress.Commands.add('selectOption', (id, option) => {
     });
 });
 
+Cypress.Commands.add('selectFirstOption', (id) => {
+    const inputSelect = `#input-select-${id}`;
+    const optionsContainer = `#${id}-sidebar`;
+
+    cy.get(inputSelect).click();
+    cy.wait(200);
+
+    const selectFirstOption = (retries = 10) => {
+        cy.get(optionsContainer).then(($container) => {
+            const options = [...$container[0].querySelectorAll('.option')];
+
+            const firstOption = options[0];
+            if (firstOption) {
+                cy.wrap(firstOption).scrollIntoView().click();
+            } else if (retries > 0) {
+                cy.wrap($container)
+                    .scrollTo('bottom')
+                    .wait(300)
+                    .then(() => {
+                        selectFirstOption(retries - 1);
+                    });
+            } else {
+                throw new Error(`No options found in ${optionsContainer}`);
+            }
+        });
+    };
+
+    selectFirstOption();
+});
+
 Cypress.Commands.add('createUser', (role) => {
     cy.visit('/users');
     cy.get('#link-to-create-user').click();
@@ -89,8 +121,8 @@ Cypress.Commands.add('createUser', (role) => {
     cy.get('#user-name').type(user.name);
     cy.get('#user-email').type(user.email);
     cy.get('#user-password').type(user.password);
-    cy.selectOption('#user-role', role);
+    cy.selectLazyOption('user-role', role);
     cy.get('#btn-save-user').click();
-    cy.get('#treetable-search').type(user.name);
+    cy.get('#datatable-search').type(user.name);
     cy.get('#users-table').contains(user.name);
 });

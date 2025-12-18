@@ -2,8 +2,10 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link, usePage } from '@inertiajs/vue3';
 import { ref } from 'vue';
-import { createOrder } from '@/Composables/useOrders.js';
+import { can } from '@composables/useAuth';
 import dayjs from 'dayjs';
+import axios from 'axios';
+import Datatable from '@/Components/Datatable.vue';
 
 const props = defineProps({
     users: {
@@ -25,14 +27,9 @@ const props = defineProps({
 });
 
 const page = usePage();
-const auth_user = page.props.auth.user.id;
+const user = page.props.auth.user;
 const tenant = page.props.tenant;
-const createOrderAndRefresh = async (id) => {
-    const res = await createOrder(id);
-    if (res) {
-        emitter.emit('datatable-refresh');
-    }
-};
+const has_quote_approval = tenant.configurations.has_quote_approval ?? '0';
 
 const expirableStatuses = ['QUOTE', 'PRICE', 'CONFIGURE'];
 
@@ -61,6 +58,17 @@ const deleteRecord = (id) => {
     });
 };
 
+const saveApproval = async (data) => {
+    try {
+        axios.put(`/api/quote-approvals/${data.id}`, { approver_id: user.id });
+
+        emitter.emit('datatable-refresh');
+        notyf.success('Quote assigned with success');
+    } catch (err) {
+        notyf.error(err?.response?.data?.message ?? 'Something went wrong');
+    }
+};
+
 const items = ref([{ label: 'Home', url: '/' }, { label: 'Quotes' }]);
 </script>
 
@@ -78,6 +86,12 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Quotes' }]);
                         { data: 'solution_type.name', title: 'Solution', style: 'width:16%' },
                         { data: 'address_postcode', title: 'Postcode', style: 'width:8%' },
                         { data: 'user.name', title: 'Owner', style: 'width:15%' },
+                        {
+                            data: 'approvals.approver.name',
+                            title: 'Approver',
+                            style: 'width:15%',
+                            hide: has_quote_approval === '0'
+                        },
                         { data: 'status', title: 'Status', style: 'width:10%' },
                         { data: 'updated_at', title: 'Updated At', style: 'width:15%' },
                         { data: 'actions', title: '', style: 'width:13%' },
@@ -106,29 +120,22 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Quotes' }]);
                             data-bs-toggle="tooltip"
                             data-bs-placement="top"
                             :title="'This quote will expire on ' + dateToExpire(data.created_at)"
-                            >{{ value }}</span
+                            >{{ value.toUpperCase() }}</span
                         >
-                        <span v-else class="badge text-bg-secondary">{{ value }}</span>
+                        <span v-else class="badge text-bg-secondary">{{
+                            data.approvals[0] && !['PENDING_APPROVAL', 'DECLINED'].includes(value)
+                                ? data.approvals[0]?.status.toUpperCase()
+                                : value
+                        }}</span>
                     </template>
-                    <template #updated_at="{ value }">
-                        {{ format.date(value) }}
+                    <template #updated_at="{ data, value }">
+                        {{ format.date(data.approvals[0]?.updated_at ?? value) }}
                     </template>
                     <template #actions="{ data, value, index }">
                         <div
-                            v-if="!['REGISTRY', 'SUBMITTED', 'EXPIRED'].includes(data.status)"
+                            v-if="!['COMPLETED', 'EXPIRED', 'PENDING_APPROVAL', 'VALIDATED'].includes(data.status)"
                             class="d-flex justify-content-end"
                         >
-                            <button
-                                v-if="['QUOTE', 'REJECTED'].includes(data.status)"
-                                :id="'datatable-btn-' + index + '-crete-order'"
-                                :hidden="!(tenant.configurations.orders_flow_is_active === '1')"
-                                class="btn px-2 py-0 mx-1 border-0"
-                                title="Send to Order"
-                                type="button"
-                                @click="createOrderAndRefresh(data.id)"
-                            >
-                                <font-awesome-icon :icon="['fas', 'thumbtack']" />
-                            </button>
                             <Link
                                 :id="'datatable-btn-' + index + '-edit'"
                                 :href="'quotes/' + data.id + '/edit'"
@@ -153,9 +160,21 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Quotes' }]);
                             </button>
                         </div>
                         <div v-else class="d-flex justify-content-end">
+                            <button
+                                v-if="
+                                    data.status === 'PENDING_APPROVAL' &&
+                                    can('update quote_approval') &&
+                                    !data.approvals[0]?.approver
+                                "
+                                :id="'datatable-workbasket-btn-' + index + '-delete'"
+                                class="btn px-2 py-0 mx-1 border-0"
+                                @click="saveApproval(data.approvals[0])"
+                            >
+                                <font-awesome-icon icon="fas fa-user-plus" />
+                            </button>
                             <Link
                                 :id="'datatable-btn-' + index + '-show'"
-                                :href="'quotes/' + data.id + '/preview'"
+                                :href="'quotes/' + data.id"
                                 class="btn px-2 py-0 mx-1 border-0"
                             >
                                 <font-awesome-icon :icon="['fas', 'eye']" />

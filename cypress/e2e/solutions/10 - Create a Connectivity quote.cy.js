@@ -7,11 +7,11 @@ const subprovider = 'BT';
 
 describe('Creates a Connectivity quote', () => {
     beforeEach(() => {
-        cy.login(Cypress.env('SUPERUSER_EMAIL'), Cypress.env('SUPERUSER_PASSWORD'));
+        cy.login('companyadmin@example.com', 'werwerwer');
     });
 
     it('Creates an Account', () => {
-        cy.visit('/');
+        cy.visit('/quotes');
         cy.get('#create-tab').click();
         cy.get('#link-to-create-account').click();
         cy.get('#account-name').type(account.name);
@@ -20,7 +20,7 @@ describe('Creates a Connectivity quote', () => {
         cy.get('.notyf').contains('Created with Success');
     });
     it('Create a Connectivity Quote', () => {
-        cy.visit('/');
+        cy.visit('/quotes');
         cy.get('#create-tab').click();
 
         cy.selectLazyOption('account_id', account.name);
@@ -68,7 +68,7 @@ describe('Creates a Connectivity quote', () => {
         cy.get('.one_off-item').its('length').should('eq', 1);
     });
     it('I can add a Custom Line and check quoted items', () => {
-        cy.visit('/');
+        cy.visit('/quotes');
         cy.get('#datatable-btn-0-show').click();
         cy.get('#btn-recurring-add').click();
         cy.get('#input-new-recurring-name').type('Custom line recurring', {
@@ -89,22 +89,9 @@ describe('Creates a Connectivity quote', () => {
         cy.get('#input-new-one_off-discount').type(10, { force: true });
         cy.get('#btn-new-one_off-add').click({ force: true });
         cy.get('#table-one_off').contains('Custom line one_off');
-
-        // cy.get('#btn-previous').click();
-        // cy.get('#btn-more-filters').click();
-        // cy.get('#filter-show-quoted .p-toggleswitch-input').click({
-        //     force: true
-        // });
-        // cy.wait(3000);
-        // cy.get('.connectivity-table-item')
-        //     .its('length')
-        //     .then((items) => {
-        //         expect(items).to.equal(1);
-        //     });
     });
-
     it('I can filter products by contended', () => {
-        cy.visit('/');
+        cy.visit('/quotes');
         cy.get('#create-tab').click();
         cy.selectLazyOption('account_id', account.name);
         cy.get('#btn-next-step').click();
@@ -131,7 +118,6 @@ describe('Creates a Connectivity quote', () => {
         cy.get('tbody tr button').eq(0).click();
         cy.get('#connectivity-product-1').contains('Primary Product');
     });
-
     it("I can see one product per uploadSpeed with 'Show only lowest cost products' option selected", () => {
         cy.visit('/');
         cy.get('#create-tab').click();
@@ -211,12 +197,5 @@ describe('Creates a Connectivity quote', () => {
 
         cy.get('tbody tr button').eq(0).click();
         cy.get('#connectivity-product-1').contains('Primary Product');
-    });
-
-    it('I can Create an order from a quote', () => {
-        cy.visit('/');
-        cy.get('#datatable-btn-0-crete-order').click();
-        cy.get('.swal2-confirm').eq(0).click();
-        cy.get('.notyf').contains('Order created with success');
     });
 });

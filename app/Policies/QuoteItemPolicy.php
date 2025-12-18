@@ -61,6 +61,7 @@ class QuoteItemPolicy
      */
     public function update(User $user, QuoteItem $quoteItem): bool
     {
+
         if (! $this->canManageQuoteItem($user, $quoteItem->quote)) {
             return false;
         }
@@ -77,6 +78,7 @@ class QuoteItemPolicy
      */
     public function delete(User $user, QuoteItem $quoteItem): bool
     {
+
         if (! $this->canManageQuoteItem($user, $quoteItem->quote)) {
             return false;
         }
@@ -105,6 +107,7 @@ class QuoteItemPolicy
      */
     public function forceDelete(User $user, QuoteItem $quoteItem): bool
     {
+
         if ($user->can("forceDelete $this->model")) {
             return true;
         }
@@ -129,10 +132,9 @@ class QuoteItemPolicy
      */
     private function canManageQuoteItem(User $user, Quote $quote): bool
     {
-        $userAncestors = User::ancestors($quote->user);
+        $userAncestors = User::getChildAndOrphansUser()->get();
 
         return $user->id === $quote->user_id
-            || $userAncestors->contains('id', $user->id)
-            || $user->hasRole('Company Admin');
+            || $userAncestors->contains('id', $user->id);
     }
 }

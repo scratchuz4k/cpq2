@@ -9,57 +9,42 @@ const rand = (notAllowedNumber, max = 101) => {
     return randomNumber;
 };
 
-const temp = getCurrentDate();
-const account = { ref: generateHash(temp), name: temp };
-
 const temp1 = getCurrentDate();
 const product = { sku: generateHash(temp1), name: temp1 };
 
 const temp2 = getCurrentDate();
-const category = { code: generateHash(temp2), name: temp2 };
+const step = { name: 'step-1' + temp2 };
 
 describe('Creates a Mobile Quote', () => {
     beforeEach(() => {
-        cy.login(Cypress.env('SUPERUSER_EMAIL'), Cypress.env('SUPERUSER_PASSWORD'));
-    });
-
-    it('Creates an Account', () => {
-        cy.visit('/');
-        cy.get('#create-tab').click();
-        cy.get('#link-to-create-account').click();
-        cy.get('#account-name').type(account.name);
-        cy.get('#account-reference').type(account.ref);
-        cy.get('#btn-save-account').click();
-        cy.get('.notyf').contains('Created with Success');
+        cy.login('companyadmin@example.com', 'werwerwer');
     });
 
     it('Creates a Category', () => {
-        cy.visit('/');
+        cy.visit('/quotes');
         cy.get('#my-account').click();
-        cy.get('#link-categories').click();
+        cy.get('#link-steps').click();
 
-        cy.get('#datatable-search').type(category.code);
-        cy.wait(3000);
-        cy.get('#categories-table').then(($table) => {
+        cy.get('#datatable-search').type(step.name);
+        cy.wait(1000);
+        cy.get('#steps-table').then(($table) => {
             if ($table.text().includes('No records found')) {
-                cy.get('#category-create-btn').click();
-
-                cy.get('#category-name').type(category.name);
-                cy.get('#category-code').type(category.code);
-                cy.selectOption('#category-solution-type', 'Mobile');
-                cy.get('#btn-save-category').click();
+                cy.get('#step-create-btn').click();
+                cy.get('#step-name').type(step.name);
+                cy.selectOption('#step-solution-type', 'Mobile');
+                cy.get('#btn-save-step').click();
                 cy.get('.notyf').contains('Created with Success');
             }
         });
     });
 
-    it('Creates a Product and add category', () => {
+    it('Creates a Product and add step', () => {
         cy.visit('/');
         cy.get('#my-account').click();
         cy.get('#link-products').click();
 
         cy.get('#datatable-search').type(product.sku);
-        cy.wait(3000);
+        cy.wait(1000);
         cy.get('#products-table').then(($table) => {
             if ($table.text().includes('No records found')) {
                 cy.get('#product-create-btn').click();
@@ -67,7 +52,7 @@ describe('Creates a Mobile Quote', () => {
                 cy.get('#product-name').type(product.name);
                 cy.get('#product-sku').type(product.sku);
 
-                cy.selectLazyOption('product-categories', category.name);
+                cy.selectLazyOption('product-steps', step.name);
 
                 cy.get('#btn-save-product').click();
                 cy.get('.notyf').contains('Created with Success');
@@ -76,21 +61,21 @@ describe('Creates a Mobile Quote', () => {
     });
 
     it('Creates Mobile Quote', () => {
-        cy.visit('/');
+        cy.visit('/quotes');
         cy.get('#create-tab').click();
-        cy.selectLazyOption('account_id', account.name);
+        cy.selectFirstOption('account_id');
         cy.get('#btn-next-step').click();
 
         cy.get('#solution_type-mobile').click();
         cy.get('#btn-create-quote').click();
         cy.wait(1000);
-        cy.get('#btn-plan-0-add-25').click();
+        cy.get('#btn-product-0-add-25').click();
         cy.wait(1000);
-        cy.get('#btn-plan-1-add-25').click();
+        cy.get('#btn-product-1-add-25').click();
         cy.wait(1000);
         cy.get('#btn-step-1-next').click();
         cy.wait(1000);
-        cy.get('#btn-plan-0-add-25').click();
+        cy.get('#btn-product-0-add-25').click();
         cy.wait(1000);
         cy.get('#btn-step-2-next').click();
 
@@ -133,7 +118,7 @@ describe('Creates a Mobile Quote', () => {
             cy.wait(500);
         });
 
-        cy.get('#btn-step-2-next').click();
+        cy.get('#btn-step-next').click();
 
         cy.get('.recurring-item').should('have.length', 3);
         cy.get('.one_off-item').then(($items) => {
@@ -144,7 +129,7 @@ describe('Creates a Mobile Quote', () => {
     });
 
     it('I can change Margin and Discount', () => {
-        cy.visit('/');
+        cy.visit('/quotes');
         cy.get('#datatable-btn-0-show').click();
 
         let items = ['recurring', 'one_off'];
@@ -196,7 +181,7 @@ describe('Creates a Mobile Quote', () => {
     });
 
     it('I can change and reset Global Discount', () => {
-        cy.visit('/');
+        cy.visit('/quotes');
         cy.get('#datatable-btn-0-show').click();
         let quote = { margin: null, commission: null, global: null };
 
@@ -231,7 +216,7 @@ describe('Creates a Mobile Quote', () => {
     });
 
     it('I can add and delete a Custom Line', () => {
-        cy.visit('/');
+        cy.visit('/quotes');
         cy.get('#datatable-btn-0-show').click();
         cy.get('#btn-recurring-add').click();
         cy.get('#input-new-recurring-name').type('Custom line recurring');
@@ -261,12 +246,5 @@ describe('Creates a Mobile Quote', () => {
                 cy.get(`#btn-one_off-${count - 1}-remove`).click();
             });
         cy.get('#swal-btn-confirm').click();
-    });
-
-    it('I can Create an order from a quote', () => {
-        cy.visit('/');
-        cy.get('#datatable-btn-0-crete-order').click();
-        cy.get('.swal2-confirm').eq(0).click();
-        cy.get('.notyf').contains('Order created with success');
     });
 });

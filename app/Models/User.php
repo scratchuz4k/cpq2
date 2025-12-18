@@ -4,9 +4,9 @@ namespace App\Models;
 
 use App\Trait\SetTenantId;
 use Exception;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -23,8 +23,6 @@ class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, HasRoles, Notifiable, SetTenantId;
 
-    public static $default_role = 'sales rep';
-
     public static function boot()
     {
         parent::boot();
@@ -35,10 +33,14 @@ class User extends Authenticatable
                 $model->tenant_id = auth()->user()->tenant_id;
             }
 
+        });
+        static::created(function (Model $model) {
             $user = Auth::user();
-            if ($user && $user->group) {
+            if ($user && $user->group()) {
                 try {
-                    $model->group_id = $user->group->id;
+                    $temp = [];
+                    $temp[$user->group()->id] = ['is_default' => true, 'tenant_id' => $user->tenant_id];
+                    $model->groups()->sync($temp);
                 } catch (Exception $e) {
                     if (! env('APP_DEBUG')) {
                         Log::error($e->getMessage());
@@ -47,51 +49,6 @@ class User extends Authenticatable
             }
         });
 
-        // Update parent when a child is created
-        static::created(function ($child) {
-            if ($child->parent_id) {
-                $parent = User::find($child->parent_id);
-                if ($parent) {
-                    $parent->has_children = true;
-                    $parent->save();
-                }
-            }
-        });
-
-        static::updating(function ($child) {
-            // Check if parent_id is being changed
-            if ($child->isDirty('parent_id')) {
-                $oldParentId = $child->getOriginal('parent_id');
-                $newParentId = $child->parent_id;
-                // Update old parent
-                if ($oldParentId) {
-                    $oldParent = User::find($oldParentId);
-                    if ($oldParent) {
-                        $oldParent->has_children = $oldParent->children()->where('id', '!=', $child->id)->exists();
-                        $oldParent->save();
-                    }
-                }
-                // Update new parent
-                if ($newParentId) {
-                    $newParent = User::find($newParentId);
-                    if ($newParent) {
-                        $newParent->has_children = true;
-                        $newParent->save();
-                    }
-                }
-            }
-        });
-
-        // Update parent when a child is deleted
-        static::deleting(function ($child) {
-            if ($child->parent_id) {
-                $parent = User::find($child->parent_id);
-                if ($parent) {
-                    $parent->has_children = $parent->children()->where('id', '!=', $child->id)->exists();
-                    $parent->save();
-                }
-            }
-        });
     }
 
     /**
@@ -103,12 +60,9 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'parent_id', // Add parent_id to fillable attributes
         'tenant_id',
-        'group_id',
         'sso', // Add sso to fillable attributes
         'commission_rate',
-        'has_children',
         'is_active',
     ];
 
@@ -142,27 +96,19 @@ class User extends Authenticatable
     }
 
     /**
-     * Get the parent user of this user.
+     * Get the group of this user.
      */
-    public function parent()
+    public function group()
     {
-        return $this->hasOne(User::class, 'id', 'parent_id');
+        return $this->groups()->where('is_default', true)->first();
     }
 
     /**
-     * Get the parent user of this user.
+     * Get the group of this user.
      */
-    public function group(): BelongsTo
+    public function groups(): BelongsToMany
     {
-        return $this->belongsTo(Group::class);
-    }
-
-    /**
-     * Get the children users of this user.
-     */
-    public function children()
-    {
-        return $this->hasMany(User::class, 'parent_id', 'id');
+        return $this->belongsToMany(Group::class);
     }
 
     public function currentTenant(): HasOne
@@ -178,47 +124,6 @@ class User extends Authenticatable
     public function quotes(): HasMany
     {
         return $this->hasMany(Quote::class);
-    }
-
-    public function orders(): HasMany
-    {
-        return $this->hasMany(Order::class);
-    }
-
-    public static function ancestors(?User $user = null)
-    {
-        $currentUser = is_null($user) ? Auth::user() : $user;
-        $users = collect([]);
-        if (is_null($currentUser)) {
-            return $users;
-        }
-        $userAscendents = collect([$currentUser]);
-        do {
-            $current = $userAscendents->pop();
-            $users->push($current);
-            if (! $current->parent) {
-                break;
-            }
-            $userAscendents->push($current->parent);
-        } while (count($userAscendents));
-
-        return $users;
-    }
-
-    public static function descendants()
-    {
-        $users = collect([]);
-        if (is_null(Auth::user())) {
-            return $users;
-        }
-        $userDescedents = collect([Auth::user()]);
-        do {
-            $current = $userDescedents->pop();
-            $users->push($current);
-            $userDescedents->push(...$current->children);
-        } while (count($userDescedents));
-
-        return $users;
     }
 
     /**
@@ -258,5 +163,25 @@ class User extends Authenticatable
 
             return $user;
         });
+    }
+
+    public static function getChildAndOrphansUser(): Builder
+    {
+        $query = User::query();
+        $superUsers = User::whereHas('roles', fn ($query) => $query->whereIn('roles.name', ['Super Admin']))->get();
+        $query = $query->whereNotIn('users.id', $superUsers->pluck('id'));
+
+        $role = Auth::user()->roles()->first();
+
+        if ($role && ! $role->parent_id) {
+            return $query;
+        }
+
+        $roles = Role::descendants();
+
+        return $query->whereHas('roles', function ($query) use ($roles) {
+            $query->whereIn('roles.id', $roles->pluck('id'));
+        });
+
     }
 }

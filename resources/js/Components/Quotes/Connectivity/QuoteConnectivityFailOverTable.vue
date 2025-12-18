@@ -168,6 +168,11 @@ const getArticles = async (clearCache = false, runTimeout = false) => {
                 }
             }
 
+            if (!article.contractTermMonths) {
+                let primaryProduct = quote.items.find((x) => x.data.type == 'Primary Product');
+                article.contractTermMonths = primaryProduct.contract_length;
+            }
+
             return article;
         });
 
@@ -308,6 +313,7 @@ watch(
     }, 500)
 );
 
+emitter.on('failover-product:removed', () => getArticles(false, true));
 window.addEventListener('beforeunload', () => {
     clearTimeout(timeoutId); // Cancel timeout on page navigation or refresh
 });

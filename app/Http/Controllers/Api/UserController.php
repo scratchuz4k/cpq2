@@ -28,7 +28,7 @@ class UserController extends BaseController
     public function index(IndexRequest $request)
     {
         $dataProvider = new DataProvider(User::class);
-        $dataProvider->builder = $this->usersService->getChildAndOrphansUser();
+        $dataProvider->builder = User::getChildAndOrphansUser();
         $dataProvider->builder = $dataProvider->builder->where('users.tenant_id', request()->user()->tenant_id);
         try {
             $data = $dataProvider->get();
@@ -65,7 +65,7 @@ class UserController extends BaseController
         try {
             $user = DB::transaction(fn () => $this->usersService->update($user, $request->all()));
         } catch (\Exception $e) {
-            throw new \Exception($e);
+            return handleException($e);
         }
 
         return new UserResource($user);

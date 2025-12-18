@@ -70,6 +70,7 @@ const meta = reactive({
 const getOptions = async () => {
     isLoadingLocal.value = true;
     let temp = [];
+    options.value = [];
     let query = queryString.stringify({
         quote_id: props.modelValue.id,
         filters: JSON.stringify(temp),

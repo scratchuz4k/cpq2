@@ -23,14 +23,16 @@ const icons = {
     6: 'fas fa-cloud-arrow-down',
     7: 'fas fa-cloud',
     8: 'fas fa-phone',
-    9: 'fas fa-shield-alt'
+    9: 'fas fa-shield-alt',
+    10: 'fab fa-microsoft',
+    11: 'fas fa-building-shield'
 };
 </script>
 
 <template>
     <h5 class="font-bold mb-3">Now, select an solution type</h5>
     <div class="row">
-        <div class="col-8">
+        <div class="col-12">
             <template v-if="props.solutionType?.length">
                 <div class="row row-cols-4 mb-3">
                     <div class="col mb-2" v-for="solution in props.solutionType">
@@ -65,7 +67,7 @@ const icons = {
     cursor: pointer;
     background-color: var(--white);
     border-radius: var(--radius);
-    padding: 20px;
+    padding: 25px 20px;
     margin-bottom: 10px;
     border: 3px solid var(--white);
     transition:

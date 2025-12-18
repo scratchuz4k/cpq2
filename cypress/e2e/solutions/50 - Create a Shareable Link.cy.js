@@ -1,38 +1,26 @@
-const { getCurrentDate, generateHash } = require('../../support/utils.js');
-const temp = getCurrentDate();
-const account = { ref: generateHash(temp), name: temp };
 let url = '';
 
 describe('Create a Shareable Link.cy', () => {
     beforeEach(() => {
-        cy.login(Cypress.env('SUPERUSER_EMAIL'), Cypress.env('SUPERUSER_PASSWORD'));
-    });
-    it('Creates an Account', () => {
-        cy.visit('/');
-        cy.get('#create-tab').click();
-        cy.get('#link-to-create-account').click();
-        cy.get('#account-name').type(account.name);
-        cy.get('#account-reference').type(account.ref);
-        cy.get('#btn-save-account').click();
-        cy.get('.notyf').contains('Created with Success');
+        cy.login('companyadmin@example.com', 'werwerwer');
     });
 
     it('Creates Mobile Quote', () => {
-        cy.visit('/');
+        cy.visit('/quotes');
         cy.get('#create-tab').click();
-        cy.selectLazyOption('account_id', account.name);
+        cy.selectFirstOption('account_id');
         cy.get('#btn-next-step').click();
 
         cy.get('#solution_type-mobile').click();
         cy.get('#btn-create-quote').click();
         cy.wait(1000);
-        cy.get('#btn-plan-0-add-25').click();
+        cy.get('#btn-product-0-add-25').click();
         cy.wait(1000);
-        cy.get('#btn-plan-1-add-25').click();
+        cy.get('#btn-product-1-add-25').click();
         cy.wait(1000);
         cy.get('#btn-step-1-next').click();
         cy.wait(1000);
-        cy.get('#btn-plan-0-add-25').click();
+        cy.get('#btn-product-0-add-25').click();
 
         cy.wait(1000);
         cy.get('#btn-step-2-next').click();
@@ -77,7 +65,7 @@ describe('Create a Shareable Link.cy', () => {
             cy.wait(500);
         } while (hardwareCount == 0 && current_page <= max_pages);
 
-        cy.get('#btn-step-2-next').click();
+        cy.get('#btn-step-next').click();
         cy.get('.recurring-item').should('have.length', 3);
         cy.get('.one_off-item').then(($items) => {
             cy.then(() => {
@@ -86,7 +74,7 @@ describe('Create a Shareable Link.cy', () => {
         });
     });
     it('I can create the link', () => {
-        cy.visit('/');
+        cy.visit('/quotes');
         cy.get('#datatable-btn-0-show').click();
         cy.get('#btn-shareable-open').click();
         cy.get('#btn-shareable-create').click();
@@ -100,7 +88,7 @@ describe('Create a Shareable Link.cy', () => {
 
     it('I can access the link', () => {
         cy.logout();
-        cy.visit('/');
+        cy.visit('/quotes');
         cy.log(url);
         cy.visit(url);
         cy.get('.item-row')

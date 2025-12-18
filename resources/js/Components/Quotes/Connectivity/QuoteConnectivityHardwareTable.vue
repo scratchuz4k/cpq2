@@ -20,7 +20,7 @@
         <div class="row mb-4" v-if="addons.length">
             <div class="col-3 mb-3" v-for="addon in addons">
                 <div
-                    class="card bg-light cursor-pointer"
+                    class="card bg-light cursor-pointer h-100"
                     :class="[quote.items.find((x) => x.product_code == addon.code) ? 'border-primary' : null]"
                     @click="checkProduct(addon)"
                 >
@@ -28,8 +28,14 @@
                         <h5 class="card-title">{{ addon.productType ?? 'Misc' }}</h5>
                         <p class="mb-4">{{ addon.productName }}</p>
                         <div class="d-flex justify-content-between">
-                            <div>{{ format.GBP(addon.priceMonthly_spa) }}</div>
-                            <div>{{ format.GBP(addon.priceInstall_spa) }}</div>
+                            <div>
+                                <p class="bold">Monthly</p>
+                                <p>{{ format.GBP(addon.priceMonthly_spa) }}</p>
+                            </div>
+                            <div>
+                                <p class="bold">Set up</p>
+                                <p>{{ format.GBP(addon.priceInstall_spa) }}</p>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -69,6 +75,7 @@ const meta = reactive({
 const getAddons = async () => {
     isLoading.value = true;
     let temp = [];
+    addons.value = [];
     temp.push({
         column: 'isPrimaryCircuitHardware',
         operator: 'equals',

@@ -18,6 +18,8 @@ class UpdateStatusExpiredQuotesJob implements ShouldQueue
         QuoteStatusesEnum::QUOTE->name,
         QuoteStatusesEnum::PRICE->name,
         QuoteStatusesEnum::CONFIGURE->name,
+        QuoteStatusesEnum::VALIDATED->name,
+        QuoteStatusesEnum::PENDING_APPROVAL->name,
     ];
 
     /**
@@ -35,8 +37,6 @@ class UpdateStatusExpiredQuotesJob implements ShouldQueue
                 ? (int) $tenant->configs['quote_expiration_days']
                 : 30;
             $expirationDate = today()->subDays($expirationDays)->format('Y-m-d');
-
-            Log::info('UpdateStatusExpiredQuotesJob | ---------------------------------------------------------------');
 
             DB::transaction(function () use (
                 &$quotesUpdated,
@@ -62,6 +62,5 @@ class UpdateStatusExpiredQuotesJob implements ShouldQueue
         }
 
         Log::info("UpdateStatusExpiredQuotesJob | {$quotesUpdated} quotes expired at {$expirationDate} ({$expirationDays} days ago)");
-        Log::info('UpdateStatusExpiredQuotesJob | ---------------------------------------------------------------');
     }
 }

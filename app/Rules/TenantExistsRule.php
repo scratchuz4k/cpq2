@@ -6,6 +6,7 @@ use App\Models\Tenant;
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class TenantExistsRule implements ValidationRule
 {
@@ -28,7 +29,15 @@ class TenantExistsRule implements ValidationRule
             ->exists();
 
         if (! $exists) {
-            $fail("The selected {$attribute} doesn't exist for this tenant.");
+            if (strpos($attribute, '.')) {
+                $attrs = explode('.', $attribute);
+
+                $fail(
+                    'The '.Str::singular($attrs[0]).' with ID '.$value.' doesn\'t exist.'
+                );
+            } else {
+                $fail("The selected {$attribute} doesn't exist.");
+            }
         }
     }
 }

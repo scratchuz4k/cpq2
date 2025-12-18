@@ -217,12 +217,16 @@ class CloudMarketApi
             'Address1.Street' => $address->street,
             'Address1.Town' => $address->town,
             'ManagedOption' => $quote->configs['managed'] ?? 0,
-            'TermMonths' => $quote->configs['contract_length'] ? explode(',', (string) $quote->configs['contract_length']) : [],
+            'TermMonths' => ! empty($quote->configs['contract_length']) ? explode(',', (string) $quote->configs['contract_length']) : [],
             'ConnectionSpeeds.MinBearer' => is_numeric($quote->configs['bearer'] ?? null) ? (int) $quote->configs['bearer'] : 100,
             'ConnectionSpeeds.MaxBearer' => 100000,
             'ConnectionSpeeds.MinSpeed' => is_numeric($quote->configs['speed'] ?? null) ? (int) $quote->configs['speed'] : 10,
             'ConnectionSpeeds.MaxSpeed' => 100000,
         ];
+
+        if (! in_array(config('app.env'), ['local', 'testing'], true)) {
+            $quoteAddress = array_merge(['RequestId' => $quote->uuid], $quoteAddress);
+        }
 
         return $quoteAddress;
     }

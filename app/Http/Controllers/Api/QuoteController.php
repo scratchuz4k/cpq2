@@ -12,8 +12,7 @@ use App\Models\Quote;
 use App\Models\User;
 use App\Services\QuoteService;
 use Exception;
-use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
-use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class QuoteController extends BaseController
@@ -35,20 +34,15 @@ class QuoteController extends BaseController
         $dataProvider = new DataProvider(Quote::class);
 
         $user = request()->user();
-        if (! $user->hasRole(['Sales Rep', 'Sales Manager'])) {
-            $users = User::all();
-        } else {
-            $users = $user->descendants();
+        $users = User::where('id', Auth::id())->get();
 
-            if ($user->hasRole('Sales Manager') && $user->group) {
-                $group_users = User::with('roles')->whereHas('roles', function ($q) use ($user) {
-                    $q->where('name', $user->roles->first()->children->first()->name);
-                })->where('group_id', $user->group_id)->get();
-
-                $users = $users->merge($group_users);
+        if ($user->can('viewAny quote')) {
+            if ($user->group()) {
+                $users->push(...$user->group()->users);
+            } else {
+                $users->push(...User::get());
             }
         }
-
         $dataProvider->builder = $dataProvider->builder->whereIn('quotes.user_id', $users->pluck('id'));
 
         try {
@@ -87,7 +81,12 @@ class QuoteController extends BaseController
      */
     public function update(QuoteUpdateRequest $request, Quote $quote)
     {
+        if ($quote->isBlocked()) {
+            return handleBlockedQuote();
+        }
+
         try {
+
             $quote = DB::transaction(function () use ($request, $quote) {
                 $quote = $this->quoteService->update($quote, $request->all());
 
@@ -105,6 +104,28 @@ class QuoteController extends BaseController
      */
     public function destroy(Quote $quote)
     {
+        if ($quote->isBlocked()) {
+            return handleBlockedQuote();
+        }
+
         $quote->delete();
+    }
+
+    /**
+     * Complete Quote
+     */
+    public function complete(Quote $quote)
+    {
+        try {
+            $quote = DB::transaction(function () use ($quote) {
+                $quote = $this->quoteService->update($quote, ['status' => 'COMPLETED']);
+
+                return $quote;
+            });
+        } catch (Exception $e) {
+            return handleException($e);
+        }
+
+        return response()->json(new QuoteResource($quote->refresh()));
     }
 }

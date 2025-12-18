@@ -18,7 +18,6 @@ use App\Services\External\CloudMarketService;
 use Dedoc\Scramble\Attributes\ExcludeRouteFromDocs;
 use Exception;
 use Illuminate\Http\Request;
-use stdClass;
 
 class ProductController extends BaseController
 {
@@ -76,16 +75,21 @@ class ProductController extends BaseController
         $quote = $this->getQuote($request);
         $address = $this->generateAddress($quote);
         $filename = $this->generateFilename($quote, $address);
-        $data = $quote->data ?? new stdClass;
+        $data = (object) ($quote->data ?? []);
         $data->filename = $filename;
         $quote->update(['data' => $data]);
         $product = $this->getProduct($quote, 'Primary Product');
 
-        if (! $product || $product->data?->providerName !== 'ITS') {
-            return;
-        }
+        // if (! $product || $product->data?->providerName !== 'ITS') {
+        return;
+        // }
 
-        CloudMarketSaveQuote::dispatch($quote);
+        try {
+            $job = new CloudMarketSaveQuote($quote);
+            $results = $job->runSync();
+        } catch (Exception $e) {
+            return handleException($e);
+        }
     }
 
     private function handleProductRequest(

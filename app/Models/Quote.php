@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Str;
 
 class Quote extends Model
 {
@@ -44,7 +45,7 @@ class Quote extends Model
     protected function casts(): array
     {
         return [
-            'data' => 'object',
+            'data' => 'array',
             'address_position' => 'array',
             'address_data' => 'array',
             'margin' => 'float',
@@ -61,6 +62,12 @@ class Quote extends Model
     protected static function booted(): void
     {
         static::addGlobalScope(new TenantScope);
+
+        static::creating(function ($quote) {
+            if (! $quote->uuid) {
+                $quote->uuid = (string) Str::uuid();
+            }
+        });
 
         static::saving(function (Quote $quote) {
             $quote->status = Quote::resolveStatus($quote);
@@ -98,14 +105,14 @@ class Quote extends Model
         return $this->hasMany(QuoteItem::class);
     }
 
+    public function approvals(): HasMany
+    {
+        return $this->hasMany(QuoteApproval::class)->orderBy('quote_approvals.id', 'desc');
+    }
+
     public function itemsTrashed(): HasMany
     {
         return $this->hasMany(QuoteItem::class)->withTrashed()->whereNotNull('deleted_at');
-    }
-
-    public function orders(): HasMany
-    {
-        return $this->hasMany(Order::class);
     }
 
     public function discounts(): HasMany
@@ -148,9 +155,9 @@ class Quote extends Model
     public static function resolveStatus(Quote $quote): string
     {
         $statuses_to_ignore = [
-            QuoteStatusesEnum::REJECTED->name,
-            QuoteStatusesEnum::REGISTRY->name,
-            QuoteStatusesEnum::SUBMITTED->name,
+            QuoteStatusesEnum::PENDING_APPROVAL->name,
+            QuoteStatusesEnum::VALIDATED->name,
+            QuoteStatusesEnum::COMPLETED->name,
             QuoteStatusesEnum::EXPIRED->name,
         ];
 
@@ -167,5 +174,21 @@ class Quote extends Model
         }
 
         return QuoteStatusesEnum::CONFIGURE->name;
+    }
+
+    public function isBlocked(): string
+    {
+        $block_statuses = [
+            QuoteStatusesEnum::PENDING_APPROVAL->name,
+            QuoteStatusesEnum::VALIDATED->name,
+            QuoteStatusesEnum::COMPLETED->name,
+            QuoteStatusesEnum::EXPIRED->name,
+        ];
+
+        if (in_array($this->status, $block_statuses)) {
+            return true;
+        }
+
+        return false;
     }
 }

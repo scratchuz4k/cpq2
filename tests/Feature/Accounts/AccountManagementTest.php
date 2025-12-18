@@ -11,10 +11,13 @@ uses(RefreshDatabase::class);
 beforeEach(function () {
     $this->artisan('db:seed');
     $this->user = User::factory()->create();
+    Auth::login($this->user);
     $this->tenant = Tenant::find(1);
     $this->user->tenants()->attach($this->tenant);
+
+    // Set the current team context
+    setTenantForPermissions();
     $this->user->assignRole('Company Admin');
-    Auth::login($this->user);
     $this->actingAs($this->user);
 });
 
@@ -81,6 +84,8 @@ it('CRUD if setting is enabled', function () {
 });
 
 it('Check API access to accounts if setting is enabled for user with token permission', function () {
+
+    setTenantForPermissions();
     $confs = [
         'restrict_account_management_is_active' => 1,
     ];

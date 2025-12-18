@@ -9,7 +9,6 @@ use App\Http\Requests\GroupAccountCreateRequest;
 use App\Models\GroupAccount;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Facades\Excel;
 
 class GroupAccountController extends BaseController
@@ -63,9 +62,7 @@ class GroupAccountController extends BaseController
         try {
             $data = $dataProvider->getCollection();
         } catch (\Exception $e) {
-            Log::debug($e->getMessage());
-
-            return $e->getMessage();
+            return handleException($e);
         }
 
         $data = $data->map(fn ($item) => [
@@ -82,14 +79,12 @@ class GroupAccountController extends BaseController
 
         try {
             if (! $data->count()) {
-                handleWebException(new \Exception, 'No data Found!');
+                return handleException(new \Exception, 'No data Found!');
             }
 
             return Excel::download(new Export($this->model, new Collection($data)), $filename);
         } catch (\Exception $e) {
-            Log::debug($e->getMessage());
-
-            return response()->json(null, 204);
+            return handlException($e);
         }
     }
 

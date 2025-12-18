@@ -23,14 +23,15 @@ class ValidDateValidator implements ValidationRule
         if (empty($value)) {
             return;
         }
+        try {
+            $parsed = Carbon::createFromFormat($this->format, $value);
 
-        $parsed = Carbon::createFromFormat($this->format, $value);
-
-        if (! $parsed) {
+            if (! ($parsed->format($this->format) === $value)) {
+                $fail("The {$attribute} field contains an invalid date '{$value}'");
+            }
+        } catch (\Exception $e) {
             $fail("The {$attribute} field contains a date in the wrong format '{$value}'. The expected format is '{$this->format}'");
         }
-        if (! ($parsed->format($this->format) === $value)) {
-            $fail("The {$attribute} field contains an invalid date '{$value}'");
-        }
+
     }
 }

@@ -40,4 +40,26 @@ class ImportService
 
         return $import;
     }
+
+    public function preview(array $array)
+    {
+        $file = array_key_exists('file', $array) ? $array['file'] : null;
+        $overwrite = array_key_exists('overwrite', $array) ? $array['overwrite'] : 0;
+        $model = array_key_exists('model', $array) ? $array['model'] : 0;
+        $user = auth()->user();
+        $helperFile = require app_path('Helpers/Import/'.mb_strtolower($model).'_import.php');
+
+        $importClass = ImportsEnum::tryFromName($model)->value;
+        $importHandler = new $importClass($overwrite);
+
+        $results = $importHandler->validateFile($file, $overwrite);
+
+        return [
+            'model' => $model,
+            'overwrite' => $overwrite,
+            'results' => $results,
+            'user' => $user,
+            'columns' => $helperFile['columns'],
+        ];
+    }
 }

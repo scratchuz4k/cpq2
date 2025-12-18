@@ -9,9 +9,10 @@ import Resources from '@/Components/Resources.vue';
 import { hasRole } from '@/Composables/useAuth.js';
 
 const page = usePage();
+const user = page.props.auth.user;
 Sentry.setUser({
-    fullName: page.props.auth.user.name,
-    email: page.props.auth.user.email
+    fullName: user.name,
+    email: user.email
 });
 
 defineProps({
@@ -20,7 +21,7 @@ defineProps({
 });
 
 const activeTab = ref(window.location.pathname.replace(/^\/|\/$/g, ''));
-const tenants = ref(page.props.auth.user.tenants);
+const tenants = ref(user.tenants);
 const currentTenant = ref(page.props.tenant);
 </script>
 
@@ -56,15 +57,6 @@ const currentTenant = ref(page.props.tenant);
                             aria-current="page"
                             :href="route('quotes.index')"
                             >QUOTES</a
-                        >
-                    </li>
-                    <li class="nav-item d-md-none d-lg-block">
-                        <a
-                            class="nav-link"
-                            :class="{ active: activeTab === 'orders' }"
-                            aria-current="page"
-                            :href="route('orders.index')"
-                            >ORDER</a
                         >
                     </li>
                     <li class="nav-item d-md-none d-lg-block">
@@ -109,7 +101,7 @@ const currentTenant = ref(page.props.tenant);
                             v-tooltip
                             data-bs-toggle="tooltip"
                             data-bs-placement="top"
-                            :title="page.props.auth.user.name"
+                            :title="user.name"
                         >
                             <font-awesome-icon :icon="['far', 'user']" />
                         </a>
@@ -187,6 +179,9 @@ const currentTenant = ref(page.props.tenant);
                         </li>
                     </template>
                 </ul>
+                <p v-if="user.group" class="badge rounded-pill bg-light text-dark me-4">
+                    Current Group: {{ user.group.name }}
+                </p>
                 <TopBarSearchable></TopBarSearchable>
             </div>
         </div>

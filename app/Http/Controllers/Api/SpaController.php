@@ -50,7 +50,7 @@ class SpaController extends BaseController
         try {
             $spa = DB::transaction(fn () => $this->spasService->store($request->all()));
         } catch (\Exception $e) {
-            throw new \Exception($e);
+            return handleException($e);
         }
 
         return new SpaResource($spa->refresh());
@@ -74,7 +74,7 @@ class SpaController extends BaseController
         try {
             $spa = DB::transaction(fn () => $this->spasService->update($spa, $request->all()));
         } catch (\Exception $e) {
-            throw new \Exception($e);
+            return handleException($e);
         }
 
         return new SpaResource($spa->refresh());

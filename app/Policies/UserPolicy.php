@@ -2,7 +2,9 @@
 
 namespace App\Policies;
 
+use App\Models\Role;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 
 class UserPolicy
 {
@@ -23,13 +25,21 @@ class UserPolicy
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user): bool
+    public function view(User $user, User $model): bool
     {
-        if ($user->can("view $this->model")) {
-            return true;
+        if ($user->tenant_id !== $model->tenant_id) {
+            return false;
         }
 
-        return false;
+        if (! $this->hasUserInChild($model)) {
+            return false;
+        }
+
+        if (! $user->can("view $this->model")) {
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -45,50 +55,107 @@ class UserPolicy
     }
 
     /**
-     * Determine whether the user can update the model.
+     * Determine if the given user can update the specified user.
+     *
+     * @param  \App\Models\User  $user  The authenticated user
+     * @param  \App\Models\User  $model  The user model to be updated
+     * @return bool
      */
-    public function update(User $user): bool
+    public function update(User $user, User $model)
     {
-        if ($user->can("update $this->model")) {
-            return true;
+        if ($user->tenant_id !== $model->tenant_id) {
+            return false;
         }
 
-        return false;
+        if (! $this->hasUserInChild($model)) {
+            return false;
+        }
+
+        if (! $user->can("update $this->model")) {
+            return false;
+        }
+
+        return true;
     }
 
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user): bool
+    public function delete(User $user, User $model): bool
     {
-        if ($user->can("delete $this->model")) {
-            return true;
+
+        if ($user->tenant_id !== $model->tenant_id) {
+            return false;
+        }
+        if (! $this->hasUserInChild($model)) {
+            return false;
         }
 
-        return false;
+        if (! $user->can("delete $this->model")) {
+            return false;
+        }
+
+        return true;
     }
 
     /**
      * Determine whether the user can restore the model.
      */
-    public function restore(User $user): bool
+    public function restore(User $user, User $model): bool
     {
-        if ($user->can("restore $this->model")) {
-            return true;
+
+        if ($user->tenant_id !== $model->tenant_id) {
+            return false;
+        }
+        if (! $this->hasUserInChild($user)) {
+            return false;
         }
 
-        return false;
+        if (! $user->can("restore $this->model")) {
+            return false;
+        }
+
+        return true;
     }
 
     /**
      * Determine whether the user can permanently delete the model.
      */
-    public function forceDelete(User $user): bool
+    public function forceDelete(User $user, User $model): bool
     {
-        if ($user->can("forceDelete $this->model")) {
+        if ($user->tenant_id !== $model->tenant_id) {
+            return false;
+        }
+
+        if (! $this->hasUserInChild($user)) {
+            return false;
+        }
+        if (! $user->can("forceDelete $this->model")) {
+            return false;
+        }
+
+        return true;
+    }
+
+    private function hasUserInChild(User $user): bool
+    {
+        if (Auth::check() && Auth::user()->roles()->withoutGlobalScopes()->where('name', 'Super Admin')->exists()) {
+            return true; // Don't apply tenant filter for super admin
+        }
+
+        $first = Auth::user()->roles()->first();
+
+        if ($first && ! $first->parent_id) {
             return true;
         }
 
-        return false;
+        $child_roles = Role::descendants();
+
+        $users = User::query()->whereHas('roles', function ($query) use ($child_roles) {
+            $query->whereIn('id', $child_roles->pluck('id'));
+        })->get();
+
+        return $users->contains(fn ($child) => $child->id === $user->id);
+
     }
 }

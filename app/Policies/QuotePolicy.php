@@ -14,14 +14,16 @@ class QuotePolicy
     private string $model = 'quote';
 
     private array $statusToBlockQuotes = [
-        QuoteStatusesEnum::REGISTRY->name,
-        QuoteStatusesEnum::SUBMITTED->name,
         QuoteStatusesEnum::EXPIRED->name,
     ];
 
     public function viewAny(User $user): bool
     {
         if ($user->can("viewAny $this->model")) {
+            return true;
+        }
+
+        if ($user->can("viewOwn $this->model")) {
             return true;
         }
 
@@ -40,6 +42,7 @@ class QuotePolicy
         if (! $user->can("view $this->model")) {
             return false;
         }
+
         if (in_array($quote->status, $this->statusToBlockQuotes)) {
             return false;
         }
@@ -145,10 +148,9 @@ class QuotePolicy
      */
     private function canManageQuote(User $user, Quote $quote): bool
     {
-        $userAncestors = User::ancestors($quote->user);
+        $userAncestors = User::getChildAndOrphansUser()->get();
 
         return $user->id === $quote->user_id
-            || $userAncestors->contains('id', $user->id)
-            || $user->hasRole('Company Admin');
+            || $userAncestors->contains('id', $user->id);
     }
 }
