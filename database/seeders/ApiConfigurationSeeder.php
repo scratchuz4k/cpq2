@@ -70,9 +70,9 @@ class ApiConfigurationSeeder extends Seeder
 
             Api::updateOrCreate([
                 'tenant_id' => $tenant->id,
-                'code' => 'VMO2',
+                'code' => 'VMB',
             ], [
-                'name' => 'VMO2',
+                'name' => 'VMB',
                 'auth_type' => 'vmo2_client',
                 'is_active' => true,
             ]);

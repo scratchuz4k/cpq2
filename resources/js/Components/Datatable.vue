@@ -366,11 +366,11 @@ getData();
     padding: 0.75rem 0rem 0rem !important;
     border-bottom: 0 !important;
 }
-/*
+
 .p-datatable .p-datatable-table-container {
     overflow: visible !important;
 }
-*/
+
 .p-datatable tr td:not(.p-0),
 .p-datatable tr th {
     padding: 0.5rem 0.5rem !important;

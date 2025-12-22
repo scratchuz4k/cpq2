@@ -58,9 +58,9 @@ class SupplierSeeder extends Seeder
 
             Supplier::updateOrCreate([
                 'tenant_id' => $tenant->id,
-                'reference' => 'vmo2',
+                'reference' => 'vmb',
             ], [
-                'name' => 'VMO2',
+                'name' => 'VMB',
             ]);
         }
     }
