@@ -136,7 +136,11 @@ const getArticles = async (clearCache = false, runTimeout = false) => {
                 'No provider is configured, please add at least one provider with the required credentials to obtain a quote.',
             'Request failed with status Unauthorized':
                 'Request failed with status Unauthorized (Please check login credentials for this provider).',
-            'Address not found in cache': 'No results were found for this address.'
+            'At least one of Building Name or Number is required':
+                'At least one of Building Name or Number is required.',
+            'Address not found in cache': 'The address could not be found.',
+            'Products are not available at': 'No products were found for this location.',
+            'No results for this location': 'No results were found for this location.'
         };
         if (res.data.errors) {
             const mappedErrors = res.data.errors

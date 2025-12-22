@@ -280,6 +280,12 @@ class CloudMarketApi
             'token' => [
                 "{$connectionBase}.Token" => $api?->token ?? env(strtoupper("{$supplierKey}_CONNECTION_TOKEN")),
             ],
+            'vmo2_client' => [
+                "{$connectionBase}.AppID" => $api?->username ?? env(strtoupper("{$supplierKey}_CONNECTION_APPID")),
+                "{$connectionBase}.ClientSecret" => $api?->password ?? env(strtoupper("{$supplierKey}_CONNECTION_CLIENTSECRET")),
+                "{$connectionBase}.UserId" => $api?->client_id ?? env(strtoupper("{$supplierKey}_CONNECTION_USERID")),
+                "{$connectionBase}.CustomerId" => $api?->client_id ?? env(strtoupper("{$supplierKey}_CONNECTION_CUSTOMERID")),
+            ],
             default => [],
         };
     }

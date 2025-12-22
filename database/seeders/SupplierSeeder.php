@@ -55,6 +55,13 @@ class SupplierSeeder extends Seeder
             ], [
                 'name' => 'IP River',
             ]);
+
+            Supplier::updateOrCreate([
+                'tenant_id' => $tenant->id,
+                'reference' => 'vmo2',
+            ], [
+                'name' => 'VMO2',
+            ]);
         }
     }
 }

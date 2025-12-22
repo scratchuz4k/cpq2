@@ -67,6 +67,15 @@ class ApiConfigurationSeeder extends Seeder
                 'auth_type' => 'basic',
                 'is_active' => true,
             ]);
+
+            Api::updateOrCreate([
+                'tenant_id' => $tenant->id,
+                'code' => 'VMO2',
+            ], [
+                'name' => 'VMO2',
+                'auth_type' => 'vmo2_client',
+                'is_active' => true,
+            ]);
         }
     }
 }
