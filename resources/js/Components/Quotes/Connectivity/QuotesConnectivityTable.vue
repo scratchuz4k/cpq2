@@ -140,7 +140,9 @@ const getArticles = async (clearCache = false, runTimeout = false) => {
                 'At least one of Building Name or Number is required.',
             'Address not found in cache': 'The address could not be found.',
             'Products are not available at': 'No products were found for this location.',
-            'No results for this location': 'No results were found for this location.'
+            'No results for this location': 'No results were found for this location.',
+            'VMB requires one of UPRN or Lat/Long for the request':
+                'Virgin Media Business requires one of UPRN or Latitude/Longitude for the request.'
         };
         if (res.data.errors) {
             const mappedErrors = res.data.errors
