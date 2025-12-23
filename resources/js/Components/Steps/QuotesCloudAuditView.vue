@@ -146,8 +146,8 @@ const dynamicSavings = computed(() => {
                 <!-- Headers -->
                 <thead>
                     <tr>
-                        <th style="width: 65%">Products</th>
-                        <th style="width: 15%">Qty</th>
+                        <th style="width: 60%">Products</th>
+                        <th style="width: 10%">Qty</th>
                         <th style="width: 15%">Price</th>
                         <th style="width: 15%">Total Price</th>
                     </tr>

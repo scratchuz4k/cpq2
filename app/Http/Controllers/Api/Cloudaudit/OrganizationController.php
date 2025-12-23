@@ -27,7 +27,7 @@ class OrganizationController extends BaseController
     #[ExcludeRouteFromDocs]
     public function index()
     {
-        if (! config('live_data.cloudmarket')) {
+        if (! config('live_data.cloudaudit')) {
             $mock_organizations = storage_path('mocks/organizations.json');
             if (! is_file($mock_organizations)) {
                 return [];
