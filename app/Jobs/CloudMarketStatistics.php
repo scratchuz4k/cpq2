@@ -30,7 +30,7 @@ class CloudMarketStatistics implements NotTenantAware, ShouldQueue
      */
     public function handle(): void
     {
-        $createdSince = Carbon::now()->subDay(1)->startOfDay()->toIso8601String();
+        $createdSince = Carbon::now()->subDay(7)->startOfDay()->toIso8601String();
         $res = CloudMarketApi::getStatistics($createdSince);
 
         $stream = StreamWrapper::getResource($res->toPsrResponse()->getBody());

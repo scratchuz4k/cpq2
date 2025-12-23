@@ -32,7 +32,7 @@ class SyncCloudMarketStatistics extends Command
         Log::info("SyncCloudMarketStatistics | Started at $start");
 
         CloudMarketStatistics::dispatch();
-        // $this->info('SyncCloudMarketStatistics | CloudMarket Statistics job has been dispatched.');
+
         $end = now();
         $date1 = Carbon::parse($start);
         $date2 = Carbon::parse($end);
