@@ -142,7 +142,8 @@ const getArticles = async (clearCache = false, runTimeout = false) => {
             'Products are not available at': 'No products were found for this location.',
             'No results for this location': 'No results were found for this location.',
             'VMB requires one of UPRN or Lat/Long for the request':
-                'Virgin Media Business requires one of UPRN or Latitude/Longitude for the request.'
+                'Virgin Media Business requires one of UPRN or Latitude/Longitude for the request.',
+            'Street is not set': 'There is no street set for this address.'
         };
         if (res.data.errors) {
             const mappedErrors = res.data.errors
