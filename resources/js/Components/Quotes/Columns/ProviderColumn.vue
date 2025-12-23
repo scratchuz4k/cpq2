@@ -16,7 +16,7 @@ const setAltImg = (event) => {
         <img
             class="img-provider"
             @error="setAltImg"
-            :src="`/images/providers/${item.data?.providerKey}.png`"
+            :src="`/images/providers/${format.toLowerCase(item.data?.providerKey)}.png`"
             :alt="item.data?.providerName"
             :title="item.data?.providerName"
         />
