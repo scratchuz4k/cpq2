@@ -52,13 +52,13 @@ class UpdateStatusExpiredQuotesJob implements ShouldQueue
                     ]);
 
                     $quotesUpdated++;
-                    Log::info("UpdateStatusExpiredQuotesJob | Quote#{$quote->id} ({$quote->created_at->format('Y-m-d')}) updated from {$originalStatus} to {$expiredStatus}");
+                    Log::info("[JOB] UpdateStatusExpiredQuotesJob | Quote#{$quote->id} ({$quote->created_at->format('Y-m-d')}) updated from {$originalStatus} to {$expiredStatus}");
                 }
             });
         } catch (\Exception $e) {
-            Log::error("UpdateStatusExpiredQuotesJob | Error processing: {$e->getMessage()}");
+            Log::error("[JOB] UpdateStatusExpiredQuotesJob | Error processing: {$e->getMessage()}");
         }
 
-        Log::info("UpdateStatusExpiredQuotesJob | {$quotesUpdated} quotes expired at {$expirationDate} ({$expirationDays} days ago)");
+        Log::info("[JOB] UpdateStatusExpiredQuotesJob | {$quotesUpdated} quotes expired at {$expirationDate} ({$expirationDays} days ago)");
     }
 }

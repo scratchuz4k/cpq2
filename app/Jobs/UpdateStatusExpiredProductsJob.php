@@ -41,13 +41,13 @@ class UpdateStatusExpiredProductsJob implements ShouldQueue
                     ]);
                     $productsUpdated++;
 
-                    Log::info("UpdateStatusExpiredProductsJob | Product ID {$product->id} was expired.");
+                    Log::info("[JOB] UpdateStatusExpiredProductsJob | Product ID {$product->id} was expired.");
                 }
             });
         } catch (\Exception $e) {
-            Log::error("UpdateStatusExpiredProductsJob | Error processing tenant ({$tenant->id}) {$tenant->name}: {$e->getMessage()}");
+            Log::error("[JOB] UpdateStatusExpiredProductsJob | Error processing tenant ({$tenant->id}) {$tenant->name}: {$e->getMessage()}");
         }
 
-        Log::info("UpdateStatusExpiredProductsJob | {$productsUpdated} products updated for ({$tenant->id}) {$tenant->name}");
+        Log::info("[JOB] UpdateStatusExpiredProductsJob | {$productsUpdated} products updated for ({$tenant->id}) {$tenant->name}");
     }
 }

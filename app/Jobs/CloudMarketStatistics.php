@@ -34,6 +34,7 @@ class CloudMarketStatistics implements NotTenantAware, ShouldQueue
         $res = CloudMarketApi::getStatistics($createdSince);
 
         $stream = StreamWrapper::getResource($res->toPsrResponse()->getBody());
+        $processedCount = 0;
         foreach (Items::fromStream($stream) as $value) {
             if (! is_object($value) && ! is_array($value)) {
                 continue;
@@ -53,7 +54,11 @@ class CloudMarketStatistics implements NotTenantAware, ShouldQueue
                     'providers' => data_get($value, 'providers', []),
                 ]
             );
+
+            $processedCount++;
         }
+
+        Log::info('[JOB] SyncCloudMarketStatistics | '.$processedCount.' statistics synced from stream.');
     }
 
     /**
@@ -62,7 +67,7 @@ class CloudMarketStatistics implements NotTenantAware, ShouldQueue
     public function failed(Exception $exception)
     {
         // Handle the failure, log exception details, etc.
-        $message = '['.strtoupper((string) env('APP_ENV')).'] CloudMarketStatistics failed with error: '.$exception->getMessage();
+        $message = '['.strtoupper((string) env('APP_ENV')).'] SyncCloudMarketStatistics failed with error: '.$exception->getMessage();
 
         $error = [
             'provider' => 'CPQ',
@@ -70,7 +75,7 @@ class CloudMarketStatistics implements NotTenantAware, ShouldQueue
         ];
 
         // Handle the failure, log exception details, etc.
-        $message = '['.strtoupper((string) env('APP_ENV')).'] CloudMarketStatistics failed with error: '.json_encode($error);
+        $message = '['.strtoupper((string) env('APP_ENV')).'] SyncCloudMarketStatistics failed with error: '.json_encode($error);
 
         Log::error($message);
         if (env('DISCORD_CLOUDMARKET_JOBS')) {
