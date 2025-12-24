@@ -299,6 +299,7 @@ const items = ref([
                                 v-if="hasRole('Super Admin') || can('create price')"
                             >
                                 <button
+                                    id="add-price-btn"
                                     class="btn btn-primary"
                                     @click="() => (showModal = !showModal)"
                                     v-if="product.prices.length == 0"
@@ -322,15 +323,15 @@ const items = ref([
                                 </template>
                                 <div class="mb-3">
                                     <label class="form-label">Code:</label>
-                                    <input class="form-control" v-model="price.code" />
+                                    <input id="price-code" class="form-control" v-model="price.code" />
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label">Cost</label>
-                                    <input class="form-control" type="number" v-model="price.cost" />
+                                    <input id="price-cost" class="form-control" type="number" v-model="price.cost" />
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label">Price</label>
-                                    <input class="form-control" type="number" v-model="price.net" />
+                                    <input id="price-price" class="form-control" type="number" v-model="price.net" />
                                 </div>
 
                                 <div class="d-flex justify-content-end">
