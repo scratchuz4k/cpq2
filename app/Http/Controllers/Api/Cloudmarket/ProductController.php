@@ -18,6 +18,7 @@ use App\Services\External\CloudMarketService;
 use Dedoc\Scramble\Attributes\ExcludeRouteFromDocs;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class ProductController extends BaseController
 {
@@ -104,6 +105,10 @@ class ProductController extends BaseController
 
         $address = $this->generateAddress($quote);
         $filename = $this->generateFilename($quote, $address);
+
+        if ($request->has('clear_cache') && (bool) $request->get('clear_cache')) {
+            Cache::forget($filename);
+        }
 
         if ($requirePrimary) {
             $product = $this->getProduct($quote, 'Primary Product');
