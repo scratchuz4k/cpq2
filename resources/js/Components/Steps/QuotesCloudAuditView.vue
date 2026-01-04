@@ -1,17 +1,19 @@
 <script setup>
-import { quote, setQuote } from '@composables/useQuote';
+import { quote, setQuote, getQuote } from '@composables/useQuote';
 import axios from 'axios';
 import { router, usePage } from '@inertiajs/vue3';
-import { computed, reactive, ref, watch } from 'vue';
+import { computed, onMounted, reactive, ref, watch } from 'vue';
 import queryString from 'query-string';
 import format from '@/Composables/format.js';
 import { Checkbox } from 'primevue';
+import { updateQuoteItem, removeQuoteItem, createQuoteItem } from '@composables/useQuoteItem';
+import { isLoading } from '@/Composables/useConnectivityItem.js';
 
 const props = defineProps({
     modelValue: Object
 });
 
-const emit = defineEmits(['update:modelValue', 'nextStep']);
+const emit = defineEmits(['update:modelValue']);
 const proxyValue = computed({
     get() {
         return props.modelValue;
@@ -27,11 +29,12 @@ const solution_type = props.modelValue.solution_type;
 const loading = ref(true);
 setQuote(props.modelValue);
 const saveQuote = async () => {
-    if (step.value == active_categories.value.length - 1) {
-        router.get(`/quotes/${props.modelValue.id}`);
-        return;
+    try {
+        await axios.get('/api/cloudmarket/products/save-quote?quote_id=' + props.modelValue.id);
+        window.location.href = route('quotes.show', { quote: props.modelValue.id });
+    } catch (error) {
+        notyf.error(error.response.data.message);
     }
-    step.value++;
 };
 emitter.on('save-quote', () => {
     saveQuote();
@@ -39,10 +42,10 @@ emitter.on('save-quote', () => {
 const organization = ref(quote.data?.organization ?? null);
 const report = ref(organization.value.data?.report ?? null);
 const items = ref(report.value ? report.value.data?.items : []);
-const itemPrices = ref({});
+const totalMonthlyCost = ref(null);
 
 const configs = reactive({
-    unassigned_licenses: 0,
+    unassigned_licenses: quote.configs?.has_unassigned_licenses ?? 0,
     under_5_utilized_licenses: 0,
     turnoff_1_in_1_month: 0,
     turnoff_4_in_3_month: 0,
@@ -51,12 +54,6 @@ const configs = reactive({
     optional_saving_inefficient_bundle: 0,
     optional_saving_under_utilized_bundles: 0,
     cloud_selected_option: 'none'
-});
-
-const checkedCount = computed(() => {
-    return Object.entries(configs)
-        .filter(([key, value]) => key !== 'cloud_selected_option' && key !== 'under_5_utilized_licenses')
-        .reduce((sum, [key, value]) => sum + (value == 1 ? 1 : 0), 0);
 });
 
 function handleUnder5UtilizedClick(event) {
@@ -107,31 +104,81 @@ const loadItem = async (itemsList) => {
                     assignedUnits: item.assignedUnits,
                     unassignedUnits: item.unassignedUnits
                 });
+                totalMonthlyCost.value += p.price?.net_spa * item.subscribedUnits;
             });
     });
+
+    await updateQuoteItems();
 };
 
-watch(
-    () => [configs.turnoff_1_in_1_month, configs.turnoff_4_in_3_month],
-    ([val1, val4]) => {
-        if (val1 == '1' || val4 == '1') {
-            configs.under_5_utilized_licenses = '1';
-        } else {
-            configs.under_5_utilized_licenses = '0';
+const updateQuoteItems = async () => {
+    const quoteHasItems = quote.items.length || quote.items_trashed?.length;
+    if (!quoteHasItems) {
+        try {
+            let res = await axios.put(`/api/quotes/${quote.id}`, {
+                configurations: {
+                    ...quote.configs,
+                    has_unassigned_licenses: 1
+                }
+            });
+        } catch (ex) {
+            alert(ex.response.data.message);
         }
+
+        for (const item of items.value.filter((x) => x.id)) {
+            await createQuoteItem({
+                quote_id: quote.id,
+                product_code: item.sku,
+                quantity: item.subscribedUnits,
+                contract_length: item.contract_length,
+                name: item.name,
+                raw_price: item.price ? item.price.net : 0,
+                price: item.price ? item.price.net_spa : 0,
+                price_plan_id: item.price_plan_id
+            });
+        }
+        await getQuote(quote.id);
+    } else if (quoteHasItems) {
+        try {
+            let res = await axios.put(`/api/quotes/${quote.id}`, {
+                configurations: {
+                    ...quote.configs,
+                    has_unassigned_licenses: parseInt(configs.unassigned_licenses)
+                }
+            });
+        } catch (ex) {
+            alert(ex.response.data.message);
+        }
+
+        for (const item of items.value.filter((x) => x.id)) {
+            const quoteItem = quote.items.find((x) => x.product_code === item.sku);
+            if (item.quantity !== item.assignedUnits) {
+                await updateQuoteItem(quoteItem.id, {
+                    quantity: parseInt(configs.unassigned_licenses) === 1 ? item.assignedUnits : item.subscribedUnits
+                });
+            }
+        }
+        await getQuote(quote.id);
     }
-);
+};
 
 watch(
     items,
     async (newItems) => {
-        loadItem(newItems);
+        await loadItem(newItems);
     },
     { immediate: true }
 );
 
+watch(configs, () => {
+    updateQuoteItems();
+});
+
 const dynamicSavings = computed(() => {
-    return 1746 * 0.1 * checkedCount.value;
+    if (parseInt(configs.unassigned_licenses) !== 0) {
+        return items.value.reduce((acc, item) => acc + (item.unassignedUnits || 0) * (item.price?.net_spa || 0), 0);
+    }
+    return 0;
 });
 </script>
 <template>
@@ -139,23 +186,27 @@ const dynamicSavings = computed(() => {
         <div class="col-lg-8">
             <div class="mt-3 d-flex justify-content-between align-items-center">
                 <h3>Total Monthly Cost</h3>
-                <h3>£1,746.00</h3>
+                <h3>{{ format.GBP(totalMonthlyCost) }}</h3>
             </div>
             <hr class="m-0" />
             <table id="table-simple" class="table table-dealmaker table-bordered table-hover mt-3">
                 <!-- Headers -->
                 <thead>
                     <tr>
-                        <th style="width: 60%">Products</th>
-                        <th style="width: 10%">Qty</th>
-                        <th style="width: 15%">Price</th>
-                        <th style="width: 15%">Total Price</th>
+                        <th>Products</th>
+                        <th>Subscribed</th>
+                        <th>Assinged</th>
+                        <th>Unassinged</th>
+                        <th>Price</th>
+                        <th>Total Price</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr v-for="item in items">
                         <td>{{ item.name ?? item.skuPartNumber }}</td>
                         <td>x{{ item.subscribedUnits }}</td>
+                        <td>x{{ item.assignedUnits }}</td>
+                        <td>x{{ item.unassignedUnits }}</td>
                         <td>{{ item.price ? format.GBP(item.price.net_spa) : 'N/A' }}</td>
                         <td>{{ item.price ? format.GBP(item.price.net_spa * item.subscribedUnits) : 'N/A' }}</td>
                     </tr>
@@ -325,7 +376,7 @@ const dynamicSavings = computed(() => {
                 </div>
             </div>
 
-            <ButtonStep v-model="proxyValue" :disabled="true" btnName="Continue with selected option">
+            <ButtonStep v-model="proxyValue" btnName="Continue with selected option" @click="saveQuote()">
                 <a id="btn-save-quote" class="btn btn-outline-primary me-2" type="submit" href="/">Save for later</a>
             </ButtonStep>
         </div>
@@ -350,7 +401,9 @@ const dynamicSavings = computed(() => {
                 <div class="row">
                     <div class="col-12">
                         <h5 class="font-bold mb-3">Potential Saving</h5>
-                        <p>Your total monthly cost is <strong>£1,746.00</strong></p>
+                        <p>
+                            Your total monthly cost is <strong>{{ format.GBP(totalMonthlyCost) }}</strong>
+                        </p>
                         <br />
                         <p>
                             You have a potential saving of up to
