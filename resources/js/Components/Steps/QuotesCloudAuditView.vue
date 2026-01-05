@@ -1,13 +1,12 @@
 <script setup>
 import { quote, setQuote, getQuote } from '@composables/useQuote';
 import axios from 'axios';
-import { router, usePage } from '@inertiajs/vue3';
-import { computed, onMounted, reactive, ref, watch } from 'vue';
+import { usePage } from '@inertiajs/vue3';
+import { computed, reactive, ref, watch } from 'vue';
 import queryString from 'query-string';
 import format from '@/Composables/format.js';
 import { Checkbox } from 'primevue';
-import { updateQuoteItem, removeQuoteItem, createQuoteItem } from '@composables/useQuoteItem';
-import { isLoading } from '@/Composables/useConnectivityItem.js';
+import { updateQuoteItem, createQuoteItem } from '@composables/useQuoteItem';
 
 const props = defineProps({
     modelValue: Object
@@ -74,7 +73,7 @@ const loadItem = async (itemsList) => {
     if (!itemsList || !itemsList.length) {
         return;
     }
-    const skuIds = itemsList.map((i) => i.skuId).filter(Boolean);
+    const skuIds = itemsList.flatMap((item) => [item.skuId, item.skuPartNumber]);
     if (!skuIds.length) {
         return;
     }
