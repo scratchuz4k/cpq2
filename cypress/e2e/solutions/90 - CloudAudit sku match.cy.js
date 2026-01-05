@@ -1,4 +1,3 @@
-const { generateHash } = require('../../support/utils.js');
 const product = {
     sku: 'e8f81a67-bd96-4074-b108-cf193eb9433b',
     name: 'Product EXCHANGE_S_ESSENTIALS'
@@ -80,9 +79,8 @@ describe('Match CouldAudit Sku', () => {
             .find('td')
             .then(($cells) => {
                 const qty = parseInt($cells.eq(1).text().trim().replace('x', ''));
-                const price = parseFloat($cells.eq(2).text().replace(/[£,]/g, '').trim());
-                const totalPrice = parseFloat($cells.eq(3).text().replace(/[£,]/g, '').trim());
-                console.log(qty);
+                const price = parseFloat($cells.eq(4).text().replace(/[£,]/g, '').trim());
+                const totalPrice = parseFloat($cells.eq(5).text().replace(/[£,]/g, '').trim());
                 expect(price).to.eq(productPrice.price);
                 expect(totalPrice).to.eq(qty * price);
             });
