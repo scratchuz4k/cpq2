@@ -3,8 +3,8 @@
         <a class="nav-link" href="#" @click="openNotification">
             <font-awesome-icon :icon="['far', 'bell']" />
 
-            <div v-if="notifications && notifications.length > 0" class="notification-badge">
-                {{ notifications.length }}
+            <div v-if="total && total.length > 0" class="notification-badge">
+                {{ total.length }}
             </div>
         </a>
         <div id="header-notification-dropdown" :class="[showModal ? 'show' : '']">
@@ -30,20 +30,17 @@
                         </div>
                         <div class="ms-3 ps-3" style="border-left: 1px solid gray">
                             <div
+                                @click="followNotification(notification)"
                                 style="background-color: whitesmoke; border-radius: 5px; border: 1px solid lightgray"
                                 class="px-2 mb-2"
                             >
                                 <small>{{ notification.description }}</small>
                             </div>
-                            <small class="d-flex justify-content-between mb-1">
-                                <a href="#" class="text-decoration-none">View more...</a>
-                                <a v-if="!notification.is_read" href="#" class="text-decoration-none">Mark as read</a>
-                                <a v-else href="#" class="text-decoration-none">Mark as unread</a>
-                            </small>
                         </div>
                     </li>
                     <li v-if="notifications.length === 0" class="list-group-item">No new notifications.</li>
                 </ul>
+                <a href="/notifications" class="btn btn-light w-100">View All Notifications</a>
             </div>
         </div>
     </div>
@@ -57,9 +54,9 @@ import Avatar from 'primevue/avatar';
 const page = usePage();
 const user = page.props.auth.user;
 
-const search = ref(null);
 const showModal = ref(false);
-const notifications = ref(false);
+const notifications = ref([]);
+const total = ref(0);
 
 const openNotification = () => {
     showModal.value = !showModal.value;
@@ -71,6 +68,11 @@ const getNotifications = () => {
                 column: 'user_id',
                 operator: 'equals',
                 value: user.id
+            },
+            {
+                column: 'is_read',
+                operator: 'equals',
+                value: false
             }
         ])
     });
@@ -79,6 +81,7 @@ const getNotifications = () => {
         .get('/api/notifications?' + string)
         .then((response) => {
             notifications.value = response.data.data;
+            total.value = response.data.meta.total;
         })
         .catch((error) => {
             console.error('Error fetching notifications:', error);

@@ -4,16 +4,19 @@ namespace App\Http\Controllers\Api;
 
 use App\Helpers\DataProvider;
 use App\Http\Controllers\BaseController;
+use App\Http\Requests\NotificationUpdateRequest;
 use App\Http\Resources\NotificationResource;
 use App\Models\Notification;
+use App\Services\NotificationService;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class NotificationController extends BaseController
 {
     protected $model = Notification::class;
 
-    public function __construct()
+    public function __construct(protected NotificationService $notificationService)
     {
         parent::__construct();
     }
@@ -34,14 +37,6 @@ class NotificationController extends BaseController
     }
 
     /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
@@ -58,19 +53,18 @@ class NotificationController extends BaseController
     }
 
     /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Notification $notification)
-    {
-        //
-    }
-
-    /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Notification $notification)
+    public function update(NotificationUpdateRequest $request, Notification $notification)
     {
-        //
+
+        try {
+            $api = DB::transaction(fn () => $this->notificationService->update($notification, $request->all()));
+        } catch (\Exception $e) {
+            return handleException($e);
+        }
+
+        return new NotificationResource($notification);
     }
 
     /**
