@@ -29,19 +29,19 @@ describe('Match CouldAudit Sku', () => {
         cy.get('#btn-next-step').click();
 
         cy.get('#table-simple tbody tr').each(($row) => {
-            // Price column (3rd column)
+            // Price column (5rd column)
             cy.wrap($row)
                 .find('td')
-                .eq(2)
+                .eq(4)
                 .invoke('text')
                 .then((text) => {
                     expect(text.trim()).to.equal('N/A');
                 });
 
-            // Total Price column (4th column)
+            // Total Price column (6th column)
             cy.wrap($row)
                 .find('td')
-                .eq(3)
+                .eq(5)
                 .invoke('text')
                 .then((text) => {
                     expect(text.trim()).to.equal('N/A');
