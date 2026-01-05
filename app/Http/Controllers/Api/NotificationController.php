@@ -1,0 +1,83 @@
+<?php
+
+namespace App\Http\Controllers\Api;
+
+use App\Helpers\DataProvider;
+use App\Http\Controllers\BaseController;
+use App\Http\Resources\NotificationResource;
+use App\Models\Notification;
+use Exception;
+use Illuminate\Http\Request;
+
+class NotificationController extends BaseController
+{
+    protected $model = Notification::class;
+
+    public function __construct()
+    {
+        parent::__construct();
+    }
+
+    /**
+     * Display a listing of the resource.
+     */
+    public function index()
+    {
+        $dataProvider = new DataProvider($this->model);
+        try {
+            $data = $dataProvider->get();
+        } catch (Exception $e) {
+            return handleException($e);
+        }
+
+        return NotificationResource::collection($data);
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create()
+    {
+        //
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(Request $request)
+    {
+        //
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show(Notification $notification)
+    {
+        //
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(Notification $notification)
+    {
+        //
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, Notification $notification)
+    {
+        //
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(Notification $notification)
+    {
+        //
+    }
+}

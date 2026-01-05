@@ -107,9 +107,7 @@ const currentTenant = ref(page.props.tenant);
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">
-                            <font-awesome-icon :icon="['far', 'bell']" />
-                        </a>
+                        <NotificationDropdown></NotificationDropdown>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="#">

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Enums\NotificationEnum;
 use App\Helpers\DataProvider;
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\QuoteApprovalCreateRequest;
@@ -9,6 +10,8 @@ use App\Http\Requests\QuoteApprovalUpdateRequest;
 use App\Http\Resources\QuoteApprovalResource;
 use App\Models\Quote;
 use App\Models\QuoteApproval;
+use App\Models\Tenant;
+use App\Models\User;
 use App\Services\QuoteApprovalService;
 use Exception;
 use Illuminate\Support\Facades\DB;
@@ -52,6 +55,15 @@ class QuoteApprovalController extends BaseController
             $quoteApproval = DB::transaction(fn () => $this->service->store($request->all()));
         } catch (Exception $e) {
             return handleException($e);
+        }
+
+        // Get the current tenant
+        $users = User::hasPermission('update quote_approval')->get();
+
+        foreach ($users as $user) {
+            // Send notification to each user
+            $description = 'A new quote approval request has been submitted from: '.$quoteApproval->quote->account->name;
+            createNotification(NotificationEnum::QuoteSubmitted, $user, $description, route('quotes.show', ['quote' => $request->quote_id]), false);
         }
 
         return response()->json(new QuoteApprovalResource($quoteApproval));
