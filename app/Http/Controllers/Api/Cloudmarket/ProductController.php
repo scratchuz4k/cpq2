@@ -108,6 +108,7 @@ class ProductController extends BaseController
 
         if ($request->has('clear_cache') && (bool) $request->get('clear_cache')) {
             Cache::forget($filename);
+            Product::where('filename', $filename)->where('key', $key)->delete();
         }
 
         if ($requirePrimary) {
