@@ -44,12 +44,17 @@ class UsersService
         $user->update($array);
 
         if (array_key_exists('group_id', $array)) {
-            $temp = [];
-            $temp[$array['group_id']] = [
-                'is_default' => true,
-                'tenant_id' => Auth::user()->tenant_id,
-            ];
-            $user->groups()->sync($temp);
+            if (is_null($array['group_id'])) {
+                $user->groups()->sync([]);
+            } else {
+                $temp = [];
+                $temp[$array['group_id']] = [
+                    'is_default' => true,
+                    'tenant_id' => Auth::user()->tenant_id,
+                ];
+                $user->groups()->sync($temp);
+            }
+
         }
 
         if (array_key_exists('role_id', $array)) {
