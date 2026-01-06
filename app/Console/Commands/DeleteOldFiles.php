@@ -27,8 +27,6 @@ class DeleteOldFiles extends Command
      */
     public function handle()
     {
-        Log::withContext(['signature' => $this->signature]);
-        Log::info('Job Started.');
 
         $count_deled_files = 0;
         $directories = [storage_path('app/products'), storage_path('app/temp')];
@@ -49,18 +47,10 @@ class DeleteOldFiles extends Command
                     $file_name = $file->getRealPath();
                     File::delete($file);
                     $count_deled_files++;
-                    Log::info("Deleted: {$file_name}");
+                    Log::info("[JOB] DeleteOldFiles | Deleted: {$file_name}");
                 }
             }
         }
-
-        Log::info(
-            $count_deled_files
-                ? "{$count_deled_files} Files older than 24 hours deleted successfully."
-                : 'No files were deleted'
-        );
-
-        Log::info('Job Finished.');
-        Log::withContext([]);
+        Log::info('[JOB] DeleteOldFiles | '.($count_deled_files ? "{$count_deled_files} Files older than 24 hours deleted successfully." : 'No files were deleted'));
     }
 }

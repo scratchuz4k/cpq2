@@ -4,7 +4,6 @@ namespace App\Jobs;
 
 use App\Helpers\Api\ShopBlocksApi;
 use App\Models\ShopBlocks\Category;
-use Carbon\Carbon;
 use Exception;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
@@ -41,12 +40,9 @@ class ShopBlocksCategoriesJob implements NotTenantAware, ShouldQueue
      */
     public function handle(): void
     {
-        $start = now();
-        Log::info("ShopBlocksCategoriesJob | Started at $start");
-        $page = 1;
-
-        $time = Carbon::now()->addSeconds(86400);
+        Log::info('[JOB] ShopBlocksCategoriesJob | Started');
         $page = 0;
+        $processedCount = 0;
         do {
             $page++;
             $res = (new ShopBlocksApi)->getCategories(200, $page);
@@ -66,18 +62,13 @@ class ShopBlocksCategoriesJob implements NotTenantAware, ShouldQueue
                 }
 
                 Category::updateOrCreate(['code' => $code], $category);
+                $processedCount++;
             }
 
             $last_page = array_key_exists('meta', $res) ? $res['meta']['last_page'] : 1;
         } while ($page != $last_page);
+        Log::info('[JOB] ShopBlocksCategoriesJob | '.$processedCount.' categories synced.');
 
-        $end = now();
-        $date1 = Carbon::parse($start);
-        $date2 = Carbon::parse($end);
-
-        $diffInSeconds = $date2->diff($date1); // Output: 3600
-        $time = $diffInSeconds->format('%y-%m-%d %h:%i:%s');
-        Log::info("ShopBlocksCategoriesJob | Ended at $end | Elapsed Time: $time");
     }
 
     /**
@@ -88,7 +79,7 @@ class ShopBlocksCategoriesJob implements NotTenantAware, ShouldQueue
     public function failed(Exception $exception)
     {
         // Handle the failure, log exception details, etc.
-        $message = '['.strtoupper((string) env('APP_ENV')).'] ShopBlocksProducts failed with error: '.$exception->getMessage();
+        $message = '['.strtoupper((string) env('APP_ENV')).'] ShopBlocksCategoriesJob failed with error: '.$exception->getMessage();
 
         $error = [
             'provider' => 'ShopBlocks',
@@ -96,7 +87,7 @@ class ShopBlocksCategoriesJob implements NotTenantAware, ShouldQueue
         ];
 
         // Handle the failure, log exception details, etc.
-        $message = '['.strtoupper((string) env('APP_ENV')).'] ShopBlocksProducts failed with error: '.json_encode($error);
+        $message = '['.strtoupper((string) env('APP_ENV')).'] ShopBlocksCategoriesJob failed with error: '.json_encode($error);
 
         Log::error($message);
         if (env('DISCORD_SHOPBLOCKS_JOBS')) {

@@ -5,7 +5,6 @@ namespace App\Console\Commands;
 use App\Jobs\ShopBlocksCategoriesJob;
 use App\Jobs\ShopBlocksProductsJob;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Log;
 
 class SyncShopBlocks extends Command
 {
@@ -28,13 +27,7 @@ class SyncShopBlocks extends Command
      */
     public function handle()
     {
-        Log::withContext(['signature' => $this->signature]);
-        Log::info('Job Started.');
-
         ShopBlocksCategoriesJob::dispatch();
         ShopBlocksProductsJob::dispatch();
-
-        Log::info('Job Finished.');
-        Log::withContext([]);
     }
 }
