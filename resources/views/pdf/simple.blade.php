@@ -54,7 +54,6 @@
             array_push($items[$index]['children'], $item);
         }
     }
-
 @endphp
 
 <!doctype html>
@@ -163,7 +162,7 @@
                                                         @if ($group['data']?->providerKey)
                                                             <img class="img-provider"
                                                                 style="max-width: 60px; max-height: 20px; width: auto; height: auto;"
-                                                                src="{{ $group['image'] ?? public_path() . '/images/providers/' . $group['data']?->providerKey . '.png' }}"
+                                                                src="{{ $group['image'] ?? public_path() . '/images/providers/' . strtolower($group['data']?->providerKey) . '.png' }}"
                                                                 onerror="this.src='/images/no_image.png'" />
                                                         @endif
                                                     </div>

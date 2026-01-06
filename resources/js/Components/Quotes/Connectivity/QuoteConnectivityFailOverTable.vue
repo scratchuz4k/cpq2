@@ -337,12 +337,6 @@ getArticles(false, true);
                                         ><i>{{ error?.response }}</i>
                                     </div>
                                 </div>
-                                <div v-if="meta.isRequestCompleted" class="small d-flex align-items-center">
-                                    <button class="btn btn-sm btn-outline-primary" @click="getArticles(true, true)">
-                                        Get fresh data
-                                        <font-awesome-icon :icon="['fas', 'refresh']" class="ps-2"></font-awesome-icon>
-                                    </button>
-                                </div>
                             </div>
                         </InfoBox>
                     </div>

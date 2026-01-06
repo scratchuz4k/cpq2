@@ -157,7 +157,7 @@
                                                 @if ($item['data']?->providerKey)
                                                     <img class="img-provider"
                                                         style="max-width: 60px; max-height: 20px; width: auto; height: auto;"
-                                                        src="{{ $item['image'] ?? public_path() . '/images/providers/' . $item['data']?->providerKey . '.png' }}" />
+                                                        src="{{ $item['image'] ?? public_path() . '/images/providers/' . strtolower($item['data']?->providerKey) . '.png' }}" />
                                                 @endif
                                             </td>
                                             <td class="column-subprovider-body ">
@@ -274,7 +274,7 @@
                                                 @if (isset($item['data']?->providerKey))
                                                     <img class="img-provider"
                                                         style="max-width: 60px; max-height: 20px; width: auto; height: auto;"
-                                                        src="{{ $item['image'] ?? public_path() . '/images/providers/' . $item['data']?->providerKey . '.png' }}" />
+                                                        src="{{ $item['image'] ?? public_path() . '/images/providers/' . strtolower($item['data']?->providerKey) . '.png' }}" />
                                                 @endif
                                             </td>
                                             <td class="column-subprovider-body ">

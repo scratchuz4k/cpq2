@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Web;
 
+use App\Helpers\DataProvider;
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\IndexRequest;
 use App\Http\Requests\RoleCreateRequest;
@@ -88,5 +89,12 @@ class RoleController extends BaseController
      */
     public function destroy(Role $role)
     {//
+    }
+
+    protected function customFilter(DataProvider &$dataProvider)
+    {
+        $dataProvider->builder = $dataProvider->builder->where('roles.name', '!=', 'Super Admin');
+        $dataProvider->builder = $dataProvider->builder->where('roles.tenant_id', request()->user()->tenant_id);
+        $dataProvider->builder = $this->service->getChilds($dataProvider->builder);
     }
 }

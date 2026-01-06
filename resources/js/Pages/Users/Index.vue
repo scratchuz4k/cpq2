@@ -133,7 +133,7 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'My Account', url: '/my
                                 { data: 'email', title: 'Email' },
                                 { data: 'commission_rate', title: 'Commission' },
                                 { data: 'roles.name', title: 'Role' },
-                                { data: 'group.name', title: 'Group' }
+                                { data: 'groups.name', title: 'Group' }
                             ]"
                             route="/users"
                         >
@@ -189,7 +189,7 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'My Account', url: '/my
                                     {{ value }}
                                 </span>
                             </template>
-                            <template #group.name="{ value }">
+                            <template #groups.name="{ value }">
                                 <span class="badge text-bg-secondary">{{ value }}</span>
                             </template>
                             <template #commission_rate="{ value }"> {{ value }}%</template>

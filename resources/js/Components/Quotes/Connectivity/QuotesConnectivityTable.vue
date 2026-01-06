@@ -116,7 +116,8 @@ const getArticles = async (clearCache = false, runTimeout = false) => {
         perPage: meta.limit,
         order: sort.order,
         orderBy: sort.field,
-        account_id: props.modelValue.account_id
+        account_id: props.modelValue.account_id,
+        clear_cache: clearCache ? 1 : 0
     });
 
     try {
@@ -136,7 +137,14 @@ const getArticles = async (clearCache = false, runTimeout = false) => {
                 'No provider is configured, please add at least one provider with the required credentials to obtain a quote.',
             'Request failed with status Unauthorized':
                 'Request failed with status Unauthorized (Please check login credentials for this provider).',
-            'Address not found in cache': 'No results were found for this address.'
+            'At least one of Building Name or Number is required':
+                'At least one of Building Name or Number is required.',
+            'Address not found in cache': 'The address could not be found.',
+            'Products are not available at': 'No products were found for this location.',
+            'No results for this location': 'No results were found for this location.',
+            'VMB requires one of UPRN or Lat/Long for the request':
+                'Virgin Media Business requires one of UPRN or Latitude/Longitude for the request.',
+            'Street is not set': 'There is no street set for this address.'
         };
         if (res.data.errors) {
             const mappedErrors = res.data.errors

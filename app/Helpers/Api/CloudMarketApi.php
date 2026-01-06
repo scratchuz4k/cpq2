@@ -134,6 +134,15 @@ class CloudMarketApi
         return self::makeRequestPost('/PartnerQuoteService/SaveQuote', array_merge($params, $credentials));
     }
 
+    public static function getStatistics(string $createdSince)
+    {
+        $params = [
+            'CreatedSince' => $createdSince,
+        ];
+
+        return self::makeRequest('/PartnerQuoteService/GetResponseStats', $params);
+    }
+
     private static function collectCredentials($apis = null): array
     {
         if (! $apis) {
@@ -280,6 +289,13 @@ class CloudMarketApi
             'token' => [
                 "{$connectionBase}.Token" => $api?->token ?? env(strtoupper("{$supplierKey}_CONNECTION_TOKEN")),
             ],
+            'vmo2_client' => [
+                'SupplierApiConnections.VirginMediaBusiness_Connection.AppID' => $api?->app_id ?? env(strtoupper("{$supplierKey}_CONNECTION_APPID")),
+                'SupplierApiConnections.VirginMediaBusiness_Connection.ClientSecret' => $api?->client_secret ?? env(strtoupper("{$supplierKey}_CONNECTION_CLIENTSECRET")),
+                'SupplierApiConnections.VirginMediaBusiness_Connection.UserId' => $api?->user_id ?? env(strtoupper("{$supplierKey}_CONNECTION_USERID")),
+                'SupplierApiConnections.VirginMediaBusiness_Connection.CustomerId' => $api?->customer_id ?? env(strtoupper("{$supplierKey}_CONNECTION_CUSTOMERID")),
+            ],
+
             default => [],
         };
     }
