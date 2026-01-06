@@ -112,7 +112,7 @@ class CloudMarketOptionsProducts implements ShouldQueue, TenantAware
     private function getConsolidatedProviderGroup($provider): string
     {
         $sub_provider_mapping = [
-            'BT' => ['BT Wholesale', 'BTW', 'BT'],
+            'BT' => ['BT Wholesale', 'BTW', 'BT', 'BTO'],
             'Virgin' => ['Virgin Media', 'Virgin Media Business', 'Virgin'],
             'ITS' => ['ITS Technology Group', 'ITS'],
             'TalkTalk' => ['TalkTalk Business', 'TalkTalk', 'TTB'],
