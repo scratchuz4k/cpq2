@@ -3,8 +3,8 @@
         <a class="nav-link" href="#" @click="openNotification">
             <font-awesome-icon :icon="['far', 'bell']" />
 
-            <div v-if="total && total.length > 0" class="notification-badge">
-                {{ total.length }}
+            <div v-if="total && total > 0" class="notification-badge">
+                {{ total }}
             </div>
         </a>
         <div id="header-notification-dropdown" :class="[showModal ? 'show' : '']">
@@ -13,43 +13,45 @@
                 class="p-2"
                 style="border: 1px solid lightgray; border-radius: 5px; background-color: white"
             >
-                <p class="bold">Notifications</p>
+                <div class="d-flex justify-content-between align-items-center mb-2 px-1 py-2">
+                    <p class="bold">Notifications</p>
+                    <a href="/notifications" class="text-decoration-none">View All</a>
+                </div>
+                <hr class="m-0" />
                 <ul class="m-0 p-0" style="list-style: none">
-                    <li v-for="notification in notifications" :key="notification.id" class="p-2 m-0">
-                        <div class="d-flex justify-content-between mb-1">
-                            <div class="d-flex align-items-center">
-                                <Avatar
-                                    :label="notification.sender.name.charAt(0).toUpperCase()"
-                                    class="mr-2"
-                                    style="background-color: #dee9fc; color: #1a2551"
-                                    shape="circle"
-                                />
-                                <p class="ms-2">{{ notification.sender.name }}</p>
-                            </div>
-                            <small>{{ format.date(notification.created_at) }}</small>
-                        </div>
-                        <div class="ms-3 ps-3" style="border-left: 1px solid gray">
-                            <div
-                                @click="followNotification(notification)"
-                                style="background-color: whitesmoke; border-radius: 5px; border: 1px solid lightgray"
-                                class="px-2 mb-2"
-                            >
-                                <small>{{ notification.description }}</small>
+                    <li
+                        v-for="notification in notifications"
+                        :key="notification.id"
+                        class="p-1 px-2"
+                        :class="[notification.is_read ? '' : 'unread']"
+                        style="border-bottom: 1px solid #4a3a6f"
+                    >
+                        <div class="d-flex align-items-center w-100">
+                            <div class="w-100" @click="followNotification(notification)" style="cursor: pointer">
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <p class="bold m-0 p-0">
+                                        {{ notification.sender.name }}
+                                        <small class="ms-2 p-0" style="font-size: 10px; color: gray">
+                                            {{ format.date(notification.created_at) }}
+                                        </small>
+                                    </p>
+                                    <div v-if="!notification.is_read" class="unread-circle d-flex me-2"></div>
+                                </div>
+                                <component :is="template[notification.type]" :notification="notification" />
                             </div>
                         </div>
                     </li>
                     <li v-if="notifications.length === 0" class="list-group-item">No new notifications.</li>
                 </ul>
-                <a href="/notifications" class="btn btn-light w-100">View All Notifications</a>
             </div>
         </div>
     </div>
 </template>
 <script setup>
 import queryString from 'query-string';
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 import { usePage } from '@inertiajs/vue3';
-import Avatar from 'primevue/avatar';
+import { template, followNotification } from '@composables/useNotification';
 
 const page = usePage();
 const user = page.props.auth.user;
@@ -60,9 +62,39 @@ const total = ref(0);
 
 const openNotification = () => {
     showModal.value = !showModal.value;
+    if (showModal.value) {
+        getNotifications();
+        getTotalUnread();
+    }
 };
+
 const getNotifications = () => {
     let string = queryString.stringify({
+        order: 'desc',
+        orderBy: 'created_at',
+        filters: JSON.stringify([
+            {
+                column: 'user_id',
+                operator: 'equals',
+                value: user.id
+            }
+        ])
+    });
+
+    axios
+        .get('/api/notifications?' + string)
+        .then((response) => {
+            notifications.value = response.data.data;
+        })
+        .catch((error) => {
+            console.error('Error fetching notifications:', error);
+        });
+};
+
+const getTotalUnread = () => {
+    let string = queryString.stringify({
+        order: 'desc',
+        orderBy: 'created_at',
         filters: JSON.stringify([
             {
                 column: 'user_id',
@@ -80,7 +112,6 @@ const getNotifications = () => {
     axios
         .get('/api/notifications?' + string)
         .then((response) => {
-            notifications.value = response.data.data;
             total.value = response.data.meta.total;
         })
         .catch((error) => {
@@ -88,19 +119,9 @@ const getNotifications = () => {
         });
 };
 
-const followNotification = async (notification) => {
-    try {
-        isLoading.value = true;
-        await axios.get('/api/cloudmarket/products/save-quote?quote_id=' + props.modelValue.id);
-        window.location.href = route('quotes.show', { quote: props.modelValue.id });
-    } catch (error) {
-        isLoading.value = false;
-        notyf.error(error.response.data.message);
-    }
-};
-
 onMounted(() => {
     getNotifications();
+    getTotalUnread();
     var select = document.getElementById('header-notification-button');
     document.addEventListener('click', (ev) => {
         if (!select.contains(ev.target)) {

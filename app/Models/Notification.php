@@ -19,6 +19,7 @@ class Notification extends Model
         'redirect_url',
         'is_read',
         'data',
+        'date',
     ];
 
     public static function booted()

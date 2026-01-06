@@ -28,12 +28,10 @@ class NotificationController extends BaseController
     {
         $dataProvider = new DataProvider($this->model);
         try {
-            $data = $dataProvider->get();
+            return $dataProvider->group(NotificationResource::class);
         } catch (Exception $e) {
             return handleException($e);
         }
-
-        return NotificationResource::collection($data);
     }
 
     /**

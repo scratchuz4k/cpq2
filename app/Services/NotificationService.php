@@ -10,6 +10,7 @@ class NotificationService
     {
         $notification = Notification::create([
             'sender_id' => auth()->id(),
+            'date' => now(),
             ...$array,
         ]);
 

@@ -21,6 +21,7 @@ return new class extends Migration
             $table->text('redirect_url');
             $table->boolean('is_read')->default(false);
             $table->json('data')->nullable();
+            $table->date('date');
             $table->timestamps();
         });
     }
