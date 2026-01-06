@@ -12,7 +12,8 @@ const props = defineProps({
 const solutionsViews = {
     3: 'QuotesConnectivityView',
     4: 'QuotesMobileView',
-    5: 'QuotesHardwareView'
+    5: 'QuotesHardwareView',
+    6: 'QuotesCloudAuditView'
 };
 
 getQuote(props.quote.id);

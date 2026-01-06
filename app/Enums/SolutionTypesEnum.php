@@ -35,7 +35,7 @@ enum SolutionTypesEnum: string
             'Connectivity' => ['StepAddress', 'StepOptionalFilters'],
             'Mobile' => [],
             'Hardware' => [],
-            'Cloud Audit' => ['StepCloudAuditTenant', 'StepCloudAuditTenantReview'],
+            'Cloud Audit' => ['StepCloudAuditTenant'],
             'Cloud' => [],
             'Hosted Voice' => [],
             'Security' => [],

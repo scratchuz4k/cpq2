@@ -1,0 +1,116 @@
+{
+    "data": [
+        {
+            "id": 1,
+            "code": "1-test",
+            "name": "Test",
+            "email": "test@example.com",
+            "status": "GRANTED",
+            "data": {
+                "account": null,
+                "email": null,
+                "report": {
+                    "id": 1,
+                    "organization_id": 1,
+                    "code": "REPORT",
+                    "data": {
+                        "id": "4371d5f5-95fa-4889-a02f-e92e36ac4983",
+                        "accountId": "f22f7e23-0e8f-4817-98bc-5ba98bbf3490",
+                        "createdAt": "2025-12-15T21:01:34.8603515Z",
+                        "updatedAt": "2025-12-15T21:01:35.4280355Z",
+                        "items": [
+                            {
+                                "skuId": "e8f81a67-bd96-4074-b108-cf193eb9433b",
+                                "skuPartNumber": "EXCHANGE_S_ESSENTIALS",
+                                "status": "Enabled",
+                                "subscribedUnits": 7,
+                                "assignedUnits": 7,
+                                "unassignedUnits": 0
+                            },
+                            {
+                                "skuId": "f30db892-07e9-47e9-837c-80727f46fd3d",
+                                "skuPartNumber": "FLOW_FREE",
+                                "status": "Enabled",
+                                "subscribedUnits": 10000,
+                                "assignedUnits": 9,
+                                "unassignedUnits": 9991
+                            },
+                            {
+                                "skuId": "4b9405b0-7788-4568-add1-99614e613b69",
+                                "skuPartNumber": "EXCHANGESTANDARD",
+                                "status": "Enabled",
+                                "subscribedUnits": 2,
+                                "assignedUnits": 2,
+                                "unassignedUnits": 0
+                            },
+                            {
+                                "skuId": "f245ecc8-75af-4f8e-b61f-27d8114de5f3",
+                                "skuPartNumber": "O365_BUSINESS_PREMIUM",
+                                "status": "Enabled",
+                                "subscribedUnits": 13,
+                                "assignedUnits": 13,
+                                "unassignedUnits": 0
+                            },
+                            {
+                                "skuId": "3b555118-da6a-4418-894f-7df1e2096870",
+                                "skuPartNumber": "O365_BUSINESS_ESSENTIALS",
+                                "status": "Enabled",
+                                "subscribedUnits": 3,
+                                "assignedUnits": 3,
+                                "unassignedUnits": 0
+                            },
+                            {
+                                "skuId": "5b631642-bd26-49fe-bd20-1daaa972ef80",
+                                "skuPartNumber": "POWERAPPS_DEV",
+                                "status": "Enabled",
+                                "subscribedUnits": 10000,
+                                "assignedUnits": 1,
+                                "unassignedUnits": 9999
+                            }
+                        ]
+                    },
+                    "synced_at": "2025-12-15 21:01:36",
+                    "created_at": "2025-12-15T21:01:36.000000Z",
+                    "updated_at": "2025-12-15T21:01:36.000000Z"
+                }
+            },
+            "created_at": "2025-12-15T20:54:21.000000Z",
+            "updated_at": "2025-12-16T14:15:01.000000Z"
+        }
+    ],
+    "links": {
+        "first": "http:\/\/localhost:8000\/api\/cloudaudit\/organizations?page=1",
+        "last": "http:\/\/localhost:8000\/api\/cloudaudit\/organizations?page=1",
+        "prev": null,
+        "next": null
+    },
+    "meta": {
+        "current_page": 1,
+        "from": 1,
+        "last_page": 1,
+        "links": [
+            {
+                "url": null,
+                "label": "&laquo; Previous",
+                "page": null,
+                "active": false
+            },
+            {
+                "url": "http:\/\/localhost:8000\/api\/cloudaudit\/organizations?page=1",
+                "label": "1",
+                "page": 1,
+                "active": true
+            },
+            {
+                "url": null,
+                "label": "Next &raquo;",
+                "page": null,
+                "active": false
+            }
+        ],
+        "path": "http:\/\/localhost:8000\/api\/cloudaudit\/organizations",
+        "per_page": 12,
+        "to": 1,
+        "total": 1
+    }
+}
