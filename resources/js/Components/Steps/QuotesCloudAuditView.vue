@@ -6,7 +6,7 @@ import { computed, reactive, ref, watch } from 'vue';
 import queryString from 'query-string';
 import format from '@/Composables/format.js';
 import { Checkbox } from 'primevue';
-import { updateQuoteItem, createQuoteItem } from '@composables/useQuoteItem';
+import { updateQuoteItem, createQuoteItem, removeQuoteItem } from '@composables/useQuoteItem';
 
 const props = defineProps({
     modelValue: Object
@@ -26,22 +26,16 @@ const page = usePage();
 const tenant = page.props.tenant;
 const solution_type = props.modelValue.solution_type;
 const loading = ref(true);
+const reviewProduct = ref(null);
 setQuote(props.modelValue);
-const saveQuote = async () => {
-    try {
-        await axios.get('/api/cloudmarket/products/save-quote?quote_id=' + props.modelValue.id);
-        window.location.href = route('quotes.show', { quote: props.modelValue.id });
-    } catch (error) {
-        notyf.error(error.response.data.message);
-    }
-};
+
 emitter.on('save-quote', () => {
     saveQuote();
 });
 const organization = ref(quote.data?.organization ?? null);
-const report = ref(organization.value.data?.report ?? null);
+const report = ref(organization.value?.data?.report ?? null);
 const items = ref(report.value ? report.value.data?.items : []);
-const totalMonthlyCost = ref(null);
+const totalMonthlyCost = ref(0);
 
 const configs = reactive({
     unassigned_licenses: quote.configs?.has_unassigned_licenses ?? 0,
@@ -52,7 +46,7 @@ const configs = reactive({
     wrong_product_plan: 0,
     optional_saving_inefficient_bundle: 0,
     optional_saving_under_utilized_bundles: 0,
-    cloud_selected_option: 'none'
+    cloud_selected_option: quote.configs?.cloud_selected_option ?? 'none'
 });
 
 function handleUnder5UtilizedClick(event) {
@@ -106,28 +100,30 @@ const loadItem = async (itemsList) => {
                 totalMonthlyCost.value += p.price?.net_spa * item.subscribedUnits;
             });
     });
-
-    await updateQuoteItems();
 };
 
-const updateQuoteItems = async () => {
+const handleQuoteItems = async () => {
+    try {
+        let res = await axios.put(`/api/quotes/${quote.id}`, {
+            configurations: {
+                ...quote.configs,
+                has_unassigned_licenses: parseInt(configs.unassigned_licenses),
+                cloud_selected_option: configs.cloud_selected_option
+            }
+        });
+
+        setQuote(res.data);
+    } catch (ex) {
+        alert(ex.response.data.message);
+    }
+
     const quoteHasItems = quote.items.length || quote.items_trashed?.length;
     if (!quoteHasItems) {
-        try {
-            let res = await axios.put(`/api/quotes/${quote.id}`, {
-                configurations: {
-                    ...quote.configs,
-                    has_unassigned_licenses: 1
-                }
-            });
-        } catch (ex) {
-            alert(ex.response.data.message);
-        }
-
         for (const item of items.value.filter((x) => x.id)) {
             await createQuoteItem({
                 quote_id: quote.id,
                 product_code: item.sku,
+                product_id: item.id,
                 quantity: item.subscribedUnits,
                 contract_length: item.contract_length,
                 name: item.name,
@@ -136,19 +132,7 @@ const updateQuoteItems = async () => {
                 price_plan_id: item.price_plan_id
             });
         }
-        await getQuote(quote.id);
     } else if (quoteHasItems) {
-        try {
-            let res = await axios.put(`/api/quotes/${quote.id}`, {
-                configurations: {
-                    ...quote.configs,
-                    has_unassigned_licenses: parseInt(configs.unassigned_licenses)
-                }
-            });
-        } catch (ex) {
-            alert(ex.response.data.message);
-        }
-
         for (const item of items.value.filter((x) => x.id)) {
             const quoteItem = quote.items.find((x) => x.product_code === item.sku);
             if (item.quantity !== item.assignedUnits) {
@@ -157,21 +141,82 @@ const updateQuoteItems = async () => {
                 });
             }
         }
-        await getQuote(quote.id);
+    }
+
+    const reviewProduct = await getReviewProduct();
+    const quoteItemReviewProduct = quote.items.find((x) => x.product_code === 'Paid-PSA-Review');
+
+    if (configs.cloud_selected_option === 'review' && !quoteItemReviewProduct) {
+        await createQuoteItem({
+            quote_id: quote.id,
+            product_code: reviewProduct.sku,
+            product_id: reviewProduct.id,
+            quantity: 1,
+            contract_length: reviewProduct.contract_length,
+            name: reviewProduct.name,
+            raw_price: reviewProduct.price ? reviewProduct.price.net : 0,
+            price: reviewProduct.price ? reviewProduct.price.net_spa : 0,
+            price_plan_id: reviewProduct.price_plan_id
+        });
+    } else if (configs.cloud_selected_option !== 'review' && quoteItemReviewProduct) {
+        await removeQuoteItem(quoteItemReviewProduct.id);
+    }
+    await saveQuote();
+};
+
+const saveQuote = async () => {
+    try {
+        await axios.get('/api/cloudmarket/products/save-quote?quote_id=' + props.modelValue.id);
+        window.location.href = route('quotes.show', { quote: props.modelValue.id });
+    } catch (error) {
+        notyf.error(error.response.data.message);
     }
 };
 
-watch(
-    items,
-    async (newItems) => {
-        await loadItem(newItems);
-    },
-    { immediate: true }
-);
+const closeQuote = async () => {
+    try {
+        let res = await axios.delete('/api/quotes/' + quote.id);
+        if (res) {
+            window.location.href = route('quotes.create');
+        }
+    } catch (error) {
+        notyf.error(error.response.data.message);
+    }
+};
 
-watch(configs, () => {
-    updateQuoteItems();
-});
+const getReviewProduct = async () => {
+    try {
+        let filters = [
+            {
+                column: 'sku',
+                operator: 'equals',
+                value: 'Paid-PSA-Review'
+            }
+        ];
+
+        let query = queryString.stringify({
+            page: 1,
+            perPage: 1,
+            filters: JSON.stringify(filters)
+        });
+
+        let res = await axios.get('/api/products' + '?' + query);
+
+        reviewProduct.value = res.data?.data?.[0] ?? {
+            product_code: 'Paid-PSA-Review',
+            quantity: 1,
+            contract_length: 1,
+            name: 'Paid PSA review',
+            raw_price: 356,
+            price: 356,
+            price_plan_id: 1
+        };
+
+        return reviewProduct.value;
+    } catch (error) {
+        notyf.error(error.response.data.message);
+    }
+};
 
 const dynamicSavings = computed(() => {
     if (parseInt(configs.unassigned_licenses) !== 0) {
@@ -179,6 +224,13 @@ const dynamicSavings = computed(() => {
     }
     return 0;
 });
+watch(
+    items,
+    async (newItems) => {
+        await loadItem(newItems);
+    },
+    { immediate: true }
+);
 </script>
 <template>
     <div class="row justify-content-between mb-3">
@@ -237,7 +289,7 @@ const dynamicSavings = computed(() => {
                 <li>Licenses available in the tenant but not assigned</li>
             </ul>
 
-            <div class="d-flex align-items-center gap-2 mt-3 py-2">
+            <!--            <div class="d-flex align-items-center gap-2 mt-3 py-2">
                 <Checkbox
                     inputId="under_5_utilized_licenses"
                     v-model="configs.under_5_utilized_licenses"
@@ -342,7 +394,7 @@ const dynamicSavings = computed(() => {
                     User has E5 license but only uses features available in cheaper E3, or the components which are used
                     would be cheaper to buy separately
                 </li>
-            </ul>
+            </ul>-->
 
             <div class="mt-3 d-flex justify-content-between align-items-center">
                 <h3>Options</h3>
@@ -375,9 +427,17 @@ const dynamicSavings = computed(() => {
                 </div>
             </div>
 
-            <ButtonStep v-model="proxyValue" btnName="Continue with selected option" @click="saveQuote()">
-                <a id="btn-save-quote" class="btn btn-outline-primary me-2" type="submit" href="/">Save for later</a>
-            </ButtonStep>
+            <div
+                v-if="configs.cloud_selected_option === 'none'"
+                class="d-flex justify-content-between flex-row-reverse mt-3"
+            >
+                <button id="btn-close-quote" class="btn btn-primary" @click="closeQuote()">
+                    Close
+                    <font-awesome-icon :icon="['fas', 'xmark']" class="ms-2"></font-awesome-icon>
+                </button>
+            </div>
+
+            <ButtonStep v-else v-model="proxyValue" @click="handleQuoteItems()"> </ButtonStep>
         </div>
         <div class="col-lg-3">
             <InfoBox>
