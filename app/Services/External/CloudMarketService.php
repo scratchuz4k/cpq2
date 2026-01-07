@@ -21,8 +21,9 @@ class CloudMarketService
 
     public function handleProductJob($key, $filename, Quote $quote, $address, $dispatchJob)
     {
+        $time = Carbon::now()->addSeconds(86400);
         if (! Cache::has($filename)) {
-            Product::write($key, $filename, [], true, null, now());
+            Product::write($key, $filename, [], true, null, now(), [], [], $time);
             $dispatchJob::dispatch($quote, $filename, $address);
         }
 
@@ -30,7 +31,7 @@ class CloudMarketService
         $createdAt = Carbon::parse($content?->created_at);
 
         if (! $content || (is_null($content?->finished_at) && $createdAt->addMinutes(20)->isPast())) {
-            Product::write($key, $filename, [], true, null, now());
+            Product::write($key, $filename, [], true, null, now(), [], [], $time);
             $dispatchJob::dispatch($quote, $filename, $address);
         }
     }

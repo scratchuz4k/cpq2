@@ -116,7 +116,8 @@ const getArticles = async (clearCache = false, runTimeout = false) => {
         perPage: meta.limit,
         order: sort.order,
         orderBy: sort.field,
-        account_id: props.modelValue.account_id
+        account_id: props.modelValue.account_id,
+        clear_cache: clearCache ? 1 : 0
     });
 
     try {

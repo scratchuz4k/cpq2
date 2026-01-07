@@ -116,6 +116,7 @@ const removeItem = (article) => {
     }
     getQuote(props.modelValue.id);
 };
+
 const steps = {};
 /*
 const steps = {

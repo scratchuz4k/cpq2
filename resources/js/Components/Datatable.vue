@@ -150,9 +150,15 @@ const getExportData = async () => {
     if (exportDisabled.value) return;
     exportDisabled.value = true;
 
+    let columns = props.columns
+        .filter((column) => column.data !== 'actions')
+        .map((x) => x.data)
+        .join(',');
+
     let filters = {
-        filters: JSON.stringify([...form.filters, ...props.query]),
-        search: global.value
+        filters: JSON.stringify([...form.filters.filter((x) => x.value != null), ...props.query]),
+        search: global.value,
+        columns: columns
     };
 
     exportData(filters, props.route);
@@ -366,11 +372,11 @@ getData();
     padding: 0.75rem 0rem 0rem !important;
     border-bottom: 0 !important;
 }
-/*
+
 .p-datatable .p-datatable-table-container {
     overflow: visible !important;
 }
-*/
+
 .p-datatable tr td:not(.p-0),
 .p-datatable tr th {
     padding: 0.5rem 0.5rem !important;

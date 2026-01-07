@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Web;
 
+use App\Helpers\DataProvider;
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\UserCreateRequest;
 use App\Http\Requests\UserImportRequest;
@@ -131,5 +132,11 @@ class UserController extends BaseController
         return Inertia::render('Users/Import', [
             'results' => $results,
         ]);
+    }
+
+    protected function customFilter(DataProvider &$dataProvider)
+    {
+        $dataProvider->builder = User::getChildAndOrphansUser();
+        $dataProvider->builder = $dataProvider->builder->where('users.tenant_id', request()->user()->tenant_id);
     }
 }

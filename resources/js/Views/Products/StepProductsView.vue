@@ -1,9 +1,8 @@
 <script setup>
 import queryString from 'query-string';
 import { computed, reactive, ref, watch } from 'vue';
-import { quote, getQuote } from '@composables/useQuote';
+import { quote } from '@composables/useQuote';
 import _ from 'lodash';
-import { updateQuoteItem, removeQuoteItem, createQuoteItem } from '@composables/useQuoteItem';
 import { Paginator, Select, Skeleton } from 'primevue';
 
 const meta = reactive({
@@ -36,10 +35,9 @@ const proxyValue = computed({
 });
 
 const products = ref([]);
-const categories = ref([]); // categories for the current result set (for CategoriesTree)
-const allCategories = ref([]); // full category tree seen so far (from initial run)
+const categories = ref([]);
+const allCategories = ref([]);
 const currentCategory = ref(null);
-const selectedParent = ref(null);
 const currentStep = ref(props.index);
 const showCards = ref(false);
 
@@ -69,80 +67,11 @@ const sortOptions = [
 const sort = ref(sortOptions[3]);
 const search = ref(null);
 
-// Build allCategories once from the categories you get back on products.
-const buildAllCategories = async () => {
-    let filters = [
-        {
-            column: 'steps.id',
-            operator: 'equals',
-            value: props.step.id
-        },
-        {
-            column: 'status',
-            operator: 'equals',
-            value: 'Active'
-        },
-        {
-            group: [
-                { column: 'parent_id', operator: 'in', value: quote.items.map((x) => x.product_id) },
-                { column: 'parent_id', operator: 'is_null', value: '', function: 'orWhere' }
-            ]
-        }
-    ];
-
-    let query = queryString.stringify({
-        page: 1,
-        perPage: 99999999,
-        filters: JSON.stringify(filters),
-        account_id: props.account.id,
-        order: sort.value.order,
-        orderBy: sort.value.orderBy,
-        search: search.value
-    });
-
-    let res = await axios.get('/api/products' + '?' + query);
-
-    const map = new Map();
-
-    res.data.data.forEach((p) => {
-        (p.categories || []).forEach((cat) => {
-            // add the category itself
-            if (!map.has(cat.id)) {
-                map.set(cat.id, {
-                    id: cat.id,
-                    name: cat.name,
-                    parent_id: cat.parent_id,
-                    // add any other fields you need in CategoriesTree
-                    ...cat
-                });
-            }
-
-            // walk up parents from the payload (if present)
-            let current = cat.parent;
-            while (current && current.id) {
-                if (!map.has(current.id)) {
-                    map.set(current.id, {
-                        id: current.id,
-                        name: current.name,
-                        parent_id: current.parent_id,
-                        ...current
-                    });
-                }
-                current = current.parent;
-            }
-        });
-    });
-
-    allCategories.value = Array.from(map.values());
-    categories.value = allCategories.value;
-};
-
 /**
  * Main: get products
  */
 const getProducts = async () => {
     meta.isLoading = true;
-    buildAllCategories();
     let filters = [
         {
             column: 'steps.id',
@@ -162,7 +91,6 @@ const getProducts = async () => {
         }
     ];
 
-    // Use allCategories here to get selected category + its descendants
     if (currentCategory.value) {
         let array = [currentCategory.value];
         let items = [];
@@ -170,7 +98,6 @@ const getProducts = async () => {
         do {
             let current = array.pop();
             items.push(current);
-            // IMPORTANT: use allCategories for traversal, not just categories for current result
             let temp = allCategories.value.filter((x) => x.parent_id == current.id);
             array.push(...temp);
         } while (array.length != 0);
@@ -191,36 +118,42 @@ const getProducts = async () => {
         orderBy: sort.value.orderBy,
         search: search.value
     });
-    // let tempCategoryIds = [];
+
     let res = await axios.get('/api/products' + '?' + query);
+
+    const tempCategories = [...allCategories.value];
+
     res.data.data.forEach((e) => {
         let temp = quote.items.find((x) => x.product_code == e.sku);
         e.quantity = temp ? temp.quantity : 0;
         e.contract_length = e.price_plan.code == 'SINGLE' ? 1 : 12;
-        //
-        //     (e.categories || []).forEach((cat) => {
-        //         if (!tempCategoryIds.includes(cat.id)) {
-        //             tempCategoryIds.push(cat.id);
-        //         }
-        //
-        //         let current = cat.parent;
-        //         while (current && current.id) {
-        //             if (!tempCategoryIds.includes(current.id)) {
-        //                 tempCategoryIds.push(current.id);
-        //             }
-        //             current = current.parent;
-        //         }
-        //     });
+        (e.categories || []).forEach((cat) => {
+            if (!tempCategories.find((c) => c.id === cat.id)) {
+                tempCategories.push({
+                    id: cat.id,
+                    name: cat.name,
+                    parent_id: cat.parent_id,
+                    ...cat
+                });
+            }
+
+            (cat.parent_tree || []).forEach((parentCat) => {
+                if (!tempCategories.find((c) => c.id === parentCat.id)) {
+                    tempCategories.push({
+                        id: parentCat.id,
+                        name: parentCat.name,
+                        parent_id: parentCat.parent_id,
+                        ...parentCat
+                    });
+                }
+            });
+        });
     });
+
     products.value = res.data.data;
 
-    // First run: build the allCategories from the initial products
-    // if (!allCategories.value.length && products.value.length) {
-    //     buildAllCategories(products.value);
-    // }
-
-    // categories for the CategoriesTree - only those that have products in this result
-    // categories.value = allCategories.value.filter((c) => tempCategoryIds.includes(c.id));
+    allCategories.value = tempCategories;
+    categories.value = tempCategories;
 
     meta.first = (meta.page - 1) * meta.limit;
     meta.total = res.data.total;

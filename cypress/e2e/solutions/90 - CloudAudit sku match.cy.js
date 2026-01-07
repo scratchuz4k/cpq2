@@ -1,0 +1,90 @@
+const { generateHash } = require('../../support/utils.js');
+const product = {
+    sku: 'e8f81a67-bd96-4074-b108-cf193eb9433b',
+    name: 'Product EXCHANGE_S_ESSENTIALS'
+};
+const productPrice = {
+    code: 1,
+    cost: 10,
+    price: 10
+};
+
+describe('Match CouldAudit Sku', () => {
+    beforeEach(() => {
+        cy.login('companyadmin@example.com', 'werwerwer');
+    });
+
+    it('Create a CouldAudit Quote', () => {
+        cy.visit('/');
+        cy.get('#create-tab').click();
+
+        cy.selectFirstOption('account_id');
+        cy.get('#btn-next-step').click();
+
+        cy.get('#solution_type-cloud_audit').click();
+        cy.get('#btn-next-step').click();
+
+        cy.wait(500);
+        cy.get('input[type="radio"]').click({ force: true });
+        cy.get('#btn-next-step').click();
+
+        cy.get('#table-simple tbody tr').each(($row) => {
+            // Price column (3rd column)
+            cy.wrap($row)
+                .find('td')
+                .eq(2)
+                .invoke('text')
+                .then((text) => {
+                    expect(text.trim()).to.equal('N/A');
+                });
+
+            // Total Price column (4th column)
+            cy.wrap($row)
+                .find('td')
+                .eq(3)
+                .invoke('text')
+                .then((text) => {
+                    expect(text.trim()).to.equal('N/A');
+                });
+        });
+    });
+
+    it('Create a product with the same sku', () => {
+        cy.visit('/');
+        cy.get('#my-account').click();
+        cy.get('#link-products').click();
+        cy.get('#product-create-btn').click();
+
+        cy.get('#product-sku').type(product.sku);
+        cy.get('#product-name').type(product.name);
+
+        cy.get('#1-1').click();
+        cy.get('#add-price-btn').click();
+
+        cy.get('#price-code').type(productPrice.code);
+        cy.get('#price-cost').type(productPrice.cost);
+        cy.get('#price-price').type(productPrice.price);
+
+        cy.get('.p-dialog .btn.btn-primary').click();
+
+        cy.get('#btn-save-product').click();
+        cy.get('.notyf').contains('Created with Success');
+    });
+
+    it('Check CouldAudit quote prices', () => {
+        cy.visit('/quotes');
+        cy.get('#datatable-btn-0-edit').click();
+
+        cy.contains('#table-simple tbody tr td', product.name)
+            .parents('tr')
+            .find('td')
+            .then(($cells) => {
+                const qty = parseInt($cells.eq(1).text().trim().replace('x', ''));
+                const price = parseFloat($cells.eq(2).text().replace(/[£,]/g, '').trim());
+                const totalPrice = parseFloat($cells.eq(3).text().replace(/[£,]/g, '').trim());
+                console.log(qty);
+                expect(price).to.eq(productPrice.price);
+                expect(totalPrice).to.eq(qty * price);
+            });
+    });
+});
