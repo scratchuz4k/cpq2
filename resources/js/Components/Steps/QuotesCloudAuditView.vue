@@ -143,7 +143,6 @@ const handleQuoteItems = async () => {
         }
     }
 
-    const reviewProduct = await getReviewProduct();
     const quoteItemReviewProduct = quote.items.find((x) => x.product_code === 'Paid-PSA-Review');
 
     if (configs.cloud_selected_option === 'review' && !quoteItemReviewProduct) {
@@ -211,8 +210,6 @@ const getReviewProduct = async () => {
             price: 356,
             price_plan_id: 1
         };
-
-        return reviewProduct.value;
     } catch (error) {
         notyf.error(error.response.data.message);
     }
@@ -231,6 +228,7 @@ watch(
     },
     { immediate: true }
 );
+getReviewProduct();
 </script>
 <template>
     <div class="row justify-content-between mb-3">
@@ -246,8 +244,8 @@ watch(
                     <tr>
                         <th>Products</th>
                         <th>Subscribed</th>
-                        <th>Assinged</th>
-                        <th>Unassinged</th>
+                        <th>Assigned</th>
+                        <th>Unassigned</th>
                         <th>Price</th>
                         <th>Total Price</th>
                     </tr>
@@ -419,8 +417,8 @@ watch(
                 <div class="col">
                     <RadioCard v-model="configs.cloud_selected_option" :value="'review'" name="cloud-selected-option">
                         <p class="font-bold mb-2">Paid PSA review</p>
-                        <p>
-                            One-off fee of £356.00<br />
+                        <p v-if="reviewProduct">
+                            One-off fee of {{ format.GBP(reviewProduct.price?.net_spa ?? reviewProduct.price) }}<br />
                             Keep licenses where they are
                         </p>
                     </RadioCard>
