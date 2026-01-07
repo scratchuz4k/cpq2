@@ -3,8 +3,8 @@
         <a class="nav-link" href="#" @click="openNotification">
             <font-awesome-icon :icon="['far', 'bell']" />
 
-            <div v-if="total && total > 0" class="notification-badge">
-                {{ total }}
+            <div v-if="totalUnread && totalUnread > 0" class="notification-badge">
+                {{ totalUnread }}
             </div>
         </a>
         <div id="header-notification-dropdown" :class="[showModal ? 'show' : '']">
@@ -51,20 +51,18 @@
 import queryString from 'query-string';
 import { onMounted, ref, watch } from 'vue';
 import { usePage } from '@inertiajs/vue3';
-import { template, followNotification } from '@composables/useNotification';
+import { template, followNotification, getTotalUnread, totalUnread } from '@composables/useNotification';
 
 const page = usePage();
 const user = page.props.auth.user;
 
 const showModal = ref(false);
 const notifications = ref([]);
-const total = ref(0);
 
-const openNotification = () => {
+const openNotification = async () => {
     showModal.value = !showModal.value;
     if (showModal.value) {
         getNotifications();
-        getTotalUnread();
     }
 };
 
@@ -91,35 +89,7 @@ const getNotifications = () => {
         });
 };
 
-const getTotalUnread = () => {
-    let string = queryString.stringify({
-        order: 'desc',
-        orderBy: 'created_at',
-        filters: JSON.stringify([
-            {
-                column: 'user_id',
-                operator: 'equals',
-                value: user.id
-            },
-            {
-                column: 'is_read',
-                operator: 'equals',
-                value: false
-            }
-        ])
-    });
-
-    axios
-        .get('/api/notifications?' + string)
-        .then((response) => {
-            total.value = response.data.meta.total;
-        })
-        .catch((error) => {
-            console.error('Error fetching notifications:', error);
-        });
-};
-
-onMounted(() => {
+onMounted(async () => {
     getNotifications();
     getTotalUnread();
     var select = document.getElementById('header-notification-button');

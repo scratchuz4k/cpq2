@@ -1,19 +1,34 @@
 <template>
     <Head title="Notifications" />
     <AuthenticatedLayout>
-        <div class="container" style="border: 1px solid lightgray; border-radius: 5px; background-color: white">
-            <h2 class="mt-3">Notifications HUB</h2>
-            <div class="row mb-2 px-1 py-2">
+        <div class="container panel">
+            <Header title="Notifications" :breadcrumbs="items">
+                <template #buttons>
+                    <button
+                        id="notifications-mark-all-read"
+                        class="btn btn-secondary"
+                        @click="markAllasRead()"
+                        :disabled="totalUnread == 0"
+                    >
+                        <font-awesome-icon :icon="['fas', 'eye']" />
+                        Mark All as Read
+                    </button>
+                </template>
+            </Header>
+            <div class="row mb-2 px-1 py-2 justify-content-between align-items-center">
                 <div class="col-2">
                     <p class="bold">Group By:</p>
-                    <Select
-                        v-model="group"
-                        :options="options"
-                        fluid
-                        size="small"
-                        option-label="label"
-                        option-value="value"
-                    />
+                    <Select v-model="group" :options="options" fluid option-label="label" option-value="value" />
+                </div>
+                <div class="col-3">
+                    <p class="bold">Search:</p>
+
+                    <IconField>
+                        <InputIcon>
+                            <font-awesome-icon :icon="['fas', 'search']" />
+                        </InputIcon>
+                        <InputText id="datatable-search" v-model="global" type="search" placeholder="Keyword Search" />
+                    </IconField>
                 </div>
             </div>
             <hr class="m-0 mb-3" />
@@ -46,21 +61,37 @@
                 </li>
                 <li v-if="notifications.length === 0" class="list-group-item">No new notifications.</li>
             </ul>
+            <Paginator
+                v-model:first="meta.first"
+                :rows="meta.limit"
+                :totalRecords="meta.total"
+                :rowsPerPageOptions="[10, 20, 50]"
+                @page="handlePaginator"
+            >
+            </Paginator>
         </div>
     </AuthenticatedLayout>
 </template>
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link } from '@inertiajs/vue3';
+import { IconField, InputIcon, InputText } from 'primevue';
 import queryString from 'query-string';
-import { onMounted, ref, watch } from 'vue';
+import { onMounted, ref, watch, reactive } from 'vue';
 import { usePage } from '@inertiajs/vue3';
-import Avatar from 'primevue/avatar';
-import { template, followNotification } from '@composables/useNotification';
+import { template, followNotification, getTotalUnread, totalUnread } from '@composables/useNotification';
 import Select from 'primevue/select';
+import Paginator from 'primevue/paginator';
 
 const page = usePage();
 const user = page.props.auth.user;
+const global = ref(null);
+const meta = reactive({
+    page: 1,
+    total: 0,
+    first: 1,
+    limit: 10
+});
 
 const group = ref('date');
 const options = ref([
@@ -80,7 +111,6 @@ const options = ref([
 
 const showModal = ref(false);
 const notifications = ref([]);
-const total = ref(0);
 
 const getNotifications = () => {
     let string = queryString.stringify({
@@ -88,38 +118,68 @@ const getNotifications = () => {
         orderBy: 'created_at',
         group: group.value,
         groupOrder: 'desc',
+        limit: meta.limit,
+        page: meta.page,
         filters: JSON.stringify([
             {
                 column: 'user_id',
                 operator: 'equals',
                 value: user.id
             }
-        ])
+        ]),
+        search: global.value
     });
 
     axios
         .get('/api/notifications?' + string)
         .then((response) => {
             notifications.value = response.data.data;
-            // total.value = response.data.meta.total;
+            meta.total = response.data.total;
+            meta.first = (meta.page - 1) * meta.limit;
         })
         .catch((error) => {
             console.error('Error fetching notifications:', error);
         });
 };
 
-const toggleNotification = async (notification) => {
+const markAllasRead = async (item) => {
+    let string = queryString.stringify({
+        filters: JSON.stringify([
+            {
+                column: 'user_id',
+                operator: 'equals',
+                value: user.id
+            },
+            {
+                column: 'is_read',
+                operator: 'equals',
+                value: false
+            }
+        ]),
+        limit: 1000
+    });
+
+    let res = await axios.get('/api/notifications?' + string);
+    let items = res.data.data;
     try {
-        await axios.put('/api/notifications/' + notification.id, {
-            is_read: !notification.is_read
-        });
-        getNotifications();
-    } catch (error) {
-        notyf.error(error.response.data.message);
+        for (const x of items) {
+            await axios.put(`/api/notifications/${x.id}`, {
+                is_read: true
+            });
+        }
+    } catch (ex) {
+        alert(ex.response.data.message);
     }
+    await getNotifications();
+    await getTotalUnread();
+};
+const handlePaginator = (ev) => {
+    meta.limit = ev.rows;
+    meta.page = ev.page + 1;
+    getNotifications();
 };
 
-onMounted(() => {
+onMounted(async () => {
     getNotifications();
     var select = document.getElementById('header-notification-button');
     document.addEventListener('click', (ev) => {
@@ -132,5 +192,13 @@ onMounted(() => {
 watch(group, () => {
     getNotifications();
 });
+watch(global, () => {
+    getNotifications();
+});
+
+const items = ref([
+    { label: 'Home', url: '/' },
+    { label: 'Notifications', url: '/notifications' }
+]);
 </script>
 <style scoped></style>

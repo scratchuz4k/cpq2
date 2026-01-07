@@ -1,3 +1,10 @@
+import { ref } from 'vue';
+import queryString from 'query-string';
+import { usePage } from '@inertiajs/vue3';
+const page = usePage();
+
+export const totalUnread = ref(0);
+
 export const template = {
     quote_submitted: 'notification-default',
     quote_approved: 'notification-default',
@@ -14,4 +21,27 @@ export const followNotification = async (notification) => {
     } catch (error) {
         notyf.error(error.response.data.message);
     }
+};
+
+export const getTotalUnread = async () => {
+    const user = page.props.auth.user;
+    let string = queryString.stringify({
+        order: 'desc',
+        orderBy: 'created_at',
+        filters: JSON.stringify([
+            {
+                column: 'user_id',
+                operator: 'equals',
+                value: user.id
+            },
+            {
+                column: 'is_read',
+                operator: 'equals',
+                value: false
+            }
+        ])
+    });
+
+    let res = await axios.get('/api/notifications?' + string);
+    totalUnread.value = res.data.meta.total;
 };

@@ -2,6 +2,7 @@
 
 namespace App\Trait;
 
+use App\Models\Tenant;
 use Illuminate\Database\Eloquent\Model;
 
 trait SetTenantId
@@ -34,6 +35,8 @@ trait SetTenantId
             // Check if tenant_id is not set and the user is authenticated
             if (auth()->check() && ! $model->tenant_id) {
                 $model->tenant_id = auth()->user()->tenant_id;
+            } else {
+                $model->tenant_id = Tenant::current()->id;
             }
         });
     }

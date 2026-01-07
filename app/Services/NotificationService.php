@@ -3,13 +3,15 @@
 namespace App\Services;
 
 use App\Models\Notification;
+use App\Models\User;
 
 class NotificationService
 {
     public function store(array $array): Notification
     {
+        $system = User::where('email', 'system@cpq.cloudmarket.com')->first();
         $notification = Notification::create([
-            'sender_id' => auth()->id(),
+            'sender_id' => auth()->id() ?? $system->id,
             'date' => now(),
             ...$array,
         ]);
