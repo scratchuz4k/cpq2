@@ -103,7 +103,7 @@ class CloudMarketService
                 'finished_at' => $content['finished_at'],
                 'created_at' => $content['created_at'],
                 'filters' => $content['filters'],
-                'errors' => isset($content['errors']) ? $content['errors'] : [],
+                'errors' => isset($content['errors']) ? mapProviderErrors($content['errors']) : [],
             ]
         );
     }

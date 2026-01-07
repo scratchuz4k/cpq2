@@ -125,3 +125,55 @@ if (! function_exists('handleBlockedQuote')) {
         return response()->json(['message' => 'Quote is blocked'], 400);
     }
 }
+
+if (! function_exists('mapProviderErrors')) {
+    function mapProviderErrors(array $errors): array
+    {
+        $errorMessages = [
+            'BadGateway' => 'A Bad Gateway error occurred, resulting in partial or no results.',
+            'Request timed out' => 'The request timed out, resulting in partial or no results.',
+            'InternalServerError' => 'An error occurred on the server.',
+            'An error occurred while sending the request' => 'There was an issue sending your request.',
+            'TooManyRequests' => 'The system is experiencing a high volume of requests.',
+            'Too Many Attempts' => 'There are currently too many requests being processed.',
+            'System.Text.Json.JsonException' => 'The request could not be processed due to a data format issue.',
+            'Service Unavailable' => 'The service is temporarily unavailable.',
+            'There is an error in XML document' => 'The request could not be processed due to a data format issue.',
+            'No provider is configured' => 'No provider is configured, please add at least one provider with the required credentials to obtain a quote.',
+            'Request failed with status Unauthorized' => 'Request failed with status Unauthorized (Please check login credentials for this provider).',
+            'Address not found in cache' => 'No results were found for this address.',
+        ];
+
+        $mappedErrors = [];
+
+        foreach ($errors as $error) {
+            if (($error['provider'] ?? null) === 'gamma') {
+                continue;
+            }
+
+            $provider = $error['provider'] ?? null;
+            $responseText = (string) ($error['response'] ?? '');
+
+            $mappedMessage = null;
+            foreach ($errorMessages as $key => $message) {
+                if (str_contains($responseText, $key)) {
+                    $mappedMessage = $message;
+                    break;
+                }
+            }
+
+            $mappedErrors[] = [
+                'provider' => $provider,
+                'response' => $mappedMessage ?? 'An error occurred, resulting in partial or no results',
+            ];
+        }
+
+        $unique = [];
+        foreach ($mappedErrors as $e) {
+            $uniqKey = ($e['provider'] ?? '').'|'.($e['response'] ?? '');
+            $unique[$uniqKey] = $e;
+        }
+
+        return array_values($unique);
+    }
+}

@@ -123,40 +123,7 @@ const getArticles = async (clearCache = false, runTimeout = false) => {
     try {
         let res = await axios.get('/api/cloudmarket/products/failover?' + query);
 
-        const errorMessages = {
-            BadGateway: 'A Bad Gateway error occurred, resulting in partial or no results.',
-            'Request timed out': 'The request timed out, resulting in partial or no results.',
-            InternalServerError: 'An error occurred on the server.',
-            'An error occurred while sending the request': 'There was an issue sending your request.',
-            TooManyRequests: 'The system is experiencing a high volume of requests.',
-            'Too Many Attempts': 'There are currently too many requests being processed.',
-            'System.Text.Json.JsonException': 'The request could not be processed due to a data format issue.',
-            'Service Unavailable': 'The service is temporarily unavailable.',
-            'There is an error in XML document': 'The request could not be processed due to a data format issue.',
-            'No provider is configured':
-                'No provider is configured, please add at least one provider with the required credentials to obtain a quote.',
-            'Request failed with status Unauthorized':
-                'Request failed with status Unauthorized (Please check login credentials for this provider).',
-            'Address not found in cache': 'No results were found for this address.'
-        };
-        if (res.data.errors) {
-            const mappedErrors = res.data.errors
-                .filter((error) => error.provider !== 'gamma')
-                .map((error) => {
-                    for (const [key, message] of Object.entries(errorMessages)) {
-                        if (error.response.includes(key)) {
-                            return { provider: error.provider, response: message };
-                        }
-                    }
-                    return {
-                        provider: error.provider,
-                        response: 'An error occurred, resulting in partial or no results'
-                    };
-                });
-            errors.value = mappedErrors.filter(
-                (e, i, arr) => arr.findIndex((x) => x.provider === e.provider && x.response === e.response) === i
-            );
-        }
+        errors.value = res.data.errors ?? [];
         articles.value = res.data.data ?? [];
         articles.value = articles.value.map((article) => {
             if (article.productName.includes('with router:')) {
