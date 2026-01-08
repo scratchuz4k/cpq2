@@ -25,7 +25,7 @@ const proxyValue = computed({
 const page = usePage();
 const tenant = page.props.tenant;
 const solution_type = props.modelValue.solution_type;
-const loading = ref(true);
+const isLoading = ref(false);
 const reviewProduct = ref(null);
 setQuote(props.modelValue);
 
@@ -103,6 +103,7 @@ const loadItem = async (itemsList) => {
 };
 
 const handleQuoteItems = async () => {
+    isLoading.value = true;
     try {
         let res = await axios.put(`/api/quotes/${quote.id}`, {
             configurations: {
@@ -148,19 +149,19 @@ const handleQuoteItems = async () => {
     if (configs.cloud_selected_option === 'review' && !quoteItemReviewProduct) {
         await createQuoteItem({
             quote_id: quote.id,
-            product_code: reviewProduct.sku,
-            product_id: reviewProduct.id,
+            product_code: reviewProduct.value.sku,
+            product_id: reviewProduct.value.id,
             quantity: 1,
-            contract_length: reviewProduct.contract_length,
-            name: reviewProduct.name,
-            raw_price: reviewProduct.price ? reviewProduct.price.net : 0,
-            price: reviewProduct.price ? reviewProduct.price.net_spa : 0,
-            price_plan_id: reviewProduct.price_plan_id
+            contract_length: reviewProduct.value.contract_length,
+            name: reviewProduct.value.name,
+            raw_price: reviewProduct.value.price ? reviewProduct.value.price?.net : 0,
+            price: reviewProduct.value.price ? reviewProduct.value.price?.net_spa : 0,
+            price_plan_id: reviewProduct.value.price_plan_id
         });
     } else if (configs.cloud_selected_option !== 'review' && quoteItemReviewProduct) {
         await removeQuoteItem(quoteItemReviewProduct.id);
     }
-    await saveQuote();
+    saveQuote();
 };
 
 const saveQuote = async () => {
@@ -173,6 +174,7 @@ const saveQuote = async () => {
 };
 
 const closeQuote = async () => {
+    isLoading.value = true;
     try {
         let res = await axios.delete('/api/quotes/' + quote.id);
         if (res) {
@@ -424,18 +426,30 @@ getReviewProduct();
                     </RadioCard>
                 </div>
             </div>
-
-            <div
-                v-if="configs.cloud_selected_option === 'none'"
-                class="d-flex justify-content-between flex-row-reverse mt-3"
-            >
-                <button id="btn-close-quote" class="btn btn-primary" @click="closeQuote()">
+            <div class="d-flex justify-content-between flex-row-reverse mt-3">
+                <button
+                    v-if="configs.cloud_selected_option === 'none'"
+                    id="btn-close-quote"
+                    class="btn btn-primary"
+                    @click="closeQuote()"
+                >
                     Close
+                    <font-awesome-icon v-if="isLoading" :icon="['fa', 'spinner']" class="fa-spin"></font-awesome-icon>
                     <font-awesome-icon :icon="['fas', 'xmark']" class="ms-2"></font-awesome-icon>
                 </button>
-            </div>
 
-            <ButtonStep v-else v-model="proxyValue" @click="handleQuoteItems()"> </ButtonStep>
+                <button
+                    v-else
+                    id="btn-next-step"
+                    class="btn btn-primary"
+                    :disabled="isLoading"
+                    @click="handleQuoteItems()"
+                >
+                    Next
+                    <font-awesome-icon v-if="isLoading" :icon="['fa', 'spinner']" class="fa-spin"></font-awesome-icon>
+                    <font-awesome-icon :icon="['fas', 'arrow-right']" class="ms-2"></font-awesome-icon>
+                </button>
+            </div>
         </div>
         <div class="col-lg-3">
             <InfoBox>
