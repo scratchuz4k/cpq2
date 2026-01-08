@@ -41,11 +41,12 @@
                     </div>
                     <div class="ms-3 mt-1">
                         <div
-                            v-for="item in notification.items"
-                            class="w-100 px-2"
+                            v-for="(item, index) in notification.items"
+                            :id="`notification-line-${index + 1}`"
+                            class="notification-line w-100 px-2"
                             @click="followNotification(item)"
                             style="cursor: pointer; position: relative; border-bottom: 1px solid #4a3a6f"
-                            :class="[item.is_read ? '' : 'unread']"
+                            :class="[item.is_read ? 'read' : 'unread']"
                         >
                             <div
                                 v-if="!item.is_read"
