@@ -36,7 +36,8 @@ trait SetTenantId
             if (auth()->check() && ! $model->tenant_id) {
                 $model->tenant_id = auth()->user()->tenant_id;
             } else {
-                $model->tenant_id = Tenant::current() ? Tenant::current()?->id : null;
+                $tenant = Tenant::current();
+                $model->tenant_id = $model->tenant_id ?? $tenant?->id;
             }
         });
     }
