@@ -22,6 +22,13 @@ class Notification extends Model
         'date',
     ];
 
+    protected function casts(): array
+    {
+        return [
+            'data' => 'array',
+        ];
+    }
+
     public static function booted()
     {
         static::addGlobalScope(new TenantScope);
