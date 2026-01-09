@@ -88,7 +88,7 @@ const loadItem = async (itemsList) => {
     const res = await axios.get('/api/products?' + string);
     (res.data.data || []).forEach((p) => {
         itemsList
-            .filter((item) => item.skuId === p.sku)
+            .filter((item) => [item.skuId, item.skuPartNumber].includes(p.sku))
             .forEach((item) => {
                 Object.assign(item, {
                     ...p,
@@ -118,7 +118,7 @@ const handleQuoteItems = async () => {
         alert(ex.response.data.message);
     }
 
-    const quoteHasItems = quote.items.length || quote.items_trashed?.length;
+    const quoteHasItems = quote.items.length;
     if (!quoteHasItems) {
         for (const item of items.value.filter((x) => x.id)) {
             await createQuoteItem({
@@ -149,7 +149,7 @@ const handleQuoteItems = async () => {
     if (configs.cloud_selected_option === 'review' && !quoteItemReviewProduct) {
         await createQuoteItem({
             quote_id: quote.id,
-            product_code: reviewProduct.value.sku,
+            product_code: reviewProduct.value.product_code,
             product_id: reviewProduct.value.id,
             quantity: 1,
             contract_length: reviewProduct.value.contract_length,
@@ -210,7 +210,7 @@ const getReviewProduct = async () => {
             name: 'Paid PSA review',
             raw_price: 356,
             price: 356,
-            price_plan_id: 1
+            price_plan_id: 2
         };
     } catch (error) {
         notyf.error(error.response.data.message);
