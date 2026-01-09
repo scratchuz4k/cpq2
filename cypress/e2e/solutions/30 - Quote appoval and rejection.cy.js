@@ -67,6 +67,7 @@ describe('Quote Approval and Rejection', () => {
         cy.get('#datatable-btn-0-show').click();
         cy.wait(500);
         cy.get('#quote-approval-start').click();
+        cy.wait(500);
         cy.get('#quote-approval-show-dialog').click();
         cy.get('.quote-approval-row').its('length').should('eq', 2);
     });
