@@ -142,6 +142,11 @@ if (! function_exists('mapProviderErrors')) {
             'No provider is configured' => 'No provider is configured, please add at least one provider with the required credentials to obtain a quote.',
             'Request failed with status Unauthorized' => 'Request failed with status Unauthorized (Please check login credentials for this provider).',
             'Address not found in cache' => 'No results were found for this address.',
+            'At least one of Building Name or Number is required' => 'At least one of Building Name or Number is required.',
+            'Products are not available at' => 'No products were found for this location.',
+            'No results for this location' => 'No results were found for this location.',
+            'VMB requires one of UPRN or Lat/Long for the request' => 'Virgin Media Business requires one of UPRN or Latitude/Longitude for the request.',
+            'Street is not set' => 'There is no street set for this address.',
         ];
 
         $mappedErrors = [];
