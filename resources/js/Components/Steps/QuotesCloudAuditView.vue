@@ -118,9 +118,17 @@ const handleQuoteItems = async () => {
         alert(ex.response.data.message);
     }
 
-    const quoteHasItems = quote.items.length;
-    if (!quoteHasItems) {
-        for (const item of items.value.filter((x) => x.id)) {
+    for (const item of items.value.filter((x) => x.id)) {
+        const quoteItem = quote.items.find((x) => x.product_code === item.sku);
+        const itemQuantity = parseInt(configs.unassigned_licenses) === 1 ? item.assignedUnits : item.subscribedUnits;
+
+        if (quoteItem) {
+            if (quoteItem.quantity === itemQuantity) continue;
+
+            await updateQuoteItem(quoteItem.id, {
+                quantity: itemQuantity
+            });
+        } else {
             await createQuoteItem({
                 quote_id: quote.id,
                 product_code: item.sku,
@@ -132,15 +140,6 @@ const handleQuoteItems = async () => {
                 price: item.price ? item.price.net_spa : 0,
                 price_plan_id: item.price_plan_id
             });
-        }
-    } else if (quoteHasItems) {
-        for (const item of items.value.filter((x) => x.id)) {
-            const quoteItem = quote.items.find((x) => x.product_code === item.sku);
-            if (item.quantity !== item.assignedUnits) {
-                await updateQuoteItem(quoteItem.id, {
-                    quantity: parseInt(configs.unassigned_licenses) === 1 ? item.assignedUnits : item.subscribedUnits
-                });
-            }
         }
     }
 
