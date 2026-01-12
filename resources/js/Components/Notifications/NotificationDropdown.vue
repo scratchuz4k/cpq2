@@ -8,34 +8,34 @@
             </div>
         </a>
         <div id="header-notification-dropdown" :class="[showModal ? 'show' : '']">
-            <div
-                id="header-notification-content"
-                class="p-2"
-                style="border: 1px solid lightgray; border-radius: 5px; background-color: white"
-            >
-                <div class="d-flex justify-content-between align-items-center mb-2 px-1 py-2">
-                    <p class="bold">Notifications</p>
-                    <a href="/notifications" class="text-decoration-none">View All</a>
-                </div>
-                <hr class="m-0" />
+            <div id="header-notification-title" class="d-flex justify-content-between align-items-center p-3">
+                <p class="bold">Notifications</p>
+                <a
+                    href="/notifications"
+                    class="text-decoration-none badge border border-primary text-primary ms-1 lh-sm"
+                    >View All</a
+                >
+            </div>
+            <div id="header-notification-content">
                 <ul class="m-0 p-0" style="list-style: none">
                     <li
                         v-for="notification in notifications"
                         :key="notification.id"
-                        class="p-1 px-2"
                         :class="[notification.is_read ? '' : 'unread']"
-                        style="border-bottom: 1px solid #4a3a6f"
+                        @click="followNotification(notification)"
+                        style="cursor: pointer"
                     >
-                        <div class="d-flex align-items-center w-100">
-                            <div class="w-100" @click="followNotification(notification)" style="cursor: pointer">
+                        <div class="d-flex align-items-center w-100 px-3 py-2">
+                            <div class="w-100">
                                 <div class="d-flex align-items-center justify-content-between">
-                                    <p class="bold m-0 p-0">
-                                        {{ notification.sender.name }}
-                                        <small class="ms-2 p-0" style="font-size: 10px; color: gray">
+                                    <div class="d-flex justify-content-between align-items-center w-100">
+                                        <div class="bold m-0 p-0">
+                                            {{ notification.sender.name }}
+                                        </div>
+                                        <small class="p-0 text-muted">
                                             {{ format.date(notification.created_at) }}
                                         </small>
-                                    </p>
-                                    <div v-if="!notification.is_read" class="unread-circle d-flex me-2"></div>
+                                    </div>
                                 </div>
                                 <component :is="template[notification.type]" :notification="notification" />
                             </div>
@@ -106,13 +106,13 @@ onMounted(async () => {
 }
 .notification-badge {
     position: absolute;
-    top: 0;
-    right: 0;
-    background-color: red;
+    top: -4px;
+    right: -2px;
+    background-color: var(--color-primary);
     color: white;
     border-radius: 50%;
-    width: 16px;
-    height: 16px;
+    width: 20px;
+    height: 20px;
     font-size: 10px;
     display: flex;
     align-items: center;
@@ -125,21 +125,58 @@ onMounted(async () => {
     top: 120%;
     right: 0;
     width: 500px;
-    max-height: 0;
-    overflow-y: auto;
     z-index: 1000;
     transition:
-        max-height 0.4s ease-in-out,
+        visibility 0.2s ease-in-out,
         opacity 0.2s ease-in-out;
-    pointer-events: none;
+    visibility: hidden;
     padding: 0;
-    border: none;
     opacity: 0;
+    border: none;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: white;
+    border-radius: 10px;
+    overflow: hidden;
 }
 
 #header-notification-dropdown.show {
-    max-height: 400px;
-    pointer-events: auto;
+    visibility: visible;
     opacity: 1;
+}
+
+#header-notification-title {
+    position: relative;
+    border-bottom: 2px solid #e1e3e4;
+}
+
+#header-notification-content {
+    position: relative;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+#header-notification-content ul li {
+    position: relative;
+    font-size: 14px;
+    border-top: 1px solid #e1e3e4;
+    transition: background-color 0.1s ease-in-out;
+    background-color: #fff;
+}
+
+#header-notification-content ul li:hover {
+    background-color: var(--lighter-grey);
+}
+
+#header-notification-content ul li.unread {
+    background-color: #e1d3e1;
+}
+#header-notification-content ul li.unread:before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 4px;
+    height: 100%;
+    background-color: var(--color-primary);
 }
 </style>

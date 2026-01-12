@@ -1,6 +1,6 @@
 <template>
-    <div class="w-100 text-start" style="font-size: 14px">
-        <p class="small">{{ props.notification.description }}</p>
+    <div class="w-100 text-start">
+        {{ props.notification.description }}
     </div>
 </template>
 <script setup>
@@ -11,8 +11,3 @@ const props = defineProps({
     }
 });
 </script>
-<style>
-.bg-whitesmoke {
-    background-color: whitesmoke;
-}
-</style>

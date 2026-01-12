@@ -15,14 +15,11 @@
                     </button>
                 </template>
             </Header>
-            <div class="row mb-2 px-1 py-2 justify-content-between align-items-center">
+            <div class="row px-1 py-2 justify-content-between align-items-center">
                 <div class="col-2">
-                    <p class="bold">Group By:</p>
                     <Select v-model="group" :options="options" fluid option-label="label" option-value="value" />
                 </div>
                 <div class="col-3">
-                    <p class="bold">Search:</p>
-
                     <IconField>
                         <InputIcon>
                             <font-awesome-icon :icon="['fas', 'search']" />
@@ -31,21 +28,20 @@
                     </IconField>
                 </div>
             </div>
-            <hr class="m-0 mb-3" />
             <ul class="m-0 p-0" style="list-style: none">
                 <li v-for="notification in notifications" :key="notification.id" class="p-2 m-0">
-                    <div class="d-flex align-items-center justify-content-between">
+                    <div class="d-flex align-items-center justify-content-between py-2">
                         <p class="bold m-0 p-0">
                             {{ notification.name }}
                         </p>
                     </div>
-                    <div class="ms-3 mt-1">
+                    <div>
                         <div
                             v-for="(item, index) in notification.items"
                             :id="`notification-line-${index + 1}`"
-                            class="notification-line w-100 px-2"
+                            class="notification-line w-100 px-3 py-2"
                             @click="followNotification(item)"
-                            style="cursor: pointer; position: relative; border-bottom: 1px solid #4a3a6f"
+                            style="cursor: pointer; position: relative"
                             :class="[item.is_read ? 'read' : 'unread']"
                         >
                             <div
@@ -54,7 +50,7 @@
                                 style="position: absolute; right: 5px; top: 5px"
                             ></div>
                             <component :is="template[item.type]" :notification="item" />
-                            <small class="p-0" style="font-size: 10px; color: gray">
+                            <small class="p-0 text-muted">
                                 {{ format.date(item.created_at) }}
                             </small>
                         </div>
@@ -197,9 +193,31 @@ watch(global, () => {
     getNotifications();
 });
 
-const items = ref([
-    { label: 'Home', url: '/' },
-    { label: 'Notifications', url: '/notifications' }
-]);
+const items = ref([{ label: 'Home', url: '/' }, { label: 'Notifications' }]);
 </script>
-<style scoped></style>
+<style scoped>
+.notification-line {
+    position: relative;
+    font-size: 14px;
+    border-bottom: 1px solid #e1e3e4;
+    transition: background-color 0.1s ease-in-out;
+    background-color: #fff;
+}
+
+.notification-line:hover {
+    background-color: var(--lighter-grey);
+}
+
+.notification-line.unread {
+    background-color: #e1d3e1;
+}
+.notification-line.unread:before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 4px;
+    height: 100%;
+    background-color: var(--color-primary);
+}
+</style>
