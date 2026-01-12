@@ -1,11 +1,11 @@
 <template>
     <div
         class="approvals-group-button flex me-2 p-0"
-        v-if="['quote', 'pending', 'approved', 'completed'].includes(quote.status.toLowerCase())"
+        v-if="['quote', 'pending', 'approved', 'completed', 'rejected'].includes(quote.status.toLowerCase())"
     >
         <button
             id="quote-approval-history"
-            v-if="['completed', 'pending'].includes(quote.status.toLowerCase()) && canToggleDialog()"
+            v-if="['completed', 'pending', 'rejected'].includes(quote.status.toLowerCase()) && canToggleDialog()"
             @click="toggleDialog()"
             class="btn btn-primary"
             :style="{
@@ -124,7 +124,8 @@
                                 class="badge rounded-pill"
                                 :class="{
                                     'bg-success text-white': item.status === 'approved',
-                                    'bg-danger text-white': item.status === 'rejected'
+                                    'bg-danger text-white': item.status === 'pending',
+                                    'bg-error text-white': item.status === 'rejected'
                                 }"
                             >
                                 {{ format.capitalizeFirstLetter(item.status) }}
