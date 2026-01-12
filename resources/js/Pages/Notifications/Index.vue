@@ -32,7 +32,7 @@
                 <li v-for="notification in notifications" :key="notification.id" class="p-2 m-0">
                     <div class="d-flex align-items-center justify-content-between py-2">
                         <p class="bold m-0 p-0">
-                            {{ notification.name }}
+                            {{ resolveFriendlyLabel(notification.name) }}
                         </p>
                     </div>
                     <div>
@@ -178,6 +178,16 @@ const handlePaginator = (ev) => {
     getNotifications();
 };
 
+const resolveFriendlyLabel = (name) => {
+    const labels = {
+        quote_submitted: 'Quote Submitted',
+        quote_approved: 'Quote Approved',
+        quote_rejected: 'Quote Rejected',
+        quote_expired: 'Quote Expired'
+    };
+    return labels[name] || name;
+};
+
 onMounted(async () => {
     getNotifications();
     var select = document.getElementById('header-notification-button');
@@ -192,6 +202,7 @@ watch(group, () => {
     getNotifications();
 });
 watch(global, () => {
+    meta.page = 1;
     getNotifications();
 });
 

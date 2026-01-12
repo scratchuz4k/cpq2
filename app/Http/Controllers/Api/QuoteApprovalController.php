@@ -62,7 +62,7 @@ class QuoteApprovalController extends BaseController
 
         foreach ($users as $user) {
             // Send notification to each user
-            $description = 'A new quote approval request has been submitted from: '.$quoteApproval->quote->account->name;
+            $description = 'A new quote approval request has been submitted for '.$quoteApproval->quote->account->name.' and is awaiting review';
             createNotification(NotificationEnum::QuoteSubmitted, $user, $description, route('quotes.show', ['quote' => $request->quote_id]), false);
         }
 

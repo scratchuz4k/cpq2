@@ -6,7 +6,7 @@ import { ref } from 'vue';
 import * as Sentry from '@sentry/vue';
 import TopBarSearchable from '@/Components/TopBarSearchable.vue';
 import Resources from '@/Components/Resources.vue';
-import { hasRole } from '@/Composables/useAuth.js';
+import { can, hasRole } from '@/Composables/useAuth.js';
 
 const page = usePage();
 const user = page.props.auth.user;
@@ -106,7 +106,7 @@ const currentTenant = ref(page.props.tenant);
                             <font-awesome-icon :icon="['far', 'user']" />
                         </a>
                     </li>
-                    <li class="nav-item">
+                    <li class="nav-item" v-if="can('viewAny notification')">
                         <NotificationDropdown></NotificationDropdown>
                     </li>
                     <li class="nav-item">
