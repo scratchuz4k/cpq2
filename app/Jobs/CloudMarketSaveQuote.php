@@ -6,27 +6,10 @@ use App\Helpers\Api\CloudMarketApi;
 use App\Models\Cloudmarket\Product;
 use App\Models\Quote;
 use Exception;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Foundation\Queue\Queueable;
-use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Log;
-use Spatie\Multitenancy\Jobs\TenantAware;
 use stdClass;
 
-class CloudMarketSaveQuote implements ShouldQueue, TenantAware
+class CloudMarketSaveQuote extends CloudMarket
 {
-    use Queueable;
-
-    public $timeout = 3600;
-
-    public $prices = [];
-
-    public $errors = [];
-
-    public $started_at = null;
-
-    public $tempFilters = [];
-
     /**
      * Create a new job instance.
      */
@@ -78,71 +61,5 @@ class CloudMarketSaveQuote implements ShouldQueue, TenantAware
         }
 
         return $products[0];
-    }
-
-    /**
-     * The job failed to process.
-     *
-     * @return void
-     */
-    public function failed(Exception $exception)
-    {
-        // Handle the failure, log exception details, etc.
-        $message = '['.strtoupper((string) env('APP_ENV')).'] CloudMarketSaveQuote failed with error: '.$exception->getMessage();
-
-        $error = [
-            'provider' => 'CPQ',
-            'response' => $exception->getMessage(),
-        ];
-        $errors = [];
-
-        $errors[] = $error;
-        array_merge($errors, $file?->errors ?? []);
-        // Handle the failure, log exception details, etc.
-        $message = '['.strtoupper((string) env('APP_ENV')).'] CloudMarketSaveQuote failed with error: '.json_encode($errors);
-
-        Log::error($message);
-        if (env('DISCORD_CLOUDMARKET_JOBS')) {
-            Http::post(env('DISCORD_CLOUDMARKET_JOBS'), ['content' => $message]);
-        }
-    }
-
-    private function getConsolidatedProviderGroup($provider): string
-    {
-        $sub_provider_mapping = [
-            'BT' => ['BT Wholesale', 'BTW', 'BT', 'BTO'],
-            'Virgin' => ['Virgin Media', 'Virgin Media Business', 'Virgin'],
-            'ITS' => ['ITS Technology Group', 'ITS'],
-            'TalkTalk' => ['TalkTalk Business', 'TalkTalk', 'TTB'],
-        ];
-
-        foreach ($sub_provider_mapping as $consolidated_name => $sub_providers) {
-            if (in_array($provider, $sub_providers)) {
-                return $consolidated_name;
-            }
-        }
-
-        return $provider;
-    }
-
-    private function processErrors($supplier, $message)
-    {
-        $unauthorizedMessages = [
-            'Request failed with status code Unauthorized',
-            'Un-authorised user',
-            'Bad credentials',
-        ];
-
-        foreach ($unauthorizedMessages as $unauthorizedMessage) {
-            if (str_contains((string) $message, $unauthorizedMessage)) {
-                $message = 'Request failed with status Unauthorized';
-                break;
-            }
-        }
-
-        return [
-            'provider' => $supplier,
-            'response' => $message,
-        ];
     }
 }
