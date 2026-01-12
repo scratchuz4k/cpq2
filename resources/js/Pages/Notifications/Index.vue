@@ -197,6 +197,7 @@ onMounted(async () => {
 });
 
 watch(group, () => {
+    meta.page = 1;
     getNotifications();
 });
 watch(global, () => {
