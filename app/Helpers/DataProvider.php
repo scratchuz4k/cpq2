@@ -114,13 +114,36 @@ class DataProvider
             return;
         }
 
-        if (count($orderByArray) == 2) {
-            $table = $this->builder->getModel()->getTable();
-            $this->builder = $this->builder->select($table.'.*')->leftJoinRelation(Str::camel($orderByArray[0]).' as '.$orderByArray[0])
-                ->orderBy($orderByArray[0].'.'.$orderByArray[1], $order);
+        if (count($orderByArray) >= 2) {
+            $this->applyRelationOrder($orderByArray, $order);
         } else {
             $this->builder = $this->builder->orderBy($orderBy, $order);
         }
+    }
+
+    private function applyRelationOrder(array $relations, string $order)
+    {
+        $table = $this->model->getTable();
+        $this->builder = $this->builder->select($table.'.*');
+
+        // Extract the column name (last element)
+        $column = array_pop($relations);
+
+        // Build nested relation path
+        $relationPath = [];
+        foreach ($relations as $part) {
+            $relationPath[] = Str::camel($part);
+        }
+
+        // Join the relation path with dots for nested relations
+        $fullRelationPath = implode('.', $relationPath);
+
+        // Create alias for the final table (use the last relation name)
+        $alias = end($relations);
+
+        // Apply the join
+        $this->builder = $this->builder->leftJoinRelation($fullRelationPath.' as '.$alias)
+            ->orderBy($alias.'.'.$column, $order);
     }
 
     private function processFilters()
