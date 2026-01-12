@@ -56,9 +56,7 @@
                         </div>
                     </div>
                 </li>
-                <li v-if="notifications.length === 0" class="list-group-item text-center py-3">
-                    No new notifications.
-                </li>
+                <li v-if="notifications.length === 0" class="list-group-item text-center py-4">No new notifications</li>
             </ul>
             <Paginator
                 v-model:first="meta.first"
