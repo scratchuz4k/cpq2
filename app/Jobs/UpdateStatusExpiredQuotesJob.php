@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Enums\NotificationEnum;
 use App\Enums\QuoteStatusesEnum;
 use App\Models\Quote;
 use App\Models\Tenant;
@@ -37,6 +38,19 @@ class UpdateStatusExpiredQuotesJob implements ShouldQueue
                 ? (int) $tenant->configs['quote_expiration_days']
                 : 30;
             $expirationDate = today()->subDays($expirationDays)->format('Y-m-d');
+
+            $notificationDate = today()->subDays($expirationDays - 2)->format('Y-m-d');
+            $notificationQuotes = Quote::whereIn('status', $this->statusThatCanBeUpdated)
+                ->whereDate('created_at', '<=', $notificationDate)
+                ->whereDate('created_at', '>=', $notificationDate)
+                ->get();
+
+            foreach ($notificationQuotes as $quote) {
+                $description = 'Your quote #'.$quote->id.' for the account '.$quote->account->name.' is about to expire in 2 days.';
+                createNotification(NotificationEnum::QuoteExpired, $quote->user, $description, route('quotes.show', ['quote' => $quote->id]), false);
+
+                Log::info("UpdateStatusExpiredQuotesJob | Quote#{$quote->id} ({$quote->created_at->format('Y-m-d')}) notified to be expired ");
+            }
 
             DB::transaction(function () use (
                 &$quotesUpdated,

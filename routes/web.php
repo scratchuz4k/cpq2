@@ -12,6 +12,7 @@ use App\Http\Controllers\Web\General\BlacklistController;
 use App\Http\Controllers\Web\GroupAccountController;
 use App\Http\Controllers\Web\GroupController;
 use App\Http\Controllers\Web\ImportController;
+use App\Http\Controllers\Web\NotificationController;
 use App\Http\Controllers\Web\ProductController;
 use App\Http\Controllers\Web\ProfileController;
 use App\Http\Controllers\Web\QuoteController;
@@ -95,6 +96,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         'roles' => RoleController::class,
         'imports' => ImportController::class,
         'steps' => StepController::class,
+        'notifications' => NotificationController::class,
     ]);
 
     Route::get('test', function () {

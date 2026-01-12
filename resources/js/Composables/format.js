@@ -9,6 +9,10 @@ const GBP = new Intl.NumberFormat('en-GB', {
     maximumFractionDigits: currency.precision ?? 2
 });
 
+const isSameDay = (d1, d2) => {
+    return d1.getFullYear() === d2.getFullYear() && d1.getMonth() === d2.getMonth() && d1.getDate() === d2.getDate();
+};
+
 const format = {
     date: (date) => {
         if (!date) {
@@ -38,6 +42,27 @@ const format = {
         // Otherwise, return formatted date as 'Y-m-d H:i'
         const dt = new Date(parsedDate);
         return dt.toISOString().slice(0, 16).replace('T', ' '); // Y-m-d H:i format
+    },
+    labelTodayYesterday: (date) => {
+        if (!date) return '';
+
+        const dt = new Date(date);
+        if (isNaN(dt.getTime())) return '';
+
+        const today = new Date();
+        const yesterday = new Date();
+        yesterday.setDate(today.getDate() - 1);
+
+        if (isSameDay(dt, today)) {
+            return 'Today';
+        }
+
+        if (isSameDay(dt, yesterday)) {
+            return 'Yesterday';
+        }
+
+        // fallback to your default format
+        return date;
     },
     formattedDate: (date, formatStr = 'dd-MM-yyyy HH:mm:ss') => {
         if (!date) {

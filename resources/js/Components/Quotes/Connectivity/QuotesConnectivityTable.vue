@@ -123,47 +123,7 @@ const getArticles = async (clearCache = false, runTimeout = false) => {
     try {
         let res = await axios.get('/api/cloudmarket/products?' + query);
 
-        const errorMessages = {
-            BadGateway: 'A Bad Gateway error occurred, resulting in partial or no results.',
-            'Request timed out': 'The request timed out, resulting in partial or no results.',
-            InternalServerError: 'An error occurred on the server.',
-            'An error occurred while sending the request': 'There was an issue sending your request.',
-            TooManyRequests: 'The system is experiencing a high volume of requests.',
-            'Too Many Attempts': 'There are currently too many requests being processed.',
-            'System.Text.Json.JsonException': 'The request could not be processed due to a data format issue.',
-            'Service Unavailable': 'The service is temporarily unavailable.',
-            'There is an error in XML document': 'The request could not be processed due to a data format issue.',
-            'No provider is configured':
-                'No provider is configured, please add at least one provider with the required credentials to obtain a quote.',
-            'Request failed with status Unauthorized':
-                'Request failed with status Unauthorized (Please check login credentials for this provider).',
-            'At least one of Building Name or Number is required':
-                'At least one of Building Name or Number is required.',
-            'Address not found in cache': 'The address could not be found.',
-            'Products are not available at': 'No products were found for this location.',
-            'No results for this location': 'No results were found for this location.',
-            'VMB requires one of UPRN or Lat/Long for the request':
-                'Virgin Media Business requires one of UPRN or Latitude/Longitude for the request.',
-            'Street is not set': 'There is no street set for this address.'
-        };
-        if (res.data.errors) {
-            const mappedErrors = res.data.errors
-                .filter((error) => error.provider !== 'gamma')
-                .map((error) => {
-                    for (const [key, message] of Object.entries(errorMessages)) {
-                        if (error.response.includes(key)) {
-                            return { provider: error.provider, response: message };
-                        }
-                    }
-                    return {
-                        provider: error.provider,
-                        response: 'An error occurred, resulting in partial or no results'
-                    };
-                });
-            errors.value = mappedErrors.filter(
-                (e, i, arr) => arr.findIndex((x) => x.provider === e.provider && x.response === e.response) === i
-            );
-        }
+        errors.value = res.data.errors ?? [];
         articles.value = res.data.data ?? [];
         articles.value = articles.value.map((article) => {
             if (article.productName.includes('with router:')) {

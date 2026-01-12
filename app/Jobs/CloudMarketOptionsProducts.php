@@ -6,31 +6,13 @@ use App\Helpers\Api\CloudMarketAddress;
 use App\Helpers\Api\CloudMarketApi;
 use App\Models\Cloudmarket\Product;
 use App\Models\Quote;
-use Exception;
 use GuzzleHttp\Psr7\StreamWrapper;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use JsonMachine\Items;
-use Spatie\Multitenancy\Jobs\TenantAware;
 
-class CloudMarketOptionsProducts implements ShouldQueue, TenantAware
+class CloudMarketOptionsProducts extends CloudMarket
 {
-    use Queueable;
-
-    public $timeout = 3600;
-
-    public $prices = [];
-
-    public $errors = [];
-
-    public $started_at = null;
-
-    public $tempFilters = [];
-
     /**
      * Create a new job instance.
      */
@@ -78,73 +60,24 @@ class CloudMarketOptionsProducts implements ShouldQueue, TenantAware
     }
 
     /**
-     * The job failed to process.
+     * Get the product file for error handling.
      *
-     * @return void
+     * @return mixed
      */
-    public function failed(Exception $exception)
+    protected function getProductFile()
     {
-        // Handle the failure, log exception details, etc.
-        $message = '['.strtoupper((string) env('APP_ENV')).'] CloudMarketConnectivityProducts failed with error: '.$exception->getMessage();
+        return Product::where('key', 'options')->where('filename', $this->file)->first();
+    }
 
-        $error = [
-            'provider' => 'CPQ',
-            'response' => $exception->getMessage(),
-        ];
-        $errors = [];
-
-        $file = Product::where('key', 'options')->where('filename', $this->file)->first();
-        $errors[] = $error;
-        array_merge($errors, $file?->errors ?? []);
-        // Handle the failure, log exception details, etc.
-        $message = '['.strtoupper((string) env('APP_ENV')).'] CloudMarketConnectivityProducts failed with error: '.json_encode($errors);
-
+    /**
+     * Write product data on failure.
+     *
+     * @param  mixed  $file
+     */
+    protected function writeProductOnFailure($file, array $errors): void
+    {
         if ($file) {
             Product::write('options', $this->file, $file['data'], false, now(), $file['created_at'], $file['filters'], $errors);
         }
-
-        Log::error($message);
-        if (env('DISCORD_CLOUDMARKET_JOBS')) {
-            Http::post(env('DISCORD_CLOUDMARKET_JOBS'), ['content' => $message]);
-        }
-    }
-
-    private function getConsolidatedProviderGroup($provider): string
-    {
-        $sub_provider_mapping = [
-            'BT' => ['BT Wholesale', 'BTW', 'BT', 'BTO'],
-            'Virgin' => ['Virgin Media', 'Virgin Media Business', 'Virgin'],
-            'ITS' => ['ITS Technology Group', 'ITS'],
-            'TalkTalk' => ['TalkTalk Business', 'TalkTalk', 'TTB'],
-        ];
-
-        foreach ($sub_provider_mapping as $consolidated_name => $sub_providers) {
-            if (in_array($provider, $sub_providers)) {
-                return $consolidated_name;
-            }
-        }
-
-        return $provider;
-    }
-
-    private function processErrors($supplier, $message)
-    {
-        $unauthorizedMessages = [
-            'Request failed with status code Unauthorized',
-            'Un-authorised user',
-            'Bad credentials',
-        ];
-
-        foreach ($unauthorizedMessages as $unauthorizedMessage) {
-            if (str_contains((string) $message, $unauthorizedMessage)) {
-                $message = 'Request failed with status Unauthorized';
-                break;
-            }
-        }
-
-        return [
-            'provider' => $supplier,
-            'response' => $message,
-        ];
     }
 }

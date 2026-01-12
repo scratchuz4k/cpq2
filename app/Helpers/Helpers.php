@@ -1,5 +1,7 @@
 <?php
 
+use App\Enums\NotificationEnum;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 
@@ -123,5 +125,21 @@ if (! function_exists('handleBlockedQuote')) {
     function handleBlockedQuote()
     {
         return response()->json(['message' => 'Quote is blocked'], 400);
+    }
+}
+
+if (! function_exists('createNotification')) {
+    function createNotification(NotificationEnum $type, User $user, $description, $redirectUrl, $data = null)
+    {
+        // Implementation of creating a notification
+        $data = [
+            'type' => $type->value,
+            'user_id' => $user->id,
+            'description' => $description,
+            'redirect_url' => $redirectUrl,
+            'data' => $data,
+        ];
+
+        app(\App\Services\NotificationService::class)->store($data);
     }
 }

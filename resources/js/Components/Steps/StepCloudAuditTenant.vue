@@ -165,7 +165,10 @@ const tenant_reviewed = ref(false);
                                 />
                             </IconField>
                         </div>
-                        <div class="row row-cols-1 row-cols-md-3 row-cols-lg-4 g-3 mt-1 mb-3">
+                        <div
+                            v-if="organizations.length"
+                            class="row row-cols-1 row-cols-md-3 row-cols-lg-4 g-3 mt-1 mb-3"
+                        >
                             <div class="col" v-for="(org, index) in organizations">
                                 <RadioCard
                                     v-model="organization"
@@ -193,6 +196,7 @@ const tenant_reviewed = ref(false);
                                 </RadioCard>
                             </div>
                         </div>
+                        <div v-else class="text-center my-1">No records found</div>
 
                         <Paginator
                             v-model:first="meta.first"
