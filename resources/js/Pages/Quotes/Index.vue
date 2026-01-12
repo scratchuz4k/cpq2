@@ -123,7 +123,7 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Quotes' }]);
                             >{{ value.toUpperCase() }}</span
                         >
                         <span v-else class="badge text-bg-secondary">{{
-                            data.approvals[0] && !['PENDING_APPROVAL', 'DECLINED'].includes(value)
+                            data.approvals[0] && !['PENDING', 'REJECTED'].includes(value)
                                 ? data.approvals[0]?.status.toUpperCase()
                                 : value
                         }}</span>
@@ -133,7 +133,7 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Quotes' }]);
                     </template>
                     <template #actions="{ data, value, index }">
                         <div
-                            v-if="!['COMPLETED', 'EXPIRED', 'PENDING_APPROVAL', 'VALIDATED'].includes(data.status)"
+                            v-if="!['COMPLETED', 'EXPIRED', 'PENDING', 'APPROVED'].includes(data.status)"
                             class="d-flex justify-content-end"
                         >
                             <Link
@@ -160,9 +160,10 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Quotes' }]);
                             </button>
                         </div>
                         <div v-else class="d-flex justify-content-end">
+                            {{ data.status }}
                             <button
                                 v-if="
-                                    data.status === 'PENDING_APPROVAL' &&
+                                    data.status === 'PENDING' &&
                                     can('update quote_approval') &&
                                     !data.approvals[0]?.approver
                                 "

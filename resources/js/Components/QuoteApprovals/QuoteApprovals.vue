@@ -1,11 +1,11 @@
 <template>
     <div
         class="approvals-group-button flex me-2 p-0"
-        v-if="['quote', 'pending_approval', 'validated', 'completed'].includes(quote.status.toLowerCase())"
+        v-if="['quote', 'pending', 'approved', 'completed'].includes(quote.status.toLowerCase())"
     >
         <button
             id="quote-approval-history"
-            v-if="['completed', 'pending_approval'].includes(quote.status.toLowerCase()) && canToggleDialog()"
+            v-if="['completed', 'pending'].includes(quote.status.toLowerCase()) && canToggleDialog()"
             @click="toggleDialog()"
             class="btn btn-primary"
             :style="{
@@ -21,7 +21,7 @@
                 v-if="
                     (has_quote_approval === '0' && quote.status.toLowerCase() !== 'completed') ||
                     quote_approval_flow === 'Margin review' ||
-                    (quote_approval_flow === 'Internal review' && quote.status.toLowerCase() === 'validated')
+                    (quote_approval_flow === 'Internal review' && quote.status.toLowerCase() === 'approved')
                 "
                 class="btn btn-primary"
                 :disabled="items.some((x) => x.status === 'pending')"
@@ -47,7 +47,7 @@
                 id="quote-approval-start"
                 v-else-if="
                     tenant.configurations.quote_approval_flow === 'Internal review' &&
-                    quote.status.toLowerCase() !== 'validated' &&
+                    quote.status.toLowerCase() !== 'approved' &&
                     !(has_quote_approval === '0' && quote.status.toLowerCase() === 'completed')
                 "
                 class="btn btn-primary"
@@ -256,7 +256,7 @@ const sendToOrder = async () => {
         return;
     }
     //  &&(can('create quote_approval') || hasRole('Super Admin'))
-    if (quote.status.toLowerCase() != 'validated' && !items.value.find((x) => ['pending'].includes(x.status))) {
+    if (quote.status.toLowerCase() != 'approved' && !items.value.find((x) => ['pending'].includes(x.status))) {
         try {
             let res = await axios.post(route('api.quote-approvals.store'), {
                 quote_id: quote.id
@@ -270,7 +270,7 @@ const sendToOrder = async () => {
         }
     }
 
-    if (quote.status.toLowerCase() == 'validated') {
+    if (quote.status.toLowerCase() == 'approved') {
         try {
             let res = await axios.post(`/api/quotes/${quote.id}/complete`);
             await getQuote(quote.id);

@@ -16,7 +16,7 @@ class QuoteApprovalService
         $array['status'] = QuoteApprovalStatus::PENDING->value;
         $array['flow'] = array_key_exists('flow', $array) ? $array['flow'] : get_tenant_config('quote_approval_flow');
         $quote = Quote::find($array['quote_id']);
-        $quote->update(['status' => QuoteStatusesEnum::PENDING_APPROVAL->name]);
+        $quote->update(['status' => QuoteStatusesEnum::PENDING->name]);
         $quoteApproval = QuoteApproval::create($array);
 
         return $quoteApproval;
@@ -39,8 +39,8 @@ class QuoteApprovalService
             return response()->json(['message' => 'Quote is not ready for approval.'], 422);
         }
 
-        if (in_array($quote->status, [QuoteStatusesEnum::VALIDATED->name, QuoteStatusesEnum::COMPLETED->name])) {
-            return response()->json(['message' => 'Quote is already validated or completed.'], 422);
+        if (in_array($quote->status, [QuoteStatusesEnum::APPROVED->name, QuoteStatusesEnum::COMPLETED->name])) {
+            return response()->json(['message' => 'Quote is already approved or completed.'], 422);
         }
 
         $hasActiveFlow = $quote->approvals->some(fn ($item) => $item->status == QuoteApprovalStatus::PENDING->value);

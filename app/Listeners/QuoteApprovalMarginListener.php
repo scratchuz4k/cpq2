@@ -48,7 +48,7 @@ class QuoteApprovalMarginListener
         if ($isMarginValid) {
             $quoteApproval->status = QuoteApprovalStatus::APPROVED->value;
             $quoteApproval->saveQuietly();
-            $this->quoteService->update($quoteApproval->quote, ['status' => QuoteStatusesEnum::VALIDATED->name]);
+            $this->quoteService->update($quoteApproval->quote, ['status' => QuoteStatusesEnum::APPROVED->name]);
         }
 
     }

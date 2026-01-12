@@ -32,7 +32,7 @@ class QuoteApprovalInternalListener
             $quoteApproval->flow === QuoteApprovalFlowEnum::INTERNAL->value
             && $quoteApproval->status === QuoteApprovalStatus::REJECTED->value
         ) {
-            $this->quoteService->update($quoteApproval->quote, ['status' => QuoteStatusesEnum::DECLINED->name]);
+            $this->quoteService->update($quoteApproval->quote, ['status' => QuoteStatusesEnum::REJECTED->name]);
 
             return;
         }
@@ -41,7 +41,7 @@ class QuoteApprovalInternalListener
             $quoteApproval->flow === QuoteApprovalFlowEnum::INTERNAL->value
             && $quoteApproval->status === QuoteApprovalStatus::APPROVED->value
         ) {
-            $this->quoteService->update($quoteApproval->quote, ['status' => QuoteStatusesEnum::VALIDATED->name]);
+            $this->quoteService->update($quoteApproval->quote, ['status' => QuoteStatusesEnum::APPROVED->name]);
 
             return;
         }
