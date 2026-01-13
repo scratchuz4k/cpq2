@@ -98,7 +98,7 @@ class DataProvider
 
             if (count($groupBy) == 2) {
                 $table = $this->builder->getModel()->getTable();
-                $this->builder = $this->builder->select($table.'.*')->leftJoinRelation(Str::camel($groupBy[0]).' as '.$groupBy[0])
+                $this->builder = $this->builder->select($table.'.*')->distinct()->leftJoinRelation(Str::camel($groupBy[0]).' as '.$groupBy[0])
                     ->orderBy($groupBy[0].'.'.$groupBy[1], $groupOrder);
             } else {
                 $this->builder = $this->builder->orderBy($groupBy[0], $groupOrder);
@@ -124,7 +124,7 @@ class DataProvider
     private function applyRelationOrder(array $relations, string $order)
     {
         $table = $this->model->getTable();
-        $this->builder = $this->builder->select($table.'.*');
+        $this->builder = $this->builder->select($table.'.*')->distinct();
 
         // Extract the column name (last element)
         $column = array_pop($relations);

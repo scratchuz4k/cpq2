@@ -87,7 +87,7 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Quotes' }]);
                         { data: 'address_postcode', title: 'Postcode', style: 'width:8%' },
                         { data: 'user.name', title: 'Owner', style: 'width:15%' },
                         {
-                            data: 'approvals.approver.name',
+                            data: 'latest_approval.approver.name',
                             title: 'Approver',
                             style: 'width:15%',
                             hide: has_quote_approval === '0'
@@ -160,7 +160,6 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Quotes' }]);
                             </button>
                         </div>
                         <div v-else class="d-flex justify-content-end">
-                            {{ data.status }}
                             <button
                                 v-if="
                                     data.status === 'PENDING' &&
