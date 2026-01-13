@@ -12,7 +12,8 @@ const props = defineProps({
 const auth_types = [
     { value: 'basic', name: 'Basic' },
     { value: 'basic_client', name: 'Basic Client' },
-    { value: 'token', name: 'Token' }
+    { value: 'token', name: 'Token' },
+    { value: 'vmo2_client', name: 'VMO2 Client' }
 ];
 const api = useForm({
     code: null,
@@ -135,6 +136,34 @@ const items = ref([
                         <div class="mb-3">
                             <label for="api-token" class="form-label">Token:</label>
                             <input id="api-token" autocomplete="off" class="form-control" v-model="api.token" />
+                        </div>
+                    </template>
+                    <template v-if="api.auth_type == 'vmo2_client'">
+                        <div class="mb-3">
+                            <label for="api-app_id" class="form-label">App ID:</label>
+                            <input id="api-app_id" autocomplete="off" class="form-control" v-model="api.app_id" />
+                        </div>
+                        <div class="mb-3">
+                            <label for="api-client_secret" class="form-label">Client Secret:</label>
+                            <input
+                                id="api-client_secret"
+                                autocomplete="off"
+                                class="form-control"
+                                v-model="api.client_secret"
+                            />
+                        </div>
+                        <div class="mb-3">
+                            <label for="api-user_id" class="form-label">User ID:</label>
+                            <input id="api-user_id" autocomplete="off" class="form-control" v-model="api.user_id" />
+                        </div>
+                        <div class="mb-3">
+                            <label for="api-customer_id" class="form-label">Customer ID:</label>
+                            <input
+                                id="api-customer_id"
+                                autocomplete="off"
+                                class="form-control"
+                                v-model="api.customer_id"
+                            />
                         </div>
                     </template>
                 </div>

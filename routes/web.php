@@ -1,5 +1,6 @@
 <?php
 
+use App\Helpers\Api\Cloudaudit\CloudAuditApiAccount;
 use App\Http\Controllers\Web\AccountController;
 use App\Http\Controllers\Web\ActivityController;
 use App\Http\Controllers\Web\ApiController;
@@ -11,6 +12,7 @@ use App\Http\Controllers\Web\General\BlacklistController;
 use App\Http\Controllers\Web\GroupAccountController;
 use App\Http\Controllers\Web\GroupController;
 use App\Http\Controllers\Web\ImportController;
+use App\Http\Controllers\Web\NotificationController;
 use App\Http\Controllers\Web\ProductController;
 use App\Http\Controllers\Web\ProfileController;
 use App\Http\Controllers\Web\QuoteController;
@@ -94,7 +96,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
         'roles' => RoleController::class,
         'imports' => ImportController::class,
         'steps' => StepController::class,
+        'notifications' => NotificationController::class,
     ]);
+
+    Route::get('test', function () {
+        $api = new CloudAuditApiAccount;
+
+        return $api->getAccounts();
+    });
 
     Route::middleware('auth')->group(function () {
         Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

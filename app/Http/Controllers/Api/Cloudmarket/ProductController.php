@@ -18,6 +18,7 @@ use App\Services\External\CloudMarketService;
 use Dedoc\Scramble\Attributes\ExcludeRouteFromDocs;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class ProductController extends BaseController
 {
@@ -28,7 +29,7 @@ class ProductController extends BaseController
     {
         // Special-cased mock data for index only
         $filters = $this->decodeFilters($request);
-        if (! env('CLOUDMARKET_CONNECTION_LIVE_DATA')) {
+        if (! config('live_data.cloudmarket')) {
             $mock_prices = storage_path('mocks/prices.json');
             if (! is_file($mock_prices)) {
                 return [];
@@ -68,7 +69,7 @@ class ProductController extends BaseController
     #[ExcludeRouteFromDocs]
     public function saveQuote(Request $request)
     {
-        if (! env('CLOUDMARKET_CONNECTION_LIVE_DATA')) {
+        if (! config('live_data.cloudmarket')) {
             return;
         }
 
@@ -104,6 +105,11 @@ class ProductController extends BaseController
 
         $address = $this->generateAddress($quote);
         $filename = $this->generateFilename($quote, $address);
+
+        if ($request->has('clear_cache') && (bool) $request->get('clear_cache')) {
+            Cache::forget($filename);
+            Product::where('filename', $filename)->where('key', $key)->delete();
+        }
 
         if ($requirePrimary) {
             $product = $this->getProduct($quote, 'Primary Product');

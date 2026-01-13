@@ -21,8 +21,9 @@ class CloudMarketService
 
     public function handleProductJob($key, $filename, Quote $quote, $address, $dispatchJob)
     {
+        $time = Carbon::now()->addSeconds(86400);
         if (! Cache::has($filename)) {
-            Product::write($key, $filename, [], true, null, now());
+            Product::write($key, $filename, [], true, null, now(), [], [], $time);
             $dispatchJob::dispatch($quote, $filename, $address);
         }
 
@@ -30,7 +31,7 @@ class CloudMarketService
         $createdAt = Carbon::parse($content?->created_at);
 
         if (! $content || (is_null($content?->finished_at) && $createdAt->addMinutes(20)->isPast())) {
-            Product::write($key, $filename, [], true, null, now());
+            Product::write($key, $filename, [], true, null, now(), [], [], $time);
             $dispatchJob::dispatch($quote, $filename, $address);
         }
     }
@@ -103,8 +104,65 @@ class CloudMarketService
                 'finished_at' => $content['finished_at'],
                 'created_at' => $content['created_at'],
                 'filters' => $content['filters'],
-                'errors' => isset($content['errors']) ? $content['errors'] : [],
+                'errors' => isset($content['errors']) ? $this->mapProviderErrors($content['errors']) : [],
             ]
         );
+    }
+
+    protected function mapProviderErrors(array $errors): array
+    {
+        $errorMessages = [
+            'BadGateway' => 'A Bad Gateway error occurred, resulting in partial or no results.',
+            'Request timed out' => 'The request timed out, resulting in partial or no results.',
+            'InternalServerError' => 'An error occurred on the server.',
+            'An error occurred while sending the request' => 'There was an issue sending your request.',
+            'TooManyRequests' => 'The system is experiencing a high volume of requests.',
+            'Too Many Attempts' => 'There are currently too many requests being processed.',
+            'System.Text.Json.JsonException' => 'The request could not be processed due to a data format issue.',
+            'Service Unavailable' => 'The service is temporarily unavailable.',
+            'There is an error in XML document' => 'The request could not be processed due to a data format issue.',
+            'No provider is configured' => 'No provider is configured, please add at least one provider with the required credentials to obtain a quote.',
+            'Request failed with status Unauthorized' => 'Request failed with status Unauthorized (Please check login credentials for this provider).',
+            'Address not found in cache' => 'No results were found for this address.',
+            'At least one of Building Name or Number is required' => 'At least one of Building Name or Number is required.',
+            'Products are not available at' => 'No products were found for this location.',
+            'No results for this location' => 'No results were found for this location.',
+            'VMB requires one of UPRN or Lat/Long for the request' => 'VMO2 requires one of UPRN or Latitude/Longitude for the request.',
+            'Latitude not set' => 'There is no latitude set for this address.',
+            'Longitude not set' => 'There is no longitude set for this address.',
+            'Street is not set' => 'There is no street set for this address.',
+        ];
+
+        $mappedErrors = [];
+
+        foreach ($errors as $error) {
+            if (($error['provider'] ?? null) === 'gamma') {
+                continue;
+            }
+
+            $provider = $error['provider'] ?? null;
+            $responseText = (string) ($error['response'] ?? '');
+
+            $mappedMessage = null;
+            foreach ($errorMessages as $key => $message) {
+                if (str_contains($responseText, $key)) {
+                    $mappedMessage = $message;
+                    break;
+                }
+            }
+
+            $mappedErrors[] = [
+                'provider' => $provider,
+                'response' => $mappedMessage ?? 'An error occurred, resulting in partial or no results',
+            ];
+        }
+
+        $unique = [];
+        foreach ($mappedErrors as $e) {
+            $uniqKey = ($e['provider'] ?? '').'|'.($e['response'] ?? '');
+            $unique[$uniqKey] = $e;
+        }
+
+        return array_values($unique);
     }
 }

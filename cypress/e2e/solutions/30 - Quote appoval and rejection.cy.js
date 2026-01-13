@@ -67,8 +67,18 @@ describe('Quote Approval and Rejection', () => {
         cy.get('#datatable-btn-0-show').click();
         cy.wait(500);
         cy.get('#quote-approval-start').click();
+        cy.wait(500);
         cy.get('#quote-approval-show-dialog').click();
         cy.get('.quote-approval-row').its('length').should('eq', 2);
+    });
+
+    it('Confirm notification Creation in Company Admin', () => {
+        cy.login('companyadmin@example.com', 'werwerwer');
+        cy.visit('/notifications');
+        cy.get('.notification-line.unread').its('length').should('eq', 1);
+        cy.get('#notification-line-1').click();
+        cy.visit('/notifications');
+        cy.get('.notification-line.unread').should('not.exist');
     });
 
     it('Approve Quote made by Sales Rep', () => {

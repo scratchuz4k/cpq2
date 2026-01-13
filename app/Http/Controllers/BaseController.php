@@ -28,6 +28,8 @@ class BaseController extends Controller
     {
         $dataProvider = new DataProvider($this->model);
 
+        $this->customFilter($dataProvider);
+
         try {
             $data = $dataProvider->getCollection();
         } catch (\Exception $e) {
@@ -73,5 +75,10 @@ class BaseController extends Controller
     protected function resourceMethodsWithoutModels()
     {
         return ['index', 'create', 'store', 'export'];
+    }
+
+    protected function customFilter(DataProvider &$dataProvider)
+    {
+        return $dataProvider;
     }
 }

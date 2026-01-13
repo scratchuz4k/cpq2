@@ -58,7 +58,15 @@ const defaults = ref([
             'viewAny role',
             'view role',
             'viewAny permission',
-            'view permission'
+            'view permission',
+            'viewAny notification',
+            'view notification',
+            'create notification',
+            'update notification',
+            'delete notification',
+            'restore notification',
+            'forceDelete notification',
+            'export notification'
         ]
     }
 ]);

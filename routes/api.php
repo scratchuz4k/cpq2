@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\AccountController;
 use App\Http\Controllers\Api\ActivityController;
 use App\Http\Controllers\Api\ApiController;
 use App\Http\Controllers\Api\CategoryController;
+use App\Http\Controllers\Api\Cloudaudit\OrganizationController;
 use App\Http\Controllers\Api\Cloudmarket\AddressController as CloudmarketAddressController;
 use App\Http\Controllers\Api\Cloudmarket\ProductController as CloudmarketProductController;
 use App\Http\Controllers\Api\ContactController;
@@ -14,6 +15,7 @@ use App\Http\Controllers\Api\General\BlacklistController;
 use App\Http\Controllers\Api\GroupAccountController;
 use App\Http\Controllers\Api\GroupController;
 use App\Http\Controllers\Api\ImportController;
+use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\PermissionController;
 use App\Http\Controllers\Api\PriceController;
 use App\Http\Controllers\Api\PricePlanController;
@@ -66,6 +68,11 @@ Route::middleware(['api', 'auth:sanctum'])->group(function () {
         Route::get('products/save-quote', [CloudmarketProductController::class, 'saveQuote']);
     });
 
+    Route::prefix('cloudaudit')->group(callback: function () {
+        Route::get('/organizations/sync', [OrganizationController::class, 'sync']);
+        Route::apiResource('organizations', OrganizationController::class);
+    });
+
     Route::prefix('external')->group(function () {
         Route::post('get-address-by-postcode', [ExternalController::class, 'getAddressesByPostCode']);
         Route::post('get-position-by-address', [ExternalController::class, 'getPositionByAddress']);
@@ -104,9 +111,9 @@ Route::middleware(['api', 'auth:sanctum'])->group(function () {
         'email-history' => EmailHistoryController::class,
         'groups' => GroupController::class,
         'group-accounts' => GroupAccountController::class,
-        'permissions' => PermissionController::class,
         'roles' => RoleController::class,
         'imports' => ImportController::class,
         'steps' => StepController::class,
+        'notifications' => NotificationController::class,
     ]);
 });

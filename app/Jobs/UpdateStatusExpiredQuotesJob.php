@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Enums\NotificationEnum;
 use App\Enums\QuoteStatusesEnum;
 use App\Models\Quote;
 use App\Models\Tenant;
@@ -38,6 +39,19 @@ class UpdateStatusExpiredQuotesJob implements ShouldQueue
                 : 30;
             $expirationDate = today()->subDays($expirationDays)->format('Y-m-d');
 
+            $notificationDate = today()->subDays($expirationDays - 2)->format('Y-m-d');
+            $notificationQuotes = Quote::whereIn('status', $this->statusThatCanBeUpdated)
+                ->whereDate('created_at', '<=', $notificationDate)
+                ->whereDate('created_at', '>=', $notificationDate)
+                ->get();
+
+            foreach ($notificationQuotes as $quote) {
+                $description = 'Your quote #'.$quote->id.' for the account '.$quote->account->name.' is about to expire in 2 days.';
+                createNotification(NotificationEnum::QuoteExpired, $quote->user, $description, route('quotes.show', ['quote' => $quote->id]), false);
+
+                Log::info("UpdateStatusExpiredQuotesJob | Quote#{$quote->id} ({$quote->created_at->format('Y-m-d')}) notified to be expired ");
+            }
+
             DB::transaction(function () use (
                 &$quotesUpdated,
                 $expiredStatus,
@@ -54,13 +68,13 @@ class UpdateStatusExpiredQuotesJob implements ShouldQueue
                     ]);
 
                     $quotesUpdated++;
-                    Log::info("UpdateStatusExpiredQuotesJob | Quote#{$quote->id} ({$quote->created_at->format('Y-m-d')}) updated from {$originalStatus} to {$expiredStatus}");
+                    Log::info("[JOB] UpdateStatusExpiredQuotesJob | Quote#{$quote->id} ({$quote->created_at->format('Y-m-d')}) updated from {$originalStatus} to {$expiredStatus}");
                 }
             });
         } catch (\Exception $e) {
-            Log::error("UpdateStatusExpiredQuotesJob | Error processing: {$e->getMessage()}");
+            Log::error("[JOB] UpdateStatusExpiredQuotesJob | Error processing: {$e->getMessage()}");
         }
 
-        Log::info("UpdateStatusExpiredQuotesJob | {$quotesUpdated} quotes expired at {$expirationDate} ({$expirationDays} days ago)");
+        Log::info("[JOB] UpdateStatusExpiredQuotesJob | {$quotesUpdated} quotes expired at {$expirationDate} ({$expirationDays} days ago)");
     }
 }
