@@ -291,9 +291,9 @@ class CloudMarketApi
             ],
             'vmo2_client' => [
                 "{$connectionBase}.AppID" => $api?->app_id ?? env(strtoupper("{$supplierKey}_CONNECTION_APPID")),
-                "{$connectionBase}.ClientSecret" => $api?->client_secret ?? env(strtoupper("{$supplierKey}_CONNECTION_CLIENTSECRET")),
-                "{$connectionBase}.UserId" => $api?->user_id ?? env(strtoupper("{$supplierKey}_CONNECTION_USERID")),
-                "{$connectionBase}.CustomerId" => $api?->customer_id ?? env(strtoupper("{$supplierKey}_CONNECTION_CUSTOMERID")),
+                "{$connectionBase}.ClientSecret" => $api?->token ?? env(strtoupper("{$supplierKey}_CONNECTION_CLIENTSECRET")),
+                "{$connectionBase}.UserId" => $api?->username ?? env(strtoupper("{$supplierKey}_CONNECTION_USERID")),
+                "{$connectionBase}.CustomerId" => $api?->client_id ?? env(strtoupper("{$supplierKey}_CONNECTION_CUSTOMERID")),
             ],
 
             default => [],
