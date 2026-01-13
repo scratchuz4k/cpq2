@@ -290,10 +290,10 @@ class CloudMarketApi
                 "{$connectionBase}.Token" => $api?->token ?? env(strtoupper("{$supplierKey}_CONNECTION_TOKEN")),
             ],
             'vmo2_client' => [
-                'SupplierApiConnections.VirginMediaBusiness_Connection.AppID' => $api?->app_id ?? env(strtoupper("{$supplierKey}_CONNECTION_APPID")),
-                'SupplierApiConnections.VirginMediaBusiness_Connection.ClientSecret' => $api?->client_secret ?? env(strtoupper("{$supplierKey}_CONNECTION_CLIENTSECRET")),
-                'SupplierApiConnections.VirginMediaBusiness_Connection.UserId' => $api?->user_id ?? env(strtoupper("{$supplierKey}_CONNECTION_USERID")),
-                'SupplierApiConnections.VirginMediaBusiness_Connection.CustomerId' => $api?->customer_id ?? env(strtoupper("{$supplierKey}_CONNECTION_CUSTOMERID")),
+                "{$connectionBase}.AppID" => $api?->app_id ?? env(strtoupper("{$supplierKey}_CONNECTION_APPID")),
+                "{$connectionBase}.ClientSecret" => $api?->client_secret ?? env(strtoupper("{$supplierKey}_CONNECTION_CLIENTSECRET")),
+                "{$connectionBase}.UserId" => $api?->user_id ?? env(strtoupper("{$supplierKey}_CONNECTION_USERID")),
+                "{$connectionBase}.CustomerId" => $api?->customer_id ?? env(strtoupper("{$supplierKey}_CONNECTION_CUSTOMERID")),
             ],
 
             default => [],

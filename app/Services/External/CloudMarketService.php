@@ -127,7 +127,9 @@ class CloudMarketService
             'At least one of Building Name or Number is required' => 'At least one of Building Name or Number is required.',
             'Products are not available at' => 'No products were found for this location.',
             'No results for this location' => 'No results were found for this location.',
-            'VMB requires one of UPRN or Lat/Long for the request' => 'Virgin Media Business requires one of UPRN or Latitude/Longitude for the request.',
+            'VMB requires one of UPRN or Lat/Long for the request' => 'VMO2 requires one of UPRN or Latitude/Longitude for the request.',
+            'Latitude not set' => 'There is no latitude set for this address.',
+            'Longitude not set' => 'There is no longitude set for this address.',
             'Street is not set' => 'There is no street set for this address.',
         ];
 

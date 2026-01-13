@@ -11,7 +11,7 @@ enum CloudMarketSuppliersEnum: string
     case Vorboss = 'vorboss';
     case IPRiver = 'ipriver';
     case PXC = 'pxc';
-    case VMB = 'VMB';
+    case VMO2 = 'vmo2';
 
     public static function asArray(): array
     {
