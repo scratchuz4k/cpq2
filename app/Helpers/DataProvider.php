@@ -28,7 +28,7 @@ class DataProvider
     public function get()
     {
         $this->processFilters();
-        $this->processRequest();
+        $this->applyOrder();
 
         $page = request()->input('page', 1);
         $limit = request()->input('limit', 10);
@@ -46,7 +46,9 @@ class DataProvider
     public function group(string $resource)
     {
         $this->processFilters();
-        $this->processRequest();
+        $this->processGroup();
+        $this->applyOrder();
+
         $collection = [];
 
         $page = request()->input('page', 1);
@@ -89,7 +91,7 @@ class DataProvider
         return new LengthAwarePaginator($collection, $total, $limit, $page);
     }
 
-    private function processRequest()
+    private function processGroup()
     {
         $group = request()->input('group', null);
         if ($group) {
@@ -98,52 +100,12 @@ class DataProvider
 
             if (count($groupBy) == 2) {
                 $table = $this->builder->getModel()->getTable();
-                $this->builder = $this->builder->select($table.'.*')->distinct()->leftJoinRelation(Str::camel($groupBy[0]).' as '.$groupBy[0])
+                $this->builder = $this->builder->select($table.'.*')->leftJoinRelation(Str::camel($groupBy[0]).' as '.$groupBy[0])
                     ->orderBy($groupBy[0].'.'.$groupBy[1], $groupOrder);
             } else {
                 $this->builder = $this->builder->orderBy($groupBy[0], $groupOrder);
             }
         }
-
-        $order = request()->input('order', 'asc');
-        $orderBy = request()->input('orderBy', 'id');
-        $orderByArray = explode('.', (string) $orderBy);
-
-        $relations = explode('.', (string) $orderBy);
-        if (count($relations) > 1 && ! $this->checkModelRelationships($relations[0])) {
-            return;
-        }
-
-        if (count($orderByArray) >= 2) {
-            $this->applyRelationOrder($orderByArray, $order);
-        } else {
-            $this->builder = $this->builder->orderBy($orderBy, $order);
-        }
-    }
-
-    private function applyRelationOrder(array $relations, string $order)
-    {
-        $table = $this->model->getTable();
-        $this->builder = $this->builder->select($table.'.*')->distinct();
-
-        // Extract the column name (last element)
-        $column = array_pop($relations);
-
-        // Build nested relation path
-        $relationPath = [];
-        foreach ($relations as $part) {
-            $relationPath[] = Str::camel($part);
-        }
-
-        // Join the relation path with dots for nested relations
-        $fullRelationPath = implode('.', $relationPath);
-
-        // Create alias for the final table (use the last relation name)
-        $alias = end($relations);
-
-        // Apply the join
-        $this->builder = $this->builder->leftJoinRelation($fullRelationPath.' as '.$alias)
-            ->orderBy($alias.'.'.$column, $order);
     }
 
     private function processFilters()
@@ -199,6 +161,53 @@ class DataProvider
                 );
             }
         }
+    }
+
+    private function applyOrder()
+    {
+        $order = request()->input('order', 'asc');
+        $orderBy = request()->input('orderBy', 'id');
+        $relations = explode('.', (string) $orderBy);
+
+        if (count($relations) > 1 && ! $this->checkModelRelationships($relations[0])) {
+            return;
+        }
+
+        $table = $this->model->getTable();
+        $this->builder = $this->builder->select($table.'.*');
+
+        // Extract the column name (last element)
+        $column = array_pop($relations);
+
+        // Build nested relation path
+        $relationPath = [];
+        foreach ($relations as $part) {
+            $relationPath[] = Str::camel($part);
+        }
+
+        // Join the relation path with dots for nested relations
+        $fullRelationPath = implode('.', $relationPath);
+
+        // Create alias for the final table (use the last relation name)
+        $alias = end($relations);
+
+        if (CustomQuery::exists($this->builder->getModel()->getTable(), $fullRelationPath.'.'.$column)) {
+            $this->builder = $this->builder->addSelect([
+                $alias => CustomQuery::execute($this->builder->getModel()->getTable(), $fullRelationPath.'.'.$column),
+            ]);
+            $this->builder = $this->builder->orderBy($alias, $order);
+
+            return;
+        }
+
+        if (count($relations) == 0) {
+            // No relations, order directly on the model's table
+            $this->builder = $this->builder->orderBy($column, $order);
+        } else {
+            $this->builder = $this->builder->leftJoinRelation($fullRelationPath.' as '.$alias)
+                ->orderBy($alias.'.'.$column, $order);
+        }
+
     }
 
     public function buildSearch($builder, $column, $operator, $value, $func)
