@@ -35,7 +35,7 @@ class CustomQuery
         return DB::table('quote_approvals')
             ->leftJoin('users as approver', 'quote_approvals.approver_id', '=', 'approver.id')
             ->whereColumn('quote_approvals.quote_id', 'quotes.id')
-            ->where('quote_approvals.tenant_id', 1)
+            ->where('quote_approvals.tenant_id', auth()->user()->tenant_id)
             ->orderByDesc('quote_approvals.id')
             ->limit(1)
             ->select('approver.name');
