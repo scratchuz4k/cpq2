@@ -60,7 +60,7 @@ const deleteRecord = (id) => {
 
 const saveApproval = async (data) => {
     try {
-        axios.put(`/api/quote-approvals/${data.id}`, { approver_id: user.id });
+        await axios.put(`/api/quote-approvals/${data.id}`, { approver_id: user.id });
 
         emitter.emit('datatable-refresh');
         notyf.success('Quote assigned with success');
@@ -164,7 +164,7 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Quotes' }]);
                                 v-if="
                                     data.status === 'PENDING' &&
                                     can('update quote_approval') &&
-                                    !data.approvals[0]?.approver
+                                    !data.latest_approval.approver
                                 "
                                 :id="'datatable-workbasket-btn-' + index + '-delete'"
                                 class="btn px-2 py-0 mx-1 border-0"
