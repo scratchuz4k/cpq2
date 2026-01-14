@@ -28,13 +28,13 @@ class QuoteApprovalInternalListener
     public function handle(QuoteApprovalEvent $event): void
     {
         $quoteApproval = $event->quoteApproval;
-        if ($quoteApproval->status === QuoteApprovalStatus::PENDING->value) {
+        if ($quoteApproval->status === QuoteApprovalStatus::PENDING->name) {
             return;
         }
 
         if (
             $quoteApproval->flow === QuoteApprovalFlowEnum::INTERNAL->value
-            && $quoteApproval->status === QuoteApprovalStatus::REJECTED->value
+            && $quoteApproval->status === QuoteApprovalStatus::REJECTED->name
         ) {
 
             $this->quoteService->update($quoteApproval->quote, ['status' => QuoteStatusesEnum::REJECTED->name]);
@@ -45,7 +45,7 @@ class QuoteApprovalInternalListener
 
         if (
             $quoteApproval->flow === QuoteApprovalFlowEnum::INTERNAL->value
-            && $quoteApproval->status === QuoteApprovalStatus::APPROVED->value
+            && $quoteApproval->status === QuoteApprovalStatus::APPROVED->name
         ) {
             $this->quoteService->update($quoteApproval->quote, ['status' => QuoteStatusesEnum::APPROVED->name]);
             $description = 'Your quote #'.$quoteApproval->quote->id.' for the account '.$quoteApproval->quote->account->name.' has been approved.';
