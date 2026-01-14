@@ -40,7 +40,6 @@ class ShopBlocksCategoriesJob implements NotTenantAware, ShouldQueue
      */
     public function handle(): void
     {
-        Log::info('[JOB] ShopBlocksCategoriesJob | Started');
         $page = 0;
         $processedCount = 0;
         do {
