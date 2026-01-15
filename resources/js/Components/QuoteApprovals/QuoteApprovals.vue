@@ -179,6 +179,7 @@ import queryString from 'query-string';
 import Paginator from 'primevue/paginator';
 import { usePage } from '@inertiajs/vue3';
 import { can, hasRole } from '@/Composables/useAuth';
+import format from '@/Composables/format.js';
 
 const { props } = usePage();
 
@@ -208,7 +209,7 @@ const getApprovals = async () => {
         meta.total = res.data.meta?.total ?? res.data.total;
         meta.first = (meta.page - 1) * meta.limit;
     } catch (ex) {
-        notyf.error(ex.response.data.message);
+        notyf.error(ex.response?.data?.message ?? 'Something went wrong!');
     }
 };
 
@@ -222,7 +223,7 @@ const startApproval = async () => {
         await getQuote(quote.id);
         //window.location = '/dashboard';
     } catch (ex) {
-        notyf.error(ex.response.data.message);
+        notyf.error(ex.response?.data?.message ?? 'Something went wrong!');
     }
 };
 
@@ -232,13 +233,13 @@ const updateQuoteApproval = async (item, status) => {
             status: status.toUpperCase(),
             comments: item.comments
         });
-        notyf.success(`Quote ${format.capitalizeFirstLetter()} with success!`);
+        notyf.success(`Quote ${format.capitalizeFirstLetter(status)} with success!`);
         showDialog.value = !showDialog.value;
         getApprovals();
         await getQuote(quote.id);
         //window.location = '/dashboard';
     } catch (ex) {
-        notyf.error(ex.response.data.message);
+        notyf.error(ex.response?.data?.message ?? 'Something went wrong!');
     }
 };
 
@@ -252,7 +253,7 @@ const sendToOrder = async () => {
             notyf.success(`Quote completed with success!`);
             //window.location = '/dashboard';
         } catch (ex) {
-            notyf.error(ex.response.data.message);
+            notyf.error(ex.response?.data?.message ?? 'Something went wrong!');
         }
         return;
     }
@@ -270,18 +271,18 @@ const sendToOrder = async () => {
             notyf.success(`Quote successfully sent for approval!`);
             //window.location = '/dashboard';
         } catch (ex) {
-            notyf.error(ex.response.data.message);
+            notyf.error(ex.response?.data?.message ?? 'Something went wrong!');
         }
     }
 
-    if (quote.status.toLowerCase() == 'approved') {
+    if (quote.status.toLowerCase() === 'approved') {
         try {
             let res = await axios.post(`/api/quotes/${quote.id}/complete`);
             await getQuote(quote.id);
             notyf.success(`Quote completed with success!`);
             //window.location = '/dashboard';
         } catch (ex) {
-            notyf.error(ex.response.data.message);
+            notyf.error(ex.response?.data?.message ?? 'Something went wrong!');
         }
     }
 };
