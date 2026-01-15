@@ -24,7 +24,7 @@
                     (quote_approval_flow === 'Internal review' && quote.status.toLowerCase() === 'approved')
                 "
                 class="btn btn-primary"
-                :disabled="items.some((x) => x.status === 'pending')"
+                :disabled="items.some((x) => x.status.toLowerCase() === 'pending')"
                 @click="sendToOrder()"
                 :style="{
                     borderRadius: canToggleDialog() ? '5px 0 0 5px' : '5px'
@@ -51,7 +51,7 @@
                     !(has_quote_approval === '0' && quote.status.toLowerCase() === 'completed')
                 "
                 class="btn btn-primary"
-                :disabled="items.some((x) => x.status === 'pending')"
+                :disabled="items.some((x) => x.status.toLowerCase() === 'pending')"
                 @click="startApproval()"
                 style="border-radius: 5px 0 0 5px"
             >
@@ -108,7 +108,7 @@
                         <td style="width: 60%" :id="'quote-approval-comments-' + index">
                             <input
                                 v-if="
-                                    item.status === 'pending' &&
+                                    item.status.toLowerCase() === 'pending' &&
                                     (can('update quote_approval') || hasRole('Super Admin'))
                                 "
                                 type="text"
@@ -123,9 +123,9 @@
                             <p
                                 class="badge rounded-pill"
                                 :class="{
-                                    'bg-success text-white': item.status === 'approved',
-                                    'bg-danger text-white': item.status === 'pending',
-                                    'bg-error text-white': item.status === 'rejected'
+                                    'bg-success text-white': item.status.toLowerCase() === 'approved',
+                                    'bg-danger text-white': item.status.toLowerCase() === 'pending',
+                                    'bg-error text-white': item.status.toLowerCase() === 'rejected'
                                 }"
                             >
                                 {{ format.capitalizeFirstLetter(item.status) }}
@@ -136,7 +136,7 @@
                                 class="d-flex"
                                 v-if="
                                     (!item.approver || item.approver?.id === user.id) &&
-                                    item.status === 'pending' &&
+                                    item.status.toLowerCase() === 'pending' &&
                                     (can('update quote_approval') || hasRole('Super Admin'))
                                 "
                             >
@@ -229,10 +229,10 @@ const startApproval = async () => {
 const updateQuoteApproval = async (item, status) => {
     try {
         let res = await axios.put(route('api.quote-approvals.update', { id: item.id }), {
-            status: status,
+            status: status.toUpperCase(),
             comments: item.comments
         });
-        notyf.success(`Quote ${status} with success!`);
+        notyf.success(`Quote ${format.capitalizeFirstLetter()} with success!`);
         showDialog.value = !showDialog.value;
         getApprovals();
         await getQuote(quote.id);
@@ -257,7 +257,10 @@ const sendToOrder = async () => {
         return;
     }
     //  &&(can('create quote_approval') || hasRole('Super Admin'))
-    if (quote.status.toLowerCase() != 'approved' && !items.value.find((x) => ['pending'].includes(x.status))) {
+    if (
+        quote.status.toLowerCase() != 'approved' &&
+        !items.value.find((x) => ['pending'].includes(x.status.toLowerCase()))
+    ) {
         try {
             let res = await axios.post(route('api.quote-approvals.store'), {
                 quote_id: quote.id
