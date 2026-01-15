@@ -179,7 +179,6 @@ import queryString from 'query-string';
 import Paginator from 'primevue/paginator';
 import { usePage } from '@inertiajs/vue3';
 import { can, hasRole } from '@/Composables/useAuth';
-import format from '@/Composables/format.js';
 
 const { props } = usePage();
 
@@ -233,7 +232,7 @@ const updateQuoteApproval = async (item, status) => {
             status: status.toUpperCase(),
             comments: item.comments
         });
-        notyf.success(`Quote ${format.capitalizeFirstLetter(status)} with success!`);
+        notyf.success(`Quote ${status} with success!`);
         showDialog.value = !showDialog.value;
         getApprovals();
         await getQuote(quote.id);
