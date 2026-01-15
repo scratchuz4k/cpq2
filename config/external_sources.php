@@ -10,7 +10,8 @@ return [
     ],
 
     'cloudmarket' => [
-        'live_data' => env('CLOUDMARKET_CONNECTION_LIVE_DATA'),
+        'connection_live_data' => env('CLOUDMARKET_CONNECTION_SERVICE_URL'),
+        'connection_service_url' => env('CLOUDMARKET_CONNECTION_LIVE_DATA'),
     ],
 
     'alpnet' => [
@@ -22,8 +23,16 @@ return [
     ],
 
     'google' => [
-        'maps_api_key' => env('GOOGLE_MAPS_API_KEY'),
-        'tag_manager_key' => env('GOOGLE_TAG_MANAGER_KEY'),
+        'maps' => [
+            'api_key' => env('GOOGLE_MAPS_API_KEY'),
+        ],
+        'tag_manager' => [
+            'api_key' => env('GOOGLE_TAG_MANAGER_KEY'),
+        ],
+        'oidc' => [
+            'client_id' => env('GOOGLE_OIDC_CLIENT_ID'),
+            'client_secret' => env('GOOGLE_OIDC_CLIENT_SECRET'),
+        ],
     ],
 
     'pandadoc' => [
@@ -32,6 +41,7 @@ return [
 
     'its' => [
         'connection_token' => env('ITS_CONNECTION_TOKEN'),
+        'connection_access_key' => env('ITS_CONNECTION_ACCESSKEY'),
     ],
 
     'virtual1' => [
