@@ -24,6 +24,7 @@ class Api extends Model
         'name',
         'auth_type',
         'client_id',
+        'app_id',
         'username',
         'password',
         'token',

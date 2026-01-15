@@ -136,25 +136,20 @@ const items = ref([
                             <input id="api-app_id" autocomplete="off" class="form-control" v-model="data.app_id" />
                         </div>
                         <div class="mb-3">
-                            <label for="api-client_secret" class="form-label">Client Secret:</label>
-                            <input
-                                id="api-client_secret"
-                                autocomplete="off"
-                                class="form-control"
-                                v-model="data.client_secret"
-                            />
+                            <label for="api-token" class="form-label">Client Secret:</label>
+                            <input id="api-token" autocomplete="off" class="form-control" v-model="data.token" />
                         </div>
                         <div class="mb-3">
-                            <label for="api-user_id" class="form-label">User ID:</label>
-                            <input id="api-user_id" autocomplete="off" class="form-control" v-model="data.user_id" />
+                            <label for="api-username" class="form-label">User ID:</label>
+                            <input id="api-username" autocomplete="off" class="form-control" v-model="data.username" />
                         </div>
                         <div class="mb-3">
-                            <label for="api-customer_id" class="form-label">Customer ID:</label>
+                            <label for="api-client_id" class="form-label">Customer ID:</label>
                             <input
-                                id="api-customer_id"
+                                id="api-client_id"
                                 autocomplete="off"
                                 class="form-control"
-                                v-model="data.customer_id"
+                                v-model="data.client_id"
                             />
                         </div>
                     </template>

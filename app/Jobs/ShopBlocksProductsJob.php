@@ -44,7 +44,6 @@ class ShopBlocksProductsJob implements NotTenantAware, ShouldQueue
      */
     public function handle(): void
     {
-        Log::info('[JOB] ShopBlocksProductsJob | Started');
         $page = 1;
         DB::connection('mysql_shopblocks')->statement('SET FOREIGN_KEY_CHECKS=0;');
         ProductDimension::truncate();
@@ -69,8 +68,6 @@ class ShopBlocksProductsJob implements NotTenantAware, ShouldQueue
             ShopBlocksProductsSyncJob::dispatch($time, $page, $filters);
             $page++;
         } while ($page != $last_page + 1);
-
-        Log::info('[JOB] ShopBlocksProductsJob | Ended');
     }
 
     /**
