@@ -13,12 +13,6 @@ class DataProvider
 
     public $builder;
 
-    public string $orderBy = 'id';
-
-    public string $order = 'desc';
-
-    protected array $relations = [];
-
     public function __construct($model)
     {
         $this->model = app($model);
