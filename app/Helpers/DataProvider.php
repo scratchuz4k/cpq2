@@ -174,7 +174,10 @@ class DataProvider
         }
 
         $table = $this->model->getTable();
-        $this->builder = $this->builder->select($table.'.*');
+
+        if ($this->model->getConnection()->getDriverName() !== 'mongodb') {
+            $this->builder = $this->builder->select($table.'.*');
+        }
 
         // Extract the column name (last element)
         $column = array_pop($relations);
