@@ -19,7 +19,7 @@ class SsoController extends Controller
     public function create()
     {
         return Inertia::render('Auth/LoginSso', [
-            'canGoogleLogin' => (config('external_sources.google.oidc.client_id') && config('external_sources.google.oidc.client_secret')),
+            'canGoogleLogin' => (config('services.google.oidc.client_id') && config('services.google.oidc.client_secret')),
             'status' => session('status'),
         ]);
     }

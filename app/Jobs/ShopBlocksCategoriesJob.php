@@ -89,8 +89,8 @@ class ShopBlocksCategoriesJob implements NotTenantAware, ShouldQueue
         $message = '['.strtoupper((string) config('app.env')).'] ShopBlocksCategoriesJob failed with error: '.json_encode($error);
 
         Log::error($message);
-        if (config('external_sources.discord.shopblocks.jobs')) {
-            Http::post(config('external_sources.discord.shopblocks.jobs'), ['content' => $message]);
+        if (config('services.discord.shopblocks.jobs')) {
+            Http::post(config('services.discord.shopblocks.jobs'), ['content' => $message]);
         }
     }
 }

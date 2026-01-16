@@ -99,8 +99,8 @@ class CloudauditAccountSyncJob implements NotTenantAware, ShouldQueue
         $message = '['.strtoupper((string) config('app.env')).'] CloudauditAccount failed with error: '.json_encode($error);
 
         Log::error($message);
-        if (config('external_sources.discord.cloudaudit.jobs')) {
-            Http::post(config('external_sources.discord.cloudaudit.jobs'), ['content' => $message]);
+        if (config('services.discord.cloudaudit.jobs')) {
+            Http::post(config('services.discord.cloudaudit.jobs'), ['content' => $message]);
         }
     }
 }

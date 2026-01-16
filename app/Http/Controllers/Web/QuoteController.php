@@ -39,6 +39,39 @@ class QuoteController extends BaseController
      */
     public function index()
     {
+        dd(config('services'));
+        exit;
+        $configs = array_unique([
+            'google.oidc.client_id' => config('services.google.oidc.client_id'),
+            'google.oidc.client_secret' => config('services.google.oidc.client_secret'),
+            'tomtom.api_key' => config('services.tomtom.api_key'),
+            'cloudaudit.live_data' => config('services.cloudaudit.live_data'),
+            'cloudmarket.connection_live_data' => config('services.cloudmarket.connection_live_data'),
+            'virtual1.address_username' => config('services.virtual1.address_username'),
+            'virtual1.address_password' => config('services.virtual1.address_password'),
+            'cloudmarket.connection_service_url' => config('services.cloudmarket.connection_service_url'),
+            'alpnet.api_token' => config('services.alpnet.api_token'),
+            'cloudaudit.api_url' => config('services.cloudaudit.api_url'),
+            'cloudaudit.api_auth' => config('services.cloudaudit.api_auth'),
+            'cloudaudit.api_id' => config('services.cloudaudit.api_id'),
+            'cloudaudit.api_client' => config('services.cloudaudit.api_client'),
+            'shopblocks.api_key' => config('services.shopblocks.api_key'),
+            'discord.cloudmarket.jobs' => config('services.discord.cloudmarket.jobs'),
+            'discord.shopblocks.jobs' => config('services.discord.shopblocks.jobs'),
+            'discord.cloudaudit.jobs' => config('services.discord.cloudaudit.jobs'),
+
+        ]);
+
+        $result = [];
+        foreach ($configs as $key => $config) {
+            $result += [
+                $key => $config,
+            ];
+        }
+
+        var_dump($result);
+        exit;
+
         $users = User::getChildAndOrphansUser()->get();
         $users = $users->filter(fn ($user) => $user->quotes->count() > 0);
         $solutionTypes = SolutionType::whereHas('quotes', fn ($query) => $query->whereIn('user_id', $users->pluck('id')))->get();

@@ -78,8 +78,8 @@ class CloudMarketStatistics implements NotTenantAware, ShouldQueue
         $message = '['.strtoupper((string) config('app.env')).'] SyncCloudMarketStatistics failed with error: '.json_encode($error);
 
         Log::error($message);
-        if (config('external_sources.discord.cloudmarket.jobs')) {
-            Http::post(config('external_sources.discord.cloudmarket.jobs'), ['content' => $message]);
+        if (config('services.discord.cloudmarket.jobs')) {
+            Http::post(config('services.discord.cloudmarket.jobs'), ['content' => $message]);
         }
     }
 }

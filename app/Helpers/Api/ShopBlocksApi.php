@@ -28,7 +28,7 @@ class ShopBlocksApi
         $response = Http::withOptions([
             'timeout' => $this->requestTimeout,
             'connect_timeout' => 30,
-        ])->withToken(config('external_sources.shopblocks.api_key'))->get('https://api.symphonycommerce.io/api/v2/products', $params);
+        ])->withToken(config('services.shopblocks.api_key'))->get('https://api.symphonycommerce.io/api/v2/products', $params);
 
         if (! $response->successful()) {
             // Handle the error accordingly. For now, we'll just log and return an empty array.
@@ -56,7 +56,7 @@ class ShopBlocksApi
         $response = Http::withOptions([
             'timeout' => $this->requestTimeout,
             'connect_timeout' => 30,
-        ])->withToken(config('external_sources.shopblocks.api_key'))->get('https://api.symphonycommerce.io/api/v2/categories', $params);
+        ])->withToken(config('services.shopblocks.api_key'))->get('https://api.symphonycommerce.io/api/v2/categories', $params);
 
         if (! $response->successful()) {
             // Handle the error accordingly. For now, we'll just log and return an empty array.

@@ -29,7 +29,7 @@ class ProductController extends BaseController
     {
         // Special-cased mock data for index only
         $filters = $this->decodeFilters($request);
-        if (! config('external_sources.cloudmarket.connection_live_data')) {
+        if (! config('services.cloudmarket.connection_live_data')) {
             $mock_prices = storage_path('mocks/prices.json');
             if (! is_file($mock_prices)) {
                 return [];
@@ -69,7 +69,7 @@ class ProductController extends BaseController
     #[ExcludeRouteFromDocs]
     public function saveQuote(Request $request)
     {
-        if (! config('external_sources.cloudaudit.live_data')) {
+        if (! config('services.cloudaudit.live_data')) {
             return;
         }
 

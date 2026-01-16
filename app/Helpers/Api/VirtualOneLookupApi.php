@@ -12,7 +12,7 @@ class VirtualOneLookupApi
     private function request($endpoint, $options)
     {
         $authentication = [
-            'auth' => [config('external_sources.virtual1.address_username'), config('external_sources.virtual1.address_password')],
+            'auth' => [config('services.virtual1.address_username'), config('services.virtual1.address_password')],
         ];
 
         $options += $authentication;

@@ -48,8 +48,8 @@ class CloudMarket implements ShouldQueue, TenantAware
         }
 
         Log::error($message);
-        if (config('external_sources.discord.cloudmarket.jobs')) {
-            Http::post(config('external_sources.discord.cloudmarket.jobs'), ['content' => $message]);
+        if (config('services.discord.cloudmarket.jobs')) {
+            Http::post(config('services.discord.cloudmarket.jobs'), ['content' => $message]);
         }
     }
 
