@@ -69,7 +69,7 @@ class ExternalController extends Controller
         $cache_key = 'address_lookup_'.Str::slug($address);
 
         return Cache::remember($cache_key, 43200, function () use ($address) {
-            $res = Http::get('https://api.tomtom.com/search/2/geocode/'.$address.'.json?key='.env('TOMTOM_API_KEY').'&countryCode=GB');
+            $res = Http::get('https://api.tomtom.com/search/2/geocode/'.$address.'.json?key='.config('external_sources.tomtom.api_key').'&countryCode=GB');
             $res = json_decode($res->body(), true);
             $position = [];
             if (is_null($res) || ! array_key_exists('results', $res) || ! count($res['results'])) {

@@ -10,8 +10,8 @@ return [
     ],
 
     'cloudmarket' => [
-        'connection_live_data' => env('CLOUDMARKET_CONNECTION_SERVICE_URL'),
-        'connection_service_url' => env('CLOUDMARKET_CONNECTION_LIVE_DATA'),
+        'connection_live_data' => env('CLOUDMARKET_CONNECTION_LIVE_DATA'),
+        'connection_service_url' => env('CLOUDMARKET_CONNECTION_SERVICE_URL', 'https://cpq-poc-uat-api.cloudmarket.com'),
     ],
 
     'alpnet' => [
@@ -65,6 +65,13 @@ return [
     'ipriver' => [
         'connection_username' => env('IPRIVER_CONNECTION_USERNAME'),
         'connection_password' => env('IPRIVER_CONNECTION_PASSWORD'),
+    ],
+
+    'vmo2' => [
+        'connection_app_id' => env('VMO2_CONNECTION_APPID'),
+        'connection_client_secret' => env('VMO2_CONNECTION_CLIENTSECRET'),
+        'connection_user_id' => env('VMO2_CONNECTION_USERID'),
+        'connection_customer_id' => env('VMO2_CONNECTION_CUSTOMERID'),
     ],
 
     'shopblocks' => [

@@ -13,7 +13,7 @@ class CloudAuditApiEmail extends CloudAuditApi
     {
         $accessToken = $this->tokenRequest();
 
-        $res = Http::withToken($accessToken)->get(env('CLOUDAUDIT_API_URL').'authorisationEmail');
+        $res = Http::withToken($accessToken)->get(config('external_sources.cloudaudit.api_url').'authorisationEmail');
 
         return $res->json();
     }
@@ -22,7 +22,7 @@ class CloudAuditApiEmail extends CloudAuditApi
     {
         $accessToken = $this->tokenRequest();
 
-        $res = Http::withToken($accessToken)->get(env('CLOUDAUDIT_API_URL').'authorisationEmail/'.$id);
+        $res = Http::withToken($accessToken)->get(config('external_sources.cloudaudit.api_url').'authorisationEmail/'.$id);
 
         return $res->json();
     }
@@ -31,7 +31,7 @@ class CloudAuditApiEmail extends CloudAuditApi
     {
         $accessToken = $this->tokenRequest();
 
-        $res = Http::withToken($accessToken)->get(env('CLOUDAUDIT_API_URL').'authorisationEmail?limit=1&accountId='.$account);
+        $res = Http::withToken($accessToken)->get(config('external_sources.cloudaudit.api_url').'authorisationEmail?limit=1&accountId='.$account);
 
         return $res->json();
     }
@@ -42,7 +42,7 @@ class CloudAuditApiEmail extends CloudAuditApi
 
         $res = Http::withToken($accessToken)
             ->withHeaders(['idempotencyKey' => Hash::make(now())])
-            ->post(env('CLOUDAUDIT_API_URL').'authorisationEmail', [
+            ->post(config('external_sources.cloudaudit.api_url').'authorisationEmail', [
                 'accountId' => $id,
                 'senderName' => $name,
                 'recipientEmail' => $rEmail,

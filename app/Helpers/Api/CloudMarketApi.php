@@ -242,7 +242,7 @@ class CloudMarketApi
 
     private static function makeRequest(string $endpoint, array $params)
     {
-        $baseUrl = env('CLOUDMARKET_CONNECTION_SERVICE_URL', 'https://cpq-poc-uat-api.cloudmarket.com');
+        $baseUrl = config('external_sources.cloudmarket.connection_service_url');
 
         return Http::withOptions([
             'stream' => true,
@@ -250,20 +250,20 @@ class CloudMarketApi
             'connect_timeout' => 30,
         ])
             ->timeout(self::$requestTimeout)
-            ->withToken(env('ALPNET_API_TOKEN'))
+            ->withToken(config('external_sources.alpnet.api_token'))
             ->get($baseUrl.$endpoint, $params);
     }
 
     private static function makeRequestPost(string $endpoint, array $params)
     {
-        $baseUrl = env('CLOUDMARKET_CONNECTION_SERVICE_URL', 'https://cpq-poc-uat-api.cloudmarket.com');
+        $baseUrl = config('external_sources.cloudmarket.connection_service_url');
 
         return Http::withOptions([
             'timeout' => self::$requestTimeout,
             'connect_timeout' => 30,
         ])
             ->timeout(self::$requestTimeout)
-            ->withToken(env('ALPNET_API_TOKEN'))
+            ->withToken(config('external_sources.alpnet.api_token'))
             ->post($baseUrl.$endpoint, $params);
     }
 
@@ -278,22 +278,22 @@ class CloudMarketApi
 
         return match ($api?->auth_type) {
             'basic' => [
-                "{$connectionBase}.Username" => $api?->username ?? env(strtoupper("{$supplierKey}_CONNECTION_USERNAME")),
-                "{$connectionBase}.Password" => $api?->password ?? env(strtoupper("{$supplierKey}_CONNECTION_PASSWORD")),
+                "{$connectionBase}.Username" => $api?->username ?? config('external_sources.'.strtolower($supplierKey).'.connection_username'),
+                "{$connectionBase}.Password" => $api?->password ?? config('external_sources.'.strtolower($supplierKey).'.connection_password'),
             ],
             'basic_client' => [
-                "{$connectionBase}.Username" => $api?->username ?? env(strtoupper("{$supplierKey}_CONNECTION_USERNAME")),
-                "{$connectionBase}.Password" => $api?->password ?? env(strtoupper("{$supplierKey}_CONNECTION_PASSWORD")),
-                "{$connectionBase}.ClientId" => $api?->client_id ?? env(strtoupper("{$supplierKey}_CONNECTION_CLIENTID")),
+                "{$connectionBase}.Username" => $api?->username ?? config('external_sources.'.strtolower($supplierKey).'.connection_username'),
+                "{$connectionBase}.Password" => $api?->password ?? config('external_sources.'.strtolower($supplierKey).'.connection_password'),
+                "{$connectionBase}.ClientId" => $api?->client_id ?? config('external_sources.'.strtolower($supplierKey).'.connection_client_id'),
             ],
             'token' => [
-                "{$connectionBase}.Token" => $api?->token ?? env(strtoupper("{$supplierKey}_CONNECTION_TOKEN")),
+                "{$connectionBase}.Token" => $api?->token ?? config('external_sources.'.strtolower($supplierKey).'.connection_token'),
             ],
             'vmo2_client' => [
-                "{$connectionBase}.AppID" => $api?->app_id ?? env(strtoupper("{$supplierKey}_CONNECTION_APPID")),
-                "{$connectionBase}.ClientSecret" => $api?->token ?? env(strtoupper("{$supplierKey}_CONNECTION_CLIENTSECRET")),
-                "{$connectionBase}.UserId" => $api?->username ?? env(strtoupper("{$supplierKey}_CONNECTION_USERID")),
-                "{$connectionBase}.CustomerId" => $api?->client_id ?? env(strtoupper("{$supplierKey}_CONNECTION_CUSTOMERID")),
+                "{$connectionBase}.AppID" => $api?->app_id ?? config('external_sources.'.strtolower($supplierKey).'.connection_app_id'),
+                "{$connectionBase}.ClientSecret" => $api?->token ?? config('external_sources.'.strtolower($supplierKey).'.connection_client_secret'),
+                "{$connectionBase}.UserId" => $api?->username ?? config('external_sources.'.strtolower($supplierKey).'.connection_user_id'),
+                "{$connectionBase}.CustomerId" => $api?->client_id ?? config('external_sources.'.strtolower($supplierKey).'.connection_customer_id'),
             ],
 
             default => [],
