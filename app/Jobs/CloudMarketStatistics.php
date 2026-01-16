@@ -67,7 +67,7 @@ class CloudMarketStatistics implements NotTenantAware, ShouldQueue
     public function failed(Exception $exception)
     {
         // Handle the failure, log exception details, etc.
-        $message = '['.strtoupper((string) env('APP_ENV')).'] SyncCloudMarketStatistics failed with error: '.$exception->getMessage();
+        $message = '['.strtoupper((string) config('app.env')).'] SyncCloudMarketStatistics failed with error: '.$exception->getMessage();
 
         $error = [
             'provider' => 'CPQ',
@@ -75,11 +75,11 @@ class CloudMarketStatistics implements NotTenantAware, ShouldQueue
         ];
 
         // Handle the failure, log exception details, etc.
-        $message = '['.strtoupper((string) env('APP_ENV')).'] SyncCloudMarketStatistics failed with error: '.json_encode($error);
+        $message = '['.strtoupper((string) config('app.env')).'] SyncCloudMarketStatistics failed with error: '.json_encode($error);
 
         Log::error($message);
-        if (env('DISCORD_CLOUDMARKET_JOBS')) {
-            Http::post(env('DISCORD_CLOUDMARKET_JOBS'), ['content' => $message]);
+        if (config('external_sources.discord.cloudmarket.jobs')) {
+            Http::post(config('external_sources.discord.cloudmarket.jobs'), ['content' => $message]);
         }
     }
 }

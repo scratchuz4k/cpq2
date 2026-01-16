@@ -47,8 +47,8 @@ return [
     'virtual1' => [
         'connection_username' => env('VIRTUAL1_CONNECTION_USERNAME'),
         'connection_password' => env('VIRTUAL1_CONNECTION_PASSWORD'),
-        'address_username' => env('VIRTUAL1_ADDRESS_USERNAME'),
-        'address_password' => env('VIRTUAL1_ADDRESS_PASSWORD'),
+        'address_username' => env('VIRTUAL1_ADDRESS_USERNAME', 'JenniferLawrence'),
+        'address_password' => env('VIRTUAL1_ADDRESS_PASSWORD', 'secretpass'),
     ],
 
     'gamma' => [
@@ -84,6 +84,9 @@ return [
         ],
         'cloudmarket' => [
             'jobs' => env('DISCORD_CLOUDMARKET_JOBS'),
+        ],
+        'shopblocks' => [
+            'jobs' => env('DISCORD_SHOPBLOCKS_JOBS'),
         ],
     ],
 ];

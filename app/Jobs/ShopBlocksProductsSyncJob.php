@@ -80,7 +80,7 @@ class ShopBlocksProductsSyncJob implements NotTenantAware, ShouldQueue
             array_push($temp['synced'], $this->page);
             Cache::put('shopblocks-sync-status', ['synced' => $temp['synced'], 'last_page' => $temp['last_page'], 'started_at' => $temp['started_at']], 30);
 
-            if (($this->page == $temp['last_page'] || count($temp['synced']) == $temp['last_page']) && env('DISCORD_SHOPBLOCKS_JOBS')) {
+            if (($this->page == $temp['last_page'] || count($temp['synced']) == $temp['last_page']) && config('external_sources.discord.shopblocks.jobs')) {
                 $allPages = range(1, $temp['last_page']);
                 $missingPages = array_diff($allPages, $temp['synced']);
 
@@ -91,8 +91,8 @@ class ShopBlocksProductsSyncJob implements NotTenantAware, ShouldQueue
                     $interval = $date1->diff($date2);
                     $timeDiff = sprintf('%02d:%02d:%02d', ($interval->d * 24) + $interval->h, $interval->i, $interval->s);
 
-                    $message = '['.strtoupper(env('APP_ENV')).'] ShopBlocksProducts Finished: '.$res.' ( Duration: '.$timeDiff.')';
-                    Http::post(env('DISCORD_SHOPBLOCKS_JOBS'), ['content' => $message]);
+                    $message = '['.strtoupper(config('app.env')).'] ShopBlocksProducts Finished: '.$res.' ( Duration: '.$timeDiff.')';
+                    Http::post(config('external_sources.discord.shopblocks.jobs'), ['content' => $message]);
                 }
             }
         }
@@ -106,7 +106,7 @@ class ShopBlocksProductsSyncJob implements NotTenantAware, ShouldQueue
     public function failed(Exception $exception)
     {
         // Handle the failure, log exception details, etc.
-        $message = '['.strtoupper((string) env('APP_ENV')).'] ShopBlocksProducts failed with error: '.$exception->getMessage();
+        $message = '['.strtoupper((string) config('app.env')).'] ShopBlocksProducts failed with error: '.$exception->getMessage();
 
         $error = [
             'provider' => 'ShopBlocks',
@@ -114,11 +114,11 @@ class ShopBlocksProductsSyncJob implements NotTenantAware, ShouldQueue
         ];
 
         // Handle the failure, log exception details, etc.
-        $message = '['.strtoupper((string) env('APP_ENV')).'] ShopBlocksProducts failed with error: '.json_encode($error);
+        $message = '['.strtoupper((string) config('app.env')).'] ShopBlocksProducts failed with error: '.json_encode($error);
 
         Log::error($message);
-        if (env('DISCORD_SHOPBLOCKS_JOBS')) {
-            Http::post(env('DISCORD_SHOPBLOCKS_JOBS'), ['content' => $message]);
+        if (config('external_sources.discord.shopblocks.jobs')) {
+            Http::post(config('external_sources.discord.shopblocks.jobs'), ['content' => $message]);
         }
     }
 

@@ -78,7 +78,7 @@ class ShopBlocksProductsJob implements NotTenantAware, ShouldQueue
     public function failed(Exception $exception)
     {
         // Handle the failure, log exception details, etc.
-        $message = '['.strtoupper((string) env('APP_ENV')).'] ShopBlocksProductsJob failed with error: '.$exception->getMessage();
+        $message = '['.strtoupper((string) config('app.env')).'] ShopBlocksProductsJob failed with error: '.$exception->getMessage();
 
         $error = [
             'provider' => 'ShopBlocks',
@@ -86,11 +86,11 @@ class ShopBlocksProductsJob implements NotTenantAware, ShouldQueue
         ];
 
         // Handle the failure, log exception details, etc.
-        $message = '['.strtoupper((string) env('APP_ENV')).'] ShopBlocksProductsJob failed with error: '.json_encode($error);
+        $message = '['.strtoupper((string) config('app.env')).'] ShopBlocksProductsJob failed with error: '.json_encode($error);
 
         Log::error($message);
-        if (env('DISCORD_SHOPBLOCKS_JOBS')) {
-            Http::post(env('DISCORD_SHOPBLOCKS_JOBS'), ['content' => $message]);
+        if (config('external_sources.discord.shopblocks.jobs')) {
+            Http::post(config('external_sources.discord.shopblocks.jobs'), ['content' => $message]);
         }
     }
 }
