@@ -7,14 +7,16 @@ use App\Models\ShopBlocks\Product;
 use App\Models\ShopBlocks\ProductDimension;
 use Carbon\Carbon;
 use Exception;
+use Illuminate\Bus\Batch;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Queue\Middleware\WithoutOverlapping;
-use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Spatie\Multitenancy\Jobs\NotTenantAware;
+use Throwable;
 
 class ShopBlocksProductsJob implements NotTenantAware, ShouldQueue
 {
@@ -61,13 +63,24 @@ class ShopBlocksProductsJob implements NotTenantAware, ShouldQueue
             return;
         }
         $last_page = array_key_exists('meta', $res) ? $res['meta']['last_page'] : 1;
-        Cache::put('shopblocks-sync-status', ['synced' => [], 'last_page' => $last_page, 'started_at' => now()], 60);
+        $total_products = array_key_exists('meta', $res) ? $res['meta']['total'] : (200 * $last_page);
 
-        Log::info("[JOB] ShopBlocksProductsJob |  $last_page ".' pages of products to be synced.');
-        do {
-            ShopBlocksProductsSyncJob::dispatch($time, $page, $filters);
-            $page++;
-        } while ($page != $last_page + 1);
+        Log::info("[JOB] ShopBlocksProductsJob | $last_page pages of $total_products products to be synced.");
+
+        $jobs = [];
+        for ($page = 1; $page <= $last_page; $page++) {
+            $jobs[] = new ShopBlocksProductsSyncJob($time, $page, $filters);
+        }
+
+        Bus::batch($jobs)
+            ->onQueue('shopblocks')
+            ->then(function (Batch $batch) use ($last_page, $total_products) {
+                Log::info("[JOB] ShopBlocksProductsJob | Successfully synced {$last_page} pages of {$total_products} products.");
+            })
+            ->catch(function (Batch $batch, Throwable $e) {
+                Log::error('[JOB] ShopBlocksProductsJob | Failed batch', ['error' => $e->getMessage()]);
+            })
+            ->dispatch();
     }
 
     /**

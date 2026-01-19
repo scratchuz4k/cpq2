@@ -3,11 +3,12 @@
 namespace App\Jobs;
 
 use App\Helpers\Api\ShopBlocksApi;
-use App\Models\ShopBlocks\Category;
 use Exception;
+use Illuminate\Bus\Batch;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Queue\Middleware\WithoutOverlapping;
+use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Spatie\Multitenancy\Jobs\NotTenantAware;
@@ -40,34 +41,31 @@ class ShopBlocksCategoriesJob implements NotTenantAware, ShouldQueue
      */
     public function handle(): void
     {
-        $page = 0;
-        $processedCount = 0;
-        do {
-            $page++;
-            $res = (new ShopBlocksApi)->getCategories(200, $page);
-            if (! array_key_exists('data', $res)) {
-                break;
-            }
+        $page = 1;
+        $res = (new ShopBlocksApi)->getCategories(200, $page);
+        if (! array_key_exists('data', $res)) {
+            return;
+        }
 
-            foreach ($res['data'] as $category) {
+        $last_page = array_key_exists('meta', $res) ? $res['meta']['last_page'] : 1;
+        $total_categories = array_key_exists('meta', $res) ? $res['meta']['total'] : (200 * $last_page);
 
-                $code = $category['id'];
-                unset($category['id']);
+        Log::info("[JOB] ShopBlocksCategoriesJob | $last_page pages of $total_categories categories to be synced.");
 
-                if (! is_null($category['parent_id'])) {
-                    $temp = Category::where('code', $category['parent_id'])->first();
+        $jobs = [];
+        for ($page = 1; $page <= $last_page; $page++) {
+            $jobs[] = new ShopBlocksCategoriesSyncJob($page);
+        }
 
-                    $category['parent_id'] = $temp?->id;
-                }
-
-                Category::updateOrCreate(['code' => $code], $category);
-                $processedCount++;
-            }
-
-            $last_page = array_key_exists('meta', $res) ? $res['meta']['last_page'] : 1;
-        } while ($page != $last_page);
-        Log::info('[JOB] ShopBlocksCategoriesJob | '.$processedCount.' categories synced.');
-
+        Bus::batch($jobs)
+            ->onQueue('shopblocks')
+            ->then(function (Batch $batch) use ($last_page, $total_categories) {
+                Log::info("[JOB] ShopBlocksCategoriesJob | Successfully synced {$last_page} pages of {$total_categories} categories.");
+            })
+            ->catch(function (Batch $batch, Throwable $e) {
+                Log::error('[JOB] ShopBlocksCategoriesJob | Failed batch', ['error' => $e->getMessage()]);
+            })
+            ->dispatch();
     }
 
     /**
