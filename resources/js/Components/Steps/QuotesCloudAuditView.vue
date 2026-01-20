@@ -143,12 +143,12 @@ const handleQuoteItems = async () => {
         }
     }
 
-    const quoteItemReviewProduct = quote.items.find((x) => x.product_code === 'Paid-PSA-Review');
+    const quoteItemReviewProduct = quote.items.find((x) => [x.product_code, x.sku].includes('Paid-PSA-Review'));
 
     if (configs.cloud_selected_option === 'review' && !quoteItemReviewProduct) {
         await createQuoteItem({
             quote_id: quote.id,
-            product_code: reviewProduct.value.product_code,
+            product_code: reviewProduct.value.product_code ?? reviewProduct.value.sku,
             product_id: reviewProduct.value.id,
             quantity: 1,
             contract_length: reviewProduct.value.contract_length,
@@ -209,7 +209,7 @@ const getReviewProduct = async () => {
             name: 'Paid PSA review',
             raw_price: 356,
             price: 356,
-            price_plan_id: 2
+            price_plan_id: 1
         };
     } catch (error) {
         notyf.error(error.response.data.message);
