@@ -14,7 +14,7 @@ class RolePermissionSeeder extends Seeder
         'Website' => [
             'viewOwn quote' => 'View Own Quote',
         ],
-        'Managament' => [
+        'Management' => [
             'viewAny report' => 'View All Report',
         ],
     ];
@@ -48,7 +48,7 @@ class RolePermissionSeeder extends Seeder
         'Commercial' => [
             'account' => 'Account',
             'contact' => 'Contact',
-            'spa' => 'Spa',
+            'spa' => 'SPA',
             'supplier' => 'Supplier',
         ],
         'Settings' => [
@@ -57,7 +57,7 @@ class RolePermissionSeeder extends Seeder
             'solution_type' => 'Solution Type',
             'activity' => 'Activity',
         ],
-        'Managament' => [
+        'Management' => [
             'group' => 'Groups',
             'user' => 'User',
             'tenant' => 'Tenant',
