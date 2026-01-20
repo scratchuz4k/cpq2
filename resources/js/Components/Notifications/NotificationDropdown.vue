@@ -1,6 +1,6 @@
 <template>
-    <div id="header-notification-button">
-        <a class="nav-link" href="#" @click="openNotification">
+    <div id="header-notification-button" class="h-100">
+        <a class="nav-link d-flex align-items-center h-100" href="#" @click="openNotification">
             <font-awesome-icon :icon="['far', 'bell']" />
 
             <div v-if="totalUnread && totalUnread > 0" class="notification-badge">

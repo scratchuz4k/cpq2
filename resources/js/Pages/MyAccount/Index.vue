@@ -137,6 +137,9 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'My Account' }]);
                             {{ $page.props.auth.user.name }}
                         </h5>
                         <span>{{ $page.props.auth.user.email }}</span>
+                        <p v-if="$page.props.auth.user.group" class="badge rounded-pill bg-light text-dark me-4">
+                            Current Group: {{ $page.props.auth.user.group.name }}
+                        </p>
 
                         <div v-if="true" class="buttons mt-3">
                             <Link class="btn btn-outline-primary px-4" :href="route('profile.edit')">Edit Profile</Link>
