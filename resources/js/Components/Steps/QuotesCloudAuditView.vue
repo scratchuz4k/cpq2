@@ -133,7 +133,7 @@ const handleQuoteItems = async () => {
                 quote_id: quote.id,
                 product_code: item.sku,
                 product_id: item.id,
-                quantity: item.subscribedUnits,
+                quantity: itemQuantity,
                 contract_length: item.contract_length,
                 name: item.name,
                 raw_price: item.price ? item.price.net : 0,
