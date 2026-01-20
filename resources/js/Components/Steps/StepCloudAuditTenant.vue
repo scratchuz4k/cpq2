@@ -122,7 +122,7 @@ const tenant_reviewed = ref(false);
                 <div class="row">
                     <div class="col-12">
                         <div class="d-flex justify-content-between mt-3">
-                            <h5 class="font-bold mb-2">Select a organization to review</h5>
+                            <h5 class="font-bold mb-2">Select an organisation to review</h5>
                             <div>
                                 <div class="btn me-2" v-if="isLoading">
                                     <div class="spinner-border spinner-border-sm" role="status">
