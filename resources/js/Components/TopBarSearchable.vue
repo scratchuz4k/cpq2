@@ -93,7 +93,7 @@
                     <a
                         class="search-option"
                         v-for="step in results.steps"
-                        :href="route('steps.show', { step: step.id })"
+                        :href="route('steps.edit', { step: step.id })"
                     >
                         <font-awesome-icon class="search-option-icon me-3" :icon="['fa', 'stairs']"></font-awesome-icon>
                         <div class="w-100 m-0 d-flex justify-content-between">
