@@ -80,7 +80,7 @@ class QuoteService
 
         if (
             array_key_exists('status', $array)
-            && $array['status'] === QuoteStatusesEnum::DECLINED->name
+            && $array['status'] === QuoteStatusesEnum::REJECTED->name
         ) {
             $quote->updateQuietly($array);
 

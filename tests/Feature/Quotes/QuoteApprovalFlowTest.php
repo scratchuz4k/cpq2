@@ -99,14 +99,14 @@ it('Complete Quote With Margin Flow', function () {
         ->assertJsonCount(2, 'data');
 
     $quote = $this->get('api/quotes/1')->json();
-    $this->assertEquals('PENDING_APPROVAL', $quote['status']);
+    $this->assertEquals('PENDING', $quote['status']);
     $this->actingAs($this->sales_rep)->post('/logout');
 
     $quoteApproval = $this->actingAs($this->sales_manager->refresh())
-        ->put('api/quote-approvals/2', ['status' => 'approved'])->json();
-    $this->assertEquals('approved', $quoteApproval['status']);
+        ->put('api/quote-approvals/2', ['status' => 'APPROVED'])->json();
+    $this->assertEquals('APPROVED', $quoteApproval['status']);
     $quote = $this->get('api/quotes/1')->json();
-    $this->assertEquals('VALIDATED', $quote['status']);
+    $this->assertEquals('APPROVED', $quote['status']);
     $this->actingAs($this->sales_manager)->post('/logout');
 
     $quote = $this->actingAs($this->sales_rep->refresh())
