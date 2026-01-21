@@ -164,6 +164,7 @@ class Quote extends Model
             QuoteStatusesEnum::PENDING->name,
             QuoteStatusesEnum::APPROVED->name,
             QuoteStatusesEnum::COMPLETED->name,
+            QuoteStatusesEnum::SUBMITTED->name,
             QuoteStatusesEnum::EXPIRED->name,
         ];
 
@@ -188,6 +189,7 @@ class Quote extends Model
             QuoteStatusesEnum::PENDING->name,
             QuoteStatusesEnum::APPROVED->name,
             QuoteStatusesEnum::COMPLETED->name,
+            QuoteStatusesEnum::SUBMITTED->name,
             QuoteStatusesEnum::EXPIRED->name,
         ];
 

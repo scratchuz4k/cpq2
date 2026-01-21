@@ -133,7 +133,7 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Quotes' }]);
                     </template>
                     <template #actions="{ data, value, index }">
                         <div
-                            v-if="!['COMPLETED', 'EXPIRED', 'PENDING', 'APPROVED'].includes(data.status)"
+                            v-if="!['COMPLETED', 'SUBMITTED', 'EXPIRED', 'PENDING', 'APPROVED'].includes(data.status)"
                             class="d-flex justify-content-end"
                         >
                             <Link
