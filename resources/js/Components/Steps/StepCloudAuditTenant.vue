@@ -69,6 +69,13 @@ const getOrganizations = async (email) => {
     organizations.value = res.data.data;
     meta.total = res.data.meta?.total ?? res.data.total;
     meta.first = (meta.page - 1) * meta.limit;
+
+    if (organization.value?.id) {
+        const match = organizations.value.find((o) => o.id === organization.value.id);
+        if (match) {
+            organization.value = match;
+        }
+    }
 };
 
 const submit = async () => {
@@ -229,7 +236,7 @@ const tenant_reviewed = ref(false);
                 class="btn btn-primary"
                 type="button"
                 @click="activateTiming()"
-                :disabled="organization == null"
+                :disabled="organization?.status.toLowerCase() !== 'granted' || !organization?.data?.report"
             >
                 Review Tenant
             </button>
