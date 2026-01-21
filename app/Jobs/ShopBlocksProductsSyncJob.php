@@ -17,8 +17,6 @@ use DOMXPath;
 use Exception;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
-use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -74,27 +72,6 @@ class ShopBlocksProductsSyncJob implements NotTenantAware, ShouldQueue
             );
 
             $this->getFeaturesFromContent($temp, $product['tabbed_content'], $this->expire_at);
-        }
-        $temp = Cache::get('shopblocks-sync-status');
-        if (is_array($temp) && array_key_exists('synced', $temp)) {
-            array_push($temp['synced'], $this->page);
-            Cache::put('shopblocks-sync-status', ['synced' => $temp['synced'], 'last_page' => $temp['last_page'], 'started_at' => $temp['started_at']], 30);
-
-            if (($this->page == $temp['last_page'] || count($temp['synced']) == $temp['last_page']) && config('services.discord.shopblocks.jobs')) {
-                $allPages = range(1, $temp['last_page']);
-                $missingPages = array_diff($allPages, $temp['synced']);
-
-                if (count($missingPages)) {
-                    $res = 'Missing Pages: '.json_encode(array_values($missingPages));
-                    $date1 = Carbon::parse($temp['started_at']);
-                    $date2 = Carbon::parse(now());
-                    $interval = $date1->diff($date2);
-                    $timeDiff = sprintf('%02d:%02d:%02d', ($interval->d * 24) + $interval->h, $interval->i, $interval->s);
-
-                    $message = '['.strtoupper(config('app.env')).'] ShopBlocksProducts Finished: '.$res.' ( Duration: '.$timeDiff.')';
-                    Http::post(config('services.discord.shopblocks.jobs'), ['content' => $message]);
-                }
-            }
         }
     }
 
