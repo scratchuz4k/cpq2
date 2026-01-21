@@ -35,8 +35,7 @@ describe('Group Testing', () => {
     });
 
     it('Creates an Account', () => {
-        cy.visit('/quotes');
-        cy.get('#create-tab').click();
+        cy.visit('/quotes/create');
         cy.get('#link-to-create-account').click();
         cy.get('#account-name').type(account.name);
         cy.get('#account-reference').type(account.ref);
@@ -102,8 +101,7 @@ describe('Group Testing', () => {
         cy.logout();
         cy.login(sales_manager.email, sales_manager.password);
 
-        cy.visit('/quotes');
-        cy.get('#create-tab').click();
+        cy.visit('/quotes/create');
         cy.get('#link-to-create-account').click();
         cy.get('#account-name').type(group_account.name);
         cy.get('#account-reference').type(group_account.ref);

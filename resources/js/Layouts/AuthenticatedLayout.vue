@@ -92,25 +92,25 @@ const currentTenant = ref(page.props.tenant);
                     <li class="nav-item">
                         <a
                             class="nav-link"
-                            id="dashboard-tab"
+                            id="quotes-tab"
                             data-toggle="tab"
                             href="/"
                             role="tab"
-                            aria-controls="dashboard"
+                            aria-controls="quotes"
                             aria-selected="false"
-                            :class="{ active: activeTab === '' }"
+                            :class="{ active: $page.component === 'Quotes/Create' }"
                             >QUOTES</a
                         >
                     </li>
                     <li class="nav-item" v-if="!page.props.auth.roles.includes('Order Manager')">
                         <a
                             class="nav-link"
-                            :class="{ active: $page.component == 'Quotes/Create' }"
-                            id="create-tab"
+                            :class="{ active: $page.component == 'MyAccount/Index' }"
+                            id="settings-tab"
                             data-toggle="tab"
                             href="/myaccount"
                             role="tab"
-                            aria-controls="create"
+                            aria-controls="settings"
                             aria-selected="false"
                         >
                             SETTINGS

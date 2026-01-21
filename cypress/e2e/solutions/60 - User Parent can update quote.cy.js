@@ -25,8 +25,7 @@ describe('User Parent can update a quote.cy', () => {
     it('Creates Mobile Quote', () => {
         //login child user and create a quote
         cy.login(user.email, user.password);
-        cy.visit('/quotes');
-        cy.get('#create-tab').click();
+        cy.visit('/quotes/create');
         cy.selectFirstOption('account_id');
         cy.get('#btn-next-step').click();
 

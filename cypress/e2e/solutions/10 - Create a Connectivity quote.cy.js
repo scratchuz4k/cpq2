@@ -11,8 +11,7 @@ describe('Creates a Connectivity quote', () => {
     });
 
     it('Creates an Account', () => {
-        cy.visit('/quotes');
-        cy.get('#create-tab').click();
+        cy.visit('/quotes/create');
         cy.get('#link-to-create-account').click();
         cy.get('#account-name').type(account.name);
         cy.get('#account-reference').type(account.ref);
@@ -20,8 +19,7 @@ describe('Creates a Connectivity quote', () => {
         cy.get('.notyf').contains('Created with Success');
     });
     it('Create a Connectivity Quote', () => {
-        cy.visit('/quotes');
-        cy.get('#create-tab').click();
+        cy.visit('/quotes/create');
 
         cy.selectLazyOption('account_id', account.name);
         cy.get('#btn-next-step').click();
@@ -91,8 +89,7 @@ describe('Creates a Connectivity quote', () => {
         cy.get('#table-one_off').contains('Custom line one_off');
     });
     it('I can filter products by contended', () => {
-        cy.visit('/quotes');
-        cy.get('#create-tab').click();
+        cy.visit('/quotes/create');
         cy.selectLazyOption('account_id', account.name);
         cy.get('#btn-next-step').click();
 
@@ -119,8 +116,7 @@ describe('Creates a Connectivity quote', () => {
         cy.get('#connectivity-product-1').contains('Primary Product');
     });
     it("I can see one product per uploadSpeed with 'Show only lowest cost products' option selected", () => {
-        cy.visit('/');
-        cy.get('#create-tab').click();
+        cy.visit('/quotes/create');
         cy.selectLazyOption('account_id', account.name);
         cy.get('#btn-next-step').click();
 
