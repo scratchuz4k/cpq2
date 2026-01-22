@@ -28,10 +28,10 @@ class QuoteService
     public function store(array $array): Quote
     {
         if (
-            array_key_exists('organization', $array)
-            && is_array($array['organization'])
+            array_key_exists('organisation', $array)
+            && is_array($array['organisation'])
         ) {
-            $array['data']['organization'] = $array['organization'];
+            $array['data']['organisation'] = $array['organisation'];
         }
 
         $quote = Quote::create($array);

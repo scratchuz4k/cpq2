@@ -32,8 +32,8 @@ setQuote(props.modelValue);
 emitter.on('save-quote', () => {
     saveQuote();
 });
-const organization = ref(quote.data?.organization ?? null);
-const report = ref(organization.value?.data?.report ?? null);
+const organisation = ref(quote.data?.organisation ?? null);
+const report = ref(organisation.value?.data?.report ?? null);
 const items = ref(report.value ? report.value.data?.items : []);
 const totalMonthlyCost = ref(0);
 

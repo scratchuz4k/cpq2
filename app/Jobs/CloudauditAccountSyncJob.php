@@ -7,7 +7,7 @@ use App\Enums\CloudAuditStatusEnum;
 use App\Helpers\Api\Cloudaudit\CloudAuditApiAccount;
 use App\Helpers\Api\Cloudaudit\CloudAuditApiEmail;
 use App\Helpers\Api\Cloudaudit\CloudAuditApiReport;
-use App\Models\Cloudaudit\Organization;
+use App\Models\Cloudaudit\Organisation;
 use Exception;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
@@ -44,7 +44,7 @@ class CloudauditAccountSyncJob implements NotTenantAware, ShouldQueue
         $accs = $apiAccount->getAccounts();
 
         foreach ($accs as $acc) {
-            $org = Organization::where('code', $acc['accountExternalId'])->first();
+            $org = Organisation::where('code', $acc['accountExternalId'])->first();
             if (! $org || in_array($org->status, [CloudAuditStatusEnum::GRANTED, CloudAuditStatusEnum::REVOKED])) {
                 continue;
             }
