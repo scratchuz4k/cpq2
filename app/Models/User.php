@@ -42,7 +42,7 @@ class User extends Authenticatable
                     $temp[$user->group()->id] = ['is_default' => true, 'tenant_id' => $user->tenant_id];
                     $model->groups()->sync($temp);
                 } catch (Exception $e) {
-                    if (! env('APP_DEBUG')) {
+                    if (! config('app.debug')) {
                         Log::error($e->getMessage());
                     }
                 }

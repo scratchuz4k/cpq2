@@ -18,7 +18,7 @@ class OrganizationService
         $array['status'] = 'created';
         $organization = Organization::create($array);
 
-        if (config('live_data.cloudaudit')) {
+        if (config('services.cloudaudit.live_data')) {
             $accApi = new CloudAuditApiAccount;
             $data = $accApi->storeAccount($organization->code, $organization->name);
             $organization->update(['status' => CloudAuditStatusEnum::CREATED_ACCOUNT, 'data' => $data]);
