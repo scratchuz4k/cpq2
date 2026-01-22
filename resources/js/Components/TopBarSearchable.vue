@@ -132,7 +132,7 @@
                     <a
                         class="search-option"
                         v-for="supplier in results.suppliers"
-                        :href="route('suppliers.show', { supplier: supplier.id })"
+                        :href="route('suppliers.edit', { supplier: supplier.id })"
                     >
                         <font-awesome-icon
                             class="search-option-icon me-3"
@@ -149,7 +149,7 @@
                 </div>
                 <div :title="'Apis'" v-if="results.apis.length">
                     <p class="search-title">Apis</p>
-                    <a class="search-option" v-for="api in results.apis" :href="route('apis.show', { api: api.id })">
+                    <a class="search-option" v-for="api in results.apis" :href="route('apis.edit', { api: api.id })">
                         <font-awesome-icon class="search-option-icon me-3" :icon="['fas', 'cloud']"></font-awesome-icon>
                         <div class="w-100 m-0 d-flex justify-content-between">
                             <p class="m-0">
@@ -165,7 +165,7 @@
                     <a
                         class="search-option"
                         v-for="user in results.users"
-                        :href="route('users.show', { user: user.id })"
+                        :href="route('users.edit', { user: user.id })"
                     >
                         <font-awesome-icon class="search-option-icon me-3" :icon="['fas', 'user']"></font-awesome-icon>
                         <div class="w-100 m-0 d-flex justify-content-between">
@@ -182,7 +182,7 @@
                     <a
                         class="search-option"
                         v-for="role in results.roles"
-                        :href="route('roles.show', { role: role.id })"
+                        :href="route('roles.edit', { role: role.id })"
                     >
                         <font-awesome-icon
                             class="search-option-icon me-3"
@@ -202,7 +202,7 @@
                     <a
                         class="search-option"
                         v-for="emailTemplate in results.emailTemplates"
-                        :href="route('email-templates.show', { email_template: emailTemplate.id })"
+                        :href="route('email-templates.edit', { email_template: emailTemplate.id })"
                     >
                         <font-awesome-icon
                             class="search-option-icon me-3"

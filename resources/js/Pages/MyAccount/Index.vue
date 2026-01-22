@@ -137,7 +137,7 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'My Account' }]);
                             {{ $page.props.auth.user.name }}
                         </h5>
                         <span>{{ $page.props.auth.user.email }}</span>
-                        <p v-if="$page.props.auth.user.group" class="badge rounded-pill bg-light text-dark me-4">
+                        <p v-if="$page.props.auth.user.group" class="badge rounded-pill bg-light text-dark">
                             Current Group: {{ $page.props.auth.user.group.name }}
                         </p>
 

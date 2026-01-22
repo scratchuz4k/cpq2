@@ -21,7 +21,6 @@ defineProps({
 });
 
 const activeTab = ref(window.location.pathname.replace(/^\/|\/$/g, ''));
-const tenants = ref(user.tenants);
 const currentTenant = ref(page.props.tenant);
 </script>
 
@@ -51,35 +50,10 @@ const currentTenant = ref(page.props.tenant);
                         <a class="nav-link" href="#">ASSETS</a>
                     </li>
                     <li class="nav-item d-md-none d-lg-block">
-                        <a
-                            class="nav-link"
-                            :class="{ active: activeTab === 'quotes' }"
-                            aria-current="page"
-                            :href="route('quotes.index')"
-                            >QUOTES</a
-                        >
+                        <a class="nav-link" aria-current="page" :href="route('quotes.index')">QUOTES</a>
                     </li>
                     <li class="nav-item d-md-none d-lg-block">
                         <a class="nav-link" href="#">BILLING</a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a
-                            id="my-account"
-                            class="nav-link"
-                            :href="route('myaccount')"
-                            v-tooltip
-                            data-bs-toggle="tooltip"
-                            data-bs-placement="top"
-                            :title="user.name"
-                        >
-                            <font-awesome-icon :icon="['far', 'user']" />
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">
-                            <font-awesome-icon :icon="['far', 'bookmark']" />
-                        </a>
                     </li>
                 </ul>
             </div>
@@ -90,28 +64,15 @@ const currentTenant = ref(page.props.tenant);
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
-                        <a
-                            class="nav-link"
-                            id="quotes-tab"
-                            data-toggle="tab"
-                            href="/"
-                            role="tab"
-                            aria-controls="quotes"
-                            aria-selected="false"
-                            :class="{ active: $page.component === 'Quotes/Create' }"
-                            >QUOTES</a
-                        >
+                        <a class="nav-link" id="quotes-tab" data-toggle="tab" :href="route('quotes.index')">QUOTES</a>
                     </li>
-                    <li class="nav-item" v-if="!page.props.auth.roles.includes('Order Manager')">
+                    <li class="nav-item">
                         <a
                             class="nav-link"
                             :class="{ active: $page.component == 'MyAccount/Index' }"
                             id="settings-tab"
                             data-toggle="tab"
-                            href="/myaccount"
-                            role="tab"
-                            aria-controls="settings"
-                            aria-selected="false"
+                            :href="route('myaccount')"
                         >
                             SETTINGS
                         </a>
@@ -119,17 +80,36 @@ const currentTenant = ref(page.props.tenant);
                 </ul>
 
                 <ul class="navbar-nav mb-2 mb-lg-0 d-flex justify-content-end">
-                    <li class="nav-item">
+                    <li class="nav-item me-2">
                         <TopBarSearchable></TopBarSearchable>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link d-flex align-items-center h-100" href="#">
-                            <font-awesome-icon :icon="['far', 'building']" class="me-2" />
-                            {{ $page.props.tenant?.name }}
+                        <a
+                            class="nav-link d-flex align-items-center h-100"
+                            role="button"
+                            v-tooltip
+                            data-bs-toggle="tooltip"
+                            data-bs-placement="top"
+                            :title="currentTenant.name + ' (T' + currentTenant.id + ')'"
+                        >
+                            <font-awesome-icon :icon="['far', 'building']" />
                         </a>
                     </li>
                     <li class="nav-item" v-if="hasRole('Super Admin') || can('viewAny notification')">
                         <NotificationDropdown></NotificationDropdown>
+                    </li>
+                    <li class="nav-item">
+                        <a
+                            id="my-account"
+                            class="nav-link d-flex align-items-center h-100"
+                            :href="route('profile.edit')"
+                            v-tooltip
+                            data-bs-toggle="tooltip"
+                            data-bs-placement="top"
+                            :title="user.name"
+                        >
+                            <font-awesome-icon :icon="['far', 'user']" />
+                        </a>
                     </li>
                 </ul>
             </div>
