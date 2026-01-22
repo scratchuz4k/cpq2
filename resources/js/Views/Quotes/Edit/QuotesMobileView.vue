@@ -77,8 +77,9 @@ getStepsWithProducts();
         <div class="row justify-content-between">
             <div class="col">
                 <div v-if="!loading">
-                    <div v-for="(step, index) in active_steps">
+                    <div v-for="(step, index) in active_steps" :key="step.id">
                         <StepProductsView
+                            v-if="index === current_step"
                             :step="step"
                             :account="props.modelValue.account"
                             v-model="current_step"

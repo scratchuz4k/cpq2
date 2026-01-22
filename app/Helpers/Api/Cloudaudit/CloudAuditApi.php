@@ -13,10 +13,10 @@ abstract class CloudAuditApi
             return Cache::get('cloudaudit-token');
         }
 
-        $response = Http::asForm()->post(env('CLOUDAUDIT_API_AUTH'), [
+        $response = Http::asForm()->post(config('services.cloudaudit.api_auth'), [
             'grant_type' => 'client_credentials',
-            'client_id' => env('CLOUDAUDIT_API_ID'),
-            'client_secret' => env('CLOUDAUDIT_API_CLIENT'),
+            'client_id' => config('services.cloudaudit.api_id'),
+            'client_secret' => config('services.cloudaudit.api_client'),
         ]);
 
         Cache::set('cloudaudit-token', $response->json()['access_token'], $response->json()['expires_in']);

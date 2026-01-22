@@ -14,10 +14,14 @@ class QuoteApprovalResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        if (is_null($this->resource)) {
+            return [];
+        }
+
         return [
             ...$this->resource->toArray(),
             'approver' => new UserResource($this->approver),
-            'quote' => new QuoteResource($this->quote),
+            'quote' => $this->quote,
         ];
     }
 }

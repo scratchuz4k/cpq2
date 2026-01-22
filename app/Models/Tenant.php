@@ -25,7 +25,7 @@ class Tenant extends \Spatie\Multitenancy\Models\Tenant
             // set actual new team_id to package instance
             setPermissionsTeamId($model->id);
             // get the admin user and assign roles/permissions on new team model
-            $admin = User::where('email', env('SUPERUSER_EMAIL', 'super@example.com'))->first();
+            $admin = User::where('email', config('cpq.superuser.email'))->first();
             $system = User::where('email', 'system@cpq.cloudmarket.com')->first();
             $role = Role::withoutGlobalScopes()->where('name', 'Super Admin')->first();
 

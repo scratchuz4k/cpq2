@@ -32,14 +32,13 @@ class QuoteApprovalMarginListener
     public function handle(QuoteApprovalEvent $event): void
     {
         $quoteApproval = $event->quoteApproval;
-
-        if (($quoteApproval->flow !== QuoteApprovalFlowEnum::MARGIN->value || $quoteApproval->status !== QuoteApprovalStatus::PENDING->value)) {
+        if (($quoteApproval->flow !== QuoteApprovalFlowEnum::MARGIN->value || $quoteApproval->status !== QuoteApprovalStatus::PENDING->name)) {
             return;
         }
 
         $isMarginValid = $quoteApproval->quote->items->every(fn ($item) => $item->isWithinMarginThresholds());
         if (! $isMarginValid) {
-            $quoteApproval->status = QuoteApprovalStatus::REJECTED->value;
+            $quoteApproval->status = QuoteApprovalStatus::REJECTED->name;
             $quoteApproval->comments = 'Margin requirements not met.';
             $quoteApproval->saveQuietly();
             $this->quoteApprovalService->store(['quote_id' => $quoteApproval->quote_id, 'flow' => QuoteApprovalFlowEnum::INTERNAL->value]);
@@ -51,9 +50,9 @@ class QuoteApprovalMarginListener
         }
 
         if ($isMarginValid) {
-            $quoteApproval->status = QuoteApprovalStatus::APPROVED->value;
+            $quoteApproval->status = QuoteApprovalStatus::APPROVED->name;
             $quoteApproval->saveQuietly();
-            $this->quoteService->update($quoteApproval->quote, ['status' => QuoteStatusesEnum::VALIDATED->name]);
+            $this->quoteService->update($quoteApproval->quote, ['status' => QuoteStatusesEnum::APPROVED->name]);
 
             $description = 'Your quote #'.$quoteApproval->quote->id.' for the account '.$quoteApproval->quote->account->name.' has been approved automatically.';
             $type = NotificationEnum::QuoteApproved;

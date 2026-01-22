@@ -27,7 +27,7 @@ class OrganisationController extends BaseController
     #[ExcludeRouteFromDocs]
     public function index()
     {
-        if (! config('live_data.cloudaudit')) {
+        if (! config('services.cloudaudit.live_data')) {
             $mock_organisations = storage_path('mocks/organisations.json');
             if (! is_file($mock_organisations)) {
                 return [];
@@ -91,7 +91,7 @@ class OrganisationController extends BaseController
     public function sync()
     {
         try {
-            if (! config('live_data.cloudaudit')) {
+            if (! config('services.cloudaudit.live_data')) {
                 return response()->json([], 200);
             }
             $job = new CloudauditAccountSyncJob;
