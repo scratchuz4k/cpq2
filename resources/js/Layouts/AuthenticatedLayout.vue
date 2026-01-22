@@ -70,7 +70,7 @@ const currentTenant = ref(page.props.tenant);
                         <a
                             class="nav-link"
                             :class="{ active: $page.component == 'MyAccount/Index' }"
-                            id="settings-tab"
+                            id="my-account"
                             data-toggle="tab"
                             :href="route('myaccount')"
                         >
