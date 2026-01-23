@@ -11,7 +11,7 @@
                 "email": null,
                 "report": {
                     "id": 1,
-                    "organization_id": 1,
+                    "organisation_id": 1,
                     "code": "REPORT",
                     "data": {
                         "id": "4371d5f5-95fa-4889-a02f-e92e36ac4983",

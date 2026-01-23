@@ -28,8 +28,8 @@ const form = reactive({
     password: null
 });
 
-const organization = ref(props.modelValue?.organization || null);
-const organizations = ref([]);
+const organisation = ref(props.modelValue?.organisation || null);
+const organisations = ref([]);
 const showModal = ref(false);
 const showLodingLogin = ref(false);
 const tenant_review_active = ref(false);
@@ -51,13 +51,13 @@ const activateTiming = async () => {
             address_line1: proxyValue.value.address?.label,
             address_postcode: proxyValue.value.address?.postCode,
             solution_type_id: proxyValue.value.solution_type?.id,
-            organization: organization.value
+            organisation: organisation.value
         });
     } catch (ex) {
         notyf.error(ex.response.data.message);
     }
 };
-const getOrganizations = async (email) => {
+const getOrganisations = async (email) => {
     let string = queryString.stringify({
         order: 'desc',
         orderBy: 'updated_at',
@@ -65,8 +65,8 @@ const getOrganizations = async (email) => {
         limit: meta.limit,
         search: meta.search
     });
-    let res = await axios.get('/api/cloudaudit/organizations?' + string);
-    organizations.value = res.data.data;
+    let res = await axios.get('/api/cloudaudit/organisations?' + string);
+    organisations.value = res.data.data;
     meta.total = res.data.meta?.total ?? res.data.total;
     meta.first = (meta.page - 1) * meta.limit;
 };
@@ -75,13 +75,13 @@ const submit = async () => {
     showLodingLogin.value = true;
 
     try {
-        let res = await axios.post('/api/cloudaudit/organizations', form);
+        let res = await axios.post('/api/cloudaudit/organisations', form);
 
-        organization.value = res.data;
+        organisation.value = res.data;
         showLodingLogin.value = false;
         showModal.value = false;
-        getOrganizations();
-        notyf.success('Organization added with Success');
+        getOrganisations();
+        notyf.success('Organisation added with Success');
     } catch (ex) {
         showLodingLogin.value = false;
         notyf.error(ex.response?.data?.message ?? ex.response?.data);
@@ -90,24 +90,24 @@ const submit = async () => {
 
 const syncCloudaudit = async () => {
     isLoading.value = true;
-    let res = await axios.get('/api/cloudaudit/organizations/sync');
+    let res = await axios.get('/api/cloudaudit/organisations/sync');
     setTimeout(() => {
         isLoading.value = false;
-        getOrganizations();
+        getOrganisations();
     }, 200);
 };
 
 const handlePaginator = (ev) => {
     form.limit = ev.rows;
     meta.page = ev.page + 1;
-    getOrganizations();
+    getOrganisations();
 };
 
 watch(
     () => [meta.search],
     _.debounce(function () {
         meta.page = 1;
-        getOrganizations();
+        getOrganisations();
     }, 200)
 );
 
@@ -122,7 +122,7 @@ const tenant_reviewed = ref(false);
                 <div class="row">
                     <div class="col-12">
                         <div class="d-flex justify-content-between mt-3">
-                            <h5 class="font-bold mb-2">Select a organization to review</h5>
+                            <h5 class="font-bold mb-2">Select an organisation to review</h5>
                             <div>
                                 <div class="btn me-2" v-if="isLoading">
                                     <div class="spinner-border spinner-border-sm" role="status">
@@ -166,12 +166,12 @@ const tenant_reviewed = ref(false);
                             </IconField>
                         </div>
                         <div
-                            v-if="organizations.length"
+                            v-if="organisations.length"
                             class="row row-cols-1 row-cols-md-3 row-cols-lg-4 g-3 mt-1 mb-3"
                         >
-                            <div class="col" v-for="(org, index) in organizations">
+                            <div class="col" v-for="(org, index) in organisations">
                                 <RadioCard
-                                    v-model="organization"
+                                    v-model="organisation"
                                     :value="org"
                                     :allow-deselect="true"
                                     name="cloud-selected-option"
@@ -184,7 +184,7 @@ const tenant_reviewed = ref(false);
                                                 class="badge bg-danger"
                                             ></font-awesome-icon>
                                             <div class="org-tooltip-info rounded border p-2 px-4">
-                                                <p>Some errors have occurred trying to sync this organization</p>
+                                                <p>Some errors have occurred trying to sync this organisation</p>
                                             </div>
                                         </div>
                                     </div>
@@ -229,7 +229,7 @@ const tenant_reviewed = ref(false);
                 class="btn btn-primary"
                 type="button"
                 @click="activateTiming()"
-                :disabled="organization == null"
+                :disabled="organisation == null"
             >
                 Review Tenant
             </button>
@@ -261,7 +261,7 @@ const tenant_reviewed = ref(false);
         position="top"
     >
         <template #header>
-            <h2><font-awesome-icon :icon="['fas', 'globe']"></font-awesome-icon> New Organization</h2>
+            <h2><font-awesome-icon :icon="['fas', 'globe']"></font-awesome-icon> New Organisation</h2>
         </template>
         <div class="container position-relative">
             <div v-if="showLodingLogin" class="login-loading-container">

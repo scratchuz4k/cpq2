@@ -252,7 +252,7 @@ const items = ref([
                     <tab title="Quote">
                         <Panel class="mt-3" header="Summary Layout" :toggleable="true">
                             <p class="mb-3">
-                                This section contains all the customizations for the appearance of the solution type to
+                                This section contains all the customisations for the appearance of the solution type to
                                 match specific preferences within the quote.
                             </p>
                             <div>
