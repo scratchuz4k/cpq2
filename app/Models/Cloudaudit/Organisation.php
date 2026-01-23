@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class Organization extends Model
+class Organisation extends Model
 {
     use SetTenantId;
 
@@ -36,7 +36,7 @@ class Organization extends Model
 
     public function logs(): HasMany
     {
-        return $this->hasMany(OrganizationLog::class);
+        return $this->hasMany(OrganisationLog::class);
     }
 
     public function account()

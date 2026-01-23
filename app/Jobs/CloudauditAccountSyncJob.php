@@ -7,7 +7,7 @@ use App\Enums\CloudAuditStatusEnum;
 use App\Helpers\Api\Cloudaudit\CloudAuditApiAccount;
 use App\Helpers\Api\Cloudaudit\CloudAuditApiEmail;
 use App\Helpers\Api\Cloudaudit\CloudAuditApiReport;
-use App\Models\Cloudaudit\Organization;
+use App\Models\Cloudaudit\Organisation;
 use Exception;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
@@ -44,7 +44,7 @@ class CloudauditAccountSyncJob implements NotTenantAware, ShouldQueue
         $accs = $apiAccount->getAccounts();
 
         foreach ($accs as $acc) {
-            $org = Organization::where('code', $acc['accountExternalId'])->first();
+            $org = Organisation::where('code', $acc['accountExternalId'])->first();
             if (! $org || in_array($org->status, [CloudAuditStatusEnum::GRANTED, CloudAuditStatusEnum::REVOKED])) {
                 continue;
             }
@@ -88,7 +88,7 @@ class CloudauditAccountSyncJob implements NotTenantAware, ShouldQueue
     public function failed(Exception $exception)
     {
         // Handle the failure, log exception details, etc.
-        $message = '['.strtoupper((string) env('APP_ENV')).'] CloudauditAccount failed with error: '.$exception->getMessage();
+        $message = '['.strtoupper((string) config('app.env')).'] CloudauditAccount failed with error: '.$exception->getMessage();
 
         $error = [
             'provider' => 'Cloudaudit',
@@ -96,11 +96,11 @@ class CloudauditAccountSyncJob implements NotTenantAware, ShouldQueue
         ];
 
         // Handle the failure, log exception details, etc.
-        $message = '['.strtoupper((string) env('APP_ENV')).'] CloudauditAccount failed with error: '.json_encode($error);
+        $message = '['.strtoupper((string) config('app.env')).'] CloudauditAccount failed with error: '.json_encode($error);
 
         Log::error($message);
-        if (env('DISCORD_CLOUDAUDIT_JOBS')) {
-            Http::post(env('DISCORD_CLOUDAUDIT_JOBS'), ['content' => $message]);
+        if (config('services.discord.cloudaudit.jobs')) {
+            Http::post(config('services.discord.cloudaudit.jobs'), ['content' => $message]);
         }
     }
 }

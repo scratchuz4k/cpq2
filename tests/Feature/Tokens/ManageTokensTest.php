@@ -37,7 +37,7 @@ it('Create Token for first Tenant', function () {
 });
 
 it('Create Token for second Tenant', function () {
-    $super_user_email = env('SUPERUSER_EMAIL', 'super@example.com');
+    $super_user_email = config('cpq.superuser.email');
     $admin = User::where('email', $super_user_email)->first();
     $this->actingAs($admin);
 

@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
@@ -110,6 +111,11 @@ class Quote extends Model
         return $this->hasMany(QuoteApproval::class)->orderBy('quote_approvals.id', 'desc');
     }
 
+    public function latestApproval(): HasOne
+    {
+        return $this->approvals()->one()->latestOfMany();
+    }
+
     public function itemsTrashed(): HasMany
     {
         return $this->hasMany(QuoteItem::class)->withTrashed()->whereNotNull('deleted_at');
@@ -155,9 +161,10 @@ class Quote extends Model
     public static function resolveStatus(Quote $quote): string
     {
         $statuses_to_ignore = [
-            QuoteStatusesEnum::PENDING_APPROVAL->name,
-            QuoteStatusesEnum::VALIDATED->name,
+            QuoteStatusesEnum::PENDING->name,
+            QuoteStatusesEnum::APPROVED->name,
             QuoteStatusesEnum::COMPLETED->name,
+            QuoteStatusesEnum::SUBMITTED->name,
             QuoteStatusesEnum::EXPIRED->name,
         ];
 
@@ -179,9 +186,10 @@ class Quote extends Model
     public function isBlocked(): string
     {
         $block_statuses = [
-            QuoteStatusesEnum::PENDING_APPROVAL->name,
-            QuoteStatusesEnum::VALIDATED->name,
+            QuoteStatusesEnum::PENDING->name,
+            QuoteStatusesEnum::APPROVED->name,
             QuoteStatusesEnum::COMPLETED->name,
+            QuoteStatusesEnum::SUBMITTED->name,
             QuoteStatusesEnum::EXPIRED->name,
         ];
 

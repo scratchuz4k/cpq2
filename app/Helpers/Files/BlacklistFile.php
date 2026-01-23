@@ -28,7 +28,7 @@ class BlacklistFile
         $this->path = storage_path('/app/blacklists/');
         $this->filename = 'blacklist_'.md5($tenant?->id.$tenant?->name).'.json';
 
-        $env = env('APP_ENV', null) == 'testing' ? 'testing' : '';
+        $env = config('app.env') == 'testing' ? 'testing' : '';
         $this->file = $this->path.$this->filename.$env;
     }
 

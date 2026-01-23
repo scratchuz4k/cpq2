@@ -60,7 +60,7 @@ const deleteRecord = (id) => {
 
 const saveApproval = async (data) => {
     try {
-        axios.put(`/api/quote-approvals/${data.id}`, { approver_id: user.id });
+        await axios.put(`/api/quote-approvals/${data.id}`, { approver_id: user.id });
 
         emitter.emit('datatable-refresh');
         notyf.success('Quote assigned with success');
@@ -76,7 +76,14 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Quotes' }]);
     <Head title="Quotes" />
     <AuthenticatedLayout>
         <div class="panel">
-            <Header :breadcrumbs="items" title="Quotes"></Header>
+            <Header :breadcrumbs="items" title="Quotes">
+                <template #buttons>
+                    <Link href="/quotes/create" id="account-create-btn" class="btn btn-primary me-2">
+                        <font-awesome-icon :icon="['fas', 'plus']"></font-awesome-icon>
+                        New Quote
+                    </Link>
+                </template>
+            </Header>
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <Datatable
                     :allow="{}"
@@ -87,7 +94,7 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Quotes' }]);
                         { data: 'address_postcode', title: 'Postcode', style: 'width:8%' },
                         { data: 'user.name', title: 'Owner', style: 'width:15%' },
                         {
-                            data: 'approvals.approver.name',
+                            data: 'latest_approval.approver.name',
                             title: 'Approver',
                             style: 'width:15%',
                             hide: has_quote_approval === '0'
@@ -123,7 +130,7 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Quotes' }]);
                             >{{ value.toUpperCase() }}</span
                         >
                         <span v-else class="badge text-bg-secondary">{{
-                            data.approvals[0] && !['PENDING_APPROVAL', 'DECLINED'].includes(value)
+                            data.approvals[0] && !['PENDING', 'REJECTED'].includes(value)
                                 ? data.approvals[0]?.status.toUpperCase()
                                 : value
                         }}</span>
@@ -133,7 +140,7 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Quotes' }]);
                     </template>
                     <template #actions="{ data, value, index }">
                         <div
-                            v-if="!['COMPLETED', 'EXPIRED', 'PENDING_APPROVAL', 'VALIDATED'].includes(data.status)"
+                            v-if="!['COMPLETED', 'SUBMITTED', 'EXPIRED', 'PENDING', 'APPROVED'].includes(data.status)"
                             class="d-flex justify-content-end"
                         >
                             <Link
@@ -162,9 +169,9 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Quotes' }]);
                         <div v-else class="d-flex justify-content-end">
                             <button
                                 v-if="
-                                    data.status === 'PENDING_APPROVAL' &&
+                                    data.status === 'PENDING' &&
                                     can('update quote_approval') &&
-                                    !data.approvals[0]?.approver
+                                    !data.latest_approval.approver
                                 "
                                 :id="'datatable-workbasket-btn-' + index + '-delete'"
                                 class="btn px-2 py-0 mx-1 border-0"

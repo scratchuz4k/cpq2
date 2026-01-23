@@ -46,7 +46,7 @@ class TenantPolicy
      */
     public function create(User $user): bool
     {
-        if ($user->email != env('SUPERUSER_EMAIL', 'super@example.com')) {
+        if ($user->email != config('cpq.superuser.email')) {
             return false;
         }
 

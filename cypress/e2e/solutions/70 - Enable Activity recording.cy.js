@@ -20,8 +20,7 @@ describe('Creates a Mobile Quote', () => {
     });
 
     it('Create a Connectivity Quote', () => {
-        cy.visit('/');
-        cy.get('#create-tab').click();
+        cy.visit('/quotes/create');
 
         cy.selectFirstOption('account_id');
         cy.get('#btn-next-step').click();
