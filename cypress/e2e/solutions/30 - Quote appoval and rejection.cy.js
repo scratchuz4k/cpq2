@@ -29,8 +29,7 @@ describe('Quote Approval and Rejection', () => {
 
     it('Creates Mobile Quote', () => {
         cy.login('sales@example.com', 'werwerwer');
-        cy.visit('/');
-        cy.get('#create-tab').click();
+        cy.visit('/quotes/create');
         cy.selectFirstOption('account_id');
         cy.get('#btn-next-step').click();
 

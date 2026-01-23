@@ -76,7 +76,14 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Quotes' }]);
     <Head title="Quotes" />
     <AuthenticatedLayout>
         <div class="panel">
-            <Header :breadcrumbs="items" title="Quotes"></Header>
+            <Header :breadcrumbs="items" title="Quotes">
+                <template #buttons>
+                    <Link href="/quotes/create" id="account-create-btn" class="btn btn-primary me-2">
+                        <font-awesome-icon :icon="['fas', 'plus']"></font-awesome-icon>
+                        New Quote
+                    </Link>
+                </template>
+            </Header>
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <Datatable
                     :allow="{}"
