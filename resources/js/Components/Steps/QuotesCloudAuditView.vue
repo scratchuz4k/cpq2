@@ -207,9 +207,9 @@ const getReviewProduct = async () => {
             quantity: 1,
             contract_length: 1,
             name: 'Paid PSA review',
-            raw_price: 356,
-            price: 356,
-            price_plan_id: 1
+            raw_price: 0,
+            price: 0,
+            price_plan_id: 2
         };
     } catch (error) {
         notyf.error(error.response.data.message);
