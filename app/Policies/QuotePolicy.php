@@ -2,7 +2,6 @@
 
 namespace App\Policies;
 
-use App\Enums\QuoteStatusesEnum;
 use App\Models\Quote;
 use App\Models\User;
 
@@ -12,10 +11,6 @@ class QuotePolicy
      * Determine whether the user can view any models.
      */
     private string $model = 'quote';
-
-    private array $statusToBlockQuotes = [
-        QuoteStatusesEnum::EXPIRED->name,
-    ];
 
     public function viewAny(User $user): bool
     {
@@ -39,17 +34,13 @@ class QuotePolicy
             return false;
         }
 
-        if ($user->can("viewOwn $this->model")) {
+        if ($user->can("viewOwn $this->model") && ! $user->can("view $this->model")) {
             if ($user->id !== $quote->user_id) {
                 return false;
             }
         }
 
         if (! $user->can("view $this->model")) {
-            return false;
-        }
-
-        if (in_array($quote->status, $this->statusToBlockQuotes)) {
             return false;
         }
 
@@ -81,10 +72,6 @@ class QuotePolicy
             return false;
         }
 
-        if (in_array($quote->status, $this->statusToBlockQuotes)) {
-            return false;
-        }
-
         return true;
     }
 
@@ -100,9 +87,6 @@ class QuotePolicy
         if (! $user->can("delete $this->model")) {
             return false;
         }
-        if (in_array($quote->status, $this->statusToBlockQuotes)) {
-            return false;
-        }
 
         return true;
     }
@@ -115,9 +99,6 @@ class QuotePolicy
         if (! $user->can("restore $this->model")) {
             return false;
         }
-        if (in_array($quote->status, $this->statusToBlockQuotes)) {
-            return false;
-        }
 
         return true;
     }
@@ -128,9 +109,6 @@ class QuotePolicy
     public function forceDelete(User $user, Quote $quote): bool
     {
         if (! $user->can("forceDelete $this->model")) {
-            return false;
-        }
-        if (in_array($quote->status, $this->statusToBlockQuotes)) {
             return false;
         }
 
