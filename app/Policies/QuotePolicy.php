@@ -43,10 +43,6 @@ class QuotePolicy
             return false;
         }
 
-        if (in_array($quote->status, $this->statusToBlockQuotes)) {
-            return false;
-        }
-
         return true;
     }
 

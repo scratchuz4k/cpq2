@@ -29,7 +29,7 @@ class UserController extends BaseController
     {
         $dataProvider = new DataProvider(User::class);
         $dataProvider->builder = User::getChildAndOrphansUser();
-        $dataProvider->builder = $dataProvider->builder->where('users.tenant_id', request()->user()->tenant_id);
+
         try {
             $data = $dataProvider->get();
         } catch (\Exception $e) {

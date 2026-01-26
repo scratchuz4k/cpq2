@@ -40,7 +40,7 @@ class QuoteApprovalInternalListener
             $this->quoteService->update($quoteApproval->quote, ['status' => QuoteStatusesEnum::REJECTED->name]);
             $description = 'Your quote #'.$quoteApproval->quote->id.' for the account '.$quoteApproval->quote->account->name.' has been rejected.';
             $type = NotificationEnum::QuoteRejected;
-            createNotification($type, $quoteApproval->quote->user, $description, route('quotes.show', ['quote' => $quoteApproval->quote->id]), false);
+            createNotification($type, $quoteApproval->quote->user, $description, route('quotes.show', ['quote' => $quoteApproval->quote->id], false));
         }
 
         if (
@@ -50,7 +50,7 @@ class QuoteApprovalInternalListener
             $this->quoteService->update($quoteApproval->quote, ['status' => QuoteStatusesEnum::APPROVED->name]);
             $description = 'Your quote #'.$quoteApproval->quote->id.' for the account '.$quoteApproval->quote->account->name.' has been approved.';
             $type = NotificationEnum::QuoteApproved;
-            createNotification($type, $quoteApproval->quote->user, $description, route('quotes.show', ['quote' => $quoteApproval->quote->id]), false);
+            createNotification($type, $quoteApproval->quote->user, $description, route('quotes.show', ['quote' => $quoteApproval->quote->id], false));
         }
 
     }
