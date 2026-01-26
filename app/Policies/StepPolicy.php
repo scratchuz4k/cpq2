@@ -66,10 +66,6 @@ class StepPolicy
             return false;
         }
 
-        if (count($step->products)) {
-            return false;
-        }
-
         return true;
     }
 
