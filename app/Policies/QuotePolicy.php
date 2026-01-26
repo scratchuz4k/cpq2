@@ -39,6 +39,12 @@ class QuotePolicy
             return false;
         }
 
+        if ($user->can("viewOwn $this->model")) {
+            if ($user->id !== $quote->user_id) {
+                return false;
+            }
+        }
+
         if (! $user->can("view $this->model")) {
             return false;
         }

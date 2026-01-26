@@ -14,7 +14,7 @@ class DashboardController extends BaseController
     public function index()
     {
         $user = Auth::user();
-        if ($user->can('viewAny quote')) {
+        if ($user->can('viewAny quote') || $user->can('viewOwn quote')) {
             return Inertia::location(route('quotes.index'));
         }
 
