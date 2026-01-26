@@ -36,7 +36,7 @@ class UserController extends BaseController
     public function create()
     {
         $users = User::getChildAndOrphansUser();
-        $users = $users->where('tenant_id', request()->user()->tenant_id);
+
         $noManagerOptions = collect([
             [
                 'id' => 0,
@@ -79,7 +79,6 @@ class UserController extends BaseController
     public function edit(User $user)
     {
         $users = User::getChildAndOrphansUser();
-        $users = $users->where('tenant_id', request()->user()->tenant_id);
         $users = $users->where('id', '!=', $user->id);
         $noManagerOptions = collect([
             [
@@ -137,6 +136,5 @@ class UserController extends BaseController
     protected function customFilter(DataProvider &$dataProvider)
     {
         $dataProvider->builder = User::getChildAndOrphansUser();
-        $dataProvider->builder = $dataProvider->builder->where('users.tenant_id', request()->user()->tenant_id);
     }
 }

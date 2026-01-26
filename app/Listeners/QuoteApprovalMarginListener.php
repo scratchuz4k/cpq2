@@ -45,7 +45,7 @@ class QuoteApprovalMarginListener
 
             $description = 'Your quote #'.$quoteApproval->quote->id.' for the account '.$quoteApproval->quote->account->name.' has been rejected automatically.';
             $type = NotificationEnum::QuoteRejected;
-            createNotification($type, $quoteApproval->quote->user, $description, route('quotes.show', ['quote' => $quoteApproval->quote->id]), false);
+            createNotification($type, $quoteApproval->quote->user, $description, route('quotes.show', ['quote' => $quoteApproval->quote->id], false));
 
         }
 
@@ -56,7 +56,7 @@ class QuoteApprovalMarginListener
 
             $description = 'Your quote #'.$quoteApproval->quote->id.' for the account '.$quoteApproval->quote->account->name.' has been approved automatically.';
             $type = NotificationEnum::QuoteApproved;
-            createNotification($type, $quoteApproval->quote->user, $description, route('quotes.show', ['quote' => $quoteApproval->quote->id]), false);
+            createNotification($type, $quoteApproval->quote->user, $description, route('quotes.show', ['quote' => $quoteApproval->quote->id], false));
         }
 
     }
