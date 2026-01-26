@@ -79,4 +79,45 @@ describe('Manage Products Step relation', () => {
         cy.get('.p-datatable-table').contains(steps[0].name);
         cy.get('.p-datatable-table').contains('Cloud Audit');
     });
+
+    it('Delete Step', () => {
+        cy.visit('/');
+        cy.get('#my-account').click();
+        cy.get('#link-steps').click();
+        cy.get('#datatable-search').type(steps[0].name);
+        cy.wait(1000);
+        cy.get('#datatable-btn-0-delete').click();
+
+        cy.get('.swal2-confirm').eq(0).click();
+        cy.get('.notyf').contains('Removed with success');
+
+        cy.get('#datatable-search').type(steps[0].name);
+        cy.get('#steps-table').should('not.contain', steps[0].name);
+    });
+
+    it('Confirm that Solution Type no longer has Step associated', () => {
+        cy.visit('/');
+        cy.get('#my-account').click();
+        cy.get('#link-solutions').click();
+
+        cy.get('#datatable-search').type('Cloud Audit');
+        cy.wait(1000);
+        cy.get('#datatable-btn-0-edit').click();
+
+        cy.get('#1-1').click();
+
+        cy.get('#steps-table').should('not.contain', steps[0].name);
+    });
+
+    products.forEach((product, index) => {
+        it('Confirm that Product no longer has Step associated', () => {
+            cy.visit('/');
+            cy.get('#my-account').click();
+            cy.get('#link-products').click();
+
+            cy.get('#datatable-search').type(product.sku);
+            cy.wait(1000);
+            cy.get('.p-datatable-table').should('not.contain', steps[0].name);
+        });
+    });
 });
