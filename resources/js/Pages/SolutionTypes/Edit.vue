@@ -179,7 +179,7 @@ const items = ref([
                         <Panel class="mt-3" header="Steps" :toggleable="true">
                             <div class="mb-3">
                                 <label class="form-label">Order Steps:</label>
-                                <table class="table">
+                                <table class="table" id="steps-table">
                                     <thead>
                                         <tr>
                                             <th style="width: 5%"></th>
