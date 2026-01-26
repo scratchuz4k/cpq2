@@ -72,7 +72,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/quotes/{quote}/configure', [QuoteController::class, 'configure'])->name('quotes.configure');
     Route::post('/quotes/{quote}/email', [QuoteController::class, 'email'])->name('quotes.email');
 
-    Route::get('/users/import', [UserController::class, 'index'])->name('users.index');
+    Route::get('/users/import', [UserController::class, 'index'])->name('users.import');
     Route::post('/users/import', [UserController::class, 'importUsers'])->name('users.import');
 
     Route::resources([
