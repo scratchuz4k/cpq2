@@ -95,18 +95,18 @@ emitter.on('quote-items:toggle:is-editing', () => (item.value.is_editing = false
             <div class="d-flex justify-content-end">
                 <template v-if="!item.is_editing">
                     <font-awesome-icon
-                        :id="'btn-' + props.code + '-' + index + '-edit'"
-                        role="button"
-                        class="px-2 py-2 text-primary"
-                        :icon="['fas', 'edit']"
-                        @click="edit(item)"
-                    />
-                    <font-awesome-icon
                         :id="'btn-' + props.code + '-' + index + '-remove'"
                         role="button"
                         class="px-2 py-2 text-secondary"
                         :icon="['fas', 'trash']"
                         @click="remove(item)"
+                    />
+                    <font-awesome-icon
+                        :id="'btn-' + props.code + '-' + index + '-edit'"
+                        role="button"
+                        class="px-2 py-2 text-primary"
+                        :icon="['fas', 'edit']"
+                        @click="edit(item)"
                     />
                 </template>
                 <template v-else>
