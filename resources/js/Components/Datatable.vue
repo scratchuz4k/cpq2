@@ -16,7 +16,6 @@ import axios from 'axios';
 import { can, hasRole } from '@/Composables/useAuth.js';
 import pluralize from 'pluralize';
 import { exportData } from '@/Composables/export.js';
-import Select from 'primevue/select';
 
 const slots = useSlots();
 const usedSlots = Object.keys(slots);
@@ -151,9 +150,15 @@ const getExportData = async () => {
     if (exportDisabled.value) return;
     exportDisabled.value = true;
 
+    let columns = props.columns
+        .filter((column) => column.data !== 'actions')
+        .map((x) => x.data)
+        .join(',');
+
     let filters = {
-        filters: JSON.stringify([...form.filters, ...props.query]),
-        search: global.value
+        filters: JSON.stringify([...form.filters.filter((x) => x.value != null), ...props.query]),
+        search: global.value,
+        columns: columns
     };
 
     exportData(filters, props.route);

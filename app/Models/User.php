@@ -87,6 +87,12 @@ class User extends Authenticatable
         'is_active' => 'boolean',
     ];
 
+    public function scopeHasPermission(Builder $query, string $permission): Builder
+    {
+        return $query->whereHas('permissions', fn ($q) => $q->where('name', $permission))
+            ->orWhereHas('roles.permissions', fn ($q) => $q->where('name', $permission));
+    }
+
     /**
      * Get the children users of this user.
      */

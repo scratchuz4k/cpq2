@@ -30,9 +30,7 @@ class ExportShopBlocks extends Command
      */
     public function handle()
     {
-        Log::withContext(['signature' => $this->signature]);
-        Log::info('Job Started.');
-
+        Log::info('[JOB] ExportShopBlocks | Job Started.');
         $categoryId = (int) $this->argument('category_id');
 
         $items = Product::when($categoryId, fn ($query) => $query->where('category_id', '=', $categoryId))->get();
@@ -59,6 +57,6 @@ class ExportShopBlocks extends Command
         })->get();
         file_put_contents(storage_path('mocks/shopblocks.product_features.json'), json_encode($items->toArray()));
 
-        Log::info('Job Finished.');
+        Log::info('[JOB] ExportShopBlocks | Job Finished.');
     }
 }

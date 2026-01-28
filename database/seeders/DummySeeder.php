@@ -64,5 +64,8 @@ class DummySeeder extends Seeder
 
         $super_user = User::where('email', env('SUPERUSER_EMAIL', 'super@example.com'))->first();
         $super_user->tenants()->sync([$tenant->id, ...$dummy_tenants->pluck('id')]);
+
+        $system_user = User::where('email', 'system@cpq.cloudmarket.com')->first();
+        $system_user->tenants()->sync([$tenant->id, ...$dummy_tenants->pluck('id')]);
     }
 }

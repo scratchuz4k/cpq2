@@ -1,8 +1,12 @@
 <script setup>
-import { Select, IconField, InputText, InputIcon, Dialog } from 'primevue';
-import { computed, ref, reactive } from 'vue';
+import _ from 'lodash';
+import { IconField, InputText, InputIcon, Dialog } from 'primevue';
+import { watch, ref, reactive, computed } from 'vue';
+import queryString from 'query-string';
 import { currentStep } from '@composables/useQuoteSteps';
-import { v4 as uuidv4 } from 'uuid';
+import Paginator from 'primevue/paginator';
+import axios from 'axios';
+import { router } from '@inertiajs/vue3';
 
 const props = defineProps({
     solutionType: Array,
@@ -18,75 +22,197 @@ const proxyValue = computed({
         emit('update:modelValue', val);
     }
 });
+const isLoading = ref(false);
 const form = reactive({
     email: null,
     password: null
 });
-const tenants = ref([]);
+
+const organization = ref(props.modelValue?.organization || null);
+const organizations = ref([]);
 const showModal = ref(false);
 const showLodingLogin = ref(false);
-const tenant = ref(null);
 const tenant_review_active = ref(false);
-const activateTiming = () => {
-    tenant_review_active.value = !tenant_review_active.value;
-    setTimeout(() => {
-        currentStep.value++;
-    }, 5000);
+const meta = reactive({
+    limit: 12,
+    page: 1,
+    total: 0,
+    first: 1,
+    search: null
+});
+
+const activateTiming = async () => {
+    try {
+        await router.post('/quotes', {
+            account_id: proxyValue.value.account?.id,
+            address_position: proxyValue.value.position,
+            address_city: proxyValue.value.address?.postTown,
+            address_data: proxyValue.value.address,
+            address_line1: proxyValue.value.address?.label,
+            address_postcode: proxyValue.value.address?.postCode,
+            solution_type_id: proxyValue.value.solution_type?.id,
+            organization: organization.value
+        });
+    } catch (ex) {
+        notyf.error(ex.response.data.message);
+    }
 };
-const extractDomain = (email) => {
-    // Split by '@' and take the last part
-    const parts = email.split('@');
-    if (parts.length < 2) return null;
-    return parts[parts.length - 1];
+const getOrganizations = async (email) => {
+    let string = queryString.stringify({
+        order: 'desc',
+        orderBy: 'updated_at',
+        page: meta.page,
+        limit: meta.limit,
+        search: meta.search
+    });
+    let res = await axios.get('/api/cloudaudit/organizations?' + string);
+    organizations.value = res.data.data;
+    meta.total = res.data.meta?.total ?? res.data.total;
+    meta.first = (meta.page - 1) * meta.limit;
 };
-const submit = () => {
+
+const submit = async () => {
     showLodingLogin.value = true;
-    setTimeout(() => {
-        const newTenant = { name: extractDomain(form.email), id: `${uuidv4()}` };
-        tenants.value.push(newTenant);
-        tenant.value = newTenant.id;
+
+    try {
+        let res = await axios.post('/api/cloudaudit/organizations', form);
+
+        organization.value = res.data;
         showLodingLogin.value = false;
         showModal.value = false;
-        notyf.success('Connected with Success');
-    }, 3000);
+        getOrganizations();
+        notyf.success('Organization added with Success');
+    } catch (ex) {
+        showLodingLogin.value = false;
+        notyf.error(ex.response?.data?.message ?? ex.response?.data);
+    }
 };
+
+const syncCloudaudit = async () => {
+    isLoading.value = true;
+    let res = await axios.get('/api/cloudaudit/organizations/sync');
+    setTimeout(() => {
+        isLoading.value = false;
+        getOrganizations();
+    }, 200);
+};
+
+const handlePaginator = (ev) => {
+    form.limit = ev.rows;
+    meta.page = ev.page + 1;
+    getOrganizations();
+};
+
+watch(
+    () => [meta.search],
+    _.debounce(function () {
+        meta.page = 1;
+        getOrganizations();
+    }, 200)
+);
+
+syncCloudaudit();
 
 const tenant_reviewed = ref(false);
 </script>
 <template>
     <div class="row mb-3" v-if="!tenant_review_active">
-        <div class="col-lg-6">
+        <div class="col-lg-12">
             <div class="panel mb-3">
                 <div class="row">
                     <div class="col-12">
-                        <h5 class="font-bold mb-3">Select a tenant to review</h5>
-                        <div class="mb-3">
-                            <label for="account_id" class="form-label"
-                                >Tenant <span class="text-primary fw-bold">*</span></label
-                            >
+                        <div class="d-flex justify-content-between mt-3">
+                            <h5 class="font-bold mb-2">Select a organization to review</h5>
+                            <div>
+                                <div class="btn me-2" v-if="isLoading">
+                                    <div class="spinner-border spinner-border-sm" role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
+                                </div>
+                                <button
+                                    v-else
+                                    id="link-to-refresh-permission"
+                                    type="button"
+                                    class="btn me-2"
+                                    @click="syncCloudaudit()"
+                                    style="border-style: dashed"
+                                >
+                                    <font-awesome-icon :icon="['fas', 'sync']" />
+                                </button>
 
-                            <Select
-                                :inputId="'quote-tenants'"
-                                v-model="tenant"
-                                :options="tenants"
-                                optionLabel="name"
-                                optionValue="id"
-                                placeholder="Select a tenant"
-                                class="w-100"
-                                :disabled="tenant_reviewed"
-                            />
+                                <button
+                                    id="link-to-request-permission"
+                                    type="button"
+                                    class="btn btn-primary"
+                                    @click="showModal = true"
+                                    style="border-style: dashed"
+                                >
+                                    <font-awesome-icon :icon="['fas', 'plus']" />
+                                    Add new
+                                </button>
+                            </div>
                         </div>
-                        or
-                        <a id="link-to-request-permission" href="#" class="text-primary" @click="showModal = true">
-                            request a permission to review an account
-                        </a>
+                        <div class="d-flex justify-content-end mt-3">
+                            <IconField>
+                                <InputIcon>
+                                    <font-awesome-icon :icon="['fas', 'search']" />
+                                </InputIcon>
+                                <InputText
+                                    id="datatable-search"
+                                    v-model="meta.search"
+                                    type="search"
+                                    placeholder="Keyword Search"
+                                />
+                            </IconField>
+                        </div>
+                        <div
+                            v-if="organizations.length"
+                            class="row row-cols-1 row-cols-md-3 row-cols-lg-4 g-3 mt-1 mb-3"
+                        >
+                            <div class="col" v-for="(org, index) in organizations">
+                                <RadioCard
+                                    v-model="organization"
+                                    :value="org"
+                                    :allow-deselect="true"
+                                    name="cloud-selected-option"
+                                >
+                                    <div class="d-flex justify-content-between">
+                                        <p class="h5 mb-0 font-bold">{{ org.name }}</p>
+                                        <div v-if="Object.keys(org.data).includes('errors')" class="org-tooltip">
+                                            <font-awesome-icon
+                                                icon="fas fa-info"
+                                                class="badge bg-danger"
+                                            ></font-awesome-icon>
+                                            <div class="org-tooltip-info rounded border p-2 px-4">
+                                                <p>Some errors have occurred trying to sync this organization</p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <p class="small mb-2">{{ org.email }}</p>
+                                    <p class="badge w-100 bg-secondary text-white mt-2">
+                                        {{ format.capitalizeFirstLetter(org.status) }}
+                                    </p>
+                                </RadioCard>
+                            </div>
+                        </div>
+                        <div v-else class="text-center my-1">No records found</div>
+
+                        <Paginator
+                            v-model:first="meta.first"
+                            :rows="meta.limit"
+                            :totalRecords="meta.total"
+                            :rowsPerPageOptions="[12, 20, 28]"
+                            @page="handlePaginator"
+                        >
+                        </Paginator>
                     </div>
                 </div>
             </div>
         </div>
     </div>
     <div class="row mb-3" v-if="!tenant_review_active && !tenant_reviewed">
-        <div class="col-lg-6 d-flex justify-content-between">
+        <div class="col-lg-12 d-flex justify-content-between">
             <button
                 id="btn-previous-step"
                 class="btn"
@@ -103,7 +229,7 @@ const tenant_reviewed = ref(false);
                 class="btn btn-primary"
                 type="button"
                 @click="activateTiming()"
-                :disabled="tenant == null"
+                :disabled="organization == null"
             >
                 Review Tenant
             </button>
@@ -135,7 +261,7 @@ const tenant_reviewed = ref(false);
         position="top"
     >
         <template #header>
-            <h2><font-awesome-icon :icon="['fas', 'globe']"></font-awesome-icon> Login External Service</h2>
+            <h2><font-awesome-icon :icon="['fas', 'globe']"></font-awesome-icon> New Organization</h2>
         </template>
         <div class="container position-relative">
             <div v-if="showLodingLogin" class="login-loading-container">
@@ -143,6 +269,22 @@ const tenant_reviewed = ref(false);
             </div>
             <form @submit.prevent="submit">
                 <div class="mb-2">
+                    <label for="name" class="form-label"> Name <span class="text-primary fw-bold">*</span></label>
+                    <IconField>
+                        <InputIcon>
+                            <font-awesome-icon :icon="['fas', 'envelope']"></font-awesome-icon>
+                        </InputIcon>
+                        <InputText
+                            id="name"
+                            class="w-100"
+                            v-model="form.name"
+                            placeholder="Name"
+                            required
+                            type="name"
+                        />
+                    </IconField>
+                </div>
+                <div class="mb-5">
                     <label for="email" class="form-label"> Email <span class="text-primary fw-bold">*</span></label>
                     <IconField>
                         <InputIcon>
@@ -158,27 +300,8 @@ const tenant_reviewed = ref(false);
                         />
                     </IconField>
                 </div>
-                <div class="mb-5">
-                    <label for="password" class="form-label"
-                        >Password <span class="text-primary fw-bold">*</span></label
-                    >
-                    <IconField>
-                        <InputIcon>
-                            <font-awesome-icon :icon="['fas', 'lock']"></font-awesome-icon>
-                        </InputIcon>
-                        <InputText
-                            id="password"
-                            class="w-100"
-                            v-model="form.password"
-                            placeholder="Password"
-                            required
-                            type="password"
-                            autocomplete="off"
-                        />
-                    </IconField>
-                </div>
                 <div class="mb-4">
-                    <button class="btn btn-primary w-100">Login</button>
+                    <button class="btn btn-primary w-100">Create</button>
                 </div>
             </form>
         </div>
@@ -194,5 +317,25 @@ const tenant_reviewed = ref(false);
     height: 100%;
     z-index: 1;
     background: rgba(255, 255, 255, 0.75);
+}
+
+.org-tooltip {
+    position: relative;
+}
+
+.org-tooltip-info {
+    position: absolute;
+    z-index: 100;
+    background: white;
+    width: 300px;
+    visibility: hidden;
+    pointer-events: none;
+    opacity: 0;
+    transition: all 0.3s ease-in-out;
+}
+.org-tooltip:hover > .org-tooltip-info {
+    visibility: visible;
+    pointer-events: auto;
+    opacity: 1;
 }
 </style>

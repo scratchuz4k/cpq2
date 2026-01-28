@@ -6,6 +6,7 @@ use App\Models\Scopes\TenantScope;
 use App\Trait\SetTenantId;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Category extends Model
@@ -28,13 +29,31 @@ class Category extends Model
         return $this->belongsToMany(Product::class, 'category_product', 'category_id');
     }
 
-    public function parent()
+    public function parent(): BelongsTo
     {
-        return $this->hasOne(Category::class, 'id', 'parent_id');
+        return $this->belongsTo(Category::class, 'parent_id');
     }
 
     public function children()
     {
         return $this->hasMany(Category::class, 'parent_id', 'id');
+    }
+
+    /**
+     * Get all parent categories (ancestors) up to the root
+     *
+     * @return \Illuminate\Support\Collection
+     */
+    public function getParentTree()
+    {
+        $parents = collect();
+        $current = $this->parent;
+
+        while ($current) {
+            $parents->push($current);
+            $current = $current->parent;
+        }
+
+        return $parents;
     }
 }
