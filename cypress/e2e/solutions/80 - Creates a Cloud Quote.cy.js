@@ -14,8 +14,7 @@ describe('Creates a Cloud Quote', () => {
     });
 
     it('Creates an Account', () => {
-        cy.visit('/quotes');
-        cy.get('#create-tab').click();
+        cy.visit('/quotes/create');
         cy.get('#link-to-create-account').click();
         cy.get('#account-name').type(account.name);
         cy.get('#account-reference').type(account.ref);
@@ -64,8 +63,7 @@ describe('Creates a Cloud Quote', () => {
     });
 
     it('Creates Cloud Quote', () => {
-        cy.visit('/quotes');
-        cy.get('#create-tab').click();
+        cy.visit('/quotes/create');
         cy.selectLazyOption('account_id', account.name);
         cy.get('#btn-next-step').click();
 

@@ -13,7 +13,7 @@ class CloudAuditApiReport extends CloudAuditApi
     {
         $accessToken = $this->tokenRequest();
 
-        $res = Http::withToken($accessToken)->get(env('CLOUDAUDIT_API_URL').'subscriptionReport');
+        $res = Http::withToken($accessToken)->get(config('services.cloudaudit.api_url').'subscriptionReport');
 
         return $res->json();
     }
@@ -22,7 +22,7 @@ class CloudAuditApiReport extends CloudAuditApi
     {
         $accessToken = $this->tokenRequest();
 
-        $res = Http::withToken($accessToken)->get(env('CLOUDAUDIT_API_URL').'subscriptionReport/'.$id);
+        $res = Http::withToken($accessToken)->get(config('services.cloudaudit.api_url').'subscriptionReport/'.$id);
 
         return $res->json();
     }
@@ -33,7 +33,7 @@ class CloudAuditApiReport extends CloudAuditApi
 
         $res = Http::withToken($accessToken)
             ->withHeaders(['idempotencyKey' => Hash::make(now())])
-            ->post(env('CLOUDAUDIT_API_URL').'subscriptionReport',
+            ->post(config('services.cloudaudit.api_url').'subscriptionReport',
                 [
                     'accountId' => $accountId,
                 ]

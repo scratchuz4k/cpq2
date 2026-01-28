@@ -21,7 +21,6 @@ defineProps({
 });
 
 const activeTab = ref(window.location.pathname.replace(/^\/|\/$/g, ''));
-const tenants = ref(user.tenants);
 const currentTenant = ref(page.props.tenant);
 </script>
 
@@ -51,68 +50,10 @@ const currentTenant = ref(page.props.tenant);
                         <a class="nav-link" href="#">ASSETS</a>
                     </li>
                     <li class="nav-item d-md-none d-lg-block">
-                        <a
-                            class="nav-link"
-                            :class="{ active: activeTab === 'quotes' }"
-                            aria-current="page"
-                            :href="route('quotes.index')"
-                            >QUOTES</a
-                        >
+                        <a class="nav-link" aria-current="page" :href="route('quotes.index')">QUOTES</a>
                     </li>
                     <li class="nav-item d-md-none d-lg-block">
                         <a class="nav-link" href="#">BILLING</a>
-                    </li>
-                    <li v-if="hasRole('Super Admin')" class="nav-item dropdown">
-                        <a
-                            class="nav-link dropdown-toggle"
-                            href="#"
-                            role="button"
-                            data-bs-toggle="dropdown"
-                            aria-expanded="false"
-                        >
-                            <font-awesome-icon :icon="['far', 'building']" />
-                            {{ currentTenant.name }} (T{{ currentTenant.id }})
-                        </a>
-
-                        <ul class="dropdown-menu">
-                            <li v-for="tenant in tenants">
-                                <Link
-                                    :class="currentTenant.id === tenant.id && 'active'"
-                                    class="dropdown-item fw-bold"
-                                    :href="route('tenant.make-current', { tenant: tenant.id })"
-                                >
-                                    {{ tenant.name }} (T{{ tenant.id }})
-                                </Link>
-                            </li>
-                        </ul>
-                    </li>
-                    <li v-else class="nav-item">
-                        <a class="nav-link" href="#">
-                            <font-awesome-icon :icon="['far', 'building']" />
-                            {{ $page.props.tenant?.name }} ( T{{ $page.props.tenant?.id }} )
-                        </a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a
-                            id="my-account"
-                            class="nav-link"
-                            :href="route('myaccount')"
-                            v-tooltip
-                            data-bs-toggle="tooltip"
-                            data-bs-placement="top"
-                            :title="user.name"
-                        >
-                            <font-awesome-icon :icon="['far', 'user']" />
-                        </a>
-                    </li>
-                    <li class="nav-item" v-if="can('viewAny notification')">
-                        <NotificationDropdown></NotificationDropdown>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">
-                            <font-awesome-icon :icon="['far', 'bookmark']" />
-                        </a>
                     </li>
                 </ul>
             </div>
@@ -123,64 +64,54 @@ const currentTenant = ref(page.props.tenant);
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
-                        <a
-                            class="nav-link"
-                            id="dashboard-tab"
-                            data-toggle="tab"
-                            href="/"
-                            role="tab"
-                            aria-controls="dashboard"
-                            aria-selected="false"
-                            :class="{ active: activeTab === '' }"
-                            >DASHBOARD</a
-                        >
+                        <a class="nav-link" id="quotes-tab" data-toggle="tab" :href="route('quotes.index')">QUOTES</a>
                     </li>
-                    <li class="nav-item" v-if="!page.props.auth.roles.includes('Order Manager')">
+                    <li class="nav-item">
                         <a
                             class="nav-link"
-                            :class="{ active: $page.component == 'Quotes/Create' }"
-                            id="create-tab"
+                            :class="{ active: $page.component == 'MyAccount/Index' }"
+                            id="my-account"
                             data-toggle="tab"
-                            href="/quotes/create"
-                            role="tab"
-                            aria-controls="create"
-                            aria-selected="false"
+                            :href="route('myaccount')"
                         >
-                            <font-awesome-icon :icon="['fas', 'plus']" />
-                            NEW
+                            SETTINGS
                         </a>
                     </li>
-                    <template v-if="quote && quote.status !== 'REGISTRY'">
-                        <li class="nav-item">
-                            <Link
-                                :href="route('quotes.configure', { quote: quote.id })"
-                                class="nav-link"
-                                :class="{ active: $page.component == 'Quotes/Configure' }"
-                                >CONFIGURE</Link
-                            >
-                        </li>
-                        <li class="nav-item">
-                            <Link
-                                :href="route('quotes.edit', { quote: quote.id })"
-                                class="nav-link"
-                                :class="{ active: $page.component == 'Quotes/Edit' }"
-                                >PRICE</Link
-                            >
-                        </li>
-                        <li class="nav-item">
-                            <Link
-                                :href="route('quotes.show', { quote: quote.id })"
-                                class="nav-link"
-                                :class="{ active: $page.component == 'Quotes/Show' }"
-                                >QUOTE</Link
-                            >
-                        </li>
-                    </template>
                 </ul>
-                <p v-if="user.group" class="badge rounded-pill bg-light text-dark me-4">
-                    Current Group: {{ user.group.name }}
-                </p>
-                <TopBarSearchable></TopBarSearchable>
+
+                <ul class="navbar-nav mb-2 mb-lg-0 d-flex justify-content-end">
+                    <li class="nav-item me-2">
+                        <TopBarSearchable></TopBarSearchable>
+                    </li>
+                    <li class="nav-item">
+                        <a
+                            class="nav-link d-flex align-items-center h-100"
+                            role="button"
+                            v-tooltip
+                            data-bs-toggle="tooltip"
+                            data-bs-placement="top"
+                            :title="currentTenant.name + ' (T' + currentTenant.id + ')'"
+                        >
+                            <font-awesome-icon :icon="['far', 'building']" />
+                        </a>
+                    </li>
+                    <li class="nav-item" v-if="hasRole('Super Admin') || can('viewAny notification')">
+                        <NotificationDropdown></NotificationDropdown>
+                    </li>
+                    <li class="nav-item">
+                        <a
+                            id="my-account"
+                            class="nav-link d-flex align-items-center h-100"
+                            :href="route('profile.edit')"
+                            v-tooltip
+                            data-bs-toggle="tooltip"
+                            data-bs-placement="top"
+                            :title="user.name"
+                        >
+                            <font-awesome-icon :icon="['far', 'user']" />
+                        </a>
+                    </li>
+                </ul>
             </div>
         </div>
     </nav>

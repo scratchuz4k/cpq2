@@ -42,7 +42,7 @@ class User extends Authenticatable
                     $temp[$user->group()->id] = ['is_default' => true, 'tenant_id' => $user->tenant_id];
                     $model->groups()->sync($temp);
                 } catch (Exception $e) {
-                    if (! env('APP_DEBUG')) {
+                    if (! config('app.debug')) {
                         Log::error($e->getMessage());
                     }
                 }
@@ -173,7 +173,9 @@ class User extends Authenticatable
 
     public static function getChildAndOrphansUser(): Builder
     {
-        $query = User::query();
+        $query = User::query()
+            ->where('tenant_id', Auth::user()->tenant_id)
+            ->with(['roles', 'groups', 'tenants', 'currentTenant']);
         $superUsers = User::whereHas('roles', fn ($query) => $query->whereIn('roles.name', ['Super Admin']))->get();
         $query = $query->whereNotIn('users.id', $superUsers->pluck('id'));
 

@@ -137,7 +137,7 @@ const items = ref([
                     </tab>
                     <tab title="Quote" id="tab-quotes">
                         <p class="my-3">
-                            This section contains all the customizations for the appearance of the solution type to
+                            This section contains all the customisations for the appearance of the solution type to
                             match specific preferences within the quote.
                         </p>
                         <div class="my-3">

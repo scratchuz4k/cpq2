@@ -39,9 +39,12 @@ class QuoteController extends BaseController
      */
     public function index()
     {
-        $users = User::getChildAndOrphansUser()->get();
-        $users = $users->filter(fn ($user) => $user->quotes->count() > 0);
-        $solutionTypes = SolutionType::whereHas('quotes', fn ($query) => $query->whereIn('user_id', $users->pluck('id')))->get();
+        if (Auth::user()->can('viewOwn quote')) {
+            $users = User::where('id', Auth::id())->get();
+        } else {
+            $users = User::getChildAndOrphansUser()->get();
+        }
+        $solutionTypes = SolutionType::whereHas('quotes')->get();
 
         return Inertia::render('Quotes/Index', [
             'users' => $users->values(),

@@ -4,19 +4,19 @@ namespace App\Http\Controllers\Api\Cloudaudit;
 
 use App\Helpers\DataProvider;
 use App\Http\Controllers\BaseController;
-use App\Http\Requests\OrganizationCreateRequest;
-use App\Http\Requests\OrganizationUpdateRequest;
-use App\Http\Resources\Cloudaudit\OrganizationResource;
+use App\Http\Requests\OrganisationCreateRequest;
+use App\Http\Requests\OrganisationUpdateRequest;
+use App\Http\Resources\Cloudaudit\OrganisationResource;
 use App\Jobs\CloudauditAccountSyncJob;
-use App\Models\Cloudaudit\Organization;
-use App\Services\OrganizationService;
+use App\Models\Cloudaudit\Organisation;
+use App\Services\OrganisationService;
 use Dedoc\Scramble\Attributes\ExcludeRouteFromDocs;
 use Exception;
 use Illuminate\Support\Facades\DB;
 
-class OrganizationController extends BaseController
+class OrganisationController extends BaseController
 {
-    public function __construct(protected OrganizationService $service)
+    public function __construct(protected OrganisationService $service)
     {
         parent::__construct();
     }
@@ -27,43 +27,43 @@ class OrganizationController extends BaseController
     #[ExcludeRouteFromDocs]
     public function index()
     {
-        if (! config('live_data.cloudaudit')) {
-            $mock_organizations = storage_path('mocks/organizations.json');
-            if (! is_file($mock_organizations)) {
+        if (! config('services.cloudaudit.live_data')) {
+            $mock_organisations = storage_path('mocks/organisations.json');
+            if (! is_file($mock_organisations)) {
                 return [];
             }
 
-            return json_decode(file_get_contents($mock_organizations), true);
+            return json_decode(file_get_contents($mock_organisations), true);
         }
 
-        $dataProvider = new DataProvider(Organization::class);
+        $dataProvider = new DataProvider(Organisation::class);
         try {
             $data = $dataProvider->get();
         } catch (Exception $e) {
             return handleException($e);
         }
 
-        return OrganizationResource::collection($data);
+        return OrganisationResource::collection($data);
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(OrganizationCreateRequest $request)
+    public function store(OrganisationCreateRequest $request)
     {
         try {
-            $organization = DB::transaction(fn () => $this->service->store($request->all()));
+            $organisation = DB::transaction(fn () => $this->service->store($request->all()));
         } catch (Exception $e) {
             return handleException($e);
         }
 
-        return response()->json(new OrganizationResource($organization->refresh()));
+        return response()->json(new OrganisationResource($organisation->refresh()));
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Organization $organization)
+    public function show(Organisation $organisation)
     {
         //
     }
@@ -71,7 +71,7 @@ class OrganizationController extends BaseController
     /**
      * Update the specified resource in storage.
      */
-    public function update(OrganizationUpdateRequest $request, Organization $organization)
+    public function update(OrganisationUpdateRequest $request, Organisation $organisation)
     {
         //
     }
@@ -79,7 +79,7 @@ class OrganizationController extends BaseController
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Organization $organization)
+    public function destroy(Organisation $organisation)
     {
         //
     }
@@ -91,7 +91,7 @@ class OrganizationController extends BaseController
     public function sync()
     {
         try {
-            if (! config('live_data.cloudaudit')) {
+            if (! config('services.cloudaudit.live_data')) {
                 return response()->json([], 200);
             }
             $job = new CloudauditAccountSyncJob;

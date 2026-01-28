@@ -13,7 +13,7 @@ class CloudAuditApiAccount extends CloudAuditApi
     {
         $accessToken = $this->tokenRequest();
 
-        $res = Http::withToken($accessToken)->get(env('CLOUDAUDIT_API_URL').'cloudAccount');
+        $res = Http::withToken($accessToken)->get(config('services.cloudaudit.api_url').'cloudAccount');
 
         return $res->json();
     }
@@ -22,7 +22,7 @@ class CloudAuditApiAccount extends CloudAuditApi
     {
         $accessToken = $this->tokenRequest();
 
-        $res = Http::withToken($accessToken)->get(env('CLOUDAUDIT_API_URL').'cloudAccount/'.$id);
+        $res = Http::withToken($accessToken)->get(config('services.cloudaudit.api_url').'cloudAccount/'.$id);
 
         return $res;
     }
@@ -33,7 +33,7 @@ class CloudAuditApiAccount extends CloudAuditApi
 
         $res = Http::withToken($accessToken)
             ->withHeaders(['idempotencyKey' => Hash::make(now())])
-            ->post(env('CLOUDAUDIT_API_URL').'cloudAccount', [
+            ->post(config('services.cloudaudit.api_url').'cloudAccount', [
                 'accountExternalId' => $code,
                 'accountAlias' => $name,
 

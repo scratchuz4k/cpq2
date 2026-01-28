@@ -12,7 +12,7 @@
     @routes
     @vite(['resources/js/app.js', "resources/js/Pages/{$page['component']}.vue"])
     @inertiaHead
-    @if (config('app.env') == 'production' && env('GOOGLE_TAG_MANAGER_KEY'))
+    @if (config('app.env') == 'production' && config('services.google.tag_manager.api_key'))
         <!-- Google Tag Manager -->
         <script>
             (function(w, d, s, l, i) {
@@ -28,16 +28,16 @@
                 j.src =
                     'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
                 f.parentNode.insertBefore(j, f);
-            })(window, document, 'script', 'dataLayer', '{{ env('GOOGLE_TAG_MANAGER_KEY') }}');
+            })(window, document, 'script', 'dataLayer', '{{ config('services.google.tag_manager.api_key') }}');
         </script>
         <!-- End Google Tag Manager -->
     @endif
 </head>
 
 <body class="font-sans antialiased">
-    @if (config('app.env') == 'production' && env('GOOGLE_TAG_MANAGER_KEY'))
+    @if (config('app.env') == 'production' && config('services.google.tag_manager.api_key'))
         <!-- Google Tag Manager (noscript) -->
-        <noscript><iframe src="https://www.googletagmanager.com/ns.html?id={{ env('GOOGLE_TAG_MANAGER_KEY') }}"
+        <noscript><iframe src="https://www.googletagmanager.com/ns.html?id={{ config('services.google.tag_manager.api_key') }}"
                 height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <!-- End Google Tag Manager (noscript) -->
     @endif

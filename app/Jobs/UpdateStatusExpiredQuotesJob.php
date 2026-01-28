@@ -19,8 +19,8 @@ class UpdateStatusExpiredQuotesJob implements ShouldQueue
         QuoteStatusesEnum::QUOTE->name,
         QuoteStatusesEnum::PRICE->name,
         QuoteStatusesEnum::CONFIGURE->name,
-        QuoteStatusesEnum::VALIDATED->name,
-        QuoteStatusesEnum::PENDING_APPROVAL->name,
+        QuoteStatusesEnum::APPROVED->name,
+        QuoteStatusesEnum::PENDING->name,
     ];
 
     /**
@@ -49,7 +49,7 @@ class UpdateStatusExpiredQuotesJob implements ShouldQueue
                 $description = 'Your quote #'.$quote->id.' for the account '.$quote->account->name.' is about to expire in 2 days.';
                 createNotification(NotificationEnum::QuoteExpired, $quote->user, $description, route('quotes.show', ['quote' => $quote->id]), false);
 
-                Log::info("UpdateStatusExpiredQuotesJob | Quote#{$quote->id} ({$quote->created_at->format('Y-m-d')}) notified to be expired ");
+                Log::info("[JOB] UpdateStatusExpiredQuotesJob | Quote#{$quote->id} ({$quote->created_at->format('Y-m-d')}) notified to be expired");
             }
 
             DB::transaction(function () use (

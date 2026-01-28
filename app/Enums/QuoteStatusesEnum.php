@@ -7,11 +7,12 @@ enum QuoteStatusesEnum: string
     case CONFIGURE = 'configure';
     case PRICE = 'price';
     case QUOTE = 'quote';
-    case PENDING_APPROVAL = 'pending approval';
-    case VALIDATED = 'validated';
+    case PENDING = 'pending';
+    case APPROVED = 'approved';
     case COMPLETED = 'completed';
     case EXPIRED = 'expired';
-    case DECLINED = 'declined';
+    case REJECTED = 'rejected';
+    case SUBMITTED = 'submitted';
 
     public static function names(): array
     {
