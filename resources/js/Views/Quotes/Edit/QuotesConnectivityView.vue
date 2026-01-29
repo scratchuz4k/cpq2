@@ -116,9 +116,9 @@ const removeItem = (article) => {
     }
     getQuote(props.modelValue.id);
 };
-console.log(import.meta.env.MODE);
+
 const steps =
-    import.meta.env.MODE !== 'production'
+    import.meta.env.VITE_APP_ENV !== 'production'
         ? {
               pxc: [
                   {
