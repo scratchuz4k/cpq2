@@ -17,7 +17,7 @@ return new class extends Migration
         ];
 
         DB::table('activities')
-            ->where('activity_type', 'App\\Models\\Quote')
+            ->where('activitable_type', 'App\\Models\\Quote')
             ->orderBy('id')
             ->chunkById(100, function ($rows) use ($statuses) {
                 foreach ($rows as $row) {
@@ -66,7 +66,7 @@ return new class extends Migration
         ];
 
         DB::table('activities')
-            ->where('activity_type', 'App\\Models\\Quote')
+            ->where('activitable_type', 'App\\Models\\Quote')
             ->orderBy('id')
             ->chunkById(100, function ($rows) use ($statuses) {
                 foreach ($rows as $row) {
