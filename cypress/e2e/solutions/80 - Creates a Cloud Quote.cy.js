@@ -24,7 +24,7 @@ describe('Creates a Cloud Quote', () => {
 
     it('Creates a Step', () => {
         cy.visit('/');
-        cy.get('#my-account').click();
+        cy.get('#settings').click();
         cy.get('#link-steps').click();
 
         cy.get('#datatable-search').type(step.name);
@@ -42,7 +42,7 @@ describe('Creates a Cloud Quote', () => {
 
     it('Creates a Product and add step', () => {
         cy.visit('/');
-        cy.get('#my-account').click();
+        cy.get('#settings').click();
         cy.get('#link-products').click();
 
         cy.get('#datatable-search').type(product.sku);

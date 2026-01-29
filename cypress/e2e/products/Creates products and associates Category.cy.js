@@ -13,7 +13,7 @@ describe('Creates products and associates Category.cy', () => {
 
     it('Creates a Category', () => {
         cy.visit('/quotes');
-        cy.get('#my-account').click();
+        cy.get('#settings').click();
         cy.get('#link-categories').click();
 
         cy.get('#datatable-search').type(category.code);
@@ -32,7 +32,7 @@ describe('Creates products and associates Category.cy', () => {
 
     it('Creates a Product and add category', () => {
         cy.visit('/quotes');
-        cy.get('#my-account').click();
+        cy.get('#settings').click();
         cy.get('#link-products').click();
 
         cy.get('#datatable-search').type(product.sku);

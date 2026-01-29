@@ -36,7 +36,7 @@ describe('Creates a Group and associates accounts.cy', () => {
     it('Creates an Group, associates users and accounts', () => {
         cy.login(Cypress.env('SUPERUSER_EMAIL'), Cypress.env('SUPERUSER_PASSWORD'));
         cy.visit('/quotes');
-        cy.get('#my-account').click();
+        cy.get('#settings').click();
         cy.get('#link-users').click();
         cy.get('#1-1').click();
         cy.get('#link-to-create-group').click();
