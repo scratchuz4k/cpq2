@@ -9,7 +9,7 @@ describe('Quote Approval and Rejection', () => {
     it('Enable Quote Approval', () => {
         cy.login('companyadmin@example.com', 'werwerwer');
         cy.visit('/');
-        cy.get('#my-account').click();
+        cy.get('#settings').click();
         cy.get('#link-tenant').click();
         cy.get('#1-1').click();
         cy.get('#active-margin-rules> input').then(($checkbox) => {
@@ -103,7 +103,7 @@ describe('Quote Approval and Rejection', () => {
     it('Disable Quote Approval', () => {
         cy.login('companyadmin@example.com', 'werwerwer');
         cy.visit('/');
-        cy.get('#my-account').click();
+        cy.get('#settings').click();
         cy.get('#link-tenant').click();
         cy.get('#1-1').click();
         cy.get('#active-margin-rules> input').then(($checkbox) => {

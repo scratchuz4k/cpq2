@@ -25,7 +25,7 @@ describe('Group Testing', () => {
 
     it('Create a Group', () => {
         cy.visit('/quotes');
-        cy.get('#my-account').click();
+        cy.get('#settings').click();
         cy.get('#link-users').click();
         cy.get('#1-1').click();
         cy.get('#link-to-create-group').click();
@@ -47,7 +47,7 @@ describe('Group Testing', () => {
 
     it('Creates Sales Manager User', () => {
         cy.visit('/quotes');
-        cy.get('#my-account').click();
+        cy.get('#settings').click();
         cy.get('#link-users').click();
         cy.get('#link-to-create-user').click();
         cy.get('#user-name').type(sales_manager.name);
@@ -62,7 +62,7 @@ describe('Group Testing', () => {
 
     it("Check that there's no relation between created Group and user/account", () => {
         cy.visit('/quotes');
-        cy.get('#my-account').click();
+        cy.get('#settings').click();
         cy.get('#link-users').click();
         cy.get('#1-1').click();
         cy.get('#datatable-search').type(group.name);
@@ -80,7 +80,7 @@ describe('Group Testing', () => {
 
     it('Add Company Admin to a Group', () => {
         cy.visit('/quotes');
-        cy.get('#my-account').click();
+        cy.get('#settings').click();
         cy.get('#link-users').click();
         cy.get('#1-1').click();
         cy.get('#datatable-search').type(group.name);
@@ -116,7 +116,7 @@ describe('Group Testing', () => {
         cy.login(sales_manager.email, sales_manager.password);
 
         cy.visit('/quotes');
-        cy.get('#my-account').click();
+        cy.get('#settings').click();
         cy.get('#link-users').click();
         cy.get('#link-to-create-user').click();
         cy.get('#user-name').type(group_user.name);
@@ -135,7 +135,7 @@ describe('Group Testing', () => {
         cy.login(sales_manager.email, sales_manager.password);
 
         cy.visit('/quotes');
-        cy.get('#my-account').click();
+        cy.get('#settings').click();
         cy.get('#link-users').click();
         cy.get('#1-1').click();
         cy.get('#datatable-search').type(group.name);

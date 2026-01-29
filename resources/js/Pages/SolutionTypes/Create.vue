@@ -86,7 +86,7 @@ const checkCategories = (index) => {
 
 const items = ref([
     { label: 'Home', url: '/' },
-    { label: 'My Account', url: '/myaccount' },
+    { label: 'Settings', url: '/settings' },
     { label: 'Solution Types', url: '/solution-types' },
     { label: 'New Solution Type' }
 ]);

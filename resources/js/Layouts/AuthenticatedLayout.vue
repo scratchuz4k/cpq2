@@ -69,10 +69,10 @@ const currentTenant = ref(page.props.tenant);
                     <li class="nav-item">
                         <a
                             class="nav-link"
-                            :class="{ active: $page.component == 'MyAccount/Index' }"
+                            :class="{ active: $page.component == 'Settings/Index' }"
                             id="my-account"
                             data-toggle="tab"
-                            :href="route('myaccount')"
+                            :href="route('settings')"
                         >
                             SETTINGS
                         </a>
@@ -100,9 +100,8 @@ const currentTenant = ref(page.props.tenant);
                     </li>
                     <li class="nav-item">
                         <a
-                            id="my-account"
                             class="nav-link d-flex align-items-center h-100"
-                            :href="route('profile.edit')"
+                            :href="route('profile.index')"
                             v-tooltip
                             data-bs-toggle="tooltip"
                             data-bs-placement="top"

@@ -10,7 +10,7 @@ describe('Creates a Step and associate it with Mobile Solution Type', () => {
     it('Create a Step', () => {
         cy.login(Cypress.env('SUPERUSER_EMAIL'), Cypress.env('SUPERUSER_PASSWORD'));
         cy.visit('/');
-        cy.get('#my-account').click();
+        cy.get('#settings').click();
         cy.get('#link-steps').click();
         cy.get('#step-create-btn').click();
         cy.get('#step-name').type(step.name);

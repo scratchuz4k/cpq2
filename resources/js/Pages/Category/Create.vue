@@ -36,7 +36,7 @@ const saveCate = () => {
 };
 const items = ref([
     { label: 'Home', url: '/' },
-    { label: 'My Account', url: '/myaccount' },
+    { label: 'Settings', url: '/settings' },
     { label: 'Categories', url: '/categories' },
     { label: 'New Category' }
 ]);

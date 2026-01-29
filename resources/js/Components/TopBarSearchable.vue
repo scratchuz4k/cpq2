@@ -15,7 +15,7 @@
             position="top"
         >
             <template #header>
-                <div class="d-flex align-items-center w-100">
+                <div class="d-flex align-items-center w-100 me-3">
                     <div class="search-control d-flex align-items-center w-100">
                         <font-awesome-icon :icon="['fas', 'search']"></font-awesome-icon>
                         <input
@@ -26,199 +26,219 @@
                     </div>
                 </div>
             </template>
-            <Loader v-if="isLoading"></Loader>
-            <div v-if="!isLoading" class="search-results d-flex flex-column">
-                <div :title="'Accounts'" v-if="results.accounts.length">
-                    <p class="search-title">Accounts</p>
+            <Loader class="py-2" v-if="isLoading"></Loader>
+            <div v-if="!isLoading" class="search-results d-flex flex-column pe-3">
+                <div class="mb-4" :title="'Accounts'" v-if="results.accounts.length">
+                    <p class="h5">Accounts</p>
                     <a
-                        class="search-option"
+                        class="card bg-light w-100 text-decoration-none mb-2"
                         v-for="account in results.accounts"
                         :href="route('accounts.edit', { account: account.id })"
+                        title=""
                     >
-                        <font-awesome-icon
-                            class="search-option-icon me-3"
-                            :icon="['far', 'address-card']"
-                        ></font-awesome-icon>
-                        <div class="w-100 m-0 d-flex justify-content-between">
-                            <p class="m-0">
-                                <b>#{{ account.id }} - {{ account.name }} </b> / {{ account.reference }}
-                                <br />
-                                {{ format.date(account.updated_at) }}
-                            </p>
-                        </div>
+                        <span class="card-body p-3 d-flex align-items-center">
+                            <font-awesome-icon
+                                class="opacity-25 me-3"
+                                :icon="['far', 'address-card']"
+                            ></font-awesome-icon>
+                            <span class="w-100 m-0 d-flex justify-content-between">
+                                <p class="m-0">
+                                    <b>#{{ account.id }} - {{ account.name }} </b> / {{ account.reference }}
+                                    <br />
+                                    <small>{{ format.date(account.updated_at) }}</small>
+                                </p>
+                            </span>
+                        </span>
                     </a>
                 </div>
-                <div :title="'Categories'" v-if="results.categories.length">
-                    <p class="search-title">Categories</p>
+                <div class="mb-4" :title="'Categories'" v-if="results.categories.length">
+                    <p class="h5">Categories</p>
                     <a
-                        class="search-option"
+                        class="card bg-light w-100 text-decoration-none mb-2"
                         v-for="category in results.categories"
                         :href="route('categories.edit', { category: category.id })"
+                        title=""
                     >
-                        <font-awesome-icon
-                            class="search-option-icon me-3"
-                            :icon="['far', 'folder']"
-                        ></font-awesome-icon>
-                        <div class="w-100 m-0 d-flex justify-content-between">
-                            <p class="m-0">
-                                <b>#{{ category.id }} - {{ category.name }} </b>
-                                <br />
-                                {{ format.date(category.updated_at) }}
-                            </p>
-                        </div>
+                        <span class="card-body p-3 d-flex align-items-center">
+                            <font-awesome-icon class="opacity-25 me-3" :icon="['far', 'folder']"></font-awesome-icon>
+                            <span class="w-100 m-0 d-flex justify-content-between">
+                                <p class="m-0">
+                                    <b>#{{ category.id }} - {{ category.name }} </b>
+                                    <br />
+                                    <small>{{ format.date(category.updated_at) }}</small>
+                                </p>
+                            </span>
+                        </span>
                     </a>
                 </div>
-                <div :title="'Solution Types'" v-if="results.solution_types.length">
-                    <p class="search-title">Solution Types</p>
+                <div class="mb-4" :title="'Solution Types'" v-if="results.solution_types.length">
+                    <p class="h5">Solution Types</p>
                     <a
-                        class="search-option"
+                        class="card bg-light w-100 text-decoration-none mb-2"
                         v-for="solution_type in results.solution_types"
-                        :href="route('solution-types.edit', { solution_type: solution_type.id })"
+                        :href="route('solution-types.edit', { solution_type: solution_type.solution_type_id })"
+                        title=""
                     >
-                        <font-awesome-icon
-                            class="search-option-icon me-3"
-                            :icon="['fas', 'circle-nodes']"
-                        ></font-awesome-icon>
-                        <div class="w-100 m-0 d-flex justify-content-between">
-                            <p class="m-0">
-                                <b>#{{ solution_type.id }} - {{ solution_type.name }} </b>
-                                <br />
-                                {{ format.date(solution_type.updated_at) }}
-                            </p>
-                        </div>
+                        <span class="card-body p-3 d-flex align-items-center">
+                            <font-awesome-icon
+                                class="opacity-25 me-3"
+                                :icon="['fas', 'circle-nodes']"
+                            ></font-awesome-icon>
+                            <span class="w-100 m-0 d-flex justify-content-between">
+                                <p class="m-0">
+                                    <b>#{{ solution_type.id }} - {{ solution_type.name }} </b>
+                                    <br />
+                                    <small>{{ format.date(solution_type.updated_at) }}</small>
+                                </p>
+                            </span>
+                        </span>
                     </a>
                 </div>
-                <div :title="'Steps'" v-if="results.steps.length">
-                    <p class="search-title">Steps</p>
+                <div class="mb-4" :title="'Steps'" v-if="results.steps.length">
+                    <p class="h5">Steps</p>
                     <a
-                        class="search-option"
+                        class="card bg-light w-100 text-decoration-none mb-2"
                         v-for="step in results.steps"
                         :href="route('steps.edit', { step: step.id })"
+                        title=""
                     >
-                        <font-awesome-icon class="search-option-icon me-3" :icon="['fa', 'stairs']"></font-awesome-icon>
-                        <div class="w-100 m-0 d-flex justify-content-between">
-                            <p class="m-0">
-                                <b>#{{ step.id }} - {{ step.name }} </b>
-                                <br />
-                                <span style="font-size: 12px"> {{ format.date(step.updated_at) }}</span>
-                            </p>
-                        </div>
+                        <span class="card-body p-3 d-flex align-items-center">
+                            <font-awesome-icon class="opacity-25 me-3" :icon="['fa', 'stairs']"></font-awesome-icon>
+                            <span class="w-100 m-0 d-flex justify-content-between">
+                                <p class="m-0">
+                                    <b>#{{ step.id }} - {{ step.name }} </b>
+                                    <br />
+                                    <small>{{ format.date(step.updated_at) }}</small>
+                                </p>
+                            </span>
+                        </span>
                     </a>
                 </div>
-                <div :title="'Quotes'" v-if="results.quotes.length">
-                    <p class="search-title">Quotes</p>
+                <div class="mb-4" :title="'Quotes'" v-if="results.quotes.length">
+                    <p class="h5">Quotes</p>
                     <a
-                        class="search-option"
+                        class="card bg-light w-100 text-decoration-none mb-2"
                         v-for="quote in results.quotes"
                         :href="route('quotes.show', { quote: quote.id })"
+                        title=""
                     >
-                        <font-awesome-icon class="search-option-icon me-3" :icon="['far', 'file']"></font-awesome-icon>
-                        <div class="w-100 m-0 d-flex justify-content-between">
-                            <p class="m-0">
-                                <b>#{{ quote.id }} - {{ quote.account?.name }} </b> / {{ quote.solution_type.name }}
-                                <br />
-                                <span style="font-size: 12px">
-                                    {{ quote.user.name }} - {{ format.date(quote.updated_at) }}</span
-                                >
-                            </p>
-                            <p class="m-0">
-                                <span class="badge text-bg-secondary">{{ quote.status }}</span>
-                            </p>
-                        </div>
+                        <span class="card-body p-3 d-flex align-items-center">
+                            <font-awesome-icon class="opacity-25 me-3" :icon="['far', 'file']"></font-awesome-icon>
+                            <span class="w-100 m-0 d-flex justify-content-between">
+                                <p class="m-0">
+                                    <b>#{{ quote.id }} - {{ quote.account?.name }} </b> / {{ quote.solution_type.name }}
+                                    <br />
+                                    <small> {{ quote.user.name }} - {{ format.date(quote.updated_at) }}</small>
+                                </p>
+                                <p class="m-0">
+                                    <span class="badge text-bg-secondary">{{ quote.status }}</span>
+                                </p>
+                            </span>
+                        </span>
                     </a>
                 </div>
-                <div :title="'Suppliers'" v-if="results.suppliers.length">
-                    <p class="search-title">Suppliers</p>
+                <div class="mb-4" :title="'Suppliers'" v-if="results.suppliers.length">
+                    <p class="h5">Suppliers</p>
                     <a
-                        class="search-option"
+                        class="card bg-light w-100 text-decoration-none mb-2"
                         v-for="supplier in results.suppliers"
                         :href="route('suppliers.edit', { supplier: supplier.id })"
+                        title=""
                     >
-                        <font-awesome-icon
-                            class="search-option-icon me-3"
-                            :icon="['fas', 'industry']"
-                        ></font-awesome-icon>
-                        <div class="w-100 m-0 d-flex justify-content-between">
-                            <p class="m-0">
-                                <b>#{{ supplier.id }} - {{ supplier.name }} </b>
-                                <br />
-                                <span style="font-size: 12px"> {{ format.date(supplier.updated_at) }}</span>
-                            </p>
-                        </div>
+                        <span class="card-body p-3 d-flex align-items-center">
+                            <font-awesome-icon class="opacity-25 me-3" :icon="['fas', 'industry']"></font-awesome-icon>
+                            <span class="w-100 m-0 d-flex justify-content-between">
+                                <p class="m-0">
+                                    <b>#{{ supplier.id }} - {{ supplier.name }} </b>
+                                    <br />
+                                    <small>{{ format.date(supplier.updated_at) }}</small>
+                                </p>
+                            </span>
+                        </span>
                     </a>
                 </div>
-                <div :title="'Apis'" v-if="results.apis.length">
-                    <p class="search-title">Apis</p>
-                    <a class="search-option" v-for="api in results.apis" :href="route('apis.edit', { api: api.id })">
-                        <font-awesome-icon class="search-option-icon me-3" :icon="['fas', 'cloud']"></font-awesome-icon>
-                        <div class="w-100 m-0 d-flex justify-content-between">
-                            <p class="m-0">
-                                <b>#{{ api.id }} - {{ api.name }} </b>
-                                <br />
-                                <span style="font-size: 12px"> {{ format.date(api.updated_at) }}</span>
-                            </p>
-                        </div>
-                    </a>
-                </div>
-                <div :title="'Users'" v-if="results.users.length">
-                    <p class="search-title">Users</p>
+                <div class="mb-4" :title="'Apis'" v-if="results.apis.length">
+                    <p class="h5">APIs</p>
                     <a
-                        class="search-option"
+                        class="card bg-light w-100 text-decoration-none mb-2"
+                        v-for="api in results.apis"
+                        :href="route('apis.edit', { api: api.id })"
+                        title=""
+                    >
+                        <span class="card-body p-3 d-flex align-items-center">
+                            <font-awesome-icon class="opacity-25 me-3" :icon="['fas', 'cloud']"></font-awesome-icon>
+                            <span class="w-100 m-0 d-flex justify-content-between">
+                                <p class="m-0">
+                                    <b>#{{ api.id }} - {{ api.name }} </b>
+                                    <br />
+                                    <small>{{ format.date(api.updated_at) }}</small>
+                                </p>
+                            </span>
+                        </span>
+                    </a>
+                </div>
+                <div class="mb-4" :title="'Users'" v-if="results.users.length">
+                    <p class="h5">Users</p>
+                    <a
+                        class="card bg-light w-100 text-decoration-none mb-2"
                         v-for="user in results.users"
                         :href="route('users.edit', { user: user.id })"
+                        title=""
                     >
-                        <font-awesome-icon class="search-option-icon me-3" :icon="['fas', 'user']"></font-awesome-icon>
-                        <div class="w-100 m-0 d-flex justify-content-between">
-                            <p class="m-0">
-                                <b>#{{ user.id }} - {{ user.name }} </b>
-                                <br />
-                                <span style="font-size: 12px"> {{ format.date(user.updated_at) }}</span>
-                            </p>
-                        </div>
+                        <span class="card-body p-3 d-flex align-items-center">
+                            <font-awesome-icon class="opacity-25 me-3" :icon="['fas', 'user']"></font-awesome-icon>
+                            <span class="w-100 m-0 d-flex justify-content-between">
+                                <p class="m-0">
+                                    <b>#{{ user.id }} - {{ user.name }} </b>
+                                    <br />
+                                    <small>{{ format.date(user.updated_at) }}</small>
+                                </p>
+                            </span>
+                        </span>
                     </a>
                 </div>
-                <div :title="'Roles'" v-if="results.roles.length">
-                    <p class="search-title">Roles</p>
+                <div class="mb-4" :title="'Roles'" v-if="results.roles.length">
+                    <p class="h5">Roles</p>
                     <a
-                        class="search-option"
+                        class="card bg-light w-100 text-decoration-none mb-2"
                         v-for="role in results.roles"
                         :href="route('roles.edit', { role: role.id })"
+                        title=""
                     >
-                        <font-awesome-icon
-                            class="search-option-icon me-3"
-                            :icon="['fas', 'id-badge']"
-                        ></font-awesome-icon>
-                        <div class="w-100 m-0 d-flex justify-content-between">
-                            <p class="m-0">
-                                <b>#{{ role.id }} - {{ role.name }} </b>
-                                <br />
-                                <span style="font-size: 12px"> {{ format.date(role.updated_at) }}</span>
-                            </p>
-                        </div>
+                        <span class="card-body p-3 d-flex align-items-center">
+                            <font-awesome-icon class="opacity-25 me-3" :icon="['fas', 'id-badge']"></font-awesome-icon>
+                            <span class="w-100 m-0 d-flex justify-content-between">
+                                <p class="m-0">
+                                    <b>#{{ role.id }} - {{ role.name }} </b>
+                                    <br />
+                                    <small>{{ format.date(role.updated_at) }}</small>
+                                </p>
+                            </span>
+                        </span>
                     </a>
                 </div>
-                <div :title="'Email Template'" v-if="results.emailTemplates.length">
-                    <p class="search-title">Email Templates</p>
+                <div class="mb-4" :title="'Email Template'" v-if="results.emailTemplates.length">
+                    <p class="h5">Email Templates</p>
                     <a
-                        class="search-option"
+                        class="card bg-light w-100 text-decoration-none mb-2"
                         v-for="emailTemplate in results.emailTemplates"
                         :href="route('email-templates.edit', { email_template: emailTemplate.id })"
+                        title=""
                     >
-                        <font-awesome-icon
-                            class="search-option-icon me-3"
-                            :icon="['fas', 'envelope']"
-                        ></font-awesome-icon>
-                        <div class="w-100 m-0 d-flex justify-content-between">
-                            <p class="m-0">
-                                <b>#{{ emailTemplate.id }} - {{ emailTemplate.description }} </b>
-                                <br />
-                                <span style="font-size: 12px"> {{ format.date(emailTemplate.updated_at) }}</span>
-                            </p>
-                        </div>
+                        <span class="card-body p-3 d-flex align-items-center">
+                            <font-awesome-icon class="opacity-25 me-3" :icon="['fas', 'envelope']"></font-awesome-icon>
+                            <span class="w-100 m-0 d-flex justify-content-between">
+                                <p class="m-0">
+                                    <b>#{{ emailTemplate.id }} - {{ emailTemplate.description }} </b>
+                                    <br />
+                                    <small>{{ format.date(emailTemplate.updated_at) }}</small>
+                                </p>
+                            </span>
+                        </span>
                     </a>
                 </div>
                 <div :title="'General'" v-if="!hasAnyResults">
-                    <p class="m-0">
+                    <p class="m-auto py-2 text-center">
                         <b>No results found!</b>
                     </p>
                 </div>
@@ -440,5 +460,13 @@ watch(search, () => {
 .search-results {
     max-height: 60vh;
     overflow-y: auto;
+}
+.card:hover {
+    background-color: var(--color-purple-light) !important;
+    border-color: var(--color-purple) !important;
+    box-shadow:
+        inset 0 0 1px #fff,
+        inset 0 1px 7px #ebebeb,
+        0 3px 6px -3px #bbb;
 }
 </style>

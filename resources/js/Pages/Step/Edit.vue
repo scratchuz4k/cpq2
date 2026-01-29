@@ -54,7 +54,7 @@ const setStepProduct = async (product_id, step_id) => {
 
 const items = ref([
     { label: 'Home', url: '/' },
-    { label: 'My Account', url: '/myaccount' },
+    { label: 'Settings', url: '/settings' },
     { label: 'Steps', url: '/steps' },
     { label: 'Edit Step' }
 ]);

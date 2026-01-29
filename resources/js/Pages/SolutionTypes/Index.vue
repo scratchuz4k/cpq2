@@ -24,11 +24,7 @@ const deleteRecord = async (id) => {
     });
 };
 
-const items = ref([
-    { label: 'Home', url: '/' },
-    { label: 'My Account', url: '/myaccount' },
-    { label: 'Solution Types' }
-]);
+const items = ref([{ label: 'Home', url: '/' }, { label: 'Settings', url: '/settings' }, { label: 'Solution Types' }]);
 </script>
 <template>
     <Head title="Solution Types" />

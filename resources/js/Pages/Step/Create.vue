@@ -35,7 +35,7 @@ const saveStep = () => {
 };
 const items = ref([
     { label: 'Home', url: '/' },
-    { label: 'My Account', url: '/myaccount' },
+    { label: 'Settings', url: '/settings' },
     { label: 'Steps', url: '/steps' },
     { label: 'New Step' }
 ]);
