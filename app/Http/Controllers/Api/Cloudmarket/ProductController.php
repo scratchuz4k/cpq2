@@ -81,9 +81,9 @@ class ProductController extends BaseController
         $quote->update(['data' => $data]);
         $product = $this->getProduct($quote, 'Primary Product');
 
-        // if (! $product || $product->data?->providerName !== 'ITS') {
-        return;
-        // }
+        if (! $product || $product->data?->providerName !== 'ITS' || config('app.env') === 'production') {
+            return;
+        }
 
         try {
             $job = new CloudMarketSaveQuote($quote);
