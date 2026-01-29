@@ -113,14 +113,14 @@ const setMarginDefaults = () => {
     submitTenantSettings();
 };
 
-const items = ref([{ label: 'Home', url: '/' }, { label: 'My Account', url: '/myaccount' }, { label: 'Tenants' }]);
+const items = ref([{ label: 'Home', url: '/' }, { label: 'Settings', url: '/settings' }, { label: 'Tenant' }]);
 </script>
 
 <template>
-    <Head title="Tenants" />
+    <Head title="Tenant" />
     <AuthenticatedLayout>
         <div class="panel">
-            <Header title="Tenants" :breadcrumbs="items"></Header>
+            <Header title="Tenant" :breadcrumbs="items"></Header>
 
             <tabs>
                 <tab :selected="true" title="General">

@@ -58,7 +58,7 @@ const setProductCategory = async (product_id, category_id) => {
 
 const items = ref([
     { label: 'Home', url: '/' },
-    { label: 'My Account', url: '/myaccount' },
+    { label: 'Settings', url: '/settings' },
     { label: 'Categories', url: '/categories' },
     { label: 'Edit Category' }
 ]);

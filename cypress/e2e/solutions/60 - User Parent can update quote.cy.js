@@ -9,7 +9,7 @@ describe('User Parent can update a quote.cy', () => {
     it('Create a child user', () => {
         cy.login('companyadmin@example.com', 'werwerwer');
         cy.visit('/quotes');
-        cy.get('#my-account').click();
+        cy.get('#settings').click();
         cy.get('#link-users').click();
         cy.get('#link-to-create-user').click();
 

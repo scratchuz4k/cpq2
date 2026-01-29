@@ -37,7 +37,8 @@
 <body class="font-sans antialiased">
     @if (config('app.env') == 'production' && config('services.google.tag_manager.api_key'))
         <!-- Google Tag Manager (noscript) -->
-        <noscript><iframe src="https://www.googletagmanager.com/ns.html?id={{ config('services.google.tag_manager.api_key') }}"
+        <noscript><iframe
+                src="https://www.googletagmanager.com/ns.html?id={{ config('services.google.tag_manager.api_key') }}"
                 height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <!-- End Google Tag Manager (noscript) -->
     @endif

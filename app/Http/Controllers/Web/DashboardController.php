@@ -24,23 +24,16 @@ class DashboardController extends BaseController
     /**
      * Display a listing of the resource.
      */
-    public function myAccount()
+    public function reporting()
     {
-        $user = request()->user();
-        $tenants = $user->tenants;
-        $permissions = $user->getAllPermissions();
-
-        return Inertia::render('MyAccount/Index', [
-            'permissions' => $permissions,
-            'tenants' => $tenants,
-        ]);
+        return Inertia::render('MyAccount/Reporting');
     }
 
     /**
      * Display a listing of the resource.
      */
-    public function reporting()
+    public function settings()
     {
-        return Inertia::render('MyAccount/Reporting');
+        return Inertia::render('Settings/Index');
     }
 }

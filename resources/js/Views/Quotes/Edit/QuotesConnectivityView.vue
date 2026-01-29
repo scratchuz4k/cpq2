@@ -116,46 +116,47 @@ const removeItem = (article) => {
     }
     getQuote(props.modelValue.id);
 };
+console.log(import.meta.env.MODE);
+const steps =
+    import.meta.env.MODE !== 'production'
+        ? {
+              pxc: [
+                  {
+                      title: 'Select a Primary Product',
+                      component: 'QuotesConnectivityTable',
+                      needAddons: true
+                  },
+                  {
+                      title: 'Failover Service',
+                      component: 'QuoteConnectivityFailOverTable',
+                      needAddons: true
+                  },
+                  {
+                      title: 'Addons',
+                      component: 'QuoteConnectivityExtrasTable',
+                      needAddons: false
+                  }
+              ],
+              its: [
+                  {
+                      title: 'Select a Primary Product',
+                      component: 'QuotesConnectivityTable',
+                      needAddons: true
+                  },
+                  {
+                      title: 'Failover Service',
+                      component: 'QuoteConnectivityFailOverTable',
+                      needAddons: true
+                  },
+                  {
+                      title: 'Addons',
+                      component: 'QuoteConnectivityExtrasTable',
+                      needAddons: false
+                  }
+              ]
+          }
+        : {};
 
-const steps = {};
-/*
-const steps = {
-    pxc: [
-        {
-            title: 'Select a Primary Product',
-            component: 'QuotesConnectivityTable',
-            needAddons: true
-        },
-        {
-            title: 'Failover Service',
-            component: 'QuoteConnectivityFailOverTable',
-            needAddons: true
-        },
-        {
-            title: 'Addons',
-            component: 'QuoteConnectivityExtrasTable',
-            needAddons: false
-        }
-    ],
-    its: [
-        {
-            title: 'Select a Primary Product',
-            component: 'QuotesConnectivityTable',
-            needAddons: true
-        },
-        {
-            title: 'Failover Service',
-            component: 'QuoteConnectivityFailOverTable',
-            needAddons: true
-        },
-        {
-            title: 'Addons',
-            component: 'QuoteConnectivityExtrasTable',
-            needAddons: false
-        }
-    ]
-};
-*/
 const getPrimary = () => {
     if (!quote.items) {
         return null;

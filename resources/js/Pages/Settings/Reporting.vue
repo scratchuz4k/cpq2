@@ -32,7 +32,7 @@ const getData = async () => {
     }
 };
 
-const items = ref([{ label: 'Home', url: '/' }, { label: 'My Account', url: '/myaccount' }, { label: 'Reporting' }]);
+const items = ref([{ label: 'Home', url: '/' }, { label: 'Settings', url: '/settings' }, { label: 'Reporting' }]);
 
 getData();
 </script>

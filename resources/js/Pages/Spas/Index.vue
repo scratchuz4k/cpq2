@@ -253,7 +253,7 @@ const getExportData = async () => {
         exportDisabled.value = false;
     }, 5000);
 };
-const items = ref([{ label: 'Home', url: '/' }, { label: 'My Account', url: '/myaccount' }, { label: 'SPAs' }]);
+const items = ref([{ label: 'Home', url: '/' }, { label: 'Settings', url: '/settings' }, { label: 'SPAs' }]);
 
 const columns = [
     { name: '#', data: 'id' },

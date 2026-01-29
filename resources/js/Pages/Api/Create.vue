@@ -50,16 +50,16 @@ const saveApi = () => {
 
 const items = ref([
     { label: 'Home', url: '/' },
-    { label: 'My Account', url: '/myaccount' },
-    { label: 'Apis', url: '/apis' },
-    { label: 'New Api' }
+    { label: 'Settings', url: '/settings' },
+    { label: 'APIs', url: '/apis' },
+    { label: 'New API' }
 ]);
 </script>
 <template>
-    <Head title="New Api" />
+    <Head title="New API" />
     <AuthenticatedLayout>
         <div class="panel">
-            <Header title="New Api" :breadcrumbs="items">
+            <Header title="New API" :breadcrumbs="items">
                 <template #buttons>
                     <PrimaryButton id="btn-save-api" @click="saveApi()">
                         <font-awesome-icon class="me-2" :icon="['fas', 'save']"></font-awesome-icon>

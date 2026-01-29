@@ -18,7 +18,7 @@ const getUniqueSolutionTypes = (steps) => {
     return [...new Set(solutionTypes)];
 };
 
-const items = ref([{ label: 'Home', url: '/' }, { label: 'My Account', url: '/myaccount' }, { label: 'Products' }]);
+const items = ref([{ label: 'Home', url: '/' }, { label: 'Settings', url: '/settings' }, { label: 'Products' }]);
 </script>
 <template>
     <Head title="Products" />

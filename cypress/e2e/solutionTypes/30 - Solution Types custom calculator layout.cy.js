@@ -8,7 +8,7 @@ describe('Solution Types CRUD', () => {
     before('Get Solution Types', () => {
         cy.login('companyadmin@example.com', 'werwerwer');
         cy.visit('/');
-        cy.get('#my-account').click();
+        cy.get('#settings').click();
         cy.get('#link-solutions').click();
 
         cy.get('.p-datatable-tbody tr').not('.p-datatable-empty-message').should('have.length.greaterThan', 0);

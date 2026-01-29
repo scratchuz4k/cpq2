@@ -10,7 +10,7 @@ describe('Creates a Mobile Quote', () => {
 
     it('Formats connectivity table to simple view', () => {
         cy.visit('/quotes');
-        cy.get('#my-account').click();
+        cy.get('#settings').click();
         cy.get('#link-solutions').click();
         cy.get('#datatable-search').type('Connectivity');
         cy.wait(1000);
@@ -84,7 +84,7 @@ describe('Creates a Mobile Quote', () => {
     });
     it('Formats connectivity table to DealMaker view', () => {
         cy.visit('/quotes');
-        cy.get('#my-account').click();
+        cy.get('#settings').click();
         cy.get('#link-solutions').click();
         cy.get('#datatable-search').type('Connectivity');
         cy.wait(1000);
