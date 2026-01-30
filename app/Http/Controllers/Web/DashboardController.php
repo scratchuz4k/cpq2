@@ -26,7 +26,7 @@ class DashboardController extends BaseController
      */
     public function reporting()
     {
-        return Inertia::render('MyAccount/Reporting');
+        return Inertia::render('Settings/Reporting');
     }
 
     /**
