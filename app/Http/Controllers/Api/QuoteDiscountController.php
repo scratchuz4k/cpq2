@@ -5,13 +5,12 @@ namespace App\Http\Controllers\Api;
 use App\Helpers\DataProvider;
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\IndexRequest;
+use App\Http\Requests\QuoteDiscountCreateRequest;
+use App\Http\Requests\QuoteDiscountUpdateRequest;
 use App\Http\Resources\StepResource;
 use App\Models\QuoteDiscount;
-use App\Models\Step;
 use App\Services\QuoteDiscountService;
-use Dedoc\Scramble\Attributes\ExcludeRouteFromDocs;
 use Exception;
-use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\DB;
 
@@ -44,8 +43,7 @@ class QuoteDiscountController extends BaseController
     /**
      * Store a new Step
      */
-    #[ExcludeRouteFromDocs]
-    public function store(Request $request)
+    public function store(QuoteDiscountCreateRequest $request)
     {
         try {
             $quoteItem = DB::transaction(fn () => $this->service->store($request->all()), 2);
@@ -59,17 +57,16 @@ class QuoteDiscountController extends BaseController
     /**
      * Show Step
      */
-    #[ExcludeRouteFromDocs]
     public function show(QuoteDiscount $quoteDiscount) {}
 
     /**
      * Update Step
      */
-    public function update(Request $request, QuoteDiscount $quoteDiscount)
+    public function update(QuoteDiscountUpdateRequest $request, QuoteDiscount $quoteDiscount)
     {
         try {
             $step = DB::transaction(fn () => $this->service->update($quoteDiscount, $request->all()));
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return handleException($e);
         }
 

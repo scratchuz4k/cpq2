@@ -16,7 +16,7 @@ pricePlansDiscount.value = {
     entity: 'price_plans'
 };
 
-const saveQuote = async () => {
+const saveDiscount = async () => {
     isLoading.value = true;
     if (quote.discount === '') {
         isLoading.value = false;
@@ -34,7 +34,7 @@ const saveQuote = async () => {
         isLoading.value = false;
     }
 };
-const resetQuote = async () => {
+const resetDiscounts = async () => {
     isLoading.value = true;
     let result = await swal.fire({
         title: 'Are you sure?'
@@ -61,7 +61,7 @@ const resetQuote = async () => {
 };
 </script>
 <template>
-    <tr class="price-mobile-sidebar total-quote-discount px-4 pt-4 pb-2 mb-3">
+    <tr>
         <td>Total Quote Discount</td>
         <td>
             <label class="form-label m-0">{{ pricePlan.name }}</label>
@@ -80,8 +80,8 @@ const resetQuote = async () => {
             <button
                 v-if="!quote.is_blocked"
                 id="btn-apply-global-discount"
-                class="btn btn-secondary w-100 mb-2"
-                @click="saveQuote()"
+                class="btn btn-secondary"
+                @click="saveDiscount()"
                 :disabled="isLoading"
             >
                 A
@@ -89,8 +89,8 @@ const resetQuote = async () => {
             <button
                 id="btn-reset-quote"
                 v-if="!quote.is_blocked"
-                class="btn w-100"
-                @click="resetQuote()"
+                class="btn"
+                @click="resetDiscounts()"
                 :disabled="isLoading"
             >
                 R
