@@ -12,7 +12,7 @@ const email = reactive(props.email);
 
 const items = ref([
     { label: 'Home', url: '/' },
-    { label: 'My Account', url: '/myaccount' },
+    { label: 'Settings', url: '/settings' },
     { label: 'Email', url: '/email-templates' },
     { label: 'Show Email' }
 ]);

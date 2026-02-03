@@ -50,7 +50,7 @@ class ShopBlocksCategoriesJob implements NotTenantAware, ShouldQueue
         $last_page = array_key_exists('meta', $res) ? $res['meta']['last_page'] : 1;
         $total_categories = array_key_exists('meta', $res) ? $res['meta']['total'] : (200 * $last_page);
 
-        Log::info("[JOB] ShopBlocksCategoriesJob | $last_page pages of $total_categories categories to be synced.");
+        Log::info("[JOB] ShopBlocksCategoriesJob | $last_page pages with $total_categories categories to be synced.");
 
         $jobs = [];
         for ($page = 1; $page <= $last_page; $page++) {
@@ -60,7 +60,7 @@ class ShopBlocksCategoriesJob implements NotTenantAware, ShouldQueue
         Bus::batch($jobs)
             ->onQueue('shopblocks')
             ->then(function (Batch $batch) use ($last_page, $total_categories) {
-                Log::info("[JOB] ShopBlocksCategoriesJob | Successfully synced {$last_page} pages of {$total_categories} categories.");
+                Log::info("[JOB] ShopBlocksCategoriesJob | Successfully synced {$last_page} pages with {$total_categories} categories.");
             })
             ->catch(function (Batch $batch, Throwable $e) {
                 Log::error('[JOB] ShopBlocksCategoriesJob | Failed batch', ['error' => $e->getMessage()]);

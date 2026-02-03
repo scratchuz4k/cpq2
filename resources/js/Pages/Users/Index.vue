@@ -63,7 +63,7 @@ const saveNewGroup = async () => {
     }
 };
 
-const items = ref([{ label: 'Home', url: '/' }, { label: 'My Account', url: '/myaccount' }, { label: 'Users' }]);
+const items = ref([{ label: 'Home', url: '/' }, { label: 'Settings', url: '/settings' }, { label: 'Users' }]);
 </script>
 <template>
     <Head title="Users" />

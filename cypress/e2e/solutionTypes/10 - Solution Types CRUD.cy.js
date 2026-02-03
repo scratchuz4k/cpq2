@@ -5,7 +5,7 @@ describe('Solution Types CRUD', () => {
 
     it('Create a Hardware Solution', () => {
         cy.visit('/quotes');
-        cy.get('#my-account').click();
+        cy.get('#settings').click();
         cy.get('#link-solutions').click();
 
         cy.get('#datatable-search').type('Hardware');
@@ -48,7 +48,7 @@ describe('Solution Types CRUD', () => {
 
     it('Edit Connectivity Solution', () => {
         cy.visit('/quotes');
-        cy.get('#my-account').click();
+        cy.get('#settings').click();
         cy.get('#link-solutions').click();
 
         cy.get('#datatable-search').type('Hardware');
@@ -73,7 +73,7 @@ describe('Solution Types CRUD', () => {
 
     it('Delete Connectivity Solution', () => {
         cy.visit('/quotes');
-        cy.get('#my-account').click();
+        cy.get('#settings').click();
         cy.get('#link-solutions').click();
 
         cy.get('#datatable-search').type('Hardware');

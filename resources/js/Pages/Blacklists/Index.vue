@@ -8,7 +8,7 @@ const props = defineProps({
 });
 const items = ref([
     { label: 'Home', url: '/' },
-    { label: 'My Account', url: '/myaccount' },
+    { label: 'Settings', url: '/settings' },
     { label: 'Products', url: '/products' },
     { label: 'Blacklists' }
 ]);

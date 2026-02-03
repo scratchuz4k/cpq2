@@ -15,7 +15,7 @@ describe('Manage Products Step relation', () => {
     steps.forEach((step, index) => {
         it('Create a Step', () => {
             cy.visit('/');
-            cy.get('#my-account').click();
+            cy.get('#settings').click();
             cy.get('#link-steps').click();
             cy.get('#step-create-btn').click();
             cy.get('#step-name').type(step.name);
@@ -29,7 +29,7 @@ describe('Manage Products Step relation', () => {
     products.forEach((product, index) => {
         it('Creates a Product', () => {
             cy.visit('/');
-            cy.get('#my-account').click();
+            cy.get('#settings').click();
             cy.get('#link-products').click();
 
             cy.get('#product-create-btn').click();
@@ -55,7 +55,7 @@ describe('Manage Products Step relation', () => {
     steps.forEach((step, index) => {
         it('Check Step has related product', () => {
             cy.visit('/');
-            cy.get('#my-account').click();
+            cy.get('#settings').click();
             cy.get('#link-steps').click();
             cy.get('#datatable-search').type(step.name);
             cy.wait(1000);
@@ -68,7 +68,7 @@ describe('Manage Products Step relation', () => {
 
     it('Update Step solution type', () => {
         cy.visit('/');
-        cy.get('#my-account').click();
+        cy.get('#settings').click();
         cy.get('#link-steps').click();
         cy.get('#datatable-search').type(steps[0].name);
         cy.wait(1000);
@@ -82,7 +82,7 @@ describe('Manage Products Step relation', () => {
 
     it('Delete Step', () => {
         cy.visit('/');
-        cy.get('#my-account').click();
+        cy.get('#settings').click();
         cy.get('#link-steps').click();
         cy.get('#datatable-search').type(steps[0].name);
         cy.wait(1000);
@@ -97,7 +97,7 @@ describe('Manage Products Step relation', () => {
 
     it('Confirm that Solution Type no longer has Step associated', () => {
         cy.visit('/');
-        cy.get('#my-account').click();
+        cy.get('#settings').click();
         cy.get('#link-solutions').click();
 
         cy.get('#datatable-search').type('Cloud Audit');
@@ -112,7 +112,7 @@ describe('Manage Products Step relation', () => {
     products.forEach((product, index) => {
         it('Confirm that Product no longer has Step associated', () => {
             cy.visit('/');
-            cy.get('#my-account').click();
+            cy.get('#settings').click();
             cy.get('#link-products').click();
 
             cy.get('#datatable-search').type(product.sku);

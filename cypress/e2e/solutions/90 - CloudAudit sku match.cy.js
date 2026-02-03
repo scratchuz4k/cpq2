@@ -49,7 +49,7 @@ describe('Match CouldAudit Sku', () => {
 
     it('Create a product with the same sku', () => {
         cy.visit('/');
-        cy.get('#my-account').click();
+        cy.get('#settings').click();
         cy.get('#link-products').click();
         cy.get('#product-create-btn').click();
 

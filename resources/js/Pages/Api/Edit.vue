@@ -42,16 +42,16 @@ const saveApi = () => {
 
 const items = ref([
     { label: 'Home', url: '/' },
-    { label: 'My Account', url: '/myaccount' },
-    { label: 'Apis', url: '/apis' },
-    { label: 'Edit Api' }
+    { label: 'Settings', url: '/settings' },
+    { label: 'APIs', url: '/apis' },
+    { label: 'Edit API' }
 ]);
 </script>
 <template>
-    <Head :title="'Edit Item #' + data.id" />
+    <Head :title="'Edit API #' + data.id" />
     <AuthenticatedLayout>
         <div class="panel">
-            <Header :title="'Edit Item #' + data.id" :breadcrumbs="items">
+            <Header :title="'Edit API #' + data.id" :breadcrumbs="items">
                 <template #buttons>
                     <PrimaryButton id="btn-save-api" @click="saveApi()">
                         <font-awesome-icon class="me-2" :icon="['fas', 'save']"></font-awesome-icon>

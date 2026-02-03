@@ -11,7 +11,7 @@ const props = defineProps({
     }
 });
 
-const items = ref([{ label: 'Home', url: '/' }, { label: 'My Account', url: '/myaccount' }, { label: 'Steps' }]);
+const items = ref([{ label: 'Home', url: '/' }, { label: 'Settings', url: '/settings' }, { label: 'Steps' }]);
 </script>
 <template>
     <Head title="Steps" />
