@@ -7,6 +7,7 @@ import * as Sentry from '@sentry/vue';
 import TopBarSearchable from '@/Components/TopBarSearchable.vue';
 import Resources from '@/Components/Resources.vue';
 import { can, hasRole } from '@/Composables/useAuth.js';
+import SvgIcon from '@/Components/Custom/SvgIcon.vue';
 
 const page = usePage();
 const user = page.props.auth.user;
@@ -66,20 +67,9 @@ const currentTenant = ref(page.props.tenant);
                     <li class="nav-item">
                         <a class="nav-link" id="quotes-tab" data-toggle="tab" :href="route('quotes.index')">QUOTES</a>
                     </li>
-                    <li class="nav-item">
-                        <a
-                            class="nav-link"
-                            :class="{ active: $page.component == 'Settings/Index' }"
-                            id="settings"
-                            data-toggle="tab"
-                            :href="route('settings')"
-                        >
-                            SETTINGS
-                        </a>
-                    </li>
                 </ul>
 
-                <ul class="navbar-nav mb-2 mb-lg-0 d-flex justify-content-end">
+                <ul class="navbar-nav nav-links mb-2 mb-lg-0 d-flex justify-content-end">
                     <li class="nav-item me-2">
                         <TopBarSearchable></TopBarSearchable>
                     </li>
@@ -95,6 +85,20 @@ const currentTenant = ref(page.props.tenant);
                             <font-awesome-icon :icon="['far', 'building']" />
                         </a>
                     </li>
+
+                    <li class="nav-item">
+                        <a
+                            class="nav-link d-flex align-items-center h-100"
+                            :href="route('settings')"
+                            v-tooltip
+                            data-bs-toggle="tooltip"
+                            data-bs-placement="top"
+                            title="Settings"
+                        >
+                            <SvgIcon width="18" height="18" name="gear" />
+                        </a>
+                    </li>
+
                     <li class="nav-item" v-if="hasRole('Super Admin') || can('viewAny notification')">
                         <NotificationDropdown></NotificationDropdown>
                     </li>

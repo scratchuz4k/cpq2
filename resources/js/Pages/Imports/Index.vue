@@ -10,6 +10,7 @@ import queryString from 'query-string';
 import CountUp from 'vue-countup-v3';
 import Table from 'primevue/datatable';
 import Column from 'primevue/column';
+import SvgIcon from '@/Components/Custom/SvgIcon.vue';
 
 const page = usePage();
 const props = defineProps({
