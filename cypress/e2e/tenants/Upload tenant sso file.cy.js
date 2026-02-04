@@ -260,6 +260,6 @@ describe('Update tenant SSO', () => {
 
         cy.get('button').contains('Sign In').click();
 
-        cy.get('#settings').contains('SETTINGS');
+        cy.get('#quotes-tab').contains('QUOTES');
     });
 });
