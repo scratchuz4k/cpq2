@@ -94,6 +94,7 @@ const currentTenant = ref(page.props.tenant);
                             data-bs-toggle="tooltip"
                             data-bs-placement="top"
                             title="Settings"
+                            id="settings"
                         >
                             <SvgIcon width="18" height="18" name="gear" />
                         </a>
