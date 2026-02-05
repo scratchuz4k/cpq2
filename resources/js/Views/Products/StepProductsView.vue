@@ -4,6 +4,7 @@ import { computed, reactive, ref, watch, onMounted } from 'vue';
 import { quote } from '@composables/useQuote';
 import _ from 'lodash';
 import { Paginator, Select, Skeleton } from 'primevue';
+import StepActionBar from '@/Components/Steps/StepActionBar.vue';
 
 const meta = reactive({
     page: 1,
@@ -317,37 +318,37 @@ watch(
                             @page="handlePaginator"
                         >
                         </Paginator>
-                        <div class="d-flex justify-content-between align-items-center mt-3">
-                            <div>
-                                <button
-                                    :disabled="meta.isLoading"
-                                    v-if="props.index > 0"
-                                    :id="'btn-step-' + (props.index + 1) + '-previous'"
-                                    class="btn text-primary step-nav btn-sm me-3"
-                                    type="button"
-                                    @click="() => proxyValue--"
-                                >
-                                    <font-awesome-icon :icon="['fas', 'arrow-left']" /> Previous
-                                </button>
-                            </div>
-                            <div>
-                                <button
-                                    :disabled="disableButton"
-                                    :id="'btn-step-' + (props.index + 1) + '-next'"
-                                    class="ms-3 btn btn-primary step-nav"
-                                    type="button"
-                                    @click="() => emitSaveQuote()"
-                                >
-                                    Next
-                                    <font-awesome-icon :icon="['fas', 'arrow-right']" />
-                                </button>
-                            </div>
-                        </div>
                     </template>
                 </div>
             </div>
         </div>
     </div>
+    <StepActionBar>
+        <template #left>
+            <button
+                :disabled="meta.isLoading"
+                v-if="props.index > 0"
+                :id="'btn-step-' + (props.index + 1) + '-previous'"
+                class="btn text-primary step-nav btn-sm me-3"
+                type="button"
+                @click="() => proxyValue--"
+            >
+                <font-awesome-icon :icon="['fas', 'arrow-left']" /> Previous
+            </button>
+        </template>
+        <template #right>
+            <button
+                :disabled="disableButton"
+                :id="'btn-step-' + (props.index + 1) + '-next'"
+                class="ms-3 btn btn-primary step-nav"
+                type="button"
+                @click="() => emitSaveQuote()"
+            >
+                Next
+                <font-awesome-icon :icon="['fas', 'arrow-right']" />
+            </button>
+        </template>
+    </StepActionBar>
 </template>
 
 <style></style>

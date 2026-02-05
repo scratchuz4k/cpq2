@@ -1,6 +1,7 @@
 <script setup>
 import { computed } from 'vue';
 import { currentStep, steps } from '@composables/useQuoteSteps';
+import StepActionBar from './StepActionBar.vue';
 
 const props = defineProps({
     modelValue: Object,
@@ -28,9 +29,18 @@ const previousStep = () => {
 </script>
 
 <template>
-    <div class="d-flex justify-content-between flex-row-reverse mt-3">
-        <div>
-            <slot></slot>
+    <div class="mt-3">
+        <slot></slot>
+    </div>
+    <StepActionBar>
+        <template #left>
+            <button id="btn-previous-step" class="btn" type="button" v-if="currentStep != 0" @click="previousStep()">
+                <font-awesome-icon :icon="['fas', 'arrow-left']" class="ms-2"></font-awesome-icon>
+                Previous Step
+            </button>
+        </template>
+        <template #right>
+            <slot name="action-bar-right"></slot>
             <button
                 id="btn-create-quote"
                 class="btn btn-primary"
@@ -52,10 +62,6 @@ const previousStep = () => {
                 Next Step
                 <font-awesome-icon :icon="['fas', 'arrow-right']" class="ms-2"></font-awesome-icon>
             </button>
-        </div>
-        <button id="btn-previous-step" class="btn" type="button" v-if="currentStep != 0" @click="previousStep()">
-            <font-awesome-icon :icon="['fas', 'arrow-left']" class="ms-2"></font-awesome-icon>
-            Previous Step
-        </button>
-    </div>
+        </template>
+    </StepActionBar>
 </template>

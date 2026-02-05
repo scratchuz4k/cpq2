@@ -7,6 +7,7 @@ import { currentStep } from '@composables/useQuoteSteps';
 import Paginator from 'primevue/paginator';
 import axios from 'axios';
 import { router } from '@inertiajs/vue3';
+import StepActionBar from './StepActionBar.vue';
 
 const props = defineProps({
     solutionType: Array,
@@ -218,8 +219,8 @@ const tenant_reviewed = ref(false);
             </div>
         </div>
     </div>
-    <div class="row mb-3" v-if="!tenant_review_active && !tenant_reviewed">
-        <div class="col-lg-12 d-flex justify-content-between">
+    <StepActionBar v-if="!tenant_review_active && !tenant_reviewed">
+        <template #left>
             <button
                 id="btn-previous-step"
                 class="btn"
@@ -231,6 +232,8 @@ const tenant_reviewed = ref(false);
                 <font-awesome-icon :icon="['fas', 'arrow-left']" class="ms-2"></font-awesome-icon>
                 Previous Step
             </button>
+        </template>
+        <template #right>
             <button
                 id="btn-next-step"
                 class="btn btn-primary"
@@ -240,8 +243,8 @@ const tenant_reviewed = ref(false);
             >
                 Review Tenant
             </button>
-        </div>
-    </div>
+        </template>
+    </StepActionBar>
     <div class="row mb-3" v-if="tenant_review_active">
         <div class="col">
             <div class="row">
