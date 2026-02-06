@@ -1,100 +1,135 @@
 <script setup>
-import { ref } from 'vue';
-import { setQuote, quote } from '@composables/useQuote';
+import { onMounted, reactive, ref } from 'vue';
+import { getQuote, quote } from '@composables/useQuote';
 
 const props = defineProps({
-    pricePlan: Array
+    preview: Boolean,
+    pricePlan: Object
 });
 
+const isEditing = ref(false);
 const isLoading = ref(false);
-const pricePlansDiscount = ref([]);
 
-let discount = quote.discounts.find((x) => x.entity?.code == props.pricePlan.code);
-pricePlansDiscount.value = {
-    ...props.pricePlan,
-    value: discount ? discount.discount : 0,
-    entity: 'price_plans'
+const discount = reactive({
+    id: null,
+    quote_id: quote.id,
+    code: props.pricePlan.code,
+    discount: 0,
+    entity: 'price_plans',
+    entity_id: props.pricePlan.id,
+    total: 0,
+    value: 0
+});
+
+const temp = ref(0);
+
+const edit = () => {
+    isEditing.value = true;
 };
 
-const saveDiscount = async () => {
+const cancel = () => {
+    isEditing.value = false;
+    temp.value = tempDiscount ? tempDiscount.discount : 0;
+};
+
+const save = async () => {
     isLoading.value = true;
-    if (quote.discount === '') {
-        isLoading.value = false;
-        return;
-    }
     try {
-        let res = await axios.put(`/api/quotes/${quote.id}`, {
-            discounts: [pricePlansDiscount.value]
-        });
-        setQuote(res.data);
+        if (discount.id == null) {
+            let res = await axios.post(`/api/quote-discounts`, discount);
+        } else {
+            let res = await axios.put(`/api/quote-discounts/${discount.id}`, discount);
+        }
+
+        await getQuote(quote.id);
+        isEditing.value = false;
         isLoading.value = false;
+        init();
     } catch (ex) {
         isLoading.value = false;
         notyf.error(ex.response.data.message);
         isLoading.value = false;
     }
 };
-const resetDiscounts = async () => {
-    isLoading.value = true;
-    let result = await swal.fire({
-        title: 'Are you sure?'
-    });
-    if (['cancel', 'backdrop'].includes(result.dismiss)) {
-        isLoading.value = false;
-        return;
-    }
 
-    quote.items.forEach((e) => {
-        e.discount = 0;
-    });
-    pricePlansDiscounts.value.forEach((e) => (e.value = 0));
-    try {
-        let res = await axios.put(`/api/quotes/${quote.id}`, {
-            discounts: [...pricePlansDiscounts.value],
-            items: quote.items
-        });
-        setQuote(res.data);
-        isLoading.value = false;
-    } catch (ex) {
-        notyf.error(ex.response.data.message);
+const init = () => {
+    let tempDiscount = quote.discounts.find((x) => x.entity?.code == props.pricePlan.code);
+    if (tempDiscount) {
+        discount.id = tempDiscount.id;
+        discount.discount = tempDiscount.discount;
+        discount.total = tempDiscount.total;
+        discount.value = tempDiscount.value;
+        temp.value = tempDiscount.discount;
     }
 };
+
+onMounted(() => {
+    init();
+});
 </script>
 <template>
     <tr>
-        <td>Total Quote Discount</td>
-        <td>
-            <label class="form-label m-0">{{ pricePlan.name }}</label>
+        <td :colspan="props.pricePlan.name == 'Recurring' ? 4 : 3">
+            <p class="small">{{ props.pricePlan.name }} Discount</p>
+        </td>
+        <td class="text-center">
+            <p class="small" v-if="!isEditing" :id="`global-${props.pricePlan.code}-discount`">
+                {{ discount.discount }} %
+            </p>
+            <input
+                v-else
+                :id="`input-global-${props.pricePlan.code}-discount`"
+                class="form-control text-center p-0 px-1"
+                type="number"
+                v-model="discount.discount"
+                min="0"
+            />
+        </td>
+        <td v-if="!props.preview"></td>
+        <td class="text-right">
+            <p v-if="props.pricePlan.name != 'Recurring'" class="small column_total">
+                {{ format.GBP(discount.value) }}
+            </p>
 
-            <div class="input-group p-0 w-50">
-                <input
-                    :id="`input-global-${pricePlan.code}-discount`"
-                    type="number"
-                    class="form-control"
-                    v-model="pricePlan.value"
-                />
-                <span class="input-group-text">%</span>
+            <div v-else class="column_total cpq-tooltip">
+                {{ format.GBP(discount.value) }}
+                <span class="cpq-tooltip-text"> Overall Cost:<br />{{ format.GBP(discount.total) }} </span>
             </div>
         </td>
-        <td>
-            <button
-                v-if="!quote.is_blocked"
-                id="btn-apply-global-discount"
-                class="btn btn-secondary"
-                @click="saveDiscount()"
-                :disabled="isLoading"
-            >
-                A
-            </button>
-            <button
-                id="btn-reset-quote"
-                v-if="!quote.is_blocked"
-                class="btn"
-                @click="resetDiscounts()"
-                :disabled="isLoading"
-            >
-                R
-            </button>
+        <td v-if="!props.preview">
+            <div class="d-flex justify-content-end">
+                <template v-if="!isEditing">
+                    <font-awesome-icon
+                        :id="'btn-' + props.pricePlan.code + '-remove'"
+                        role="button"
+                        class="px-2 py-2 text-secondary"
+                        :icon="['fas', 'trash']"
+                    />
+                    <font-awesome-icon
+                        :id="'btn-' + props.pricePlan.code + '-edit'"
+                        role="button"
+                        class="px-2 py-2 text-primary"
+                        :icon="['fas', 'edit']"
+                        @click="edit()"
+                    />
+                </template>
+                <template v-else>
+                    <font-awesome-icon
+                        :id="'btn-' + props.pricePlan.code + '-cancel'"
+                        role="button"
+                        class="px-2 py-2 text-secondary"
+                        :icon="['fas', 'cancel']"
+                        @click="cancel()"
+                    />
+                    <font-awesome-icon
+                        :id="'btn-' + props.pricePlan.code + '-save'"
+                        role="button"
+                        class="px-2 py-2 text-primary"
+                        :icon="['fas', 'save']"
+                        @click="save()"
+                    />
+                </template>
+            </div>
         </td>
     </tr>
 </template>

@@ -23,8 +23,9 @@ class QuoteDiscountUpdateRequest extends FormRequest
     {
         return [
             'code' => 'required',
-            'entity' => 'required|in:price_plans',
-            'value' => 'required|numeric',
+            'entity' => 'required|in:price_plans,quote',
+            'entity_id' => 'required|numeric',
+            'discount' => 'required|numeric',
         ];
     }
 }

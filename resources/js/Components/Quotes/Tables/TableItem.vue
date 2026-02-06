@@ -1,6 +1,6 @@
 <script setup>
 import { updateQuoteItem, removeQuoteItem, temp } from '@composables/useQuoteItem';
-import { getQuote, quote } from '@/Composables/useQuote';
+import { quote } from '@/Composables/useQuote';
 import format from '@/Composables/format';
 
 const props = defineProps({

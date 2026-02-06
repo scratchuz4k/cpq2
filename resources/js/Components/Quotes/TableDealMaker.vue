@@ -2,6 +2,7 @@
 import { reactive } from 'vue';
 import { quote, getQuote } from '@composables/useQuote';
 import { createQuoteItem } from '@/Composables/useQuoteItem';
+import TableTotal from './TableTotal.vue';
 
 const props = defineProps({
     pricePlans: Array,
@@ -78,10 +79,22 @@ emitter.on('quote-items:updated', () => {
                     </template>
                 </tbody>
                 <tfoot>
-                    <QuoteDiscountRow :pricePlan="pricePlan"></QuoteDiscountRow>
+                    <QuoteDiscountRow :preview="props.preview" :pricePlan="pricePlan"></QuoteDiscountRow>
+                    <tr>
+                        <td :colspan="filterColumns(columns, pricePlan.code).length - 1">
+                            <p class="mb-0 fw-bold">Subtotal</p>
+                        </td>
+                        <td class="text-end fw-bold" :id="pricePlanskeys[pricePlan.code] + '-total'">
+                            {{ format.GBP(quoteTotal(pricePlan.code)) }}
+                        </td>
+                        <td v-if="!props.preview"></td>
+                    </tr>
                 </tfoot>
             </table>
         </div>
+    </div>
+    <div class="dealmaker-panel">
+        <TableTotal :preview="props.preview"></TableTotal>
     </div>
 </template>
 

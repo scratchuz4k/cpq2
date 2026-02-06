@@ -22,6 +22,7 @@ use App\Http\Controllers\Api\PricePlanController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\QuoteApprovalController;
 use App\Http\Controllers\Api\QuoteController;
+use App\Http\Controllers\Api\QuoteDiscountController;
 use App\Http\Controllers\Api\QuoteItemController;
 use App\Http\Controllers\Api\ReportController;
 use App\Http\Controllers\Api\ResourceController;
@@ -96,6 +97,7 @@ Route::middleware(['api', 'auth:sanctum'])->group(function () {
         'quotes' => QuoteController::class,
         'quote-items' => QuoteItemController::class,
         'quote-approvals' => QuoteApprovalController::class,
+        'quote-discounts' => QuoteDiscountController::class,
         'solution-types' => SolutionTypeController::class,
         'permissions' => PermissionController::class,
         'prices' => PriceController::class,

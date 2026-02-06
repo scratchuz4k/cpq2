@@ -13,12 +13,14 @@ class QuoteDiscount extends Model
 {
     use RegisterActivity, SetTenantId, SoftDeletes;
 
-    protected $fillable = ['discountable_type', 'discountable_id', 'discount', 'tenant_id'];
+    protected $fillable = ['quote_id', 'discountable_type', 'discountable_id', 'discount', 'tenant_id', 'total'];
 
     protected function casts(): array
     {
         return [
             'discount' => 'float',
+            'value' => 'float',
+            'total' => 'float',
         ];
     }
 
@@ -27,6 +29,10 @@ class QuoteDiscount extends Model
         static::addGlobalScope(new TenantScope);
 
         static::saved(function ($discount) {
+            $discount->value = 0;
+            $discount->total = 0;
+            $discount->saveQuietly();
+
             foreach ($discount->quote->items as $item) {
                 $item->computeTotals();
                 $item->saveQuietly();
