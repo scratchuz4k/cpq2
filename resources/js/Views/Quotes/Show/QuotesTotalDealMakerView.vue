@@ -166,7 +166,7 @@ const items = ref([
                     </InfoBox>
                 </div>
 
-                <QuoteDiscountPanel :pricePlans="props.pricePlans"></QuoteDiscountPanel>
+                <!-- <QuoteDiscountPanel :pricePlans="props.pricePlans"></QuoteDiscountPanel> -->
 
                 <div class="price-mobile-sidebar commission-calculator px-4 pt-4 pb-2 mb-3">
                     <h3 class="mb-3">Profitability Calculator</h3>
