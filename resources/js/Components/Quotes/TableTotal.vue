@@ -52,6 +52,25 @@ const save = async () => {
     }
 };
 
+const destroy = async () => {
+    swal.fire({
+        title: 'Are you sure?'
+    }).then(async (result) => {
+        if (['cancel', 'backdrop'].includes(result.dismiss)) {
+            return;
+        }
+        try {
+            let res = await axios.delete(`/api/quote-discounts/${discount.id}`);
+            await getQuote(quote.id);
+            init();
+            notyf.success('Removed with success');
+            return;
+        } catch (err) {
+            notyf.error(err?.response?.data?.message ?? 'Something went wrong');
+        }
+    });
+};
+
 const quoteTotal = (price_plan, column = 'total') => {
     let total = 0;
     let items = quote.items;
@@ -72,6 +91,12 @@ const quoteTotal = (price_plan, column = 'total') => {
 };
 
 const init = () => {
+    discount.id = null;
+    discount.discount = 0;
+    discount.total = 0;
+    discount.value = 0;
+    temp.value = 0;
+
     let tempDiscount = quote.discounts.find((x) => x.entity?.uuid == quote.uuid);
     if (tempDiscount) {
         discount.id = tempDiscount.id;
@@ -126,6 +151,7 @@ onMounted(() => {
                                 role="button"
                                 class="px-2 py-2 text-secondary"
                                 :icon="['fas', 'trash']"
+                                @click="destroy()"
                             />
                             <font-awesome-icon
                                 :id="'btn-quote-discount-edit'"
