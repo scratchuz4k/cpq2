@@ -79,7 +79,11 @@ emitter.on('quote-items:updated', () => {
                     </template>
                 </tbody>
                 <tfoot>
-                    <QuoteDiscountRow :preview="props.preview" :pricePlan="pricePlan"></QuoteDiscountRow>
+                    <QuoteDiscountRow
+                        v-if="quote.items.filter((x) => x.price_plan.code == pricePlan.code).length > 0"
+                        :preview="props.preview"
+                        :pricePlan="pricePlan"
+                    ></QuoteDiscountRow>
                     <tr>
                         <td :colspan="filterColumns(columns, pricePlan.code).length - 1">
                             <p class="mb-0 fw-bold">Subtotal</p>
