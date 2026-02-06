@@ -29,6 +29,8 @@ const edit = () => {
 
 const cancel = () => {
     isEditing.value = false;
+
+    let tempDiscount = quote.discounts.find((x) => x.entity?.code == props.pricePlan.code);
     temp.value = tempDiscount ? tempDiscount.discount : 0;
 };
 
