@@ -120,7 +120,7 @@ onMounted(() => {
         <thead>
             <tr>
                 <th style="width: 60%" class="text-start"></th>
-                <th>%</th>
+                <th>Discount</th>
                 <th>Total</th>
                 <th v-if="!props.preview" style="width: 60px" class="text-center"></th>
             </tr>
@@ -205,7 +205,7 @@ onMounted(() => {
             </tr>
             <tr>
                 <th>
-                    <p class="small text-start">Total</p>
+                    <p class="small text-start">Final Amount</p>
                 </th>
                 <td></td>
                 <td id="total_net">
