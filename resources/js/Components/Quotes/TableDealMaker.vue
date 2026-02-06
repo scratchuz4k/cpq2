@@ -3,6 +3,7 @@ import { reactive } from 'vue';
 import { quote, getQuote } from '@composables/useQuote';
 import { createQuoteItem } from '@/Composables/useQuoteItem';
 import TableTotal from './TableTotal.vue';
+import { can, hasRole } from '@/Composables/useAuth';
 
 const props = defineProps({
     pricePlans: Array,
@@ -80,7 +81,10 @@ emitter.on('quote-items:updated', () => {
                 </tbody>
                 <tfoot>
                     <QuoteDiscountRow
-                        v-if="quote.items.filter((x) => x.price_plan.code == pricePlan.code).length > 0"
+                        v-if="
+                            quote.items.filter((x) => x.price_plan.code == pricePlan.code).length > 0 &&
+                            (can('viewAny quote_discount') || hasRole('Super Admin'))
+                        "
                         :preview="props.preview"
                         :pricePlan="pricePlan"
                     ></QuoteDiscountRow>

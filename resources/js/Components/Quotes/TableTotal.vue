@@ -1,6 +1,7 @@
 <script setup>
 import { onMounted, reactive, ref } from 'vue';
 import { quote, getQuote } from '@composables/useQuote';
+import { can, hasRole } from '@/Composables/useAuth';
 
 const props = defineProps({
     preview: Boolean
@@ -125,7 +126,7 @@ onMounted(() => {
             </tr>
         </thead>
         <tbody>
-            <tr>
+            <tr v-if="can('viewAny quote_discount') || hasRole('Super Admin')">
                 <td>
                     <p class="small text-start">Overall Discount</p>
                 </td>
@@ -151,6 +152,7 @@ onMounted(() => {
                                 role="button"
                                 class="px-2 py-2 text-secondary"
                                 :icon="['fas', 'trash']"
+                                v-if="can('delete quote_discount') || hasRole('Super Admin')"
                                 @click="destroy()"
                             />
                             <font-awesome-icon
@@ -158,6 +160,7 @@ onMounted(() => {
                                 role="button"
                                 class="px-2 py-2 text-primary"
                                 :icon="['fas', 'edit']"
+                                v-if="can('update quote_discount') || hasRole('Super Admin')"
                                 @click="edit()"
                             />
                         </template>
