@@ -81,6 +81,11 @@
         border-color: var(--teal);
     }
 }
+.table-dealmaker tfoot tr th {
+    background: var(--table-header-light-grey);
+    color: black !important;
+    font-size: 12px;
+}
 
 .table-connectivity,
 .table-dealmaker {

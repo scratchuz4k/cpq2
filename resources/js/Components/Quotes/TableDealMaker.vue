@@ -78,8 +78,6 @@ emitter.on('quote-items:updated', () => {
                         >
                         </TableItem>
                     </template>
-                </tbody>
-                <tfoot>
                     <QuoteDiscountRow
                         v-if="
                             quote.items.filter((x) => x.price_plan.code == pricePlan.code).length > 0 &&
@@ -88,14 +86,16 @@ emitter.on('quote-items:updated', () => {
                         :preview="props.preview"
                         :pricePlan="pricePlan"
                     ></QuoteDiscountRow>
+                </tbody>
+                <tfoot>
                     <tr>
-                        <td :colspan="filterColumns(columns, pricePlan.code).length - 1">
-                            <p class="mb-0 fw-bold">Subtotal</p>
-                        </td>
-                        <td class="text-end fw-bold" :id="pricePlanskeys[pricePlan.code] + '-total'">
+                        <th :colspan="filterColumns(columns, pricePlan.code).length - 1">
+                            <p class="mb-0">Subtotal</p>
+                        </th>
+                        <th class="text-end" :id="pricePlanskeys[pricePlan.code] + '-total'">
                             {{ format.GBP(quoteTotal(pricePlan.code)) }}
-                        </td>
-                        <td v-if="!props.preview"></td>
+                        </th>
+                        <th v-if="!props.preview"></th>
                     </tr>
                 </tfoot>
             </table>

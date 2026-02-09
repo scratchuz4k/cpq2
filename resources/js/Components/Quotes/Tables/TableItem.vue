@@ -97,8 +97,8 @@ emitter.on('quote-items:toggle:is-editing', () => (item.value.is_editing = false
                     <font-awesome-icon
                         :id="'btn-' + props.code + '-' + index + '-remove'"
                         role="button"
-                        class="px-2 py-2 text-secondary"
-                        :icon="['fas', 'trash']"
+                        class="px-2 py-2 text-primary"
+                        :icon="['fas', 'trash-alt']"
                         @click="remove(item)"
                     />
                     <font-awesome-icon
@@ -113,7 +113,7 @@ emitter.on('quote-items:toggle:is-editing', () => (item.value.is_editing = false
                     <font-awesome-icon
                         :id="'btn-' + props.code + '-' + index + '-cancel'"
                         role="button"
-                        class="px-2 py-2 text-secondary"
+                        class="px-2 py-2 text-primary"
                         :icon="['fas', 'cancel']"
                         @click="cancel(item)"
                     />

@@ -102,7 +102,7 @@ onMounted(() => {
         </td>
         <td class="text-center">
             <p class="small" v-if="!isEditing" :id="`global-${props.pricePlan.code}-discount`">
-                {{ discount.discount }} %
+                - {{ discount.discount }} %
             </p>
             <input
                 v-else
@@ -114,9 +114,9 @@ onMounted(() => {
             />
         </td>
         <td v-if="!props.preview"></td>
-        <td class="text-right">
+        <td class="text-right text-danger">
             <p v-if="props.pricePlan.name != 'Recurring'" class="small column_total">
-                {{ format.GBP(discount.value) }}
+                - {{ format.GBP(discount.value) }}
             </p>
 
             <div v-else class="column_total cpq-tooltip">
@@ -130,8 +130,8 @@ onMounted(() => {
                     <font-awesome-icon
                         :id="'btn-' + props.pricePlan.code + '-remove'"
                         role="button"
-                        class="px-2 py-2 text-secondary"
-                        :icon="['fas', 'trash']"
+                        class="px-2 py-2 text-primary"
+                        :icon="['fas', 'trash-alt']"
                         v-if="can('delete quote_discount') || hasRole('Super Admin')"
                         @click="destroy()"
                     />
@@ -148,7 +148,7 @@ onMounted(() => {
                     <font-awesome-icon
                         :id="'btn-' + props.pricePlan.code + '-cancel'"
                         role="button"
-                        class="px-2 py-2 text-secondary"
+                        class="px-2 py-2 text-primary"
                         :icon="['fas', 'cancel']"
                         @click="cancel()"
                     />

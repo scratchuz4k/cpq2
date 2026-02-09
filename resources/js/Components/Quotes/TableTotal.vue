@@ -114,7 +114,7 @@ onMounted(() => {
 </script>
 <template>
     <div class="mobile-price-group-heading d-flex justify-content-between align-items-center">
-        <h3>Totals</h3>
+        <h3>Overall Totals</h3>
     </div>
     <table class="table-dealmaker table table-bordered text-end">
         <thead>
@@ -126,13 +126,33 @@ onMounted(() => {
             </tr>
         </thead>
         <tbody>
+            <tr>
+                <th>
+                    <p class="small text-start">Monthly Total</p>
+                </th>
+                <td></td>
+                <td>
+                    {{ format.GBP(quoteTotal('Recurring')) }}
+                </td>
+                <td></td>
+            </tr>
+            <tr>
+                <th>
+                    <p class="small text-start">One Off Total</p>
+                </th>
+                <td></td>
+                <td id="total_net">
+                    {{ format.GBP(quoteTotal('One-Off')) }}
+                </td>
+                <td></td>
+            </tr>
             <tr v-if="can('viewAny quote_discount') || hasRole('Super Admin')">
                 <td>
                     <p class="small text-start">Overall Discount</p>
                 </td>
                 <td>
                     <p class="small" v-if="!isEditing" :id="`global-quote-discount-discount`">
-                        {{ discount.discount }} %
+                        - {{ discount.discount }} %
                     </p>
                     <input
                         v-else
@@ -143,15 +163,15 @@ onMounted(() => {
                         min="0"
                     />
                 </td>
-                <td>{{ format.GBP(discount.value) }}</td>
+                <td class="text-danger">- {{ format.GBP(discount.value) }}</td>
                 <td v-if="!props.preview">
                     <div class="d-flex justify-content-end">
                         <template v-if="!isEditing">
                             <font-awesome-icon
                                 :id="'btn-quote-discount-remove'"
                                 role="button"
-                                class="px-2 py-2 text-secondary"
-                                :icon="['fas', 'trash']"
+                                class="px-2 py-2 text-primary"
+                                :icon="['fas', 'trash-alt']"
                                 v-if="can('delete quote_discount') || hasRole('Super Admin')"
                                 @click="destroy()"
                             />
@@ -168,7 +188,7 @@ onMounted(() => {
                             <font-awesome-icon
                                 :id="'btn-quote-discount-cancel'"
                                 role="button"
-                                class="px-2 py-2 text-secondary"
+                                class="px-2 py-2 text-primary"
                                 :icon="['fas', 'cancel']"
                                 @click="cancel()"
                             />
@@ -183,36 +203,18 @@ onMounted(() => {
                     </div>
                 </td>
             </tr>
-            <tr v-if="props.preview">
-                <th>
-                    <p class="small text-start">Monthly Total</p>
-                </th>
-                <td></td>
-                <td>
-                    {{ format.GBP(quoteTotal('Recurring')) }}
-                </td>
-                <td></td>
-            </tr>
-            <tr v-if="props.preview">
-                <th>
-                    <p class="small text-start">One Off Total</p>
-                </th>
-                <td></td>
-                <td id="total_net">
-                    {{ format.GBP(quoteTotal('One-Off')) }}
-                </td>
-                <td></td>
-            </tr>
+        </tbody>
+        <tfoot>
             <tr>
                 <th>
                     <p class="small text-start">Final Amount</p>
                 </th>
-                <td></td>
-                <td id="total_net">
+                <th></th>
+                <th id="total_net">
                     {{ format.GBP(quote.total) }}
-                </td>
-                <td v-if="!props.preview"></td>
+                </th>
+                <th v-if="!props.preview"></th>
             </tr>
-        </tbody>
+        </tfoot>
     </table>
 </template>

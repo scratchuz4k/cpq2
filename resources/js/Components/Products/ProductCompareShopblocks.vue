@@ -61,7 +61,7 @@
                             </div>
                             <div class="mx-3">
                                 <button @click="() => removeCompareItem(index)" class="btn">
-                                    <font-awesome-icon :icon="['fas', 'trash']" @click="" />
+                                    <font-awesome-icon :icon="['fas', 'trash-alt']" @click="" />
                                 </button>
                             </div>
                         </div>
