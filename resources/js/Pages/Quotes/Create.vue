@@ -97,7 +97,7 @@ const items = ref([{ label: 'Home', url: '/dashboard' }, { label: 'Create a quot
                 }"
             ></component>
         </form>
-        <template #actionBarRight>
+        <template #actionBar>
             <ButtonStep v-model="quote"></ButtonStep>
         </template>
     </AuthenticatedLayout>

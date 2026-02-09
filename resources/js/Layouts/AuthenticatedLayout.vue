@@ -123,12 +123,16 @@ const currentTenant = ref(page.props.tenant);
         </div>
     </main>
     <StepActionBar v-if="showStepActionBar">
-        <template #left>
-            <slot name="actionBarLeft" />
-        </template>
-        <template #right>
-            <slot name="actionBarRight" />
-        </template>
+        <slot name="actionBar"></slot>
+        <!--        <template #content>-->
+        <!--            <slot name="actionContent" />-->
+        <!--        </template>-->
+        <!--        <template #left>-->
+        <!--            <slot name="actionBarLeft" />-->
+        <!--        </template>-->
+        <!--        <template #right>-->
+        <!--            <slot name="actionBarRight" />-->
+        <!--        </template>-->
     </StepActionBar>
     <Footer></Footer>
     <Resources></Resources>

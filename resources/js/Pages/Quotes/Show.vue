@@ -30,7 +30,7 @@ let view =
                 preview: false
             }"
         ></component>
-        <template #actionBarLeft>
+        <template #actionBar>
             <a
                 v-if="!quote.is_blocked"
                 id="btn-previous"
@@ -40,8 +40,8 @@ let view =
                 <font-awesome-icon class="me-2" :icon="['fas', 'arrow-left']"></font-awesome-icon>
                 Edit Quote
             </a>
-        </template>
-        <template #actionBarRight>
+            <!--        </template>-->
+            <!--        <template #actionBarRight>-->
             <QuoteApprovals></QuoteApprovals>
             <ActivityDialog
                 :filters="[

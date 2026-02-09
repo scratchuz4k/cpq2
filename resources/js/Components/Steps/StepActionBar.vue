@@ -11,12 +11,16 @@ defineProps({
     <div v-if="show" class="step-action-bar">
         <div class="container">
             <div class="step-action-bar-content">
-                <div class="step-action-bar-left">
-                    <slot name="left"></slot>
-                </div>
-                <div class="step-action-bar-right">
-                    <slot name="right"></slot>
-                </div>
+                <slot></slot>
+                <!--                <div class="step-action-bar-left">-->
+                <!--                    <slot name="content"></slot>-->
+                <!--                </div>-->
+                <!--                <div class="step-action-bar-left">-->
+                <!--                    <slot name="left"></slot>-->
+                <!--                </div>-->
+                <!--                <div class="step-action-bar-right">-->
+                <!--                    <slot name="right"></slot>-->
+                <!--                </div>-->
             </div>
         </div>
     </div>
