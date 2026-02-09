@@ -48,6 +48,7 @@ defineProps({
     justify-content: space-between;
     align-items: center;
     gap: 1rem;
+    flex-direction: row;
 }
 
 .step-action-bar-left,

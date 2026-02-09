@@ -87,7 +87,7 @@ const items = ref([{ label: 'Home', url: '/dashboard' }, { label: 'Create a quot
     <AuthenticatedLayout :show-step-action-bar="true">
         <Header title="Create a quote" :breadcrumbs="items"></Header>
 
-        <form @submit.prevent="submit">
+        <form @submit.prevent="submit" id="create-quote-form">
             <component
                 :is="steps[currentStep]"
                 @nextStep="() => currentStep++"
