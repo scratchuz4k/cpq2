@@ -2,7 +2,7 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, router } from '@inertiajs/vue3';
 import { reactive, ref, watch } from 'vue';
-import { currentStep, initSteps, steps } from '@composables/useQuoteSteps';
+import { currentStep, initSteps, steps, actionBarButtons } from '@composables/useQuoteSteps';
 
 const props = defineProps({
     accounts: Array,
@@ -98,7 +98,20 @@ const items = ref([{ label: 'Home', url: '/dashboard' }, { label: 'Create a quot
             ></component>
         </form>
         <template #actionBar>
-            <ButtonStep v-model="quote"></ButtonStep>
+            <template v-if="actionBarButtons.length" v-for="btn in actionBarButtons" :key="btn.label">
+                <button
+                    :class="btn.props.class"
+                    :type="btn.props.type"
+                    :disabled="btn.props.disabled"
+                    @click="btn.onClick"
+                >
+                    <font-awesome-icon v-if="btn.icon && btn.iconPosition === 'left'" :icon="btn.icon" class="me-2" />
+                    {{ btn.label }}
+                    <font-awesome-icon v-if="btn.icon && btn.iconPosition === 'right'" :icon="btn.icon" class="ms-2" />
+                </button>
+            </template>
+
+            <ButtonStep v-else v-model="quote"></ButtonStep>
         </template>
     </AuthenticatedLayout>
 </template>

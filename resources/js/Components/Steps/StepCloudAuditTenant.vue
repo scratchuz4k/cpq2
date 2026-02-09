@@ -1,14 +1,14 @@
 <script setup>
 import _ from 'lodash';
 import { IconField, InputText, InputIcon, Dialog } from 'primevue';
-import { watch, ref, reactive, computed, onMounted } from 'vue';
+import { watch, ref, reactive, computed, onMounted, onUnmounted, watchEffect } from 'vue';
 import queryString from 'query-string';
 import { currentStep } from '@composables/useQuoteSteps';
 import Paginator from 'primevue/paginator';
 import axios from 'axios';
 import { router } from '@inertiajs/vue3';
 import StepActionBar from './StepActionBar.vue';
-import { isDisabled } from '@/Composables/useQuoteSteps.js';
+import { isDisabled, actionBarButtons } from '@/Composables/useQuoteSteps.js';
 
 const props = defineProps({
     solutionType: Array,
@@ -112,6 +112,35 @@ const handlePaginator = (ev) => {
     getOrganisations();
 };
 
+watchEffect(() => {
+    actionBarButtons.value = [
+        {
+            component: 'button',
+            props: {
+                class: 'btn float-start',
+                type: 'button',
+                disabled: currentStep.value === 0,
+                id: 'btn-previous-step'
+            },
+            icon: ['fas', 'arrow-left'],
+            iconPosition: 'left',
+            label: 'Previous Step',
+            onClick: () => currentStep.value--
+        },
+        {
+            component: 'button',
+            props: {
+                class: 'btn btn-primary float-start',
+                type: 'button',
+                disabled: computed(() => organisation.value == null),
+                id: 'btn-next-step'
+            },
+            label: 'Review Tenant',
+            onClick: activateTiming
+        }
+    ];
+});
+
 watch(
     () => [meta.search],
     _.debounce(function () {
@@ -120,20 +149,9 @@ watch(
     }, 200)
 );
 
-onMounted(() => {
-    isDisabled.value = proxyValue.value.account === null;
+onUnmounted(() => {
+    actionBarButtons.value = [];
 });
-
-watch(
-    () => [proxyValue.value.account],
-    () => {
-        if (proxyValue.value.account === null) {
-            isDisabled.value = true;
-        } else {
-            isDisabled.value = false;
-        }
-    }
-);
 
 syncCloudaudit();
 
