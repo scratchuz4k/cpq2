@@ -15,13 +15,10 @@ class UpdateStatusExpiredQuotesJob implements ShouldQueue
 {
     use Queueable;
 
-    private $statusThatCanBeUpdated = [
-        QuoteStatusesEnum::QUOTE->name,
-        QuoteStatusesEnum::PRICE->name,
-        QuoteStatusesEnum::CONFIGURE->name,
-        QuoteStatusesEnum::VALIDATED->name,
-        QuoteStatusesEnum::PENDING_APPROVAL->name,
-    ];
+    private $statusThatCantBeUpdated = [
+        QuoteStatusesEnum::SUBMITTED->name,
+        QuoteStatusesEnum::COMPLETED->name,
+        QuoteStatusesEnum::EXPIRED->name, ];
 
     /**
      * Execute the job.
@@ -40,16 +37,15 @@ class UpdateStatusExpiredQuotesJob implements ShouldQueue
             $expirationDate = today()->subDays($expirationDays)->format('Y-m-d');
 
             $notificationDate = today()->subDays($expirationDays - 2)->format('Y-m-d');
-            $notificationQuotes = Quote::whereIn('status', $this->statusThatCanBeUpdated)
+            $notificationQuotes = Quote::whereNotIn('status', $this->statusThatCantBeUpdated)
                 ->whereDate('created_at', '<=', $notificationDate)
-                ->whereDate('created_at', '>=', $notificationDate)
                 ->get();
 
             foreach ($notificationQuotes as $quote) {
                 $description = 'Your quote #'.$quote->id.' for the account '.$quote->account->name.' is about to expire in 2 days.';
-                createNotification(NotificationEnum::QuoteExpired, $quote->user, $description, route('quotes.show', ['quote' => $quote->id]), false);
+                createNotification(NotificationEnum::QuoteExpired, $quote->user, $description, route('quotes.show', ['quote' => $quote->id], false));
 
-                Log::info("UpdateStatusExpiredQuotesJob | Quote#{$quote->id} ({$quote->created_at->format('Y-m-d')}) notified to be expired ");
+                Log::info("[JOB] UpdateStatusExpiredQuotesJob | Quote#{$quote->id} ({$quote->created_at->format('Y-m-d')}) notified to be expired");
             }
 
             DB::transaction(function () use (
@@ -57,7 +53,7 @@ class UpdateStatusExpiredQuotesJob implements ShouldQueue
                 $expiredStatus,
                 $expirationDate,
             ) {
-                $quotes = Quote::whereIn('status', $this->statusThatCanBeUpdated)
+                $quotes = Quote::whereNotIn('status', $this->statusThatCantBeUpdated)
                     ->whereDate('created_at', '<=', $expirationDate)
                     ->get();
 

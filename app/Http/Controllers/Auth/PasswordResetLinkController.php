@@ -21,7 +21,7 @@ class PasswordResetLinkController extends Controller
     {
         return Inertia::render('Auth/ForgotPassword', [
             'status' => session('status'),
-            'canGoogleLogin' => (env('GOOGLE_OIDC_CLIENT_ID') && env('GOOGLE_OIDC_CLIENT_SECRET')),
+            'canGoogleLogin' => (config('services.google.oidc.client_id') && config('services.google.oidc.client_secret')),
         ]);
     }
 

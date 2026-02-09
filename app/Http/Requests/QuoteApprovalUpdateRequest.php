@@ -22,7 +22,7 @@ class QuoteApprovalUpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'status' => 'in:approved,rejected',
+            'status' => 'in:APPROVED,REJECTED',
             'approver_id' => 'exists:users,id',
         ];
     }

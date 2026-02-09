@@ -14,7 +14,7 @@ describe('Blacklist Crud', () => {
     it('Create a Blacklist Item', () => {
         // create a new item
         cy.visit('/quotes');
-        cy.get('#my-account').click();
+        cy.get('#settings').click();
         cy.get('#link-products').click();
         cy.get('#blacklist-index-btn').click();
         cy.get('#blacklist-create-btn').click();
@@ -27,16 +27,14 @@ describe('Blacklist Crud', () => {
 
     it('Check product results for Blacklisted Item', () => {
         // Create an account
-        cy.visit('/quotes');
-        cy.get('#create-tab').click();
+        cy.visit('/quotes/create');
         cy.get('#link-to-create-account').click();
         cy.get('#account-name').type(account.name);
         cy.get('#account-reference').type(account.ref);
         cy.get('#btn-save-account').click();
         cy.get('.notyf').contains('Created with Success');
 
-        cy.visit('/quotes');
-        cy.get('#create-tab').click();
+        cy.visit('/quotes/create');
         cy.selectLazyOption('account_id', account.name);
         cy.get('#btn-next-step').click();
 

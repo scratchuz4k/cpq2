@@ -3,17 +3,17 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link } from '@inertiajs/vue3';
 import { ref } from 'vue';
 
-const items = ref([{ label: 'Home', url: '/' }, { label: 'My Account', url: '/myaccount' }, { label: 'Apis' }]);
+const items = ref([{ label: 'Home', url: '/' }, { label: 'Settings', url: '/settings' }, { label: 'APIs' }]);
 </script>
 <template>
-    <Head title="Api" />
+    <Head title="APIs" />
     <AuthenticatedLayout>
         <div class="panel">
-            <Header title="Api" :breadcrumbs="items">
+            <Header title="APIs" :breadcrumbs="items">
                 <template #buttons>
                     <Link href="/apis/create" id="api-create-btn" class="btn btn-primary me-2">
                         <font-awesome-icon :icon="['fas', 'plus']"></font-awesome-icon>
-                        New Api
+                        New API
                     </Link>
                 </template>
             </Header>

@@ -32,7 +32,7 @@ class CloudMarket implements ShouldQueue, TenantAware
     {
         // Handle the failure, log exception details, etc.
         $className = static::class;
-        $message = '['.strtoupper((string) env('APP_ENV')).'] '.$className.' failed with error: '.$exception->getMessage();
+        $message = '['.strtoupper((string) config('app.env')).'] '.$className.' failed with error: '.$exception->getMessage();
 
         $error = [
             'provider' => 'CPQ',
@@ -43,13 +43,13 @@ class CloudMarket implements ShouldQueue, TenantAware
         $file = $this->getProductFile();
         if ($file) {
             $errors = array_merge($errors, $file?->errors ?? []);
-            $message = '['.strtoupper((string) env('APP_ENV')).'] '.$className.' failed with error: '.json_encode($errors);
+            $message = '['.strtoupper((string) config('app.env')).'] '.$className.' failed with error: '.json_encode($errors);
             $this->writeProductOnFailure($file, $errors);
         }
 
         Log::error($message);
-        if (env('DISCORD_CLOUDMARKET_JOBS')) {
-            Http::post(env('DISCORD_CLOUDMARKET_JOBS'), ['content' => $message]);
+        if (config('services.discord.cloudmarket.jobs')) {
+            Http::post(config('services.discord.cloudmarket.jobs'), ['content' => $message]);
         }
     }
 

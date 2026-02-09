@@ -21,8 +21,7 @@ describe('Creates a Group and associates accounts.cy', () => {
     });
     it('Creates Accounts', () => {
         cy.login(Cypress.env('SUPERUSER_EMAIL'), Cypress.env('SUPERUSER_PASSWORD'));
-        cy.visit('/quotes');
-        cy.get('#create-tab').click();
+        cy.visit('/quotes/create');
         cy.get('#link-to-create-account').click();
         cy.get('#account-name').type(account1.name);
         cy.get('#account-reference').type(account1.ref);
@@ -37,7 +36,7 @@ describe('Creates a Group and associates accounts.cy', () => {
     it('Creates an Group, associates users and accounts', () => {
         cy.login(Cypress.env('SUPERUSER_EMAIL'), Cypress.env('SUPERUSER_PASSWORD'));
         cy.visit('/quotes');
-        cy.get('#my-account').click();
+        cy.get('#settings').click();
         cy.get('#link-users').click();
         cy.get('#1-1').click();
         cy.get('#link-to-create-group').click();
@@ -60,8 +59,7 @@ describe('Creates a Group and associates accounts.cy', () => {
     });
     it('check if user has correct accounts', () => {
         cy.login(user.email, user.password);
-        cy.visit('/quotes');
-        cy.get('#create-tab').click();
+        cy.visit('/quotes/create');
         cy.get('#input-select-account_id').click();
         cy.get('#select-account_id-search').type(account1.name);
         cy.wait(1000);

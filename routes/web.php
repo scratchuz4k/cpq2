@@ -61,8 +61,8 @@ Route::post('/quotes/{quote}/download', [QuoteController::class, 'download'])->n
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('index');
+    Route::get('/settings', [DashboardController::class, 'settings'])->name('settings');
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-    Route::get('/myaccount', [DashboardController::class, 'myAccount'])->name('myaccount');
     Route::get('/reporting', [DashboardController::class, 'reporting'])->name('reporting');
 
     Route::get('/tenant/{tenant}/make-current', [TenantController::class, 'switch'])->name('tenant.make-current');
@@ -72,7 +72,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/quotes/{quote}/configure', [QuoteController::class, 'configure'])->name('quotes.configure');
     Route::post('/quotes/{quote}/email', [QuoteController::class, 'email'])->name('quotes.email');
 
-    Route::get('/users/import', [UserController::class, 'index'])->name('users.index');
+    Route::get('/users/import', [UserController::class, 'index'])->name('users.import');
     Route::post('/users/import', [UserController::class, 'importUsers'])->name('users.import');
 
     Route::resources([
@@ -106,9 +106,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 
     Route::middleware('auth')->group(function () {
-        Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+        Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
+        // Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
         Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-        Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+        // Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     });
 });
 

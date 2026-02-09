@@ -57,7 +57,7 @@ const addPerms = (group) => {
 
 const items = ref([
     { label: 'Home', url: '/' },
-    { label: 'My Account', url: '/myaccount' },
+    { label: 'Settings', url: '/settings' },
     { label: 'Roles', url: '/roles' },
     { label: 'Edit Role' }
 ]);
@@ -76,7 +76,8 @@ const items = ref([
             </Header>
             <InfoBox class="mt-3">
                 <small>
-                    Roles without parent are considered top-level roles, this influences users and roles visibility
+                    Roles without a parent are considered as top-level roles. This influences users and roles
+                    visibility.
                 </small>
             </InfoBox>
 

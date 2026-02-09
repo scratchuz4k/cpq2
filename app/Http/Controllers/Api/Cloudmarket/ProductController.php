@@ -29,7 +29,7 @@ class ProductController extends BaseController
     {
         // Special-cased mock data for index only
         $filters = $this->decodeFilters($request);
-        if (! config('live_data.cloudmarket')) {
+        if (! config('services.cloudmarket.connection_live_data')) {
             $mock_prices = storage_path('mocks/prices.json');
             if (! is_file($mock_prices)) {
                 return [];
@@ -69,7 +69,7 @@ class ProductController extends BaseController
     #[ExcludeRouteFromDocs]
     public function saveQuote(Request $request)
     {
-        if (! config('live_data.cloudmarket')) {
+        if (! config('services.cloudaudit.live_data')) {
             return;
         }
 
@@ -81,9 +81,9 @@ class ProductController extends BaseController
         $quote->update(['data' => $data]);
         $product = $this->getProduct($quote, 'Primary Product');
 
-        // if (! $product || $product->data?->providerName !== 'ITS') {
-        return;
-        // }
+        if (! $product || $product->data?->providerName !== 'ITS' || config('app.env') === 'production') {
+            return;
+        }
 
         try {
             $job = new CloudMarketSaveQuote($quote);

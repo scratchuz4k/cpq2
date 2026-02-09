@@ -8,11 +8,11 @@ use App\Trait\SetTenantId;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class OrganizationLog extends Model
+class OrganisationLog extends Model
 {
     use SetTenantId;
 
-    protected $fillable = ['tenant_id', 'organization_id', 'code',  'data',  'synced_at'];
+    protected $fillable = ['tenant_id', 'organisation_id', 'code',  'data',  'synced_at'];
 
     protected function casts(): array
     {
@@ -32,8 +32,8 @@ class OrganizationLog extends Model
         return $this->belongsTo(Tenant::class);
     }
 
-    public function organization(): BelongsTo
+    public function organisation(): BelongsTo
     {
-        return $this->belongsTo(Organization::class);
+        return $this->belongsTo(Organisation::class);
     }
 }

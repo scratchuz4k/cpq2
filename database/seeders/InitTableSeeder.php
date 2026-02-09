@@ -27,8 +27,8 @@ class InitTableSeeder extends Seeder
     public function run()
     {
 
-        $super_user_email = env('SUPERUSER_EMAIL', 'super@example.com');
-        $super_user_password = env('SUPERUSER_PASSWORD', 'werwerwer');
+        $super_user_email = config('cpq.superuser.email');
+        $super_user_password = config('cpq.superuser.password');
         if (! $super_user = User::where('email', $super_user_email)->first()) {
             $super_user = User::updateOrCreate([
                 'email' => $super_user_email,

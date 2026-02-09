@@ -18,7 +18,7 @@ describe('Manage Products Category relation', () => {
     categories.forEach((category, index) => {
         it('Create a Category', () => {
             cy.visit('/quotes');
-            cy.get('#my-account').click();
+            cy.get('#settings').click();
             cy.get('#link-categories').click();
             cy.get('#category-create-btn').click();
             cy.get('#category-code').type(category.code);
@@ -32,7 +32,7 @@ describe('Manage Products Category relation', () => {
     products.forEach((product, index) => {
         it('Creates a Product', () => {
             cy.visit('/quotes');
-            cy.get('#my-account').click();
+            cy.get('#settings').click();
             cy.get('#link-products').click();
 
             cy.get('#product-create-btn').click();
@@ -55,7 +55,7 @@ describe('Manage Products Category relation', () => {
     categories.forEach((category, index) => {
         it('Check Category has related product', () => {
             cy.visit('/quotes');
-            cy.get('#my-account').click();
+            cy.get('#settings').click();
             cy.get('#link-categories').click();
             cy.get('#datatable-search').type(category.name);
             cy.wait(1000);

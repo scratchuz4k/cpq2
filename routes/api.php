@@ -4,7 +4,7 @@ use App\Http\Controllers\Api\AccountController;
 use App\Http\Controllers\Api\ActivityController;
 use App\Http\Controllers\Api\ApiController;
 use App\Http\Controllers\Api\CategoryController;
-use App\Http\Controllers\Api\Cloudaudit\OrganizationController;
+use App\Http\Controllers\Api\Cloudaudit\OrganisationController;
 use App\Http\Controllers\Api\Cloudmarket\AddressController as CloudmarketAddressController;
 use App\Http\Controllers\Api\Cloudmarket\ProductController as CloudmarketProductController;
 use App\Http\Controllers\Api\ContactController;
@@ -69,8 +69,8 @@ Route::middleware(['api', 'auth:sanctum'])->group(function () {
     });
 
     Route::prefix('cloudaudit')->group(callback: function () {
-        Route::get('/organizations/sync', [OrganizationController::class, 'sync']);
-        Route::apiResource('organizations', OrganizationController::class);
+        Route::get('/organisations/sync', [OrganisationController::class, 'sync']);
+        Route::apiResource('organisations', OrganisationController::class);
     });
 
     Route::prefix('external')->group(function () {

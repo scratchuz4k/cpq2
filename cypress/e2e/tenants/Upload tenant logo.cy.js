@@ -4,7 +4,7 @@ describe('Update tenant logo', () => {
     beforeEach(() => {
         cy.login(Cypress.env('SUPERUSER_EMAIL'), Cypress.env('SUPERUSER_PASSWORD'));
         cy.visit('/quotes');
-        cy.get('#my-account').click();
+        cy.get('#settings').click();
         cy.get('#link-tenant').click();
         cy.get('#v-pills-logo-tab').click();
     });

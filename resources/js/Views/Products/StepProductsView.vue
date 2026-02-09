@@ -1,6 +1,6 @@
 <script setup>
 import queryString from 'query-string';
-import { computed, reactive, ref, watch } from 'vue';
+import { computed, reactive, ref, watch, onMounted } from 'vue';
 import { quote } from '@composables/useQuote';
 import _ from 'lodash';
 import { Paginator, Select, Skeleton } from 'primevue';
@@ -197,6 +197,10 @@ const emitSaveQuote = () => {
     emitter.emit('save-quote');
 };
 
+onMounted(async () => {
+    getProducts();
+});
+
 watch(sort, () => {
     getProducts();
 });
@@ -224,7 +228,6 @@ watch(
         getProducts();
     }, 500)
 );
-getProducts();
 </script>
 
 <template>

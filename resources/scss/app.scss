@@ -263,6 +263,16 @@ body {
         color: var(--white);
     }
 
+    .navbar-nav.nav-links .nav-link {
+        width: 38px;
+        padding: 4px 0px !important;
+    }
+
+    .navbar-nav.nav-links .nav-link svg {
+        text-align: center;
+        margin: 0 auto !important;
+    }
+
     .navbar-toggler {
         color: var(--white);
     }

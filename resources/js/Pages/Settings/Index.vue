@@ -1,6 +1,5 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import Permissions from '@/Components/Permissions.vue';
 import { Head, Link } from '@inertiajs/vue3';
 import { can, hasRole } from '@composables/useAuth';
 import { ref } from 'vue';
@@ -72,7 +71,7 @@ const options = [
         icon: ['far', 'bookmark']
     },
     {
-        title: "Api's",
+        title: 'APIs',
         url: route('apis.index'),
         has_permission: hasRole('Super Admin') || can('viewAny api'),
         icon: ['fas', 'cloud']
@@ -102,76 +101,23 @@ const options = [
         icon: ['fas', 'gauge']
     }
 ];
-const items = ref([{ label: 'Home', url: '/' }, { label: 'My Account' }]);
+const items = ref([{ label: 'Home', url: '/' }, { label: 'Settings' }]);
 </script>
 
 <template>
-    <Head title="My Account" />
+    <Head title="Settings" />
     <AuthenticatedLayout>
         <div class="panel">
-            <Header title="My Account" :breadcrumbs="items">
-                <template #buttons>
-                    <form @submit.prevent="submit">
-                        <Link :href="route('logout')" method="post" as="button" class="btn btn-primary px-4"
-                            >Log Out
-                        </Link>
-                    </form>
-                </template>
-            </Header>
+            <Header title="Settings" :breadcrumbs="items"></Header>
             <div class="row">
-                <div class="col-4">
-                    <div class="text-center">
-                        <font-awesome-icon
-                            class="bg-light p-5 rounded-circle text-secondary"
-                            :icon="['fas', 'user']"
-                            size="4x"
-                        ></font-awesome-icon>
-                    </div>
-                    <div class="text-center mt-3">
-                        <span
-                            v-for="role in $page.props.auth.roles"
-                            class="badge bg-secondary p-1 px-2 rounded text-white"
-                            >{{ role }}</span
-                        >
-                        <h5 class="mt-2 mb-0">
-                            {{ $page.props.auth.user.name }}
-                        </h5>
-                        <span>{{ $page.props.auth.user.email }}</span>
-
-                        <div v-if="true" class="buttons mt-3">
-                            <Link class="btn btn-outline-primary px-4" :href="route('profile.edit')">Edit Profile</Link>
-                        </div>
-
-                        <hr class="login-seperator" />
-                        <h5 class="mt-4">Company Accounts</h5>
-                        <ul class="nav flex-column">
-                            <li v-for="tenant in tenants">
-                                <Link
-                                    :href="
-                                        route('tenant.make-current', {
-                                            tenant: tenant.id
-                                        })
-                                    "
-                                >
-                                    {{ tenant.name }} (T{{ tenant.id }})
-                                </Link>
-                            </li>
-                        </ul>
-                        <hr class="login-seperator" />
-                        <h5 class="mt-4">User Permissions</h5>
-                        <div class="px-2">
-                            <Permissions :permissions="permissions" />
-                        </div>
-                    </div>
-                </div>
-                <div class="col-8">
-                    <div class="row row-cols-1 row-cols-md-3 g-4">
+                <div class="col-12">
+                    <div class="row row-cols-1 row-cols-md-4 g-4">
                         <div v-for="option in options.filter((x) => x.has_permission)" class="col">
                             <div class="card bg-light border-0">
                                 <a
                                     :id="'link-' + format.toLowerCase(option.title)"
                                     :href="option.url"
-                                    class="card-body text-center p-2 text-decoration-none"
+                                    class="card-body text-center py-3 px-2 text-decoration-none"
                                 >
                                     <font-awesome-icon
                                         class="py-3 opacity-25"

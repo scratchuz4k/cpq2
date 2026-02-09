@@ -4,7 +4,7 @@ import { Head, Link } from '@inertiajs/vue3';
 import { ref } from 'vue';
 import ToggleActive from '@/Components/ToggleActive.vue';
 
-const items = ref([{ label: 'Home', url: '/' }, { label: 'My Account', url: '/myaccount' }, { label: 'Categories' }]);
+const items = ref([{ label: 'Home', url: '/' }, { label: 'Settings', url: '/settings' }, { label: 'Categories' }]);
 </script>
 <template>
     <Head title="Categories" />

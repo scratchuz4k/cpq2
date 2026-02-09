@@ -14,8 +14,7 @@ describe('Match CouldAudit Sku', () => {
     });
 
     it('Create a CouldAudit Quote', () => {
-        cy.visit('/');
-        cy.get('#create-tab').click();
+        cy.visit('/quotes/create');
 
         cy.selectFirstOption('account_id');
         cy.get('#btn-next-step').click();
@@ -50,7 +49,7 @@ describe('Match CouldAudit Sku', () => {
 
     it('Create a product with the same sku', () => {
         cy.visit('/');
-        cy.get('#my-account').click();
+        cy.get('#settings').click();
         cy.get('#link-products').click();
         cy.get('#product-create-btn').click();
 

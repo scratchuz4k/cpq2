@@ -42,7 +42,7 @@ class Account extends Model
                         'group_id' => $user->group()->id,
                     ]);
                 } catch (Exception $e) {
-                    if (! env('APP_DEBUG')) {
+                    if (! config('app.debug')) {
                         Log::error($e->getMessage());
                     }
                 }

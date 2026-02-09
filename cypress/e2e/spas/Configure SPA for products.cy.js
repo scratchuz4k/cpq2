@@ -11,8 +11,7 @@ describe('Creates a Connectivity quote', () => {
     });
 
     it('Get Price From Gamma Product', () => {
-        cy.visit('/quotes');
-        cy.get('#create-tab').click();
+        cy.visit('/quotes/create');
         cy.selectFirstOption('account_id');
         cy.get('#btn-next-step').click();
 
@@ -51,7 +50,7 @@ describe('Creates a Connectivity quote', () => {
 
     it('Create Supplier Gamma Products', () => {
         cy.visit('/quotes');
-        cy.get('#my-account').click();
+        cy.get('#settings').click();
         cy.get('#link-suppliers').click();
         cy.get('#datatable-search').type(supplier);
         cy.wait(1000);
@@ -67,7 +66,7 @@ describe('Creates a Connectivity quote', () => {
     });
     it('Create SPA for Gamma Products', () => {
         cy.visit('/quotes');
-        cy.get('#my-account').click();
+        cy.get('#settings').click();
         cy.get('#link-spas').click();
         cy.get('#create-spa').click();
         cy.get('#spa-entity-Supplier').click();
@@ -106,7 +105,7 @@ describe('Creates a Connectivity quote', () => {
 
     it('Delete SPA ', () => {
         cy.visit('/quotes');
-        cy.get('#my-account').click();
+        cy.get('#settings').click();
         cy.get('#link-spas').click();
         cy.get('#datatable-btn-0-delete').click();
         cy.get('#swal-btn-confirm').click();

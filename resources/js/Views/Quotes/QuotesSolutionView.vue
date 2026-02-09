@@ -178,6 +178,7 @@ watch(addressPostCode, () => {
                             optionLabel="name"
                             placeholder="Select an option"
                             @change="solutionChange(modelValue)"
+                            :disabled="is_updating_quote"
                         />
                     </template>
                     <div v-else class="text-primary fst-italic">

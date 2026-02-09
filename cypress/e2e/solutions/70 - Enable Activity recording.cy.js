@@ -20,8 +20,7 @@ describe('Creates a Mobile Quote', () => {
     });
 
     it('Create a Connectivity Quote', () => {
-        cy.visit('/');
-        cy.get('#create-tab').click();
+        cy.visit('/quotes/create');
 
         cy.selectFirstOption('account_id');
         cy.get('#btn-next-step').click();
@@ -71,7 +70,7 @@ describe('Creates a Mobile Quote', () => {
     it('Enable Activity recording', () => {
         cy.login('super@example.com', 'werwerwer');
         cy.visit('/quotes');
-        cy.get('#my-account').click();
+        cy.get('#settings').click();
         cy.get('#link-tenant').click();
         cy.get('#1-1').click();
         cy.get('#log-system-is-active> input').then(($checkbox) => {
@@ -140,7 +139,7 @@ describe('Creates a Mobile Quote', () => {
     it('Disabling Activity recording', () => {
         cy.login('super@example.com', 'werwerwer');
         cy.visit('/quotes');
-        cy.get('#my-account').click();
+        cy.get('#settings').click();
         cy.get('#link-tenant').click();
         cy.get('#1-1').click();
         cy.get('#log-system-is-active> input').then(($checkbox) => {

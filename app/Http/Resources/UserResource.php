@@ -16,11 +16,13 @@ class UserResource extends JsonResource
     {
         return [
             ...$this->resource->toArray(),
-            'roles' => $this->roles,
-            'groups' => $this->groups,
+
             'group' => $this->group(),
-            'current_tenant' => $this->currentTenant,
+            'roles' => $this->whenLoaded('roles'),
+            'groups' => $this->whenLoaded('groups'),
+            'current_tenant' => $this->whenLoaded('currentTenant'),
             'tenants' => $this->whenLoaded('tenants'),
+
             'updated_at' => $this->updated_at,
             'created_at' => $this->created_at,
         ];

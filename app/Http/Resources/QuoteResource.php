@@ -32,9 +32,7 @@ class QuoteResource extends JsonResource
             'updated_at' => $this->updated_at,
             'configs' => $this->configs,
             'approvals' => $this->approvals,
-            'approval_approver' => $this->whenLoaded('approvals', function () {
-                return $this->approvals->first()?->approver;
-            }),
+            'latest_approval' => (new QuoteApprovalResource($this->latestApproval))->resolve(),
         ];
     }
 }

@@ -19,7 +19,7 @@ class AuthenticatedSessionController extends Controller
     {
         return Inertia::render('Auth/Login', [
             'canResetPassword' => Route::has('password.request'),
-            'canGoogleLogin' => (env('GOOGLE_OIDC_CLIENT_ID') && env('GOOGLE_OIDC_CLIENT_SECRET')),
+            'canGoogleLogin' => (config('services.google.oidc.client_id') && config('services.google.oidc.client_secret')),
             'status' => session('status'),
         ]);
     }

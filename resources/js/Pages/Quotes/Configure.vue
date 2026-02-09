@@ -66,7 +66,7 @@ const items = ref([{ label: 'Home', url: '/dashboard' }, { label: `Quote #${prop
                         id="btn-create-quote"
                         class="btn btn-primary"
                         type="submit"
-                        :disabled="!form.address"
+                        :disabled="parseInt(quote.solution_type.code) === 3 && !form.address"
                         @click="submit()"
                     >
                         Get prices
