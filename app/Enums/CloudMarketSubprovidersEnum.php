@@ -7,12 +7,17 @@ enum CloudMarketSubprovidersEnum: string
     case BT = 'BT';
     case CITYFIBRE = 'CityFibre';
     case COLT = 'Colt';
+    case COMMUNITY_FIBRE = 'Community Fibre';
+    case ELEVATE = 'Elevate';
     case EXPOE = 'ExpoE';
     case GAMMA_OPENREACH = 'Gamma Openreach';
     case GLIDE = 'Glide';
     case ITS = 'ITS';
+    case JOLA = 'Jola';
+    case M247_WIRELESS = 'M247 Wireless';
     case M247_FIBRE = 'M247 Fibre';
     case NEOS_NETWORKS = 'Neos Networks';
+    case NETOMNIA = 'Netomnia';
     case PXC = 'PXC';
     case SKY = 'Sky';
     case SSE = 'SSE';
@@ -21,9 +26,7 @@ enum CloudMarketSubprovidersEnum: string
     case VIRGIN = 'Virgin';
     case VODAFONE = 'Vodafone';
     case VIRTUAL1 = 'Virtual1';
-    case ELEVATE = 'Elevate';
-    case COMMUNITY_FIBRE = 'Community Fibre';
-    case NETOMNIA = 'Netomnia';
+    case ZEN = 'Zen';
 
     public static function asArray(): array
     {
