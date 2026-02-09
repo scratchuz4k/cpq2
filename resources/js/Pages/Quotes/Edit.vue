@@ -4,6 +4,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link } from '@inertiajs/vue3';
 import { ref } from 'vue';
 import QuotesDefaultView from '@/Views/Quotes/Edit/QuotesDefaultView.vue';
+import { actionBarButtons } from '@/Composables/useQuoteSteps.js';
 
 const props = defineProps({
     quote: Object
@@ -26,7 +27,7 @@ const items = ref([
 
 <template>
     <Head :title="'Quote #' + quote.id" />
-    <AuthenticatedLayout :quote="quote">
+    <AuthenticatedLayout :quote="quote" :show-step-action-bar="true">
         <Header title="Create a quote" :breadcrumbs="items"></Header>
         <component
             v-if="Object.keys(solutionsViews).includes(quote.solution_type.code)"
@@ -36,5 +37,29 @@ const items = ref([
             }"
         ></component>
         <QuotesDefaultView v-else v-bind="{ modelValue: props.quote }"> </QuotesDefaultView>
+        <template #actionBar>
+            <template v-if="actionBarButtons.length" v-for="btn in actionBarButtons" :key="btn.label">
+                <button
+                    :class="btn.props.class"
+                    :type="btn.props.type"
+                    :disabled="btn.props.disabled"
+                    @click="btn.onClick"
+                >
+                    <font-awesome-icon
+                        v-if="btn.icon && btn.iconPosition === 'left'"
+                        :icon="btn.icon"
+                        :class="btn.iconClass"
+                        class="me-2"
+                    />
+                    {{ btn.label }}
+                    <font-awesome-icon
+                        v-if="btn.icon && btn.iconPosition === 'right'"
+                        :icon="btn.icon"
+                        :class="btn.iconClass"
+                        class="ms-2"
+                    />
+                </button>
+            </template>
+        </template>
     </AuthenticatedLayout>
 </template>
