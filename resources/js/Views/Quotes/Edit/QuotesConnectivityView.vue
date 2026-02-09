@@ -56,42 +56,14 @@
             currentStep: currentStep
         }"
     ></component>
-    <StepActionBar>
-        <template #left>
-            <button v-if="currentStep != 0" class="btn continue-btn" type="button" @click="checkGoPrevious()">
-                <font-awesome-icon :icon="['fas', 'arrow-left']" class="ms-2"></font-awesome-icon>
-                Previous Step
-            </button>
-        </template>
-        <template #right>
-            <button
-                v-if="connectivitySteps.length == currentStep + 1"
-                class="btn btn-primary continue-btn"
-                type="submit"
-                @click="saveQuote()"
-            >
-                Continue
-                <font-awesome-icon :icon="['fas', 'arrow-right']" class="ms-2"></font-awesome-icon>
-            </button>
-            <button
-                v-else
-                class="btn btn-primary continue-btn"
-                type="button"
-                @click="checkGoNext()"
-                :disabled="isLoading"
-            >
-                Next Step
-                <font-awesome-icon :icon="['fas', 'arrow-right']" class="ms-2"></font-awesome-icon>
-            </button>
-        </template>
-    </StepActionBar>
 </template>
 <script setup>
-import { ref, watch } from 'vue';
+import { ref, watch, watchEffect } from 'vue';
 import { getQuote, quote } from '@/Composables/useQuote';
 import { remove, addons, isLoading, checks } from '@/Composables/useConnectivityItem';
 import axios from 'axios';
 import StepActionBar from '@/Components/Steps/StepActionBar.vue';
+import { actionBarButtons } from '@/Composables/useQuoteSteps.js';
 
 const props = defineProps({
     modelValue: Object
@@ -262,6 +234,49 @@ watch(
         getbyGroup();
     }
 );
+
+watchEffect(() => {
+    actionBarButtons.value = [
+        currentStep.value !== 0
+            ? {
+                  props: {
+                      class: 'btn continue-btn me-auto',
+                      type: 'button',
+                      id: 'btn-previous-step'
+                  },
+                  icon: ['fas', 'arrow-left'],
+                  iconPosition: 'left',
+                  label: 'Previous Step',
+                  onClick: checkGoPrevious
+              }
+            : null,
+
+        connectivitySteps.value.length === currentStep.value + 1
+            ? {
+                  props: {
+                      class: 'btn btn-primary continue-btn ms-auto',
+                      type: 'submit',
+                      id: 'btn-continue'
+                  },
+                  icon: ['fas', 'arrow-right'],
+                  iconPosition: 'right',
+                  label: 'Continue',
+                  onClick: saveQuote
+              }
+            : {
+                  props: {
+                      class: 'btn btn-primary continue-btn ms-auto',
+                      type: 'button',
+                      disabled: isLoading.value,
+                      id: 'btn-next-step'
+                  },
+                  icon: ['fas', 'arrow-right'],
+                  iconPosition: 'right',
+                  label: 'Next Step',
+                  onClick: checkGoNext
+              }
+    ].filter(Boolean);
+});
 
 getComponent();
 checkAddons();

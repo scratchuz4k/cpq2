@@ -244,6 +244,38 @@ onMounted(async () => {
     await getProductsShopBlocks();
 });
 
+import { actionBarButtons } from '@/Composables/useQuoteSteps.js';
+import { watchEffect, onUnmounted } from 'vue';
+
+watchEffect(() => {
+    actionBarButtons.value = [
+        step.value !== 1
+            ? {
+                  props: {
+                      class: 'btn text-primary step-nav btn-sm me-3',
+                      type: 'button',
+                      id: 'btn-step-previous'
+                  },
+                  icon: ['fas', 'arrow-left'],
+                  iconPosition: 'left',
+                  label: 'Previous',
+                  onClick: () => proxyValue.value--
+              }
+            : null,
+        {
+            props: {
+                class: 'ms-3 btn btn-primary step-nav ms-auto',
+                type: 'button',
+                id: 'btn-step-next'
+            },
+            icon: ['fas', 'arrow-right'],
+            iconPosition: 'right',
+            label: 'Next',
+            onClick: () => emit('save')
+        }
+    ].filter(Boolean);
+});
+
 watch([filters, sort], () => {
     getProductsShopBlocks();
 });
@@ -410,24 +442,5 @@ watch(
         </div>
         <ProductCompareShopblocks v-if="selectedItems.length" v-model="selectedItems"></ProductCompareShopblocks>
     </div>
-    <StepActionBar>
-        <template #left>
-            <button
-                v-if="step != 1"
-                id="btn-step-previous"
-                class="btn text-primary step-nav btn-sm me-3"
-                type="button"
-                @click="() => proxyValue--"
-            >
-                <font-awesome-icon :icon="['fas', 'arrow-left']" /> Previous
-            </button>
-        </template>
-        <template #right>
-            <button id="btn-step-next" class="ms-3 btn btn-primary step-nav" type="button" @click="emit('save')">
-                Next
-                <font-awesome-icon :icon="['fas', 'arrow-right']" />
-            </button>
-        </template>
-    </StepActionBar>
 </template>
 <style></style>

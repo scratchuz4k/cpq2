@@ -1,10 +1,11 @@
 <script setup>
 import queryString from 'query-string';
-import { computed, reactive, ref, watch, onMounted } from 'vue';
+import { computed, reactive, ref, watch, onMounted, watchEffect } from 'vue';
 import { quote } from '@composables/useQuote';
 import _ from 'lodash';
 import { Paginator, Select, Skeleton } from 'primevue';
 import StepActionBar from '@/Components/Steps/StepActionBar.vue';
+import { actionBarButtons } from '@/Composables/useQuoteSteps.js';
 
 const meta = reactive({
     page: 1,
@@ -202,6 +203,37 @@ onMounted(async () => {
     getProducts();
 });
 
+watchEffect(() => {
+    actionBarButtons.value = [
+        props.index > 0
+            ? {
+                  props: {
+                      class: 'btn text-primary step-nav btn-sm me-3',
+                      type: 'button',
+                      disabled: meta.isLoading,
+                      id: `btn-step-${props.index + 1}-previous`
+                  },
+                  icon: ['fas', 'arrow-left'],
+                  iconPosition: 'left',
+                  label: 'Previous',
+                  onClick: () => proxyValue.value--
+              }
+            : null,
+        {
+            props: {
+                class: 'ms-3 btn btn-primary step-nav ms-auto',
+                type: 'button',
+                disabled: disableButton.value,
+                id: `btn-step-${props.index + 1}-next`
+            },
+            icon: ['fas', 'arrow-right'],
+            iconPosition: 'right',
+            label: 'Next',
+            onClick: emitSaveQuote
+        }
+    ].filter(Boolean);
+});
+
 watch(sort, () => {
     getProducts();
 });
@@ -323,32 +355,6 @@ watch(
             </div>
         </div>
     </div>
-    <StepActionBar>
-        <template #left>
-            <button
-                :disabled="meta.isLoading"
-                v-if="props.index > 0"
-                :id="'btn-step-' + (props.index + 1) + '-previous'"
-                class="btn text-primary step-nav btn-sm me-3"
-                type="button"
-                @click="() => proxyValue--"
-            >
-                <font-awesome-icon :icon="['fas', 'arrow-left']" /> Previous
-            </button>
-        </template>
-        <template #right>
-            <button
-                :disabled="disableButton"
-                :id="'btn-step-' + (props.index + 1) + '-next'"
-                class="ms-3 btn btn-primary step-nav"
-                type="button"
-                @click="() => emitSaveQuote()"
-            >
-                Next
-                <font-awesome-icon :icon="['fas', 'arrow-right']" />
-            </button>
-        </template>
-    </StepActionBar>
 </template>
 
 <style></style>
