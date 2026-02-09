@@ -1,12 +1,11 @@
 <script setup>
 import { computed } from 'vue';
-import { currentStep, steps } from '@composables/useQuoteSteps';
+import { currentStep, steps, isDisabled } from '@composables/useQuoteSteps';
 import StepActionBar from './StepActionBar.vue';
 
 const props = defineProps({
     modelValue: Object,
-    btnName: String,
-    disabled: Boolean
+    btnName: String
 });
 
 const emit = defineEmits(['update:modelValue', 'nextStep']);
@@ -32,36 +31,22 @@ const previousStep = () => {
     <div class="mt-3">
         <slot></slot>
     </div>
-    <StepActionBar>
-        <template #left>
-            <button id="btn-previous-step" class="btn" type="button" v-if="currentStep != 0" @click="previousStep()">
-                <font-awesome-icon :icon="['fas', 'arrow-left']" class="ms-2"></font-awesome-icon>
-                Previous Step
-            </button>
-        </template>
-        <template #right>
-            <slot name="action-bar-right"></slot>
-            <button
-                id="btn-create-quote"
-                class="btn btn-primary"
-                type="submit"
-                v-if="currentStep + 1 == steps.length"
-                :disabled="props.disabled"
-            >
-                {{ btnName ?? 'Get Prices' }}
-                <font-awesome-icon :icon="['fas', 'arrow-right']" class="ms-2"></font-awesome-icon>
-            </button>
-            <button
-                id="btn-next-step"
-                class="btn btn-primary"
-                type="button"
-                v-else
-                @click="nextStep()"
-                :disabled="props.disabled"
-            >
-                Next Step
-                <font-awesome-icon :icon="['fas', 'arrow-right']" class="ms-2"></font-awesome-icon>
-            </button>
-        </template>
-    </StepActionBar>
+    <button id="btn-previous-step" class="btn" type="button" v-if="currentStep != 0" @click="previousStep()">
+        <font-awesome-icon :icon="['fas', 'arrow-left']" class="ms-2"></font-awesome-icon>
+        Previous Step
+    </button>
+    <button
+        id="btn-create-quote"
+        class="btn btn-primary"
+        type="submit"
+        v-if="currentStep + 1 == steps.length"
+        :disabled="isDisabled"
+    >
+        {{ btnName ?? 'Get Prices' }}
+        <font-awesome-icon :icon="['fas', 'arrow-right']" class="ms-2"></font-awesome-icon>
+    </button>
+    <button id="btn-next-step" class="btn btn-primary" type="button" v-else @click="nextStep()" :disabled="isDisabled">
+        Next Step
+        <font-awesome-icon :icon="['fas', 'arrow-right']" class="ms-2"></font-awesome-icon>
+    </button>
 </template>

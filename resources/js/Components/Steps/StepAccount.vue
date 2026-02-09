@@ -1,6 +1,8 @@
 <script setup>
-import { computed } from 'vue';
+import { computed, onMounted, watch } from 'vue';
+import { isDisabled } from '@/Composables/useQuoteSteps.js';
 import queryString from 'query-string';
+import { isFinite } from 'lodash/lang.js';
 
 const props = defineProps({
     modelValue: Object
@@ -40,6 +42,22 @@ const getAccount = async () => {
         proxyValue.value.account = res.data.data[0];
     }
 };
+
+onMounted(() => {
+    isDisabled.value = proxyValue.value.account === null;
+});
+
+watch(
+    () => [proxyValue.value.account],
+    () => {
+        if (proxyValue.value.account === null) {
+            isDisabled.value = true;
+        } else {
+            isDisabled.value = false;
+        }
+    }
+);
+
 getAccount();
 </script>
 
@@ -69,7 +87,6 @@ getAccount();
                     </div>
                 </div>
             </div>
-            <ButtonStep v-model="proxyValue" :disabled="proxyValue.account == null"></ButtonStep>
         </div>
     </div>
 </template>

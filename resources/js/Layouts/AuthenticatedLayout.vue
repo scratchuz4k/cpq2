@@ -7,6 +7,7 @@ import * as Sentry from '@sentry/vue';
 import TopBarSearchable from '@/Components/TopBarSearchable.vue';
 import Resources from '@/Components/Resources.vue';
 import { can, hasRole } from '@/Composables/useAuth.js';
+import StepActionBar from '@/Components/Steps/StepActionBar.vue';
 
 const page = usePage();
 const user = page.props.auth.user;
@@ -17,7 +18,8 @@ Sentry.setUser({
 
 defineProps({
     quote: Object,
-    order: Object
+    order: Object,
+    showStepActionBar: Boolean
 });
 
 const activeTab = ref(window.location.pathname.replace(/^\/|\/$/g, ''));
@@ -120,6 +122,14 @@ const currentTenant = ref(page.props.tenant);
             <slot />
         </div>
     </main>
+    <StepActionBar v-if="showStepActionBar">
+        <template #left>
+            <slot name="actionBarLeft" />
+        </template>
+        <template #right>
+            <slot name="actionBarRight" />
+        </template>
+    </StepActionBar>
     <Footer></Footer>
     <Resources></Resources>
 </template>
@@ -149,7 +159,7 @@ const currentTenant = ref(page.props.tenant);
 .search-option {
     text-decoration: none;
     color: black;
-    font-size: 0.5m;
+    font-size: 0.5em;
     cursor: pointer;
     margin-bottom: 5px;
     padding: 15px;
