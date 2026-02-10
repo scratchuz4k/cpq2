@@ -57,14 +57,26 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withExceptions(function (Exceptions $exceptions) {
         Integration::handles($exceptions);
         $exceptions->respond(function (Response $response, Throwable $exception, Request $request) {
-            if (! app()->environment(['local', 'testing']) && in_array($response->getStatusCode(), [500, 503, 404, 403])) {
-                return Inertia::render('Error', ['status' => $response->getStatusCode(), 'message' => $exception->getMessage()])
+            $status = $response->getStatusCode();
+            $message = $exception->getMessage()
+                ?: $response->getContent()
+                ?: 'An unexpected error occurred.';
+
+            if ($request->expectsJson()) {
+                return response()->json(['message' => $message], $status);
+            }
+
+            if ($status === 419) {
+                return back()->with(
+                    'message',
+                    'The page expired, please try again.'
+                );
+            }
+
+            if (in_array($status, [403, 404, 500, 503])) {
+                return Inertia::render('Error', ['status' => $status])
                     ->toResponse($request)
-                    ->setStatusCode($response->getStatusCode());
-            } elseif ($response->getStatusCode() === 419) {
-                return back()->with([
-                    'message' => 'The page expired, please try again.',
-                ]);
+                    ->setStatusCode($status);
             }
 
             return $response;

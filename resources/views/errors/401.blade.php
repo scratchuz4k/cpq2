@@ -2,4 +2,4 @@
 
 @section('title', __('Unauthorized'))
 @section('code', '401')
-@section('message', __('Unauthorized'))
+@section('message', __('Sorry, you need to login to access this page.'))

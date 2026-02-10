@@ -13,6 +13,7 @@ import TriStateToggle from '@/Components/TriStateToggle.vue';
 import queryString from 'query-string';
 import { remove, add } from '@/Composables/useConnectivityItem';
 import { quote, getQuote } from '@/Composables/useQuote';
+import SvgIcon from '@/Components/Custom/SvgIcon.vue';
 
 const props = defineProps({
     modelValue: Object,
