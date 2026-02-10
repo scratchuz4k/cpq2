@@ -23,13 +23,9 @@ defineProps({
     bottom: 0;
     left: 0;
     right: 0;
-    width: 100vw;
-    max-width: 100vw;
-    margin-left: calc(50% - 50vw);
     background-color: white;
     border-top: 1px solid #e0e0e0;
     box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
-    z-index: 1000;
     padding: 1rem 0;
 }
 

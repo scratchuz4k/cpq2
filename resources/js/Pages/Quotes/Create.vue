@@ -10,15 +10,6 @@ const props = defineProps({
     steps: Object
 });
 
-// const configurations = reactive({
-//     speed: props.modelValue.configs?.speed ? props.modelValue.configs.speed.split(',') : [0, 10000],
-//     bearer: props.modelValue.configs?.bearer ? props.modelValue.configs.bearer.split(',') : [0, 10000],
-//     contract_length: props.modelValue.configs?.contract_length
-//         ? props.modelValue.configs.contract_length.split(',')
-//         : [],
-//     managed: props.modelValue.configs?.managed ? props.modelValue.configs.managed : '0'
-// });
-
 const quote = reactive({
     isLoading: false,
     account: null,

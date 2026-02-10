@@ -224,8 +224,8 @@ const dynamicSavings = computed(() => {
     return 0;
 });
 
-watchEffect(() => {
-    actionBarButtons.value = [
+const init = () => {
+    let temp =
         configs.cloud_selected_option === 'none'
             ? {
                   component: 'button',
@@ -254,8 +254,16 @@ watchEffect(() => {
                   iconPosition: 'right',
                   label: 'Next',
                   onClick: handleQuoteItems
-              }
-    ].filter(Boolean);
+              };
+
+    actionBarButtons.value = [temp].filter(Boolean);
+};
+onMounted(() => {
+    init();
+});
+
+watchEffect(() => {
+    init();
 });
 
 onUnmounted(() => {
@@ -272,7 +280,6 @@ watch(
 getReviewProduct();
 </script>
 <template>
-    <h1>teste: {{ actionBarButtons }}</h1>
     <div class="row justify-content-between mb-3">
         <div class="col-lg-8">
             <div class="mt-3 d-flex justify-content-between align-items-center">
