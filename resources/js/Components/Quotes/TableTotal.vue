@@ -119,35 +119,35 @@ onMounted(() => {
     <table class="table-dealmaker table table-bordered text-end">
         <thead>
             <tr>
-                <th style="width: 60%" class="text-start"></th>
-                <th>Discount</th>
-                <th>Total</th>
+                <th style="width: 70%" class="text-start"></th>
+                <th style="width: 10%">Discount</th>
+                <th style="width: 20%">Total</th>
                 <th v-if="!props.preview" style="width: 60px" class="text-center"></th>
             </tr>
         </thead>
         <tbody>
             <tr>
-                <th>
-                    <p class="small text-start">Monthly Total</p>
-                </th>
-                <td></td>
                 <td>
+                    <p class="small text-start">Monthly Total</p>
+                </td>
+                <td></td>
+                <td class="bold">
                     {{ format.GBP(quoteTotal('Recurring')) }}
                 </td>
-                <td></td>
+                <td v-if="!props.preview"></td>
             </tr>
             <tr>
-                <th>
+                <td>
                     <p class="small text-start">One Off Total</p>
-                </th>
-                <td></td>
-                <td id="total_net">
-                    {{ format.GBP(quoteTotal('One-Off')) }}
                 </td>
                 <td></td>
+                <td id="total_net" class="bold">
+                    {{ format.GBP(quoteTotal('One-Off')) }}
+                </td>
+                <td v-if="!props.preview"></td>
             </tr>
             <tr v-if="can('viewAny quote_discount') || hasRole('Super Admin')">
-                <td>
+                <td class="column-discount-body">
                     <p class="small text-start">Overall Discount</p>
                 </td>
                 <td>
@@ -207,10 +207,10 @@ onMounted(() => {
         <tfoot>
             <tr>
                 <th>
-                    <p class="small text-start">Final Amount</p>
+                    <p class="text-start">Final Amount</p>
                 </th>
                 <th></th>
-                <th id="total_net">
+                <th id="total_net" style="font-size: 16px">
                     {{ format.GBP(quote.total) }}
                 </th>
                 <th v-if="!props.preview"></th>
