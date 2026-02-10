@@ -96,7 +96,7 @@ const items = ref([
 
             <div class="row justify-content-end">
                 <div class="col-6">
-                    <TableTotal :isSimpleView="true" :quote="quote"></TableTotal>
+                    <TableTotal :isSimpleView="true"></TableTotal>
                 </div>
             </div>
         </div>

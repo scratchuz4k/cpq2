@@ -62,6 +62,9 @@ const destroy = async () => {
         if (['cancel', 'backdrop'].includes(result.dismiss)) {
             return;
         }
+        if (!discount.id) {
+            return;
+        }
         try {
             let res = await axios.delete(`/api/quote-discounts/${discount.id}`);
             await getQuote(quote.id);

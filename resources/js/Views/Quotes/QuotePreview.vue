@@ -91,6 +91,7 @@ let view = component && Object.keys(solutionsViews).includes(component) ? soluti
                     preview: true
                 }"
             ></component>
+            <TableTotal :isSimpleView="true"></TableTotal>
         </div>
     </div>
 </template>

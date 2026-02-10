@@ -25,7 +25,7 @@ class QuoteDiscountCreateRequest extends FormRequest
             'code' => 'required',
             'entity' => 'required|in:price_plans,quote',
             'entity_id' => 'required|numeric',
-            'discount' => 'required|numeric',
+            'discount' => 'required|numeric|min:0|max:100',
         ];
     }
 }

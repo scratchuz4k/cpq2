@@ -31,6 +31,7 @@ const edit = () => {
 
 const cancel = () => {
     isEditing.value = false;
+    let tempDiscount = quote.discounts.find((x) => x.entity?.uuid == quote.uuid);
     temp.value = tempDiscount ? tempDiscount.discount : 0;
 };
 
@@ -61,6 +62,11 @@ const destroy = async () => {
         if (['cancel', 'backdrop'].includes(result.dismiss)) {
             return;
         }
+
+        if (!discount.id) {
+            return;
+        }
+
         try {
             let res = await axios.delete(`/api/quote-discounts/${discount.id}`);
             await getQuote(quote.id);
@@ -119,10 +125,10 @@ onMounted(() => {
     </div>
     <table class="table-dealmaker table table-bordered text-end">
         <thead>
-            <tr>
+            <tr class="border-0">
                 <th style="width: 70%" class="text-start"></th>
-                <th style="width: 10%"><pv-if v-if="!isSimpleView">Discount</pv-if></th>
-                <th style="width: 20%">Total</th>
+                <th style="width: 10%"></th>
+                <th style="width: 20%"></th>
                 <th v-if="!props.preview" style="width: 60px" class="text-center"></th>
             </tr>
         </thead>
