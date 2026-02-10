@@ -40,25 +40,31 @@ const items = ref([
         <template #actionBar>
             <template v-if="actionBarButtons.length" v-for="btn in actionBarButtons" :key="btn.label">
                 <button
-                    :class="btn.props.class"
-                    :type="btn.props.type"
-                    :disabled="btn.props.disabled"
+                    v-if="btn.btn === 'back'"
+                    :disabled="btn.disabled ?? false"
+                    :id="btn.id ?? 'btn-step-previous'"
+                    class="btn text-primary step-nav btn-sm me-3 me-auto"
+                    type="button"
                     @click="btn.onClick"
                 >
-                    <font-awesome-icon
-                        v-if="btn.icon && btn.iconPosition === 'left'"
-                        :icon="btn.icon"
-                        :class="btn.iconClass"
-                        class="me-2"
-                    />
-                    {{ btn.label }}
-                    <font-awesome-icon
-                        v-if="btn.icon && btn.iconPosition === 'right'"
-                        :icon="btn.icon"
-                        :class="btn.iconClass"
-                        class="ms-2"
-                    />
+                    <font-awesome-icon :icon="['fas', 'arrow-left']" />
+                    {{ btn.label ?? 'Previous' }}
                 </button>
+
+                <button
+                    v-else-if="btn.btn === 'next'"
+                    :disabled="btn.disabled"
+                    :id="btn.id ?? 'btn-step-next'"
+                    class="ms-3 btn btn-primary step-nav ms-auto"
+                    type="button"
+                    @click="btn.onClick"
+                >
+                    {{ btn.label ?? 'Next' }}
+                    <font-awesome-icon v-if="btn.icon" :icon="btn.icon" :class="btn.iconClass" class="ms-2" />
+                    <font-awesome-icon v-else :icon="['fas', 'arrow-right']" />
+                </button>
+                <!--                <button v-else -->
+                <!--                ></button>-->
             </template>
         </template>
     </AuthenticatedLayout>

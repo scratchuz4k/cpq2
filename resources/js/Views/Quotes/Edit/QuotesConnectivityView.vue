@@ -239,13 +239,7 @@ watchEffect(() => {
     actionBarButtons.value = [
         currentStep.value !== 0
             ? {
-                  props: {
-                      class: 'btn continue-btn me-auto',
-                      type: 'button',
-                      id: 'btn-previous-step'
-                  },
-                  icon: ['fas', 'arrow-left'],
-                  iconPosition: 'left',
+                  btn: 'back',
                   label: 'Previous Step',
                   onClick: checkGoPrevious
               }
@@ -253,25 +247,14 @@ watchEffect(() => {
 
         connectivitySteps.value.length === currentStep.value + 1
             ? {
-                  props: {
-                      class: 'btn btn-primary continue-btn ms-auto',
-                      type: 'submit',
-                      id: 'btn-continue'
-                  },
-                  icon: ['fas', 'arrow-right'],
-                  iconPosition: 'right',
+                  btn: 'next',
+                  id: 'btn-continue',
                   label: 'Continue',
                   onClick: saveQuote
               }
             : {
-                  props: {
-                      class: 'btn btn-primary continue-btn ms-auto',
-                      type: 'button',
-                      disabled: isLoading.value,
-                      id: 'btn-next-step'
-                  },
-                  icon: ['fas', 'arrow-right'],
-                  iconPosition: 'right',
+                  btn: 'next',
+                  disabled: isLoading.value,
                   label: 'Next Step',
                   onClick: checkGoNext
               }

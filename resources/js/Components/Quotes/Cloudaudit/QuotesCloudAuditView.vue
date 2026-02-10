@@ -228,25 +228,17 @@ const init = () => {
     let temp =
         configs.cloud_selected_option === 'none'
             ? {
-                  props: {
-                      class: 'btn btn-primary ms-auto',
-                      type: 'button',
-                      disabled: isLoading.value,
-                      id: 'btn-close-quote'
-                  },
+                  btn: 'next',
+                  disabled: isLoading.value,
+                  id: 'btn-close-quote',
                   icon: isLoading.value ? ['fa', 'spinner'] : ['fas', 'xmark'],
                   iconClass: isLoading.value ? 'fa-spin' : '',
-                  iconPosition: 'right',
                   label: 'Close',
                   onClick: closeQuote
               }
             : {
-                  props: {
-                      class: 'btn btn-primary ms-auto',
-                      type: 'button',
-                      disabled: isLoading.value,
-                      id: 'btn-next-step'
-                  },
+                  btn: 'next',
+                  disabled: isLoading.value,
                   icon: isLoading.value ? ['fa', 'spinner'] : ['fas', 'arrow-right'],
                   iconClass: isLoading.value ? 'fa-spin' : '',
                   iconPosition: 'right',

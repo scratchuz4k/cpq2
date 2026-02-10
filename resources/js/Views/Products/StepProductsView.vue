@@ -207,28 +207,16 @@ watchEffect(() => {
     actionBarButtons.value = [
         props.index > 0
             ? {
-                  props: {
-                      class: 'btn text-primary step-nav btn-sm me-3',
-                      type: 'button',
-                      disabled: meta.isLoading,
-                      id: `btn-step-${props.index + 1}-previous`
-                  },
-                  icon: ['fas', 'arrow-left'],
-                  iconPosition: 'left',
-                  label: 'Previous',
+                  btn: 'back',
+                  id: `btn-step-${props.index + 1}-previous`,
+                  disabled: meta.isLoading,
                   onClick: () => proxyValue.value--
               }
             : null,
         {
-            props: {
-                class: 'ms-3 btn btn-primary step-nav ms-auto',
-                type: 'button',
-                disabled: disableButton.value,
-                id: `btn-step-${props.index + 1}-next`
-            },
-            icon: ['fas', 'arrow-right'],
-            iconPosition: 'right',
-            label: 'Next',
+            btn: 'next',
+            disabled: disableButton.value,
+            id: `btn-step-${props.index + 1}-next`,
             onClick: emitSaveQuote
         }
     ].filter(Boolean);

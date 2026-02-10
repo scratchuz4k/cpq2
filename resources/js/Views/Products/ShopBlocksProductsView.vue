@@ -251,26 +251,12 @@ watchEffect(() => {
     actionBarButtons.value = [
         step.value !== 1
             ? {
-                  props: {
-                      class: 'btn text-primary step-nav btn-sm me-3',
-                      type: 'button',
-                      id: 'btn-step-previous'
-                  },
-                  icon: ['fas', 'arrow-left'],
-                  iconPosition: 'left',
-                  label: 'Previous',
+                  btn: 'back',
                   onClick: () => proxyValue.value--
               }
             : null,
         {
-            props: {
-                class: 'ms-3 btn btn-primary step-nav ms-auto',
-                type: 'button',
-                id: 'btn-step-next'
-            },
-            icon: ['fas', 'arrow-right'],
-            iconPosition: 'right',
-            label: 'Next',
+            btn: 'next',
             onClick: () => emit('save')
         }
     ].filter(Boolean);
