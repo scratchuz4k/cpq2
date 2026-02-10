@@ -27,7 +27,9 @@ const tenant = reactive({
             : 0,
         quote_margin_rules_operation: props.tenant.configurations.quote_margin_rules_operation ?? 'percentage',
         has_quote_approval: props.tenant.configurations.has_quote_approval ?? '0',
-        quote_approval_flow: props.tenant.configurations.quote_approval_flow ?? 'Internal review'
+        quote_approval_flow: props.tenant.configurations.quote_approval_flow ?? 'Internal review',
+        cutomization_header: JSON.parse(props.tenant.configurations.cutomization_header ?? '[]'),
+        cutomization_footer: JSON.parse(props.tenant.configurations.cutomization_footer ?? '[]')
     }
 });
 
@@ -97,6 +99,24 @@ const submitTenantSettings = async () => {
         isLoading.value = false;
     }
 };
+const saveTenant = async () => {
+    try {
+        tenant.configurations.cutomization_header = JSON.stringify(tenant.configurations.cutomization_header);
+        tenant.configurations.cutomization_footer = JSON.stringify(tenant.configurations.cutomization_footer);
+        let res = await axios.put(`/api/tenants/` + tenant.id, tenant);
+        let temp = res.data;
+
+        temp.configurations.cutomization_header = JSON.parse(temp.configurations.cutomization_header);
+        temp.configurations.cutomization_footer = JSON.parse(temp.configurations.cutomization_footer);
+        Object.assign(tenant, temp);
+
+        notyf.success('Content updated successfully');
+    } catch (err) {
+        notyf.error(err?.response?.data?.message ?? 'Something went wrong');
+    } finally {
+        isLoading.value = false;
+    }
+};
 
 const onQuoteDaysInput = _.debounce(() => {
     let value = Number(tenant.configurations.quote_expiration_days);
@@ -120,7 +140,14 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Settings', url: '/sett
     <Head title="Tenant" />
     <AuthenticatedLayout>
         <div class="panel">
-            <Header title="Tenant" :breadcrumbs="items"></Header>
+            <Header title="Tenant" :breadcrumbs="items">
+                <template #buttons>
+                    <PrimaryButton id="btn-save-account" @click="saveTenant()">
+                        <font-awesome-icon class="me-2" :icon="['fas', 'save']"></font-awesome-icon>
+                        Save
+                    </PrimaryButton>
+                </template>
+            </Header>
 
             <tabs>
                 <tab :selected="true" title="General">
@@ -154,6 +181,30 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Settings', url: '/sett
                                 aria-selected="false"
                             >
                                 Logo
+                            </button>
+                            <button
+                                class="nav-link"
+                                id="v-pills-logo-tab"
+                                data-bs-toggle="pill"
+                                data-bs-target="#v-pills-header"
+                                type="button"
+                                role="tab"
+                                aria-controls="v-pills-header"
+                                aria-selected="false"
+                            >
+                                Header
+                            </button>
+                            <button
+                                class="nav-link"
+                                id="v-pills-logo-tab"
+                                data-bs-toggle="pill"
+                                data-bs-target="#v-pills-footer"
+                                type="button"
+                                role="tab"
+                                aria-controls="v-pills-footer"
+                                aria-selected="false"
+                            >
+                                Footer
                             </button>
                         </div>
                         <div class="tab-content ps-3 w-100" id="v-pills-tabContent">
@@ -228,6 +279,22 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Settings', url: '/sett
                                         </div>
                                     </div>
                                 </div>
+                            </div>
+                            <div
+                                class="tab-pane fade"
+                                id="v-pills-header"
+                                role="tabpanel"
+                                aria-labelledby="v-pills-header-tab"
+                            >
+                                <TenantLinks v-model="tenant.configurations.cutomization_header" />
+                            </div>
+                            <div
+                                class="tab-pane fade"
+                                id="v-pills-footer"
+                                role="tabpanel"
+                                aria-labelledby="v-pills-footer-tab"
+                            >
+                                <TenantLinks v-model="tenant.configurations.cutomization_footer" />
                             </div>
                         </div>
                     </div>
