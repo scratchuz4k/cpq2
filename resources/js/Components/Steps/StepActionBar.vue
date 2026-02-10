@@ -12,15 +12,6 @@ defineProps({
         <div class="container">
             <div class="step-action-bar-content">
                 <slot></slot>
-                <!--                <div class="step-action-bar-left">-->
-                <!--                    <slot name="content"></slot>-->
-                <!--                </div>-->
-                <!--                <div class="step-action-bar-left">-->
-                <!--                    <slot name="left"></slot>-->
-                <!--                </div>-->
-                <!--                <div class="step-action-bar-right">-->
-                <!--                    <slot name="right"></slot>-->
-                <!--                </div>-->
             </div>
         </div>
     </div>

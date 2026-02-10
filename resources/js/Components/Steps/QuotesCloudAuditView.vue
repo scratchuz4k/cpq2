@@ -2,7 +2,7 @@
 import { quote, setQuote, getQuote } from '@composables/useQuote';
 import axios from 'axios';
 import { usePage } from '@inertiajs/vue3';
-import { computed, reactive, ref, watch, watchEffect } from 'vue';
+import { computed, onMounted, onUnmounted, reactive, ref, watch, watchEffect } from 'vue';
 import queryString from 'query-string';
 import format from '@/Composables/format.js';
 import { Checkbox } from 'primevue';
@@ -255,7 +255,11 @@ watchEffect(() => {
                   label: 'Next',
                   onClick: handleQuoteItems
               }
-    ];
+    ].filter(Boolean);
+});
+
+onUnmounted(() => {
+    actionBarButtons.value = [];
 });
 
 watch(
@@ -268,6 +272,7 @@ watch(
 getReviewProduct();
 </script>
 <template>
+    <h1>teste: {{ actionBarButtons }}</h1>
     <div class="row justify-content-between mb-3">
         <div class="col-lg-8">
             <div class="mt-3 d-flex justify-content-between align-items-center">
