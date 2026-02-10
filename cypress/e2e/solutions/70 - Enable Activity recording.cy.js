@@ -63,7 +63,7 @@ describe('Creates a Mobile Quote', () => {
         cy.get('#connectivity-product-1').contains('Primary Product');
 
         //Save quote
-        cy.get('.continue-btn').eq(0).click();
+        cy.get('#btn-continue').click();
         cy.get('.recurring-item').its('length').should('eq', 1);
         cy.get('.one_off-item').its('length').should('eq', 1);
     });

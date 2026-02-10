@@ -72,7 +72,7 @@ describe('Creates a Mobile Quote', () => {
         cy.get('#connectivity-product-1').contains('Primary Product');
 
         //Save quote
-        cy.get('.continue-btn').eq(0).click();
+        cy.get('#btn-continue').eq(0).click();
         cy.get('.Simple-item').its('length').should('eq', 2);
         cy.get('#table-simple > thead').contains('Quote Reference');
         cy.get('#table-simple > thead').contains('Speed');
