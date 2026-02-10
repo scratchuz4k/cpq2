@@ -22,15 +22,15 @@ describe('Creates a Connectivity quote', () => {
         cy.visit('/quotes/create');
 
         cy.selectLazyOption('account_id', account.name);
-        cy.get('#btn-next-step').click();
+        cy.get('.step-action-bar #btn-next-step').click();
 
         cy.get('#solution_type-connectivity').click();
-        cy.get('#btn-next-step').click();
+        cy.get('.step-action-bar #btn-next-step').click();
 
         cy.get('#input_address').type('EH32 9NT');
         cy.selectOption('#select_address', 1);
-        cy.get('#btn-next-step').click();
-        cy.get('#btn-create-quote').should('not.be.disabled').click();
+        cy.get('.step-action-bar #btn-next-step').click();
+        cy.get('.step-action-bar #btn-create-quote').should('not.be.disabled').click();
 
         //Provider filter
         cy.get('#provider-multiselect').click();
@@ -61,7 +61,7 @@ describe('Creates a Connectivity quote', () => {
         cy.get('#connectivity-product-1').contains('Primary Product');
 
         //Save quote
-        cy.get('#btn-continue').eq(0).click();
+        cy.get('#btn-continue').click();
         cy.get('.recurring-item').its('length').should('eq', 1);
         cy.get('.one_off-item').its('length').should('eq', 1);
     });
@@ -91,15 +91,15 @@ describe('Creates a Connectivity quote', () => {
     it('I can filter products by contended', () => {
         cy.visit('/quotes/create');
         cy.selectLazyOption('account_id', account.name);
-        cy.get('#btn-next-step').click();
+        cy.get('.step-action-bar #btn-next-step').click();
 
         cy.get('#solution_type-connectivity').click();
-        cy.get('#btn-next-step').click();
+        cy.get('.step-action-bar #btn-next-step').click();
 
         cy.get('#input_address').type('EH32 9NT');
         cy.selectOption('#select_address', 1);
-        cy.get('#btn-next-step').click();
-        cy.get('#btn-create-quote').should('not.be.disabled').click();
+        cy.get('.step-action-bar #btn-next-step').click();
+        cy.get('.step-action-bar #btn-create-quote').should('not.be.disabled').click();
 
         cy.scrollTo('top');
 
@@ -118,15 +118,15 @@ describe('Creates a Connectivity quote', () => {
     it("I can see one product per uploadSpeed with 'Show only lowest cost products' option selected", () => {
         cy.visit('/quotes/create');
         cy.selectLazyOption('account_id', account.name);
-        cy.get('#btn-next-step').click();
+        cy.get('.step-action-bar #btn-next-step').click();
 
         cy.get('#solution_type-connectivity').click();
-        cy.get('#btn-next-step').click();
+        cy.get('.step-action-bar #btn-next-step').click();
 
         cy.get('#input_address').type('EH32 9NT');
         cy.selectOption('#select_address', 1);
-        cy.get('#btn-next-step').click();
-        cy.get('#btn-create-quote').should('not.be.disabled').click();
+        cy.get('.step-action-bar #btn-next-step').click();
+        cy.get('.step-action-bar #btn-create-quote').should('not.be.disabled').click();
 
         cy.scrollTo('top');
 

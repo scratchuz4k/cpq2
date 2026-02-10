@@ -65,7 +65,7 @@ describe('Creates a Cloud Quote', () => {
     it('Creates Cloud Quote', () => {
         cy.visit('/quotes/create');
         cy.selectLazyOption('account_id', account.name);
-        cy.get('#btn-next-step').click();
+        cy.get('.step-action-bar #btn-next-step').click();
 
         cy.get('#solution_type-cloud').click();
         cy.get('#btn-create-quote').click();
