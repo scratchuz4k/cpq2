@@ -4,7 +4,8 @@ import { quote, getQuote } from '@composables/useQuote';
 import { can, hasRole } from '@/Composables/useAuth';
 
 const props = defineProps({
-    preview: Boolean
+    preview: Boolean,
+    isSimpleView: Boolean
 });
 const isEditing = ref(false);
 const isLoading = ref(false);
@@ -120,7 +121,7 @@ onMounted(() => {
         <thead>
             <tr>
                 <th style="width: 70%" class="text-start"></th>
-                <th style="width: 10%">Discount</th>
+                <th style="width: 10%"><pv-if v-if="!isSimpleView">Discount</pv-if></th>
                 <th style="width: 20%">Total</th>
                 <th v-if="!props.preview" style="width: 60px" class="text-center"></th>
             </tr>
@@ -146,7 +147,7 @@ onMounted(() => {
                 </td>
                 <td v-if="!props.preview"></td>
             </tr>
-            <tr v-if="can('viewAny quote_discount') || hasRole('Super Admin')">
+            <tr v-if="!isSimpleView && (can('viewAny quote_discount') || hasRole('Super Admin'))">
                 <td class="column-discount-body">
                     <p class="small text-start">Overall Discount</p>
                 </td>
