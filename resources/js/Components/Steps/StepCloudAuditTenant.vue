@@ -115,27 +115,13 @@ const handlePaginator = (ev) => {
 watchEffect(() => {
     actionBarButtons.value = [
         {
-            component: 'button',
-            props: {
-                class: 'btn float-start',
-                type: 'button',
-                disabled: currentStep.value === 0,
-                id: 'btn-previous-step'
-            },
-            icon: ['fas', 'arrow-left'],
-            iconPosition: 'left',
-            label: 'Previous Step',
+            btn: 'back',
+            disabled: currentStep.value === 0,
             onClick: () => currentStep.value--
         },
         {
-            component: 'button',
-            props: {
-                class: 'btn btn-primary float-start',
-                type: 'button',
-                disabled: computed(() => organisation.value == null),
-                id: 'btn-next-step'
-            },
-            label: 'Review Tenant',
+            btn: 'next',
+            disabled: computed(() => organisation.value == null),
             onClick: activateTiming
         }
     ];

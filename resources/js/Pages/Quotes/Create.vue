@@ -91,14 +91,25 @@ const items = ref([{ label: 'Home', url: '/dashboard' }, { label: 'Create a quot
         <template #actionBar>
             <template v-if="actionBarButtons.length" v-for="btn in actionBarButtons" :key="btn.label">
                 <button
-                    :class="btn.props.class"
-                    :type="btn.props.type"
-                    :disabled="btn.props.disabled"
+                    v-if="btn.btn === 'back'"
+                    id="btn-previous-step"
+                    class="btn"
+                    type="button"
                     @click="btn.onClick"
+                    :disabled="btn.disabled"
                 >
-                    <font-awesome-icon v-if="btn.icon && btn.iconPosition === 'left'" :icon="btn.icon" class="me-2" />
-                    {{ btn.label }}
-                    <font-awesome-icon v-if="btn.icon && btn.iconPosition === 'right'" :icon="btn.icon" class="ms-2" />
+                    <font-awesome-icon :icon="['fas', 'arrow-left']" class="ms-2"></font-awesome-icon>
+                    Previous Step
+                </button>
+                <button
+                    v-else-if="btn.btn === 'next'"
+                    id="btn-next-step"
+                    class="btn btn-primary"
+                    type="button"
+                    @click="btn.onClick"
+                    :disabled="btn.disabled"
+                >
+                    Review Tenant
                 </button>
             </template>
 

@@ -228,7 +228,6 @@ const init = () => {
     let temp =
         configs.cloud_selected_option === 'none'
             ? {
-                  component: 'button',
                   props: {
                       class: 'btn btn-primary ms-auto',
                       type: 'button',
@@ -242,7 +241,6 @@ const init = () => {
                   onClick: closeQuote
               }
             : {
-                  component: 'button',
                   props: {
                       class: 'btn btn-primary ms-auto',
                       type: 'button',
