@@ -42,6 +42,25 @@
             false,
         ),
     ];
+
+    function getDiscount($quote, $model, $id)
+    {
+        if ($model === 'App\Models\Quote') {
+            return collect($quote['discounts'])->where('discountable_type', $model)->where('entity.uuid', $id)->first();
+        }
+
+        if ($model === 'App\Models\PricePlan') {
+            return collect($quote['discounts'])->where('discountable_type', $model)->where('entity.code', $id)->first();
+        }
+
+        return null;
+    }
+
+    $discounts = [
+        'quote' => getDiscount($quote, 'App\Models\Quote', $quote['uuid']),
+        'one_off' => getDiscount($quote, 'App\Models\PricePlan', 'SINGLE'),
+        'monthly' => getDiscount($quote, 'App\Models\PricePlan', 'MONTHLY'),
+    ];
 @endphp
 
 <!doctype html>
@@ -99,6 +118,8 @@
                         </span>
                     @endif
                 </div>
+
+
                 <div class="row mb-3">
                     <div class="col">
                         <p>
@@ -144,9 +165,7 @@
                                     <th class="column-quantity-header w-5">Quantity</th>
                                     <th class="column-price-header w-10">Price</th>
                                     <th class="column-discount-header w-5">Discount</th>
-                                    <th class="column-total-header text-end" style="white-space: nowrap;">Total
-                                        Price
-                                    </th>
+                                    <th class="column-total-header text-end" style="white-space: nowrap;">Total </th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -236,14 +255,34 @@
                                         </td>
                                     </tr>
                                 @endforeach
+                                @if ($discounts['monthly'])
+                                    <tr class="item-row" style="vertical-align: middle;">
+                                        <td class="column-name-body" colspan="{{ $isConnectivity ? '7' : '2' }}">
+                                            Recurring Discount
+                                        </td>
+                                        <td class="text-end text-danger" colspan="2">
+                                            - £{{ number_format($discounts['monthly']['discount'], 2) }} %
+                                        </td>
+                                        <td class="text-end text-danger">
+                                            - {{ number_format((float) $discounts['monthly']['value'], 2) }}£
+                                        </td>
+                                    </tr>
+                                @endif
                             </tbody>
+
+                            <tfoot>
+                                <tr>
+                                    <th class="text-start" colspan="{{ $isConnectivity ? '9' : '5' }}">Subtotal
+                                    </th>
+                                    <th class="text-end">
+                                        £{{ number_format($monthly_items_total, 2) }}</th>
+                                </tr>
+                            </tfoot>
                         </table>
                     </div>
                     <div class="mb-5">
                         <div class="mobile-price-group-heading mt-3 d-flex justify-content-between align-items-center">
                             <h3>One off charges</h3>
-                            <h3 id="recurring_total">
-                                £{{ number_format(quoteTotal('SINGLE', 'total', $quote['items']), 2) }}</h3>
                         </div>
                         <table id="table-one_off" class="table table-dealmaker table-bordered">
                             <!-- Headers -->
@@ -261,9 +300,7 @@
                                     <th class="column-quantity-header w-5">Quantity</th>
                                     <th class="column-price-header w-10">Price</th>
                                     <th class="column-discount-header w-5">Discount</th>
-                                    <th class="column-total-header text-end" style="white-space: nowrap;">Total
-                                        Price
-                                    </th>
+                                    <th class="column-total-header text-end" style="white-space: nowrap;">Total</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -341,7 +378,28 @@
                                         </td>
                                     </tr>
                                 @endforeach
+                                @if ($discounts['one_off'])
+                                    <tr class="item-row" style="vertical-align: middle;"></tr>
+                                    <td class="column-name-body" colspan="{{ $isConnectivity ? '7' : '2' }}">
+                                        One-Off Discount
+                                    </td>
+                                    <td class="text-end text-danger" colspan="2">
+                                        - £{{ number_format($discounts['one_off']['discount'], 2) }} %
+                                    </td>
+                                    <td class="text-end text-danger">
+                                        - {{ number_format((float) $discounts['one_off']['value'], 2) }}£
+                                    </td>
+                                    </tr>
+                                @endif
                             </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th class="text-start" colspan="{{ $isConnectivity ? '8' : '4' }}">Subtotal
+                                    </th>
+                                    <th class="text-end">
+                                        £{{ number_format(quoteTotal('SINGLE', 'total', $quote['items']), 2) }}</th>
+                                </tr>
+                            </tfoot>
                         </table>
                     </div>
                     <div class="mobile-price-group-heading mt-3 d-flex justify-content-between align-items-center">
@@ -374,6 +432,19 @@
                                     £{{ number_format(quoteTotal('SINGLE', 'total', $quote['items']), 2) }}
                                 </td>
                             </tr>
+                            @if ($discounts['quote'])
+                                <tr class="item-row" style="vertical-align: middle;">
+                                    <td>
+                                        <p class="small text-start">Overall Discount</p>
+                                    </td>
+                                    <td class="text-end text-danger">
+                                        - £{{ number_format($discounts['quote']['discount'], 2) }} %
+                                    </td>
+                                    <td class="text-end text-danger">
+                                        - {{ number_format((float) $discounts['quote']['value'], 2) }}£
+                                    </td>
+                                </tr>
+                            @endif
                             <tr>
                                 <th>
                                     <p class="small text-start">Total</p>
