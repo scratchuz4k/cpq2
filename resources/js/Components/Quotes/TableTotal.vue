@@ -37,12 +37,12 @@ const cancel = () => {
 
 const save = async () => {
     isLoading.value = true;
-    discount.discount = temp.value;
+
     try {
         if (discount.id == null) {
-            let res = await axios.post(`/api/quote-discounts`, discount);
+            let res = await axios.post(`/api/quote-discounts`, { ...discount, discount: temp.value });
         } else {
-            let res = await axios.put(`/api/quote-discounts/${discount.id}`, discount);
+            let res = await axios.put(`/api/quote-discounts/${discount.id}`, { ...discount, discount: temp.value });
         }
 
         await getQuote(quote.id);
