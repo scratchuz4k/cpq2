@@ -37,6 +37,7 @@ const cancel = () => {
 
 const save = async () => {
     isLoading.value = true;
+    discount.discount = temp.value;
     try {
         if (discount.id == null) {
             let res = await axios.post(`/api/quote-discounts`, discount);
@@ -159,18 +160,18 @@ onMounted(() => {
                 </td>
                 <td>
                     <p class="small" v-if="!isEditing" :id="`global-quote-discount-discount`">
-                        - {{ discount.discount }} %
+                        {{ discount.discount }} %
                     </p>
                     <input
                         v-else
                         :id="`input-global-quote-discount-discount`"
                         class="form-control text-center p-0 px-1"
                         type="number"
-                        v-model="discount.discount"
+                        v-model="temp"
                         min="0"
                     />
                 </td>
-                <td class="text-danger">- {{ format.GBP(discount.value) }}</td>
+                <td class="text-danger">{{ format.GBP(discount.value) }}</td>
                 <td v-if="!props.preview">
                     <div class="d-flex justify-content-end">
                         <template v-if="!isEditing">

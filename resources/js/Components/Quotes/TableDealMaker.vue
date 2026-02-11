@@ -25,6 +25,12 @@ const quoteTotal = (key) => {
         .reduce((acc, item) => (acc += item.quantity * item.price), 0);
 };
 
+const quoteTotalMonths = (key) => {
+    return quote.items
+        .filter((x) => x.price_plan && x.price_plan.code == key)
+        .reduce((acc, item) => (acc += item.quantity * item.price * item.contract_length), 0);
+};
+
 const filterColumns = (columns, code) => {
     if (code == 'SINGLE') {
         return columns.filter((x) => x.value != 'contract_length');
@@ -49,9 +55,6 @@ emitter.on('quote-items:updated', () => {
     <div class="dealmaker-panel" v-for="pricePlan in pricePlans">
         <div class="mobile-price-group-heading d-flex justify-content-between align-items-center">
             <h3>{{ pricePlan.name }} charges</h3>
-            <!-- <h3 :id="pricePlanskeys[pricePlan.code] + '-total'">
-                {{ format.GBP(quoteTotal(pricePlan.code)) }}
-            </h3> -->
         </div>
         <div>
             <table :id="'table-' + pricePlanskeys[pricePlan.code]" class="table-dealmaker table table-bordered">
@@ -93,7 +96,12 @@ emitter.on('quote-items:updated', () => {
                             <p class="mb-0">Subtotal</p>
                         </th>
                         <th class="text-end" :id="pricePlanskeys[pricePlan.code] + '-total'">
-                            {{ format.GBP(quoteTotal(pricePlan.code)) }}
+                            <div class="cpq-tooltip">
+                                {{ format.GBP(quoteTotal(pricePlan.code)) }}
+                                <span class="cpq-tooltip-text">
+                                    Overall Cost:<br />{{ format.GBP(quoteTotalMonths(pricePlan.code)) }}
+                                </span>
+                            </div>
                         </th>
                         <th v-if="!props.preview"></th>
                     </tr>

@@ -93,12 +93,6 @@ const items = ref([
             <!-- In a real application, this would be dynamically generated based on the selected solution type -->
             <TableCustom v-if="quote.solution_type.configurations?.has_custom_table == 1"></TableCustom>
             <TableSimple v-else :preview="preview"></TableSimple>
-
-            <div class="row justify-content-end">
-                <div class="col-6">
-                    <TableTotal :isSimpleView="true"></TableTotal>
-                </div>
-            </div>
         </div>
     </div>
 

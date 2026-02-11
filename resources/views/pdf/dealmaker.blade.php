@@ -261,10 +261,10 @@
                                             Recurring Discount
                                         </td>
                                         <td class="text-end text-danger" colspan="2">
-                                            - £{{ number_format($discounts['monthly']['discount'], 2) }} %
+                                            {{ number_format($discounts['monthly']['discount'], 2) }} %
                                         </td>
                                         <td class="text-end text-danger">
-                                            - {{ number_format((float) $discounts['monthly']['value'], 2) }}£
+                                            {{ number_format((float) $discounts['monthly']['value'], 2) }}£
                                         </td>
                                     </tr>
                                 @endif
@@ -384,10 +384,10 @@
                                         One-Off Discount
                                     </td>
                                     <td class="text-end text-danger" colspan="2">
-                                        - £{{ number_format($discounts['one_off']['discount'], 2) }} %
+                                        {{ number_format($discounts['one_off']['discount'], 2) }} %
                                     </td>
                                     <td class="text-end text-danger">
-                                        - {{ number_format((float) $discounts['one_off']['value'], 2) }}£
+                                        {{ number_format((float) $discounts['one_off']['value'], 2) }}£
                                     </td>
                                     </tr>
                                 @endif
