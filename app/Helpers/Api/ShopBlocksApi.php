@@ -32,7 +32,7 @@ class ShopBlocksApi
 
         if (! $response->successful()) {
             // Handle the error accordingly. For now, we'll just log and return an empty array.
-            Log::error('Failed to retrieve products from Shopblocks API: '.$response->body());
+            Log::error('[JOB] ShopBlocksProductsApi | Failed to retrieve products from Shopblocks API: '.$response->body());
 
             return [];
         }
@@ -60,7 +60,7 @@ class ShopBlocksApi
 
         if (! $response->successful()) {
             // Handle the error accordingly. For now, we'll just log and return an empty array.
-            Log::error('Failed to retrieve categories from Shopblocks API: '.$response->body());
+            Log::error('[JOB] ShopBlocksProductsApi | Failed to retrieve categories from Shopblocks API: '.$response->body());
 
             return [];
         }

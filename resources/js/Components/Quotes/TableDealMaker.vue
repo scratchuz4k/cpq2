@@ -96,7 +96,11 @@ emitter.on('quote-items:updated', () => {
                             <p class="mb-0">Subtotal</p>
                         </th>
                         <th class="text-end" :id="pricePlanskeys[pricePlan.code] + '-total'">
-                            <div class="cpq-tooltip">
+                            <span v-if="props.preview || pricePlan.name != 'Recurring'">
+                                {{ format.GBP(quoteTotal(pricePlan.code)) }}
+                            </span>
+
+                            <div v-else class="cpq-tooltip">
                                 {{ format.GBP(quoteTotal(pricePlan.code)) }}
                                 <span class="cpq-tooltip-text">
                                     Overall Cost:<br />{{ format.GBP(quoteTotalMonths(pricePlan.code)) }}

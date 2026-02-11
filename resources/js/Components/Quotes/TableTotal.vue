@@ -125,14 +125,12 @@ onMounted(() => {
         <h3>Overall Totals</h3>
     </div>
     <table class="table-dealmaker table table-bordered text-end">
-        <thead>
-            <tr class="border-0">
-                <th style="width: 70%" class="text-start"></th>
-                <th style="width: 10%"></th>
-                <th style="width: 20%"></th>
-                <th v-if="!props.preview" style="width: 60px" class="text-center"></th>
-            </tr>
-        </thead>
+        <colgroup>
+            <col style="width: 70%" class="text-start" />
+            <col style="width: 9%" />
+            <col style="width: 20%" />
+            <col v-if="!props.preview" style="width: 60px" class="text-center" />
+        </colgroup>
         <tbody>
             <tr>
                 <td>
@@ -154,12 +152,18 @@ onMounted(() => {
                 </td>
                 <td v-if="!props.preview"></td>
             </tr>
-            <tr v-if="!isSimpleView && (can('viewAny quote_discount') || hasRole('Super Admin'))">
+            <tr
+                v-if="
+                    !isSimpleView &&
+                    (can('viewAny quote_discount') || hasRole('Super Admin')) &&
+                    (!props.preview || discount.discount)
+                "
+            >
                 <td class="column-discount-body">
                     <p class="small text-start">Overall Discount</p>
                 </td>
                 <td>
-                    <p class="small" v-if="!isEditing" :id="`global-quote-discount-discount`">
+                    <p class="small text-center" v-if="!isEditing" :id="`global-quote-discount-discount`">
                         {{ discount.discount }} %
                     </p>
                     <input
@@ -171,7 +175,7 @@ onMounted(() => {
                         min="0"
                     />
                 </td>
-                <td class="text-danger">{{ format.GBP(discount.value) }}</td>
+                <td class="text-danger">-{{ format.GBP(discount.value) }}</td>
                 <td v-if="!props.preview">
                     <div class="d-flex justify-content-end">
                         <template v-if="!isEditing">

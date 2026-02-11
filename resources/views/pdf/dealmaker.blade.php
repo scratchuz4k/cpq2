@@ -145,8 +145,6 @@
                     <div class="mb-5">
                         <div class="mobile-price-group-heading mt-3 d-flex justify-content-between align-items-center">
                             <h3>Recurring charges</h3>
-                            <h3 id="recurring_total">
-                                £{{ number_format($monthly_items_total, 2) }}</h3>
                         </div>
                         <table id="table-recurring" class="table table-dealmaker table-bordered  ">
                             <!-- Headers -->
@@ -257,14 +255,14 @@
                                 @endforeach
                                 @if ($discounts['monthly'])
                                     <tr class="item-row" style="vertical-align: middle;">
-                                        <td class="column-name-body" colspan="{{ $isConnectivity ? '7' : '2' }}">
+                                        <td class="column-name-body" colspan="{{ $isConnectivity ? '8' : '4' }}">
                                             Recurring Discount
                                         </td>
-                                        <td class="text-end text-danger" colspan="2">
+                                        <td class="text-center">
                                             {{ number_format($discounts['monthly']['discount'], 2) }} %
                                         </td>
                                         <td class="text-end text-danger">
-                                            {{ number_format((float) $discounts['monthly']['value'], 2) }}£
+                                            -£{{ number_format((float) $discounts['monthly']['value'], 2) }}
                                         </td>
                                     </tr>
                                 @endif
@@ -380,14 +378,14 @@
                                 @endforeach
                                 @if ($discounts['one_off'])
                                     <tr class="item-row" style="vertical-align: middle;"></tr>
-                                    <td class="column-name-body" colspan="{{ $isConnectivity ? '7' : '2' }}">
+                                    <td class="column-name-body" colspan="{{ $isConnectivity ? '7' : '3' }}">
                                         One-Off Discount
                                     </td>
-                                    <td class="text-end text-danger" colspan="2">
+                                    <td class="text-center">
                                         {{ number_format($discounts['one_off']['discount'], 2) }} %
                                     </td>
                                     <td class="text-end text-danger">
-                                        {{ number_format((float) $discounts['one_off']['value'], 2) }}£
+                                        -£{{ number_format((float) $discounts['one_off']['value'], 2) }}
                                     </td>
                                     </tr>
                                 @endif
@@ -403,7 +401,7 @@
                         </table>
                     </div>
                     <div class="mobile-price-group-heading mt-3 d-flex justify-content-between align-items-center">
-                        <h3>OverallTotals</h3>
+                        <h3>Overall Totals</h3>
                     </div>
                     <table class="table table-dealmaker table-bordered text-end">
                         <thead>
@@ -415,21 +413,22 @@
                         </thead>
                         <tbody>
                             <tr>
-                                <th>
+                                <td>
                                     <p class="small text-start">Monthly Total</p>
-                                </th>
-                                <th></th>
+                                </td>
+                                <td></td>
                                 <td id="total_monthly_net">
-                                    £{{ number_format(quoteQuantityPrice('MONTHLY', $quote['items']), 2) }}
+                                    <b>£{{ number_format(quoteQuantityPrice('MONTHLY', $quote['items']), 2) }}</b>
                                 </td>
                             </tr>
                             <tr>
-                                <th>
+                                <td>
                                     <p class="small text-start">One Off Total</p>
-                                </th>
-                                <th></th>
+                                </td>
+                                <td>
+                                </td>
                                 <td id="total_single_net">
-                                    £{{ number_format(quoteTotal('SINGLE', 'total', $quote['items']), 2) }}
+                                    <b>£{{ number_format(quoteTotal('SINGLE', 'total', $quote['items']), 2) }}</b>
                                 </td>
                             </tr>
                             @if ($discounts['quote'])
@@ -437,21 +436,21 @@
                                     <td>
                                         <p class="small text-start">Overall Discount</p>
                                     </td>
-                                    <td class="text-end text-danger">
-                                        - £{{ number_format($discounts['quote']['discount'], 2) }} %
+                                    <td class="text-end">
+                                        {{ number_format($discounts['quote']['discount'], 2) }} %
                                     </td>
                                     <td class="text-end text-danger">
-                                        - {{ number_format((float) $discounts['quote']['value'], 2) }}£
+                                        -£{{ number_format((float) $discounts['quote']['value'], 2) }}
                                     </td>
                                 </tr>
                             @endif
                             <tr>
-                                <th>
+                                <td>
                                     <p class="small text-start">Total</p>
-                                </th>
-                                <th></th>
+                                </td>
+                                <td></td>
                                 <td id="total_net">
-                                    £{{ number_format($quote['total'], 2) }}
+                                    <b>£{{ number_format($quote['total'], 2) }}</b>
                                 </td>
                             </tr>
                         </tbody>

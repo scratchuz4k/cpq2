@@ -100,7 +100,7 @@ onMounted(() => {
 });
 </script>
 <template>
-    <tr>
+    <tr v-if="!props.preview || discount.discount">
         <td :colspan="props.pricePlan.name == 'Recurring' ? 4 : 3">
             <p class="small">{{ props.pricePlan.name }} Discount</p>
         </td>
@@ -119,13 +119,13 @@ onMounted(() => {
         </td>
         <td v-if="!props.preview"></td>
         <td class="text-right text-danger">
-            <p v-if="props.pricePlan.name != 'Recurring'" class="small column_total">
-                {{ format.GBP(discount.value) }}
+            <p v-if="props.preview || props.pricePlan.name != 'Recurring'" class="small column_total">
+                -{{ format.GBP(discount.value) }}
             </p>
 
             <div v-else class="column_total cpq-tooltip">
-                {{ format.GBP(discount.value) }}
-                <span class="cpq-tooltip-text"> Overall Cost:<br />{{ format.GBP(discount.total) }} </span>
+                -{{ format.GBP(discount.value) }}
+                <span class="cpq-tooltip-text bold"> Overall Discount:<br />- {{ format.GBP(discount.total) }} </span>
             </div>
         </td>
         <td v-if="!props.preview">
