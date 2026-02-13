@@ -4,35 +4,31 @@
     <table class="table w-100">
         <thead>
             <tr>
-                <th>Label</th>
-                <th>Link</th>
-                <th>Active?</th>
+                <th></th>
+                <th style="width: 40%">Label</th>
+                <th style="width: 35%">Link</th>
+                <th style="width: 10%">Active?</th>
                 <th></th>
             </tr>
         </thead>
-        <tbody>
-            <template v-if="proxyValue && proxyValue.length > 0">
-                <tr v-for="link in proxyValue" :key="link.id">
-                    <td>{{ link.label }}</td>
-                    <td>{{ link.url }}</td>
-                    <td>{{ link.is_active ? 'Yes' : 'No' }}</td>
-                    <td>
-                        <Button
-                            type="button"
-                            severity="danger"
-                            @click="proxyValue.value = proxyValue.value.filter((l) => l.id !== link.id)"
-                        >
-                            <font-awesome-icon :icon="['fas', 'trash']" />
-                        </Button>
-                    </td>
-                </tr>
-            </template>
-            <tr v-else>
+        <template v-if="proxyValue && proxyValue.length > 0">
+            <draggable v-model="proxyValue" item-key="id" tag="tbody" v-bind="dragOptions" handle=".handle">
+                <template #item="{ element, index }">
+                    <TenantLinksItem
+                        v-model="proxyValue[index]"
+                        @remove="proxyValue.splice(index, 1)"
+                    ></TenantLinksItem>
+                </template>
+            </draggable>
+        </template>
+        <tbody v-else>
+            <tr>
                 <td colspan="4" class="text-center">No links added yet.</td>
             </tr>
         </tbody>
         <tfoot>
             <tr>
+                <th></th>
                 <th>
                     <input class="form-control" v-model="temp.label" placeholder="Label" />
                 </th>
@@ -40,10 +36,11 @@
                     <input class="form-control" v-model="temp.url" placeholder="URL" />
                 </th>
                 <th>
-                    <div class="d-flex align-items-center">
+                    <div class="d-flex align-items-center justify-content-center">
                         <Checkbox
                             inputId="unassigned_licenses"
                             v-model="temp.is_active"
+                            :checked="temp.is_active"
                             binary
                             trueValue="1"
                             falseValue="0"
@@ -51,22 +48,21 @@
                     </div>
                 </th>
                 <th>
-                    <Button type="button" :class="['me-2']" severity="primary" @click="add()">
-                        <font-awesome-icon :icon="['fas', 'add']" />
-                    </Button>
+                    <font-awesome-icon :icon="['fas', 'add']" @click="add()" />
                 </th>
             </tr>
         </tfoot>
     </table>
 </template>
 <script setup>
-import { computed, reactive } from 'vue';
-import { Button } from 'primevue';
+import { computed, reactive, ref } from 'vue';
+import draggable from 'vuedraggable';
 
 const props = defineProps({
     modelValue: Array
 });
 
+const emit = defineEmits(['update:modelValue']);
 const proxyValue = computed({
     get() {
         return props.modelValue;
@@ -83,16 +79,43 @@ const temp = reactive({
 });
 
 const add = () => {
-    if (temp.label && temp.url) {
-        const newLink = {
-            label: temp.label,
-            url: temp.url,
-            is_active: temp.is_active
-        };
-        proxyValue.value.push(newLink);
-        temp.label = '';
-        temp.url = '';
-        temp.is_active = false;
+    if (!temp.label || !temp.url) {
+        return;
     }
+
+    if (!isValidHttpUrl(temp.url)) {
+        notyf.error('Please enter a valid URL');
+        return;
+    }
+    if (temp.label.length > 20) {
+        notyf.error('Label must be less than 20 characters');
+        return;
+    }
+
+    const newLink = {
+        label: temp.label,
+        url: temp.url,
+        is_active: temp.is_active
+    };
+    proxyValue.value.push(newLink);
+    temp.label = '';
+    temp.url = '';
+    temp.is_active = false;
+};
+
+const isValidHttpUrl = (str) => {
+    try {
+        const url = new URL(str);
+        return url.protocol === 'http:' || url.protocol === 'https:';
+    } catch (error) {
+        return false;
+    }
+};
+
+const dragOptions = {
+    animation: 200,
+    group: 'description',
+    disabled: false,
+    ghostClass: 'ghost'
 };
 </script>

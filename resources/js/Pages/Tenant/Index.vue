@@ -28,8 +28,8 @@ const tenant = reactive({
         quote_margin_rules_operation: props.tenant.configurations.quote_margin_rules_operation ?? 'percentage',
         has_quote_approval: props.tenant.configurations.has_quote_approval ?? '0',
         quote_approval_flow: props.tenant.configurations.quote_approval_flow ?? 'Internal review',
-        cutomization_header: JSON.parse(props.tenant.configurations.cutomization_header ?? '[]'),
-        cutomization_footer: JSON.parse(props.tenant.configurations.cutomization_footer ?? '[]')
+        customization_header: JSON.parse(props.tenant.configurations.customization_header ?? '[]'),
+        customization_footer: JSON.parse(props.tenant.configurations.customization_footer ?? '[]')
     }
 });
 
@@ -101,13 +101,16 @@ const submitTenantSettings = async () => {
 };
 const saveTenant = async () => {
     try {
-        tenant.configurations.cutomization_header = JSON.stringify(tenant.configurations.cutomization_header);
-        tenant.configurations.cutomization_footer = JSON.stringify(tenant.configurations.cutomization_footer);
-        let res = await axios.put(`/api/tenants/` + tenant.id, tenant);
+        let configs = {};
+        Object.assign(configs, tenant.configurations);
+        configs.customization_header = JSON.stringify(configs.customization_header);
+        configs.customization_footer = JSON.stringify(configs.customization_footer);
+
+        let res = await axios.put(`/api/tenants/` + tenant.id, { ...tenant, configurations: configs });
         let temp = res.data;
 
-        temp.configurations.cutomization_header = JSON.parse(temp.configurations.cutomization_header);
-        temp.configurations.cutomization_footer = JSON.parse(temp.configurations.cutomization_footer);
+        temp.configurations.customization_header = JSON.parse(temp.configurations.customization_header);
+        temp.configurations.customization_footer = JSON.parse(temp.configurations.customization_footer);
         Object.assign(tenant, temp);
 
         notyf.success('Content updated successfully');
@@ -286,7 +289,7 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Settings', url: '/sett
                                 role="tabpanel"
                                 aria-labelledby="v-pills-header-tab"
                             >
-                                <TenantLinks v-model="tenant.configurations.cutomization_header" />
+                                <TenantLinks v-model="tenant.configurations.customization_header" />
                             </div>
                             <div
                                 class="tab-pane fade"
@@ -294,7 +297,7 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Settings', url: '/sett
                                 role="tabpanel"
                                 aria-labelledby="v-pills-footer-tab"
                             >
-                                <TenantLinks v-model="tenant.configurations.cutomization_footer" />
+                                <TenantLinks v-model="tenant.configurations.customization_footer" />
                             </div>
                         </div>
                     </div>

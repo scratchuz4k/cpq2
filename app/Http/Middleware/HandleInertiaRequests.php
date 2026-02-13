@@ -31,6 +31,8 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
+        $configs = $request->user()->currentTenant->configs;
+
         return [
             ...parent::share($request),
             'auth' => [
@@ -39,6 +41,10 @@ class HandleInertiaRequests extends Middleware
                 'roles' => $request->user() ? $request->user()->getRoleNames() : [],
             ],
             'tenant' => $request->user() ? (new TenantResource($request->user()->currentTenant))->resolve() : [],
+            'customization' => [
+                'header' => json_decode(array_key_exists('customization_header', $configs) ? $configs['customization_header'] : '[]'),
+                'footer' => json_decode(array_key_exists('customization_footer', $configs) ? $configs['customization_footer'] : '[]'),
+            ],
         ];
     }
 }
