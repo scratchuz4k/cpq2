@@ -31,7 +31,7 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
-        $configs = $request->user()->currentTenant->configs;
+        $configs = $request->user()->currentTenant?->configs ?? [];
 
         return [
             ...parent::share($request),

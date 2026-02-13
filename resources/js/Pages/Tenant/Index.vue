@@ -145,7 +145,7 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Settings', url: '/sett
         <div class="panel">
             <Header title="Tenant" :breadcrumbs="items">
                 <template #buttons>
-                    <PrimaryButton id="btn-save-account" @click="saveTenant()">
+                    <PrimaryButton id="btn-save-tenant" @click="saveTenant()">
                         <font-awesome-icon class="me-2" :icon="['fas', 'save']"></font-awesome-icon>
                         Save
                     </PrimaryButton>
@@ -187,7 +187,7 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Settings', url: '/sett
                             </button>
                             <button
                                 class="nav-link"
-                                id="v-pills-logo-tab"
+                                id="v-pills-header-tab"
                                 data-bs-toggle="pill"
                                 data-bs-target="#v-pills-header"
                                 type="button"
@@ -199,7 +199,7 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Settings', url: '/sett
                             </button>
                             <button
                                 class="nav-link"
-                                id="v-pills-logo-tab"
+                                id="v-pills-footer-tab"
                                 data-bs-toggle="pill"
                                 data-bs-target="#v-pills-footer"
                                 type="button"
@@ -297,7 +297,7 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Settings', url: '/sett
                                 role="tabpanel"
                                 aria-labelledby="v-pills-footer-tab"
                             >
-                                <TenantLinks v-model="tenant.configurations.customization_footer" />
+                                <TenantLinks v-model="tenant.configurations.customization_footer" :linkLimit="4" />
                             </div>
                         </div>
                     </div>

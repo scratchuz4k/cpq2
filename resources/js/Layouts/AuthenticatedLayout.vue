@@ -57,7 +57,7 @@ const placeHolderlinks = [
                         v-for="link in links.filter((x) => x.is_active)"
                         :key="link.name"
                     >
-                        <a class="nav-link" :href="link.url">{{ link.label }}</a>
+                        <a class="nav-link" :href="link.url" target="_blank">{{ link.label }}</a>
                     </li>
                 </ul>
             </div>

@@ -31,13 +31,27 @@
             <div class="row">
                 <div class="col">
                     <div class="d-flex flex-column flex-sm-row justify-content-end">
-                        <a href="https://giacom.com/copyright/" target="_blank">Copyright</a>
-                        <a href="https://giacom.com/privacy-and-cookies-policy/" target="_blank">Privacy and cookies</a>
-                        <a href="https://giacom.com/company-details/" target="_blank">Legal</a>
-                        <a href="https://giacom.com/accessibility/" target="_blank">Accessibility</a>
+                        <a v-for="link in links.filter((x) => x.is_active)" :href="link.url" target="_blank">{{
+                            link.label
+                        }}</a>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </template>
+<script setup>
+import { Link, usePage } from '@inertiajs/vue3';
+
+const page = usePage();
+const user = page.props.auth.user;
+
+const placeHolderlinks = [
+    { label: 'Copyright', url: 'https://giacom.com/copyright/', is_active: true },
+    { label: 'Privacy and cookies', url: 'https://giacom.com/privacy-and-cookies-policy/', is_active: true },
+    { label: 'Legal', url: 'https://giacom.com/company-details/', is_active: true },
+    { label: 'Accessibility', url: 'https://giacom.com/accessibility/', is_active: true }
+];
+
+const links = Object.keys(page.props.customization.footer).length ? page.props.customization.footer : placeHolderlinks;
+</script>
