@@ -123,6 +123,10 @@ body {
 }
 
 #app {
+    flex-direction: column;
+    display: flex;
+    min-height: 100vh;
+
     a:not(.btn) {
         color: var(--color-purple);
     }
@@ -290,6 +294,7 @@ body {
     }
 
     main {
+        flex: 1;
         background: var(--grey-lighter);
         padding: 30px 0;
     }
