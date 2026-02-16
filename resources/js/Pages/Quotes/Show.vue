@@ -34,7 +34,7 @@ let view =
             <a
                 v-if="!quote.is_blocked"
                 id="btn-previous"
-                class="btn text-primary me-auto"
+                class="btn btn-outline-dark me-auto"
                 :href="route('quotes.edit', { quote: quote.id })"
             >
                 <font-awesome-icon class="me-2" :icon="['fas', 'arrow-left']"></font-awesome-icon>

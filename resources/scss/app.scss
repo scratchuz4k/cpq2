@@ -170,6 +170,18 @@ body {
         border-color: var(--secondary-dark);
     }
 
+    .btn-outline-dark {
+        border-color: var(--secondary-dark);
+        border-width: 0.175rem;
+        color: var(--secondary-dark);
+        font-weight: 600;
+
+        &:hover {
+            background-color: var(--secondary-dark);
+            color: var(--white);
+        }
+    }
+
     .btn-text {
         background-color: transparent;
         color: var(--secondary);

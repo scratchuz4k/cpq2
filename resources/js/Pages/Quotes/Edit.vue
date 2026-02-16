@@ -43,7 +43,7 @@ const items = ref([
                     v-if="btn.btn === 'back'"
                     :disabled="btn.disabled ?? false"
                     :id="btn.id ?? 'btn-step-previous'"
-                    class="btn text-primary step-nav btn-sm me-3 me-auto"
+                    class="btn btn-outline-dark step-nav me-3 me-auto"
                     type="button"
                     @click="btn.onClick"
                 >

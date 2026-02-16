@@ -93,7 +93,7 @@ const items = ref([{ label: 'Home', url: '/dashboard' }, { label: 'Create a quot
                 <button
                     v-if="btn.btn === 'back'"
                     id="btn-previous-step"
-                    class="btn"
+                    class="btn btn-outline-dark"
                     type="button"
                     @click="btn.onClick"
                     :disabled="btn.disabled"

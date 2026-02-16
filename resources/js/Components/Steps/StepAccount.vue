@@ -2,7 +2,6 @@
 import { computed, onMounted, watch } from 'vue';
 import { isDisabled } from '@/Composables/useQuoteSteps.js';
 import queryString from 'query-string';
-import { isFinite } from 'lodash/lang.js';
 
 const props = defineProps({
     modelValue: Object

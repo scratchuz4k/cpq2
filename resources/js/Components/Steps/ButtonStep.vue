@@ -51,7 +51,13 @@ const previousStep = () => {
             Next Step
             <font-awesome-icon :icon="['fas', 'arrow-right']" class="ms-2"></font-awesome-icon>
         </button>
-        <button id="btn-previous-step" class="btn" type="button" v-if="currentStep != 0" @click="previousStep()">
+        <button
+            id="btn-previous-step"
+            class="btn btn-outline-dark"
+            type="button"
+            v-if="currentStep != 0"
+            @click="previousStep()"
+        >
             <font-awesome-icon :icon="['fas', 'arrow-left']" class="ms-2"></font-awesome-icon>
             Previous Step
         </button>
