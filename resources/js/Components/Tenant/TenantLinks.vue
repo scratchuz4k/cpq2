@@ -7,7 +7,7 @@
                 <th></th>
                 <th style="width: 40%">Label</th>
                 <th style="width: 35%">Link</th>
-                <th style="width: 10%">Active?</th>
+                <th class="text-center" style="width: 5%">Active?</th>
                 <th></th>
             </tr>
         </thead>
@@ -23,14 +23,20 @@
         </template>
         <tbody v-else>
             <tr>
-                <td colspan="5" class="text-center">No links added yet.</td>
+                <td colspan="5" class="text-center py-3">No links added yet.</td>
             </tr>
         </tbody>
         <tfoot>
             <tr>
                 <th></th>
                 <th>
-                    <input id="tenant-new-link-label" class="form-control" v-model="temp.label" placeholder="Label" />
+                    <input
+                        maxlength="20"
+                        id="tenant-new-link-label"
+                        class="form-control"
+                        v-model="temp.label"
+                        placeholder="Label"
+                    />
                 </th>
                 <th>
                     <input id="tenant-new-link-url" class="form-control" v-model="temp.url" placeholder="URL" />
@@ -42,14 +48,17 @@
                             inputId="unassigned_licenses"
                             v-model="temp.is_active"
                             :checked="temp.is_active"
+                            class="ms-2"
                             binary
                             trueValue="1"
                             falseValue="0"
                         />
                     </div>
                 </th>
-                <th>
-                    <font-awesome-icon id="tenant-new-link-add" :icon="['fas', 'add']" @click="add()" />
+                <th class="text-end">
+                    <a class="btn p-2 mx-1 border-0" role="button" @click="add()">
+                        <font-awesome-icon id="tenant-new-link-add" :icon="['fas', 'add']" />
+                    </a>
                 </th>
             </tr>
         </tfoot>

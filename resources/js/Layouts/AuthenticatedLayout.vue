@@ -25,12 +25,6 @@ defineProps({
 
 const activeTab = ref(window.location.pathname.replace(/^\/|\/$/g, ''));
 const currentTenant = ref(page.props.tenant);
-const placeHolderlinks = [
-    { name: 'Customers', href: null },
-    { name: 'Assets', href: null },
-    { name: 'Quotes', href: route('quotes.index') },
-    { name: 'Billing', href: null }
-];
 </script>
 
 <template>

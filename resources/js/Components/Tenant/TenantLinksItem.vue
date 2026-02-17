@@ -1,45 +1,60 @@
 <template>
     <tr>
         <td style="width: 5%">
-            <button class="btn p-1 border-0 handle">
+            <button class="btn p-2 border-0 handle">
                 <font-awesome-icon icon="fas fa-bars" />
             </button>
         </td>
         <td>
-            <p v-if="!isEditing">{{ proxyValue.label }}</p>
+            <p class="py-2" v-if="!isEditing">{{ proxyValue.label }}</p>
             <input v-else class="form-control" v-model="temp.label" placeholder="Label" />
         </td>
         <td>
-            <p v-if="!isEditing">{{ proxyValue.url }}</p>
+            <p class="py-2" v-if="!isEditing">{{ proxyValue.url }}</p>
             <input v-else class="form-control" v-model="temp.url" placeholder="URL" />
         </td>
         <td>
-            <p v-if="!isEditing">{{ proxyValue.is_active ? 'Yes' : 'No' }}</p>
-            <div v-else class="d-flex align-items-center justify-content-center">
+            <p class="py-2 text-center" v-if="!isEditing">
                 <Checkbox
-                    inputId="unassigned_licenses"
                     v-model="temp.is_active"
-                    :checked="false"
+                    :checked="!!proxyValue.is_active"
+                    class="ms-2 opacity-100"
+                    binary
+                    trueValue="1"
+                    falseValue="0"
+                    disabled="true"
+                />
+            </p>
+            <p class="py-2 text-center" v-else>
+                <Checkbox
+                    v-model="temp.is_active"
+                    :checked="!!proxyValue.is_active"
+                    class="ms-2"
                     binary
                     trueValue="1"
                     falseValue="0"
                 />
-            </div>
+            </p>
         </td>
         <td>
-            <template v-if="!isEditing">
-                <font-awesome-icon role="button" class="text-primary me-3" :icon="['fas', 'edit']" @click="edit()" />
-                <font-awesome-icon role="button" class="text-secondary" :icon="['fas', 'trash']" @click="remove()" />
-            </template>
-            <template v-else>
-                <font-awesome-icon
-                    role="button"
-                    class="text-secondary me-3"
-                    :icon="['fas', 'cancel']"
-                    @click="cancel()"
-                />
-                <font-awesome-icon role="button" class="text-primary" :icon="['fas', 'save']" @click="save()" />
-            </template>
+            <div class="d-flex justify-content-end">
+                <template v-if="!isEditing">
+                    <a class="btn p-2 mx-1 border-0" role="button" @click="edit()"
+                        ><font-awesome-icon class="text-primary" :icon="['fas', 'edit']"
+                    /></a>
+                    <a class="btn p-2 mx-1 border-0" role="button" @click="remove()"
+                        ><font-awesome-icon class="text-secondary" :icon="['fas', 'trash']"
+                    /></a>
+                </template>
+                <template v-else>
+                    <a class="btn p-2 mx-1 border-0" role="button" @click="cancel()">
+                        <font-awesome-icon class="text-secondary" :icon="['fas', 'cancel']" />
+                    </a>
+                    <a class="btn p-2 mx-1 border-0" role="button" @click="save()">
+                        <font-awesome-icon class="text-primary" :icon="['fas', 'save']" />
+                    </a>
+                </template>
+            </div>
         </td>
     </tr>
 </template>
