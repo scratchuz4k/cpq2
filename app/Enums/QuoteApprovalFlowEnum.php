@@ -6,7 +6,7 @@ enum QuoteApprovalFlowEnum: string
 {
     case INTERNAL = 'Internal review';
     case MARGIN = 'Margin review';
-    //    case CLIENT = 'Client review';
+    case CLIENT = 'Client review';
 
     public static function asArray(): array
     {

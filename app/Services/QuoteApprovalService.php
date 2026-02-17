@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enums\QuoteApprovalFlowEnum;
 use App\Enums\QuoteApprovalStatus;
 use App\Enums\QuoteStatusesEnum;
 use App\Models\Quote;
@@ -11,6 +12,13 @@ use Illuminate\Support\Facades\Auth;
 
 class QuoteApprovalService
 {
+    protected $sharedLinkService;
+
+    public function __construct()
+    {
+        $this->sharedLinkService = new SharedLinkService;
+    }
+
     public function store(array $array): QuoteApproval
     {
         $array['status'] = QuoteApprovalStatus::PENDING->name;
@@ -18,6 +26,13 @@ class QuoteApprovalService
         $quote = Quote::find($array['quote_id']);
         $quote->update(['status' => QuoteStatusesEnum::PENDING->name]);
         $quoteApproval = QuoteApproval::create($array);
+
+        if ($quoteApproval->flow == QuoteApprovalFlowEnum::CLIENT->value) {
+            $link = $this->sharedLinkService->store([
+                'shareable_type' => 'quote_approvals',
+                'shareable_id' => $quoteApproval->id,
+            ]);
+        }
 
         return $quoteApproval;
     }

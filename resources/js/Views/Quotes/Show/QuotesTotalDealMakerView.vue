@@ -6,7 +6,7 @@ import { usePage } from '@inertiajs/vue3';
 import WarningNote from '@/Components/WarningNote.vue';
 import { checkWarnings } from '@composables/warning.js';
 import format from '@/Composables/format.js';
-import { has } from 'lodash';
+import { can, hasRole } from '@composables/useAuth';
 
 const props = defineProps({
     modelValue: Object,
@@ -162,7 +162,9 @@ const items = ref([
                             Edit Quote</a
                         >
                         <div class="ms-auto">
-                            <QuoteApprovals></QuoteApprovals>
+                            <QuoteApprovalsModal
+                                v-if="can('viewAny quote_approval') || hasRole('Super Admin')"
+                            ></QuoteApprovalsModal>
                             <ActivityDialog
                                 :filters="[
                                     { entity: 'Quote', values: quote.id },
@@ -222,6 +224,13 @@ const items = ref([
                         </div>
                     </InfoBox>
                 </div>
+                <QuoteApprovalsPanel
+                    v-if="
+                        quote.approvals.find((x) => x.status == 'PENDING') &&
+                        (can('viewAny quote_approval') || hasRole('Super Admin'))
+                    "
+                ></QuoteApprovalsPanel>
+
                 <div class="price-mobile-sidebar total-quote-discount px-4 pt-4 pb-2 mb-3">
                     <h3 class="mb-3">Total Quote Discount</h3>
                     <div

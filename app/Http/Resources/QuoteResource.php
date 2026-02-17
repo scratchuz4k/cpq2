@@ -31,7 +31,7 @@ class QuoteResource extends JsonResource
             'items_trashed' => QuoteItemResource::collection($this->itemsTrashed)->resolve(),
             'updated_at' => $this->updated_at,
             'configs' => $this->configs,
-            'approvals' => $this->approvals,
+            'approvals' => QuoteApprovalResource::collection($this->approvals)->resolve(),
             'latest_approval' => (new QuoteApprovalResource($this->latestApproval))->resolve(),
         ];
     }

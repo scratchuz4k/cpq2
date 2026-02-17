@@ -27,7 +27,8 @@ const tenant = reactive({
             : 0,
         quote_margin_rules_operation: props.tenant.configurations.quote_margin_rules_operation ?? 'percentage',
         has_quote_approval: props.tenant.configurations.has_quote_approval ?? '0',
-        quote_approval_flow: props.tenant.configurations.quote_approval_flow ?? 'Internal review'
+        quote_approval_flow: props.tenant.configurations.quote_approval_flow ?? 'Internal review',
+        has_client_approval: props.tenant.configurations.has_client_approval ?? '0'
     }
 });
 
@@ -437,6 +438,31 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Settings', url: '/sett
                                                                 </select>
                                                             </div>
                                                         </div>
+                                                    </div>
+                                                    <div class="d-flex align-items-center">
+                                                        <label class="form-label m-0 me-2"
+                                                            >Send to Client Approval:</label
+                                                        >
+                                                        <ToggleSwitch
+                                                            id="active-margin-rules"
+                                                            v-model="tenant.configurations.has_client_approval"
+                                                            @change="submitTenantSettings"
+                                                            trueValue="1"
+                                                            falseValue="0"
+                                                            binary
+                                                        >
+                                                            <template #handle>
+                                                                <font-awesome-icon
+                                                                    :icon="
+                                                                        tenant.configurations.has_client_approval ===
+                                                                        '1'
+                                                                            ? ['fas', 'circle-check']
+                                                                            : ['far', 'circle-xmark']
+                                                                    "
+                                                                    class="text-primary"
+                                                                />
+                                                            </template>
+                                                        </ToggleSwitch>
                                                     </div>
                                                 </div>
                                             </div>

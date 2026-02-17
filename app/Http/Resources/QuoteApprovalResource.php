@@ -21,6 +21,7 @@ class QuoteApprovalResource extends JsonResource
         return [
             ...$this->resource->toArray(),
             'approver' => new UserResource($this->approver),
+            'shared_link' => (new SharedLinkResource($this->sharedLink))->resolve(),
             'quote' => $this->quote,
         ];
     }

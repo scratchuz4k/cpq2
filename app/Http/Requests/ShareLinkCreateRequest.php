@@ -22,7 +22,7 @@ class ShareLinkCreateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'shareable_type' => ['required', 'in:quotes'],
+            'shareable_type' => ['required', 'in:quotes,quote_approvals'],
             'shareable_id' => ['required', 'numeric'],
             'expires_at' => ['nullable', 'date'],
         ];

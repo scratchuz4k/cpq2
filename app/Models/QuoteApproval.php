@@ -7,6 +7,7 @@ use App\Models\Scopes\TenantScope;
 use App\Trait\SetTenantId;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
 
 class QuoteApproval extends Model
 {
@@ -39,5 +40,10 @@ class QuoteApproval extends Model
     public function approver(): BelongsTo
     {
         return $this->belongsTo(User::class, 'approver_id', 'id');
+    }
+
+    public function sharedLink(): MorphOne
+    {
+        return $this->morphOne(SharedLink::class, 'shareable');
     }
 }
