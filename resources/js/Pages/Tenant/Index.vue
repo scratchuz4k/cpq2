@@ -87,33 +87,22 @@ const submitTextForm = async () => {
 
 const submitTenantSettings = async () => {
     try {
-        let res = await axios.put(`/api/tenants/` + tenant.id, tenant);
-        Object.assign(tenant, res.data);
-        notyf.success('Content updated successfully');
-        tenant.configurations.quote_margin_rules_value = tenant.configurations.quote_margin_rules_value
-            ? Number(tenant.configurations.quote_margin_rules_value)
-            : 1;
-    } catch (err) {
-        notyf.error(err?.response?.data?.message ?? 'Something went wrong');
-    } finally {
-        isLoading.value = false;
-    }
-};
-const saveTenant = async () => {
-    try {
         let configs = {};
         Object.assign(configs, tenant.configurations);
         configs.customization_header = JSON.stringify(configs.customization_header);
         configs.customization_footer = JSON.stringify(configs.customization_footer);
 
         let res = await axios.put(`/api/tenants/` + tenant.id, { ...tenant, configurations: configs });
-        let temp = res.data;
 
+        let temp = res.data;
         temp.configurations.customization_header = JSON.parse(temp.configurations.customization_header);
         temp.configurations.customization_footer = JSON.parse(temp.configurations.customization_footer);
         Object.assign(tenant, temp);
 
         notyf.success('Content updated successfully');
+        tenant.configurations.quote_margin_rules_value = tenant.configurations.quote_margin_rules_value
+            ? Number(tenant.configurations.quote_margin_rules_value)
+            : 1;
     } catch (err) {
         notyf.error(err?.response?.data?.message ?? 'Something went wrong');
     } finally {
@@ -143,14 +132,7 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Settings', url: '/sett
     <Head title="Tenant" />
     <AuthenticatedLayout>
         <div class="panel">
-            <Header title="Tenant" :breadcrumbs="items">
-                <template #buttons>
-                    <PrimaryButton id="btn-save-tenant" @click="saveTenant()">
-                        <font-awesome-icon class="me-2" :icon="['fas', 'save']"></font-awesome-icon>
-                        Save
-                    </PrimaryButton>
-                </template>
-            </Header>
+            <Header title="Tenant" :breadcrumbs="items"> </Header>
 
             <tabs>
                 <tab :selected="true" title="General">
@@ -289,7 +271,15 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Settings', url: '/sett
                                 role="tabpanel"
                                 aria-labelledby="v-pills-header-tab"
                             >
-                                <TenantLinks v-model="tenant.configurations.customization_header" />
+                                <h4>Header Links for {{ tenant.name }}</h4>
+                                <p class="mb-3">Manage the header navigation links</p>
+
+                                <TenantLinks
+                                    v-model="tenant.configurations.customization_header"
+                                    id="header"
+                                    :linkLimit="4"
+                                    @change="submitTenantSettings()"
+                                />
                             </div>
                             <div
                                 class="tab-pane fade"
@@ -297,7 +287,15 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Settings', url: '/sett
                                 role="tabpanel"
                                 aria-labelledby="v-pills-footer-tab"
                             >
-                                <TenantLinks v-model="tenant.configurations.customization_footer" :linkLimit="4" />
+                                <h4>Footer Links for {{ tenant.name }}</h4>
+                                <p class="mb-3">Manage the footer navigation links</p>
+
+                                <TenantLinks
+                                    v-model="tenant.configurations.customization_footer"
+                                    id="footer"
+                                    :linkLimit="4"
+                                    @change="submitTenantSettings()"
+                                />
                             </div>
                         </div>
                     </div>

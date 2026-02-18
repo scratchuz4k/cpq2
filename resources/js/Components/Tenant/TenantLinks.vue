@@ -1,6 +1,4 @@
 <template>
-    <p>Links</p>
-
     <table class="table w-100">
         <thead>
             <tr>
@@ -16,7 +14,10 @@
                 <template #item="{ element, index }">
                     <TenantLinksItem
                         v-model="proxyValue[index]"
-                        @remove="proxyValue.splice(index, 1)"
+                        :id="props.id"
+                        :index="index"
+                        @removed="() => removeRow(index)"
+                        @edited="emit('change')"
                     ></TenantLinksItem>
                 </template>
             </draggable>
@@ -31,20 +32,20 @@
                 <th></th>
                 <th>
                     <input
-                        maxlength="20"
-                        id="tenant-new-link-label"
+                        :id="`${props.id}-new-link-label`"
                         class="form-control"
                         v-model="temp.label"
                         placeholder="Label"
+                        maxlength="20"
                     />
                 </th>
                 <th>
-                    <input id="tenant-new-link-url" class="form-control" v-model="temp.url" placeholder="URL" />
+                    <input :id="`${props.id}-new-link-url`" class="form-control" v-model="temp.url" placeholder="URL" />
                 </th>
                 <th>
                     <div class="d-flex align-items-center justify-content-center">
                         <Checkbox
-                            id="tenant-new-link-is-active"
+                            :id="`${props.id}-new-link-is_active`"
                             inputId="unassigned_licenses"
                             v-model="temp.is_active"
                             :checked="temp.is_active"
@@ -57,7 +58,7 @@
                 </th>
                 <th class="text-end">
                     <a class="btn p-2 mx-1 border-0" role="button" @click="add()">
-                        <font-awesome-icon id="tenant-new-link-add" :icon="['fas', 'add']" />
+                        <font-awesome-icon :id="`${props.id}-new-link-add`" :icon="['fas', 'add']" />
                     </a>
                 </th>
             </tr>
@@ -70,13 +71,14 @@ import draggable from 'vuedraggable';
 
 const props = defineProps({
     modelValue: Array,
+    id: String,
     linkLimit: {
         type: Number,
         default: null
     }
 });
 
-const emit = defineEmits(['update:modelValue']);
+const emit = defineEmits(['update:modelValue', 'change']);
 const proxyValue = computed({
     get() {
         return props.modelValue;
@@ -92,34 +94,42 @@ const temp = reactive({
     is_active: false
 });
 
+const removeRow = (index) => {
+    proxyValue.value.splice(index, 1);
+    emit('change');
+};
+
 const add = () => {
     if (props.linkLimit && proxyValue.value.length >= props.linkLimit) {
         notyf.error(`You can only add up to ${props.linkLimit} links`);
         return;
     }
 
-    if (!temp.label || !temp.url) {
+    const newLink = {
+        label: temp.label.trim(),
+        url: temp.url.trim(),
+        is_active: temp.is_active
+    };
+
+    if (!newLink.label || !newLink.url) {
+        notyf.error(`Please enter a valid URL`);
         return;
     }
 
-    if (!isValidHttpUrl(temp.url)) {
+    if (!isValidHttpUrl(newLink.url)) {
         notyf.error('Please enter a valid URL');
         return;
     }
-    if (temp.label.length > 20) {
+    if (newLink.label.length > 20) {
         notyf.error('Label must be less than 20 characters');
         return;
     }
 
-    const newLink = {
-        label: temp.label,
-        url: temp.url,
-        is_active: temp.is_active
-    };
     proxyValue.value.push(newLink);
     temp.label = '';
     temp.url = '';
     temp.is_active = false;
+    emit('change');
 };
 
 const isValidHttpUrl = (str) => {

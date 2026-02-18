@@ -1,56 +1,76 @@
 <template>
     <tr>
         <td style="width: 5%">
-            <button class="btn p-2 border-0 handle">
+            <button :id="`${props.id}-${index}-link-move`" class="btn p-2 border-0 handle">
                 <font-awesome-icon icon="fas fa-bars" />
             </button>
         </td>
         <td>
-            <p class="py-2" v-if="!isEditing">{{ proxyValue.label }}</p>
-            <input v-else class="form-control" v-model="temp.label" placeholder="Label" />
+            <p :id="`${props.id}-${index}-link-label`" class="py-2" v-if="!isEditing">{{ proxyValue.label }}</p>
+            <input
+                :id="`${props.id}-${index}-link-edit-label`"
+                v-else
+                class="form-control"
+                v-model="temp.label"
+                placeholder="Label"
+                maxlength="20"
+            />
         </td>
         <td>
-            <p class="py-2" v-if="!isEditing">{{ proxyValue.url }}</p>
-            <input v-else class="form-control" v-model="temp.url" placeholder="URL" />
+            <p :id="`${props.id}-${index}-link-url`" class="py-2" v-if="!isEditing">{{ proxyValue.url }}</p>
+            <input
+                :id="`${props.id}-${index}-link-edit-url`"
+                v-else
+                class="form-control"
+                v-model="temp.url"
+                placeholder="URL"
+            />
         </td>
         <td>
-            <p class="py-2 text-center" v-if="!isEditing">
-                <Checkbox
-                    v-model="temp.is_active"
-                    :checked="!!proxyValue.is_active"
-                    class="ms-2 opacity-100"
-                    binary
-                    trueValue="1"
-                    falseValue="0"
-                    disabled="true"
-                />
-            </p>
-            <p class="py-2 text-center" v-else>
-                <Checkbox
-                    v-model="temp.is_active"
-                    :checked="!!proxyValue.is_active"
-                    class="ms-2"
-                    binary
-                    trueValue="1"
-                    falseValue="0"
-                />
-            </p>
+            <Checkbox
+                :id="`${props.id}-${index}-is_active`"
+                v-model="temp.is_active"
+                :checked="!!proxyValue.is_active"
+                class="ms-2 opacity-100"
+                binary
+                trueValue="1"
+                falseValue="0"
+                :disabled="isEditing ? true : false"
+            />
         </td>
         <td>
             <div class="d-flex justify-content-end">
                 <template v-if="!isEditing">
-                    <a class="btn p-2 mx-1 border-0" role="button" @click="edit()"
+                    <a
+                        :id="`${props.id}-${index}-link-edit`"
+                        class="btn p-2 mx-1 border-0"
+                        role="button"
+                        @click="edit()"
                         ><font-awesome-icon class="text-primary" :icon="['fas', 'edit']"
                     /></a>
-                    <a class="btn p-2 mx-1 border-0" role="button" @click="remove()"
+                    <a
+                        :id="`${props.id}-${index}-link-remove`"
+                        class="btn p-2 mx-1 border-0"
+                        role="button"
+                        @click="remove()"
                         ><font-awesome-icon class="text-secondary" :icon="['fas', 'trash']"
                     /></a>
                 </template>
                 <template v-else>
-                    <a class="btn p-2 mx-1 border-0" role="button" @click="cancel()">
+                    <a
+                        :id="`${props.id}-${index}-link-cancel`"
+                        class="btn p-2 mx-1 border-0"
+                        role="button"
+                        @click="cancel()"
+                    >
                         <font-awesome-icon class="text-secondary" :icon="['fas', 'cancel']" />
                     </a>
-                    <a class="btn p-2 mx-1 border-0" role="button" @click="save()">
+                    <a
+                        :id="`${props.id}-${index}-link-save`"
+                        class="btn p-2 mx-1 border-0"
+                        role="button"
+                        @click="save()"
+                    >
                         <font-awesome-icon class="text-primary" :icon="['fas', 'save']" />
                     </a>
                 </template>
@@ -62,10 +82,12 @@
 import { computed, reactive, ref } from 'vue';
 
 const props = defineProps({
-    modelValue: Object
+    modelValue: Object,
+    id: String,
+    index: Number
 });
 
-const emit = defineEmits(['update:modelValue', 'remove']);
+const emit = defineEmits(['update:modelValue', 'removed', 'edited']);
 const proxyValue = computed({
     get() {
         return props.modelValue;
@@ -94,13 +116,39 @@ const cancel = () => {
 };
 
 const save = () => {
+    temp.label = temp.label.trim();
+    temp.url = temp.url.trim();
+    if (!temp.label || !temp.url) {
+        notyf.error(`Please enter a valid URL`);
+        return;
+    }
+
+    if (!isValidHttpUrl(temp.url)) {
+        notyf.error('Please enter a valid URL');
+        return;
+    }
+    if (temp.label.length > 20) {
+        notyf.error('Label must be less than 20 characters');
+        return;
+    }
+
     proxyValue.value.label = temp.label;
     proxyValue.value.url = temp.url;
     proxyValue.value.is_active = temp.is_active;
     isEditing.value = false;
+    emit('edited');
 };
 
 const remove = () => {
-    emit('remove', proxyValue);
+    emit('removed', proxyValue);
+};
+
+const isValidHttpUrl = (str) => {
+    try {
+        const url = new URL(str);
+        return url.protocol === 'http:' || url.protocol === 'https:';
+    } catch (error) {
+        return false;
+    }
 };
 </script>
