@@ -118,7 +118,7 @@ onMounted(() => {
             />
         </td>
         <td v-if="!props.preview"></td>
-        <td class="text-right text-danger">
+        <td class="text-right text-primary">
             <p v-if="props.preview || props.pricePlan.name != 'Recurring'" class="small column_total">
                 -{{ format.GBP(discount.value) }}
             </p>

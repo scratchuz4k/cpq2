@@ -134,7 +134,7 @@ onMounted(() => {
         <tbody>
             <tr>
                 <td>
-                    <p class="small text-start">Monthly Total</p>
+                    <p class="small text-start">Recurring Total</p>
                 </td>
                 <td></td>
                 <td class="bold">
@@ -175,7 +175,7 @@ onMounted(() => {
                         min="0"
                     />
                 </td>
-                <td class="text-danger">-{{ format.GBP(discount.value) }}</td>
+                <td class="text-primary">-{{ format.GBP(discount.value) }}</td>
                 <td v-if="!props.preview">
                     <div class="d-flex justify-content-end">
                         <template v-if="!isEditing">
