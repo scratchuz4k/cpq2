@@ -48,7 +48,7 @@ const items = ref([{ label: 'Home', url: '/dashboard' }, { label: `Quote #${prop
 </script>
 
 <template>
-    <AuthenticatedLayout :quote="quote">
+    <AuthenticatedLayout :quote="quote" :show-step-action-bar="true">
         <form @submit.prevent="submit">
             <div class="row mb-3">
                 <div class="col">
@@ -62,22 +62,20 @@ const items = ref([{ label: 'Home', url: '/dashboard' }, { label: `Quote #${prop
                 :is_updating_quote="true"
             ></QuotesSolutionView>
         </form>
-        <StepActionBar>
-            <template #right>
-                <button
-                    id="btn-create-quote"
-                    class="btn btn-primary"
-                    type="submit"
-                    :disabled="parseInt(quote.solution_type.code) === 3 && !form.address"
-                    @click="submit()"
-                >
-                    Get prices
-                    <font-awesome-icon :icon="['fas', 'arrow-right']" class="ms-2"></font-awesome-icon>
-                    <div v-if="form.isLoading" class="spinner-border spinner-border-sm" role="status">
-                        <span class="visually-hidden">Loading...</span>
-                    </div>
-                </button>
-            </template>
-        </StepActionBar>
+        <template #actionBar>
+            <button
+                id="btn-create-quote"
+                class="btn btn-primary ms-auto"
+                type="submit"
+                :disabled="parseInt(quote.solution_type.code) === 3 && !form.address"
+                @click="submit()"
+            >
+                Get prices
+                <font-awesome-icon :icon="['fas', 'arrow-right']" class="ms-2"></font-awesome-icon>
+                <div v-if="form.isLoading" class="spinner-border spinner-border-sm" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </button>
+        </template>
     </AuthenticatedLayout>
 </template>

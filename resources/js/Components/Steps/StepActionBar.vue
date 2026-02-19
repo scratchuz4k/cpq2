@@ -36,11 +36,4 @@ defineProps({
     gap: 0;
     flex-direction: row;
 }
-
-.step-action-bar-left,
-.step-action-bar-right {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-}
 </style>
