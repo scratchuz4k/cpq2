@@ -27,16 +27,18 @@
             />
         </td>
         <td>
-            <Checkbox
-                :id="`${props.id}-${index}-is_active`"
-                v-model="temp.is_active"
-                :checked="!!proxyValue.is_active"
-                class="ms-2 opacity-100"
-                binary
-                trueValue="1"
-                falseValue="0"
-                :disabled="isEditing ? true : false"
-            />
+            <p class="py-2 text-center">
+                <Checkbox
+                    :id="`${props.id}-${index}-is_active`"
+                    v-model="temp.is_active"
+                    :checked="!!proxyValue.is_active"
+                    class="ms-2 opacity-100"
+                    binary
+                    trueValue="1"
+                    falseValue="0"
+                    :disabled="isEditing ? false : true"
+                />
+            </p>
         </td>
         <td>
             <div class="d-flex justify-content-end">

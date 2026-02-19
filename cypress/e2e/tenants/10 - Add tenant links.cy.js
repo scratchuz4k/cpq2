@@ -6,10 +6,10 @@ describe('Update tenant logo', () => {
     it('Setup tenant header links and check', () => {
         cy.visit('/tenants');
         cy.get('#v-pills-header-tab').click();
-        cy.get('#tenant-new-link-label').clear().type('This label is too long for the system');
-        cy.get('#tenant-new-link-url').type('https://quotes.example.com');
-        cy.get('#tenant-new-link-is-active').click();
-        cy.get('#tenant-new-link-add').click();
+        cy.get('#header-new-link-label').clear().type('This label is too long for the system');
+        cy.get('#header-new-link-url').type('https://quotes.example.com');
+        cy.get('#header-new-link-is-active').click();
+        cy.get('#header-new-link-add').click();
         cy.get('.notyf').contains('Label must be less than 20 characters');
 
         cy.get('#tenant-new-link-label').clear().type('Quotes Link');
