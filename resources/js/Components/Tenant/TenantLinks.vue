@@ -10,7 +10,14 @@
             </tr>
         </thead>
         <template v-if="proxyValue && proxyValue.length > 0">
-            <draggable v-model="proxyValue" item-key="id" tag="tbody" v-bind="dragOptions" handle=".handle">
+            <draggable
+                v-model="proxyValue"
+                item-key="id"
+                tag="tbody"
+                v-bind="dragOptions"
+                handle=".handle"
+                @end="emit('change')"
+            >
                 <template #item="{ element, index }">
                     <TenantLinksItem
                         v-model="proxyValue[index]"
