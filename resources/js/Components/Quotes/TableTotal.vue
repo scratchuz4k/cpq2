@@ -7,6 +7,7 @@ const props = defineProps({
     preview: Boolean,
     isSimpleView: Boolean
 });
+const quoteTotal = ref(0);
 const isEditing = ref(false);
 const isLoading = ref(false);
 const group = quote.solution_type?.table?.group ?? null;
@@ -103,19 +104,13 @@ const quoteTotalByPricePlan = (price_plan, column = 'total') => {
     return total ? total - (tempDiscount?.total ?? 0) : 0;
 };
 
-const quoteTotal = () => {
-    let items = quote.items;
-
-    if (group) {
-        items = quote.items.flatMap((obj) => obj.items ?? obj);
-    }
-
-    let total = quote.items.reduce((acc, item) => (acc += item.quantity * item.price * item.contract_length), 0);
+const getQuoteTotal = () => {
+    let total = quoteTotalByPricePlan('Recurring') + quoteTotalByPricePlan('One-Off');
     let tempDiscount = quote.discounts
         .filter((x) => x.entity?.uuid == quote.uuid)
         .reduce((acc, item) => (acc += item.total), 0);
 
-    return total ? total - tempDiscount : 0;
+    quoteTotal.value = total ? total - tempDiscount : 0;
 };
 
 const init = () => {
@@ -137,12 +132,14 @@ const init = () => {
 
 onMounted(() => {
     init();
+    getQuoteTotal();
 });
 
 watch(
     () => [quote.discounts],
     () => {
         init();
+        getQuoteTotal();
     }
 );
 </script>
@@ -249,7 +246,7 @@ watch(
                 </th>
                 <th></th>
                 <th id="total_net" style="font-size: 16px">
-                    {{ format.GBP(quoteTotal()) }}
+                    {{ format.GBP(quoteTotal) }}
                 </th>
                 <th v-if="!props.preview"></th>
             </tr>

@@ -49,6 +49,7 @@ class QuoteDiscount extends Model
                 $item->computeTotals();
                 $item->saveQuietly();
             }
+
             $discount->quote->computeTotals();
             $discount->quote->save();
         });
