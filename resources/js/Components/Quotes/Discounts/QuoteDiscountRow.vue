@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, reactive, ref } from 'vue';
+import { onMounted, reactive, ref, watch } from 'vue';
 import { getQuote, quote } from '@composables/useQuote';
 import { can, hasRole } from '@/Composables/useAuth';
 
@@ -98,6 +98,13 @@ const init = () => {
 onMounted(() => {
     init();
 });
+
+watch(
+    () => [quote.discounts],
+    () => {
+        init();
+    }
+);
 </script>
 <template>
     <tr v-if="!props.preview || discount.discount">

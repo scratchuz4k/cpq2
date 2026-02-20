@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, reactive, ref } from 'vue';
+import { onMounted, reactive, ref, watch } from 'vue';
 import { quote, getQuote } from '@composables/useQuote';
 import { can, hasRole } from '@/Composables/useAuth';
 
@@ -119,6 +119,13 @@ const init = () => {
 onMounted(() => {
     init();
 });
+
+watch(
+    () => [quote.discounts],
+    () => {
+        init();
+    }
+);
 </script>
 <template>
     <div class="mobile-price-group-heading d-flex justify-content-between align-items-center">

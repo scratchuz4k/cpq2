@@ -140,6 +140,10 @@ class Quote extends Model
         $this->total_tax = 0;
         $this->total_gross = 0;
 
+        if (! $this->items->count()) {
+            $this->discounts->each->deleteQuietly();
+        }
+
         foreach ($this->items as $item) {
             $raw_total += ($item->raw_price * $item->quantity * $item->contract_length);
 
