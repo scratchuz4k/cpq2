@@ -277,7 +277,8 @@
                                     <th class="text-start" colspan="{{ $isConnectivity ? '9' : '5' }}">Subtotal
                                     </th>
                                     <th class="text-end">
-                                        £{{ number_format($monthly_items_total, 2) }}</th>
+                                        £{{ number_format($monthly_items_total - $discounts['monthly']['value'], 2) }}
+                                    </th>
                                 </tr>
                             </tfoot>
                         </table>
@@ -399,7 +400,8 @@
                                     <th class="text-start" colspan="{{ $isConnectivity ? '8' : '4' }}">Subtotal
                                     </th>
                                     <th class="text-end">
-                                        £{{ number_format(quoteTotal('SINGLE', 'total', $quote['items']), 2) }}</th>
+                                        £{{ number_format(quoteTotal('SINGLE', 'total', $quote['items']) - $discounts['one_off']['value'], 2) }}
+                                    </th>
                                 </tr>
                             </tfoot>
                         </table>
@@ -422,7 +424,7 @@
                                 </td>
                                 <td></td>
                                 <td id="total_monthly_net">
-                                    <b>£{{ number_format(quoteQuantityPrice('MONTHLY', $quote['items']), 2) }}</b>
+                                    <b>£{{ number_format(quoteTotal('MONTHLY', 'total', $quote['items']) - $discounts['monthly']['total'], 2) }}</b>
                                 </td>
                             </tr>
                             <tr>
@@ -432,7 +434,7 @@
                                 <td>
                                 </td>
                                 <td id="total_single_net">
-                                    <b>£{{ number_format(quoteTotal('SINGLE', 'total', $quote['items']), 2) }}</b>
+                                    <b>£{{ number_format(quoteTotal('SINGLE', 'total', $quote['items']) - $discounts['one_off']['total'], 2) }}</b>
                                 </td>
                             </tr>
                             @if ($discounts['quote'])
@@ -444,7 +446,7 @@
                                         {{ number_format($discounts['quote']['discount'], 2) }} %
                                     </td>
                                     <td class="text-end  text-primary">
-                                        -£{{ number_format((float) $discounts['quote']['value'], 2) }}
+                                        -£{{ number_format((float) $discounts['quote']['total'], 2) }}
                                     </td>
                                 </tr>
                             @endif
@@ -454,7 +456,7 @@
                                 </td>
                                 <td></td>
                                 <td id="total_net">
-                                    <b>£{{ number_format($quote['total'], 2) }}</b>
+                                    <b>£{{ number_format($quote['total'] - $discounts['quote']['total'], 2) }}</b>
                                 </td>
                             </tr>
                         </tbody>

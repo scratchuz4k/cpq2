@@ -29,14 +29,17 @@ class QuoteDiscount extends Model
         static::addGlobalScope(new TenantScope);
 
         static::saved(function ($discount) {
-            $discount->value = 0;
-            $discount->total = 0;
-            $discount->saveQuietly();
+            foreach ($discount->quote->discounts as $discount) {
+                $discount->value = 0;
+                $discount->total = 0;
+                $discount->saveQuietly();
+            }
 
             foreach ($discount->quote->items as $item) {
                 $item->computeTotals();
                 $item->saveQuietly();
             }
+
             $discount->quote->computeTotals();
             $discount->quote->save();
         });

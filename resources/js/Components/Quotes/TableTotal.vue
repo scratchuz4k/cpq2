@@ -111,7 +111,9 @@ const quoteTotal = () => {
     }
 
     let total = quote.items.reduce((acc, item) => (acc += item.quantity * item.price * item.contract_length), 0);
-    let tempDiscount = quote.discounts.reduce((acc, item) => (acc += item.total), 0);
+    let tempDiscount = quote.discounts
+        .filter((x) => x.entity?.uuid == quote.uuid)
+        .reduce((acc, item) => (acc += item.total), 0);
 
     return total ? total - tempDiscount : 0;
 };
