@@ -80,13 +80,14 @@ const destroy = async () => {
     });
 };
 
-const quoteTotal = (price_plan, column = 'total') => {
+const quoteTotalByPricePlan = (price_plan, column = 'total') => {
     let total = 0;
     let items = quote.items;
 
     if (group) {
         items = quote.items.flatMap((obj) => obj.items ?? obj);
     }
+
     items.forEach((e) => {
         if (e.children?.lenght) {
             total += e.children
@@ -96,7 +97,23 @@ const quoteTotal = (price_plan, column = 'total') => {
             total += e[column];
         }
     });
-    return total;
+
+    let tempDiscount = quote.discounts.find((x) => x.entity?.code == pricePlanskeys[price_plan]);
+
+    return total ? total - (tempDiscount?.total ?? 0) : 0;
+};
+
+const quoteTotal = () => {
+    let items = quote.items;
+
+    if (group) {
+        items = quote.items.flatMap((obj) => obj.items ?? obj);
+    }
+
+    let total = quote.items.reduce((acc, item) => (acc += item.quantity * item.price * item.contract_length), 0);
+    let tempDiscount = quote.discounts.reduce((acc, item) => (acc += item.total), 0);
+
+    return total ? total - tempDiscount : 0;
 };
 
 const init = () => {
@@ -145,7 +162,7 @@ watch(
                 </td>
                 <td></td>
                 <td class="bold">
-                    {{ format.GBP(quoteTotal('Recurring')) }}
+                    {{ format.GBP(quoteTotalByPricePlan('Recurring')) }}
                 </td>
                 <td v-if="!props.preview"></td>
             </tr>
@@ -155,7 +172,7 @@ watch(
                 </td>
                 <td></td>
                 <td id="total_net" class="bold">
-                    {{ format.GBP(quoteTotal('One-Off')) }}
+                    {{ format.GBP(quoteTotalByPricePlan('One-Off')) }}
                 </td>
                 <td v-if="!props.preview"></td>
             </tr>
@@ -182,7 +199,7 @@ watch(
                         min="0"
                     />
                 </td>
-                <td class="text-primary">-{{ format.GBP(discount.value) }}</td>
+                <td class="text-primary">-{{ format.GBP(discount.total) }}</td>
                 <td v-if="!props.preview">
                     <div class="d-flex justify-content-end">
                         <template v-if="!isEditing">
@@ -230,7 +247,7 @@ watch(
                 </th>
                 <th></th>
                 <th id="total_net" style="font-size: 16px">
-                    {{ format.GBP(quote.total) }}
+                    {{ format.GBP(quoteTotal()) }}
                 </th>
                 <th v-if="!props.preview"></th>
             </tr>

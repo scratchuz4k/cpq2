@@ -140,8 +140,16 @@ class Quote extends Model
         $this->total_tax = 0;
         $this->total_gross = 0;
 
+        $priceplans = PricePlan::get();
+        foreach ($priceplans as $priceplan) {
+            $temp = $this->items->where('pricePlan.code', $priceplan->code);
+            if (! $temp->count()) {
+                $this->discounts->where('discountable_type', "App\Models\PricePlan")->where('discountable_id', $priceplan->id)->each->deleteQuietly();
+            }
+        }
+
         if (! $this->items->count()) {
-            $this->discounts->each->deleteQuietly();
+            $this->discounts->where('discountable_type', "App\Models\Quote")->where('discountable_id', $this->id)->each->deleteQuietly();
         }
 
         foreach ($this->items as $item) {
@@ -151,6 +159,7 @@ class Quote extends Model
             $this->total_tax += $item->total_tax;
             $this->total_gross += $item->total_gross;
         }
+
         $this->total = format_currency($this->total);
         $this->total_tax = format_currency($this->total_tax);
         $this->total_gross = format_currency($this->total_gross);

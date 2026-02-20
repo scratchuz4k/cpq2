@@ -20,15 +20,20 @@ if (props.preview) {
 }
 
 const quoteTotal = (key) => {
-    return quote.items
+    let total = quote.items
         .filter((x) => x.price_plan && x.price_plan.code == key)
         .reduce((acc, item) => (acc += item.quantity * item.price), 0);
+    let tempDiscount = quote.discounts.find((x) => x.entity?.code == key);
+    return total ? total - (tempDiscount?.value ?? 0) : 0;
 };
 
 const quoteTotalMonths = (key) => {
-    return quote.items
+    let total = quote.items
         .filter((x) => x.price_plan && x.price_plan.code == key)
         .reduce((acc, item) => (acc += item.quantity * item.price * item.contract_length), 0);
+    let tempDiscount = quote.discounts.find((x) => x.entity?.code == key);
+
+    return total ? total - (tempDiscount?.total ?? 0) : 0;
 };
 
 const filterColumns = (columns, code) => {
