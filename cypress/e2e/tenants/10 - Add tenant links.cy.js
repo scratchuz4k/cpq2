@@ -11,7 +11,7 @@ describe('Update tenant logo', () => {
         cy.get('#header-new-link-add').click();
         cy.get('.notyf').contains('Please enter a valid URL');
         cy.get('#header-new-link-url').type('https://quotes.example.com');
-        cy.get('#tenant-new-link-add').click();
+        cy.get('#header-new-link-add').click();
         cy.get('#btn-save-tenant').click();
         cy.visit('/tenants');
         cy.get('#navbarSupportedContent .nav-link').contains('Quotes Link').should('exist');
