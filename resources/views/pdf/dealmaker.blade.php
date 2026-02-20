@@ -45,15 +45,22 @@
 
     function getDiscount($quote, $model, $id)
     {
+        $temp = null;
         if ($model === 'App\Models\Quote') {
-            return collect($quote['discounts'])->where('discountable_type', $model)->where('entity.uuid', $id)->first();
+            $temp = collect($quote['discounts'])
+                ->where('discountable_type', $model)
+                ->where('entity.uuid', $id)
+                ->first();
         }
 
         if ($model === 'App\Models\PricePlan') {
-            return collect($quote['discounts'])->where('discountable_type', $model)->where('entity.code', $id)->first();
+            $temp = collect($quote['discounts'])
+                ->where('discountable_type', $model)
+                ->where('entity.code', $id)
+                ->first();
         }
 
-        return null;
+        return $temp ? $temp : ['discount' => 0, 'value' => 0, 'total' => 0];
     }
 
     $discounts = [
@@ -62,6 +69,7 @@
         'monthly' => getDiscount($quote, 'App\Models\PricePlan', 'MONTHLY'),
     ];
 @endphp
+
 
 <!doctype html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">

@@ -57,6 +57,11 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withExceptions(function (Exceptions $exceptions) {
         Integration::handles($exceptions);
         $exceptions->respond(function (Response $response, Throwable $exception, Request $request) {
+
+            if (config('app.debug')) {
+                return $response;
+            }
+
             $status = $response->getStatusCode();
             $message = $exception->getMessage()
                 ?: $response->getContent()
