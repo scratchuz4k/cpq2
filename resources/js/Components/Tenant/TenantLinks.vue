@@ -64,8 +64,8 @@
                     </div>
                 </th>
                 <th class="text-end">
-                    <a class="btn p-2 mx-1 border-0" role="button" @click="add()">
-                        <font-awesome-icon :id="`${props.id}-new-link-add`" :icon="['fas', 'add']" />
+                    <a :id="`${props.id}-new-link-add`" class="btn p-2 mx-1 border-0" role="button" @click="add()">
+                        <font-awesome-icon :icon="['fas', 'add']" />
                     </a>
                 </th>
             </tr>
