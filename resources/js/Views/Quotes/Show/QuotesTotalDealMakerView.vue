@@ -86,14 +86,6 @@ const items = ref([
                 <TableDealMaker v-else :pricePlans="pricePlans" :preview="preview"></TableDealMaker>
 
                 <div class="mb-5">
-                    <div>
-                        <p class="payment-info border-bottom pb-3 mb-3 big bold">
-                            <span class="text-primary">1 payment </span> of {{ format.GBP(quoteTotal('SINGLE')) }}<br />
-                            followed by
-                            <span class="text-primary"> monthly payments</span> of
-                            {{ format.GBP(quoteQuantityPrice('MONTHLY')) }}
-                        </p>
-                    </div>
                     <div class="d-flex justify-content-between">
                         <a
                             v-if="!quote.is_blocked"

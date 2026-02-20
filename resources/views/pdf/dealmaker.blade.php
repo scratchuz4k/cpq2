@@ -1,5 +1,6 @@
 @php
-    $isConnectivity = !is_null($quote['solution_type']) && $quote['solution_type']['code'] == 3 ? true : false;
+    //$isConnectivity = !is_null($quote['solution_type']) && $quote['solution_type']['code'] == 3 ? true : false;
+    $isConnectivity = false;
 
     $leafNodes = getLeafNodesWithChildren($quote['items']);
     $quote['items'] = $leafNodes;
@@ -96,6 +97,42 @@
         .text-primary {
             color: var(--color-purple) !important;
         }
+
+        .column-name-header,
+        .column-name-body {
+            width: 50%;
+        }
+
+        #table-one_off .column-name-header,
+        #table-one_off .column-name-body {
+            width: 60% !important;
+        }
+
+        .column-quantity-body,
+        .column-quantity-header,
+        .column-contract_length-header,
+        .column-contract_length-body {
+            width: 10% !important;
+            text-align: center;
+        }
+
+        .column-discount-body,
+        .column-discount-header {
+            width: 10% !important;
+            text-align: center;
+        }
+
+        .column-margin-header,
+        .column-margin-body,
+        .column-price-header,
+        .column-price-body {
+            text-align: right;
+        }
+
+        .column-speed-body,
+        .column-bearer-body {
+            white-space: nowrap;
+        }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
         integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
@@ -163,18 +200,18 @@
                             <thead>
                                 <tr>
                                     @if ($isConnectivity)
-                                        <th class="column-provider-header d-xl-table-cell w-5">Provider</th>
-                                        <th class="column-subprovider-header d-xl-table-cell w-5">SubProvider</th>
+                                        <th class="column-provider-header d-xl-table-cell">Provider</th>
+                                        <th class="column-subprovider-header d-xl-table-cell">SubProvider</th>
                                     @endif
-                                    <th class="column-name-header w-20">Name</th>
-                                    <th class="column-contract_lenght-header w-5">Months</th>
+                                    <th class="column-name-header">Name</th>
+                                    <th class="column-contract_lenght-header">Months</th>
                                     @if ($isConnectivity)
-                                        <th class="column-speed-header w-5">Speed</th>
-                                        <th class="column-bearer-header w-5">Bearer</th>
+                                        <th class="column-speed-header">Speed</th>
+                                        <th class="column-bearer-header">Bearer</th>
                                     @endif
-                                    <th class="column-quantity-header w-5">Quantity</th>
-                                    <th class="column-price-header w-10">Price</th>
-                                    <th class="column-discount-header w-5">Discount</th>
+                                    <th class="column-quantity-header">Quantity</th>
+                                    <th class="column-price-header">Price</th>
+                                    <th class="column-discount-header">Discount</th>
                                     <th class="column-total-header text-end" style="white-space: nowrap;">Total </th>
                                 </tr>
                             </thead>
@@ -265,7 +302,7 @@
                                         </td>
                                     </tr>
                                 @endforeach
-                                @if ($discounts['monthly'])
+                                @if ($discounts['monthly']['discount'])
                                     <tr class="item-row" style="vertical-align: middle;">
                                         <td class="column-name-body" colspan="{{ $isConnectivity ? '8' : '4' }}">
                                             Recurring Discount
@@ -389,7 +426,7 @@
                                         </td>
                                     </tr>
                                 @endforeach
-                                @if ($discounts['one_off'])
+                                @if ($discounts['one_off']['discount'])
                                     <tr class="item-row" style="vertical-align: middle;"></tr>
                                     <td class="column-name-body" colspan="{{ $isConnectivity ? '7' : '3' }}">
                                         One-Off Discount
@@ -419,11 +456,11 @@
                     </div>
                     <table class="table table-dealmaker table-bordered text-end">
                         <thead>
-                            <tr class="border-0">
-                                <th></th>
-                                <th></th>
-                                <th></th>
-                            </tr>
+                            <colgroup>
+                                <col style="width: 70%" class="text-start" />
+                                <col style="width: 9%" />
+                                <col style="width: 20%" />
+                            </colgroup>
                         </thead>
                         <tbody>
                             <tr>
@@ -445,7 +482,7 @@
                                     <b>£{{ number_format(quoteTotal('SINGLE', 'total', $quote['items']) - $discounts['one_off']['total'], 2) }}</b>
                                 </td>
                             </tr>
-                            @if ($discounts['quote'])
+                            @if ($discounts['quote']['discount'])
                                 <tr class="item-row" style="vertical-align: middle;">
                                     <td>
                                         <p class="small text-start">Overall Discount</p>

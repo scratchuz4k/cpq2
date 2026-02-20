@@ -112,7 +112,7 @@ emitter.on('quote-items:updated', () => {
                                 </span>
                             </div>
                         </th>
-                        <th v-if="!props.preview"></th>
+                        <th v-if="!preview && !quote.is_blocked"></th>
                     </tr>
                 </tfoot>
             </table>

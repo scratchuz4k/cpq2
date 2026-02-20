@@ -199,7 +199,7 @@ watch(
                     />
                 </td>
                 <td class="text-primary">-{{ format.GBP(discount.total) }}</td>
-                <td v-if="!props.preview">
+                <td v-if="!props.preview && !quote.is_blocked">
                     <div class="d-flex justify-content-end">
                         <template v-if="!isEditing">
                             <font-awesome-icon

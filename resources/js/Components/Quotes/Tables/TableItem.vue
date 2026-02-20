@@ -137,7 +137,16 @@ emitter.on('quote-items:toggle:is-editing', () => (item.value.is_editing = false
     background: #f5cccc !important;
 }
 .red-bg > td:nth-child(1) {
+    padding-left: 0.625rem !important;
+}
+.red-bg > td:nth-child(1):before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
     border-width: 0;
-    border-left: 4px solid #dc3545 !important;
+    width: 4px;
+    height: 100%;
+    background: #dc3545;
 }
 </style>

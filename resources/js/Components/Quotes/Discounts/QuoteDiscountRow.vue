@@ -124,8 +124,7 @@ watch(
                 min="0"
             />
         </td>
-        <td v-if="!props.preview"></td>
-        <td class="text-right text-primary">
+        <td colspan="2" class="text-right text-primary">
             <p v-if="props.preview || props.pricePlan.name != 'Recurring'" class="small column_total">
                 -{{ format.GBP(discount.value) }}
             </p>
@@ -135,7 +134,7 @@ watch(
                 <span class="cpq-tooltip-text bold"> Overall Discount:<br />- {{ format.GBP(discount.total) }} </span>
             </div>
         </td>
-        <td v-if="!props.preview">
+        <td v-if="!props.preview && !quote.is_blocked">
             <div class="d-flex justify-content-end">
                 <template v-if="!isEditing">
                     <font-awesome-icon
