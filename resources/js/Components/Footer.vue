@@ -31,9 +31,13 @@
             <div class="row">
                 <div class="col">
                     <div class="d-flex flex-column flex-sm-row justify-content-end">
-                        <a v-for="link in links.filter((x) => x.is_active)" :href="link.url" target="_blank">{{
-                            link.label
-                        }}</a>
+                        <a
+                            class="footer-link"
+                            v-for="link in links.filter((x) => x.is_active)"
+                            :href="link.url"
+                            target="_blank"
+                            >{{ link.label }}</a
+                        >
                     </div>
                 </div>
             </div>
