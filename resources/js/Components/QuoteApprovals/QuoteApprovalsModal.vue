@@ -1,5 +1,19 @@
 <template>
     <div
+        v-if="['quote'].includes(quote.status.toLowerCase()) && has_quote_approval == '0'"
+        class="approvals-group-button flex me-2 p-0"
+    >
+        <button id="quote-approval-history" @click="sendToOrder()" class="btn btn-primary">
+            <font-awesome-icon
+                v-if="quote.items.some((x) => !x.is_margin_valid)"
+                :icon="['fas', 'thumbs-up']"
+                class="me-2"
+            />
+            <font-awesome-icon v-else :icon="['fas', 'thumbtack']" class="me-2" />
+            <span> Send to Order </span>
+        </button>
+    </div>
+    <div
         class="approvals-group-button flex me-2 p-0"
         v-if="
             ['quote', 'pending', 'pending_client', 'approved', 'completed', 'rejected'].includes(
@@ -43,14 +57,21 @@
                 id="quote-approval-start"
                 v-else
                 class="btn btn-primary"
-                :disabled="items.some((x) => x.status.toLowerCase() === 'pending')"
-                @click="startApproval()"
+                :disabled="items.some((x) => x.status.toLowerCase() === 'pending') || !can('create quote_approval')"
+                @click="sendToOrder()"
                 style="border-radius: 5px 0 0 5px"
             >
                 <font-awesome-icon :icon="['fas', 'thumbs-up']" class="me-2" />
 
                 <span v-if="quote.status.toLowerCase() == 'pending_client'">Waiting Client Approval</span>
-                <span v-else>Send to Approval</span>
+                <span v-else-if="quote_approval_flow == 'Internal review'"> Send to Approval </span>
+                <span v-else>
+                    {{
+                        quote.items.some((x) => !x.is_margin_valid) && quote_approval_flow == 'Margin review'
+                            ? 'Send to Approval'
+                            : 'Send to Order'
+                    }}
+                </span>
             </button>
         </template>
 
@@ -187,6 +208,7 @@ const meta = reactive({
     first: 1
 });
 const has_quote_approval = tenant.configurations.has_quote_approval ?? '0';
+const quote_approval_flow = tenant.configurations.quote_approval_flow ?? 'Internal Review';
 
 const getApprovals = async () => {
     let query = queryString.stringify({

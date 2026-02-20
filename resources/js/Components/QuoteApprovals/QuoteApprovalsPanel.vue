@@ -27,6 +27,7 @@
             Currently in client review, here's the
             <a target="_blank" :href="route('share_link', { token: shareLink.token })">link</a>.
         </p>
+        <button class="btn btn-primary">Send Email</button>
     </div>
 </template>
 <script setup>
