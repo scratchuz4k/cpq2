@@ -58,7 +58,7 @@ return Application::configure(basePath: dirname(__DIR__))
         Integration::handles($exceptions);
         $exceptions->respond(function (Response $response, Throwable $exception, Request $request) {
 
-            if (config('app.debug')) {
+            if (config('app.debug') && app()->environment(['local', 'testing'])) {
                 return $response;
             }
 
