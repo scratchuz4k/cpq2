@@ -267,6 +267,12 @@ watch(
     },
     { immediate: true }
 );
+
+onMounted(() => {
+    window.addEventListener('pageshow', (event) => {
+        isLoading.value = false;
+    });
+});
 getReviewProduct();
 </script>
 <template>
