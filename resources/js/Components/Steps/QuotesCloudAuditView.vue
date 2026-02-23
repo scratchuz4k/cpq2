@@ -2,7 +2,7 @@
 import { quote, setQuote, getQuote } from '@composables/useQuote';
 import axios from 'axios';
 import { usePage } from '@inertiajs/vue3';
-import { computed, reactive, ref, watch } from 'vue';
+import { computed, onMounted, reactive, ref, watch } from 'vue';
 import queryString from 'query-string';
 import format from '@/Composables/format.js';
 import { Checkbox } from 'primevue';
@@ -229,6 +229,12 @@ watch(
     },
     { immediate: true }
 );
+
+onMounted(() => {
+    window.addEventListener('pageshow', (event) => {
+        isLoading.value = false;
+    });
+});
 getReviewProduct();
 </script>
 <template>
