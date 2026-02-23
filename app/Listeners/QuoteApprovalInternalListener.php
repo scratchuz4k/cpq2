@@ -55,10 +55,11 @@ class QuoteApprovalInternalListener
             $hasPemission = get_tenant_config('has_client_approval');
             if (! $hasPemission) {
                 $this->quoteService->update($quoteApproval->quote, ['status' => QuoteStatusesEnum::APPROVED->name]);
-            } else {
-                $this->quoteApprovalService->store(['quote_id' => $quoteApproval->quote_id, 'flow' => QuoteApprovalFlowEnum::CLIENT->value]);
-                $this->quoteService->update($quoteApproval->quote, ['status' => QuoteStatusesEnum::PENDING_CLIENT->name]);
             }
+            // else {
+            //     $this->quoteApprovalService->store(['quote_id' => $quoteApproval->quote_id, 'flow' => QuoteApprovalFlowEnum::CLIENT->value]);
+            //     $this->quoteService->update($quoteApproval->quote, ['status' => QuoteStatusesEnum::PENDING_CLIENT->name]);
+            // }
 
             $description = 'Your quote #'.$quoteApproval->quote->id.' for the account '.$quoteApproval->quote->account->name.' has been approved.';
             $type = NotificationEnum::QuoteApproved;

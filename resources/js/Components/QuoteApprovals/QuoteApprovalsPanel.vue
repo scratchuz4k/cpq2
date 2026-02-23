@@ -23,11 +23,41 @@
     </div>
     <div v-else class="panel">
         <p class="big bold">Action Required:</p>
-        <p class="small mt-2">
-            Currently in client review, here's the
-            <a target="_blank" :href="route('share_link', { token: shareLink.token })">link</a>.
-        </p>
-        <button class="btn btn-primary">Send Email</button>
+        <div class="my-3">
+            <label for="expiration_data" class="form-label"> Currently in client review, here's the link. </label>
+            <div class="input-group">
+                <input
+                    id="input-shareable-link"
+                    type="text"
+                    class="form-control"
+                    :value="route('share_link', { token: shareLink.token })"
+                    disabled
+                />
+
+                <button
+                    class="input-group-text"
+                    @click="copyToClipboard(route('share_link', { token: shareLink.token }))"
+                >
+                    <font-awesome-icon role="button" :icon="['far', 'clipboard']" />
+                </button>
+            </div>
+            <div class="input-group mt-2">
+                <input
+                    id="input-shareable-link"
+                    type="password"
+                    class="form-control"
+                    :value="approval.configs?.link_password"
+                    disabled
+                />
+
+                <button class="input-group-text" @click="copyToClipboard(approval.configs?.link_password)">
+                    <font-awesome-icon role="button" :icon="['far', 'clipboard']" />
+                </button>
+            </div>
+            <p class="small mt-3">
+                Expires at: {{ approval.configs?.link_expiration_date ?? 'without expiration date' }}
+            </p>
+        </div>
     </div>
 </template>
 <script setup>
@@ -63,6 +93,15 @@ const init = () => {
     let clientApproval = quote.approvals.find((x) => x.status == 'PENDING' && x.flow == 'Client review');
     if (clientApproval) {
         Object.assign(shareLink, clientApproval.shared_link);
+    }
+};
+
+const copyToClipboard = async (msg) => {
+    try {
+        await navigator.clipboard.writeText(msg);
+        notyf.success('Copied to clipboard!');
+    } catch (err) {
+        notyf.error('Failed to copy text: ' + err);
     }
 };
 

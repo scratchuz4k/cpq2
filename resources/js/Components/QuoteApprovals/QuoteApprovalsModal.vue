@@ -62,16 +62,7 @@
                 style="border-radius: 5px 0 0 5px"
             >
                 <font-awesome-icon :icon="['fas', 'thumbs-up']" class="me-2" />
-
-                <span v-if="quote.status.toLowerCase() == 'pending_client'">Waiting Client Approval</span>
-                <span v-else-if="quote_approval_flow == 'Internal review'"> Send to Approval </span>
-                <span v-else>
-                    {{
-                        quote.items.some((x) => !x.is_margin_valid) && quote_approval_flow == 'Margin review'
-                            ? 'Send to Approval'
-                            : 'Send to Order'
-                    }}
-                </span>
+                <span>{{ getButtonText() }}</span>
             </button>
         </template>
 
@@ -188,7 +179,7 @@
 </template>
 <script setup>
 import Dialog from 'primevue/dialog';
-import { ref, onMounted, reactive } from 'vue';
+import { ref, onMounted, reactive, watch } from 'vue';
 import { quote, getQuote } from '@composables/useQuote';
 import queryString from 'query-string';
 import Paginator from 'primevue/paginator';
@@ -209,6 +200,7 @@ const meta = reactive({
 });
 const has_quote_approval = tenant.configurations.has_quote_approval ?? '0';
 const quote_approval_flow = tenant.configurations.quote_approval_flow ?? 'Internal Review';
+const has_client_approval = !!tenant.configurations.has_client_approval ?? false;
 
 const getApprovals = async () => {
     let query = queryString.stringify({
@@ -222,20 +214,6 @@ const getApprovals = async () => {
         items.value = res.data.data;
         meta.total = res.data.meta?.total ?? res.data.total;
         meta.first = (meta.page - 1) * meta.limit;
-    } catch (ex) {
-        notyf.error(ex.response?.data?.message ?? 'Something went wrong!');
-    }
-};
-
-const startApproval = async () => {
-    try {
-        let res = await axios.post(route('api.quote-approvals.store'), {
-            quote_id: quote.id
-        });
-        notyf.success(`Quote successfully sent for approval!`);
-        getApprovals();
-        await getQuote(quote.id);
-        //window.location = '/dashboard';
     } catch (ex) {
         notyf.error(ex.response?.data?.message ?? 'Something went wrong!');
     }
@@ -319,8 +297,39 @@ const handlePaginator = (ev) => {
     getApprovals();
 };
 
+const getButtonText = () => {
+    if (quote_approval_flow == 'Margin review' && !quote.items.some((x) => x.is_margin_valid)) {
+        return 'Send to Order';
+    }
+
+    let lastApproval = items.value.length ? items.value[0] : null;
+
+    if (!lastApproval) {
+        return 'Send to Approval';
+    }
+
+    if (has_client_approval && lastApproval.status.toLowerCase() === 'approved') {
+        return 'Send to Client Approval';
+    }
+
+    if (quote.status.toLowerCase() == 'pending_client') {
+        return 'Waiting Client Approval';
+    }
+
+    if (quote.status.toLowerCase() == 'pending') {
+        return 'Waiting for Approval';
+    }
+
+    return 'Send to Approval';
+};
+
 onMounted(() => {
     getApprovals();
+});
+
+watch(quote, () => {
+    getApprovals();
+    getButtonText();
 });
 </script>
 <style>

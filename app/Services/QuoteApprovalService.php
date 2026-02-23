@@ -9,6 +9,7 @@ use App\Enums\QuoteStatusesEnum;
 use App\Helpers\DynamicEmail;
 use App\Models\Quote;
 use App\Models\QuoteApproval;
+use App\Models\Tenant;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
@@ -27,40 +28,61 @@ class QuoteApprovalService
     public function store(array $array): QuoteApproval
     {
         $array['status'] = QuoteApprovalStatus::PENDING->name;
-        $array['flow'] = array_key_exists('flow', $array) ? $array['flow'] : get_tenant_config('quote_approval_flow');
+
         $quote = Quote::find($array['quote_id']);
-        $quote->update(['status' => QuoteStatusesEnum::PENDING->name]);
+
+        $array['flow'] = array_key_exists('flow', $array) ? $array['flow'] : get_tenant_config('quote_approval_flow');
+        $status = QuoteStatusesEnum::PENDING->name;
+
+        $lastApproval = count($quote->approvals) ? $quote->approvals[0] : null;
+        if ($lastApproval && $lastApproval->status == QuoteApprovalStatus::APPROVED->name) {
+            $isInternalOrMargin = in_array($lastApproval->flow, [QuoteApprovalFlowEnum::INTERNAL->value, QuoteApprovalFlowEnum::MARGIN->value]);
+
+            $array['flow'] = $isInternalOrMargin ? QuoteApprovalFlowEnum::CLIENT->value : $array['flow'];
+            $status = $isInternalOrMargin ? QuoteStatusesEnum::PENDING_CLIENT->name : $status;
+        }
+
+        $quote->update(['status' => $status]);
         $quoteApproval = QuoteApproval::create($array);
 
         if ($quoteApproval->flow == QuoteApprovalFlowEnum::CLIENT->value) {
             $password = Str::random(8);
+
+            $tenant = Tenant::current();
+            $expirationDays = ($tenant->configs && array_key_exists('quote_expiration_days', $tenant->configs))
+                ? (int) $tenant->configs['quote_expiration_days']
+                : 30;
+            $expirationDate = $quote->created_at->addDays($expirationDays);
+
             $link = $this->sharedLinkService->store([
                 'shareable_type' => 'quote_approvals',
                 'shareable_id' => $quoteApproval->id,
                 'password' => $password,
+                'expires_at' => $expirationDate,
             ]);
 
-            $contact = $quote->account->contacts->first();
-            if (! $contact || ! $contact->email) {
-                throw new Exception('Account doesnt have a valid contact!');
-            }
+            $quoteApproval->syncConfigurations(['link_password' => $password, 'link_expiration_date' => $expirationDate]);
+            // $contact = $quote->account->contacts->first();
+            // if (! $contact || ! $contact->email) {
+            //     throw new Exception('Account doesnt have a valid contact!');
+            // }
 
-            Mail::queue(
-                new DynamicEmail(
-                    user: Auth::user(),
-                    tenant: Auth::user()->currentTenant,
-                    templateEnum: EmailTemplatesEnum::QUOTE_CLIENT_REVIEW,
-                    parameters: [
-                        'quote_link' => route('share_link', ['token' => $link->token]),
-                        'account_name' => $quote->account->name,
-                        'quote_number' => $quote->id,
-                        'quote_password' => $password,
-                    ],
-                    overrides: [
-                        'to' => $contact->email,
-                    ],
-                )
-            );
+            // Mail::queue(
+            //     new DynamicEmail(
+            //         user: Auth::user(),
+            //         tenant: Auth::user()->currentTenant,
+            //         templateEnum: EmailTemplatesEnum::QUOTE_CLIENT_REVIEW,
+            //         parameters: [
+            //             'quote_link' => route('share_link', ['token' => $link->token]),
+            //             'account_name' => $quote->account->name,
+            //             'quote_number' => $quote->id,
+            //             'quote_password' => $password,
+            //         ],
+            //         overrides: [
+            //             'to' => $contact->email,
+            //         ],
+            //     )
+            // );
         }
 
         return $quoteApproval;
@@ -80,6 +102,12 @@ class QuoteApprovalService
     public function validateStore(Quote $quote): ?JsonResponse
     {
         if ($quote->status != QuoteStatusesEnum::QUOTE->name) {
+
+            $hasPemission = get_tenant_config('has_client_approval');
+            if ($quote->status == QuoteStatusesEnum::PENDING->name && $hasPemission) {
+                return null;
+            }
+
             return response()->json(['message' => 'Quote is not ready for approval.'], 422);
         }
 

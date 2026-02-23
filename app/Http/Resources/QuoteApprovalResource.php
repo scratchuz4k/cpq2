@@ -23,6 +23,7 @@ class QuoteApprovalResource extends JsonResource
             'approver' => new UserResource($this->approver),
             'shared_link' => (new SharedLinkResource($this->sharedLink))->resolve(),
             'quote' => $this->quote,
+            'configs' => $this->configs,
         ];
     }
 }

@@ -32,7 +32,7 @@ class TenantController extends BaseController
         return Inertia::render('Tenant/Index', [
             'isSuperAdmin' => $user->hasRole('Super Admin'),
             'tenant' => (new TenantResource($user->currentTenant))->resolve(),
-            'quote_approval_flows' => QuoteApprovalFlowEnum::asArray(),
+            'quote_approval_flows' => QuoteApprovalFlowEnum::availableFlows(),
         ]);
     }
 
