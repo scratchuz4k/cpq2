@@ -58,17 +58,23 @@ const search = _.debounce(async (clearOptions = false) => {
     });
 
     isLoading.value = true;
-    let res = await axios.get(`/api${props.url}?${string}`);
-    if (clearOptions) {
+    try {
+        let res = await axios.get(`/api${props.url}?${string}`);
+        if (clearOptions) {
+            options.value = [];
+        }
+        meta.total_pages = res.data.meta?.last_page ?? res.data.last_page;
+        if (page.value > 1) {
+            options.value.push(...res.data.data);
+        } else {
+            options.value = res.data.data;
+        }
+    } catch (error) {
         options.value = [];
+        console.error(error.response?.data?.message ?? error.response?.data);
+    } finally {
+        isLoading.value = false;
     }
-    meta.total_pages = res.data.meta?.last_page ?? res.data.last_page;
-    if (page.value > 1) {
-        options.value.push(...res.data.data);
-    } else {
-        options.value = res.data.data;
-    }
-    isLoading.value = false;
 }, 200);
 
 const getValue = (item, key) => {
