@@ -2,12 +2,14 @@
 import _ from 'lodash';
 import ApplicationLogo from '@/Components/ApplicationLogo.vue';
 import { Link, usePage } from '@inertiajs/vue3';
-import { ref } from 'vue';
+import { Comment, computed, ref, useSlots } from 'vue';
 import * as Sentry from '@sentry/vue';
 import TopBarSearchable from '@/Components/TopBarSearchable.vue';
 import Resources from '@/Components/Resources.vue';
 import { can, hasRole } from '@/Composables/useAuth.js';
+import StepActionBar from '@/Components/Steps/StepActionBar.vue';
 import SvgIcon from '@/Components/Custom/SvgIcon.vue';
+import { actionBarButtons } from '@/Composables/useQuoteSteps.js';
 
 const page = usePage();
 const user = page.props.auth.user;
@@ -20,11 +22,37 @@ Sentry.setUser({
 
 defineProps({
     quote: Object,
-    order: Object
+    order: Object,
+    showStepActionBar: Boolean
 });
 
 const activeTab = ref(window.location.pathname.replace(/^\/|\/$/g, ''));
 const currentTenant = ref(page.props.tenant);
+const slots = useSlots();
+
+const hasActionBarContent = computed(() => {
+    if (!slots.actionBar) {
+        return false;
+    }
+
+    const nodes = slots.actionBar();
+
+    const flatten = (items) => {
+        const res = [];
+        items.forEach((n) => {
+            if (Array.isArray(n)) {
+                res.push(...flatten(n));
+            } else if (n) {
+                res.push(n);
+            }
+        });
+        return res;
+    };
+
+    const flatNodes = flatten(Array.isArray(nodes) ? nodes : [nodes]);
+
+    return flatNodes.some((node) => node.type !== Comment);
+});
 </script>
 
 <template>
@@ -122,6 +150,9 @@ const currentTenant = ref(page.props.tenant);
             <slot />
         </div>
     </main>
+    <StepActionBar v-if="showStepActionBar && (hasActionBarContent || actionBarButtons.length)">
+        <slot name="actionBar"></slot>
+    </StepActionBar>
     <Footer></Footer>
     <Resources></Resources>
 </template>
@@ -151,7 +182,7 @@ const currentTenant = ref(page.props.tenant);
 .search-option {
     text-decoration: none;
     color: black;
-    font-size: 0.5m;
+    font-size: 0.5em;
     cursor: pointer;
     margin-bottom: 5px;
     padding: 15px;

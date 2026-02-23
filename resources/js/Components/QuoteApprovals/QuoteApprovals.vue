@@ -1,6 +1,6 @@
 <template>
     <div
-        class="approvals-group-button flex me-2 p-0"
+        class="approvals-group-button flex ms-2 p-0"
         v-if="['quote', 'pending', 'approved', 'completed', 'rejected'].includes(quote.status.toLowerCase())"
     >
         <button
@@ -142,14 +142,14 @@
                             >
                                 <button
                                     :id="'quote-approval-approve-' + index"
-                                    class="btn btn-sm btn-primary me-2"
+                                    class="btn btn-sm btn-primary ms-2"
                                     @click="() => updateQuoteApproval(item, 'approved')"
                                 >
                                     <font-awesome-icon :icon="['fas', 'check']" />
                                 </button>
                                 <button
                                     :id="'quote-approval-reject-' + index"
-                                    class="btn btn-sm btn-secondary"
+                                    class="btn btn-sm btn-secondary ms-2"
                                     @click="() => updateQuoteApproval(item, 'rejected')"
                                 >
                                     <font-awesome-icon :icon="['fas', 'x']" />
