@@ -204,11 +204,13 @@ onMounted(async () => {
 });
 
 watchEffect(() => {
+    if (proxyValue.value !== props.index) return;
+
     actionBarButtons.value = [
         props.index > 0
             ? {
                   btn: 'back',
-                  id: `btn-step-${proxyValue.value + 1}-previous`,
+                  id: `btn-step-${props.index + 1}-previous`,
                   disabled: meta.isLoading,
                   onClick: () => proxyValue.value--
               }
@@ -216,7 +218,7 @@ watchEffect(() => {
         {
             btn: 'next',
             disabled: disableButton.value,
-            id: `btn-step-${proxyValue.value + 1}-next`,
+            id: `btn-step-${props.index + 1}-next`,
             onClick: emitSaveQuote
         }
     ].filter(Boolean);

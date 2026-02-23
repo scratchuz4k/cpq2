@@ -63,8 +63,6 @@ const items = ref([
                     <font-awesome-icon v-if="btn.icon" :icon="btn.icon" :class="btn.iconClass" class="ms-2" />
                     <font-awesome-icon v-else :icon="['fas', 'arrow-right']" />
                 </button>
-                <!--                <button v-else -->
-                <!--                ></button>-->
             </template>
         </template>
     </AuthenticatedLayout>
