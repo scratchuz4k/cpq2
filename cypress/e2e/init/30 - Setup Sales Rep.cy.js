@@ -31,7 +31,7 @@ describe('Setup Sales Rep.cy', () => {
         cy.get('.notyf').contains('Created with Success');
         cy.visit('/quotes/create');
         cy.selectLazyOption('account_id', account.name);
-        cy.get('#btn-next-step').click();
+        cy.get('.step-action-bar #btn-next-step').click();
 
         cy.get('#solution_type-mobile').click();
         cy.get('#btn-create-quote').click();

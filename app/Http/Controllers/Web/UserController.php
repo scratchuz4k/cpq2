@@ -37,16 +37,7 @@ class UserController extends BaseController
     {
         $users = User::getChildAndOrphansUser();
 
-        $noManagerOptions = collect([
-            [
-                'id' => 0,
-                'name' => 'No manager',
-                'parent_id' => null,
-            ],
-        ]);
-
         return Inertia::render('Users/Create', [
-            'managers' => $noManagerOptions->merge($users->get()),
             'parent_id' => $users->where('id', request('parent_id'))->first() ? intval(request('parent_id')) : null,
         ]);
     }
@@ -80,17 +71,9 @@ class UserController extends BaseController
     {
         $users = User::getChildAndOrphansUser();
         $users = $users->where('id', '!=', $user->id);
-        $noManagerOptions = collect([
-            [
-                'id' => 0,
-                'name' => 'No manager',
-                'parent_id' => null,
-            ],
-        ]);
 
         return Inertia::render('Users/Edit', [
-            'user' => (new UserResource($user->load(['tenants'])))->toArray(request()),
-            'managers' => $noManagerOptions->merge($users->get()),
+            'user' => (new UserResource($user->load(['tenants', 'roles'])))->toArray(request()),
             'permissions' => $user->getAllPermissions(),
         ]);
     }

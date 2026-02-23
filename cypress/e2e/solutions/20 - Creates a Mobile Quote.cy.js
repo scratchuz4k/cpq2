@@ -63,7 +63,7 @@ describe('Creates a Mobile Quote', () => {
     it('Creates Mobile Quote', () => {
         cy.visit('/quotes/create');
         cy.selectFirstOption('account_id');
-        cy.get('#btn-next-step').click();
+        cy.get('.step-action-bar #btn-next-step').click();
 
         cy.get('#solution_type-mobile').click();
         cy.get('#btn-create-quote').click();
@@ -117,7 +117,7 @@ describe('Creates a Mobile Quote', () => {
             cy.wait(500);
         });
 
-        cy.get('#btn-step-next').click();
+        cy.get('.step-action-bar #btn-step-next').click();
 
         cy.get('.recurring-item').should('have.length', 3);
         cy.get('.one_off-item').then(($items) => {

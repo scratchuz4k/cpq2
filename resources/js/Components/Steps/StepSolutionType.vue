@@ -1,6 +1,7 @@
 <script setup>
 import format from '@/Composables/format';
-import { computed } from 'vue';
+import { computed, onMounted, watch } from 'vue';
+import { isDisabled } from '@/Composables/useQuoteSteps.js';
 
 const props = defineProps({
     solutionType: Array,
@@ -27,6 +28,21 @@ const icons = {
     10: 'fab fa-microsoft',
     11: 'fas fa-building-shield'
 };
+
+onMounted(() => {
+    isDisabled.value = proxyValue.value.solution_type === null;
+});
+
+watch(
+    () => [proxyValue.value.solution_type],
+    () => {
+        if (proxyValue.value.solution_type === null) {
+            isDisabled.value = true;
+        } else {
+            isDisabled.value = false;
+        }
+    }
+);
 </script>
 
 <template>
@@ -57,7 +73,6 @@ const icons = {
                 <font-awesome-icon class="me-2" :icon="['fas', 'circle-exclamation']"></font-awesome-icon>
                 No solution types available
             </div>
-            <ButtonStep v-model="proxyValue" :disabled="proxyValue.solution_type == null"></ButtonStep>
         </div>
     </div>
 </template>

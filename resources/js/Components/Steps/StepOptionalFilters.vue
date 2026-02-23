@@ -188,7 +188,6 @@ const formatInput = (ev, field, index) => {
                     </div>
                 </div>
             </div>
-            <ButtonStep v-if="showButton" v-model="proxyValue"></ButtonStep>
         </div>
     </div>
 </template>

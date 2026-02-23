@@ -7,35 +7,6 @@
             </p>
             <p class="mb-0 text-primary bold fs-5 pt-1">STEP {{ currentStep + 1 }}/{{ connectivitySteps.length }}</p>
         </div>
-        <div class="d-flex justify-content-end align-items-center">
-            <div>
-                <button v-if="currentStep != 0" class="btn continue-btn" type="button" @click="checkGoPrevious()">
-                    <font-awesome-icon :icon="['fas', 'arrow-left']" class="ms-2"></font-awesome-icon>
-                    Previous Step
-                </button>
-            </div>
-            <div>
-                <button
-                    v-if="connectivitySteps.length == currentStep + 1"
-                    class="btn btn-primary continue-btn"
-                    type="submit"
-                    @click="saveQuote()"
-                >
-                    Continue
-                    <font-awesome-icon :icon="['fas', 'arrow-right']" class="ms-2"></font-awesome-icon>
-                </button>
-                <button
-                    v-else
-                    class="btn btn-primary continue-btn"
-                    type="button"
-                    @click="checkGoNext()"
-                    :disabled="isLoading"
-                >
-                    Next Step
-                    <font-awesome-icon :icon="['fas', 'arrow-right']" class="ms-2"></font-awesome-icon>
-                </button>
-            </div>
-        </div>
     </div>
 
     <div class="row mb-4" v-if="result.length">
@@ -87,10 +58,12 @@
     ></component>
 </template>
 <script setup>
-import { ref, watch } from 'vue';
+import { ref, watch, watchEffect } from 'vue';
 import { getQuote, quote } from '@/Composables/useQuote';
 import { remove, addons, isLoading, checks } from '@/Composables/useConnectivityItem';
 import axios from 'axios';
+import StepActionBar from '@/Components/Steps/StepActionBar.vue';
+import { actionBarButtons } from '@/Composables/useQuoteSteps.js';
 
 const props = defineProps({
     modelValue: Object
@@ -261,6 +234,32 @@ watch(
         getbyGroup();
     }
 );
+
+watchEffect(() => {
+    actionBarButtons.value = [
+        currentStep.value !== 0
+            ? {
+                  btn: 'back',
+                  label: 'Previous Step',
+                  onClick: checkGoPrevious
+              }
+            : null,
+
+        connectivitySteps.value.length === currentStep.value + 1
+            ? {
+                  btn: 'next',
+                  id: 'btn-continue',
+                  label: 'Continue',
+                  onClick: saveQuote
+              }
+            : {
+                  btn: 'next',
+                  disabled: isLoading.value,
+                  label: 'Next Step',
+                  onClick: checkGoNext
+              }
+    ].filter(Boolean);
+});
 
 getComponent();
 checkAddons();

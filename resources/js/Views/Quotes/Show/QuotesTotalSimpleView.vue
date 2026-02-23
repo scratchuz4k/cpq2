@@ -6,6 +6,7 @@ import { getMarginThreshHoldWarning } from '@composables/useQuoteItem';
 import { usePage } from '@inertiajs/vue3';
 import { checkWarnings } from '@composables/warning.js';
 import WarningNote from '@/Components/WarningNote.vue';
+import StepActionBar from '@/Components/Steps/StepActionBar.vue';
 
 const page = usePage();
 const tenant = page.props.tenant;
@@ -52,39 +53,6 @@ const items = ref([
         <div class="d-flex justify-content-between align-items-center">
             <p class="fs-4 me-3 mb-0"><b>Your quote</b></p>
         </div>
-        <div class="d-flex justify-content-between align-items-center">
-            <ActivityDialog
-                :filters="[
-                    { entity: 'Quote', values: quote.id },
-                    {
-                        entity: 'QuoteItem',
-                        values:
-                            quote.items.map((x) => x.id).join(',') +
-                            ',' +
-                            quote.items_trashed.map((x) => x.id).join(',')
-                    },
-                    {
-                        entity: 'QuoteDiscount',
-                        values: quote.discounts.map((x) => x.id).join(',')
-                    }
-                ]"
-            ></ActivityDialog>
-            <ShareableQuote :disabled="quote.items.some((x) => !x.is_margin_valid)"></ShareableQuote>
-
-            <a
-                class="btn btn-outline-primary me-2"
-                :href="route('quotes.preview', { quote: quote.id })"
-                v-if="!quote.items.some((x) => !x.is_margin_valid)"
-            >
-                <font-awesome-icon :icon="['far', 'file-pdf']"></font-awesome-icon>
-                Preview
-            </a>
-            <button class="btn btn-outline-primary me-2" v-else disabled="true">
-                <font-awesome-icon :icon="['far', 'file-pdf']"></font-awesome-icon>
-                Preview
-            </button>
-            <a :href="route('dashboard')" class="btn btn-primary" type="submit"> Save and close </a>
-        </div>
     </div>
 
     <div class="row mb-4">
@@ -99,41 +67,6 @@ const items = ref([
                     <TableTotal :quote="quote"></TableTotal>
                 </div>
             </div>
-        </div>
-    </div>
-
-    <div>
-        <div class="d-flex justify-content-end align-items-center">
-            <ActivityDialog
-                :filters="[
-                    { entity: 'Quote', values: quote.id },
-                    {
-                        entity: 'QuoteItem',
-                        values:
-                            quote.items.map((x) => x.id).join(',') +
-                            ',' +
-                            quote.items_trashed.map((x) => x.id).join(',')
-                    },
-                    {
-                        entity: 'QuoteDiscount',
-                        values: quote.discounts.map((x) => x.id).join(',')
-                    }
-                ]"
-            ></ActivityDialog>
-            <ShareableQuote :disabled="quote.items.some((x) => !x.is_margin_valid)"></ShareableQuote>
-            <a
-                class="btn btn-outline-primary me-2"
-                :href="route('quotes.preview', { quote: quote.id })"
-                v-if="!quote.items.some((x) => !x.is_margin_valid)"
-            >
-                <font-awesome-icon :icon="['far', 'file-pdf']"></font-awesome-icon>
-                Preview
-            </a>
-            <button class="btn btn-outline-primary me-2" v-else disabled="true">
-                <font-awesome-icon :icon="['far', 'file-pdf']"></font-awesome-icon>
-                Preview
-            </button>
-            <a :href="route('dashboard')" class="btn btn-primary" type="submit"> Save and close </a>
         </div>
     </div>
 </template>
