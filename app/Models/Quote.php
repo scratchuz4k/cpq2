@@ -152,12 +152,45 @@ class Quote extends Model
             $this->discounts->where('discountable_type', "App\Models\Quote")->where('discountable_id', $this->id)->each->deleteQuietly();
         }
 
+        $discounts = collect();
+        $discounts->push(...$this->discounts->where('discountable_type', "App\Models\PricePlan"));
+        $discounts->push(...$this->discounts->where('discountable_type', "App\Models\Quote"));
+
+        foreach ($discounts as $discount) {
+            $discount->value = 0;
+            $discount->total = 0;
+        }
+
         foreach ($this->items as $item) {
             $raw_total += ($item->raw_price * $item->quantity * $item->contract_length);
+
+            $itemPrice = $item->raw_price;
+
+            foreach ($discounts as $discount) {
+                // sequential percentage discount
+                if ($discount->discountable_type == 'App\Models\PricePlan' && $discount->discountable_id != $item->pricePlan->id) {
+                    continue;
+                }
+
+                $discounValue = $itemPrice - ($itemPrice * (1 - ($discount->discount / 100)));
+                $itemPrice = $itemPrice - $discounValue; // new base for next discount
+
+                // accumulate into this discount (per item)
+                $lineDiscount = $discounValue * $item->quantity;
+                $lineTotal = $discounValue * $item->quantity * $item->contract_length;
+
+                $discount->value += format_currency($lineDiscount);
+                $discount->total += format_currency($lineTotal);
+            }
 
             $this->total += $item->total;
             $this->total_tax += $item->total_tax;
             $this->total_gross += $item->total_gross;
+        }
+
+        // persist discounts
+        foreach ($discounts as $discount) {
+            $discount->saveQuietly();
         }
 
         $this->total = format_currency($this->total);
