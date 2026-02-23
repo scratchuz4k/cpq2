@@ -1,6 +1,6 @@
 <script setup>
 import { updateQuoteItem, removeQuoteItem, temp } from '@composables/useQuoteItem';
-import { quote } from '@/Composables/useQuote';
+import { getQuote, quote } from '@/Composables/useQuote';
 import format from '@/Composables/format';
 
 const props = defineProps({
@@ -27,12 +27,15 @@ const edit = (p) => {
 };
 
 const save = async (p) => {
-    item.value.quantity = temp.quantity;
-    item.value.discount = temp.discount;
-    item.value.contract_length = temp.contract_length;
-    if (await updateQuoteItem(item.value.id, item.value)) {
-        item.value.is_editing = false;
-        emitter.emit('quote-items:updated');
+    let item = {
+        quantity: temp.quantity,
+        discount: temp.discount,
+        contract_length: temp.contract_length
+    };
+
+    if (await updateQuoteItem(p.id, item)) {
+        await getQuote(quote.id);
+        p.is_editing = false;
     }
 };
 

@@ -33,8 +33,7 @@ class Quote extends Model
         'tenant_id',
         'name',
         'total',
-        'total_tax',
-        'total_gross',
+        'total_discount',
         'commission_value',
         'commission_rate',
         'margin',
@@ -51,8 +50,7 @@ class Quote extends Model
             'address_data' => 'array',
             'margin' => 'float',
             'total' => 'float',
-            'total_tax' => 'float',
-            'total_gross' => 'float',
+            'total_discount' => 'float',
             'commission_value' => 'float',
             'commission_rate ' => 'float',
             'created_at' => 'datetime:Y-m-d H:i:s',
@@ -137,8 +135,6 @@ class Quote extends Model
         $raw_total = 0;
 
         $this->total = 0;
-        $this->total_tax = 0;
-        $this->total_gross = 0;
 
         $priceplans = PricePlan::get();
         foreach ($priceplans as $priceplan) {
@@ -186,8 +182,6 @@ class Quote extends Model
             }
 
             $this->total += $item->total;
-            $this->total_tax += $item->total_tax;
-            $this->total_gross += $item->total_gross;
         }
 
         // persist discounts
@@ -196,8 +190,7 @@ class Quote extends Model
         }
 
         $this->total = format_currency($this->total);
-        $this->total_tax = format_currency($this->total_tax);
-        $this->total_gross = format_currency($this->total_gross);
+        $this->total_discount = format_currency($totalDiscount);
 
         $total_cost = $raw_total;
         $margin_value = ($this->total - $totalDiscount) - $total_cost;
