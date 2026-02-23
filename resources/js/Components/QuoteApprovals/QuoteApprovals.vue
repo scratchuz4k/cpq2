@@ -149,7 +149,7 @@
                                 </button>
                                 <button
                                     :id="'quote-approval-reject-' + index"
-                                    class="btn btn-sm btn-secondary"
+                                    class="btn btn-sm btn-secondary ms-2"
                                     @click="() => updateQuoteApproval(item, 'rejected')"
                                 >
                                     <font-awesome-icon :icon="['fas', 'x']" />

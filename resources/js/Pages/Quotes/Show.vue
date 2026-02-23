@@ -1,11 +1,14 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head } from '@inertiajs/vue3';
+import { quote, setQuote } from '@composables/useQuote';
 
 const props = defineProps({
     quote: Object,
     pricePlans: Object
 });
+
+setQuote(props.quote);
 
 const solutionsViews = {
     Simple: 'QuotesTotalSimpleView',
@@ -26,7 +29,7 @@ let view =
             :is="view"
             v-bind="{
                 modelValue: quote,
-                pricePlans: props.pricePlans,
+                pricePlans: pricePlans,
                 preview: false
             }"
         ></component>
