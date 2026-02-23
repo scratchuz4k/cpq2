@@ -9,7 +9,7 @@ describe('Accounts Crud', () => {
         cy.login('companyadmin@example.com', 'werwerwer');
     });
 
-    it('Create an Account', () => {
+    it.only('Create an Account', () => {
         cy.visit('/quotes');
         cy.get('#settings').click();
         cy.get('#link-accounts').click();

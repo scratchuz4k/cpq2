@@ -11,6 +11,8 @@ import SvgIcon from '@/Components/Custom/SvgIcon.vue';
 
 const page = usePage();
 const user = page.props.auth.user;
+const links = page.props.customization.header;
+
 Sentry.setUser({
     fullName: user.name,
     email: user.email
@@ -42,19 +44,14 @@ const currentTenant = ref(page.props.tenant);
             >
                 <i class="fa-solid fa-bars"></i>
             </button>
-            <div class="collapse navbar-collapse justify-content-end" id="navbarSupportedContent">
+            <div class="collapse navbar-collapse justify-content-start" id="navbarSupportedContent">
                 <ul class="navbar-nav navme-auto mb-2 mb-lg-0">
-                    <li class="nav-item d-md-none d-lg-block">
-                        <a class="nav-link" href="#">CUSTOMERS</a>
-                    </li>
-                    <li class="nav-item d-md-none d-lg-block">
-                        <a class="nav-link" href="#">ASSETS</a>
-                    </li>
-                    <li class="nav-item d-md-none d-lg-block">
-                        <a class="nav-link" aria-current="page" :href="route('quotes.index')">QUOTES</a>
-                    </li>
-                    <li class="nav-item d-md-none d-lg-block">
-                        <a class="nav-link" href="#">BILLING</a>
+                    <li
+                        class="nav-item d-md-none d-lg-block"
+                        v-for="link in links.filter((x) => x.is_active)"
+                        :key="link.name"
+                    >
+                        <a class="nav-link" :href="link.url" target="_blank">{{ link.label }}</a>
                     </li>
                 </ul>
             </div>
