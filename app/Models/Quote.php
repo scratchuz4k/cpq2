@@ -132,8 +132,9 @@ class Quote extends Model
     public function computeTotals()
     {
         $this->refresh();
-        $total_cost = 0;
         $this->total = 0;
+        $total_cost = 0;
+        $totalDiscount = 0;
 
         $priceplans = PricePlan::get();
         foreach ($priceplans as $priceplan) {
@@ -155,7 +156,6 @@ class Quote extends Model
             $discount->value = 0;
             $discount->total = 0;
         }
-        $totalDiscount = 0;
 
         foreach ($this->items as $item) {
             $total_cost += ($item->raw_price * $item->quantity * $item->contract_length);
