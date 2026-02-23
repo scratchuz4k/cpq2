@@ -132,8 +132,7 @@ class Quote extends Model
     public function computeTotals()
     {
         $this->refresh();
-        $raw_total = 0;
-
+        $total_cost = 0;
         $this->total = 0;
 
         $priceplans = PricePlan::get();
@@ -159,9 +158,9 @@ class Quote extends Model
         $totalDiscount = 0;
 
         foreach ($this->items as $item) {
-            $raw_total += ($item->raw_price * $item->quantity * $item->contract_length);
+            $total_cost += ($item->raw_price * $item->quantity * $item->contract_length);
 
-            $itemPrice = $item->raw_price;
+            $itemPrice = $item->price;
 
             foreach ($discounts as $discount) {
                 // sequential percentage discount
@@ -189,13 +188,12 @@ class Quote extends Model
             $discount->saveQuietly();
         }
 
-        $this->total = format_currency($this->total);
+        $this->total = format_currency($this->total - $totalDiscount);
         $this->total_discount = format_currency($totalDiscount);
 
-        $total_cost = $raw_total;
-        $margin_value = ($this->total - $totalDiscount) - $total_cost;
+        $margin_value = ($this->total) - $total_cost;
 
-        $this->margin = $this->total ? format_currency(($margin_value / ($this->total - $totalDiscount)) * 100) : 0;
+        $this->margin = $this->total ? format_currency(($margin_value / ($this->total)) * 100) : 0;
         $this->commission_value = format_currency($margin_value * ($this->commission_rate / 100));
     }
 

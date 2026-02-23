@@ -501,7 +501,7 @@
                                 </td>
                                 <td></td>
                                 <td id="total_net">
-                                    <b>£{{ number_format($quote['total'] - $discounts['quote']['total'], 2) }}</b>
+                                    <b>£{{ number_format($quote['total'], 2) }}</b>
                                 </td>
                             </tr>
                         </tbody>

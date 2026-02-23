@@ -60,7 +60,7 @@ const remove = async (p) => {
     items.forEach(async (x) => {
         await removeQuoteItem(x.id);
     });
-    emitter.emit('quote-items:updated');
+    await getQuote(quote.id);
 };
 
 const cancel = (p) => {
