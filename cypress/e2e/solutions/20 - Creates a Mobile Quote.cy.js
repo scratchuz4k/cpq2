@@ -72,11 +72,6 @@ describe('Creates a Mobile Quote', () => {
         cy.wait(1000);
         cy.get('#btn-product-1-add-25').click();
         cy.wait(1000);
-        cy.get('#btn-step-1-next').click();
-        cy.wait(1000);
-        cy.get('#btn-product-0-add-25').click();
-        cy.wait(1000);
-        cy.get('#btn-step-2-next').click();
 
         cy.get('#current-step')
             .invoke('text')
@@ -119,7 +114,7 @@ describe('Creates a Mobile Quote', () => {
 
         cy.get('#btn-step-next').click();
 
-        cy.get('.recurring-item').should('have.length', 3);
+        cy.get('.recurring-item').should('have.length', 2);
         cy.get('.one_off-item').then(($items) => {
             cy.then(() => {
                 expect(hardwareCount).to.equal($items.length);

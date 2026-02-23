@@ -160,6 +160,7 @@ class Quote extends Model
             $discount->value = 0;
             $discount->total = 0;
         }
+        $totalDiscount = 0;
 
         foreach ($this->items as $item) {
             $raw_total += ($item->raw_price * $item->quantity * $item->contract_length);
@@ -181,6 +182,7 @@ class Quote extends Model
 
                 $discount->value += format_currency($lineDiscount);
                 $discount->total += format_currency($lineTotal);
+                $totalDiscount += $lineTotal;
             }
 
             $this->total += $item->total;
@@ -198,9 +200,9 @@ class Quote extends Model
         $this->total_gross = format_currency($this->total_gross);
 
         $total_cost = $raw_total;
-        $margin_value = $this->total - $total_cost;
+        $margin_value = ($this->total - $totalDiscount) - $total_cost;
 
-        $this->margin = $this->total ? format_currency(($margin_value / $this->total) * 100) : 0;
+        $this->margin = $this->total ? format_currency(($margin_value / ($this->total - $totalDiscount)) * 100) : 0;
         $this->commission_value = format_currency($margin_value * ($this->commission_rate / 100));
     }
 
