@@ -91,6 +91,7 @@ describe('Manage Products Step relation', () => {
         cy.get('.swal2-confirm').eq(0).click();
         cy.get('.notyf').contains('Removed with success');
 
+        cy.wait(1000);
         cy.get('#datatable-search').type(steps[0].name);
         cy.get('#steps-table').should('not.contain', steps[0].name);
     });

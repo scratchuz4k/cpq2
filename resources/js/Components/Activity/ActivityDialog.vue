@@ -174,7 +174,7 @@ function getEntityLabel(type) {
     <button
         :hidden="!(tenant.configurations.log_system_is_active === '1') || !has_viewAny_permission"
         id="btn-activity-open"
-        class="btn btn-outline-primary me-2"
+        class="btn btn-outline-primary ms-2"
         @click="() => (visible = !visible)"
     >
         <font-awesome-icon :icon="['fas', 'clock-rotate-left']"></font-awesome-icon>

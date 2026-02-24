@@ -36,15 +36,15 @@ describe('Blacklist Crud', () => {
 
         cy.visit('/quotes/create');
         cy.selectLazyOption('account_id', account.name);
-        cy.get('#btn-next-step').click();
+        cy.get('.step-action-bar #btn-next-step').click();
 
         cy.get('#solution_type-connectivity').click();
-        cy.get('#btn-next-step').click();
+        cy.get('.step-action-bar #btn-next-step').click();
 
         cy.get('#input_address').type('EH32 9NT');
         cy.wait(1000);
         cy.selectOption('#select_address', 1);
-        cy.get('#btn-next-step').click();
+        cy.get('.step-action-bar #btn-next-step').click();
         cy.get('#btn-create-quote').should('not.be.disabled').click();
         // Scroll back to top
         cy.scrollTo('top');

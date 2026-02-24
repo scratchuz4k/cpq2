@@ -140,6 +140,11 @@
         .child-bg>td {
             background-color: whitesmoke;
         }
+
+
+        .text-primary {
+            color: var(--color-purple) !important;
+        }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
         integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
@@ -282,7 +287,7 @@
                         <tbody>
                             <tr>
                                 <th>
-                                    <p class="small text-start">Monthly Total</p>
+                                    <p class="small text-start">Recurring Total</p>
                                 </th>
                                 <td id="total_monthly_net">
                                     £{{ number_format(quoteQuantityPrice('MONTHLY', $quote['items']), 2) }}

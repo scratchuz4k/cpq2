@@ -23,6 +23,8 @@ class QuoteDiscountResource extends JsonResource
         return [
             ...$this->resource->toArray(),
             'discount' => (float) $this->discount,
+            'value' => (float) $this->value,
+            'total' => (float) $this->total,
             'entity' => $entity1,
         ];
     }

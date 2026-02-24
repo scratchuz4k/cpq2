@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\QuoteResource;
 use App\Models\PricePlan;
 use App\Models\Quote;
+use App\Models\QuoteApproval;
 use App\Models\SharedLink;
 use App\Models\Tenant;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -16,6 +17,7 @@ class SharedLinkController extends Controller
 {
     private $sharedModels = [
         Quote::class => 'Quotes',
+        QuoteApproval::class => 'QuoteApprovals',
     ];
 
     public function show(Request $request, $token)
@@ -71,8 +73,9 @@ class SharedLinkController extends Controller
 
     private function getResource($component, $item)
     {
-        if ($item->tenant !== Tenant::current()) {
-            $temp = Tenant::findOrFail($item->tenant->id);
+        $tenant = $component == 'QuoteApprovals' ? $item->quote->tenant : $item->tenant;
+        if ($tenant !== Tenant::current()) {
+            $temp = Tenant::findOrFail($tenant->id);
             $temp->makeCurrent();
         }
 
@@ -80,6 +83,11 @@ class SharedLinkController extends Controller
             'Quotes' => [
                 'pricePlans' => PricePlan::all(),
                 'model' => new QuoteResource($item->load(['items', 'tenant.logo'])),
+            ],
+
+            'QuoteApprovals' => [
+                'pricePlans' => PricePlan::all(),
+                'model' => new QuoteResource($item->quote->load(['items', 'tenant.logo'])),
             ],
             default => $item,
         };

@@ -15,8 +15,8 @@ return [
         ['name' => 'Months', 'value' => 'contract_length', 'is_group' => false],
         ['name' => 'Quantity', 'value' => 'quantity', 'is_group' => false],
         ['name' => 'Price', 'value' => 'price', 'is_group' => false],
-        ['name' => 'Margin', 'value' => 'margin', 'is_group' => false],
         ['name' => 'Discount', 'value' => 'discount', 'is_group' => false],
+        ['name' => 'Margin', 'value' => 'margin', 'is_group' => false],
         ['name' => 'Total',  'value' => 'total', 'is_group' => false],
     ],
 ];

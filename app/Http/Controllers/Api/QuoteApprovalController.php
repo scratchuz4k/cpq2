@@ -97,6 +97,36 @@ class QuoteApprovalController extends BaseController
     }
 
     /**
+     * Update the specified resource in storage.
+     */
+    public function clientApprove(QuoteApprovalUpdateRequest $request, string $uuid)
+    {
+
+        $quote = Quote::where('uuid', $uuid)->firstOrFail();
+        $quote->tenant->makeCurrent();
+
+        $lastApproval = $quote->approvals->count() ? $quote->approvals[0] : null;
+        if (! $lastApproval) {
+            return response()->json(['message' => 'This Quote Approval has no current approval workflow'], 422);
+        }
+
+        $error = $this->service->validateUpdate($lastApproval);
+        if ($error != null) {
+            return $error;
+        }
+
+        try {
+            $lastApproval = DB::transaction(fn () => $this->service->update($lastApproval, $request->all()));
+        } catch (Exception $e) {
+            return handleException($e);
+        }
+
+        $quote->tenant->forgetCurrent();
+
+        return response()->json(new QuoteApprovalResource($lastApproval));
+    }
+
+    /**
      * Remove the specified resource from storage.
      */
     public function destroy(QuoteApproval $quoteApproval)
