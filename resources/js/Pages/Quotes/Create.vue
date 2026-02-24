@@ -1,13 +1,19 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, router } from '@inertiajs/vue3';
-import { reactive, ref, watch } from 'vue';
+import { reactive, ref, watch, onMounted } from 'vue';
 import { currentStep, initSteps, steps, actionBarButtons } from '@composables/useQuoteSteps';
 
 const props = defineProps({
     accounts: Array,
     solution_types: Object,
     steps: Object
+});
+
+onMounted(() => {
+    actionBarButtons.value = [];
+    currentStep.value = 0;
+    steps.value = [...initSteps];
 });
 
 const quote = reactive({

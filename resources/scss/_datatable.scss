@@ -23,6 +23,10 @@
         font-weight: bold;
     }
 
+    tr {
+        background: var(--table-header-grey);
+    }
+
     tr th {
         padding: 0.5rem 0.2rem;
     }
@@ -80,6 +84,15 @@
         background-color: var(--teal);
         border-color: var(--teal);
     }
+}
+.table-dealmaker tfoot tr th {
+    background: var(--table-header-light-grey);
+    color: black !important;
+    font-size: 14px;
+    padding: 0.5rem 0.2rem !important;
+}
+#print .table-dealmaker tfoot tr th {
+    background: none !important;
 }
 
 .table-connectivity,
@@ -163,12 +176,24 @@
     text-align: center;
 }
 
-.column-name-header {
+.column-name-header,
+.column-name-body {
     width: 35%;
 }
 
-#table-one_off .column-name-header {
+#table-one_off .column-name-header,
+#table-one_off .column-name-body {
     width: 45% !important;
+}
+
+#print .column-name-header,
+#print .column-name-body {
+    width: 50%;
+}
+
+#print #table-one_off .column-name-header,
+#print #table-one_off .column-name-body {
+    width: 60% !important;
 }
 
 .column-total-header,

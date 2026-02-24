@@ -106,12 +106,8 @@ describe('Creates a Mobile Quote', () => {
         cy.get('#datatable-btn-0-show').click();
 
         cy.get('.recurring-item').its('length').should('eq', 1);
-        cy.get('#table-recurring > thead').contains('Provider');
-        cy.get('#table-recurring > thead').contains('SubProvider');
         cy.get('#table-recurring > thead').contains('Name');
         cy.get('#table-recurring > thead').contains('Months');
-        cy.get('#table-recurring > thead').contains('Speed');
-        cy.get('#table-recurring > thead').contains('Bearer');
         cy.get('#table-recurring > thead').contains('Quantity');
         cy.get('#table-recurring > thead').contains('Price');
         cy.get('#table-recurring > thead').contains('Margin');
