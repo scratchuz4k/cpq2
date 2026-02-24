@@ -6,6 +6,7 @@ import { usePage } from '@inertiajs/vue3';
 import WarningNote from '@/Components/WarningNote.vue';
 import { checkWarnings } from '@composables/warning.js';
 import format from '@/Composables/format.js';
+import { can, hasRole } from '@composables/useAuth';
 
 const props = defineProps({
     modelValue: Object,
@@ -15,6 +16,7 @@ const props = defineProps({
 
 const page = usePage();
 const tenant = page.props.tenant;
+const user = page.props.auth.user;
 
 setQuote(props.modelValue);
 const group = quote.solution_type?.table?.group ?? null;
@@ -29,31 +31,6 @@ const warningProviders = ref([
 ]);
 
 checkWarnings(warningProviders.value, null);
-
-const quoteTotal = (key) => {
-    let items = quote.items;
-    if (group) {
-        items = quote.items.flatMap((obj) => obj.items ?? obj);
-    }
-    return items.filter((x) => x.price_plan && x.price_plan.code == key).reduce((acc, item) => (acc += item.total), 0);
-};
-
-const quoteQuantityPrice = (price_plan) => {
-    let total = 0;
-    let tax = 0;
-    let items = quote.items;
-    if (group) {
-        items = quote.items.flatMap((obj) => obj.items ?? obj);
-    }
-
-    items.forEach((e) => {
-        if (e.price_plan && e.price_plan.code == price_plan) {
-            total += e.price * e.quantity;
-            tax += e.price * e.quantity * e.tax;
-        }
-    });
-    return total + tax;
-};
 
 const items = ref([
     { label: 'Home', url: '/' },
@@ -94,18 +71,26 @@ const items = ref([
                             Status: {{ quote.status }}
                         </div>
                     </InfoBox>
-                    <InfoBox v-if="['QUOTE', 'PRICE', 'CONFIGURE'].includes(quote.status)">
+                    <InfoBox>
                         <div style="font-size: 14px">
-                            This quote will expire on
+                            Quote expiration date:
                             <b style="font-size: 16px">
                                 {{ format.expireDate(quote.created_at, tenant.configurations?.quote_expiration_days) }}
                             </b>
                         </div>
                     </InfoBox>
                 </div>
-
-                <!-- <QuoteDiscountPanel :pricePlans="props.pricePlans"></QuoteDiscountPanel> -->
-
+                <QuoteApprovalsPanel
+                    v-if="
+                        quote.approvals.find((x) => x.status == 'PENDING') &&
+                        (can('update quote_approval') ||
+                            hasRole('Super Admin') ||
+                            quote.approvals.find((x) => x.flow == 'Client review')) &&
+                        quote.approvals.some(
+                            (x) => !x.approver_id || x.approver_id === user.id || hasRole('Super Admin')
+                        )
+                    "
+                ></QuoteApprovalsPanel>
                 <div class="price-mobile-sidebar commission-calculator px-4 pt-4 pb-2 mb-3">
                     <h3 class="mb-3">Profitability Calculator</h3>
                     <p class="mb-2" style="font-size: 14px">

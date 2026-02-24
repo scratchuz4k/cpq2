@@ -1,11 +1,28 @@
 <template>
     <div
+        v-if="['quote'].includes(quote.status.toLowerCase()) && has_quote_approval == '0'"
         class="approvals-group-button flex ms-2 p-0"
-        v-if="['quote', 'pending', 'approved', 'completed', 'rejected'].includes(quote.status.toLowerCase())"
+    >
+        <button id="quote-approval-history" @click="sendToOrder()" class="btn btn-primary">
+            <font-awesome-icon
+                v-if="quote.items.some((x) => !x.is_margin_valid)"
+                :icon="['fas', 'thumbs-up']"
+                class="me-2"
+            />
+            <font-awesome-icon v-else :icon="['fas', 'thumbtack']" class="me-2" />
+            <span> Send to Order </span>
+        </button>
+    </div>
+    <div
+        class="approvals-group-button flex ms-2 p-0"
+        v-if="
+            ['quote', 'pending', 'approved', 'completed', 'rejected'].includes(quote.status.toLowerCase()) &&
+            canToggleDialog()
+        "
     >
         <button
             id="quote-approval-history"
-            v-if="['completed', 'pending', 'rejected'].includes(quote.status.toLowerCase()) && canToggleDialog()"
+            v-if="['completed', 'rejected'].includes(quote.status.toLowerCase())"
             @click="toggleDialog()"
             class="btn btn-primary"
             :style="{
@@ -18,11 +35,7 @@
         <template v-else>
             <button
                 id="quote-approval-start"
-                v-if="
-                    (has_quote_approval === '0' && quote.status.toLowerCase() !== 'completed') ||
-                    quote_approval_flow === 'Margin review' ||
-                    (quote_approval_flow === 'Internal review' && quote.status.toLowerCase() === 'approved')
-                "
+                v-if="quote.status.toLowerCase() === 'approved'"
                 class="btn btn-primary"
                 :disabled="items.some((x) => x.status.toLowerCase() === 'pending')"
                 @click="sendToOrder()"
@@ -36,27 +49,22 @@
                     class="me-2"
                 />
                 <font-awesome-icon v-else :icon="['fas', 'thumbtack']" class="me-2" />
-                {{
-                    quote.items.some((x) => !x.is_margin_valid) && quote.status.toLowerCase() == 'quote'
-                        ? 'Send to Approval'
-                        : 'Send to Order'
-                }}
+                <span> Send to Order </span>
             </button>
 
             <button
                 id="quote-approval-start"
-                v-else-if="
-                    tenant.configurations.quote_approval_flow === 'Internal review' &&
-                    quote.status.toLowerCase() !== 'approved' &&
-                    !(has_quote_approval === '0' && quote.status.toLowerCase() === 'completed')
-                "
+                v-else
                 class="btn btn-primary"
-                :disabled="items.some((x) => x.status.toLowerCase() === 'pending')"
-                @click="startApproval()"
+                :disabled="
+                    items.some((x) => x.status.toLowerCase() === 'pending') ||
+                    (!can('create quote_approval') && !hasRole('Super Admin'))
+                "
+                @click="sendToOrder()"
                 style="border-radius: 5px 0 0 5px"
             >
                 <font-awesome-icon :icon="['fas', 'thumbs-up']" class="me-2" />
-                Send to Approval
+                <span>{{ getButtonText() }}</span>
             </button>
         </template>
 
@@ -173,7 +181,7 @@
 </template>
 <script setup>
 import Dialog from 'primevue/dialog';
-import { ref, onMounted, reactive } from 'vue';
+import { ref, onMounted, reactive, watch } from 'vue';
 import { quote, getQuote } from '@composables/useQuote';
 import queryString from 'query-string';
 import Paginator from 'primevue/paginator';
@@ -193,7 +201,8 @@ const meta = reactive({
     first: 1
 });
 const has_quote_approval = tenant.configurations.has_quote_approval ?? '0';
-const quote_approval_flow = tenant.configurations.quote_approval_flow ?? 'Internal review';
+const quote_approval_flow = tenant.configurations.quote_approval_flow ?? 'Internal Review';
+const has_client_approval = !!tenant.configurations.has_client_approval ?? false;
 
 const getApprovals = async () => {
     let query = queryString.stringify({
@@ -207,20 +216,6 @@ const getApprovals = async () => {
         items.value = res.data.data;
         meta.total = res.data.meta?.total ?? res.data.total;
         meta.first = (meta.page - 1) * meta.limit;
-    } catch (ex) {
-        notyf.error(ex.response?.data?.message ?? 'Something went wrong!');
-    }
-};
-
-const startApproval = async () => {
-    try {
-        let res = await axios.post(route('api.quote-approvals.store'), {
-            quote_id: quote.id
-        });
-        notyf.success(`Quote successfully sent for approval!`);
-        getApprovals();
-        await getQuote(quote.id);
-        //window.location = '/dashboard';
     } catch (ex) {
         notyf.error(ex.response?.data?.message ?? 'Something went wrong!');
     }
@@ -256,7 +251,7 @@ const sendToOrder = async () => {
         }
         return;
     }
-    //  &&(can('create quote_approval') || hasRole('Super Admin'))
+
     if (
         quote.status.toLowerCase() != 'approved' &&
         !items.value.find((x) => ['pending'].includes(x.status.toLowerCase()))
@@ -304,8 +299,39 @@ const handlePaginator = (ev) => {
     getApprovals();
 };
 
+const getButtonText = () => {
+    if (quote_approval_flow == 'Margin review' && !quote.items.some((x) => x.is_margin_valid)) {
+        return 'Send to Order';
+    }
+
+    let lastApproval = items.value.length ? items.value[0] : null;
+
+    if (!lastApproval) {
+        return 'Send to Approval';
+    }
+
+    if (has_client_approval && lastApproval.status.toLowerCase() === 'approved') {
+        return 'Send to Client Approval';
+    }
+
+    if (quote.status.toLowerCase() == 'pending') {
+        if (lastApproval.flow === 'Client review') {
+            return 'Waiting Client Approval';
+        } else {
+            return 'Waiting for Approval';
+        }
+    }
+
+    return 'Send to Approval';
+};
+
 onMounted(() => {
     getApprovals();
+});
+
+watch(quote, () => {
+    getApprovals();
+    getButtonText();
 });
 </script>
 <style>

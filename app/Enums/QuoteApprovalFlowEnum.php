@@ -6,13 +6,19 @@ enum QuoteApprovalFlowEnum: string
 {
     case INTERNAL = 'Internal review';
     case MARGIN = 'Margin review';
-    //    case CLIENT = 'Client review';
+    case CLIENT = 'Client review';
 
-    public static function asArray(): array
+    public static function availableFlows(): array
     {
-        return array_map(fn ($case) => [
-            'name' => $case->name,
-            'value' => $case->value,
-        ], self::cases());
+        return array_map(
+            fn (self $case) => [
+                'name' => $case->name,
+                'value' => $case->value,
+            ],
+            array_filter(
+                self::cases(),
+                fn (self $case) => $case !== self::CLIENT,
+            ),
+        );
     }
 }

@@ -4,13 +4,15 @@ namespace App\Models;
 
 use App\Events\QuoteApprovalEvent;
 use App\Models\Scopes\TenantScope;
+use App\Trait\HasConfigurations;
 use App\Trait\SetTenantId;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
 
 class QuoteApproval extends Model
 {
-    use SetTenantId;
+    use HasConfigurations, SetTenantId;
 
     protected $fillable = [
         'status',
@@ -39,5 +41,10 @@ class QuoteApproval extends Model
     public function approver(): BelongsTo
     {
         return $this->belongsTo(User::class, 'approver_id', 'id');
+    }
+
+    public function sharedLink(): MorphOne
+    {
+        return $this->morphOne(SharedLink::class, 'shareable');
     }
 }

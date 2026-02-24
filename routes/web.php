@@ -54,7 +54,7 @@ Route::get('/health', function () {
     }
 })->name('health');
 
-Route::get('/s/{token}', [SharedLinkController::class, 'show']);
+Route::get('/s/{token}', [SharedLinkController::class, 'show'])->name('share_link');
 Route::post('/s/{token}', [SharedLinkController::class, 'verifyPassword']);
 
 Route::post('/quotes/{quote}/download', [QuoteController::class, 'download'])->name('quotes.download');

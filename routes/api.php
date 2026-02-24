@@ -46,6 +46,7 @@ use App\Http\Controllers\Auth\IntegrateAuthController;
 use Illuminate\Support\Facades\Route;
 
 Route::post('generate-auth-token', [IntegrateAuthController::class, 'createToken']);
+Route::put('quote-approvals/{uuid}/client', [QuoteApprovalController::class, 'clientApprove'])->name('quote-approvals.update-client');
 
 Route::middleware(['api', 'auth:sanctum'])->group(function () {
     Route::prefix('shop-blocks')->group(callback: function () {
