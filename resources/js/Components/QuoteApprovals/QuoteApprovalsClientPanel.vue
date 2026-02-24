@@ -14,9 +14,6 @@
             <input class="form-control form-control-sm" v-model="approval.comments" />
         </div>
     </div>
-    <div class="panel">
-        <p class="small mt-2">Quote was approved with success.</p>
-    </div>
 </template>
 <script setup>
 import { can, hasRole } from '@composables/useAuth';

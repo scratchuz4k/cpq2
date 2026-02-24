@@ -1,7 +1,7 @@
 <template>
     <div
         v-if="['quote'].includes(quote.status.toLowerCase()) && has_quote_approval == '0'"
-        class="approvals-group-button flex me-2 p-0"
+        class="approvals-group-button flex ms-2 p-0"
     >
         <button id="quote-approval-history" @click="sendToOrder()" class="btn btn-primary">
             <font-awesome-icon
@@ -14,7 +14,7 @@
         </button>
     </div>
     <div
-        class="approvals-group-button flex me-2 p-0"
+        class="approvals-group-button flex ms-2 p-0"
         v-if="
             ['quote', 'pending', 'approved', 'completed', 'rejected'].includes(quote.status.toLowerCase()) &&
             canToggleDialog()

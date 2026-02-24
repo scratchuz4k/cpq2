@@ -65,7 +65,7 @@ let view =
                 ></ActivityDialog>
                 <ShareableQuote :disabled="quote.items.some((x) => !x.is_margin_valid)"></ShareableQuote>
                 <a
-                    class="btn btn-outline-primary me-2"
+                    class="btn btn-outline-primary ms-2"
                     :href="route('quotes.preview', { quote: quote.id })"
                     v-if="!quote.items.some((x) => !x.is_margin_valid)"
                 >
@@ -78,7 +78,7 @@ let view =
                 </button>
                 <button
                     hidden
-                    class="btn btn-outline-primary me-2"
+                    class="btn btn-outline-primary ms-2"
                     :disabled="quote.items.some((x) => !x.is_margin_valid)"
                 >
                     <font-awesome-icon class="me-2" :icon="['fas', 'envelope']"> </font-awesome-icon>
