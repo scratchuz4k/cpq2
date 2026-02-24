@@ -27,12 +27,15 @@ const edit = (p) => {
 };
 
 const save = async (p) => {
-    item.value.quantity = temp.quantity;
-    item.value.discount = temp.discount;
-    item.value.contract_length = temp.contract_length;
-    if (await updateQuoteItem(item.value.id, item.value)) {
-        item.value.is_editing = false;
-        emitter.emit('quote-items:updated');
+    let item = {
+        quantity: temp.quantity,
+        discount: temp.discount,
+        contract_length: temp.contract_length
+    };
+
+    if (await updateQuoteItem(p.id, item)) {
+        await getQuote(quote.id);
+        p.is_editing = false;
     }
 };
 
@@ -57,7 +60,7 @@ const remove = async (p) => {
     items.forEach(async (x) => {
         await removeQuoteItem(x.id);
     });
-    emitter.emit('quote-items:updated');
+    await getQuote(quote.id);
 };
 
 const cancel = (p) => {
@@ -95,25 +98,25 @@ emitter.on('quote-items:toggle:is-editing', () => (item.value.is_editing = false
             <div class="d-flex justify-content-end">
                 <template v-if="!item.is_editing">
                     <font-awesome-icon
+                        :id="'btn-' + props.code + '-' + index + '-remove'"
+                        role="button"
+                        class="px-2 py-2 text-primary"
+                        :icon="['fas', 'trash-alt']"
+                        @click="remove(item)"
+                    />
+                    <font-awesome-icon
                         :id="'btn-' + props.code + '-' + index + '-edit'"
                         role="button"
                         class="px-2 py-2 text-primary"
                         :icon="['fas', 'edit']"
                         @click="edit(item)"
                     />
-                    <font-awesome-icon
-                        :id="'btn-' + props.code + '-' + index + '-remove'"
-                        role="button"
-                        class="px-2 py-2 text-secondary"
-                        :icon="['fas', 'trash']"
-                        @click="remove(item)"
-                    />
                 </template>
                 <template v-else>
                     <font-awesome-icon
                         :id="'btn-' + props.code + '-' + index + '-cancel'"
                         role="button"
-                        class="px-2 py-2 text-secondary"
+                        class="px-2 py-2 text-primary"
                         :icon="['fas', 'cancel']"
                         @click="cancel(item)"
                     />
@@ -137,7 +140,16 @@ emitter.on('quote-items:toggle:is-editing', () => (item.value.is_editing = false
     background: #f5cccc !important;
 }
 .red-bg > td:nth-child(1) {
+    padding-left: 0.625rem !important;
+}
+.red-bg > td:nth-child(1):before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
     border-width: 0;
-    border-left: 4px solid #dc3545 !important;
+    width: 4px;
+    height: 100%;
+    background: #dc3545;
 }
 </style>

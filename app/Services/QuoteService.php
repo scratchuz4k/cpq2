@@ -121,6 +121,8 @@ class QuoteService
             $view = 'custom';
         }
 
+        // return view("pdf.$view", compact('quote', 'tenant', 'columns', 'items', 'group', 'groupName'))->render();
+
         return pdf()
             ->view("pdf.$view", compact('quote', 'tenant', 'columns', 'items', 'group', 'groupName'))
             ->format(Format::A4)

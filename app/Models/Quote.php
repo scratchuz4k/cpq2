@@ -33,8 +33,7 @@ class Quote extends Model
         'tenant_id',
         'name',
         'total',
-        'total_tax',
-        'total_gross',
+        'total_discount',
         'commission_value',
         'commission_rate',
         'margin',
@@ -51,8 +50,7 @@ class Quote extends Model
             'address_data' => 'array',
             'margin' => 'float',
             'total' => 'float',
-            'total_tax' => 'float',
-            'total_gross' => 'float',
+            'total_discount' => 'float',
             'commission_value' => 'float',
             'commission_rate ' => 'float',
             'created_at' => 'datetime:Y-m-d H:i:s',
@@ -134,27 +132,68 @@ class Quote extends Model
     public function computeTotals()
     {
         $this->refresh();
-        $raw_total = 0;
-
         $this->total = 0;
-        $this->total_tax = 0;
-        $this->total_gross = 0;
+        $total_cost = 0;
+        $totalDiscount = 0;
+
+        $priceplans = PricePlan::get();
+        foreach ($priceplans as $priceplan) {
+            $temp = $this->items->where('pricePlan.code', $priceplan->code);
+            if (! $temp->count()) {
+                $this->discounts->where('discountable_type', "App\Models\PricePlan")->where('discountable_id', $priceplan->id)->each->deleteQuietly();
+            }
+        }
+
+        if (! $this->items->count()) {
+            $this->discounts->where('discountable_type', "App\Models\Quote")->where('discountable_id', $this->id)->each->deleteQuietly();
+        }
+
+        $discounts = collect();
+        $discounts->push(...$this->discounts->where('discountable_type', "App\Models\PricePlan"));
+        $discounts->push(...$this->discounts->where('discountable_type', "App\Models\Quote"));
+
+        foreach ($discounts as $discount) {
+            $discount->value = 0;
+            $discount->total = 0;
+        }
 
         foreach ($this->items as $item) {
-            $raw_total += ($item->raw_price * $item->quantity * $item->contract_length);
+            $total_cost += ($item->raw_price * $item->quantity * $item->contract_length);
+
+            $itemPrice = $item->price;
+
+            foreach ($discounts as $discount) {
+                // sequential percentage discount
+                if ($discount->discountable_type == 'App\Models\PricePlan' && $discount->discountable_id != $item->pricePlan->id) {
+                    continue;
+                }
+
+                $discounValue = $itemPrice - ($itemPrice * (1 - ($discount->discount / 100)));
+                $itemPrice = $itemPrice - $discounValue; // new base for next discount
+
+                // accumulate into this discount (per item)
+                $lineDiscount = $discounValue * $item->quantity;
+                $lineTotal = $discounValue * $item->quantity * $item->contract_length;
+
+                $discount->value += format_currency($lineDiscount);
+                $discount->total += format_currency($lineTotal);
+                $totalDiscount += $lineTotal;
+            }
 
             $this->total += $item->total;
-            $this->total_tax += $item->total_tax;
-            $this->total_gross += $item->total_gross;
         }
-        $this->total = format_currency($this->total);
-        $this->total_tax = format_currency($this->total_tax);
-        $this->total_gross = format_currency($this->total_gross);
 
-        $total_cost = $raw_total;
-        $margin_value = $this->total - $total_cost;
+        // persist discounts
+        foreach ($discounts as $discount) {
+            $discount->saveQuietly();
+        }
 
-        $this->margin = $this->total ? format_currency(($margin_value / $this->total) * 100) : 0;
+        $this->total = format_currency($this->total - $totalDiscount);
+        $this->total_discount = format_currency($totalDiscount);
+
+        $margin_value = ($this->total) - $total_cost;
+
+        $this->margin = $this->total ? format_currency(($margin_value / ($this->total)) * 100) : 0;
         $this->commission_value = format_currency($margin_value * ($this->commission_rate / 100));
     }
 

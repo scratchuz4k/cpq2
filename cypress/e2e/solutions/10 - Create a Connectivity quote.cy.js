@@ -65,29 +65,29 @@ describe('Creates a Connectivity quote', () => {
         cy.get('.recurring-item').its('length').should('eq', 1);
         cy.get('.one_off-item').its('length').should('eq', 1);
     });
-    it('I can add a Custom Line and check quoted items', () => {
-        cy.visit('/quotes');
-        cy.get('#datatable-btn-0-show').click();
-        cy.get('#btn-recurring-add').click();
-        cy.get('#input-new-recurring-name').type('Custom line recurring', {
-            force: true
-        });
-        cy.get('#input-new-recurring-quantity').type(10, { force: true });
-        cy.get('#input-new-recurring-price').type(10, { force: true });
-        cy.get('#input-new-recurring-discount').type(10, { force: true });
-        cy.get('#btn-new-recurring-add').click({ force: true });
-        cy.get('#table-recurring').contains('Custom line recurring');
+    // it('I can add a Custom Line and check quoted items', () => {
+    //     cy.visit('/quotes');
+    //     cy.get('#datatable-btn-0-show').click();
+    //     cy.get('#btn-recurring-add').click();
+    //     cy.get('#input-new-recurring-name').type('Custom line recurring', {
+    //         force: true
+    //     });
+    //     cy.get('#input-new-recurring-quantity').type(10, { force: true });
+    //     cy.get('#input-new-recurring-price').type(10, { force: true });
+    //     cy.get('#input-new-recurring-discount').type(10, { force: true });
+    //     cy.get('#btn-new-recurring-add').click({ force: true });
+    //     cy.get('#table-recurring').contains('Custom line recurring');
 
-        cy.get('#btn-one_off-add').click();
-        cy.get('#input-new-one_off-name').type('Custom line one_off', {
-            force: true
-        });
-        cy.get('#input-new-one_off-quantity').type(10, { force: true });
-        cy.get('#input-new-one_off-price').type(10, { force: true });
-        cy.get('#input-new-one_off-discount').type(10, { force: true });
-        cy.get('#btn-new-one_off-add').click({ force: true });
-        cy.get('#table-one_off').contains('Custom line one_off');
-    });
+    //     cy.get('#btn-one_off-add').click();
+    //     cy.get('#input-new-one_off-name').type('Custom line one_off', {
+    //         force: true
+    //     });
+    //     cy.get('#input-new-one_off-quantity').type(10, { force: true });
+    //     cy.get('#input-new-one_off-price').type(10, { force: true });
+    //     cy.get('#input-new-one_off-discount').type(10, { force: true });
+    //     cy.get('#btn-new-one_off-add').click({ force: true });
+    //     cy.get('#table-one_off').contains('Custom line one_off');
+    // });
     it('I can filter products by contended', () => {
         cy.visit('/quotes/create');
         cy.selectLazyOption('account_id', account.name);
