@@ -279,7 +279,7 @@ const items = ref([
                             </div>
                         </Panel>
 
-                        <Panel class="mt-3" header="Summary Table" :toggleable="true">
+                        <!-- <Panel class="mt-3" header="Summary Table" :toggleable="true">
                             <p class="mb-3">
                                 In this section you can enable or disable a custom a table shown in the solution type
                                 view.
@@ -409,7 +409,7 @@ const items = ref([
                                     </table>
                                 </div>
                             </template>
-                        </Panel>
+                        </Panel> -->
                     </tab>
                 </tabs>
             </div>

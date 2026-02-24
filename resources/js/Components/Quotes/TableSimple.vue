@@ -2,7 +2,7 @@
 import { ref } from 'vue';
 import { quote, getQuote } from '@composables/useQuote';
 
-defineProps({
+const props = defineProps({
     preview: Boolean
 });
 const columns = quote.solution_type?.table?.columns ?? [];
@@ -95,4 +95,9 @@ emitter.on('quote-items:updated', async () => {
             </template>
         </tbody>
     </table>
+    <div class="row justify-content-end mt-5">
+        <div :class="props.preview ? 'col-12' : 'col-6'">
+            <TableTotal :preview="props.preview" :isSimpleView="true"></TableTotal>
+        </div>
+    </div>
 </template>

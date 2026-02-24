@@ -512,7 +512,7 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Settings', url: '/sett
                                                             >Send to Client Approval:</label
                                                         >
                                                         <ToggleSwitch
-                                                            id="active-margin-rules"
+                                                            id="active-client_approval-rules"
                                                             v-model="tenant.configurations.has_client_approval"
                                                             @change="submitTenantSettings"
                                                             trueValue="1"
