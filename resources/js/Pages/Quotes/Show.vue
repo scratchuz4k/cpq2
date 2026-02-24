@@ -2,6 +2,7 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head } from '@inertiajs/vue3';
 import { quote, setQuote } from '@composables/useQuote';
+import { can, hasRole } from '@composables/useAuth';
 
 const props = defineProps({
     quote: Object,
@@ -64,26 +65,29 @@ let view =
                 ></ActivityDialog>
                 <ShareableQuote :disabled="quote.items.some((x) => !x.is_margin_valid)"></ShareableQuote>
                 <a
-                    class="btn btn-outline-primary ms-2"
+                    class="btn btn-outline-primary me-2"
                     :href="route('quotes.preview', { quote: quote.id })"
                     v-if="!quote.items.some((x) => !x.is_margin_valid)"
                 >
                     <font-awesome-icon :icon="['far', 'file-pdf']"></font-awesome-icon>
                     Preview
                 </a>
-                <button class="btn btn-outline-primary ms-2" v-else disabled="true">
+                <button class="btn btn-outline-primary me-2" v-else disabled="true">
                     <font-awesome-icon :icon="['far', 'file-pdf']"></font-awesome-icon>
                     Preview
                 </button>
                 <button
                     hidden
-                    class="btn btn-outline-primary ms-2"
+                    class="btn btn-outline-primary me-2"
                     :disabled="quote.items.some((x) => !x.is_margin_valid)"
                 >
                     <font-awesome-icon class="me-2" :icon="['fas', 'envelope']"> </font-awesome-icon>
                     Email this quote
                 </button>
-                <QuoteApprovals></QuoteApprovals>
+
+                <QuoteApprovalsModal
+                    v-if="can('viewAny quote_approval') || hasRole('Super Admin')"
+                ></QuoteApprovalsModal>
             </div>
         </template>
     </AuthenticatedLayout>

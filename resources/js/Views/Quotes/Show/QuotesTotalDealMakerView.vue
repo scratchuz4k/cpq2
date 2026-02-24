@@ -151,59 +151,6 @@ const items = ref([
                             {{ format.GBP(quoteQuantityPrice('MONTHLY')) }}
                         </p>
                     </div>
-                    <div class="d-flex justify-content-between">
-                        <a
-                            v-if="!quote.is_blocked"
-                            id="btn-previous"
-                            class="btn text-primary"
-                            :href="route('quotes.edit', { quote: quote.id })"
-                        >
-                            <font-awesome-icon class="me-2" :icon="['fas', 'arrow-left']"></font-awesome-icon>
-                            Edit Quote</a
-                        >
-                        <div class="ms-auto">
-                            <QuoteApprovalsModal
-                                v-if="can('viewAny quote_approval') || hasRole('Super Admin')"
-                            ></QuoteApprovalsModal>
-                            <ActivityDialog
-                                :filters="[
-                                    { entity: 'Quote', values: quote.id },
-                                    {
-                                        entity: 'QuoteItem',
-                                        values:
-                                            quote.items.map((x) => x.id).join(',') +
-                                            ',' +
-                                            quote.items_trashed.map((x) => x.id).join(',')
-                                    },
-                                    {
-                                        entity: 'QuoteDiscount',
-                                        values: quote.discounts.map((x) => x.id).join(',')
-                                    }
-                                ]"
-                            ></ActivityDialog>
-                            <ShareableQuote :disabled="quote.items.some((x) => !x.is_margin_valid)"></ShareableQuote>
-                            <a
-                                class="btn btn-outline-primary me-2"
-                                :href="route('quotes.preview', { quote: quote.id })"
-                                v-if="!quote.items.some((x) => !x.is_margin_valid)"
-                            >
-                                <font-awesome-icon :icon="['far', 'file-pdf']"></font-awesome-icon>
-                                Preview
-                            </a>
-                            <button class="btn btn-outline-primary me-2" v-else disabled="true">
-                                <font-awesome-icon :icon="['far', 'file-pdf']"></font-awesome-icon>
-                                Preview
-                            </button>
-                            <button
-                                hidden
-                                class="btn btn-outline-primary me-2"
-                                :disabled="quote.items.some((x) => !x.is_margin_valid)"
-                            >
-                                <font-awesome-icon class="me-2" :icon="['fas', 'envelope']"> </font-awesome-icon>
-                                Email this quote
-                            </button>
-                        </div>
-                    </div>
                 </div>
             </div>
             <div class="col-xl-4 ps-xl-5">

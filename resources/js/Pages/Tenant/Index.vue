@@ -28,7 +28,7 @@ const tenant = reactive({
         quote_margin_rules_operation: props.tenant.configurations.quote_margin_rules_operation ?? 'percentage',
         has_quote_approval: props.tenant.configurations.has_quote_approval ?? '0',
         quote_approval_flow: props.tenant.configurations.quote_approval_flow ?? 'Internal review',
-        has_client_approval: props.tenant.configurations.has_client_approval ?? '0'
+        has_client_approval: props.tenant.configurations.has_client_approval ?? '0',
         customization_header: JSON.parse(props.tenant.configurations.customization_header ?? '[]'),
         customization_footer: JSON.parse(props.tenant.configurations.customization_footer ?? '[]')
     }

@@ -1,7 +1,7 @@
 <template>
     <button
         id="btn-shareable-open"
-        class="btn btn-outline-primary ms-2"
+        class="btn btn-outline-primary me-2"
         @click="openShare()"
         :disabled="props.disabled"
     >
