@@ -16,6 +16,7 @@ const props = defineProps({
 
 const page = usePage();
 const tenant = page.props.tenant;
+const user = page.props.auth.user;
 
 const isLoading = ref(false);
 setQuote(props.modelValue);
@@ -162,9 +163,9 @@ const items = ref([
                             Status: {{ quote.status }}
                         </div>
                     </InfoBox>
-                    <InfoBox v-if="['QUOTE', 'PRICE', 'CONFIGURE'].includes(quote.status)">
+                    <InfoBox>
                         <div style="font-size: 14px">
-                            This quote will expire on
+                            Quote expiration date:
                             <b style="font-size: 16px">
                                 {{ format.expireDate(quote.created_at, tenant.configurations?.quote_expiration_days) }}
                             </b>
@@ -174,7 +175,12 @@ const items = ref([
                 <QuoteApprovalsPanel
                     v-if="
                         quote.approvals.find((x) => x.status == 'PENDING') &&
-                        (can('viewAny quote_approval') || hasRole('Super Admin'))
+                        (can('update quote_approval') ||
+                            hasRole('Super Admin') ||
+                            quote.approvals.find((x) => x.flow == 'Client review')) &&
+                        quote.approvals.some(
+                            (x) => !x.approver_id || x.approver_id === user.id || hasRole('Super Admin')
+                        )
                     "
                 ></QuoteApprovalsPanel>
 

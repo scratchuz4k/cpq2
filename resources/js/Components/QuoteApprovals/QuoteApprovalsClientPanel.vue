@@ -9,10 +9,10 @@
                     Reject
                 </button>
             </div>
-            <button class="btn btn-sm mt-2" @click="showComments = !showComments">
-                <font-awesome-icon :icon="['fas', 'plus']"></font-awesome-icon>
+            <a class="btn btn-sm border-0 mt-2" @click="showComments = !showComments" role="button">
+                <font-awesome-icon class="me-1" :icon="['fas', showComments ? 'minus' : 'plus']"></font-awesome-icon>
                 {{ showComments ? 'Hide' : 'Add' }} Comments
-            </button>
+            </a>
             <div v-if="showComments">
                 <input class="form-control form-control-sm" v-model="approval.comments" />
             </div>

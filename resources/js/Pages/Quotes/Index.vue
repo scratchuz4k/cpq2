@@ -171,7 +171,8 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Quotes' }]);
                                 v-if="
                                     data.status === 'PENDING' &&
                                     can('update quote_approval') &&
-                                    !data.latest_approval.approver
+                                    !data.latest_approval.approver &&
+                                    data.latest_approval.flow !== 'Client review'
                                 "
                                 :id="'datatable-workbasket-btn-' + index + '-delete'"
                                 class="btn px-2 py-0 mx-1 border-0"

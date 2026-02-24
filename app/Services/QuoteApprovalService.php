@@ -39,7 +39,7 @@ class QuoteApprovalService
             $isInternalOrMargin = in_array($lastApproval->flow, [QuoteApprovalFlowEnum::INTERNAL->value, QuoteApprovalFlowEnum::MARGIN->value]);
 
             $array['flow'] = $isInternalOrMargin ? QuoteApprovalFlowEnum::CLIENT->value : $array['flow'];
-            $status = $isInternalOrMargin ? QuoteStatusesEnum::PENDING_CLIENT->name : $status;
+            $status = $isInternalOrMargin ? QuoteStatusesEnum::PENDING->name : $status;
         }
 
         $quote->update(['status' => $status]);

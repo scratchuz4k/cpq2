@@ -162,7 +162,6 @@ class Quote extends Model
     {
         $statuses_to_ignore = [
             QuoteStatusesEnum::PENDING->name,
-            QuoteStatusesEnum::PENDING_CLIENT->name,
             QuoteStatusesEnum::APPROVED->name,
             QuoteStatusesEnum::COMPLETED->name,
             QuoteStatusesEnum::SUBMITTED->name,
@@ -188,7 +187,6 @@ class Quote extends Model
     {
         $block_statuses = [
             QuoteStatusesEnum::PENDING->name,
-            QuoteStatusesEnum::PENDING_CLIENT->name,
             QuoteStatusesEnum::APPROVED->name,
             QuoteStatusesEnum::COMPLETED->name,
             QuoteStatusesEnum::SUBMITTED->name,

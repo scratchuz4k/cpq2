@@ -9,10 +9,10 @@
                     Reject
                 </button>
             </div>
-            <button class="btn btn-sm mt-2" @click="showComments = !showComments">
-                <font-awesome-icon :icon="['fas', 'plus']"></font-awesome-icon>
+            <a class="btn btn-sm border-0 mt-2" @click="showComments = !showComments" role="button">
+                <font-awesome-icon class="me-1" :icon="['fas', showComments ? 'minus' : 'plus']"></font-awesome-icon>
                 {{ showComments ? 'Hide' : 'Add' }} Comments
-            </button>
+            </a>
             <div v-if="showComments">
                 <input class="form-control form-control-sm" v-model="approval.comments" />
             </div>
@@ -24,7 +24,9 @@
     <div v-else class="panel">
         <p class="big bold">Action Required:</p>
         <div class="my-3">
-            <label for="expiration_data" class="form-label"> Currently in client review, here's the link. </label>
+            <label for="expiration_data" class="form-label"
+                >The quote is currently under client review. You can access it here:
+            </label>
             <div class="input-group">
                 <input
                     id="input-shareable-link"
@@ -43,20 +45,24 @@
             </div>
             <div class="input-group mt-2">
                 <input
-                    id="input-shareable-link"
-                    type="password"
-                    class="form-control"
+                    id="input-shareable-link-password"
+                    :type="showPassword ? 'text' : 'password'"
+                    class="form-control pe-5"
                     :value="approval.configs?.link_password"
                     disabled
                 />
 
+                <button
+                    class="input-group-text text-muted bg-transparent border-0"
+                    @click="showPassword = !showPassword"
+                    style="position: absolute; right: 36px; top: 0; bottom: 0; z-index: 1"
+                >
+                    <font-awesome-icon role="button" :icon="['far', showPassword ? 'eye-slash' : 'eye']" />
+                </button>
                 <button class="input-group-text" @click="copyToClipboard(approval.configs?.link_password)">
                     <font-awesome-icon role="button" :icon="['far', 'clipboard']" />
                 </button>
             </div>
-            <p class="small mt-3">
-                Expires at: {{ approval.configs?.link_expiration_date ?? 'without expiration date' }}
-            </p>
         </div>
     </div>
 </template>
@@ -68,6 +74,7 @@ import { ref, onMounted, reactive, watch } from 'vue';
 const approval = reactive({});
 const shareLink = reactive({});
 const showComments = ref(false);
+const showPassword = ref(false);
 
 const updateQuoteApproval = async (status) => {
     if (!approval.id) {

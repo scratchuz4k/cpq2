@@ -16,9 +16,8 @@
     <div
         class="approvals-group-button flex me-2 p-0"
         v-if="
-            ['quote', 'pending', 'pending_client', 'approved', 'completed', 'rejected'].includes(
-                quote.status.toLowerCase()
-            ) && canToggleDialog()
+            ['quote', 'pending', 'approved', 'completed', 'rejected'].includes(quote.status.toLowerCase()) &&
+            canToggleDialog()
         "
     >
         <button
@@ -57,7 +56,10 @@
                 id="quote-approval-start"
                 v-else
                 class="btn btn-primary"
-                :disabled="items.some((x) => x.status.toLowerCase() === 'pending') || !can('create quote_approval')"
+                :disabled="
+                    items.some((x) => x.status.toLowerCase() === 'pending') ||
+                    (!can('create quote_approval') && !hasRole('Super Admin'))
+                "
                 @click="sendToOrder()"
                 style="border-radius: 5px 0 0 5px"
             >
@@ -312,12 +314,12 @@ const getButtonText = () => {
         return 'Send to Client Approval';
     }
 
-    if (quote.status.toLowerCase() == 'pending_client') {
-        return 'Waiting Client Approval';
-    }
-
     if (quote.status.toLowerCase() == 'pending') {
-        return 'Waiting for Approval';
+        if (lastApproval.flow === 'Client review') {
+            return 'Waiting Client Approval';
+        } else {
+            return 'Waiting for Approval';
+        }
     }
 
     return 'Send to Approval';
