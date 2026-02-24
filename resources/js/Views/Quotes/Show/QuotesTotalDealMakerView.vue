@@ -31,31 +31,6 @@ const warningProviders = ref([
 
 checkWarnings(warningProviders.value, null);
 
-const quoteTotal = (key) => {
-    let items = quote.items;
-    if (group) {
-        items = quote.items.flatMap((obj) => obj.items ?? obj);
-    }
-    return items.filter((x) => x.price_plan && x.price_plan.code == key).reduce((acc, item) => (acc += item.total), 0);
-};
-
-const quoteQuantityPrice = (price_plan) => {
-    let total = 0;
-    let tax = 0;
-    let items = quote.items;
-    if (group) {
-        items = quote.items.flatMap((obj) => obj.items ?? obj);
-    }
-
-    items.forEach((e) => {
-        if (e.price_plan && e.price_plan.code == price_plan) {
-            total += e.price * e.quantity;
-            tax += e.price * e.quantity * e.tax;
-        }
-    });
-    return total + tax;
-};
-
 const items = ref([
     { label: 'Home', url: '/' },
     {
@@ -110,69 +85,56 @@ const items = ref([
                         (can('viewAny quote_approval') || hasRole('Super Admin'))
                     "
                 ></QuoteApprovalsPanel>
-
-                <div class="price-mobile-sidebar total-quote-discount px-4 pt-4 pb-2 mb-3">
-                    <h3 class="mb-3">Total Quote Discount</h3>
-                    <div
-                        v-for="pricePlan in pricePlansDiscounts"
-                        class="d-flex justify-content-between align-items-center mb-3"
-                    >
-                        <label class="form-label m-0">{{ pricePlan.name }}</label>
-
-                        <!-- <QuoteDiscountPanel :pricePlans="props.pricePlans"></QuoteDiscountPanel> -->
-
-                        <div class="price-mobile-sidebar commission-calculator px-4 pt-4 pb-2 mb-3">
-                            <h3 class="mb-3">Profitability Calculator</h3>
-                            <p class="mb-2" style="font-size: 14px">
-                                Currently, you will make
-                                <span id="commission_text" v-if="show_calc_commission">
-                                    <b>{{ format.GBP(quote.commission_value) }}</b>
-                                    commission
-                                </span>
-                                <span v-if="calc_layout === 'DEFAULT'"> and </span>
-                                <span id="margin_text" v-if="show_calc_margin">
-                                    <b>{{ format.decimalPlaces(quote.margin) }} %</b>
-                                    margin</span
+                <div class="price-mobile-sidebar commission-calculator px-4 pt-4 pb-2 mb-3">
+                    <h3 class="mb-3">Profitability Calculator</h3>
+                    <p class="mb-2" style="font-size: 14px">
+                        Currently, you will make
+                        <span id="commission_text" v-if="show_calc_commission">
+                            <b>{{ format.GBP(quote.commission_value) }}</b>
+                            commission
+                        </span>
+                        <span v-if="calc_layout === 'DEFAULT'"> and </span>
+                        <span id="margin_text" v-if="show_calc_margin">
+                            <b>{{ format.decimalPlaces(quote.margin) }} %</b>
+                            margin</span
+                        >
+                        on this quote.
+                    </p>
+                    <div class="p-3 mb-3" style="background: #e9edf0">
+                        <div v-if="show_calc_margin" class="mb-3">
+                            <label class="form-label">Margin</label>
+                            <div class="input-group">
+                                <input
+                                    id="input-margin-order"
+                                    class="form-control"
+                                    :value="format.decimalPlaces(quote.margin) + ' %'"
+                                    disabled
+                                />
+                                <span class="input-group-text"
+                                    ><font-awesome-icon :icon="['fas', 'lock']"></font-awesome-icon
+                                ></span>
+                            </div>
+                        </div>
+                        <div v-if="show_calc_commission" class="mb-3">
+                            <label class="form-label"
+                                >Commission
+                                <b
+                                    >(<span id="order-tax-commission">
+                                        {{ format.decimalPlaces(quote.commission_rate) }}</span
+                                    >
+                                    %)</b
                                 >
-                                on this quote.
-                            </p>
-                            <div class="p-3 mb-3" style="background: #e9edf0">
-                                <div v-if="show_calc_margin" class="mb-3">
-                                    <label class="form-label">Margin</label>
-                                    <div class="input-group">
-                                        <input
-                                            id="input-margin-order"
-                                            class="form-control"
-                                            :value="format.decimalPlaces(quote.margin) + ' %'"
-                                            disabled
-                                        />
-                                        <span class="input-group-text"
-                                            ><font-awesome-icon :icon="['fas', 'lock']"></font-awesome-icon
-                                        ></span>
-                                    </div>
-                                </div>
-                                <div v-if="show_calc_commission" class="mb-3">
-                                    <label class="form-label"
-                                        >Commission
-                                        <b
-                                            >(<span id="order-tax-commission">
-                                                {{ format.decimalPlaces(quote.commission_rate) }}</span
-                                            >
-                                            %)</b
-                                        >
-                                    </label>
-                                    <div class="input-group">
-                                        <input
-                                            id="input-commission_value-order"
-                                            class="form-control"
-                                            :value="format.GBP(quote.commission_value)"
-                                            disabled
-                                        />
-                                        <span class="input-group-text"
-                                            ><font-awesome-icon :icon="['fas', 'lock']"></font-awesome-icon
-                                        ></span>
-                                    </div>
-                                </div>
+                            </label>
+                            <div class="input-group">
+                                <input
+                                    id="input-commission_value-order"
+                                    class="form-control"
+                                    :value="format.GBP(quote.commission_value)"
+                                    disabled
+                                />
+                                <span class="input-group-text"
+                                    ><font-awesome-icon :icon="['fas', 'lock']"></font-awesome-icon
+                                ></span>
                             </div>
                         </div>
                     </div>
