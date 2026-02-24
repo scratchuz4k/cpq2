@@ -1,8 +1,9 @@
 <script setup>
 import _ from 'lodash';
-import { computed, reactive, ref, watch } from 'vue';
+import { computed, onMounted, reactive, ref, watch } from 'vue';
 import format from '@/Composables/format';
 import Select from 'primevue/select';
+import { isDisabled } from '@/Composables/useQuoteSteps.js';
 
 const props = defineProps({
     solutionType: Array,
@@ -111,6 +112,21 @@ const addressSelect = async (form) => {
     }
 };
 
+onMounted(() => {
+    isDisabled.value = proxyValue.value.address === null;
+});
+
+watch(
+    () => [proxyValue.value.address],
+    () => {
+        if (proxyValue.value.address === null) {
+            isDisabled.value = true;
+        } else {
+            isDisabled.value = false;
+        }
+    }
+);
+
 solutionChange(props.modelValue);
 addressSearch({
     postCode: props.modelValue.postCode ?? ''
@@ -192,7 +208,6 @@ watch(addressPostCode, () => {
                     </iframe>
                 </InfoBox>
             </template>
-            <ButtonStep v-model="proxyValue" :disabled="proxyValue.address == null"></ButtonStep>
         </div>
     </div>
 </template>

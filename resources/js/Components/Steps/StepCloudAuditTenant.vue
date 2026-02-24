@@ -1,12 +1,14 @@
 <script setup>
 import _ from 'lodash';
 import { IconField, InputText, InputIcon, Dialog } from 'primevue';
-import { watch, ref, reactive, computed } from 'vue';
+import { watch, ref, reactive, computed, onMounted, onUnmounted, watchEffect } from 'vue';
 import queryString from 'query-string';
 import { currentStep } from '@composables/useQuoteSteps';
 import Paginator from 'primevue/paginator';
 import axios from 'axios';
 import { router } from '@inertiajs/vue3';
+import StepActionBar from './StepActionBar.vue';
+import { isDisabled, actionBarButtons } from '@/Composables/useQuoteSteps.js';
 
 const props = defineProps({
     solutionType: Array,
@@ -110,6 +112,21 @@ const handlePaginator = (ev) => {
     getOrganisations();
 };
 
+watchEffect(() => {
+    actionBarButtons.value = [
+        {
+            btn: 'back',
+            disabled: currentStep.value === 0,
+            onClick: () => currentStep.value--
+        },
+        {
+            btn: 'next',
+            disabled: computed(() => organisation.value == null),
+            onClick: activateTiming
+        }
+    ];
+});
+
 watch(
     () => [meta.search],
     _.debounce(function () {
@@ -117,6 +134,10 @@ watch(
         getOrganisations();
     }, 200)
 );
+
+onUnmounted(() => {
+    actionBarButtons.value = [];
+});
 
 syncCloudaudit();
 
@@ -216,30 +237,6 @@ const tenant_reviewed = ref(false);
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
-    <div class="row mb-3" v-if="!tenant_review_active && !tenant_reviewed">
-        <div class="col-lg-12 d-flex justify-content-between">
-            <button
-                id="btn-previous-step"
-                class="btn"
-                type="button"
-                v-if="currentStep != 0"
-                @click="() => currentStep--"
-                :disabled="props.disabled"
-            >
-                <font-awesome-icon :icon="['fas', 'arrow-left']" class="ms-2"></font-awesome-icon>
-                Previous Step
-            </button>
-            <button
-                id="btn-next-step"
-                class="btn btn-primary"
-                type="button"
-                @click="activateTiming()"
-                :disabled="organisation?.status.toLowerCase() !== 'granted' || !organisation?.data?.report"
-            >
-                Review Tenant
-            </button>
         </div>
     </div>
     <div class="row mb-3" v-if="tenant_review_active">
