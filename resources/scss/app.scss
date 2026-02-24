@@ -124,6 +124,10 @@ body {
 }
 
 #app {
+    flex-direction: column;
+    display: flex;
+    min-height: 100vh;
+
     a:not(.btn) {
         color: var(--color-purple);
     }
@@ -169,6 +173,18 @@ body {
     .btn-secondary:hover {
         background-color: var(--secondary-dark-lighter);
         border-color: var(--secondary-dark);
+    }
+
+    .btn-outline-dark {
+        border-color: var(--secondary-dark);
+        border-width: 0.175rem;
+        color: var(--secondary-dark);
+        font-weight: 600;
+
+        &:hover {
+            background-color: var(--secondary-dark);
+            color: var(--white);
+        }
     }
 
     .btn-text {
@@ -249,11 +265,6 @@ body {
         padding: 4px 12px !important;
     }
 
-    .navbar .navbar-brand img {
-        position: relative;
-        top: 5px;
-    }
-
     .navbar-nav .nav-link.active {
         background-color: var(--dark-grey);
         color: var(--white);
@@ -279,6 +290,7 @@ body {
     }
 
     main {
+        flex: 1;
         background: var(--grey-lighter);
         padding: 30px 0;
     }
