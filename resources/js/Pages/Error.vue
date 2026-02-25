@@ -39,11 +39,9 @@ const error = errors[props.status] ?? {
                 <div class="flex items-center mb-3 text-center">
                     <span class="text-primary fs-3 font-weight-bold">{{ error.title }}</span>
                 </div>
-                <div class="flex items-center text-center">
+                <div class="flex items-center text-center mb-4">
                     <span class="text-white fs-5">{{ error.description }}</span>
                 </div>
-                <br />
-                <br />
                 <div class="flex items-center justify-center">
                     <div>
                         <a class="btn btn-primary text-uppercase px-4" href="/">Home</a>

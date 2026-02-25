@@ -72,7 +72,7 @@ let view =
                     <font-awesome-icon :icon="['far', 'file-pdf']"></font-awesome-icon>
                     Preview
                 </a>
-                <button class="btn btn-outline-primary me-2" v-else disabled="true">
+                <button class="btn btn-outline-primary ms-2" v-else disabled="true">
                     <font-awesome-icon :icon="['far', 'file-pdf']"></font-awesome-icon>
                     Preview
                 </button>
