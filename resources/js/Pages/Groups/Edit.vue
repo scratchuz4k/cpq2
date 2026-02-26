@@ -1,5 +1,4 @@
 <script setup>
-import queryString from 'query-string';
 import { Button, InputText, DataTable, Column, Panel } from 'primevue';
 import { reactive, ref } from 'vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';

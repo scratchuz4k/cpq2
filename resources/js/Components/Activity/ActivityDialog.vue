@@ -3,7 +3,7 @@ import Button from 'primevue/button';
 import { can, hasRole } from '@/Composables/useAuth.js';
 import { ref, onMounted, watch, reactive } from 'vue';
 import { usePage } from '@inertiajs/vue3';
-import queryString from 'query-string';
+import queryString from 'qs';
 import { exportData } from '@/Composables/export.js';
 import { Dialog, Timeline, MultiSelect, Select, Paginator, Card } from 'primevue';
 const props = defineProps({
@@ -112,7 +112,7 @@ const getActivity = async () => {
     }
     let string = queryString.stringify({
         page: meta.page,
-        filters: JSON.stringify(getFilters()),
+        filters: getFilters(),
         order: 'desc',
         orderBy: 'created_at',
         limit: meta.limit

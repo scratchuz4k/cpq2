@@ -4,7 +4,7 @@ import axios from 'axios';
 import PickList from 'primevue/picklist';
 import { reactive, ref, watch } from 'vue';
 import Button from 'primevue/button';
-import queryString from 'query-string';
+import queryString from 'qs';
 import TooltipWithIcon from '@/Components/TooltipWithIcon.vue';
 import { DateTime } from 'luxon';
 

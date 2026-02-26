@@ -1,5 +1,4 @@
 <script setup>
-import queryString from 'query-string';
 import { Dialog, IconField, Galleria, InputIcon, InputText } from 'primevue';
 import { ref, computed, watch } from 'vue';
 import _ from 'lodash';

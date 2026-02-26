@@ -6,7 +6,7 @@ import Header from '@/Components/Header.vue';
 import Datatable from '@/Components/Datatable.vue';
 import { Dialog, Button, Checkbox, Select } from 'primevue';
 import { exportData } from '@/Composables/export.js';
-import queryString from 'query-string';
+import queryString from 'qs';
 import CountUp from 'vue-countup-v3';
 import Table from 'primevue/datatable';
 import Column from 'primevue/column';

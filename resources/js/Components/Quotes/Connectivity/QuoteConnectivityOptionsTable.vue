@@ -48,7 +48,7 @@
 import { removeAddon, addAddon, isLoading } from '@/Composables/useConnectivityItem';
 import { onMounted, reactive, ref } from 'vue';
 import { quote, getQuote } from '@/Composables/useQuote';
-import queryString from 'query-string';
+import queryString from 'qs';
 
 const props = defineProps({
     modelValue: Object,
@@ -73,7 +73,7 @@ const getOptions = async () => {
     options.value = [];
     let query = queryString.stringify({
         quote_id: props.modelValue.id,
-        filters: JSON.stringify(temp),
+        filters: temp,
         account_id: props.modelValue.account_id
     });
     try {

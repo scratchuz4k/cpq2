@@ -10,7 +10,7 @@ import Spinner from '@/Components/Spinner.vue';
 import Select from 'primevue/select';
 import ToggleSwitch from 'primevue/toggleswitch';
 import TriStateToggle from '@/Components/TriStateToggle.vue';
-import queryString from 'query-string';
+import queryString from 'qs';
 import { remove, add } from '@/Composables/useConnectivityItem';
 import { quote, getQuote } from '@/Composables/useQuote';
 import SvgIcon from '@/Components/Custom/SvgIcon.vue';
@@ -112,7 +112,7 @@ const getArticles = async (clearCache = false, runTimeout = false) => {
 
     let query = queryString.stringify({
         quote_id: props.modelValue.id,
-        filters: JSON.stringify(temp),
+        filters: temp,
         page: meta.page,
         perPage: meta.limit,
         order: sort.order,

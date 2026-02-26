@@ -183,7 +183,7 @@
 import Dialog from 'primevue/dialog';
 import { ref, onMounted, reactive, watch } from 'vue';
 import { quote, getQuote } from '@composables/useQuote';
-import queryString from 'query-string';
+import queryString from 'qs';
 import Paginator from 'primevue/paginator';
 import { usePage } from '@inertiajs/vue3';
 import { can, hasRole } from '@/Composables/useAuth';
@@ -208,7 +208,7 @@ const getApprovals = async () => {
     let query = queryString.stringify({
         limit: meta.limit,
         page: meta.page,
-        filters: JSON.stringify([{ column: 'quote_id', operator: 'equals', value: quote.id }]),
+        filters: [{ column: 'quote_id', operator: 'equals', value: quote.id }],
         order: 'desc'
     });
     try {

@@ -4,7 +4,7 @@ import { quote, setQuote } from '@composables/useQuote';
 import axios from 'axios';
 import { router } from '@inertiajs/vue3';
 import { ref } from 'vue';
-import queryString from 'query-string';
+import queryString from 'qs';
 
 const props = defineProps({
     modelValue: Object
@@ -18,7 +18,7 @@ const getStepsWithProducts = async () => {
     loading.value = true;
     let query = queryString.stringify({
         limit: 200,
-        filters: JSON.stringify([
+        filters: [
             {
                 column: 'id',
                 operator: 'in',
@@ -34,7 +34,7 @@ const getStepsWithProducts = async () => {
                 operator: 'equals',
                 value: 1
             }
-        ])
+        ]
     });
     let res = await axios.get('/api/steps?' + query);
 
