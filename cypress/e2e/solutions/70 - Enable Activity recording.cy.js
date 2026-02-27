@@ -11,7 +11,7 @@ const rand = (notAllowedNumber, max = 101) => {
 
 const temp = getCurrentDate();
 const account = { ref: generateHash(temp), name: temp };
-const provider = 'Gamma';
+const provider = 'Giacom';
 const subprovider = 'BT';
 
 describe('Creates a Mobile Quote', () => {

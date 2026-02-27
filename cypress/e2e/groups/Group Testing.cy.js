@@ -66,8 +66,8 @@ describe('Group Testing', () => {
         cy.get('#link-users').click();
         cy.get('#1-1').click();
         cy.get('#datatable-search').type(group.name);
-        cy.get('#datatable-btn-0-edit').click();
         cy.wait(1000);
+        cy.get('#datatable-btn-0-edit').click();
 
         cy.get('#1-1').click();
         cy.get('#datatable-search').type(sales_manager.name, { force: true });

@@ -1,6 +1,6 @@
 const { isSymbol } = require('lodash');
 
-const provider = 'Gamma';
+const provider = 'Giacom';
 const subprovider = 'BT';
 
 describe('Creates a Mobile Quote', () => {
