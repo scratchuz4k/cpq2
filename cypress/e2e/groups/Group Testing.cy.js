@@ -27,7 +27,7 @@ describe('Group Testing', () => {
         cy.visit('/quotes');
         cy.get('#settings').click();
         cy.get('#link-users').click();
-        cy.get('#1-1').click();
+        cy.get('#users-1-1').click();
         cy.get('#link-to-create-group').click();
         cy.get('#group-create-name').type(group.name, { force: true });
         cy.get('#group-create-submit').click();
@@ -64,11 +64,9 @@ describe('Group Testing', () => {
         cy.visit('/quotes');
         cy.get('#settings').click();
         cy.get('#link-users').click();
-        cy.get('#1-1').click();
+        cy.get('#users-1-1').click();
         cy.get('#datatable-search').type(group.name);
-        cy.wait(2000);
         cy.get('#datatable-btn-0-edit').click();
-        cy.wait(2000);
 
         cy.get('#1-1').click();
         cy.get('#datatable-search').type(sales_manager.name, { force: true });
@@ -83,9 +81,8 @@ describe('Group Testing', () => {
         cy.visit('/quotes');
         cy.get('#settings').click();
         cy.get('#link-users').click();
-        cy.get('#1-1').click();
+        cy.get('#users-1-1').click();
         cy.get('#datatable-search').type(group.name);
-        cy.wait(2000);
         cy.get('#datatable-btn-0-edit').click();
 
         cy.get('#1-1').click();
@@ -138,14 +135,12 @@ describe('Group Testing', () => {
         cy.visit('/quotes');
         cy.get('#settings').click();
         cy.get('#link-users').click();
-        cy.get('#1-1').click();
+        cy.get('#users-1-1').click();
         cy.get('#datatable-search').type(group.name);
         cy.get('#datatable-btn-0-edit').click();
 
-        cy.wait(1000);
         cy.get('#1-1').click();
         cy.get('#datatable-search').type(group_user.name, { force: true });
-        cy.wait(2000);
         cy.get('.p-datatable-table').contains(group_user.name);
 
         cy.get('#2-2').click();
