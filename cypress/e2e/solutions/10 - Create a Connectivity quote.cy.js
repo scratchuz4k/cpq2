@@ -2,7 +2,7 @@ import { generateHash, getCurrentDate } from '../../support/utils.js';
 
 const temp = getCurrentDate();
 const account = { ref: generateHash(temp), name: temp };
-const provider = 'Giacom';
+const provider = 'Gamma';
 const subprovider = 'BT';
 
 describe('Creates a Connectivity quote', () => {

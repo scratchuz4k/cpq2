@@ -132,7 +132,14 @@ class ProductController extends BaseController
 
     private function decodeFilters(Request $request)
     {
-        return $request->has('filters') ? json_decode($request->filters, true) : [];
+        if ($request->has('filters') && is_string($request->filters)) {
+            return json_decode($request->filters, true);
+        }
+        if ($request->has('filters') && is_array($request->filters)) {
+            return $request->filters;
+        }
+
+        return [];
     }
 
     private function getQuote(Request $request)

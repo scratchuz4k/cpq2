@@ -2,7 +2,7 @@ import { faVoteYea } from '@fortawesome/free-solid-svg-icons';
 import { generateHash, getCurrentDate } from '../../support/utils.js';
 
 const temp = getCurrentDate();
-const provider = 'Giacom';
+const provider = 'Gamma';
 const subprovider = 'BT';
 
 describe('Quote Approval and Rejection', () => {
