@@ -66,8 +66,9 @@ describe('Creates a Mobile Quote', () => {
         cy.get('.step-action-bar #btn-next-step').click();
 
         cy.get('#solution_type-mobile').click();
-        cy.get('#btn-create-quote').click();
         cy.wait(1000);
+        cy.get('#btn-create-quote').click();
+        cy.wait(2000);
         cy.get('#btn-product-0-add-25').click();
         cy.wait(1000);
         cy.get('#btn-product-1-add-25').click();
