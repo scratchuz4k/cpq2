@@ -78,6 +78,7 @@ getStepsWithProducts();
                 <div v-if="!loading">
                     <div v-for="(step, index) in active_steps">
                         <StepProductsView
+                            v-if="index === current_step"
                             :step="step"
                             :account="props.modelValue.account"
                             v-model="current_step"
