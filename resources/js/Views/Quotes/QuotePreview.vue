@@ -42,7 +42,7 @@ let view = component && Object.keys(solutionsViews).includes(component) ? soluti
             <div class="row">
                 <div class="col" id="header_left">
                     <div class="preview-logo">
-                        <app-logo></app-logo>
+                        <AppLogo type="logo_docs"></AppLogo>
                     </div>
                 </div>
                 <div class="col text-end" id="header_right">

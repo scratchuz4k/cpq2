@@ -1,6 +1,5 @@
 <script setup>
 import _ from 'lodash';
-import ApplicationLogo from '@/Components/ApplicationLogo.vue';
 import { Link, usePage } from '@inertiajs/vue3';
 import { Comment, computed, ref, useSlots } from 'vue';
 import * as Sentry from '@sentry/vue';
@@ -59,7 +58,7 @@ const hasActionBarContent = computed(() => {
     <nav class="navbar navbar-expand-md bg-theme-secondary-dark">
         <div class="container d-flex justify-space-between">
             <a class="navbar-brand" href="/">
-                <ApplicationLogo />
+                <AppLogo />
             </a>
             <button
                 class="navbar-toggler"

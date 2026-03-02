@@ -3,7 +3,7 @@
         <div class="container">
             <div class="row mb-3">
                 <div class="col">
-                    <img alt="Giacom" src="/images/cloud-market-tools-giacom-logo.png" />
+                    <app-logo type="logo_alt"></app-logo>
                 </div>
                 <div class="col d-flex justify-center justify-content-sm-end">
                     <a title="Facebook" class="fs-4" href="https://www.facebook.com/GiacomGroup" target="_blank">
@@ -46,6 +46,7 @@
 </template>
 <script setup>
 import { Link, usePage } from '@inertiajs/vue3';
+import AppLogo from './AppLogo.vue';
 
 const page = usePage();
 const user = page.props.auth.user;

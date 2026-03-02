@@ -35,7 +35,7 @@ describe('Update tenant logo', () => {
         cy.get('#library-container').find('.p-card').first().click();
         cy.get('.action-button-wrapper').find('.p-button').eq(1).click();
 
-        cy.get('.notyf').contains('Logo uploaded with Success');
+        cy.get('.notyf').contains('Updated with Success');
     });
 
     it('upload wrong format image', () => {
@@ -63,7 +63,7 @@ describe('Update tenant logo', () => {
     });
 
     it('Remove tenant logo', () => {
-        cy.get('#v-pills-logo').find('#remove-file-button').click();
+        cy.get('#v-pills-logo').find('#logo-remove-file-button').click();
         cy.get('.notyf').contains('Logo deleted with Success');
         cy.get('#v-pills-logo').find('.input-resource').should('exist');
     });
