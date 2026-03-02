@@ -159,19 +159,57 @@ watch(searchInput, () => {
                             /></span>
                         </a>
                     </template>
-                    <template v-else>
-                        <img
-                            src="/images/no_image.png"
-                            style="object-fit: contain"
-                            :style="{
-                                width: '140px',
-                                height: '140px'
-                            }"
-                        />
-                    </template>
                 </div>
             </div>
+
             <div class="w-100">
+                <div class="d-flex justify-content-between">
+                    <div class="bold truncate-1-lines" :class="[showAsColumn ? 'truncate-2-lines mb-2' : 'me-3']">
+                        {{ proxyValue.model?.name }}
+                    </div>
+                    <div v-if="proxyValue.stock > 0" class="badge text-bg-warning" style="--bs-bg-opacity: 0.5">
+                        <span :id="'hardware-' + index + '-stock'">
+                            {{ proxyValue.stock }}
+                        </span>
+                        in stock
+                    </div>
+                </div>
+                <p class="my-3">
+                    {{ proxyValue.name }}
+                </p>
+                <div class="actions d-flex justify-content-between">
+                    <div class="buttons">
+                        <button id="btn-show-details" class="btn btn-outline-primary me-2" @click="openModal()">
+                            View product details
+                        </button>
+                        <button
+                            v-if="hasSelect && !showAsColumn"
+                            id="btn-compare"
+                            class="btn btn-outline-primary me-2"
+                            @click="select()"
+                        >
+                            Compare
+                        </button>
+                        <button v-if="hasSuppliers" id="btn-show-suppliers" class="btn btn-outline-primary me-2">
+                            50 Suppliers
+                            <font-awesome-icon :icon="['fas', 'arrow-right']" class="ms-2" />
+                        </button>
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <InputQuantity
+                            :id="'hardware-' + index"
+                            style="max-width: 120px"
+                            v-model="proxyValue.quantity"
+                            @change="(val) => checkQuantity(proxyValue, val, true)"
+                        />
+                        <p class="bold big ms-3">
+                            {{ format.GBP(proxyValue.price?.net_spa || 0) }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="w-100 d-none">
                 <div class="d-flex justify-content-between">
                     <p class="bold truncate-1-lines" :class="[showAsColumn ? 'truncate-2-lines mb-2' : 'me-3']">
                         {{ proxyValue.model?.name }}
