@@ -47,10 +47,12 @@ return new class extends Migration
                         $lastStatusActivity = Activity::query()
                             ->where('activitable_type', Quote::class)
                             ->where('activitable_id', $quote->id)
-                            ->where('operation', 'updated')
+                            ->where('operation', ['updated', 'created'])
                             ->whereJsonContains('data', ['field' => 'status'])
                             ->latest()
                             ->first();
+
+                        $statusTo = null;
 
                         if ($lastStatusActivity) {
                             $change = collect($lastStatusActivity->data)
@@ -64,7 +66,7 @@ return new class extends Migration
                         $data = [
                             [
                                 'field' => 'status',
-                                'from' => isset($statusTo) ? $statusTo : 'QUOTE',
+                                'from' => isset($statusTo) ? $statusTo : QuoteStatusesEnum::QUOTE->name,
                                 'to' => $expiredStatus,
                             ],
                         ];
