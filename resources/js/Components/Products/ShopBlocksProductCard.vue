@@ -174,28 +174,28 @@ watch(searchInput, () => {
                         in stock
                     </div>
                 </div>
-                <p class="my-3">
+                <p class="my-3 truncate-2-lines">
                     {{ proxyValue.name }}
                 </p>
                 <div class="actions d-flex justify-content-between">
                     <div class="buttons">
-                        <button id="btn-show-details" class="btn btn-outline-primary me-2" @click="openModal()">
+                        <button id="btn-show-details" class="btn btn-sm btn-outline-primary me-2" @click="openModal()">
                             View product details
                         </button>
                         <button
                             v-if="hasSelect && !showAsColumn"
                             id="btn-compare"
-                            class="btn btn-outline-primary me-2"
+                            class="btn btn-sm btn-outline-primary me-2"
                             @click="select()"
                         >
                             Compare
                         </button>
-                        <button v-if="hasSuppliers" id="btn-show-suppliers" class="btn btn-outline-primary me-2">
+                        <button id="btn-show-suppliers" class="btn btn-sm btn-outline-primary me-2">
                             50 Suppliers
                             <font-awesome-icon :icon="['fas', 'arrow-right']" class="ms-2" />
                         </button>
                     </div>
-                    <div class="d-flex align-items-center">
+                    <div class="actions d-flex align-items-center">
                         <InputQuantity
                             :id="'hardware-' + index"
                             style="max-width: 120px"
