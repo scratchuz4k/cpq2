@@ -1,6 +1,8 @@
 <template>
-    <img v-if="logo" :src="logo?.full_route" :alt="text[props.type]" class="img-fluid" />
-    <img v-else :src="default_logo[props.type]" />
+    <div class="app-logo">
+        <img v-if="logo" :src="logo?.full_route" :alt="text[props.type]" />
+        <!-- <img v-else :src="default_logo[props.type]" /> -->
+    </div>
 </template>
 <script setup>
 import { usePage } from '@inertiajs/vue3';

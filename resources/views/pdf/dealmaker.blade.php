@@ -144,9 +144,9 @@
     <div id="print">
         <div class="row" id="header">
             <div class="col" id="header_left">
-                @if (!is_null($tenant['logo']))
+                @if (!is_null($tenant['logo_docs']))
                     <div class="preview-logo">
-                        <img src="{{ public_path($tenant['logo']['route']) }}" alt="{{ $tenant['name'] }}"
+                        <img src="{{ public_path($tenant['logo_docs']['route']) }}" alt="{{ $tenant['name'] }}"
                             class="img-fluid" />
                     </div>
                 @endif

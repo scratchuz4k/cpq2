@@ -1258,15 +1258,17 @@ body {
     opacity: 1;
 }
 
+.app-logo,
 .preview-logo {
     display: flex;
     flex-direction: column;
-    height: 100px;
-    width: 300px;
+    max-height: 50px;
+    max-width: 300px;
 }
 
+.app-logo > img,
 .preview-logo > img {
-    max-height: 100px;
+    max-height: 50px;
     max-width: 300px;
     object-fit: scale-down;
     object-position: left;
