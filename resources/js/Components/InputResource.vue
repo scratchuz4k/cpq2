@@ -1,5 +1,5 @@
 <template>
-    <div class="mt-2" @click="openResources()" style="cursor: pointer">
+    <div :id="props.id + '-file-button'" class="mt-2" @click="openResources()" style="cursor: pointer">
         <div v-if="item">
             <img
                 :src="coverImage(item)"
