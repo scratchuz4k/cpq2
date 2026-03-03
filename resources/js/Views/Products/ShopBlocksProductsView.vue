@@ -309,22 +309,22 @@ watch(
             <div class="col-9">
                 <div class="d-flex justify-content-between align-items-end mb-3">
                     <div class="d-flex flex-fill justify-content-start">
-                        <button
-                            class="btn border"
-                            :class="[showCards ? 'btn-dark' : '']"
-                            @click="() => (showCards = !showCards)"
-                            style="border-radius: 5px 0 0 5px"
-                        >
-                            <font-awesome-icon :icon="['fas', 'grip']"></font-awesome-icon>
-                        </button>
-                        <button
-                            class="btn border"
-                            :class="[showCards ? '' : 'btn-dark']"
-                            @click="() => (showCards = !showCards)"
-                            style="border-radius: 0 5px 5px 0"
-                        >
-                            <font-awesome-icon :icon="['fas', 'grip-lines']"></font-awesome-icon>
-                        </button>
+                        <!--                        <button-->
+                        <!--                            class="btn border"-->
+                        <!--                            :class="[showCards ? 'btn-dark' : '']"-->
+                        <!--                            @click="() => (showCards = !showCards)"-->
+                        <!--                            style="border-radius: 5px 0 0 5px"-->
+                        <!--                        >-->
+                        <!--                            <font-awesome-icon :icon="['fas', 'grip']"></font-awesome-icon>-->
+                        <!--                        </button>-->
+                        <!--                        <button-->
+                        <!--                            class="btn border"-->
+                        <!--                            :class="[showCards ? '' : 'btn-dark']"-->
+                        <!--                            @click="() => (showCards = !showCards)"-->
+                        <!--                            style="border-radius: 0 5px 5px 0"-->
+                        <!--                        >-->
+                        <!--                            <font-awesome-icon :icon="['fas', 'grip-lines']"></font-awesome-icon>-->
+                        <!--                        </button>-->
                     </div>
                     <div class="d-flex justify-content-end text-nowrap flex-shrink-0">
                         <span class="me-2 align-self-center">Sort by</span>

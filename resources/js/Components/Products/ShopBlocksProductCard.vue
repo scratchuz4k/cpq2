@@ -168,7 +168,7 @@ watch(searchInput, () => {
                     <div class="bold truncate-1-lines" :class="[showAsColumn ? 'truncate-2-lines mb-2' : 'me-3']">
                         {{ proxyValue.model?.name }}
                     </div>
-                    <div v-if="proxyValue.stock > 0" class="badge text-bg-warning" style="--bs-bg-opacity: 0.5">
+                    <div v-if="proxyValue.stock > 0" class="badge-success rounded-5 bold">
                         <span :id="'hardware-' + index + '-stock'">
                             {{ proxyValue.stock }}
                         </span>
@@ -203,97 +203,10 @@ watch(searchInput, () => {
                             v-model="proxyValue.quantity"
                             @change="(val) => checkQuantity(proxyValue, val, true)"
                         />
-                        <p class="bold big ms-3">
+                        <p class="bold big ms-4">
                             {{ format.GBP(proxyValue.price?.net_spa || 0) }}
                         </p>
                     </div>
-                </div>
-            </div>
-
-            <div class="w-100 d-none">
-                <div class="d-flex justify-content-between">
-                    <p class="bold truncate-1-lines" :class="[showAsColumn ? 'truncate-2-lines mb-2' : 'me-3']">
-                        {{ proxyValue.model?.name }}
-                    </p>
-                    <div :class="[!showAsColumn ? 'd-flex justify-content-end' : 'position-absolute top-0 end-0 mt-2']">
-                        <div class="me-3">
-                            <p v-if="proxyValue.stock > 0" class="badge text-bg-warning" style="--bs-bg-opacity: 0.5">
-                                <span :id="'hardware-' + index + '-stock'">
-                                    {{ proxyValue.stock }}
-                                </span>
-                                in stock
-                            </p>
-                            <p v-else class="badge text-bg-danger" style="--bs-bg-opacity: 0.5">
-                                <font-awesome-icon :icon="['fa', 'warning']" />
-                                <span :id="'hardware-' + index + '-stock'"></span>
-                                OUT OF STOCK
-                            </p>
-                        </div>
-                        <div v-if="!showAsColumn">
-                            <p class="bold big">
-                                {{ format.GBP(proxyValue.price?.net_spa || 0) }}
-                            </p>
-                        </div>
-                    </div>
-                </div>
-                <p :class="[showAsColumn ? 'truncate-3-lines' : null]" v-html="proxyValue.name"></p>
-                <a class="fw-bold small" type="button" style="text-decoration: none" @click="openModal()"
-                    >More Info<font-awesome-icon class="ps-2" :icon="['fas', 'plus']"
-                /></a>
-                <div v-if="showAsColumn">
-                    <p class="bold big mt-3">
-                        {{ format.GBP(proxyValue.price?.net_spa || 0) }}
-                    </p>
-                </div>
-                <div class="mt-3">
-                    <div
-                        class="d-flex"
-                        :style="{
-                            flexDirection: showAsColumn ? 'column' : 'row'
-                        }"
-                    >
-                        <div
-                            :style="{
-                                width: showAsColumn ? '100%' : '150px'
-                            }"
-                        >
-                            <InputQuantity
-                                :id="'hardware-' + index"
-                                v-model="proxyValue.quantity"
-                                @change="(val) => checkQuantity(proxyValue, val, true)"
-                            />
-                        </div>
-
-                        <template v-if="!showAsColumn">
-                            <button
-                                :id="'btn-product-' + index + '-add-25'"
-                                class="btn btn-sm ms-4 btn-add-custom-quantity"
-                                @click="checkQuantity(proxyValue, proxyValue.quantity + 25, true)"
-                            >
-                                +25
-                            </button>
-                            <button
-                                :id="'btn-product-' + index + '-add-50'"
-                                class="btn btn-sm ms-2 btn-add-custom-quantity"
-                                @click="checkQuantity(proxyValue, proxyValue.quantity + 50, true)"
-                            >
-                                +50
-                            </button>
-                            <button
-                                :id="'btn-product-' + index + '-add-100'"
-                                class="btn btn-sm ms-2 me-4 btn-add-custom-quantity"
-                                @click="checkQuantity(proxyValue, proxyValue.quantity + 100, true)"
-                            >
-                                +100
-                            </button>
-                        </template>
-                        <button v-if="hasSelect && !showAsColumn" class="btn btn-add-comparator" @click="select">
-                            Add to Comparator
-                        </button>
-                    </div>
-                    <template v-if="hasSelect && showAsColumn">
-                        <button class="btn btn-add-comparator w-100 mt-3" @click="select">Add to Comparator</button>
-                    </template>
                 </div>
             </div>
         </div>
@@ -518,5 +431,13 @@ watch(searchInput, () => {
 
 .p-galleria-close-button {
     z-index: 1000 !important;
+}
+
+.badge-success {
+    background-color: var(--bg-badge-success);
+    opacity: 80%;
+    padding: 4px 16px;
+    font-size: 14px;
+    color: var(--text-badge-success);
 }
 </style>
