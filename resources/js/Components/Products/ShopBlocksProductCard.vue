@@ -15,6 +15,7 @@ const props = defineProps({
 const displayBasic = ref(false);
 const showModal = ref(false);
 const loadingFeatures = ref(false);
+const hasSuppliers = ref(false);
 const emit = defineEmits(['update:modelValue', 'select']);
 const proxyValue = computed({
     get: () => props.modelValue,
@@ -190,7 +191,7 @@ watch(searchInput, () => {
                         >
                             Compare
                         </button>
-                        <button id="btn-show-suppliers" class="btn btn-sm btn-outline-primary me-2">
+                        <button v-if="hasSuppliers" id="btn-show-suppliers" class="btn btn-sm btn-outline-primary me-2">
                             50 Suppliers
                             <font-awesome-icon :icon="['fas', 'arrow-right']" class="ms-2" />
                         </button>
