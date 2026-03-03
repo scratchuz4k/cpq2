@@ -19,7 +19,7 @@ const proxyValue = computed({
 });
 
 const checkQuantity = _.debounce(async (product, temp) => {
-    if (product.stock <= temp) {
+    if (temp > product.stock) {
         notyf.open({
             type: 'warning',
             message: 'You can only add up to the number of units in stock. The quantity is automatically adjusted'
