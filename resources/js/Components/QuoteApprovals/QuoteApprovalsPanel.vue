@@ -122,6 +122,7 @@ const updateQuoteApproval = async (status) => {
         });
         notyf.success(`Quote ${status} with success!`);
         await getQuote(quote.id);
+        showModal.value = false;
     } catch (ex) {
         notyf.error(ex.response?.data?.message ?? 'Something went wrong!');
     }
