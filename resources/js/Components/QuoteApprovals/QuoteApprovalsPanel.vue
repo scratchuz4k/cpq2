@@ -9,13 +9,6 @@
                     Reject
                 </button>
             </div>
-            <a class="btn btn-sm border-0 mt-2" @click="showComments = !showComments" role="button">
-                <font-awesome-icon class="me-1" :icon="['fas', showComments ? 'minus' : 'plus']"></font-awesome-icon>
-                {{ showComments ? 'Hide' : 'Add' }} Comments
-            </a>
-            <div v-if="showComments">
-                <input class="form-control form-control-sm" v-model="approval.comments" />
-            </div>
         </template>
         <div class="mt-2" v-else>
             <p class="bold">Missing required permissions</p>
@@ -32,19 +25,17 @@
                 <h2>Reject Comments</h2>
             </template>
             <div class="container m-0 p-0">
-                <Form @submit.prevent="updateQuoteApproval('rejected')" class="flex flex-col gap-4">
+                <form @submit.prevent="updateQuoteApproval('rejected', true)" class="flex flex-col gap-4">
                     <div class="flex flex-col gap-1">
-                        <Textarea
-                            v-model="approval.comments"
-                            rows="5"
-                            cols="30"
-                            style="resize: none"
-                            class="w-100"
-                            required
-                        />
+                        <Textarea v-model="approval.comments" rows="5" cols="30" style="resize: none" class="w-100" />
                     </div>
-                    <Button type="submit" severity="secondary" label="Submit" class="w-100" />
-                </Form>
+                    <Button
+                        type="submit"
+                        severity="secondary"
+                        label="Submit"
+                        class="btn btn-primary text-white w-100"
+                    />
+                </form>
             </div>
         </Dialog>
     </div>
@@ -101,18 +92,19 @@ import { Dialog, Button, Textarea } from 'primevue';
 
 const approval = reactive({});
 const shareLink = reactive({});
-const showComments = ref(false);
 const showPassword = ref(false);
 const showModal = ref(false);
 
-const updateQuoteApproval = async (status) => {
+const updateQuoteApproval = async (status, fromModal = false) => {
     if (!approval.id) {
         notyf.error('No quote Approval found!');
         return;
     }
     if (status == 'rejected' && !approval.comments) {
+        if (fromModal) {
+            notyf.error('Please fill the comments box');
+        }
         showModal.value = true;
-        notyf.error('Please fill the comments box');
         return;
     }
     try {
