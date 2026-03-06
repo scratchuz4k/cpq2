@@ -61,9 +61,11 @@ const submitLogoForm = async () => {
         logo_alt_id: tenant.logo_alt_id,
         logo_docs_id: tenant.logo_docs_id
     };
+
     try {
         let res = await axios.put(`/api/tenants/` + tenant.id, data);
         Object.assign(tenant, res.data);
+        emitter.emit('logo:updated');
         notyf.success('Updated with Success');
     } catch (err) {
         notyf.error(err?.response?.data?.message ?? 'Something went wrong');

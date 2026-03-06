@@ -6,6 +6,7 @@
 </template>
 <script setup>
 import { usePage } from '@inertiajs/vue3';
+import { ref, reactive } from 'vue';
 
 const props = defineProps({
     type: {
@@ -16,8 +17,8 @@ const props = defineProps({
 });
 
 const page = usePage();
-let tenant = page.props.model?.tenant ?? page.props.tenant;
-const logo = Object.keys(tenant).includes(props.type) ? tenant[props.type] : null;
+const tenant = reactive(page.props.model?.tenant ?? page.props.tenant);
+const logo = ref(Object.keys(tenant).includes(props.type) ? tenant[props.type] : null);
 
 const text = {
     logo: `${tenant.name} main logo`,
@@ -30,4 +31,14 @@ const default_logo = {
     logo_alt: '/images/cloud-market-tools-giacom-logo.png',
     logo_docs: '/images/cloud-market-tools-logo.png'
 };
+
+emitter.on('logo:updated', async () => {
+    try {
+        let res = await axios.get(`/api/tenants/` + tenant.id);
+        Object.assign(tenant, res.data);
+        logo.value = Object.keys(tenant).includes(props.type) ? tenant[props.type] : null;
+    } catch (err) {
+        notyf.error(err?.response?.data?.message ?? 'Something went wrong');
+    }
+});
 </script>
