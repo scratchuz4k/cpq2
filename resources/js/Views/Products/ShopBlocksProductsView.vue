@@ -3,10 +3,10 @@ import _ from 'lodash';
 import queryString from 'query-string';
 import { Paginator, Select } from 'primevue';
 import { quote } from '@/Composables/useQuote';
+import { selectedItems, addSelected } from '@/Composables/useComparator';
 import { categories } from '@composables/custom/shopblocks';
 import { computed, onMounted, reactive, ref, watch } from 'vue';
 import ShopBlocksStorages from '@/Components/ShopBlocks/ShopBlocksStorages.vue';
-import StepActionBar from '@/Components/Steps/StepActionBar.vue';
 
 const emit = defineEmits(['save', 'update:modelValue']);
 const proxyValue = computed({
@@ -28,7 +28,6 @@ const props = defineProps({
     current_step: Number
 });
 
-const selectedItems = ref([]);
 const meta = reactive({
     page: 1,
     total: 0,
@@ -218,19 +217,6 @@ const getProductsShopBlocks = async () => {
             console.error(error);
         }
     }
-};
-
-const addSelected = (item) => {
-    if (selectedItems.value.length >= 4) {
-        notyf.error('Comparator is full');
-        return;
-    }
-    if (selectedItems.value.find((x) => x.sku == item.value.sku)) {
-        notyf.error('Already added');
-        return;
-    }
-
-    selectedItems.value.push(item.value);
 };
 
 const handlePaginator = (ev) => {
@@ -426,7 +412,6 @@ watch(
                 ></template>
             </div>
         </div>
-        <ProductCompareShopblocks v-if="selectedItems.length" v-model="selectedItems"></ProductCompareShopblocks>
     </div>
 </template>
 <style></style>

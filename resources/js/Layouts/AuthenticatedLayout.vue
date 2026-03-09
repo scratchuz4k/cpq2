@@ -10,6 +10,7 @@ import { can, hasRole } from '@/Composables/useAuth.js';
 import StepActionBar from '@/Components/Steps/StepActionBar.vue';
 import SvgIcon from '@/Components/Custom/SvgIcon.vue';
 import { actionBarButtons } from '@/Composables/useQuoteSteps.js';
+import { selectedItems, addSelected } from '@/Composables/useComparator';
 
 const page = usePage();
 const user = page.props.auth.user;
@@ -150,6 +151,7 @@ const hasActionBarContent = computed(() => {
             <slot />
         </div>
     </main>
+    <ProductCompareShopblocks v-if="selectedItems.length"></ProductCompareShopblocks>
     <StepActionBar v-if="showStepActionBar && (hasActionBarContent || actionBarButtons.length)">
         <slot name="actionBar"></slot>
     </StepActionBar>

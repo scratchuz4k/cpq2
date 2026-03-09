@@ -1,291 +1,270 @@
 <template>
     <div
-        :style="{ height: show ? '100%' : '80px' }"
+        :style="{ height: show ? '100vh' : '80px', bottom: show ? '0' : '70px' }"
         style="
-            position: fixed;
-            bottom: 0;
+            position: sticky;
             left: 0;
             right: 0;
             background: white;
-            z-index: 999;
+            z-index: 500;
             transition: height 0.5s ease;
+            border-top: 2px solid var(--color-purple);
         "
     >
-        <div
-            class="w-100 row px-4"
-            style="
-                position: relative;
-                z-index: 1;
-                height: 80px;
-                cursor: pointer;
-                border-top: 2px solid var(--color-purple);
-                box-shadow: 0px 10px 10px -8px rgba(0, 0, 0, 0.1);
-            "
-        >
-            <div class="col px-5">
-                <div class="row pe-3 h-100">
-                    <div class="w-20" @click="() => (show = !show)">
-                        <div class="d-flex align-items-center justify-content-start h-100">
-                            <font-awesome-icon
-                                v-if="!show"
-                                style="font-size: 24px; color: var(--color-purple)"
-                                :icon="['fas', 'chevron-up']"
-                            />
-                            <font-awesome-icon
-                                v-else
-                                style="font-size: 24px; color: var(--color-purple)"
-                                :icon="['fas', 'chevron-down']"
-                            />
-                            <p class="big bold ms-2" style="color: var(--color-purple)">
-                                {{ show ? 'Close' : 'Open' }}
-                            </p>
-                        </div>
+        <div class="container" style="height: 80px; cursor: pointer">
+            <div class="row h-100">
+                <div class="w-20" @click="() => (show = !show)">
+                    <div class="d-flex align-items-center justify-content-start h-100">
+                        <font-awesome-icon
+                            v-if="!show"
+                            style="font-size: 24px; color: var(--color-purple)"
+                            :icon="['fas', 'chevron-up']"
+                        />
+                        <font-awesome-icon
+                            v-else
+                            style="font-size: 24px; color: var(--color-purple)"
+                            :icon="['fas', 'chevron-down']"
+                        />
+                        <p class="big bold ms-2" style="color: var(--color-purple)">
+                            {{ show ? 'Close' : 'Open' }}
+                        </p>
                     </div>
-                    <div v-for="(item, index) in proxyValue" class="w-20">
-                        <div class="d-flex align-items-center h-100">
-                            <div>
-                                <img
-                                    :src="item.primary_image ?? '/images/no_image.png'"
-                                    style="object-fit: contain"
-                                    :style="{
-                                        width: '60px',
-                                        height: '60px'
-                                    }"
-                                />
-                            </div>
-                            <div class="mx-2 w-100">
-                                <p class="bold truncate-1-line">
-                                    {{ item.model.name }}
-                                </p>
-                                <p class="truncate-1-line">{{ item.sku }}</p>
-                            </div>
-                            <div class="mx-3">
-                                <button @click="() => removeCompareItem(index)" class="btn">
-                                    <font-awesome-icon :icon="['fas', 'trash-alt']" @click="" />
-                                </button>
-                            </div>
+                </div>
+                <div v-for="(item, index) in selectedItems" class="w-20">
+                    <div class="d-flex align-items-center justify-content-between h-100">
+                        <div class="ms-2">
+                            <img
+                                :src="item.primary_image ?? '/images/no_image.png'"
+                                style="object-fit: contain"
+                                :style="{
+                                    width: '40px',
+                                    height: '40px'
+                                }"
+                            />
+                        </div>
+                        <div class="w-100">
+                            <p class="bold truncate-1-line">
+                                {{ item.model.name }}
+                            </p>
+                            <p class="truncate-1-line">{{ item.sku }}</p>
+                        </div>
+                        <div class="me-2">
+                            <button @click="() => removeCompareItem(index)" class="btn">
+                                <font-awesome-icon :icon="['fas', 'trash-alt']" @click="" />
+                            </button>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
         <div
-            class="w-100 row p-3 product-info"
+            v-if="show"
+            class="container product-info"
             style="overflow-y: scroll; overflow-x: hidden; height: calc(100% - 80px)"
         >
-            <div class="col">
-                <div class="panel h-100">
-                    <h3 class="mb-3">General</h3>
-                    <table class="table table-bordered">
-                        <tbody>
-                            <tr>
-                                <th>Sku</th>
-                                <td>
-                                    <template v-if="proxyValue.length >= 1">
-                                        {{ proxyValue[0].sku }}
-                                    </template>
-                                </td>
-                                <td>
-                                    <template v-if="proxyValue.length >= 2">
-                                        {{ proxyValue[1].sku }}
-                                    </template>
-                                </td>
-                                <td>
-                                    <template v-if="proxyValue.length >= 3">
-                                        {{ proxyValue[2].sku }}
-                                    </template>
-                                </td>
-                                <td>
-                                    <template v-if="proxyValue.length >= 4">
-                                        {{ proxyValue[3].sku }}
-                                    </template>
-                                </td>
-                            </tr>
-                            <tr>
-                                <th>Model</th>
-                                <td>
-                                    <template v-if="proxyValue.length >= 1">
-                                        {{ proxyValue[0].model.name }}
-                                    </template>
-                                </td>
-                                <td>
-                                    <template v-if="proxyValue.length >= 2">
-                                        {{ proxyValue[1].model.name }}
-                                    </template>
-                                </td>
-                                <td>
-                                    <template v-if="proxyValue.length >= 3">
-                                        {{ proxyValue[2].model.name }}
-                                    </template>
-                                </td>
-                                <td>
-                                    <template v-if="proxyValue.length >= 4">
-                                        {{ proxyValue[3].model.name }}
-                                    </template>
-                                </td>
-                            </tr>
-                            <tr>
-                                <th>Name</th>
-                                <td>
-                                    <template v-if="proxyValue.length >= 1">
-                                        {{ proxyValue[0].name }}
-                                    </template>
-                                </td>
-                                <td>
-                                    <template v-if="proxyValue.length >= 2">
-                                        {{ proxyValue[1].name }}
-                                    </template>
-                                </td>
-                                <td>
-                                    <template v-if="proxyValue.length >= 3">
-                                        {{ proxyValue[2].name }}
-                                    </template>
-                                </td>
-                                <td>
-                                    <template v-if="proxyValue.length >= 4">
-                                        {{ proxyValue[3].name }}
-                                    </template>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <div class="d-flex justify-content-between align-items-end mt-5 py-3">
-                        <h3>Features</h3>
-                        <div>
-                            <IconField>
-                                <InputIcon>
-                                    <font-awesome-icon icon="fas fa-search" />
-                                </InputIcon>
-                                <InputText
-                                    id="'select-compare-search'"
-                                    v-model="searchInput"
-                                    placeholder="Search"
-                                    type="search"
-                                />
-                            </IconField>
-                        </div>
+            <div class="panel h-100">
+                <h3 class="mb-3">General</h3>
+                <table class="table table-bordered">
+                    <tbody>
+                        <tr>
+                            <th>Sku</th>
+                            <td>
+                                <template v-if="selectedItems.length >= 1">
+                                    {{ selectedItems[0].sku }}
+                                </template>
+                            </td>
+                            <td>
+                                <template v-if="selectedItems.length >= 2">
+                                    {{ selectedItems[1].sku }}
+                                </template>
+                            </td>
+                            <td>
+                                <template v-if="selectedItems.length >= 3">
+                                    {{ selectedItems[2].sku }}
+                                </template>
+                            </td>
+                            <td>
+                                <template v-if="selectedItems.length >= 4">
+                                    {{ selectedItems[3].sku }}
+                                </template>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Model</th>
+                            <td>
+                                <template v-if="selectedItems.length >= 1">
+                                    {{ selectedItems[0].model.name }}
+                                </template>
+                            </td>
+                            <td>
+                                <template v-if="selectedItems.length >= 2">
+                                    {{ selectedItems[1].model.name }}
+                                </template>
+                            </td>
+                            <td>
+                                <template v-if="selectedItems.length >= 3">
+                                    {{ selectedItems[2].model.name }}
+                                </template>
+                            </td>
+                            <td>
+                                <template v-if="selectedItems.length >= 4">
+                                    {{ selectedItems[3].model.name }}
+                                </template>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Name</th>
+                            <td>
+                                <template v-if="selectedItems.length >= 1">
+                                    {{ selectedItems[0].name }}
+                                </template>
+                            </td>
+                            <td>
+                                <template v-if="selectedItems.length >= 2">
+                                    {{ selectedItems[1].name }}
+                                </template>
+                            </td>
+                            <td>
+                                <template v-if="selectedItems.length >= 3">
+                                    {{ selectedItems[2].name }}
+                                </template>
+                            </td>
+                            <td>
+                                <template v-if="selectedItems.length >= 4">
+                                    {{ selectedItems[3].name }}
+                                </template>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="d-flex justify-content-between align-items-end mt-5 py-3">
+                    <h3>Features</h3>
+                    <div>
+                        <IconField>
+                            <InputIcon>
+                                <font-awesome-icon icon="fas fa-search" />
+                            </InputIcon>
+                            <InputText
+                                id="'select-compare-search'"
+                                v-model="searchInput"
+                                placeholder="Search"
+                                type="search"
+                            />
+                        </IconField>
                     </div>
-                    <table class="table table-bordered">
-                        <tbody>
-                            <template v-for="group in temp">
-                                <tr>
-                                    <th colspan="5" style="background: whitesmoke">
-                                        <div @click="() => (group.show = !group.show)" style="cursor: pointer">
-                                            <div class="d-flex justify-content-between w-100">
-                                                <p>{{ group.name }}</p>
-                                                <div class="px-2">
-                                                    <font-awesome-icon
-                                                        class="w-100"
-                                                        v-if="group.show"
-                                                        style="color: var(--color-purple)"
-                                                        :icon="['fas', 'chevron-down']"
-                                                    />
-                                                    <font-awesome-icon
-                                                        class="w-100"
-                                                        v-else
-                                                        style="color: var(--color-purple)"
-                                                        :icon="['fas', 'chevron-up']"
-                                                    />
-                                                </div>
+                </div>
+                <table class="table table-bordered">
+                    <tbody>
+                        <template v-for="group in temp">
+                            <tr>
+                                <th colspan="5" style="background: whitesmoke">
+                                    <div @click="() => (group.show = !group.show)" style="cursor: pointer">
+                                        <div class="d-flex justify-content-between w-100">
+                                            <p>{{ group.name }}</p>
+                                            <div class="px-2">
+                                                <font-awesome-icon
+                                                    class="w-100"
+                                                    v-if="group.show"
+                                                    style="color: var(--color-purple)"
+                                                    :icon="['fas', 'chevron-down']"
+                                                />
+                                                <font-awesome-icon
+                                                    class="w-100"
+                                                    v-else
+                                                    style="color: var(--color-purple)"
+                                                    :icon="['fas', 'chevron-up']"
+                                                />
                                             </div>
                                         </div>
-                                    </th>
-                                </tr>
-                                <tr v-if="group.show" v-for="row in group.features">
-                                    <th>{{ row.label }}</th>
-                                    <td>{{ row.items[0] }}</td>
-                                    <td>{{ row.items[1] }}</td>
-                                    <td>{{ row.items[2] }}</td>
-                                    <td>{{ row.items[3] }}</td>
-                                </tr>
-                            </template>
-                        </tbody>
-                    </table>
-                    <h3 class="mb-3 mt-5">Prices</h3>
-                    <table class="table table-bordered">
-                        <tbody>
-                            <tr>
-                                <th>Stock</th>
-                                <td>
-                                    <template v-if="proxyValue.length >= 1">
-                                        {{ proxyValue[0].stock }}
-                                    </template>
-                                </td>
-                                <td>
-                                    <template v-if="proxyValue.length >= 2">
-                                        {{ proxyValue[1].stock }}
-                                    </template>
-                                </td>
-                                <td>
-                                    <template v-if="proxyValue.length >= 3">
-                                        {{ proxyValue[2].stock }}
-                                    </template>
-                                </td>
-                                <td>
-                                    <template v-if="proxyValue.length >= 4">
-                                        {{ proxyValue[3].stock }}
-                                    </template>
-                                </td>
+                                    </div>
+                                </th>
                             </tr>
-                            <tr>
-                                <th>Net</th>
-                                <td>
-                                    <template v-if="proxyValue.length >= 1">
-                                        {{ format.GBP(proxyValue[0].price.net_spa) }}</template
-                                    >
-                                </td>
-                                <td>
-                                    <template v-if="proxyValue.length >= 2">
-                                        {{ format.GBP(proxyValue[1].price.net_spa) }}
-                                    </template>
-                                </td>
-                                <td>
-                                    <template v-if="proxyValue.length >= 3">
-                                        {{ format.GBP(proxyValue[2].price.net_spa) }}</template
-                                    >
-                                </td>
-                                <td>
-                                    <template v-if="proxyValue.length >= 4">
-                                        {{ format.GBP(proxyValue[3].price.net_spa) }}</template
-                                    >
-                                </td>
+                            <tr v-if="group.show" v-for="row in group.features">
+                                <th>{{ row.label }}</th>
+                                <td>{{ row.items[0] }}</td>
+                                <td>{{ row.items[1] }}</td>
+                                <td>{{ row.items[2] }}</td>
+                                <td>{{ row.items[3] }}</td>
                             </tr>
-                        </tbody>
-                    </table>
-                </div>
+                        </template>
+                    </tbody>
+                </table>
+                <h3 class="mb-3 mt-5">Prices</h3>
+                <table class="table table-bordered">
+                    <tbody>
+                        <tr>
+                            <th>Stock</th>
+                            <td>
+                                <template v-if="selectedItems.length >= 1">
+                                    {{ selectedItems[0].stock }}
+                                </template>
+                            </td>
+                            <td>
+                                <template v-if="selectedItems.length >= 2">
+                                    {{ selectedItems[1].stock }}
+                                </template>
+                            </td>
+                            <td>
+                                <template v-if="selectedItems.length >= 3">
+                                    {{ selectedItems[2].stock }}
+                                </template>
+                            </td>
+                            <td>
+                                <template v-if="selectedItems.length >= 4">
+                                    {{ selectedItems[3].stock }}
+                                </template>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Net</th>
+                            <td>
+                                <template v-if="selectedItems.length >= 1">
+                                    {{ format.GBP(selectedItems[0].price.net_spa) }}</template
+                                >
+                            </td>
+                            <td>
+                                <template v-if="selectedItems.length >= 2">
+                                    {{ format.GBP(selectedItems[1].price.net_spa) }}
+                                </template>
+                            </td>
+                            <td>
+                                <template v-if="selectedItems.length >= 3">
+                                    {{ format.GBP(selectedItems[2].price.net_spa) }}</template
+                                >
+                            </td>
+                            <td>
+                                <template v-if="selectedItems.length >= 4">
+                                    {{ format.GBP(selectedItems[3].price.net_spa) }}</template
+                                >
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
 </template>
 <script setup>
 import queryString from 'query-string';
-import { computed, ref, watch } from 'vue';
+import { ref, watch } from 'vue';
 import _ from 'lodash';
 import IconField from 'primevue/iconfield';
 import InputIcon from 'primevue/inputicon';
 import InputText from 'primevue/inputtext';
+import { selectedItems, addSelected } from '@/Composables/useComparator';
 
 const props = defineProps({
-    index: Number,
-    modelValue: {
-        type: Array,
-        default: []
-    }
+    index: Number
 });
 
 const loadingFeatures = ref(false);
 const searchInput = ref('');
 const show = ref(false);
-const emit = defineEmits(['update:modelValue']);
-const proxyValue = computed({
-    get: () => props.modelValue,
-    set: (value) => emit('update:modelValue', value)
-});
 
 const temp = ref([]);
 const getFeaturesTable = () => {
     temp.value = [];
-    proxyValue.value.forEach((x, i) => {
+    selectedItems.value.forEach((x, i) => {
         if (!x.features) {
             return;
         }
@@ -320,11 +299,11 @@ const getFeaturesTable = () => {
 
 const getFeatures = () => {
     loadingFeatures.value = true;
-    if (!proxyValue.value.length) {
+    if (!selectedItems.value.length) {
         loadingFeatures.value = false;
         return;
     }
-    proxyValue.value.forEach(async (x) => {
+    selectedItems.value.forEach(async (x) => {
         if (x.features) {
             return;
         }
@@ -347,8 +326,8 @@ const getFeatures = () => {
 };
 
 const removeCompareItem = (index) => {
-    proxyValue.value.splice(index, 1);
-    if (proxyValue.value.length === 0) {
+    selectedItems.value.splice(index, 1);
+    if (selectedItems.value.length === 0) {
         document.body.style.overflow = 'auto';
     }
 };
@@ -357,8 +336,8 @@ watch(searchInput, () => {
     getFeaturesTable();
 });
 
-watch(props.modelValue, () => {
-    if (!props.modelValue.length) {
+watch(selectedItems, () => {
+    if (!selectedItems.length) {
         return;
     }
     document.body.style.overflow = show.value ? 'hidden' : 'auto';
