@@ -192,7 +192,7 @@
 
                                                                 </span>
                                                             @endif
-                                                            @if (isset($group['data']->isContended) and $group['data']->isContended)
+                                                            {{-- @if (isset($group['data']->isContended) and $group['data']->isContended)
                                                                 <span
                                                                     class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm is-contended"
                                                                     data-bs-toggle="tooltip" data-bs-placement="top"
@@ -201,7 +201,7 @@
                                                                     v-tooltip>
                                                                     <i class="fa-solid fa-server"></i>
                                                                 </span>
-                                                            @endif
+                                                            @endif --}}
                                                             @if (isset($group['data']->additionalInfo->{'Type'}) && $group['data']->additionalInfo->{'Type'} == 'Fibre Flex 200+')
                                                                 <span
                                                                     class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm is-burstable"
@@ -301,7 +301,7 @@
                                                         {{ $group['data']->additionalInfo->{'router'} }}
                                                     </span>
                                                 @endif
-                                                @if (isset($group['data']->isContended) and $group['data']->isContended)
+                                                {{-- @if (isset($group['data']->isContended) and $group['data']->isContended)
                                                     <span
                                                         class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm is-contended"
                                                         data-bs-toggle="tooltip" data-bs-placement="top"
@@ -309,7 +309,7 @@
                                                         v-tooltip>
                                                         Contended Service
                                                     </span>
-                                                @endif
+                                                @endif --}}
                                                 @if (isset($group['data']->additionalInfo->{'Type'}) && $group['data']->additionalInfo->{'Type'} == 'Fibre Flex 200+')
                                                     <span
                                                         class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm is-contended"

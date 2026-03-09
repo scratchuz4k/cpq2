@@ -22,7 +22,7 @@ const item = defineModel();
         >
             <font-awesome-icon :icon="['fas', 'plug']"></font-awesome-icon>
         </span>
-        <span
+        <!-- <span
             v-if="item.data?.isContended"
             class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm is-contended"
             data-bs-toggle="tooltip"
@@ -32,7 +32,7 @@ const item = defineModel();
             v-tooltip
         >
             <font-awesome-icon :icon="['fas', 'server']"></font-awesome-icon>
-        </span>
+        </span> -->
         <span
             v-if="item.data?.additionalInfo?.['Type'] == 'Fibre Flex 200+'"
             v-tooltip
