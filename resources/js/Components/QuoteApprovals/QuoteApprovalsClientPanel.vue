@@ -6,27 +6,52 @@
             <button class="btn btn-primary me-2" @click="() => updateQuoteApproval('approved')">Approve</button>
             <button class="btn btn-outline-danger bold" @click="() => updateQuoteApproval('rejected')">Reject</button>
         </div>
-        <button class="btn btn-sm mt-2" @click="showComments = !showComments">
-            <font-awesome-icon :icon="['fas', 'plus']"></font-awesome-icon>
-            {{ showComments ? 'Hide' : 'Add' }} Comments
-        </button>
-        <div v-if="showComments">
-            <input class="form-control form-control-sm" v-model="approval.comments" />
-        </div>
+        <Dialog
+            v-model:visible="showModal"
+            modal
+            :style="{ marginTop: '4rem', minWidth: '40vw' }"
+            :draggable="false"
+            position="top"
+        >
+            <template #header>
+                <h2>Reject Comments</h2>
+            </template>
+            <div class="container m-0 p-0">
+                <form @submit.prevent="updateQuoteApproval('rejected', true)" class="flex flex-col gap-4">
+                    <div class="flex flex-col gap-1">
+                        <Textarea v-model="approval.comments" rows="5" cols="30" style="resize: none" class="w-100" />
+                    </div>
+                    <Button
+                        type="submit"
+                        severity="secondary"
+                        label="Submit"
+                        class="btn btn-primary text-white w-100"
+                    />
+                </form>
+            </div>
+        </Dialog>
     </div>
 </template>
 <script setup>
 import { can, hasRole } from '@composables/useAuth';
 import { quote, getQuote } from '@composables/useQuote';
 import { ref, onMounted, reactive, watch } from 'vue';
+import { Dialog, Button, Textarea } from 'primevue';
 
 const approval = reactive({});
 const showApproval = ref(false);
-const showComments = ref(false);
+const showModal = ref(false);
 
-const updateQuoteApproval = async (status) => {
+const updateQuoteApproval = async (status, fromModal = false) => {
     if (!approval.id) {
         notyf.error('No quote Approval found!');
+        return;
+    }
+    if (status == 'rejected' && !approval.comments) {
+        if (fromModal) {
+            notyf.error('Please fill the comments box');
+        }
+        showModal.value = true;
         return;
     }
     try {

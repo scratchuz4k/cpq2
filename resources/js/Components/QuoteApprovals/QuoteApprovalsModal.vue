@@ -123,7 +123,7 @@
                                 class="form-control"
                                 v-model="item.comments"
                             />
-                            <p v-else>
+                            <p v-else style="white-space: pre-line">
                                 {{ item.comments }}
                             </p>
                         </td>
