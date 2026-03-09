@@ -20,8 +20,8 @@ class PriceResource extends JsonResource
 
         return [
             ...$this->resource->toArray(),
-            'net' => number_format((float) $this->net, config('currency.precision')),
-            'cost' => number_format((float) $this->cost, config('currency.precision')),
+            'net' => number_format((float) $this->net, config('currency.precision'), '.', ''),
+            'cost' => number_format((float) $this->cost, config('currency.precision'), '.', ''),
             'updated_at' => $this->updated_at,
             'created_at' => $this->created_at,
         ];
