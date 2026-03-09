@@ -44,7 +44,10 @@ trait RegisterActivity
     {
         static::eventsToBeRecorded()->each(fn ($eventName) => static::$eventName(function (Model $model) use ($eventName) {
             $user = auth()->user() ?? User::where('email', 'system@cpq.cloudmarket.com')->first();
-            $tenant = $user?->currentTenant ?? Tenant::current();
+
+            $tenant = ($user?->email === 'system@cpq.cloudmarket.com')
+                ? Tenant::current()
+                : ($user?->currentTenant ?? Tenant::current());
 
             if (! $tenant || ! $user) {
                 throw new \Exception('No tenant or user found for activity logging');
