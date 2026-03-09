@@ -7,6 +7,7 @@ use App\Helpers\DataProvider;
 use App\Http\Resources\QuoteItemResource;
 use App\Http\Resources\QuoteResource;
 use App\Http\Resources\SolutionTypeResource;
+use App\Http\Resources\TenantResource;
 use App\Models\PricePlan;
 use App\Models\Quote;
 use App\Models\QuoteItem;
@@ -94,7 +95,7 @@ class QuoteService
 
     public function generatePdf(Request $request, Quote $quote, $disk = 'temp')
     {
-        $tenant = (new \App\Http\Resources\TenantResource($quote->tenant))->resolve();
+        $tenant = (new TenantResource($quote->tenant))->resolve();
         $dir = 'pdf/'.$quote->tenant->id;
 
         if (! Storage::makeDirectory($dir)) {

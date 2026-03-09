@@ -92,10 +92,9 @@
     <div id="print">
         <div class="row" id="header">
             <div class="col" id="header_left">
-                @if (!is_null($tenant['logo']))
-                    <div class="preview-logo">
-                        <img src="{{ public_path($tenant['logo']['route']) }}" alt="{{ $tenant['name'] }}"
-                            class="img-fluid" />
+                @if (!is_null($tenant['logo_docs']))
+                    <div class="app-logo preview-logo">
+                        <img src="{{ public_path($tenant['logo_docs']['route']) }}" alt="{{ $tenant['name'] }}" />
                     </div>
                 @endif
             </div>

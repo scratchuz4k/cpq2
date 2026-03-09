@@ -1,5 +1,4 @@
 <script setup>
-import ApplicationLogo from '@/Components/ApplicationLogo.vue';
 import { Link } from '@inertiajs/vue3';
 </script>
 
@@ -12,7 +11,7 @@ import { Link } from '@inertiajs/vue3';
         <nav class="navbar navbar-expand-lg bg-theme-secondary-dark">
             <div class="container d-flex justify-space-between">
                 <a class="navbar-brand" href="/">
-                    <ApplicationLogo />
+                    <AppLogo />
                 </a>
                 <button
                     class="navbar-toggler"

@@ -10,7 +10,7 @@ describe('Update tenant logo', () => {
     });
 
     it('upload image', () => {
-        cy.get('#v-pills-logo .input-resource').click();
+        cy.get('#logo-file-button').click();
 
         // Create a virtual file in the test
         const fileName = 'exampleFile.png';
@@ -35,11 +35,11 @@ describe('Update tenant logo', () => {
         cy.get('#library-container').find('.p-card').first().click();
         cy.get('.action-button-wrapper').find('.p-button').eq(1).click();
 
-        cy.get('.notyf').contains('Logo uploaded with Success');
+        cy.get('.notyf').contains('Updated with Success');
     });
 
     it('upload wrong format image', () => {
-        cy.get('#v-pills-logo').find('img').click();
+        cy.get('#logo-file-button').click();
 
         // Create a virtual file in the test
         const fileName = 'exampleFile.webp';
@@ -63,8 +63,8 @@ describe('Update tenant logo', () => {
     });
 
     it('Remove tenant logo', () => {
-        cy.get('#v-pills-logo').find('#remove-file-button').click();
-        cy.get('.notyf').contains('Logo deleted with Success');
-        cy.get('#v-pills-logo').find('.input-resource').should('exist');
+        cy.get('#logo-remove-file-button').click();
+        cy.get('.notyf').contains('Updated with Success');
+        cy.get('#logo-file-button > .input-resource').should('exist');
     });
 });

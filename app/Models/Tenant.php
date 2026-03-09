@@ -57,7 +57,7 @@ class Tenant extends \Spatie\Multitenancy\Models\Tenant
         });
     }
 
-    protected $fillable = ['name', 'domain', 'database', 'sso_id', 'logo_id'];
+    protected $fillable = ['name', 'domain', 'database', 'sso_id', 'logo_id', 'logo_alt_id', 'logo_docs_id'];
 
     public function users(): BelongsToMany
     {
@@ -72,6 +72,16 @@ class Tenant extends \Spatie\Multitenancy\Models\Tenant
     public function logo(): BelongsTo
     {
         return $this->belongsTo(Resource::class, 'logo_id', 'id');
+    }
+
+    public function logoAlt(): BelongsTo
+    {
+        return $this->belongsTo(Resource::class, 'logo_alt_id', 'id');
+    }
+
+    public function logoDocs(): BelongsTo
+    {
+        return $this->belongsTo(Resource::class, 'logo_docs_id', 'id');
     }
 
     public function solutionTypes(): BelongsToMany
