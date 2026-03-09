@@ -1258,24 +1258,29 @@ body {
     opacity: 1;
 }
 
-.app-logo {
-    min-height: 30px;
-}
-
 .app-logo,
 .preview-logo {
     display: flex;
     flex-direction: column;
-    max-height: 50px;
+    min-height: 40px;
+    max-height: 40px;
     max-width: 300px;
+}
+
+.preview-logo {
+    max-height: 100px;
 }
 
 .app-logo > img,
 .preview-logo > img {
-    max-height: 50px;
+    max-height: 40px;
     max-width: 300px;
     object-fit: scale-down;
     object-position: left;
+}
+
+.preview-logo > img {
+    max-height: 100px;
 }
 
 .dropzone {

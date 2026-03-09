@@ -1,5 +1,5 @@
 <template>
-    <div class="app-logo">
+    <div :class="'app-logo'">
         <img v-if="logo" :src="logo?.full_route" :alt="text[props.type]" />
         <!-- <img v-else :src="default_logo[props.type]" /> -->
     </div>
