@@ -1,6 +1,6 @@
 <script setup>
 import TreeTableItem from '@/Components/TreeTableItem.vue';
-import queryString from 'query-string';
+import queryString from 'qs';
 import axios from 'axios';
 import { reactive, ref, useSlots, watch } from 'vue';
 import Paginator from 'primevue/paginator';
@@ -63,7 +63,7 @@ const getData = async () => {
 
     let string = queryString.stringify({
         ...meta,
-        filters: JSON.stringify(filters),
+        filters: filters,
         search: global.value
     });
 
@@ -113,7 +113,7 @@ const getExportData = async () => {
 
     let string = queryString.stringify({
         ...meta,
-        filters: JSON.stringify(filters),
+        filters: filters,
         search: global.value
     });
 

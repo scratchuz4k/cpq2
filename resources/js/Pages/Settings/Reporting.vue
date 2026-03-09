@@ -5,7 +5,7 @@ import { reactive, ref } from 'vue';
 import RangeDateFilter from '@/Components/RangeDateFilter.vue';
 import ChartCard from '@/Components/ChartCard.vue';
 import format from '@/Composables/format.js';
-import queryString from 'query-string';
+import queryString from 'qs';
 
 const props = defineProps({
     registered_users: Array,

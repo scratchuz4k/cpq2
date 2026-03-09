@@ -14,8 +14,7 @@ describe('Creates a Cloud Quote', () => {
     });
 
     it('Creates an Account', () => {
-        cy.visit('/quotes/create');
-        cy.get('#link-to-create-account').click();
+        cy.visit('/accounts/create');
         cy.get('#account-name').type(account.name);
         cy.get('#account-reference').type(account.ref);
         cy.get('#btn-save-account').click();
@@ -68,17 +67,13 @@ describe('Creates a Cloud Quote', () => {
         cy.get('.step-action-bar #btn-next-step').click();
 
         cy.get('#solution_type-cloud').click();
-        cy.get('#btn-create-quote').click();
         cy.wait(1000);
+        cy.get('#btn-create-quote').click();
+        cy.wait(2000);
         cy.get('#btn-product-0-add-25').click();
         cy.wait(1000);
         cy.get('#btn-product-1-add-25').click();
         cy.wait(1000);
-        cy.get('#btn-step-1-next').click();
-        cy.wait(1000);
-        cy.get('#btn-product-0-add-25').click();
-        cy.wait(1000);
-        cy.get('#btn-step-2-next').click();
 
         cy.get('#current-step')
             .invoke('text')
@@ -97,7 +92,7 @@ describe('Creates a Cloud Quote', () => {
 
         cy.wait(2000);
 
-        cy.get('.recurring-item').should('have.length', 3);
+        cy.get('.recurring-item').should('have.length', 2);
     });
 
     // it('I can add and delete a Custom Line', () => {

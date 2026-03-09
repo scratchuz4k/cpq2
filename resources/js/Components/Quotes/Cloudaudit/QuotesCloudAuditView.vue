@@ -3,7 +3,7 @@ import { quote, setQuote, getQuote } from '@composables/useQuote';
 import axios from 'axios';
 import { usePage } from '@inertiajs/vue3';
 import { computed, onMounted, onUnmounted, reactive, ref, watch, watchEffect } from 'vue';
-import queryString from 'query-string';
+import queryString from 'qs';
 import format from '@/Composables/format.js';
 import { Checkbox } from 'primevue';
 import { updateQuoteItem, createQuoteItem, removeQuoteItem } from '@composables/useQuoteItem';
@@ -73,7 +73,7 @@ const loadItem = async (itemsList) => {
         return;
     }
     const string = queryString.stringify({
-        filters: JSON.stringify([
+        filters: [
             {
                 column: 'sku',
                 operator: 'in',
@@ -84,7 +84,7 @@ const loadItem = async (itemsList) => {
                 operator: 'equals',
                 value: 'Active'
             }
-        ])
+        ]
     });
     const res = await axios.get('/api/products?' + string);
     (res.data.data || []).forEach((p) => {
@@ -198,7 +198,7 @@ const getReviewProduct = async () => {
         let query = queryString.stringify({
             page: 1,
             perPage: 1,
-            filters: JSON.stringify(filters)
+            filters: filters
         });
 
         let res = await axios.get('/api/products' + '?' + query);

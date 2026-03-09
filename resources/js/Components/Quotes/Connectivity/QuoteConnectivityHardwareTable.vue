@@ -50,7 +50,7 @@
 import { removeAddon, addAddon, addons, isLoading, checks } from '@/Composables/useConnectivityItem';
 import { onMounted, reactive } from 'vue';
 import { quote, getQuote } from '@/Composables/useQuote';
-import queryString from 'query-string';
+import queryString from 'qs';
 import _ from 'lodash';
 
 const props = defineProps({
@@ -84,7 +84,7 @@ const getAddons = async () => {
 
     let query = queryString.stringify({
         quote_id: props.modelValue.id,
-        filters: JSON.stringify(temp),
+        filters: temp,
         account_id: props.modelValue.account_id
     });
     try {

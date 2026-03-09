@@ -1,5 +1,5 @@
 <script setup>
-import queryString from 'query-string';
+import queryString from 'qs';
 import { Dialog, IconField, Galleria, InputIcon, InputText } from 'primevue';
 import { ref, computed, watch } from 'vue';
 import _ from 'lodash';
@@ -94,13 +94,13 @@ const openModal = async () => {
     if (!proxyValue.value.features) {
         let query = queryString.stringify({
             limit: 500,
-            filters: JSON.stringify([
+            filters: [
                 {
                     column: 'product_id',
                     operator: 'equals',
                     value: proxyValue.value.id
                 }
-            ])
+            ]
         });
 
         let res = await axios.get('/api/shop-blocks/product-dimensions?' + query);

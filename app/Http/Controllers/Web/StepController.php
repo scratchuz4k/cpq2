@@ -39,7 +39,7 @@ class StepController extends BaseController
      */
     public function create()
     {
-        $solutionTypes = Auth::user()->currentTenant->solutionTypes->filter(fn ($solutionType) => $solutionType->pivot->is_active === 1)->makeHidden('pivot');
+        $solutionTypes = Auth::user()->currentTenant->solutionTypes->filter(fn ($solutionType) => $solutionType->pivot->is_active === 1)->sortBy('name')->makeHidden('pivot');
 
         return Inertia::render('Step/Create', [
             'solution_types' => (SolutionTypeTenantResource::collection($solutionTypes))->resolve(),

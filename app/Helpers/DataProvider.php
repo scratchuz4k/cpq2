@@ -126,8 +126,8 @@ class DataProvider
 
                 $this->builder = $this->builder->where(function ($query) use ($filter) {
                     foreach ($filter['group'] as $i => $groupFilter) {
-                        if (is_null($groupFilter['value'])) {
-                            continue;
+                        if (! isset($groupFilter['value']) || is_null($groupFilter['value'])) {
+                            $groupFilter['value'] = null;
                         }
                         $queryParts = $this->resolveQueryParts($groupFilter['operator'], $groupFilter['value']);
                         $func = array_key_exists('function', $groupFilter) ? $groupFilter['function'] : ($i === 0 ? 'where' : 'orWhere');

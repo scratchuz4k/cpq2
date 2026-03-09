@@ -10,7 +10,7 @@
                 <a
                     class="nav-link"
                     :class="[activeTab == identifier ? 'active ' : '']"
-                    :id="index + '-' + index"
+                    :id="props.id ? props.id + '-' + index + '-' + index : index + '-' + index"
                     @click.prevent="setActiveTab(identifier)"
                     v-html="tabData.name"
                 ></a>
@@ -31,6 +31,10 @@ export default defineComponent({
         class: {
             required: false,
             default: []
+        },
+        id: {
+            required: false,
+            default: null
         }
     },
     name: 'Tabs',
