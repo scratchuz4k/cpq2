@@ -4,11 +4,17 @@ export const selectedItems = ref([]);
 
 export const addSelected = (item) => {
     if (selectedItems.value.length >= 4) {
-        notyf.error('Comparator is full');
+        notyf.error('Product comparator is full');
         return;
     }
-    if (selectedItems.value.find((x) => x.sku == item.value.sku)) {
-        notyf.error('Already added');
+
+    if (item.value.sku && selectedItems.value.find((x) => x.sku == item.value.sku)) {
+        notyf.error('Product is already in comparator');
+        return;
+    }
+
+    if (item.value.id && selectedItems.value.find((x) => x.id == item.value.id)) {
+        notyf.error('Product is already in comparator');
         return;
     }
 

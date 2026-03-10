@@ -9,6 +9,7 @@
             z-index: 500;
             transition: height 0.5s ease;
             border-top: 2px solid var(--color-purple);
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
         "
     >
         <div class="container" style="height: 80px; cursor: pointer">
@@ -44,7 +45,7 @@
                         </div>
                         <div class="w-100">
                             <p class="bold truncate-1-line">
-                                {{ item.model.name }}
+                                {{ item.name }}
                             </p>
                             <p class="truncate-1-line">{{ item.sku }}</p>
                         </div>
@@ -90,29 +91,6 @@
                             </td>
                         </tr>
                         <tr>
-                            <th>Model</th>
-                            <td>
-                                <template v-if="selectedItems.length >= 1">
-                                    {{ selectedItems[0].model.name }}
-                                </template>
-                            </td>
-                            <td>
-                                <template v-if="selectedItems.length >= 2">
-                                    {{ selectedItems[1].model.name }}
-                                </template>
-                            </td>
-                            <td>
-                                <template v-if="selectedItems.length >= 3">
-                                    {{ selectedItems[2].model.name }}
-                                </template>
-                            </td>
-                            <td>
-                                <template v-if="selectedItems.length >= 4">
-                                    {{ selectedItems[3].model.name }}
-                                </template>
-                            </td>
-                        </tr>
-                        <tr>
                             <th>Name</th>
                             <td>
                                 <template v-if="selectedItems.length >= 1">
@@ -135,11 +113,42 @@
                                 </template>
                             </td>
                         </tr>
+                        <tr>
+                            <th>Description</th>
+                            <td>
+                                <div
+                                    class="truncate-3-lines"
+                                    v-if="selectedItems.length >= 1"
+                                    v-html="selectedItems[0].description"
+                                ></div>
+                            </td>
+                            <td>
+                                <div
+                                    class="truncate-3-lines"
+                                    v-if="selectedItems.length >= 2"
+                                    v-html="selectedItems[1].description"
+                                ></div>
+                            </td>
+                            <td>
+                                <div
+                                    class="truncate-3-lines"
+                                    v-if="selectedItems.length >= 3"
+                                    v-html="selectedItems[2].description"
+                                ></div>
+                            </td>
+                            <td>
+                                <div
+                                    class="truncate-3-lines"
+                                    v-if="selectedItems.length >= 4"
+                                    v-html="selectedItems[3].description"
+                                ></div>
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
                 <div class="d-flex justify-content-between align-items-end mt-5 py-3">
                     <h3>Features</h3>
-                    <div>
+                    <div v-if="temp.length">
                         <IconField>
                             <InputIcon>
                                 <font-awesome-icon icon="fas fa-search" />
@@ -153,7 +162,7 @@
                         </IconField>
                     </div>
                 </div>
-                <table class="table table-bordered">
+                <table v-if="temp.length" class="table table-bordered">
                     <tbody>
                         <template v-for="group in temp">
                             <tr>
@@ -189,6 +198,7 @@
                         </template>
                     </tbody>
                 </table>
+                <div v-else>No Features Available</div>
                 <h3 class="mb-3 mt-5">Prices</h3>
                 <table class="table table-bordered">
                     <tbody>

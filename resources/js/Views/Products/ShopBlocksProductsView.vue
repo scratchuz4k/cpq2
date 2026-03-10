@@ -288,30 +288,30 @@ watch(
             <div class="col-3">
                 <div class="d-flex justify-content-between mb-3">
                     <div class="d-flex">
-                        <h2>Products ({{ meta.total }})</h2>
+                        <p class="bold">Products ({{ meta.total }})</p>
                     </div>
                 </div>
             </div>
             <div class="col-9">
-                <div class="d-flex justify-content-between align-items-end mb-3">
-                    <div class="d-flex flex-fill justify-content-start">
-                        <!--                        <button-->
-                        <!--                            class="btn border"-->
-                        <!--                            :class="[showCards ? 'btn-dark' : '']"-->
-                        <!--                            @click="() => (showCards = !showCards)"-->
-                        <!--                            style="border-radius: 5px 0 0 5px"-->
-                        <!--                        >-->
-                        <!--                            <font-awesome-icon :icon="['fas', 'grip']"></font-awesome-icon>-->
-                        <!--                        </button>-->
-                        <!--                        <button-->
-                        <!--                            class="btn border"-->
-                        <!--                            :class="[showCards ? '' : 'btn-dark']"-->
-                        <!--                            @click="() => (showCards = !showCards)"-->
-                        <!--                            style="border-radius: 0 5px 5px 0"-->
-                        <!--                        >-->
-                        <!--                            <font-awesome-icon :icon="['fas', 'grip-lines']"></font-awesome-icon>-->
-                        <!--                        </button>-->
-                    </div>
+                <div class="d-flex justify-content-end align-items-end mb-3">
+                    <!-- <div class="d-flex flex-fill justify-content-start">
+                        <button
+                            class="btn border"
+                            :class="[showCards ? 'btn-dark' : '']"
+                            @click="() => (showCards = !showCards)"
+                            style="border-radius: 5px 0 0 5px"
+                        >
+                            <font-awesome-icon :icon="['fas', 'grip']"></font-awesome-icon>
+                        </button>
+                        <button
+                            class="btn border"
+                            :class="[showCards ? '' : 'btn-dark']"
+                            @click="() => (showCards = !showCards)"
+                            style="border-radius: 0 5px 5px 0"
+                        >
+                            <font-awesome-icon :icon="['fas', 'grip-lines']"></font-awesome-icon>
+                        </button>
+                    </div> -->
                     <div class="d-flex justify-content-end text-nowrap flex-shrink-0">
                         <span class="me-2 align-self-center">Sort by</span>
                         <Select v-model="sort" :options="sorts" optionLabel="label" placeholder="All"> </Select>
@@ -323,7 +323,7 @@ watch(
             <div class="col-3">
                 <div class="rounded bg-white p-3">
                     <div class="mb-4">
-                        <h2>Search</h2>
+                        <p class="bold">Search</p>
                         <input type="search" class="form-control" placeholder="" v-model="search" />
                     </div>
                     <ul class="d-flex list-unstyled">
@@ -362,24 +362,24 @@ watch(
                     </ul>
 
                     <div class="mb-4">
-                        <h2>Categories</h2>
+                        <p class="bold">Categories</p>
                         <ShopBlocksCategoriesTree
                             v-model="currentCategory"
                             :defaultCategory="category"
                         ></ShopBlocksCategoriesTree>
                     </div>
                     <div class="mb-4">
-                        <h2>Brands</h2>
+                        <p class="bold">Brands</p>
                         <ShopBlocksBrands v-model="currentBrand" :category="currentCategory"></ShopBlocksBrands>
                     </div>
 
                     <div v-if="!category > 0" class="mb-4">
-                        <h2>Models</h2>
+                        <p class="bold">Models</p>
                         <ShopBlocksModels v-model="currentModel" :category="currentCategory"></ShopBlocksModels>
                     </div>
 
                     <div class="mb-4">
-                        <h2>Storage</h2>
+                        <p class="bold">Storage</p>
                         <ShopBlocksStorages v-model="currentStorage" :category="currentCategory"></ShopBlocksStorages>
                     </div>
                 </div>
@@ -391,7 +391,7 @@ watch(
                 <template v-else>
                     <div class="text-center pt-2 pb-4" v-if="!productsHardware.length">No Results Found</div>
                     <div class="row" :class="[showCards ? 'row-cols-4' : 'row-cols-1']">
-                        <ShopBlocksProductCard
+                        <ProductCard
                             v-for="(product, index) in productsHardware"
                             @select="(item) => addSelected(item)"
                             :hasSelect="true"
@@ -399,7 +399,7 @@ watch(
                             :index="index"
                             v-model="productsHardware[index]"
                         >
-                        </ShopBlocksProductCard>
+                        </ProductCard>
                     </div>
                     <Paginator
                         v-model:first="meta.first"
