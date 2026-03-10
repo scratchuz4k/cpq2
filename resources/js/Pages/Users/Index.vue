@@ -72,7 +72,7 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Settings', url: '/sett
             <Header title="Users" :breadcrumbs="items">
                 <template #buttons></template>
             </Header>
-            <tabs>
+            <tabs id="users">
                 <tab title="Users" :selected="true">
                     <div class="d-flex mt-3 justify-content-end">
                         <Link href="/imports?model=User" id="product-import-btn" class="btn btn-secondary me-2">

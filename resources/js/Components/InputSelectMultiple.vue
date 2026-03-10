@@ -1,7 +1,7 @@
 <script setup>
 import _ from 'lodash';
 import { IconField, InputIcon, InputText } from 'primevue';
-import queryString from 'query-string';
+import queryString from 'qs';
 import { ref, watch, computed, reactive, onMounted } from 'vue';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -53,7 +53,7 @@ const search = _.debounce(async (clearOptions = false) => {
 
     const columns = Array.isArray(props.fields) ? props.fields.filter(Boolean).join(',') : props.fields;
     const queryParams = {
-        filters: JSON.stringify(props.query),
+        filters: props.query,
         page: page.value,
         search: inputSearch.value
     };

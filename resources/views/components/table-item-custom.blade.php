@@ -25,14 +25,14 @@
                     <i class="fa-solid fa-plug"></i>
                 </span>
             @endif
-            @if (isset($item['data']->isContended) and $item['data']->isContended)
+            {{-- @if (isset($item['data']->isContended) and $item['data']->isContended)
                 <span class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm is-contended"
                     data-bs-toggle="tooltip" data-bs-placement="top"data-bs-html="true"
                     title="<b>Contended Service:</b> Contended, wires only full fibre service with symmetrical upload and download speeds"
                     v-tooltip>
                     <i class="fa-solid fa-server"></i>
                 </span>
-            @endif
+            @endif --}}
             @if (isset($item['data']->additionalInfo->{'Type'}) && $item['data']->additionalInfo->{'Type'} == 'Fibre Flex 200+')
                 <span class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm is-burstable"
                     data-bs-toggle="tooltip" data-bs-placement="top"data-bs-html="true"

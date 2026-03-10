@@ -88,33 +88,33 @@ describe('Creates a Connectivity quote', () => {
     //     cy.get('#btn-new-one_off-add').click({ force: true });
     //     cy.get('#table-one_off').contains('Custom line one_off');
     // });
-    it('I can filter products by contended', () => {
-        cy.visit('/quotes/create');
-        cy.selectLazyOption('account_id', account.name);
-        cy.get('.step-action-bar #btn-next-step').click();
+    // it('I can filter products by contended', () => {
+    //     cy.visit('/quotes/create');
+    //     cy.selectLazyOption('account_id', account.name);
+    //     cy.get('.step-action-bar #btn-next-step').click();
 
-        cy.get('#solution_type-connectivity').click();
-        cy.get('.step-action-bar #btn-next-step').click();
+    //     cy.get('#solution_type-connectivity').click();
+    //     cy.get('.step-action-bar #btn-next-step').click();
 
-        cy.get('#input_address').type('EH32 9NT');
-        cy.selectOption('#select_address', 1);
-        cy.get('.step-action-bar #btn-next-step').click();
-        cy.get('.step-action-bar #btn-create-quote').should('not.be.disabled').click();
+    //     cy.get('#input_address').type('EH32 9NT');
+    //     cy.selectOption('#select_address', 1);
+    //     cy.get('.step-action-bar #btn-next-step').click();
+    //     cy.get('.step-action-bar #btn-create-quote').should('not.be.disabled').click();
 
-        cy.scrollTo('top');
+    //     cy.scrollTo('top');
 
-        cy.get('#btn-more-filters').click();
-        cy.get('#filter-show-contended .custom-range-input').invoke('val', 100).trigger('input', { force: true });
-        cy.wait(3000);
-        cy.get('table tbody tr.connectivity-table-item').then(($rows) => {
-            cy.get('.is-contended').should('have.length', $rows.length);
-        });
+    //     cy.get('#btn-more-filters').click();
+    //     cy.get('#filter-show-contended .custom-range-input').invoke('val', 100).trigger('input', { force: true });
+    //     cy.wait(3000);
+    //     cy.get('table tbody tr.connectivity-table-item').then(($rows) => {
+    //         cy.get('.is-contended').should('have.length', $rows.length);
+    //     });
 
-        cy.get('#btn-more-filters').click();
+    //     cy.get('#btn-more-filters').click();
 
-        cy.get('tbody tr button').eq(0).click();
-        cy.get('#connectivity-product-1').contains('Primary Product');
-    });
+    //     cy.get('tbody tr button').eq(0).click();
+    //     cy.get('#connectivity-product-1').contains('Primary Product');
+    // });
     it("I can see one product per uploadSpeed with 'Show only lowest cost products' option selected", () => {
         cy.visit('/quotes/create');
         cy.selectLazyOption('account_id', account.name);

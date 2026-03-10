@@ -1,7 +1,7 @@
 <script setup>
 import { computed, onMounted, watch } from 'vue';
 import { isDisabled } from '@/Composables/useQuoteSteps.js';
-import queryString from 'query-string';
+import queryString from 'qs';
 
 const props = defineProps({
     modelValue: Object
@@ -27,13 +27,13 @@ const getAccount = async () => {
         return;
     }
     let string = queryString.stringify({
-        filters: JSON.stringify([
+        filters: [
             {
                 column: 'reference',
                 operator: 'equals',
                 value: account_reference
             }
-        ])
+        ]
     });
 
     const res = await axios.get('/api/accounts' + '?' + string);

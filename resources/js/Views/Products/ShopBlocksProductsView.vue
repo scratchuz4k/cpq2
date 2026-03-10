@@ -1,6 +1,6 @@
 <script setup>
 import _ from 'lodash';
-import queryString from 'query-string';
+import queryString from 'qs';
 import { Paginator, Select } from 'primevue';
 import { quote } from '@/Composables/useQuote';
 import { categories } from '@composables/custom/shopblocks';
@@ -180,7 +180,7 @@ const getProductsShopBlocks = async () => {
     let query = queryString.stringify({
         page: meta.page,
         perPage: meta.limit,
-        filters: JSON.stringify(filters),
+        filters: filters,
         order: sort.value.order,
         orderBy: sort.value.orderBy,
         columns: 'description,name',

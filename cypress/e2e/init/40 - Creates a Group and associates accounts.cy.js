@@ -38,7 +38,7 @@ describe('Creates a Group and associates accounts.cy', () => {
         cy.visit('/quotes');
         cy.get('#settings').click();
         cy.get('#link-users').click();
-        cy.get('#1-1').click();
+        cy.get('#users-1-1').click();
         cy.get('#link-to-create-group').click();
         cy.wait(1000);
         cy.get('#group-create-name').type(group.name);

@@ -1,10 +1,6 @@
 import { faVoteYea } from '@fortawesome/free-solid-svg-icons';
 import { generateHash, getCurrentDate } from '../../support/utils.js';
 
-const temp = getCurrentDate();
-const provider = 'Giacom';
-const subprovider = 'BT';
-
 describe('Quote Approval and Rejection', () => {
     it('Enable Quote Approval', () => {
         cy.login('companyadmin@example.com', 'werwerwer');

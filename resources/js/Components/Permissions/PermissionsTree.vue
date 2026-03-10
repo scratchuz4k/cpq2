@@ -5,7 +5,7 @@ import InputText from 'primevue/inputtext';
 import { ref, watch, computed } from 'vue';
 import { permissions, groupedPermissions } from '@composables/usePermissions';
 
-import queryString from 'query-string';
+import queryString from 'qs';
 
 const props = defineProps({
     modelValue: Array

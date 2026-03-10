@@ -58,7 +58,7 @@
     </div>
 </template>
 <script setup>
-import queryString from 'query-string';
+import queryString from 'qs';
 import { onMounted, ref, watch } from 'vue';
 import { usePage } from '@inertiajs/vue3';
 import { template, followNotification, getTotalUnread, totalUnread } from '@composables/useNotification';
@@ -80,13 +80,13 @@ const getNotifications = () => {
     let string = queryString.stringify({
         order: 'desc',
         orderBy: 'created_at',
-        filters: JSON.stringify([
+        filters: [
             {
                 column: 'user_id',
                 operator: 'equals',
                 value: user.id
             }
-        ])
+        ]
     });
 
     axios

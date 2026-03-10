@@ -2,7 +2,7 @@
 import _ from 'lodash';
 import { IconField, InputText, InputIcon, Dialog } from 'primevue';
 import { watch, ref, reactive, computed, onMounted, onUnmounted, watchEffect } from 'vue';
-import queryString from 'query-string';
+import queryString from 'qs';
 import { currentStep } from '@composables/useQuoteSteps';
 import Paginator from 'primevue/paginator';
 import axios from 'axios';

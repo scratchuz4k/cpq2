@@ -1,5 +1,5 @@
 <template>
-    <div class="mt-2" @click="openResources()" style="cursor: pointer">
+    <div :id="props.id + '-file-button'" class="mt-2" @click="openResources()" style="cursor: pointer">
         <div v-if="item">
             <img
                 :src="coverImage(item)"
@@ -23,7 +23,7 @@
             type="button"
             class="btn btn-outline-primary mt-2"
             @click="remove()"
-            id="remove-file-button"
+            :id="props.id + '-remove-file-button'"
         >
             <font-awesome-icon icon="fas fa-trash-alt" />
             Remove file
@@ -33,8 +33,14 @@
 <script setup>
 import { v4 as uuid } from 'uuid';
 import { computed, ref, watch } from 'vue';
-import Button from 'primevue/button';
+
 const props = defineProps({
+    id: {
+        required: false,
+        default: () => {
+            return `${uuid()}`;
+        }
+    },
     resource: Object,
     modelValue: Number,
     showLikeLine: Boolean,
@@ -42,7 +48,7 @@ const props = defineProps({
 });
 
 const emit = defineEmits(['update:modelValue', 'change']);
-const eventFire = `resources:images:${uuid()}`;
+const eventFire = `resources:images:${props.id}`;
 
 const item = ref(props.resource);
 const proxyValue = computed({

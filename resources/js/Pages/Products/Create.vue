@@ -259,7 +259,7 @@ const items = ref([
                                             {{ format.GBP(data[field]) }}
                                         </template>
                                         <template #editor="{ data, field }">
-                                            <InputText v-model="data[field]" fluid />
+                                            <InputText type="number" v-model="data[field]" fluid />
                                         </template>
                                     </Column>
                                     <Column field="net" header="Net">
@@ -267,7 +267,7 @@ const items = ref([
                                             {{ format.GBP(data[field]) }}
                                         </template>
                                         <template #editor="{ data, field }">
-                                            <InputText v-model="data[field]" fluid />
+                                            <InputText type="number" v-model="data[field]" fluid />
                                         </template>
                                     </Column>
 

@@ -1119,6 +1119,10 @@ body {
     z-index: 1101 !important;
 }
 
+.notyf .notyf__message {
+    text-align: center;
+}
+
 .notyf-error {
     background: var(--red) !important;
     border-radius: 0.5rem !important;
@@ -1258,18 +1262,29 @@ body {
     opacity: 1;
 }
 
+.app-logo,
 .preview-logo {
     display: flex;
     flex-direction: column;
-    height: 100px;
-    width: 300px;
+    min-height: 40px;
+    max-height: 40px;
+    max-width: 300px;
+}
+
+.preview-logo {
+    max-height: 100px;
+}
+
+.app-logo > img,
+.preview-logo > img {
+    max-height: 40px;
+    max-width: 300px;
+    object-fit: scale-down;
+    object-position: left;
 }
 
 .preview-logo > img {
     max-height: 100px;
-    max-width: 300px;
-    object-fit: scale-down;
-    object-position: left;
 }
 
 .dropzone {
