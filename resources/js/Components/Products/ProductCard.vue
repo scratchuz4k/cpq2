@@ -31,11 +31,12 @@ const checkQuantity = _.debounce(async (product, temp) => {
     }
     product.quantity = temp;
 
-    let item = quote.items.find((x) => x.product_code == product.code);
+    let code = product.sku ?? product.code;
+    let item = quote.items.find((x) => x.product_code == code);
     if (!item) {
         await createQuoteItem({
             quote_id: quote.id,
-            product_code: product.code,
+            product_code: code,
             quantity: product.quantity,
             contract_length: product.contract_length,
             name: product.name,
@@ -210,7 +211,7 @@ watch(searchInput, () => {
                     </div>
                     <div class="actions d-flex align-items-center">
                         <InputQuantity
-                            :id="'hardware-' + index"
+                            :id="'product-' + index"
                             style="max-width: 120px"
                             v-model="proxyValue.quantity"
                             @change="(val) => checkQuantity(proxyValue, val, true)"
@@ -243,7 +244,7 @@ watch(searchInput, () => {
                     </p>
                     <div class="actions d-flex align-items-center">
                         <InputQuantity
-                            :id="'hardware-' + index"
+                            :id="'product-' + index"
                             style="max-width: 120px"
                             v-model="proxyValue.quantity"
                             @change="(val) => checkQuantity(proxyValue, val, true)"
