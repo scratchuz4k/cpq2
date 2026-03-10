@@ -18,9 +18,10 @@ onMounted(() => {
 
     new Dropzone(element, {
         url: '/api/resources',
-        paramName: 'file',
+        paramName: 'upload',
         maxFilesize: 2,
-        autoProcessQueue: false,
+        uploadMultiple: false,
+        parallelUploads: 1,
         acceptedFiles: props.acceptedFiles,
         addRemoveLinks: true,
         dictRemoveFile: '×',
@@ -29,36 +30,19 @@ onMounted(() => {
             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
         },
         init: function () {
-            this.on('addedfile', (file) => {
-                const formData = new FormData();
-                formData.append('file', file);
-
-                fetch('/api/resources', {
-                    method: 'POST',
-                    body: formData,
-                    headers: {
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                    }
-                })
-                    .then((res) => res.json())
-                    .then((data) => {
-                        window.notyf.success(data.message);
-                        emit('resource:created');
-                        this.removeFile(file);
-                    })
-                    .catch((err) => {
-                        window.notyf.error(err.message);
-                        this.removeFile(file);
-                    });
-            });
-
             this.on('error', function (file, response) {
                 window.notyf.error(response.message ?? response);
                 this.removeFile(file);
             });
-        }
+        },
+        success: (res, data) => onUpload(data)
     });
 });
+
+const onUpload = (data) => {
+    window.notyf.success(data.message);
+    emit('resource:created');
+};
 </script>
 
 <style lang="scss" scoped>
