@@ -11,6 +11,7 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class ResourceController extends Controller
 {
@@ -36,12 +37,12 @@ class ResourceController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'file' => 'required',
+            'upload' => 'required',
         ]);
 
-        $files = $request->file;
+        $files = $request->upload;
         if (! is_array($files)) {
-            $files = [$request->file];
+            $files = [$request->upload];
         }
 
         try {
@@ -55,6 +56,8 @@ class ResourceController extends Controller
                     $key->getSize(),
                 ];
 
+                $storedName = $this->getSafeFilename($originalName);
+
                 if (in_array($mimeType, ['text/xml', 'application/xml']) && ! safeXmlParse($key->get())) {
                     return response()->json([
                         'message' => 'The file must contain a valid XML.',
@@ -63,7 +66,7 @@ class ResourceController extends Controller
                 }
 
                 // check content file
-                if ($path = $key->store($folder, 'public')) {
+                if ($path = $key->storeAs($folder, $storedName, 'public')) {
                     $newFile = Resource::create([
                         'title' => $originalName,
                         'mime_type' => $mimeType,
@@ -78,6 +81,16 @@ class ResourceController extends Controller
         }
 
         return response(['file' => $newFile, 'message' => 'Resource uploaded successfully!', 'error' => false], 200);
+    }
+
+    protected function getSafeFilename(string $originalName): string
+    {
+        $name = pathinfo($originalName, PATHINFO_FILENAME);
+        $ext = pathinfo($originalName, PATHINFO_EXTENSION);
+        $slug = Str::slug($name);
+        $unique = time().'_'.Str::random(6);
+
+        return $slug ? "{$slug}_{$unique}.{$ext}" : "{$unique}.{$ext}";
     }
 
     /**
