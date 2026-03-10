@@ -11,7 +11,6 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 
 class ResourceController extends Controller
 {
@@ -63,14 +62,8 @@ class ResourceController extends Controller
                     ], 422);
                 }
 
-                // rename file to a friendly name
-                $baseName = pathinfo($originalName, PATHINFO_FILENAME);
-                $extension = $key->getClientOriginalExtension();
-                $friendlyName = Str::slug($baseName);
-                $uniqueName = $friendlyName.'-'.uniqid().'.'.$extension;
-
                 // check content file
-                if ($path = $key->storeAs($folder, $uniqueName, 'public')) {
+                if ($path = $key->store($folder, 'public')) {
                     $newFile = Resource::create([
                         'title' => $originalName,
                         'mime_type' => $mimeType,
