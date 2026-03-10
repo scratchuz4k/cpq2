@@ -1,6 +1,6 @@
 <script setup>
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import queryString from 'query-string';
+import queryString from 'qs';
 import axios from 'axios';
 import { Link } from '@inertiajs/vue3';
 import { onUnmounted, reactive, ref } from 'vue';
@@ -63,13 +63,13 @@ const getChildren = async () => {
     let string = queryString.stringify({
         page: meta.page,
         limit: 20,
-        filters: JSON.stringify([
+        filters: [
             {
                 column: 'parent_id',
                 operator: 'equals',
                 value: props.item.id
             }
-        ])
+        ]
     });
 
     let res = await axios.get('/api' + props.route + '?' + string);

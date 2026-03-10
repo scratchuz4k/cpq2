@@ -4,7 +4,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link, usePage } from '@inertiajs/vue3';
 import { Button, Paginator } from 'primevue';
 import { reactive, ref } from 'vue';
-import queryString from 'query-string';
+import queryString from 'qs';
 import axios from 'axios';
 import { exportData } from '@/Composables/export.js';
 import { can, hasRole } from '@/Composables/useAuth.js';
@@ -106,7 +106,7 @@ const getData = async () => {
         orderBy: meta.orderBy,
         order: meta.order,
         page: meta.page,
-        filters: JSON.stringify(getFilters()),
+        filters: getFilters(),
         limit: meta.limit
     });
 

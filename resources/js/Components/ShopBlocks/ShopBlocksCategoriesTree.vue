@@ -1,6 +1,6 @@
 <script setup>
 import { computed } from 'vue';
-import queryString from 'query-string';
+import queryString from 'qs';
 import { categories, drillDown } from '@composables/custom/shopblocks';
 
 const props = defineProps({
@@ -47,7 +47,7 @@ const getShopBlocksCategories = async () => {
         let string = queryString.stringify({
             limit: 500,
             page: current_page,
-            filters: JSON.stringify(filters)
+            filters: filters
         });
         let res = await axios.get('/api/shop-blocks/categories?' + string);
         categories.value.push(...res.data.data);

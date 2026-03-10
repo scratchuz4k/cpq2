@@ -1,5 +1,5 @@
 <script setup>
-import queryString from 'query-string';
+import queryString from 'qs';
 import { computed, reactive, ref, watch, onMounted, watchEffect } from 'vue';
 import { quote } from '@composables/useQuote';
 import _ from 'lodash';
@@ -114,7 +114,7 @@ const getProducts = async () => {
     let query = queryString.stringify({
         page: meta.page,
         perPage: meta.limit,
-        filters: JSON.stringify(filters),
+        filters: filters,
         account_id: props.account.id,
         order: sort.value.order,
         orderBy: sort.value.orderBy,
@@ -182,7 +182,7 @@ const getCategories = async (categoryIds = []) => {
     ];
 
     const query = queryString.stringify({
-        filters: JSON.stringify(filters)
+        filters: filters
     });
 
     const res = await axios.get('/api/categories' + '?' + query);

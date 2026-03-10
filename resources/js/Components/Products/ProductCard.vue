@@ -1,5 +1,4 @@
 <script setup>
-import queryString from 'query-string';
 import { Dialog, IconField, Galleria, InputIcon, InputText } from 'primevue';
 import { ref, computed, watch } from 'vue';
 import _ from 'lodash';
@@ -23,7 +22,11 @@ const proxyValue = computed({
 });
 
 const checkQuantity = _.debounce(async (product, temp) => {
-    if (product.stock <= temp) {
+    if (temp > product.stock) {
+        notyf.open({
+            type: 'warning',
+            message: 'You can only add up to the number of units in stock. The quantity is automatically adjusted'
+        });
         temp = product.stock;
     }
     product.quantity = temp;

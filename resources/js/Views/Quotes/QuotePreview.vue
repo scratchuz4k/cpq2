@@ -41,9 +41,7 @@ let view = component && Object.keys(solutionsViews).includes(component) ? soluti
         <div id="print" class="page">
             <div class="row">
                 <div class="col" id="header_left">
-                    <div class="preview-logo">
-                        <app-logo></app-logo>
-                    </div>
+                    <AppLogo type="logo_docs" :class="'preview-logo'"></AppLogo>
                 </div>
                 <div class="col text-end" id="header_right">
                     <p>{{ quote.account?.name }}<br />{{ quote.address_data?.label }}</p>
@@ -51,7 +49,7 @@ let view = component && Object.keys(solutionsViews).includes(component) ? soluti
                     <p>Email: sales@example.com</p>
                 </div>
             </div>
-            <div class="d-flex">
+            <div class="mt-4 d-flex">
                 <h1 class="mb-1 w-auto">Quote Q-{{ quote.id }}</h1>
                 <span
                     v-if="quote.status === 'EXPIRED'"

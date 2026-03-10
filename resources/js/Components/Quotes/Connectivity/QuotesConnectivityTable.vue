@@ -10,7 +10,7 @@ import Spinner from '@/Components/Spinner.vue';
 import Select from 'primevue/select';
 import ToggleSwitch from 'primevue/toggleswitch';
 import TriStateToggle from '@/Components/TriStateToggle.vue';
-import queryString from 'query-string';
+import queryString from 'qs';
 import { remove, add } from '@/Composables/useConnectivityItem';
 import { quote, getQuote } from '@/Composables/useQuote';
 import SvgIcon from '@/Components/Custom/SvgIcon.vue';
@@ -98,9 +98,9 @@ const getArticles = async (clearCache = false, runTimeout = false) => {
         temp.push({ column: '*', operator: 'lowest-cost', value: true });
     }
 
-    if (showContended.value !== null) {
-        temp.push({ column: 'isContended', operator: 'equals', value: showContended.value });
-    }
+    // if (showContended.value !== null) {
+    //     temp.push({ column: 'isContended', operator: 'equals', value: showContended.value });
+    // }
 
     if (showManaged.value !== null) {
         temp.push({ column: 'isManaged', operator: 'equals', value: showManaged.value });
@@ -112,7 +112,7 @@ const getArticles = async (clearCache = false, runTimeout = false) => {
 
     let query = queryString.stringify({
         quote_id: props.modelValue.id,
-        filters: JSON.stringify(temp),
+        filters: temp,
         page: meta.page,
         perPage: meta.limit,
         order: sort.order,
@@ -541,25 +541,25 @@ onMounted(() => {
                                             Show only quoted items
                                         </label>
                                     </div>
-                                    <div class="checkbox d-flex py-1 px-2">
-                                        <TriStateToggle v-model="showContended" id="filter-show-contended">
-                                            <template #handle>
-                                                <font-awesome-icon
-                                                    :icon="
-                                                        showContended === true
-                                                            ? ['fas', 'circle-check']
-                                                            : showContended === false
-                                                              ? ['far', 'circle-xmark']
-                                                              : ['far', 'circle']
-                                                    "
-                                                    class="text-primary"
-                                                />
-                                            </template>
-                                        </TriStateToggle>
-                                        <label class="form-check-label" for="filter-show-contended">
-                                            Show contended products
-                                        </label>
-                                    </div>
+                                    <!-- <div class="checkbox d-flex py-1 px-2">
+                    <TriStateToggle v-model="showContended" id="filter-show-contended">
+                      <template #handle>
+                        <font-awesome-icon
+                          :icon="
+                            showContended === true
+                              ? ['fas', 'circle-check']
+                              : showContended === false
+                              ? ['far', 'circle-xmark']
+                              : ['far', 'circle']
+                          "
+                          class="text-primary"
+                        />
+                      </template>
+                    </TriStateToggle>
+                    <label class="form-check-label" for="filter-show-contended">
+                      Show contended products
+                    </label>
+                  </div> -->
                                     <div class="checkbox d-flex py-1 px-2">
                                         <TriStateToggle v-model="showManaged" id="filter-show-managed">
                                             <template #handle>
@@ -825,17 +825,17 @@ onMounted(() => {
                                     >
                                         <font-awesome-icon :icon="['fas', 'plug']"></font-awesome-icon>
                                     </span>
-                                    <span
-                                        v-if="article?.isContended"
-                                        class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm is-contended"
-                                        data-bs-toggle="tooltip"
-                                        data-bs-placement="top"
-                                        data-bs-html="true"
-                                        data-bs-original-title="<b>Contended Service:</b> Contended, wires only full fibre service with symmetrical upload and download speeds"
-                                        v-tooltip
-                                    >
-                                        <font-awesome-icon :icon="['fas', 'server']"></font-awesome-icon>
-                                    </span>
+                                    <!-- <span
+                    v-if="article?.isContended"
+                    class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm is-contended"
+                    data-bs-toggle="tooltip"
+                    data-bs-placement="top"
+                    data-bs-html="true"
+                    data-bs-original-title="<b>Contended Service:</b> Contended, wires only full fibre service with symmetrical upload and download speeds"
+                    v-tooltip
+                  >
+                    <font-awesome-icon :icon="['fas', 'server']"></font-awesome-icon>
+                  </span> -->
                                     <span
                                         v-if="article?.additionalInfo?.['Type'] == 'Fibre Flex 200+'"
                                         v-tooltip

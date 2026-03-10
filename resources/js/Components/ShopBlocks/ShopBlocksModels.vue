@@ -1,6 +1,5 @@
 <script setup>
 import { computed, reactive, ref, watch } from 'vue';
-import queryString from 'query-string';
 import { categories } from '@composables/custom/shopblocks';
 
 const props = defineProps({

@@ -252,7 +252,7 @@ import _ from 'lodash';
 import Dialog from 'primevue/dialog';
 import axios from 'axios';
 import { reactive, ref, watch, computed } from 'vue';
-import queryString from 'query-string';
+import queryString from 'qs';
 import { can, hasRole } from '@composables/useAuth';
 
 const visible = ref(false);

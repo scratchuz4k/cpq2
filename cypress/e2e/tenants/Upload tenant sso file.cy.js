@@ -156,7 +156,7 @@ describe('Update tenant SSO', () => {
         cy.get('#settings').click();
         cy.get('#link-tenant').click();
         cy.get('#v-pills-sso-tab').click();
-        cy.get('#v-pills-sso').find('#remove-file-button').click();
+        cy.get('#v-pills-sso').find('#sso-remove-file-button').click();
         cy.get('.notyf').contains('File deleted with Success');
         cy.get('#v-pills-sso').find('.input-resource').should('exist');
     });

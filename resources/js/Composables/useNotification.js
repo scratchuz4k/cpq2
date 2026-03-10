@@ -1,5 +1,5 @@
 import { ref } from 'vue';
-import queryString from 'query-string';
+import queryString from 'qs';
 import { usePage } from '@inertiajs/vue3';
 const page = usePage();
 
@@ -28,7 +28,7 @@ export const getTotalUnread = async () => {
     let string = queryString.stringify({
         order: 'desc',
         orderBy: 'created_at',
-        filters: JSON.stringify([
+        filters: [
             {
                 column: 'user_id',
                 operator: 'equals',
@@ -39,7 +39,7 @@ export const getTotalUnread = async () => {
                 operator: 'equals',
                 value: false
             }
-        ])
+        ]
     });
 
     let res = await axios.get('/api/notifications?' + string);

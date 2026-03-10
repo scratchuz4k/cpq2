@@ -255,8 +255,8 @@
     </div>
 </template>
 <script setup>
-import queryString from 'query-string';
-import { ref, watch } from 'vue';
+import queryString from 'qs';
+import { computed, ref, watch } from 'vue';
 import _ from 'lodash';
 import IconField from 'primevue/iconfield';
 import InputIcon from 'primevue/inputicon';
@@ -318,13 +318,13 @@ const getFeatures = () => {
             return;
         }
         let query = queryString.stringify({
-            filters: JSON.stringify([
+            filters: [
                 {
                     column: 'product_id',
                     operator: 'equals',
                     value: x.id
                 }
-            ]),
+            ],
             limit: 1000
         });
 

@@ -1,7 +1,7 @@
 <script setup>
 import { quote, getQuote } from '@composables/useQuote';
 import { reactive, watch, ref } from 'vue';
-import queryString from 'query-string';
+import queryString from 'qs';
 import axios from 'axios';
 
 const props = defineProps({
@@ -37,7 +37,7 @@ const sortBy = (column) => {
 const getItems = async () => {
     let string = queryString.stringify({
         ...form,
-        filters: JSON.stringify([...form.filters])
+        filters: [...form.filters]
     });
 
     let res = await axios.get('/api/quote-items?' + string);

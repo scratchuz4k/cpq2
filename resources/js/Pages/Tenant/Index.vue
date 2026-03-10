@@ -56,14 +56,17 @@ const submitFileForm = async () => {
 const submitLogoForm = async () => {
     isLoading.value = true;
 
-    let success_message = tenant.logo_id ? 'Logo uploaded with Success' : 'Logo deleted with Success';
     let data = {
-        logo_id: tenant.logo_id
+        logo_id: tenant.logo_id,
+        logo_alt_id: tenant.logo_alt_id,
+        logo_docs_id: tenant.logo_docs_id
     };
+
     try {
         let res = await axios.put(`/api/tenants/` + tenant.id, data);
         Object.assign(tenant, res.data);
-        notyf.success(success_message);
+        emitter.emit('logo:updated');
+        notyf.success('Updated with Success');
     } catch (err) {
         notyf.error(err?.response?.data?.message ?? 'Something went wrong');
     }
@@ -166,7 +169,7 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Settings', url: '/sett
                                 aria-controls="v-pills-logo"
                                 aria-selected="false"
                             >
-                                Logo
+                                Logos
                             </button>
                             <button
                                 class="nav-link"
@@ -205,6 +208,7 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Settings', url: '/sett
                                     <p>The file to upload must be a .xml</p>
                                     <form @submit.prevent="submitFileForm" enctype="multipart/form-data">
                                         <InputResource
+                                            id="sso"
                                             v-model="tenant.sso_id"
                                             :resource="tenant.file"
                                             :acceptedFiles="['text/xml']"
@@ -246,22 +250,43 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Settings', url: '/sett
                                 <div class="col xml-in-tabs">
                                     <div class="d-flex">
                                         <div class="logo-form">
-                                            <h4>Import Logo for {{ tenant.name }}</h4>
-                                            <p>The file to upload must be a .jpeg, .jpg, .png, .gif</p>
-                                            <form @submit.prevent="submitLogoForm" enctype="multipart/form-data">
-                                                <InputResource
-                                                    v-model="tenant.logo_id"
-                                                    :resource="tenant.logo"
-                                                    :showLikeLine="false"
-                                                    :acceptedFiles="[
-                                                        'image/jpeg',
-                                                        'image/jpg',
-                                                        'image/png',
-                                                        'image/gif'
-                                                    ]"
-                                                    @change="submitLogoForm"
-                                                ></InputResource>
-                                            </form>
+                                            <h4>Import Logos for {{ tenant.name }}</h4>
+                                            <p>The files to upload must be a .jpeg, .jpg, .png, .gif</p>
+                                        </div>
+                                    </div>
+                                    <div class="row row-cols-3 mt-3">
+                                        <div>
+                                            <label>Header</label>
+                                            <InputResource
+                                                id="logo"
+                                                v-model="tenant.logo_id"
+                                                :resource="tenant.logo"
+                                                :showLikeLine="false"
+                                                :acceptedFiles="['image/jpeg', 'image/jpg', 'image/png', 'image/gif']"
+                                                @change="submitLogoForm"
+                                            ></InputResource>
+                                        </div>
+                                        <div>
+                                            <label>Footer</label>
+                                            <InputResource
+                                                id="logo-alt"
+                                                v-model="tenant.logo_alt_id"
+                                                :resource="tenant.logo_alt"
+                                                :showLikeLine="false"
+                                                :acceptedFiles="['image/jpeg', 'image/jpg', 'image/png', 'image/gif']"
+                                                @change="submitLogoForm"
+                                            ></InputResource>
+                                        </div>
+                                        <div>
+                                            <label>PDF documents</label>
+                                            <InputResource
+                                                id="logo-docs"
+                                                v-model="tenant.logo_docs_id"
+                                                :resource="tenant.logo_docs"
+                                                :showLikeLine="false"
+                                                :acceptedFiles="['image/jpeg', 'image/jpg', 'image/png', 'image/gif']"
+                                                @change="submitLogoForm"
+                                            ></InputResource>
                                         </div>
                                     </div>
                                 </div>
