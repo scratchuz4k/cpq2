@@ -37,12 +37,12 @@ class ResourceController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'upload' => 'required',
+            'file' => 'required',
         ]);
 
-        $files = $request->upload;
+        $files = $request->file;
         if (! is_array($files)) {
-            $files = [$request->upload];
+            $files = [$request->file];
         }
 
         try {
@@ -56,8 +56,6 @@ class ResourceController extends Controller
                     $key->getSize(),
                 ];
 
-                $storedName = $this->getSafeFilename($originalName);
-
                 if (in_array($mimeType, ['text/xml', 'application/xml']) && ! safeXmlParse($key->get())) {
                     return response()->json([
                         'message' => 'The file must contain a valid XML.',
@@ -65,8 +63,14 @@ class ResourceController extends Controller
                     ], 422);
                 }
 
+                // rename file to a friendly name
+                $baseName = pathinfo($originalName, PATHINFO_FILENAME);
+                $extension = $key->getClientOriginalExtension();
+                $friendlyName = Str::slug($baseName);
+                $uniqueName = $friendlyName.'-'.uniqid().'.'.$extension;
+
                 // check content file
-                if ($path = $key->storeAs($folder, $storedName, 'public')) {
+                if ($path = $key->storeAs($folder, $uniqueName, 'public')) {
                     $newFile = Resource::create([
                         'title' => $originalName,
                         'mime_type' => $mimeType,
@@ -81,16 +85,6 @@ class ResourceController extends Controller
         }
 
         return response(['file' => $newFile, 'message' => 'Resource uploaded successfully!', 'error' => false], 200);
-    }
-
-    protected function getSafeFilename(string $originalName): string
-    {
-        $name = pathinfo($originalName, PATHINFO_FILENAME);
-        $ext = pathinfo($originalName, PATHINFO_EXTENSION);
-        $slug = Str::slug($name);
-        $unique = time().'_'.Str::random(6);
-
-        return $slug ? "{$slug}_{$unique}.{$ext}" : "{$unique}.{$ext}";
     }
 
     /**

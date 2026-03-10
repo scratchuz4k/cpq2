@@ -18,7 +18,7 @@ onMounted(() => {
 
     new Dropzone(element, {
         url: '/api/resources',
-        paramName: 'upload',
+        paramName: 'file',
         maxFilesize: 2,
         uploadMultiple: false,
         parallelUploads: 1,
