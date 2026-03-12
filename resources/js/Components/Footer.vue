@@ -1,11 +1,11 @@
 <template>
     <div class="footer">
         <div class="container">
-            <div class="row mb-3">
+            <div class="row">
                 <div class="col">
                     <app-logo type="logo_alt"></app-logo>
                 </div>
-                <div class="col d-flex justify-center justify-content-sm-end">
+                <div class="col d-flex justify-center justify-content-sm-end align-items-center">
                     <a title="Facebook" class="fs-4" href="https://www.facebook.com/GiacomGroup" target="_blank">
                         <font-awesome-icon :icon="['fa-brands', 'fa-facebook']"></font-awesome-icon>
                     </a>
@@ -28,7 +28,7 @@
                     </a>
                 </div>
             </div>
-            <div class="row">
+            <div class="row mt-3" v-if="links.filter((x) => x.is_active).length">
                 <div class="col">
                     <div class="d-flex flex-column flex-sm-row justify-content-end">
                         <a
@@ -50,13 +50,5 @@ import AppLogo from './AppLogo.vue';
 
 const page = usePage();
 const user = page.props.auth.user;
-
-const placeHolderlinks = [
-    { label: 'Copyright', url: 'https://giacom.com/copyright/', is_active: true },
-    { label: 'Privacy and cookies', url: 'https://giacom.com/privacy-and-cookies-policy/', is_active: true },
-    { label: 'Legal', url: 'https://giacom.com/company-details/', is_active: true },
-    { label: 'Accessibility', url: 'https://giacom.com/accessibility/', is_active: true }
-];
-
-const links = Object.keys(page.props.customization.footer).length ? page.props.customization.footer : placeHolderlinks;
+const links = page.props.customization.footer;
 </script>
