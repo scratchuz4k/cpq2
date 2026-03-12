@@ -15,7 +15,7 @@ class DummySeeder extends Seeder
         $main_tenant = Tenant::updateOrCreate([
             'name' => 'CloudMarket',
         ], [
-            'domain' => 'cloudmarket.example.com',
+            'domain' => 'example.com',
             'database' => 'cloudmarket',
         ]);
         $dummy_tenants = Tenant::factory(2)->create([]);
