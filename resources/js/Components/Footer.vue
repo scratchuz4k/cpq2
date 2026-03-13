@@ -45,10 +45,9 @@
     </div>
 </template>
 <script setup>
-import { Link, usePage } from '@inertiajs/vue3';
+import { usePage } from '@inertiajs/vue3';
 import AppLogo from './AppLogo.vue';
 
 const page = usePage();
-const user = page.props.auth.user;
 const links = page.props.customization.footer;
 </script>
