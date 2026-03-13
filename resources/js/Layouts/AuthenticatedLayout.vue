@@ -9,6 +9,7 @@ import { can, hasRole } from '@/Composables/useAuth.js';
 import StepActionBar from '@/Components/Steps/StepActionBar.vue';
 import SvgIcon from '@/Components/Custom/SvgIcon.vue';
 import { actionBarButtons } from '@/Composables/useQuoteSteps.js';
+import UserFeedback from '@/Components/UserFeedback.vue';
 
 const page = usePage();
 const user = page.props.auth.user;
@@ -154,6 +155,7 @@ const hasActionBarContent = computed(() => {
     </StepActionBar>
     <Footer></Footer>
     <Resources></Resources>
+    <UserFeedback></UserFeedback>
 </template>
 <style>
 .search-button:focus-visible,

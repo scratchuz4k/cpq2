@@ -156,6 +156,7 @@ createInertiaApp({
                     networkResponseHeaders: ['Referrer-Policy']
                 }),
                 Sentry.feedbackIntegration({
+                    autoInject: false,
                     triggerLabel: 'Provide Feedback',
                     submitButtonLabel: 'Submit Feedback',
                     formTitle: 'Provide Feedback',
