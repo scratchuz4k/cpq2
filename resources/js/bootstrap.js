@@ -20,11 +20,9 @@ window.axios.interceptors.response.use(
     (error) => {
         if (error.response && error.response.status === 401) {
             window.location.href = '/login';
-            return;
         }
         if (error.response && error.response.status === 419) {
             window.location.reload();
-            return;
         }
         return Promise.reject(error);
     }
