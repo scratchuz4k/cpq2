@@ -167,7 +167,10 @@ createInertiaApp({
                         email: 'email'
                     },
                     // Additional SDK configuration goes in here, for example:
-                    colorScheme: 'light'
+                    colorScheme: 'light',
+                    onSubmitSuccess() {
+                        notyf.success('Thank you for your feedback!');
+                    }
                 })
             ],
             // Tracing
