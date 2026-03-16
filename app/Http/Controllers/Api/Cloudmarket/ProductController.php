@@ -69,7 +69,7 @@ class ProductController extends BaseController
     #[ExcludeRouteFromDocs]
     public function saveQuote(Request $request)
     {
-        if (! config('services.cloudaudit.live_data')) {
+        if (! config('services.cloudmarket.connection_live_data')) {
             return;
         }
 
