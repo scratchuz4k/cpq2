@@ -89,7 +89,7 @@ class ProductController extends BaseController
             $job = new CloudMarketSaveQuote($quote);
             $results = $job->runSync();
         } catch (Exception $e) {
-            return handleException($e);
+            return handleException($e, 'Something went wrong while saving your quote.');
         }
     }
 

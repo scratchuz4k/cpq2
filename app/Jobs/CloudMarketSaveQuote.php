@@ -32,7 +32,7 @@ class CloudMarketSaveQuote extends CloudMarket
         $res = json_decode($temp, true);
 
         if ($res == '') {
-            throw new Exception('Something went wrong!');
+            throw new Exception('Something went wrong while saving your quote.');
         }
 
         if (array_key_exists('errors', $res)) {
