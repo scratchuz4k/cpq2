@@ -245,7 +245,6 @@ const sendToOrder = async () => {
             });
             await getQuote(quote.id);
             notyf.success(`Quote completed with success!`);
-            //window.location = '/dashboard';
         } catch (ex) {
             notyf.error(ex.response?.data?.message ?? 'Something went wrong!');
         }
@@ -263,7 +262,6 @@ const sendToOrder = async () => {
             await getQuote(quote.id);
             getApprovals();
             notyf.success(`Quote successfully sent for approval!`);
-            //window.location = '/dashboard';
         } catch (ex) {
             notyf.error(ex.response?.data?.message ?? 'Something went wrong!');
         }
@@ -274,7 +272,6 @@ const sendToOrder = async () => {
             let res = await axios.post(`/api/quotes/${quote.id}/complete`);
             await getQuote(quote.id);
             notyf.success(`Quote completed with success!`);
-            //window.location = '/dashboard';
         } catch (ex) {
             notyf.error(ex.response?.data?.message ?? 'Something went wrong!');
         }
@@ -300,29 +297,65 @@ const handlePaginator = (ev) => {
 };
 
 const getButtonText = () => {
-    if (quote_approval_flow == 'Margin review' && !quote.items.some((x) => x.is_margin_valid)) {
+    if (!has_quote_approval) {
         return 'Send to Order';
     }
 
     let lastApproval = items.value.length ? items.value[0] : null;
 
-    if (!lastApproval) {
-        return 'Send to Approval';
-    }
-
-    if (has_client_approval && lastApproval.status.toLowerCase() === 'approved') {
-        return 'Send to Client Approval';
-    }
-
     if (quote.status.toLowerCase() == 'pending') {
-        if (lastApproval.flow === 'Client review') {
-            return 'Waiting Client Approval';
-        } else {
-            return 'Waiting for Approval';
+        if (lastApproval && lastApproval.status.toLowerCase() === 'pending') {
+            if (lastApproval?.flow === 'Client review') {
+                return 'Waiting Client Approval';
+            } else {
+                return 'Waiting for Approval';
+            }
         }
     }
 
-    return 'Send to Approval';
+    if (quote_approval_flow == 'Margin review') {
+        if (quote.items.some((x) => !x.is_margin_valid)) {
+            if (!lastApproval) {
+                return 'Send to Approval';
+            } else {
+                if (!has_client_approval) {
+                    return 'Send to Order';
+                }
+
+                if (lastApproval.status.toLowerCase() === 'approved') {
+                    return 'Send to Client Approval';
+                } else {
+                    return 'Send to Approval';
+                }
+            }
+        } else {
+            if (!lastApproval) {
+                if (!has_client_approval) {
+                    return 'Send to Approval';
+                } else {
+                    return 'Send to Client Approval';
+                }
+            } else {
+                if (!has_client_approval) {
+                    return 'Send to Order';
+                }
+
+                return 'Send to Client Approval';
+            }
+        }
+    }
+
+    if (quote_approval_flow == 'Internal review') {
+        if (!lastApproval) {
+            return 'Send to Approval';
+        } else {
+            if (has_client_approval && lastApproval.status.toLowerCase() === 'approved') {
+                return 'Send to Client Approval';
+            }
+
+            return 'Send to Approval';
+        }
+    }
 };
 
 onMounted(() => {
