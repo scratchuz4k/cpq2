@@ -57,7 +57,7 @@ class CloudMarketFailOverProducts extends CloudMarket
             $temp = (array) $value;
             $temp['providerKey'] = $temp['providerKey'] == 'virtual1' ? 'pxc' : $temp['providerKey'];
             $temp['providerName'] = $temp['providerName'] == 'Virtual1' ? 'PXC' : $temp['providerName'];
-            $temp['connectivitySupplierName'] = $temp['connectivitySupplierName'] == 'Virtual1' ? 'PXC' : $temp['connectivitySupplierName'];
+            $temp['connectivitySupplierName'] = $this->getConsolidatedProviderName($temp['connectivitySupplierName']);
             $temp['connectivitySupplierGroup'] = $this->getConsolidatedProviderGroup($temp['connectivitySupplierName']);
             $temp['code'] = '';
             foreach (array_keys($temp) as $itemKey) {

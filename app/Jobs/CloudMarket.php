@@ -53,6 +53,16 @@ class CloudMarket implements ShouldQueue, TenantAware
         }
     }
 
+    protected function getConsolidatedProviderName($provider): string
+    {
+        $sub_provider_mapping = [
+            'its' => 'ITS',
+            'virtual1' => 'PXC',
+        ];
+
+        return array_key_exists(strtolower($provider), $sub_provider_mapping) ? $sub_provider_mapping[strtolower($provider)] : $provider;
+    }
+
     protected function getConsolidatedProviderGroup($provider): string
     {
         $sub_provider_mapping = [
