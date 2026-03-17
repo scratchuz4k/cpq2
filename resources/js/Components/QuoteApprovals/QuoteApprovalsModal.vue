@@ -301,60 +301,35 @@ const getButtonText = () => {
         return 'Send to Order';
     }
 
-    let lastApproval = items.value.length ? items.value[0] : null;
+    const lastApproval = items.value.length ? items.value[0] : null;
+    const quoteStatus = quote.status.toLowerCase();
+    const marginInvalid = quote.items.some((x) => !x.is_margin_valid);
+    const lastApprovalStatus = lastApproval ? lastApproval.status.toLowerCase() : null;
+    const lastApprovalFlow = lastApproval ? lastApproval.flow : null;
 
-    if (quote.status.toLowerCase() == 'pending') {
-        if (lastApproval && lastApproval.status.toLowerCase() === 'pending') {
-            if (lastApproval?.flow === 'Client review') {
-                return 'Waiting Client Approval';
-            } else {
-                return 'Waiting for Approval';
-            }
+    // Pending quote status
+    if (quoteStatus === 'pending' && lastApprovalStatus === 'pending') {
+        return lastApprovalFlow === 'Client review' ? 'Waiting Client Approval' : 'Waiting for Approval';
+    }
+
+    // Margin review flow
+    if (quote_approval_flow === 'Margin review') {
+        if (marginInvalid) {
+            if (!lastApproval) return 'Send to Approval';
+            if (!has_client_approval) return 'Send to Order';
+            return lastApprovalStatus === 'approved' ? 'Send to Client Approval' : 'Send to Approval';
+        } else {
+            if (!lastApproval) return !has_client_approval ? 'Send to Approval' : 'Send to Client Approval';
+            if (!has_client_approval) return 'Send to Order';
+            return 'Send to Client Approval';
         }
     }
 
-    if (quote_approval_flow == 'Margin review') {
-        if (quote.items.some((x) => !x.is_margin_valid)) {
-            if (!lastApproval) {
-                return 'Send to Approval';
-            } else {
-                if (!has_client_approval) {
-                    return 'Send to Order';
-                }
-
-                if (lastApproval.status.toLowerCase() === 'approved') {
-                    return 'Send to Client Approval';
-                } else {
-                    return 'Send to Approval';
-                }
-            }
-        } else {
-            if (!lastApproval) {
-                if (!has_client_approval) {
-                    return 'Send to Approval';
-                } else {
-                    return 'Send to Client Approval';
-                }
-            } else {
-                if (!has_client_approval) {
-                    return 'Send to Order';
-                }
-
-                return 'Send to Client Approval';
-            }
-        }
-    }
-
-    if (quote_approval_flow == 'Internal review') {
-        if (!lastApproval) {
-            return 'Send to Approval';
-        } else {
-            if (has_client_approval && lastApproval.status.toLowerCase() === 'approved') {
-                return 'Send to Client Approval';
-            }
-
-            return 'Send to Approval';
-        }
+    // Internal review flow
+    if (quote_approval_flow === 'Internal review') {
+        if (!lastApproval) return 'Send to Approval';
+        if (has_client_approval && lastApprovalStatus === 'approved') return 'Send to Client Approval';
+        return 'Send to Approval';
     }
 };
 
