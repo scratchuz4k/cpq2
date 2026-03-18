@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Enums\CloudMarketSubprovidersEnum;
 use Exception;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
@@ -22,6 +23,18 @@ class CloudMarket implements ShouldQueue, TenantAware
     public $started_at = null;
 
     public $tempFilters = [];
+
+    public $subproviders = [];
+
+    public function __construct()
+    {
+        $subproviders = CloudMarketSubprovidersEnum::asArray();
+        // Remove spaces and lowercase the value string for each subprovider
+        foreach ($subproviders as $subprovider) {
+            $this->subproviders[strtolower(str_replace(' ', '', $subprovider['value']))] = $subprovider['value'];
+        }
+
+    }
 
     /**
      * The job failed to process.
@@ -55,12 +68,16 @@ class CloudMarket implements ShouldQueue, TenantAware
 
     protected function getConsolidatedProviderName($provider): string
     {
-        $sub_provider_mapping = [
-            'its' => 'ITS',
+        $key = strtolower(str_replace(' ', '', $provider));
+        if (array_key_exists($key, $this->subproviders)) {
+            $provider = $this->subproviders[$key];
+        }
+
+        $provider_override = [
             'virtual1' => 'PXC',
         ];
 
-        return array_key_exists(strtolower($provider), $sub_provider_mapping) ? $sub_provider_mapping[strtolower($provider)] : $provider;
+        return array_key_exists(strtolower($provider), $provider_override) ? $provider_override[strtolower($provider)] : $provider;
     }
 
     protected function getConsolidatedProviderGroup($provider): string
