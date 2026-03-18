@@ -166,6 +166,7 @@ class ProductController extends BaseController
         return new CloudMarketAddress(
             postCode: $address->postCode ?? null,
             uprn: $address->uprn ?? null,
+            districtCode: $address->districtCode ?? null,
             lat: $address->latitude ?? null,
             lon: $address->longitude ?? null,
             addressKey: $address->addressKey ?? null,
