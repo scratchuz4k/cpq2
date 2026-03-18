@@ -56,11 +56,6 @@ class Product extends Model
         return $this->prices()->first();
     }
 
-    public function parent()
-    {
-        return $this->hasOne(Product::class, 'id', 'parent_id');
-    }
-
     public function children()
     {
         return $this->hasMany(Product::class, 'parent_id', 'id');
