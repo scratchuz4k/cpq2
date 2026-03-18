@@ -76,8 +76,8 @@ class ProductController extends BaseController
         $quote = $this->getQuote($request);
         $address = $this->generateAddress($quote);
         $filename = $this->generateFilename($quote, $address);
-        $data = (object) ($quote->data ?? []);
-        $data->filename = $filename;
+        $data = $quote->data ?? [];
+        $data['filename'] = $filename;
         $quote->update(['data' => $data]);
         $product = $this->getProduct($quote, 'Primary Product');
 
@@ -199,8 +199,8 @@ class ProductController extends BaseController
             ]]);
         }
 
-        if (isset($quote->data?->quoteReference)) {
-            $filename = $filename.$quote->data?->quoteReference;
+        if (is_array($quote->data) && isset($quote->data['quoteReference'])) {
+            $filename = $filename.$quote->data['quoteReference'];
         }
 
         return $filename;
