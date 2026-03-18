@@ -124,8 +124,8 @@ class CloudMarketApi
             'addOns' => self::saveAddons($quote),
         ];
 
-        if (isset($quote->data?->quoteReference)) { // && isset($quote->data?->quoteId) && $params['quoteId'] == $quote->data?->quoteId
-            $params['quoteReference'] = $quote->data?->quoteReference;
+        if (is_array($quote->data) && isset($quote->data['quoteReference'])) {
+            $params['quoteReference'] = $quote->data['quoteReference'];
         }
 
         Log::debug('CloudMarketApi::saveQuote request:', $params);
