@@ -171,7 +171,7 @@ class ProductController extends BaseController
             lon: $address->longitude ?? null,
             addressKey: $address->addressKey ?? null,
             buildingName: $address->premisesName ?? $address->organisationName ?? null,
-            buildingNumber: $address->buildingNumber ?? null,
+            buildingNumber: $address->buildingNumber ?? $address->thoroughfareNumber ?? null,
             subPremises: $address->subPremises ?? null,
             street: $address->thoroughfareName ?? $address->dependentThoroughfareName ?? null,
             town: $address->postTown ?? $address->locality ?? $address->doubleDependentLocality ?? null,
