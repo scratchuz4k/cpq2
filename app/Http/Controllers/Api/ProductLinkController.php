@@ -9,6 +9,7 @@ use App\Services\ProductLinkService;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\DB;
 
 class ProductLinkController extends BaseController
 {
@@ -36,19 +37,17 @@ class ProductLinkController extends BaseController
     }
 
     /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
     {
-        //
+        try {
+            $price = DB::transaction(fn () => $this->service->store($request->all()));
+        } catch (Exception $e) {
+            return handleException($e);
+        }
+
+        return new JsonResource($price->refresh());
     }
 
     /**
@@ -60,19 +59,17 @@ class ProductLinkController extends BaseController
     }
 
     /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(ProductLink $productLink)
-    {
-        //
-    }
-
-    /**
      * Update the specified resource in storage.
      */
     public function update(Request $request, ProductLink $productLink)
     {
-        //
+        try {
+            $product = DB::transaction(fn () => $this->service->update($productLink, $request->all()));
+        } catch (Exception $e) {
+            return handleException($e);
+        }
+
+        return new JsonResource($product);
     }
 
     /**

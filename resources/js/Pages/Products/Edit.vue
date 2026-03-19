@@ -391,7 +391,9 @@ const items = ref([
                         </div>
                     </div>
                 </tab>
-                <tab title="Linked Products"> </tab>
+                <tab title="Linked Products">
+                    <RelationDatatable></RelationDatatable>
+                </tab>
             </tabs>
         </div>
     </AuthenticatedLayout>
