@@ -231,7 +231,7 @@ const updateQuoteApproval = async (item, status) => {
         showDialog.value = !showDialog.value;
         getApprovals();
         await getQuote(quote.id);
-        //window.location = '/dashboard';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (ex) {
         notyf.error(ex.response?.data?.message ?? 'Something went wrong!');
     }
@@ -245,6 +245,7 @@ const sendToOrder = async () => {
             });
             await getQuote(quote.id);
             notyf.success(`Quote completed with success!`);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         } catch (ex) {
             notyf.error(ex.response?.data?.message ?? 'Something went wrong!');
         }
@@ -262,6 +263,7 @@ const sendToOrder = async () => {
             await getQuote(quote.id);
             getApprovals();
             notyf.success(`Quote successfully sent for approval!`);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         } catch (ex) {
             notyf.error(ex.response?.data?.message ?? 'Something went wrong!');
         }
@@ -272,6 +274,7 @@ const sendToOrder = async () => {
             let res = await axios.post(`/api/quotes/${quote.id}/complete`);
             await getQuote(quote.id);
             notyf.success(`Quote completed with success!`);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         } catch (ex) {
             notyf.error(ex.response?.data?.message ?? 'Something went wrong!');
         }

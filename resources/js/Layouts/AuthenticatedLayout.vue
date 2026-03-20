@@ -2,17 +2,19 @@
 import _ from 'lodash';
 import { Link, usePage } from '@inertiajs/vue3';
 import { Comment, computed, ref, useSlots } from 'vue';
-import * as Sentry from '@sentry/vue';
 import TopBarSearchable from '@/Components/TopBarSearchable.vue';
 import Resources from '@/Components/Resources.vue';
 import { can, hasRole } from '@/Composables/useAuth.js';
 import StepActionBar from '@/Components/Steps/StepActionBar.vue';
 import SvgIcon from '@/Components/Custom/SvgIcon.vue';
 import { actionBarButtons } from '@/Composables/useQuoteSteps.js';
+import * as Sentry from '@sentry/vue';
+import UserFeedback from '@/Components/UserFeedback.vue';
 
 const page = usePage();
 const user = page.props.auth.user;
 const links = page.props.customization.header;
+const feedbackAvailable = !!Sentry.getFeedback();
 
 Sentry.setUser({
     fullName: user.name,
@@ -154,6 +156,7 @@ const hasActionBarContent = computed(() => {
     </StepActionBar>
     <Footer></Footer>
     <Resources></Resources>
+    <UserFeedback v-if="feedbackAvailable"></UserFeedback>
 </template>
 <style>
 .search-button:focus-visible,

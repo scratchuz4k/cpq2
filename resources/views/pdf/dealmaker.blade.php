@@ -318,7 +318,8 @@
 
                             <tfoot>
                                 <tr>
-                                    <th class="text-start" colspan="{{ $isConnectivity ? '9' : '5' }}">Subtotal
+                                    <th class="text-start" colspan="{{ $isConnectivity ? '9' : '5' }}">
+                                        Montly Subtotal
                                     </th>
                                     <th class="text-end">
                                         £{{ number_format($monthly_items_total - $discounts['monthly']['value'], 2) }}

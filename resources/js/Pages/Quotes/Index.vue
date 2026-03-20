@@ -2,7 +2,7 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link, usePage } from '@inertiajs/vue3';
 import { ref } from 'vue';
-import { can } from '@composables/useAuth';
+import { can, hasRole } from '@composables/useAuth';
 import dayjs from 'dayjs';
 import axios from 'axios';
 import Datatable from '@/Components/Datatable.vue';
@@ -139,11 +139,22 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Quotes' }]);
                         {{ format.date(data.approvals[0]?.updated_at ?? value) }}
                     </template>
                     <template #actions="{ data, value, index }">
-                        <div
-                            v-if="!['COMPLETED', 'SUBMITTED', 'EXPIRED', 'PENDING', 'APPROVED'].includes(data.status)"
-                            class="d-flex justify-content-end"
-                        >
+                        <div class="d-flex justify-content-end">
+                            <button
+                                v-if="
+                                    data.status === 'PENDING' &&
+                                    (can('update quote_approval') || hasRole('Super Admin')) &&
+                                    !data.latest_approval.approver &&
+                                    data.latest_approval.flow !== 'Client review'
+                                "
+                                :id="'datatable-workbasket-btn-' + index + '-assign'"
+                                class="btn px-2 py-0 mx-1 border-0"
+                                @click="saveApproval(data.approvals[0])"
+                            >
+                                <font-awesome-icon icon="fas fa-user-plus" />
+                            </button>
                             <Link
+                                v-if="['CONFIGURE', 'PRICE', 'QUOTE', 'REJECTED'].includes(data.status)"
                                 :id="'datatable-btn-' + index + '-edit'"
                                 :href="'quotes/' + data.id + '/edit'"
                                 class="btn px-2 py-0 mx-1 border-0"
@@ -159,34 +170,13 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Quotes' }]);
                                 <font-awesome-icon :icon="['fas', 'eye']" />
                             </Link>
                             <button
+                                v-if="data.status !== ''"
                                 :id="'datatable-btn-' + index + '-delete'"
                                 class="btn px-2 py-0 mx-1 border-0"
                                 @click="deleteRecord(data.id)"
                             >
                                 <font-awesome-icon icon="fas fa-trash-alt" />
                             </button>
-                        </div>
-                        <div v-else class="d-flex justify-content-end">
-                            <button
-                                v-if="
-                                    data.status === 'PENDING' &&
-                                    can('update quote_approval') &&
-                                    !data.latest_approval.approver &&
-                                    data.latest_approval.flow !== 'Client review'
-                                "
-                                :id="'datatable-workbasket-btn-' + index + '-delete'"
-                                class="btn px-2 py-0 mx-1 border-0"
-                                @click="saveApproval(data.approvals[0])"
-                            >
-                                <font-awesome-icon icon="fas fa-user-plus" />
-                            </button>
-                            <Link
-                                :id="'datatable-btn-' + index + '-show'"
-                                :href="'quotes/' + data.id"
-                                class="btn px-2 py-0 mx-1 border-0"
-                            >
-                                <font-awesome-icon :icon="['fas', 'eye']" />
-                            </Link>
                         </div>
                     </template>
                 </Datatable>

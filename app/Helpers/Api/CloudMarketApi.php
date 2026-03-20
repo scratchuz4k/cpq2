@@ -124,9 +124,10 @@ class CloudMarketApi
             'addOns' => self::saveAddons($quote),
         ];
 
-        if (isset($quote->data?->quoteReference)) { // && isset($quote->data?->quoteId) && $params['quoteId'] == $quote->data?->quoteId
-            $params['quoteReference'] = $quote->data?->quoteReference;
+        if (is_array($quote->data) && isset($quote->data['quoteReference'])) {
+            $params['quoteReference'] = $quote->data['quoteReference'];
         }
+
         Log::debug('CloudMarketApi::saveQuote request:', $params);
 
         $credentials = Arr::undot($credentials);
@@ -219,6 +220,7 @@ class CloudMarketApi
             'Address1.Latitude' => $address->lat,
             'Address1.Longitude' => $address->lon,
             'Address1.UPRN' => $address->uprn,
+            'Address1.DistrictCode' => $address->districtCode,
             'Address1.AddressKey' => $address->addressKey,
             'Address1.BuildingName' => $address->buildingName,
             'Address1.BuildingNumber' => $address->buildingNumber,

@@ -10,7 +10,7 @@ defineProps({
 const item = defineModel();
 
 const getRef = (item) => {
-    if (quote.data?.quoteReference) {
+    if (quote.data?.quoteReference && item.data?.providerKey == 'its') {
         return quote.data?.quoteReference;
     }
     return item.data?.quoteId;

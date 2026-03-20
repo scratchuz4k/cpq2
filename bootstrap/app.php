@@ -58,24 +58,28 @@ return Application::configure(basePath: dirname(__DIR__))
         Integration::handles($exceptions);
         $exceptions->respond(function (Response $response, Throwable $exception, Request $request) {
 
-            if (config('app.debug') && app()->environment(['local', 'testing'])) {
+            if (config('app.debug')) {
                 return $response;
             }
 
             $status = $response->getStatusCode();
-            $message = $exception->getMessage()
-                ?: $response->getContent()
-                ?: 'An unexpected error occurred.';
+
+            $safeMessages = [
+                419 => 'The page expired, please try again.',
+                403 => 'You are not authorized to perform this action.',
+                404 => 'The requested resource was not found.',
+                500 => 'Something went wrong.',
+                503 => 'Service unavailable, please try again later.',
+            ];
+
+            $message = $safeMessages[$status] ?? 'An unexpected error occurred.';
 
             if ($request->expectsJson()) {
                 return response()->json(['message' => $message], $status);
             }
 
             if ($status === 419) {
-                return back()->with(
-                    'message',
-                    'The page expired, please try again.'
-                );
+                return back()->with('message', $message);
             }
 
             if (in_array($status, [403, 404, 500, 503])) {
