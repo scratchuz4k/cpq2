@@ -4,6 +4,8 @@ import { ref, computed, watch } from 'vue';
 import _ from 'lodash';
 import { updateQuoteItem, removeQuoteItem, createQuoteItem } from '@composables/useQuoteItem';
 import { quote, getQuote } from '@/Composables/useQuote';
+import queryString from 'qs';
+
 const props = defineProps({
     index: Number,
     hasSelect: Boolean,
@@ -22,18 +24,27 @@ const proxyValue = computed({
 });
 
 const checkQuantity = _.debounce(async (product, temp) => {
+    if (temp < 0) {
+        product.quantity = 0;
+        return;
+    }
+
     if (temp > product.stock) {
         notyf.open({
             type: 'warning',
             message: 'You can only add up to the number of units in stock. The quantity is automatically adjusted'
         });
-        temp = product.stock;
+        temp = product.stock ?? 0;
     }
     product.quantity = temp;
 
     let code = product.sku ?? product.code;
     let item = quote.items.find((x) => x.product_code == code);
     if (!item) {
+        if (product.quantity == 0) {
+            return;
+        }
+
         await createQuoteItem({
             quote_id: quote.id,
             product_code: code,
@@ -261,7 +272,7 @@ watch(searchInput, () => {
             :draggable="false"
         >
             <template #header>
-                <h2>Product Information ({{ proxyValue.model?.name }})</h2>
+                <h2>Product Information ({{ proxyValue.name }})</h2>
             </template>
             <div class="panel h-100">
                 <h3 class="mb-3">General</h3>
@@ -294,7 +305,10 @@ watch(searchInput, () => {
                     </tbody>
                 </table>
             </div>
-            <div class="d-flex justify-content-between align-items-end mb-3 mt-5">
+            <div v-if="loadingFeatures" class="row">
+                <div class="col text-center">Loading...</div>
+            </div>
+            <div v-else-if="temp.length" class="d-flex justify-content-between align-items-end mb-3 mt-5">
                 <h3>Features</h3>
                 <div>
                     <IconField>
@@ -310,10 +324,8 @@ watch(searchInput, () => {
                     </IconField>
                 </div>
             </div>
-            <div v-if="loadingFeatures" class="row">
-                <div class="col text-center">Loading...</div>
-            </div>
-            <div v-else class="row">
+
+            <div class="row">
                 <div class="col">
                     <table class="table">
                         <tbody>
