@@ -26,16 +26,17 @@
                     fluid
                     iconDisplay="input"
                     :minDate="dateNow.toJSDate()"
+                    placeholder="dd-mm-yyyy"
                 />
             </div>
             <div class="mb-3">
                 <label for="expiration_data" class="form-label">Password</label>
                 <input
                     type="password"
-                    id="input-shareable-password"
+                    id="input-shareable-key"
                     class="form-control"
                     v-model="shareLink.password"
-                    autocomplete="off"
+                    autocomplete="new-password"
                 />
             </div>
 
@@ -57,6 +58,26 @@
                     />
 
                     <button class="input-group-text" @click="copyToClipboard(shareLink.link)">
+                        <font-awesome-icon role="button" :icon="['far', 'clipboard']" />
+                    </button>
+                </div>
+                <div class="input-group mb-3" v-if="shareLink.password">
+                    <input
+                        id="input-shareable-link-password"
+                        :type="showPassword ? 'text' : 'password'"
+                        class="form-control pe-5"
+                        :value="shareLink.password"
+                        disabled
+                    />
+
+                    <button
+                        class="input-group-text text-muted bg-transparent border-0"
+                        @click="showPassword = !showPassword"
+                        style="position: absolute; right: 36px; top: 0; bottom: 0; z-index: 1"
+                    >
+                        <font-awesome-icon role="button" :icon="['far', showPassword ? 'eye-slash' : 'eye']" />
+                    </button>
+                    <button class="input-group-text" @click="copyToClipboard(shareLink.password)">
                         <font-awesome-icon role="button" :icon="['far', 'clipboard']" />
                     </button>
                 </div>
@@ -122,6 +143,7 @@ import { quote } from '@composables/useQuote';
 const isLoading = ref(false);
 const showShareDialog = ref(false);
 const dateNow = DateTime.now();
+const showPassword = ref(false);
 
 const props = defineProps({
     disabled: {
@@ -176,6 +198,7 @@ const deleteShareLink = async () => {
         let res = await axios.delete(`/api/shared-links/${shareLink.id}`);
         shareLink.link = null;
         shareLink.expires_at = null;
+        shareLink.password = null;
     } catch (ex) {
         notyf.error(ex.response.data.message);
     }

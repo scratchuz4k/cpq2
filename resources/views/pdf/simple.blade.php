@@ -346,11 +346,11 @@
                     </div>
                     <table class="table table-dealmaker table-bordered text-end">
                         <thead>
-                            <tr class="border-0">
-                                <th></th>
-                                <th></th>
-                                <th></th>
-                            </tr>
+                            <colgroup>
+                                <col style="width: 70%" class="text-start" />
+                                <col style="width: 9%" />
+                                <col style="width: 20%" />
+                            </colgroup>
                         </thead>
                         <tbody>
                             <tr>

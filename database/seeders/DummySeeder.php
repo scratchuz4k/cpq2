@@ -12,22 +12,27 @@ class DummySeeder extends Seeder
 {
     public function run()
     {
-        $dummy_tenants = Tenant::factory(3)->create([]);
-
-        $tenant = Tenant::updateOrCreate([
+        $main_tenant = Tenant::updateOrCreate([
             'name' => 'CloudMarket',
         ], [
             'domain' => 'example.com',
             'database' => 'cloudmarket',
         ]);
+        $dummy_tenants = Tenant::factory(2)->create([]);
 
-        $accounts = Account::factory(10)->create();
+        $tenants = $dummy_tenants->prepend($main_tenant);
+
+        foreach ($tenants as $tenant) {
+            Account::factory(10)->create([
+                'tenant_id' => $tenant->id,
+            ]);
+        }
 
         $support_user = User::updateOrCreate([
             'email' => 'support@example.com',
         ], [
             'name' => 'Support User',
-            'tenant_id' => $tenant->id,
+            'tenant_id' => $main_tenant->id,
             'password' => Hash::make('werwerwer'),
         ]);
 
@@ -35,7 +40,7 @@ class DummySeeder extends Seeder
             'email' => 'companyadmin@example.com',
         ], [
             'name' => 'Company Admin User',
-            'tenant_id' => $tenant->id,
+            'tenant_id' => $main_tenant->id,
             'password' => Hash::make('werwerwer'),
         ]);
 
@@ -43,7 +48,7 @@ class DummySeeder extends Seeder
             'email' => 'salesmanager@example.com',
         ], [
             'name' => 'Sales Manager',
-            'tenant_id' => $tenant->id,
+            'tenant_id' => $main_tenant->id,
             'password' => Hash::make('werwerwer'),
         ]);
 
@@ -51,11 +56,11 @@ class DummySeeder extends Seeder
             'email' => 'sales@example.com',
         ], [
             'name' => 'Sales Rep',
-            'tenant_id' => $tenant->id,
+            'tenant_id' => $main_tenant->id,
             'password' => Hash::make('werwerwer'),
         ]);
 
-        $tenant->users()->sync([
+        $main_tenant->users()->sync([
             $support_user->id,
             $company_admin_user->id,
             $sales_manager_user->id,
@@ -63,9 +68,9 @@ class DummySeeder extends Seeder
         ]);
 
         $super_user = User::where('email', config('cpq.superuser.email'))->first();
-        $super_user->tenants()->sync([$tenant->id, ...$dummy_tenants->pluck('id')]);
+        $super_user->tenants()->sync($tenants->pluck('id'));
 
         $system_user = User::where('email', 'system@cpq.cloudmarket.com')->first();
-        $system_user->tenants()->sync([$tenant->id, ...$dummy_tenants->pluck('id')]);
+        $system_user->tenants()->sync($tenants->pluck('id'));
     }
 }

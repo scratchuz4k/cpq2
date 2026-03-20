@@ -118,8 +118,8 @@ const add = () => {
         is_active: temp.is_active
     };
 
-    if (!newLink.label || !newLink.url) {
-        notyf.error(`Please enter a valid URL`);
+    if (!newLink.label) {
+        notyf.error(`Please enter a label`);
         return;
     }
 
