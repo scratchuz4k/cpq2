@@ -48,16 +48,16 @@ const getData = async () => {
     let string = queryString.stringify({
         ...form,
         page: form.page,
-        columns: props.columns
+        columns: props.options.columns
             .filter((column) => column.data !== 'actions')
             .map((x) => x.data)
             .join(','),
-        filters: [...form.filters.filter((x) => x.value != null), ...props.query],
+        filters: [...form.filters.filter((x) => x.value != null), ...props.options.query],
         search: form.search
     });
 
     try {
-        let res = await axios.get('/api' + props.route + '?' + string);
+        let res = await axios.get('/api/' + props.options.route + '?' + string);
         data.value = res.data.data;
         emptyData.value = !data.value.length;
         form.total = res.data.meta?.total ?? res.data.total;
@@ -89,7 +89,7 @@ const deleteRecord = async (id) => {
             return;
         }
         try {
-            let res = await axios.delete('/api' + props.route + '/' + id);
+            let res = await axios.delete('/api' + props.options.route + '/' + id);
             getData();
             notyf.success('Removed with success');
         } catch (err) {
@@ -127,25 +127,25 @@ const getExportData = async () => {
     if (exportDisabled.value) return;
     exportDisabled.value = true;
 
-    let columns = props.columns
+    let columns = props.options.columns
         .filter((column) => column.data !== 'actions')
         .map((x) => x.data)
         .join(',');
 
     let filters = {
-        filters: JSON.stringify([...form.filters.filter((x) => x.value != null), ...props.query]),
+        filters: JSON.stringify([...form.filters.filter((x) => x.value != null), ...props.options.query]),
         search: form.search,
         columns: columns
     };
 
-    exportData(filters, props.route);
+    exportData(filters, props.options.route);
 
     setTimeout(() => {
         exportDisabled.value = false;
     }, 5000);
 };
 
-emitter.on('datatable-refresh' + (props.id ? ':' + props.id : ''), () => {
+emitter.on('datatable-refresh' + (props.options.id ? ':' + props.options.id : ''), () => {
     getData();
 });
 
@@ -168,7 +168,24 @@ watch(
 getData();
 </script>
 <template>
-    <DataTable :tableProps="props.tableProps" :value="data" :rows="form.limit" stripedRows :reorderableColumns="false">
+    <div class="d-flex justify-content-between mt-3">
+        <div>
+            <h2>Products (1)</h2>
+        </div>
+        <div>
+            <button class="btn btn-primary">
+                <font-awesome-icon :icon="['fas', 'plus']"></font-awesome-icon>
+                New Product
+            </button>
+        </div>
+    </div>
+    <DataTable
+        :tableProps="{ id: props.options.id }"
+        :value="data"
+        :rows="form.limit"
+        stripedRows
+        :reorderableColumns="false"
+    >
         <template #header>
             <div class="d-flex justify-content-between">
                 <div>
@@ -208,19 +225,23 @@ getData();
                 </IconField>
             </div>
         </template>
-        <Column v-for="(column, key) in columns.filter((x) => !x.hide)" :field="column.data" :style="column.style">
-            <template #header v-if="column.data != 'actions'">
+        <Column
+            v-for="(data, key) in props.options.columns.filter((x) => !x.hide)"
+            :field="data.column"
+            :style="data.style"
+        >
+            <template #header v-if="data.column != 'actions'">
                 <div class="d-flex justify-content-between align-items-center w-100 pe-3 position-relative">
                     <b
                         class="column-title sortable d-inline-flex align-items-center"
-                        @click="sortBy(column.data)"
+                        @click="sortBy(data.column)"
                         :style="{
-                            textDecoration: column.data == form.orderBy ? 'underline' : 'none'
+                            textDecoration: data.column == form.orderBy ? 'underline' : 'none'
                         }"
                     >
-                        {{ column.title }}
+                        {{ data.title }}
                         <span class="text-center" style="width: 20px">
-                            <template v-if="column.data == form.orderBy">
+                            <template v-if="data.column == form.orderBy">
                                 <font-awesome-icon v-if="form.order == 'desc'" :icon="['fas', 'sort-down']" />
                                 <font-awesome-icon v-else :icon="['fas', 'sort-up']" />
                             </template>
@@ -231,8 +252,8 @@ getData();
                             <font-awesome-icon :icon="['fas', 'filter']" />
                         </button>
                         <div class="filter-content" :class="{ last: key + 1 == columns.length }">
-                            <template v-if="Object.keys(props.filters).includes(column.data)">
-                                <div class="my-1" v-if="props.filters[column.data].type === 'checkbox'">
+                            <template v-if="Object.keys(props.options.filters).includes(data.column)">
+                                <div class="my-1" v-if="props.options.filters[data.column].type === 'checkbox'">
                                     <div class="form-check p-0">
                                         <Checkbox
                                             inputId="active-filter"
@@ -243,7 +264,7 @@ getData();
                                         <label class="form-check-label ms-2" for="active-filter"> Active </label>
                                     </div>
                                 </div>
-                                <div v-if="props.filters[column.data].type === 'options'" class="mb-3">
+                                <div v-if="props.options.filters[data.column].type === 'options'" class="mb-3">
                                     <label class="form-label" :for="`filter-value-${key}`">Options</label>
                                     <select
                                         :id="`filter-value-${key}`"
@@ -252,7 +273,7 @@ getData();
                                     >
                                         <option :value="null">All</option>
                                         <option
-                                            v-for="option in filters[column.data].options"
+                                            v-for="option in filters[data.column].options"
                                             :value="typeof option === 'object' ? option.value : option"
                                         >
                                             {{ typeof option === 'object' ? option.label : option }}
@@ -291,7 +312,7 @@ getData();
                     <template v-if="allow.update">
                         <Link
                             :id="'datatable-btn-' + index + '-edit'"
-                            :href="props.route + '/' + data.id + '/edit'"
+                            :href="props.options.route + '/' + data.id + '/edit'"
                             class="btn p-2 mx-1 border-0"
                         >
                             <font-awesome-icon :icon="['fas', 'edit']" />
@@ -301,7 +322,7 @@ getData();
                     <template v-if="allow.link">
                         <Link
                             :id="'datatable-btn-' + index + '-show'"
-                            :href="props.route + '/' + data.id"
+                            :href="props.options.route + '/' + data.id"
                             class="btn p-2 mx-1 border-0"
                         >
                             <font-awesome-icon :icon="['fas', 'eye']" />
@@ -326,9 +347,9 @@ getData();
         </template>
     </DataTable>
     <Paginator
-        v-model:first="meta.first"
+        v-model:first="form.first"
         :rows="form.limit"
-        :totalRecords="meta.total"
+        :totalRecords="form.total"
         :rowsPerPageOptions="[20, 30, 50]"
         @page="handlePaginator"
     >

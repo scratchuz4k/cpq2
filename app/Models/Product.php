@@ -58,7 +58,7 @@ class Product extends Model
 
     public function children()
     {
-        return $this->hasMany(Product::class, 'parent_id', 'id');
+        return $this->hasManyThrough(Product::class, ProductLink::class, 'product_id', 'id', 'id', 'child_id');
     }
 
     public function prices(): HasMany

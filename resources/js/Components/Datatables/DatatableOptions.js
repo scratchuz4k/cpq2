@@ -40,9 +40,10 @@ export class DatatableOptions {
      * @param {string} key
      * @param {string} title
      * @param {object} style
+     * @param {boolean} hide
      */
-    addColumn(column, title, style = {}) {
-        this.columns.push({ column: column, title: title, style: style });
+    addColumn(column, title, style = {}, hide = false) {
+        this.columns.push({ column: column, title: title, style: style, hide: hide });
         this.filters.push({ column: column, value: null, operator: FilterOperators.CONTAINS });
     }
 

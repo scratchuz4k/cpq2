@@ -4,11 +4,11 @@ namespace App\Http\Controllers\Api;
 
 use App\Helpers\DataProvider;
 use App\Http\Controllers\BaseController;
+use App\Http\Resources\ProductLinkResource;
 use App\Models\ProductLink;
 use App\Services\ProductLinkService;
 use Exception;
 use Illuminate\Http\Request;
-use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\DB;
 
 class ProductLinkController extends BaseController
@@ -33,7 +33,7 @@ class ProductLinkController extends BaseController
             return handleException($e);
         }
 
-        return JsonResource::collection($data);
+        return ProductLinkResource::collection($data);
     }
 
     /**
@@ -47,7 +47,7 @@ class ProductLinkController extends BaseController
             return handleException($e);
         }
 
-        return new JsonResource($price->refresh());
+        return new ProductLinkResource($price->refresh());
     }
 
     /**
@@ -69,7 +69,7 @@ class ProductLinkController extends BaseController
             return handleException($e);
         }
 
-        return new JsonResource($product);
+        return new ProductLinkResource($product);
     }
 
     /**

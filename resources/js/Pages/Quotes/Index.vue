@@ -5,7 +5,6 @@ import { ref } from 'vue';
 import { can } from '@composables/useAuth';
 import dayjs from 'dayjs';
 import axios from 'axios';
-import Datatable from '@/Components/Datatable.vue';
 
 const props = defineProps({
     users: {

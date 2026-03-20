@@ -3,7 +3,6 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link, usePage } from '@inertiajs/vue3';
 import { reactive, ref, watch } from 'vue';
 import Header from '@/Components/Header.vue';
-import Datatable from '@/Components/Datatable.vue';
 import { Dialog, Button, Checkbox, Select } from 'primevue';
 import { exportData } from '@/Composables/export.js';
 import queryString from 'qs';

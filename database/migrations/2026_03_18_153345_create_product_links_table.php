@@ -16,8 +16,8 @@ return new class extends Migration
         Schema::create('product_links', function (Blueprint $table) {
             $table->id();
             $table->foreignId('tenant_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('product_id')->nullable()->constrained('products', 'id')->nullOnDelete();
-            $table->foreignId('child_id')->nullable()->constrained('products', 'id')->nullOnDelete();
+            $table->foreignId('product_id')->constrained('products', 'id')->cascadeOnDelete();
+            $table->foreignId('child_id')->constrained('products', 'id')->cascadeOnDelete();
             $table->timestamps();
         });
 

@@ -14,6 +14,7 @@ import Select from 'primevue/select';
 import { DateTime } from 'luxon';
 import _ from 'lodash';
 import format from '@/Composables/format.js';
+import { DatatableOptions } from '@/Components/Datatables/DatatableOptions.js';
 
 const props = defineProps({
     product: Object,
@@ -107,6 +108,12 @@ const onRowEditSave = async (event) => {
         notyf.error(ex.response.data.message);
     }
 };
+
+const options = new DatatableOptions('product-links');
+options.addColumn('child.name', 'Name', null);
+options.addColumn('child.sku', 'SKU', null);
+
+options.addQuery('product_id', 'equals', product.id);
 
 const items = ref([
     { label: 'Home', url: '/' },
@@ -392,7 +399,7 @@ const items = ref([
                     </div>
                 </tab>
                 <tab title="Linked Products">
-                    <RelationDatatable></RelationDatatable>
+                    <RelationDatatable :options="options"></RelationDatatable>
                 </tab>
             </tabs>
         </div>
