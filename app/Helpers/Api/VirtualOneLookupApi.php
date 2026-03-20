@@ -80,7 +80,7 @@ class VirtualOneLookupApi
             ]);
 
             if (array_key_exists('address', $response) && ! empty($response['address'])) {
-                Cache::put($cache_key, $response);
+                Cache::put($cache_key, $response, now()->addDays(7));
             }
         }
 
