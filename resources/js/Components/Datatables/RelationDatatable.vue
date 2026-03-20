@@ -337,10 +337,15 @@ getData();
     </Paginator>
 </template>
 <style scoped>
+.datatable-col {
+    padding: 0.75rem;
+    vertical-align: middle;
+}
+
 .datatable-col-sticky {
     padding: 0.75rem;
     vertical-align: middle;
-    min-width: 150px;
+    min-width: 150px !important;
 }
 
 .datatable-col-sticky-1 {

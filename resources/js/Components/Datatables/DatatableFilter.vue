@@ -41,3 +41,9 @@
         </div>
     </div>
 </template>
+<script setup>
+const props = defineProps({
+    data: Object,
+    options: Object
+});
+</script>

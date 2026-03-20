@@ -43,7 +43,7 @@ export class DatatableOptions {
      * @param {boolean} hide
      * @param {boolean} sticky
      */
-    addColumn(column, title, style = {}, hide = false, sticky = false) {
+    addColumn(column, title, style = {}, { hide = false, sticky = false } = {}) {
         this.columns.push({ column: column, title: title, style: style, hide: hide, sticky: sticky });
         this.filters.push({ column: column, value: null, operator: FilterOperators.CONTAINS });
     }
@@ -102,9 +102,9 @@ export class DatatableOptions {
      * @param {boolean} update - Whether the update action is allowed
      * @param {boolean} destroy - Whether the destroy action is allowed
      * @param {boolean} link - Whether the link action is allowed
-     * @param {boolean} hasExport - Whether the export action is allowed
+     * @param {boolean} allowExport - Whether the export action is allowed
      */
-    setAllowedActions(create = false, update = false, destroy = false, link = false, hasExport = false) {
-        this.allow = { create, update, destroy, link, export: hasExport };
+    setAllowedActions({ create = false, update = false, destroy = false, link = false, allowExport = false } = {}) {
+        this.allow = { create, update, destroy, link, export: allowExport };
     }
 }
