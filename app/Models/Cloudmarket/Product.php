@@ -35,7 +35,7 @@ class Product extends Model
             'filename' => $filename,
         ], $content);
 
-        Cache::put($filename, json_encode(['updated_at' => now()]), 86400);
+        Cache::put($filename, json_encode(['updated_at' => now()]), now()->addHours(24));
     }
 
     public static function addOptions(string $key, string $filename, array $data)

@@ -27,7 +27,7 @@ class ShopBlocksFile
             'errors' => $errors,
         ]);
 
-        Cache::put($this->filename, json_encode(['updated_at' => now()]), 86400);
+        Cache::put($this->filename, json_encode(['updated_at' => now()]), now()->addHours(24));
         file_put_contents($this->path.$this->filename, $dataString);
     }
 
