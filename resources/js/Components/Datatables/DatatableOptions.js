@@ -32,7 +32,7 @@ export class DatatableOptions {
         this.columnFilters = {};
         this.query = [];
         this.sort = { order: 'desc', orderBy: 'updated_at' };
-        this.allowedActions = { create: false, update: false, destroy: false, link: false, export: false };
+        this.allow = { create: false, update: false, destroy: false, link: false, export: false };
     }
 
     /**
@@ -41,9 +41,10 @@ export class DatatableOptions {
      * @param {string} title
      * @param {object} style
      * @param {boolean} hide
+     * @param {boolean} sticky
      */
-    addColumn(column, title, style = {}, hide = false) {
-        this.columns.push({ column: column, title: title, style: style, hide: hide });
+    addColumn(column, title, style = {}, hide = false, sticky = false) {
+        this.columns.push({ column: column, title: title, style: style, hide: hide, sticky: sticky });
         this.filters.push({ column: column, value: null, operator: FilterOperators.CONTAINS });
     }
 
@@ -104,6 +105,6 @@ export class DatatableOptions {
      * @param {boolean} hasExport - Whether the export action is allowed
      */
     setAllowedActions(create = false, update = false, destroy = false, link = false, hasExport = false) {
-        this.allowedActions = { create, update, destroy, link, export: hasExport };
+        this.allow = { create, update, destroy, link, export: hasExport };
     }
 }

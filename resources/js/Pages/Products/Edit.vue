@@ -110,10 +110,21 @@ const onRowEditSave = async (event) => {
 };
 
 const options = new DatatableOptions('product-links');
-options.addColumn('child.name', 'Name', null);
-options.addColumn('child.sku', 'SKU', null);
+options.addColumn('child.name', 'Name', { width: '50%' }, false, true);
+options.addColumn('child.sku', 'SKU', null, false, true);
+options.addColumn('child.status', 'status', null, false, false);
+options.addColumn('child.description', 'description', null, false, false);
+options.addColumn('child.description', 'description', null, false, false);
+options.addColumn('child.description', 'description', null, false, false);
+options.addColumn('child.description', 'description', null, false, false);
+options.addColumn('child.description', 'description', null, false, false);
+options.addColumn('child.description', 'description', null, false, false);
+options.addColumn('child.description', 'description', null, false, false);
+options.addColumn('child.description', 'description', null, false, false);
+options.addColumn('child.description', 'description', null, false, false);
 
 options.addQuery('product_id', 'equals', product.id);
+options.setAllowedActions(false, false, false, true, false);
 
 const items = ref([
     { label: 'Home', url: '/' },
