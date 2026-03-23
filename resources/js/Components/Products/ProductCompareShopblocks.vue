@@ -151,9 +151,9 @@
                     </div>
                 </div>
 
-                <table v-if="temp.length" class="table table-bordered">
+                <table v-if="hasFeatures.value" class="table table-bordered">
                     <tbody>
-                        <template v-for="group in temp">
+                        <template v-for="group in getFeaturesTable(selectedItems)">
                             <tr>
                                 <th colspan="5" class="sticky-row">
                                     <div @click="() => (group.show = !group.show)" style="cursor: pointer">
@@ -247,26 +247,25 @@
     </div>
 </template>
 <script setup>
-import queryString from 'qs';
 import { ref, watch } from 'vue';
 import _ from 'lodash';
 import IconField from 'primevue/iconfield';
 import InputIcon from 'primevue/inputicon';
 import InputText from 'primevue/inputtext';
-import { selectedItems, addSelected } from '@/Composables/useComparator';
+import { selectedItems } from '@/Composables/useComparator';
 
 const props = defineProps({
     index: Number
 });
 
-const loadingFeatures = ref(false);
 const searchInput = ref('');
 const show = ref(false);
+const hasFeatures = ref(false);
 
-const temp = ref([]);
-const getFeaturesTable = () => {
-    temp.value = [];
-    selectedItems.value.forEach((x, i) => {
+const getFeaturesTable = (items) => {
+    let temp = [];
+    hasFeatures.value = false;
+    items.forEach((x, i) => {
         if (!x.features) {
             return;
         }
@@ -279,52 +278,26 @@ const getFeaturesTable = () => {
         });
 
         features.forEach((e) => {
-            let gIndex = temp.value.findIndex((t) => t.name == e.dimension_type.group);
+            let gIndex = temp.findIndex((t) => t.name == e.dimension_type.group);
             if (gIndex == -1) {
-                temp.value.push({ name: e.dimension_type.group, show: true, features: [] });
-                gIndex = temp.value.length - 1;
+                temp.push({ name: e.dimension_type.group, show: true, features: [] });
+                gIndex = temp.length - 1;
             }
 
-            let index = temp.value[gIndex].features.findIndex((t) => t.key == e.dimension_type.key);
+            let index = temp[gIndex].features.findIndex((t) => t.key == e.dimension_type.key);
             if (index == -1) {
-                temp.value[gIndex].features.push({
+                temp[gIndex].features.push({
                     key: e.dimension_type.key,
                     label: e.dimension_type.label,
                     items: {}
                 });
-                index = temp.value[gIndex].features.length - 1;
+                index = temp[gIndex].features.length - 1;
             }
-            temp.value[gIndex].features[index].items[i] = e.dimension.value;
+            temp[gIndex].features[index].items[i] = e.dimension.value;
         });
     });
-};
-
-const getFeatures = () => {
-    loadingFeatures.value = true;
-    if (!selectedItems.value.length) {
-        loadingFeatures.value = false;
-        return;
-    }
-    selectedItems.value.forEach(async (x) => {
-        if (x.features) {
-            return;
-        }
-        let query = queryString.stringify({
-            filters: [
-                {
-                    column: 'product_id',
-                    operator: 'equals',
-                    value: x.id
-                }
-            ],
-            limit: 1000
-        });
-
-        let res = await axios.get('/api/shop-blocks/product-dimensions?' + query);
-        x.features = res.data?.data;
-    });
-    loadingFeatures.value = false;
-    getFeaturesTable();
+    hasFeatures.value = temp.length > 0;
+    return temp;
 };
 
 const removeCompareItem = (index) => {
@@ -335,18 +308,12 @@ const removeCompareItem = (index) => {
 };
 
 watch(searchInput, () => {
-    getFeaturesTable();
-});
-
-watch(selectedItems.value, () => {
-    document.body.style.overflow = show.value ? 'hidden' : 'auto';
-    getFeatures();
+    getFeaturesTable(selectedItems.value);
 });
 
 watch(show, () => {
     document.body.style.overflow = show.value ? 'hidden' : 'auto';
 });
-getFeatures();
 </script>
 <style scoped>
 .compare-bar {

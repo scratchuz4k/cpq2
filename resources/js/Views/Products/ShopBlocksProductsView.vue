@@ -393,11 +393,12 @@ watch(
                     <div class="row" :class="[showCards ? 'row-cols-4' : 'row-cols-1']">
                         <ProductCard
                             v-for="(product, index) in productsHardware"
-                            @select="(item) => addSelected(item)"
+                            @select="(item) => addSelected(item, true)"
                             :hasSelect="true"
                             :showAsColumn="showCards"
                             :index="index"
                             v-model="productsHardware[index]"
+                            :showFeatures="true"
                         >
                         </ProductCard>
                     </div>

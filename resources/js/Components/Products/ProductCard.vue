@@ -10,7 +10,8 @@ const props = defineProps({
     index: Number,
     hasSelect: Boolean,
     showAsColumn: Boolean,
-    modelValue: Object
+    modelValue: Object,
+    showFeatures: Boolean
 });
 
 const displayBasic = ref(false);
@@ -77,7 +78,8 @@ const searchInput = ref('');
 const temp = ref([]);
 const getFeaturesTable = () => {
     temp.value = [];
-    if (!proxyValue.value.features) {
+
+    if (!proxyValue.value.features || !props.showFeatures) {
         return;
     }
     let lowerSearch = searchInput.value.toLowerCase();
