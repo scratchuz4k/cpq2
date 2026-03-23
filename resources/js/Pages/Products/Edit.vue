@@ -140,283 +140,275 @@ const items = ref([
 <template>
     <Head :title="'Edit Product #' + product.id" />
     <AuthenticatedLayout>
-        <div class="panel">
-            <Header :title="'Edit Product #' + product.id" :breadcrumbs="items">
-                <template #buttons>
-                    <PrimaryButton @click="saveProduct()">
-                        <font-awesome-icon class="me-2" :icon="['fas', 'save']"></font-awesome-icon>
-                        Save
-                    </PrimaryButton>
-                </template>
-            </Header>
-            <tabs class="mt-3">
-                <tab title="General" :selected="true">
-                    <div class="my-3">
-                        <p>
-                            This section provides an overview of the product, including general information and
-                            associated suppliers.
-                        </p>
-                    </div>
-                    <div class="row my-4">
-                        <div class="col-6">
-                            <div class="mb-3 d-flex flex-column">
-                                <label class="form-label" for="product-status"> Status: </label>
-                                <div>
-                                    <span
-                                        v-tooltip
-                                        data-bs-toggle="tooltip"
-                                        data-bs-placement="top"
-                                        data-bs-html="true"
-                                        :data-bs-original-title="'This product is ' + product.status"
-                                        class="badge border border-primary text-primary opacity-75 ms-1 lh-sm"
-                                    >
-                                        {{ product.status }}
-                                    </span>
-                                </div>
-                            </div>
-                            <div class="mb-3 d-flex flex-column">
-                                <label class="form-label" for="active-filter"> Active: </label>
-                                <ToggleSwitch id="active-filter" v-model="product.is_active">
-                                    <template #handle>
-                                        <font-awesome-icon
-                                            :icon="
-                                                product.is_active ? ['fas', 'circle-check'] : ['far', 'circle-xmark']
-                                            "
-                                            class="text-primary"
-                                        />
-                                    </template>
-                                </ToggleSwitch>
-                            </div>
-                            <div class="mb-3">
-                                <label for="product-sku" class="form-label">SKU:</label>
-                                <input id="product-sku" class="form-control" v-model="product.sku" />
-                            </div>
-                            <div class="mb-3">
-                                <label for="product-name" class="form-label">Name:</label>
-                                <input id="product-name" class="form-control" v-model="product.name" />
-                            </div>
-
-                            <div class="mb-3">
-                                <label for="product-description" class="form-label">Description:</label>
-                                <textarea id="product-description" class="form-control" v-model="product.description">{{
-                                    product.description
-                                }}</textarea>
-                            </div>
-
-                            <div class="mb-5">
-                                <label for="product-expires_at" class="form-label">Expires At:</label>
-                                <DatePicker
-                                    id="expire-date"
-                                    class="w-100"
-                                    v-model="product.expires_at"
-                                    placeholder="Expires At"
-                                    showIcon
-                                    iconDisplay="input"
-                                    dateFormat="dd/mm/yy"
-                                />
-                            </div>
-
-                            <h4>Relations</h4>
-                            <hr />
-                            <div class="mb-3">
-                                <label class="form-label">Price Plan</label>
-                                <Select
-                                    v-model="product.price_plan_id"
-                                    :inputId="'price_plan'"
-                                    :options="props.price_plans"
-                                    class="w-100"
-                                    optionLabel="name"
-                                    optionValue="id"
-                                    placeholder="Select an Price Plan"
-                                />
-                            </div>
-
-                            <div class="mb-3">
-                                <label for="product-categories" class="form-label">Categories:</label>
-                                <InputSelectMultiple
-                                    id="product-categories"
-                                    url="/categories"
-                                    :fields="['name']"
-                                    v-model="categories"
-                                    placeholder="Select a Category"
-                                    :query="[{ column: 'is_active', operator: 'equals', value: 1 }]"
+        <Header :title="'Edit Product #' + product.id" :breadcrumbs="items">
+            <template #buttons>
+                <PrimaryButton @click="saveProduct()">
+                    <font-awesome-icon class="me-2" :icon="['fas', 'save']"></font-awesome-icon>
+                    Save
+                </PrimaryButton>
+            </template>
+        </Header>
+        <tabs class="mt-3">
+            <tab title="General" :selected="true">
+                <div class="my-3">
+                    <p>
+                        This section provides an overview of the product, including general information and associated
+                        suppliers.
+                    </p>
+                </div>
+                <div class="row my-4">
+                    <div class="col-6">
+                        <div class="mb-3 d-flex flex-column">
+                            <label class="form-label" for="product-status"> Status: </label>
+                            <div>
+                                <span
+                                    v-tooltip
+                                    data-bs-toggle="tooltip"
+                                    data-bs-placement="top"
+                                    data-bs-html="true"
+                                    :data-bs-original-title="'This product is ' + product.status"
+                                    class="badge border border-primary text-primary opacity-75 ms-1 lh-sm"
                                 >
-                                </InputSelectMultiple>
+                                    {{ product.status }}
+                                </span>
                             </div>
-                            <div class="mb-3">
-                                <label for="product-steps" class="form-label">Steps:</label>
-                                <InputSelectMultiple
-                                    id="product-steps"
-                                    url="/steps"
-                                    :fields="['name', 'solution_type.name']"
-                                    v-model="steps"
-                                    placeholder="Select a Step"
-                                    :query="[{ column: 'is_active', operator: 'equals', value: 1 }]"
-                                >
-                                </InputSelectMultiple>
-                            </div>
-                            <div class="mb-3">
-                                <label for="product-supplier" class="form-label">Supplier:</label>
-                                <InputSelect
-                                    id="product-supplier"
-                                    url="/suppliers"
-                                    :fields="['name']"
-                                    v-model="product.supplier"
-                                    placeholder="Select a Supplier"
-                                    :query="[{ column: 'is_active', operator: 'equals', value: 1 }]"
-                                >
-                                </InputSelect>
-                            </div>
-                            <div class="mb-3">
-                                <label for="product-parent" class="form-label">Parent:</label>
-                                <div class="input-group p-0">
-                                    <InputSelect
-                                        id="product-parent"
-                                        url="/products"
-                                        :fields="['name']"
-                                        class="w-100"
-                                        v-model="product.parent"
-                                        placeholder="Select a Parent"
-                                        :query="[{ column: 'is_active', operator: 'equals', value: 1 }]"
+                        </div>
+                        <div class="mb-3 d-flex flex-column">
+                            <label class="form-label" for="active-filter"> Active: </label>
+                            <ToggleSwitch id="active-filter" v-model="product.is_active">
+                                <template #handle>
+                                    <font-awesome-icon
+                                        :icon="product.is_active ? ['fas', 'circle-check'] : ['far', 'circle-xmark']"
+                                        class="text-primary"
                                     />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </tab>
-                <tab title="Prices" v-if="hasRole('Super Admin') || can('viewAny price')">
-                    <div class="my-3">
-                        <p>
-                            Here are the available prices for this product, including details like cost and net value.
-                        </p>
-                    </div>
-                    <div class="row my-4">
-                        <div class="col-8">
-                            <div class="mb-3">
-                                <DataTable
-                                    v-model:editingRows="editingRows"
-                                    :value="prices"
-                                    editMode="row"
-                                    dataKey="id"
-                                    @row-edit-save="onRowEditSave"
-                                    :pt="{
-                                        table: { style: 'min-width: 50rem' },
-                                        column: {
-                                            bodycell: ({ state }) => ({
-                                                style:
-                                                    state['d_editing'] &&
-                                                    'padding-top: 0.75rem; padding-bottom: 0.75rem'
-                                            })
-                                        }
-                                    }"
-                                >
-                                    <Column field="code" header="Code" style="width: 10%"></Column>
-                                    <Column field="cost" header="Cost">
-                                        <template #body="{ data, field }">
-                                            {{ format.GBP(data[field]) }}
-                                        </template>
-                                        <template #editor="{ data, field }">
-                                            <InputText type="number" v-model="data[field]" fluid />
-                                        </template>
-                                    </Column>
-                                    <Column field="net" header="Net">
-                                        <template #body="{ data, field }">
-                                            {{ format.GBP(data[field]) }}
-                                        </template>
-                                        <template #editor="{ data, field }">
-                                            <InputText type="number" v-model="data[field]" fluid />
-                                        </template>
-                                    </Column>
-                                    <Column field="net_spa" header="Net SPA">
-                                        <template #body="{ data, field }">
-                                            {{ format.GBP(data[field]) }}
-                                        </template>
-                                    </Column>
-                                    <Column field="active_spas" header="Active SPA">
-                                        <template #body="slotProps">
-                                            <p v-for="item in slotProps.data.active_spas">
-                                                {{ item.operation.code }}:
-                                                {{
-                                                    item.percentage
-                                                        ? format.decimalPlaces(item.percentage) + '%'
-                                                        : format.GBP(item.margin)
-                                                }}
-                                            </p>
-                                        </template>
-                                    </Column>
-                                    <Column
-                                        :rowEditor="true"
-                                        v-if="hasRole('Super Admin') || can('update price')"
-                                        style="width: 5%"
-                                    >
-                                    </Column>
-                                    <Column
-                                        bodyStyle="text-align:center"
-                                        v-if="hasRole('Super Admin') || can('delete price')"
-                                        style="width: 5%"
-                                    >
-                                        <template #body="{ data }">
-                                            <Button
-                                                @click="deletePrice(data.id)"
-                                                class="p-button p-component p-button-icon-only p-button-secondary p-button-rounded p-button-text p-datatable-row-editor-init"
-                                                label="Button"
-                                            >
-                                                <font-awesome-icon :icon="['far', 'trash-can']" />
-                                            </Button>
-                                        </template>
-                                    </Column>
-                                </DataTable>
-                            </div>
-                            <div
-                                class="mb-3 d-flex justify-content-end"
-                                v-if="hasRole('Super Admin') || can('create price')"
-                            >
-                                <button
-                                    class="btn btn-primary"
-                                    @click="() => (showModal = !showModal)"
-                                    v-if="prices.length == 0"
-                                >
-                                    Add Price
-                                </button>
-                            </div>
-                            <Dialog
-                                v-model:visible="showModal"
-                                modal
-                                :style="{ width: '50rem', marginTop: '4rem' }"
-                                :breakpoints="{ '1199px': '75vw', '575px': '90vw' }"
-                                :draggable="false"
-                                position="top"
-                            >
-                                <template #header>
-                                    <h3>Add new Price</h3>
                                 </template>
-                                <div class="mb-3">
-                                    <label class="form-label">Code:</label>
-                                    <input class="form-control" v-model="price.code" />
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label">Cost</label>
-                                    <input class="form-control" type="number" v-model="price.cost" />
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label">Price</label>
-                                    <input class="form-control" type="number" v-model="price.net" />
-                                </div>
+                            </ToggleSwitch>
+                        </div>
+                        <div class="mb-3">
+                            <label for="product-sku" class="form-label">SKU:</label>
+                            <input id="product-sku" class="form-control" v-model="product.sku" />
+                        </div>
+                        <div class="mb-3">
+                            <label for="product-name" class="form-label">Name:</label>
+                            <input id="product-name" class="form-control" v-model="product.name" />
+                        </div>
 
-                                <div class="d-flex justify-content-end">
-                                    <button class="btn btn-secondary me-2" @click="() => (showModal = !showModal)">
-                                        Cancel
-                                    </button>
-                                    <button class="btn btn-primary" @click="savePrice()">Save</button>
-                                </div>
-                            </Dialog>
+                        <div class="mb-3">
+                            <label for="product-description" class="form-label">Description:</label>
+                            <textarea id="product-description" class="form-control" v-model="product.description">{{
+                                product.description
+                            }}</textarea>
+                        </div>
+
+                        <div class="mb-5">
+                            <label for="product-expires_at" class="form-label">Expires At:</label>
+                            <DatePicker
+                                id="expire-date"
+                                class="w-100"
+                                v-model="product.expires_at"
+                                placeholder="Expires At"
+                                showIcon
+                                iconDisplay="input"
+                                dateFormat="dd/mm/yy"
+                            />
+                        </div>
+
+                        <h4>Relations</h4>
+                        <hr />
+                        <div class="mb-3">
+                            <label class="form-label">Price Plan</label>
+                            <Select
+                                v-model="product.price_plan_id"
+                                :inputId="'price_plan'"
+                                :options="props.price_plans"
+                                class="w-100"
+                                optionLabel="name"
+                                optionValue="id"
+                                placeholder="Select an Price Plan"
+                            />
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="product-categories" class="form-label">Categories:</label>
+                            <InputSelectMultiple
+                                id="product-categories"
+                                url="/categories"
+                                :fields="['name']"
+                                v-model="categories"
+                                placeholder="Select a Category"
+                                :query="[{ column: 'is_active', operator: 'equals', value: 1 }]"
+                            >
+                            </InputSelectMultiple>
+                        </div>
+                        <div class="mb-3">
+                            <label for="product-steps" class="form-label">Steps:</label>
+                            <InputSelectMultiple
+                                id="product-steps"
+                                url="/steps"
+                                :fields="['name', 'solution_type.name']"
+                                v-model="steps"
+                                placeholder="Select a Step"
+                                :query="[{ column: 'is_active', operator: 'equals', value: 1 }]"
+                            >
+                            </InputSelectMultiple>
+                        </div>
+                        <div class="mb-3">
+                            <label for="product-supplier" class="form-label">Supplier:</label>
+                            <InputSelect
+                                id="product-supplier"
+                                url="/suppliers"
+                                :fields="['name']"
+                                v-model="product.supplier"
+                                placeholder="Select a Supplier"
+                                :query="[{ column: 'is_active', operator: 'equals', value: 1 }]"
+                            >
+                            </InputSelect>
+                        </div>
+                        <div class="mb-3">
+                            <label for="product-parent" class="form-label">Parent:</label>
+                            <div class="input-group p-0">
+                                <InputSelect
+                                    id="product-parent"
+                                    url="/products"
+                                    :fields="['name']"
+                                    class="w-100"
+                                    v-model="product.parent"
+                                    placeholder="Select a Parent"
+                                    :query="[{ column: 'is_active', operator: 'equals', value: 1 }]"
+                                />
+                            </div>
                         </div>
                     </div>
-                </tab>
-                <tab title="Linked Products">
-                    <RelationDatatable :options="options"></RelationDatatable>
-                </tab>
-            </tabs>
-        </div>
+                </div>
+            </tab>
+            <tab title="Prices" v-if="hasRole('Super Admin') || can('viewAny price')">
+                <div class="my-3">
+                    <p>Here are the available prices for this product, including details like cost and net value.</p>
+                </div>
+                <div class="row my-4">
+                    <div class="col-8">
+                        <div class="mb-3">
+                            <DataTable
+                                v-model:editingRows="editingRows"
+                                :value="prices"
+                                editMode="row"
+                                dataKey="id"
+                                @row-edit-save="onRowEditSave"
+                                :pt="{
+                                    table: { style: 'min-width: 50rem' },
+                                    column: {
+                                        bodycell: ({ state }) => ({
+                                            style: state['d_editing'] && 'padding-top: 0.75rem; padding-bottom: 0.75rem'
+                                        })
+                                    }
+                                }"
+                            >
+                                <Column field="code" header="Code" style="width: 10%"></Column>
+                                <Column field="cost" header="Cost">
+                                    <template #body="{ data, field }">
+                                        {{ format.GBP(data[field]) }}
+                                    </template>
+                                    <template #editor="{ data, field }">
+                                        <InputText type="number" v-model="data[field]" fluid />
+                                    </template>
+                                </Column>
+                                <Column field="net" header="Net">
+                                    <template #body="{ data, field }">
+                                        {{ format.GBP(data[field]) }}
+                                    </template>
+                                    <template #editor="{ data, field }">
+                                        <InputText type="number" v-model="data[field]" fluid />
+                                    </template>
+                                </Column>
+                                <Column field="net_spa" header="Net SPA">
+                                    <template #body="{ data, field }">
+                                        {{ format.GBP(data[field]) }}
+                                    </template>
+                                </Column>
+                                <Column field="active_spas" header="Active SPA">
+                                    <template #body="slotProps">
+                                        <p v-for="item in slotProps.data.active_spas">
+                                            {{ item.operation.code }}:
+                                            {{
+                                                item.percentage
+                                                    ? format.decimalPlaces(item.percentage) + '%'
+                                                    : format.GBP(item.margin)
+                                            }}
+                                        </p>
+                                    </template>
+                                </Column>
+                                <Column
+                                    :rowEditor="true"
+                                    v-if="hasRole('Super Admin') || can('update price')"
+                                    style="width: 5%"
+                                >
+                                </Column>
+                                <Column
+                                    bodyStyle="text-align:center"
+                                    v-if="hasRole('Super Admin') || can('delete price')"
+                                    style="width: 5%"
+                                >
+                                    <template #body="{ data }">
+                                        <Button
+                                            @click="deletePrice(data.id)"
+                                            class="p-button p-component p-button-icon-only p-button-secondary p-button-rounded p-button-text p-datatable-row-editor-init"
+                                            label="Button"
+                                        >
+                                            <font-awesome-icon :icon="['far', 'trash-can']" />
+                                        </Button>
+                                    </template>
+                                </Column>
+                            </DataTable>
+                        </div>
+                        <div
+                            class="mb-3 d-flex justify-content-end"
+                            v-if="hasRole('Super Admin') || can('create price')"
+                        >
+                            <button
+                                class="btn btn-primary"
+                                @click="() => (showModal = !showModal)"
+                                v-if="prices.length == 0"
+                            >
+                                Add Price
+                            </button>
+                        </div>
+                        <Dialog
+                            v-model:visible="showModal"
+                            modal
+                            :style="{ width: '50rem', marginTop: '4rem' }"
+                            :breakpoints="{ '1199px': '75vw', '575px': '90vw' }"
+                            :draggable="false"
+                            position="top"
+                        >
+                            <template #header>
+                                <h3>Add new Price</h3>
+                            </template>
+                            <div class="mb-3">
+                                <label class="form-label">Code:</label>
+                                <input class="form-control" v-model="price.code" />
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Cost</label>
+                                <input class="form-control" type="number" v-model="price.cost" />
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Price</label>
+                                <input class="form-control" type="number" v-model="price.net" />
+                            </div>
+
+                            <div class="d-flex justify-content-end">
+                                <button class="btn btn-secondary me-2" @click="() => (showModal = !showModal)">
+                                    Cancel
+                                </button>
+                                <button class="btn btn-primary" @click="savePrice()">Save</button>
+                            </div>
+                        </Dialog>
+                    </div>
+                </div>
+            </tab>
+            <tab title="Linked Products">
+                <RelationDatatable :options="options"></RelationDatatable>
+            </tab>
+        </tabs>
     </AuthenticatedLayout>
 </template>

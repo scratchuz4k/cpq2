@@ -17,7 +17,6 @@ import { can, hasRole } from '@/Composables/useAuth.js';
 import pluralize from 'pluralize';
 import { exportData } from '@/Composables/export.js';
 import { DatatableOptions } from './DatatableOptions';
-import Datatable from './Datatable.vue';
 
 const slots = useSlots();
 const usedSlots = Object.keys(slots);
@@ -49,8 +48,8 @@ const getData = async () => {
         ...form,
         page: form.page,
         columns: props.options.columns
-            .filter((column) => column.data !== 'actions')
-            .map((x) => x.data)
+            .filter((data) => data.column !== 'actions')
+            .map((x) => x.column)
             .join(','),
         filters: [...form.filters.filter((x) => x.value != null), ...props.options.query],
         search: form.search
@@ -80,6 +79,7 @@ const handlePaginator = (ev) => {
 const clearFilters = () => {
     form.filters.forEach((x) => (x.value = null));
 };
+
 const deleteRecord = async (id) => {
     swal.fire({
         title: 'Are you sure?'
@@ -157,7 +157,7 @@ watch(
 );
 
 watch(
-    [form.filters, form.search],
+    () => [form.filters, form.search],
     _.debounce(function () {
         form.page = 1;
         getData();
@@ -178,50 +178,54 @@ getData();
             </button>
         </div>
     </div>
-    <div class="d-flex justify-content-between">
-        <div>
-            <Button
-                :severity="activeFilters ? 'primary' : 'secondary'"
-                type="button"
-                :class="['me-2']"
-                @click="() => (activeFilters = !activeFilters)"
-            >
-                <font-awesome-icon :icon="['fas', 'filter']" />
-            </Button>
-            <Button
-                v-if="activeFilters"
-                type="button"
-                :class="['me-2']"
-                :severity="form.filters.find((x) => x.value) ? 'primary' : 'secondary'"
-                @click="clearFilters()"
-            >
-                <font-awesome-icon :icon="['fas', 'eraser']" />
-            </Button>
-            <Button
-                v-if="has_export_permission"
-                :disabled="!items.length || exportDisabled"
-                :severity="'secondary'"
-                :class="['me-2']"
-                @click="getExportData()"
-                type="button"
-            >
-                <font-awesome-icon :icon="['fas', 'file-export']" />
-            </Button>
-        </div>
+    <div class="datatable-header d-flex justify-content-between p-3">
         <IconField>
             <InputIcon>
                 <font-awesome-icon :icon="['fas', 'search']" />
             </InputIcon>
-            <InputText id="datatable-search" v-model="global" type="search" placeholder="Keyword Search" />
+            <InputText id="datatable-search" v-model="form.search" type="search" placeholder="Search" size="small" />
         </IconField>
+        <div class="d-flex">
+            <button
+                type="button"
+                class="btn btn-sm d-flex justify-content-center align-items-center p-0 px-2 me-2"
+                :class="[activeFilters ? 'btn-primary' : 'btn-outline-primary']"
+                @click="() => (activeFilters = !activeFilters)"
+            >
+                <font-awesome-icon :icon="['fas', 'filter']" class="me-1" />
+                <p class="small">Filter</p>
+            </button>
+            <button
+                v-if="activeFilters"
+                type="button"
+                class="btn btn-outline-primary btn-sm d-flex justify-content-center align-items-center p-0 px-2 me-2"
+                :severity="form.filters.find((x) => x.value) ? 'primary' : 'secondary'"
+                @click="clearFilters()"
+            >
+                <font-awesome-icon :icon="['fas', 'eraser']" class="me-1" />
+                <p class="small">Clear</p>
+            </button>
+            <button
+                v-if="has_export_permission"
+                :disabled="!items.length || exportDisabled"
+                :severity="'secondary'"
+                class="btn btn-outline-primary btn-sm d-flex justify-content-center align-items-center p-0 px-2 me-2"
+                @click="getExportData()"
+                type="button"
+            >
+                <font-awesome-icon :icon="['fas', 'file-export']" class="me-1" />
+                <p class="small">Export</p>
+            </button>
+        </div>
     </div>
-    <div v-if="items.length" style="max-height: 60vh; overflow: auto">
-        <table :id="props.options.id" class="table">
+    <div v-if="items.length" class="datatable-content">
+        <table :id="props.options.id">
             <thead>
                 <tr>
                     <th
                         v-for="(data, key) in props.options.columns.filter((x) => !x.hide)"
                         :key="key"
+                        class="datatable-table-header"
                         :class="[
                             'datatable-col',
                             data.sticky ? `datatable-col-sticky datatable-col-sticky-${key + 1}` : '',
@@ -234,8 +238,8 @@ getData();
                             v-if="data.column != 'actions'"
                             class="d-flex justify-content-between align-items-center w-100 pe-3 position-relative"
                         >
-                            <b
-                                class="column-title sortable d-inline-flex align-items-center"
+                            <p
+                                class="d-inline-flex align-items-center"
                                 @click="sortBy(data.column)"
                                 :style="{
                                     textDecoration: data.column == form.orderBy ? 'underline' : 'none'
@@ -248,7 +252,7 @@ getData();
                                         <font-awesome-icon v-else :icon="['fas', 'sort-up']" />
                                     </template>
                                 </span>
-                            </b>
+                            </p>
                             <!-- <DatatableFilter v-if="activeFilters"></DatatableFilter> -->
                         </div>
                     </th>
@@ -264,6 +268,7 @@ getData();
                         v-for="(data, key) in props.options.columns.filter((x) => !x.hide)"
                         :style="data.style"
                         :key="key"
+                        class="datatable-table-column"
                         :class="[
                             'datatable-col',
                             data.sticky ? `datatable-col-sticky datatable-col-sticky-${key + 1}` : '',
@@ -337,9 +342,26 @@ getData();
     </Paginator>
 </template>
 <style scoped>
+.datatable-header {
+    background-color: white;
+}
+.datatable-content {
+    background-color: white;
+    max-height: 60vh;
+    overflow: auto;
+}
+.datatable-table-header {
+    background-color: #e8e8e8;
+    border-top: 1px solid #dee2e6;
+}
+.datatable-table-column {
+    background-color: white;
+}
+
 .datatable-col {
     padding: 0.75rem;
     vertical-align: middle;
+    border-bottom: 1px solid #dee2e6;
 }
 
 .datatable-col-sticky {
@@ -351,24 +373,21 @@ getData();
 .datatable-col-sticky-1 {
     position: sticky;
     left: 0;
-    background: #fff;
     z-index: 2;
 }
 .datatable-col-sticky-2 {
     position: sticky;
     left: 150px;
-    background: #fff;
     z-index: 2;
 }
 .datatable-col-sticky-3 {
     position: sticky;
     left: 300px;
-    background: #fff;
     z-index: 2;
 }
 
 .datatable-col-last-sticky {
-    border-right: 1px solid #dee2e6;
-    box-shadow: 2px 0 8px -2px rgba(0, 0, 0, 0.15);
+    border-right: 2px solid #dee2e6;
+    box-shadow: 5px 0px 13.8px 0px #d4d4d4f2;
 }
 </style>
