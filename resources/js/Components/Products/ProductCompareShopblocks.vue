@@ -21,7 +21,7 @@
                 </div>
                 <div v-for="(item, index) in selectedItems" class="w-20">
                     <div class="d-flex align-items-center justify-content-between h-100">
-                        <div class="ms-2">
+                        <div v-if="item.primary_image">
                             <img
                                 :src="item.primary_image ?? '/images/no_image.png'"
                                 style="object-fit: contain"
@@ -31,11 +31,11 @@
                                 }"
                             />
                         </div>
-                        <div class="w-100">
+                        <div class="w-100 ms-2">
                             <p class="bold truncate-1-line">
                                 {{ item.name }}
                             </p>
-                            <p class="truncate-1-line">{{ item.sku }}</p>
+                            <p class="truncate-1-line" :title="item.sku">{{ item.sku }}</p>
                         </div>
                         <div class="me-2">
                             <button @click="() => removeCompareItem(index)" class="btn">
@@ -49,14 +49,14 @@
         <div
             v-if="show"
             class="container product-info"
-            style="overflow-y: scroll; overflow-x: hidden; height: calc(100% - 80px)"
+            style="overflow-y: scroll; overflow-x: hidden; height: calc(100% - 80px - 100px)"
         >
             <div class="panel h-100">
                 <h3 class="mb-3">General</h3>
                 <table class="table table-bordered">
                     <tbody>
                         <tr>
-                            <th>Sku</th>
+                            <th style="background: whitesmoke; border-right: 1px solid #dee2e6">Sku</th>
                             <td>
                                 <template v-if="selectedItems.length >= 1">
                                     {{ selectedItems[0].sku }}
@@ -79,7 +79,7 @@
                             </td>
                         </tr>
                         <tr>
-                            <th>Name</th>
+                            <th style="background: whitesmoke; border-right: 1px solid #dee2e6">Name</th>
                             <td>
                                 <template v-if="selectedItems.length >= 1">
                                     {{ selectedItems[0].name }}
@@ -102,7 +102,7 @@
                             </td>
                         </tr>
                         <tr>
-                            <th>Description</th>
+                            <th style="background: whitesmoke; border-right: 1px solid #dee2e6">Description</th>
                             <td>
                                 <div
                                     class="truncate-3-lines"
@@ -136,7 +136,7 @@
                 </table>
                 <div class="d-flex justify-content-between align-items-end mt-5 py-3">
                     <h3>Features</h3>
-                    <div v-if="temp.length">
+                    <div>
                         <IconField>
                             <InputIcon>
                                 <font-awesome-icon icon="fas fa-search" />
@@ -150,14 +150,15 @@
                         </IconField>
                     </div>
                 </div>
+
                 <table v-if="temp.length" class="table table-bordered">
                     <tbody>
                         <template v-for="group in temp">
                             <tr>
-                                <th colspan="5" style="background: whitesmoke">
+                                <th colspan="5" class="sticky-row">
                                     <div @click="() => (group.show = !group.show)" style="cursor: pointer">
                                         <div class="d-flex justify-content-between w-100">
-                                            <p>{{ group.name }}</p>
+                                            <p style="width: 200px">{{ group.name }}</p>
                                             <div class="px-2">
                                                 <font-awesome-icon
                                                     class="w-100"
@@ -177,7 +178,9 @@
                                 </th>
                             </tr>
                             <tr v-if="group.show" v-for="row in group.features">
-                                <th>{{ row.label }}</th>
+                                <th style="background: whitesmoke; border-right: 1px solid #dee2e6">
+                                    <p style="width: 200px">{{ row.label }}</p>
+                                </th>
                                 <td>{{ row.items[0] }}</td>
                                 <td>{{ row.items[1] }}</td>
                                 <td>{{ row.items[2] }}</td>
@@ -187,11 +190,12 @@
                     </tbody>
                 </table>
                 <div v-else>No Features Available</div>
+
                 <h3 class="mb-3 mt-5">Prices</h3>
-                <table class="table table-bordered">
+                <table class="table table-bordered mb-5">
                     <tbody>
                         <tr>
-                            <th>Stock</th>
+                            <th style="background: whitesmoke; border-right: 1px solid #dee2e6">Stock</th>
                             <td>
                                 <template v-if="selectedItems.length >= 1">
                                     {{ selectedItems[0].stock }}
@@ -214,7 +218,7 @@
                             </td>
                         </tr>
                         <tr>
-                            <th>Net</th>
+                            <th style="background: whitesmoke; border-right: 1px solid #dee2e6">Net</th>
                             <td>
                                 <template v-if="selectedItems.length >= 1">
                                     {{ format.GBP(selectedItems[0].price.net_spa) }}</template
@@ -244,7 +248,7 @@
 </template>
 <script setup>
 import queryString from 'qs';
-import { computed, ref, watch } from 'vue';
+import { ref, watch } from 'vue';
 import _ from 'lodash';
 import IconField from 'primevue/iconfield';
 import InputIcon from 'primevue/inputicon';
@@ -334,10 +338,7 @@ watch(searchInput, () => {
     getFeaturesTable();
 });
 
-watch(selectedItems, () => {
-    if (!selectedItems.length) {
-        return;
-    }
+watch(selectedItems.value, () => {
     document.body.style.overflow = show.value ? 'hidden' : 'auto';
     getFeatures();
 });
@@ -362,8 +363,32 @@ getFeatures();
 .table tbody th {
     width: 20%;
 }
+
 .table tbody td {
     width: 20%;
+    word-break: break-word;
+    overflow-wrap: break-word;
+}
+
+.sticky-row {
+    background: whitesmoke;
+    position: sticky;
+    right: 0;
+    top: 0;
+    z-index: 3;
+    border-bottom: 1px solid #dee2e6;
+    border-top: 1px solid #dee2e6;
+}
+.sticky-row:after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -1px;
+    width: 100%;
+    height: 1px;
+    background: #dee2e6;
+    z-index: 1;
+    overflow: hidden;
 }
 
 .w-20 {
