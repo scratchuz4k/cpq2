@@ -312,6 +312,23 @@ body {
         border: 0;
     }
 
+    h1 {
+        margin-bottom: 30px;
+    }
+
+    h1 span {
+        color: var(--primary-light);
+    }
+
+    h2 {
+        font-size: 18px;
+        font-weight: bold;
+    }
+
+    .bold {
+        font-weight: bold;
+    }
+
     .info-box-primary {
         background-color: var(--color-purple-light);
         border-left: var(--color-purple-dark) 5px solid;
@@ -319,6 +336,10 @@ body {
         .fa,
         .svg-inline--fa {
             color: var(--color-purple-dark);
+        }
+
+        h4 {
+            font-size: 18px;
         }
 
         p {
@@ -333,6 +354,10 @@ body {
         .fa,
         .svg-inline--fa {
             color: var(--color-blue);
+        }
+
+        h4 {
+            font-size: 18px;
         }
 
         p {

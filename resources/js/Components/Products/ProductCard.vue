@@ -147,23 +147,19 @@ watch(searchInput, () => {
             :class="[!showAsColumn ? 'w-100 d-flex ' : 'p-3']"
             style="position: relative; top: 0; right: 0"
         >
-            <div :class="[!showAsColumn ? 'me-4' : '']">
+            <div v-if="proxyValue.primary_image" :class="[!showAsColumn ? 'me-4' : '']">
                 <div class="d-flex justify-content-center align-items-middle">
-                    <template v-if="proxyValue.primary_image">
-                        <a class="product-gallery-link" @click="() => (displayBasic = !displayBasic)">
-                            <img
-                                :src="proxyValue.primary_image"
-                                style="object-fit: contain"
-                                :style="{
-                                    width: '140px',
-                                    height: '140px'
-                                }"
-                            />
-                            <span
-                                ><font-awesome-icon :icon="['fas', 'magnifying-glass']" style="font-size: 1.5rem"
-                            /></span>
-                        </a>
-                    </template>
+                    <a class="product-gallery-link" @click="() => (displayBasic = !displayBasic)">
+                        <img
+                            :src="proxyValue.primary_image"
+                            style="object-fit: contain"
+                            :style="{
+                                width: '140px',
+                                height: '140px'
+                            }"
+                        />
+                        <span><font-awesome-icon :icon="['fas', 'magnifying-glass']" style="font-size: 1.5rem" /></span>
+                    </a>
                 </div>
             </div>
 
@@ -173,13 +169,13 @@ watch(searchInput, () => {
                     :class="[showAsColumn ? 'mt-3' : '0']"
                     :style="{ flexDirection: showAsColumn ? 'column' : 'row', gap: showAsColumn ? '10px' : '0' }"
                 >
-                    <h2
+                    <h3
                         v-if="!showAsColumn"
                         class="bold truncate-1-lines m-0"
                         :class="[showAsColumn ? 'truncate-2-lines mb-2' : 'me-3']"
                     >
                         {{ proxyValue.name }}
-                    </h2>
+                    </h3>
                     <p v-else class="truncate-2-lines bold">{{ proxyValue.name }}</p>
                     <div v-if="proxyValue.stock > 0">
                         <p class="badge-success rounded-5 bold text-center" style="white-space: nowrap">
@@ -396,9 +392,12 @@ watch(searchInput, () => {
     width: 70%;
 }
 
+h3 {
+    font-size: 22px;
+}
+
 .product-description {
     font-size: 14px;
-    font-weight: 500;
 }
 
 .shopblock-product:hover {
@@ -455,7 +454,7 @@ watch(searchInput, () => {
     background-color: var(--bg-badge-success);
     opacity: 80%;
     padding: 4px 16px;
-    font-size: 14px;
+    font-size: 12px;
     color: var(--text-badge-success);
 }
 </style>

@@ -1,17 +1,5 @@
 <template>
-    <div
-        :style="{ height: show ? '100vh' : '80px', bottom: show ? '0' : '70px' }"
-        style="
-            position: sticky;
-            left: 0;
-            right: 0;
-            background: white;
-            z-index: 500;
-            transition: height 0.5s ease;
-            border-top: 2px solid var(--color-purple);
-            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
-        "
-    >
+    <div class="compare-bar" :style="{ height: show ? '100vh' : '80px', bottom: show ? '0' : '73px' }">
         <div class="container" style="height: 80px; cursor: pointer">
             <div class="row h-100">
                 <div class="w-20" @click="() => (show = !show)">
@@ -360,6 +348,17 @@ watch(show, () => {
 getFeatures();
 </script>
 <style scoped>
+.compare-bar {
+    position: sticky;
+    left: 0;
+    right: 0;
+    background: white;
+    z-index: 999;
+    transition: height 0.5s ease;
+    border-top: 1px solid #e0e0e0;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+}
+
 .table tbody th {
     width: 20%;
 }
