@@ -151,9 +151,9 @@
                     </div>
                 </div>
 
-                <table v-if="hasFeatures.value" class="table table-bordered">
+                <table v-if="comparatorGroups.length > 0" class="table table-bordered">
                     <tbody>
-                        <template v-for="group in getFeaturesTable(selectedItems)">
+                        <template v-for="group in comparatorGroups">
                             <tr>
                                 <th colspan="5" class="sticky-row">
                                     <div @click="() => (group.show = !group.show)" style="cursor: pointer">
@@ -189,7 +189,7 @@
                         </template>
                     </tbody>
                 </table>
-                <div v-else>No Features Available</div>
+                <div v-else>No Features available</div>
 
                 <h3 class="mb-3 mt-5">Prices</h3>
                 <table class="table table-bordered mb-5">
@@ -247,12 +247,12 @@
     </div>
 </template>
 <script setup>
-import { ref, watch } from 'vue';
+import { ref, watch, watchEffect } from 'vue';
 import _ from 'lodash';
 import IconField from 'primevue/iconfield';
 import InputIcon from 'primevue/inputicon';
 import InputText from 'primevue/inputtext';
-import { selectedItems } from '@/Composables/useComparator';
+import { selectedItems, comparatorGroups, getFeaturesTable } from '@/Composables/useComparator';
 
 const props = defineProps({
     index: Number
@@ -260,45 +260,6 @@ const props = defineProps({
 
 const searchInput = ref('');
 const show = ref(false);
-const hasFeatures = ref(false);
-
-const getFeaturesTable = (items) => {
-    let temp = [];
-    hasFeatures.value = false;
-    items.forEach((x, i) => {
-        if (!x.features) {
-            return;
-        }
-        let lowerSearch = searchInput.value.toLowerCase();
-        let features = x.features.filter((obj) => {
-            return (
-                obj.dimension.value.toLowerCase().includes(lowerSearch) ||
-                obj.dimension_type.label.toLowerCase().includes(lowerSearch)
-            );
-        });
-
-        features.forEach((e) => {
-            let gIndex = temp.findIndex((t) => t.name == e.dimension_type.group);
-            if (gIndex == -1) {
-                temp.push({ name: e.dimension_type.group, show: true, features: [] });
-                gIndex = temp.length - 1;
-            }
-
-            let index = temp[gIndex].features.findIndex((t) => t.key == e.dimension_type.key);
-            if (index == -1) {
-                temp[gIndex].features.push({
-                    key: e.dimension_type.key,
-                    label: e.dimension_type.label,
-                    items: {}
-                });
-                index = temp[gIndex].features.length - 1;
-            }
-            temp[gIndex].features[index].items[i] = e.dimension.value;
-        });
-    });
-    hasFeatures.value = temp.length > 0;
-    return temp;
-};
 
 const removeCompareItem = (index) => {
     selectedItems.value.splice(index, 1);
@@ -308,7 +269,7 @@ const removeCompareItem = (index) => {
 };
 
 watch(searchInput, () => {
-    getFeaturesTable(selectedItems.value);
+    getFeaturesTable(searchInput.value);
 });
 
 watch(show, () => {

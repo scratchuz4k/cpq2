@@ -25,7 +25,8 @@ Sentry.setUser({
 defineProps({
     quote: Object,
     order: Object,
-    showStepActionBar: Boolean
+    showStepActionBar: Boolean,
+    showComparator: Boolean
 });
 
 const activeTab = ref(window.location.pathname.replace(/^\/|\/$/g, ''));
@@ -152,7 +153,7 @@ const hasActionBarContent = computed(() => {
             <slot />
         </div>
     </main>
-    <ProductCompareShopblocks v-if="selectedItems.length"></ProductCompareShopblocks>
+    <ProductCompareShopblocks v-if="showComparator && selectedItems.length"></ProductCompareShopblocks>
     <StepActionBar v-if="showStepActionBar && (hasActionBarContent || actionBarButtons.length)">
         <slot name="actionBar"></slot>
     </StepActionBar>

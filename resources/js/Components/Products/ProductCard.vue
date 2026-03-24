@@ -306,7 +306,7 @@ watch(searchInput, () => {
             <div v-if="loadingFeatures" class="row">
                 <div class="col text-center">Loading...</div>
             </div>
-            <div v-else-if="temp.length" class="d-flex justify-content-between align-items-end mb-3 mt-5">
+            <div v-else class="d-flex justify-content-between align-items-end mb-3 mt-5">
                 <h3>Features</h3>
                 <div>
                     <IconField>
@@ -323,7 +323,7 @@ watch(searchInput, () => {
                 </div>
             </div>
 
-            <div class="row">
+            <div v-if="temp.length" class="row">
                 <div class="col">
                     <table class="table">
                         <tbody>
@@ -360,6 +360,7 @@ watch(searchInput, () => {
                     </table>
                 </div>
             </div>
+            <div v-else>No Features Available</div>
         </Dialog>
 
         <Galleria

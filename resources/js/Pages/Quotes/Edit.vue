@@ -27,7 +27,7 @@ const items = ref([
 
 <template>
     <Head :title="'Quote #' + quote.id" />
-    <AuthenticatedLayout :quote="quote" :show-step-action-bar="true">
+    <AuthenticatedLayout :quote="quote" :show-step-action-bar="true" :show-comparator="true">
         <Header title="Create a quote" :breadcrumbs="items"></Header>
         <component
             v-if="Object.keys(solutionsViews).includes(quote.solution_type.code)"
