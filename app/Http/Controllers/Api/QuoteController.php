@@ -104,10 +104,6 @@ class QuoteController extends BaseController
      */
     public function destroy(Quote $quote)
     {
-        if ($quote->isBlocked()) {
-            return handleBlockedQuote();
-        }
-
         $quote->delete();
     }
 

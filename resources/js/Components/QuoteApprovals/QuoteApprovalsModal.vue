@@ -1,19 +1,5 @@
 <template>
     <div
-        v-if="['quote'].includes(quote.status.toLowerCase()) && has_quote_approval == '0'"
-        class="approvals-group-button flex ms-2 p-0"
-    >
-        <button id="quote-approval-history" @click="sendToOrder()" class="btn btn-primary">
-            <font-awesome-icon
-                v-if="quote.items.some((x) => !x.is_margin_valid)"
-                :icon="['fas', 'thumbs-up']"
-                class="me-2"
-            />
-            <font-awesome-icon v-else :icon="['fas', 'thumbtack']" class="me-2" />
-            <span> Send to Order </span>
-        </button>
-    </div>
-    <div
         class="approvals-group-button flex ms-2 p-0"
         v-if="
             ['quote', 'pending', 'approved', 'completed', 'rejected'].includes(quote.status.toLowerCase()) &&
@@ -32,41 +18,21 @@
             Workflow History
         </button>
 
-        <template v-else>
-            <button
-                id="quote-approval-start"
-                v-if="quote.status.toLowerCase() === 'approved'"
-                class="btn btn-primary"
-                :disabled="items.some((x) => x.status.toLowerCase() === 'pending')"
-                @click="sendToOrder()"
-                :style="{
-                    borderRadius: canToggleDialog() ? '5px 0 0 5px' : '5px'
-                }"
-            >
-                <font-awesome-icon
-                    v-if="quote.items.some((x) => !x.is_margin_valid)"
-                    :icon="['fas', 'thumbs-up']"
-                    class="me-2"
-                />
-                <font-awesome-icon v-else :icon="['fas', 'thumbtack']" class="me-2" />
-                <span> Send to Order </span>
-            </button>
-
-            <button
-                id="quote-approval-start"
-                v-else
-                class="btn btn-primary"
-                :disabled="
-                    items.some((x) => x.status.toLowerCase() === 'pending') ||
-                    (!can('create quote_approval') && !hasRole('Super Admin'))
-                "
-                @click="sendToOrder()"
-                style="border-radius: 5px 0 0 5px"
-            >
-                <font-awesome-icon :icon="['fas', 'thumbs-up']" class="me-2" />
-                <span>{{ getButtonText() }}</span>
-            </button>
-        </template>
+        <button
+            v-else
+            id="quote-approval-start"
+            class="btn btn-primary"
+            :disabled="
+                items.some((x) => x.status.toLowerCase() === 'pending') ||
+                (!can('create quote_approval') && !hasRole('Super Admin'))
+            "
+            @click="sendToOrder()"
+            style="border-radius: 5px 0 0 5px"
+        >
+            <font-awesome-icon v-if="getButtonText() == 'Send to Order'" :icon="['fas', 'thumbtack']" class="me-2" />
+            <font-awesome-icon v-else :icon="['fas', 'thumbs-up']" class="me-2" />
+            <span>{{ getButtonText() }}</span>
+        </button>
 
         <button
             id="quote-approval-show-dialog"
@@ -200,9 +166,10 @@ const meta = reactive({
     total: 0,
     first: 1
 });
-const has_quote_approval = tenant.configurations.has_quote_approval ?? '0';
+
+const has_quote_approval = tenant.configurations.has_quote_approval == '1';
 const quote_approval_flow = tenant.configurations.quote_approval_flow ?? 'Internal Review';
-const has_client_approval = !!tenant.configurations.has_client_approval ?? false;
+const has_client_approval = tenant.configurations.has_client_approval == '1';
 
 const getApprovals = async () => {
     let query = queryString.stringify({
@@ -231,21 +198,21 @@ const updateQuoteApproval = async (item, status) => {
         showDialog.value = !showDialog.value;
         getApprovals();
         await getQuote(quote.id);
-        //window.location = '/dashboard';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (ex) {
         notyf.error(ex.response?.data?.message ?? 'Something went wrong!');
     }
 };
 
 const sendToOrder = async () => {
-    if (has_quote_approval == '0') {
+    if (!has_quote_approval) {
         try {
             let res = await axios.put(`/api/quotes/${quote.id}`, {
                 status: 'COMPLETED'
             });
             await getQuote(quote.id);
             notyf.success(`Quote completed with success!`);
-            //window.location = '/dashboard';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         } catch (ex) {
             notyf.error(ex.response?.data?.message ?? 'Something went wrong!');
         }
@@ -262,8 +229,10 @@ const sendToOrder = async () => {
             });
             await getQuote(quote.id);
             getApprovals();
-            notyf.success(`Quote successfully sent for approval!`);
-            //window.location = '/dashboard';
+            if (quote.status.toLowerCase() !== 'approved') {
+                notyf.success(`Quote successfully sent for approval!`);
+            }
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         } catch (ex) {
             notyf.error(ex.response?.data?.message ?? 'Something went wrong!');
         }
@@ -274,7 +243,7 @@ const sendToOrder = async () => {
             let res = await axios.post(`/api/quotes/${quote.id}/complete`);
             await getQuote(quote.id);
             notyf.success(`Quote completed with success!`);
-            //window.location = '/dashboard';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         } catch (ex) {
             notyf.error(ex.response?.data?.message ?? 'Something went wrong!');
         }
@@ -282,7 +251,7 @@ const sendToOrder = async () => {
 };
 
 const canToggleDialog = () => {
-    return has_quote_approval === '1' && (can('viewAny quote_approval') || hasRole('Super Admin'));
+    return has_quote_approval && (can('viewAny quote_approval') || hasRole('Super Admin'));
 };
 
 const toggleDialog = () => {
@@ -300,29 +269,47 @@ const handlePaginator = (ev) => {
 };
 
 const getButtonText = () => {
-    if (quote_approval_flow == 'Margin review' && !quote.items.some((x) => x.is_margin_valid)) {
+    if (!has_quote_approval) {
         return 'Send to Order';
     }
 
-    let lastApproval = items.value.length ? items.value[0] : null;
+    const quoteStatus = quote.status.toLowerCase();
+    const hasMarginInvalid = quote.items.some((x) => !x.is_margin_valid);
+    const lastApproval = items.value.length ? items.value[0] : null;
+    const lastApprovalStatus = lastApproval ? lastApproval.status.toLowerCase() : null;
+    const lastApprovalFlow = lastApproval ? lastApproval.flow : null;
 
-    if (!lastApproval) {
-        return 'Send to Approval';
+    // Pending quote status
+    if (quoteStatus === 'pending' && lastApprovalStatus === 'pending') {
+        return lastApprovalFlow === 'Client review' ? 'Waiting Client Approval' : 'Waiting for Approval';
+    }
+    if (quoteStatus === 'approved') {
+        return 'Send to Order';
     }
 
-    if (has_client_approval && lastApproval.status.toLowerCase() === 'approved') {
-        return 'Send to Client Approval';
-    }
+    // Margin review flow
+    if (quote_approval_flow === 'Margin review') {
+        if (hasMarginInvalid) {
+            if (lastApproval && lastApprovalStatus === 'rejected') return 'Send to Approval';
 
-    if (quote.status.toLowerCase() == 'pending') {
-        if (lastApproval.flow === 'Client review') {
-            return 'Waiting Client Approval';
+            if (lastApproval && lastApprovalStatus === 'approved') {
+                if (lastApprovalFlow === 'Client review') return 'Send to Order';
+                return !has_client_approval ? 'Send to Order' : 'Send to Client Approval';
+            }
+
+            return 'Send to Approval';
         } else {
-            return 'Waiting for Approval';
+            if (!has_client_approval) return 'Send to Order';
+            return 'Send to Client Approval';
         }
     }
 
-    return 'Send to Approval';
+    // Internal review flow
+    if (quote_approval_flow === 'Internal review') {
+        if (!lastApproval) return 'Send to Approval';
+        if (has_client_approval && lastApprovalStatus === 'approved') return 'Send to Client Approval';
+        return 'Send to Approval';
+    }
 };
 
 onMounted(() => {

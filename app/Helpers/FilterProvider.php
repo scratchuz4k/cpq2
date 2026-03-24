@@ -84,7 +84,16 @@ class FilterProvider
             case 'contains':
                 return $data->filter(fn ($item) => Str::contains($item[$column], $value));
             case 'in':
-                return $data->whereIn($column, $value);
+                $lowercaseSearch = is_array($value) ? array_map('strtolower', $value) : strtolower($value);
+
+                return $data->filter(function ($item) use ($column, $lowercaseSearch) {
+                    $column = strtolower(is_array($item) ? $item[$column] : $item->{$column});
+                    if (is_array($lowercaseSearch)) {
+                        return in_array($column, $lowercaseSearch);
+                    }
+
+                    return $column == $lowercaseSearch;
+                });
             case 'not_in':
                 return $data->whereNotIn($column, $value);
             case 'between':

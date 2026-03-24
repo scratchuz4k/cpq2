@@ -62,6 +62,8 @@
     --table-header-dark-grey: #646464;
     --p-breadcrumb-background: transparent !important;
     --p-breadcrumb-padding: 0.5rem 0 !important;
+    --bg-badge-success: #d6f5d6;
+    --text-badge-success: #145214;
 }
 
 :root {
@@ -147,7 +149,9 @@ body {
         border-width: 0.175rem;
     }
 
-    .btn-primary:hover {
+    .btn-primary:hover,
+    .btn-primary:active,
+    .btn-primary:focus-visible {
         background-color: var(--color-purple-dark);
         border-color: var(--color-purple-dark);
     }
@@ -158,7 +162,9 @@ body {
         color: var(--color-purple);
         font-weight: 600;
 
-        &:hover {
+        &:hover,
+        &:active,
+        &:focus-visible {
             background-color: var(--color-purple);
             color: var(--white);
         }
@@ -170,7 +176,9 @@ body {
         font-weight: 600;
     }
 
-    .btn-secondary:hover {
+    .btn-secondary:hover,
+    .btn-secondary:active,
+    .btn-secondary:focus-visible {
         background-color: var(--secondary-dark-lighter);
         border-color: var(--secondary-dark);
     }
@@ -181,7 +189,9 @@ body {
         color: var(--secondary-dark);
         font-weight: 600;
 
-        &:hover {
+        &:hover,
+        &:active,
+        &:focus-visible {
             background-color: var(--secondary-dark);
             color: var(--white);
         }
@@ -197,7 +207,9 @@ body {
         background-color: var(--color-pink);
         border-color: var(--color-pink);
 
-        &:hover {
+        &:hover,
+        &:active,
+        &:focus-visible {
             background-color: var(--color-pink-light);
             border-color: var(--color-pink-light);
         }
@@ -1049,6 +1061,13 @@ body {
         background-color: var(--color-purple);
         border-color: var(--color-purple);
         font-weight: bold;
+
+        &:hover,
+        &:active,
+        &:focus-visible {
+            background-color: var(--color-purple-dark);
+            border-color: var(--color-purple-dark);
+        }
     }
 
     .btn-primary:not(:disabled):hover {
@@ -1060,7 +1079,9 @@ body {
         border-color: var(--primary-light);
         color: var(--primary-light);
 
-        &:hover {
+        &:hover,
+        &:active,
+        &:focus-visible {
             background-color: var(--primary-light);
             color: var(--white);
         }
@@ -1070,6 +1091,13 @@ body {
         background-color: var(--secondary-dark);
         border-color: var(--secondary-dark);
         font-weight: bold;
+
+        &:hover,
+        &:active,
+        &:focus-visible {
+            background-color: var(--secondary-dark-lighter);
+            border-color: var(--secondary-dark);
+        }
     }
 
     .btn-secondary:not(:disabled):hover {
@@ -1175,12 +1203,6 @@ body {
 
 .notyf-success .notyf__dismiss {
     margin-right: auto !important;
-}
-
-#sentry-feedback {
-    --font-family: var(--font-primary);
-    --button-primary-background: var(--color-purple);
-    --button-primary-hover-background: var(--color-purple-dark);
 }
 
 .file-card {
@@ -1475,4 +1497,35 @@ body {
     border-radius: var(--radius);
     padding: 20px;
     margin-bottom: 20px;
+}
+
+.truncate-1-lines {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 36px; /* or a fixed px value, e.g. 24px */
+    height: calc(36px * 1); /* 3 lines × line-height */
+}
+
+.truncate-2-lines {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 24px; /* or a fixed px value, e.g. 24px */
+    height: calc(24px * 2); /* 3 lines × line-height */
+}
+
+.truncate-3-lines {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.5em; /* or a fixed px value, e.g. 24px */
+    height: calc(1.5em * 3); /* 3 lines × line-height */
+    font-size: 14px !important;
 }

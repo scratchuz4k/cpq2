@@ -9,7 +9,13 @@
         >
             <font-awesome-icon :icon="['fas', 'minus']" />
         </button>
-        <input :id="'input-' + props.id + '-quantity'" type="number" class="input-quantity" v-model="proxyValue" />
+        <input
+            :id="'input-' + props.id + '-quantity'"
+            type="number"
+            :value="proxyValue"
+            class="input-quantity"
+            @input="checkValue($event)"
+        />
         <button
             :id="'btn-' + props.id + '-add-1'"
             class="btn-quantity btn-add-quantity"
@@ -22,6 +28,7 @@
     </div>
 </template>
 <script setup>
+import _ from 'lodash';
 import { computed } from 'vue';
 const props = defineProps({
     id: String,
@@ -39,6 +46,15 @@ const proxyValue = computed({
         emit('change', val);
     }
 });
+
+const checkValue = (event) => {
+    const temp = parseInt(event.target.value);
+    if (isNaN(temp)) {
+        proxyValue.value = 0;
+        return;
+    }
+    proxyValue.value = temp;
+};
 </script>
 <style scoped>
 .input-quantity {
