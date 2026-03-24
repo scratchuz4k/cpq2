@@ -189,7 +189,7 @@
                         </template>
                     </tbody>
                 </table>
-                <div v-else>No Features available</div>
+                <div v-else>No Features Available</div>
 
                 <h3 class="mb-3 mt-5">Prices</h3>
                 <table class="table table-bordered mb-5">
@@ -302,7 +302,7 @@ watch(show, () => {
     background: whitesmoke;
     position: sticky;
     right: 0;
-    top: 0;
+    top: -1px;
     z-index: 3;
     border-bottom: 1px solid #dee2e6;
     border-top: 1px solid #dee2e6;

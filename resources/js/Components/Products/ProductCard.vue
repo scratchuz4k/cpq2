@@ -477,7 +477,7 @@ h3 {
     background: whitesmoke;
     position: sticky;
     right: 0;
-    top: 0;
+    top: -1px;
     z-index: 3;
     border-bottom: 1px solid #dee2e6;
     border-top: 1px solid #dee2e6;
