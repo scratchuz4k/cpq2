@@ -229,7 +229,9 @@ const sendToOrder = async () => {
             });
             await getQuote(quote.id);
             getApprovals();
-            notyf.success(`Quote successfully sent for approval!`);
+            if (quote.status.toLowerCase() !== 'approved') {
+                notyf.success(`Quote successfully sent for approval!`);
+            }
             window.scrollTo({ top: 0, behavior: 'smooth' });
         } catch (ex) {
             notyf.error(ex.response?.data?.message ?? 'Something went wrong!');
@@ -281,6 +283,9 @@ const getButtonText = () => {
     if (quoteStatus === 'pending' && lastApprovalStatus === 'pending') {
         return lastApprovalFlow === 'Client review' ? 'Waiting Client Approval' : 'Waiting for Approval';
     }
+    if (quoteStatus === 'approved') {
+        return 'Send to Order';
+    }
 
     // Margin review flow
     if (quote_approval_flow === 'Margin review') {
@@ -292,12 +297,10 @@ const getButtonText = () => {
                 return !has_client_approval ? 'Send to Order' : 'Send to Client Approval';
             }
 
-            if (!lastApproval) return !has_client_approval ? 'Send to Approval' : 'Send to Client Approval';
-            if (!has_client_approval) return 'Send to Order';
-            return 'Send to Client Approval';
+            return 'Send to Approval';
         } else {
             if (!has_client_approval) return 'Send to Order';
-            if (!lastApproval) return 'Send to Approval';
+            return 'Send to Client Approval';
         }
     }
 

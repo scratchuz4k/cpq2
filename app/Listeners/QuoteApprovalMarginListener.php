@@ -2,7 +2,6 @@
 
 namespace App\Listeners;
 
-use App\Enums\NotificationEnum;
 use App\Enums\QuoteApprovalFlowEnum;
 use App\Enums\QuoteApprovalStatus;
 use App\Enums\QuoteStatusesEnum;
@@ -42,11 +41,6 @@ class QuoteApprovalMarginListener
             $quoteApproval->comments = 'Margin requirements not met.';
             $quoteApproval->saveQuietly();
             $this->quoteApprovalService->store(['quote_id' => $quoteApproval->quote_id, 'flow' => QuoteApprovalFlowEnum::INTERNAL->value]);
-
-            $description = 'Your quote #'.$quoteApproval->quote->id.' for the account '.$quoteApproval->quote->account->name.' has been rejected automatically.';
-            $type = NotificationEnum::QuoteRejected;
-            createNotification($type, $quoteApproval->quote->user, $description, route('quotes.show', ['quote' => $quoteApproval->quote->id], false));
-
         }
 
         if ($isMarginValid) {
@@ -60,10 +54,6 @@ class QuoteApprovalMarginListener
                 $this->quoteApprovalService->store(['quote_id' => $quoteApproval->quote_id, 'flow' => QuoteApprovalFlowEnum::CLIENT->value]);
                 $this->quoteService->update($quoteApproval->quote, ['status' => QuoteStatusesEnum::PENDING->name]);
             }
-
-            $description = 'Your quote #'.$quoteApproval->quote->id.' for the account '.$quoteApproval->quote->account->name.' has been approved automatically.';
-            $type = NotificationEnum::QuoteApproved;
-            createNotification($type, $quoteApproval->quote->user, $description, route('quotes.show', ['quote' => $quoteApproval->quote->id], false));
         }
 
     }
