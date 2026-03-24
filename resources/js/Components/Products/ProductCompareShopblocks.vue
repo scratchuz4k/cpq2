@@ -61,7 +61,7 @@
                             </div>
                             <div class="mx-3">
                                 <button @click="() => removeCompareItem(index)" class="btn">
-                                    <font-awesome-icon :icon="['fas', 'trash']" @click="" />
+                                    <font-awesome-icon :icon="['fas', 'trash-alt']" @click="" />
                                 </button>
                             </div>
                         </div>
@@ -258,7 +258,7 @@
     </div>
 </template>
 <script setup>
-import queryString from 'query-string';
+import queryString from 'qs';
 import { computed, ref, watch } from 'vue';
 import _ from 'lodash';
 import IconField from 'primevue/iconfield';
@@ -329,13 +329,13 @@ const getFeatures = () => {
             return;
         }
         let query = queryString.stringify({
-            filters: JSON.stringify([
+            filters: [
                 {
                     column: 'product_id',
                     operator: 'equals',
                     value: x.id
                 }
-            ]),
+            ],
             limit: 1000
         });
 

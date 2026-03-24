@@ -11,7 +11,7 @@ import InputText from 'primevue/inputtext';
 import Button from 'primevue/button';
 
 import { reactive, ref, useSlots, watch } from 'vue';
-import queryString from 'query-string';
+import queryString from 'qs';
 import axios from 'axios';
 import { can, hasRole } from '@/Composables/useAuth.js';
 import pluralize from 'pluralize';
@@ -75,7 +75,7 @@ const getData = async () => {
             .filter((column) => column.data !== 'actions')
             .map((x) => x.data)
             .join(','),
-        filters: JSON.stringify([...form.filters.filter((x) => x.value != null), ...props.query]),
+        filters: [...form.filters.filter((x) => x.value != null), ...props.query],
         search: global.value
     });
 

@@ -6,7 +6,7 @@ import { usePage } from '@inertiajs/vue3';
 import WarningNote from '@/Components/WarningNote.vue';
 import { checkWarnings } from '@composables/warning.js';
 import format from '@/Composables/format.js';
-import { has } from 'lodash';
+import { can, hasRole } from '@composables/useAuth';
 
 const props = defineProps({
     modelValue: Object,
@@ -16,8 +16,8 @@ const props = defineProps({
 
 const page = usePage();
 const tenant = page.props.tenant;
+const user = page.props.auth.user;
 
-const isLoading = ref(false);
 setQuote(props.modelValue);
 const group = quote.solution_type?.table?.group ?? null;
 
@@ -31,86 +31,6 @@ const warningProviders = ref([
 ]);
 
 checkWarnings(warningProviders.value, null);
-
-const pricePlansDiscounts = ref([]);
-props.pricePlans.forEach((e) => {
-    let discount = props.modelValue.discounts.find((x) => x.entity?.code == e.code);
-    pricePlansDiscounts.value.push({
-        ...e,
-        value: discount ? discount.discount : 0,
-        entity: 'price_plans'
-    });
-});
-
-const saveQuote = async () => {
-    isLoading.value = true;
-    if (quote.discount === '') {
-        isLoading.value = false;
-        return;
-    }
-    try {
-        let res = await axios.put(`/api/quotes/${quote.id}`, {
-            discounts: [...pricePlansDiscounts.value]
-        });
-        setQuote(res.data);
-        isLoading.value = false;
-    } catch (ex) {
-        isLoading.value = false;
-        notyf.error(ex.response.data.message);
-        isLoading.value = false;
-    }
-};
-
-const resetQuote = async () => {
-    isLoading.value = true;
-    let result = await swal.fire({
-        title: 'Are you sure?'
-    });
-    if (['cancel', 'backdrop'].includes(result.dismiss)) {
-        isLoading.value = false;
-        return;
-    }
-
-    quote.items.forEach((e) => {
-        e.discount = 0;
-    });
-    pricePlansDiscounts.value.forEach((e) => (e.value = 0));
-    try {
-        let res = await axios.put(`/api/quotes/${quote.id}`, {
-            discounts: [...pricePlansDiscounts.value],
-            items: quote.items
-        });
-        setQuote(res.data);
-        isLoading.value = false;
-    } catch (ex) {
-        notyf.error(ex.response.data.message);
-    }
-};
-
-const quoteTotal = (key) => {
-    let items = quote.items;
-    if (group) {
-        items = quote.items.flatMap((obj) => obj.items ?? obj);
-    }
-    return items.filter((x) => x.price_plan && x.price_plan.code == key).reduce((acc, item) => (acc += item.total), 0);
-};
-
-const quoteQuantityPrice = (price_plan) => {
-    let total = 0;
-    let tax = 0;
-    let items = quote.items;
-    if (group) {
-        items = quote.items.flatMap((obj) => obj.items ?? obj);
-    }
-
-    items.forEach((e) => {
-        if (e.price_plan && e.price_plan.code == price_plan) {
-            total += e.price * e.quantity;
-            tax += e.price * e.quantity * e.tax;
-        }
-    });
-    return total + tax;
-};
 
 const items = ref([
     { label: 'Home', url: '/' },
@@ -141,68 +61,6 @@ const items = ref([
                 </div>
                 <TableCustom v-if="quote.solution_type.configurations?.has_custom_table == 1"></TableCustom>
                 <TableDealMaker v-else :pricePlans="pricePlans" :preview="preview"></TableDealMaker>
-
-                <div class="mb-5">
-                    <div>
-                        <p class="payment-info border-bottom pb-3 mb-3 big bold">
-                            <span class="text-primary">1 payment </span> of {{ format.GBP(quoteTotal('SINGLE')) }}<br />
-                            followed by
-                            <span class="text-primary"> monthly payments</span> of
-                            {{ format.GBP(quoteQuantityPrice('MONTHLY')) }}
-                        </p>
-                    </div>
-                    <div class="d-flex justify-content-between">
-                        <a
-                            v-if="!quote.is_blocked"
-                            id="btn-previous"
-                            class="btn text-primary"
-                            :href="route('quotes.edit', { quote: quote.id })"
-                        >
-                            <font-awesome-icon class="me-2" :icon="['fas', 'arrow-left']"></font-awesome-icon>
-                            Edit Quote</a
-                        >
-                        <div class="ms-auto">
-                            <QuoteApprovals></QuoteApprovals>
-                            <ActivityDialog
-                                :filters="[
-                                    { entity: 'Quote', values: quote.id },
-                                    {
-                                        entity: 'QuoteItem',
-                                        values:
-                                            quote.items.map((x) => x.id).join(',') +
-                                            ',' +
-                                            quote.items_trashed.map((x) => x.id).join(',')
-                                    },
-                                    {
-                                        entity: 'QuoteDiscount',
-                                        values: quote.discounts.map((x) => x.id).join(',')
-                                    }
-                                ]"
-                            ></ActivityDialog>
-                            <ShareableQuote :disabled="quote.items.some((x) => !x.is_margin_valid)"></ShareableQuote>
-                            <a
-                                class="btn btn-outline-primary me-2"
-                                :href="route('quotes.preview', { quote: quote.id })"
-                                v-if="!quote.items.some((x) => !x.is_margin_valid)"
-                            >
-                                <font-awesome-icon :icon="['far', 'file-pdf']"></font-awesome-icon>
-                                Preview
-                            </a>
-                            <button class="btn btn-outline-primary me-2" v-else disabled="true">
-                                <font-awesome-icon :icon="['far', 'file-pdf']"></font-awesome-icon>
-                                Preview
-                            </button>
-                            <button
-                                hidden
-                                class="btn btn-outline-primary me-2"
-                                :disabled="quote.items.some((x) => !x.is_margin_valid)"
-                            >
-                                <font-awesome-icon class="me-2" :icon="['fas', 'envelope']"> </font-awesome-icon>
-                                Email this quote
-                            </button>
-                        </div>
-                    </div>
-                </div>
             </div>
             <div class="col-xl-4 ps-xl-5">
                 <div class="mb-3">
@@ -213,47 +71,26 @@ const items = ref([
                             Status: {{ quote.status }}
                         </div>
                     </InfoBox>
-                    <InfoBox v-if="['QUOTE', 'PRICE', 'CONFIGURE'].includes(quote.status)">
+                    <InfoBox>
                         <div style="font-size: 14px">
-                            This quote will expire on
+                            Quote expiration date:
                             <b style="font-size: 16px">
                                 {{ format.expireDate(quote.created_at, tenant.configurations?.quote_expiration_days) }}
                             </b>
                         </div>
                     </InfoBox>
                 </div>
-                <div class="price-mobile-sidebar total-quote-discount px-4 pt-4 pb-2 mb-3">
-                    <h3 class="mb-3">Total Quote Discount</h3>
-                    <div
-                        v-for="pricePlan in pricePlansDiscounts"
-                        class="d-flex justify-content-between align-items-center mb-3"
-                    >
-                        <label class="form-label m-0">{{ pricePlan.name }}</label>
-
-                        <div class="input-group p-0 w-50">
-                            <input
-                                :id="`input-global-${pricePlan.code}-discount`"
-                                type="number"
-                                class="form-control"
-                                v-model="pricePlan.value"
-                            />
-                            <span class="input-group-text">%</span>
-                        </div>
-                    </div>
-                    <template v-if="!quote.is_blocked">
-                        <button
-                            id="btn-apply-global-discount"
-                            class="btn btn-secondary w-100 mb-2"
-                            @click="saveQuote()"
-                            :disabled="isLoading"
-                        >
-                            Apply to quote
-                        </button>
-                        <button id="btn-reset-quote" class="btn w-100" @click="resetQuote()" :disabled="isLoading">
-                            Reset quote
-                        </button>
-                    </template>
-                </div>
+                <QuoteApprovalsPanel
+                    v-if="
+                        quote.approvals.find((x) => x.status == 'PENDING') &&
+                        (can('update quote_approval') ||
+                            hasRole('Super Admin') ||
+                            quote.approvals.find((x) => x.flow == 'Client review')) &&
+                        quote.approvals.some(
+                            (x) => !x.approver_id || x.approver_id === user.id || hasRole('Super Admin')
+                        )
+                    "
+                ></QuoteApprovalsPanel>
                 <div class="price-mobile-sidebar commission-calculator px-4 pt-4 pb-2 mb-3">
                     <h3 class="mb-3">Profitability Calculator</h3>
                     <p class="mb-2" style="font-size: 14px">

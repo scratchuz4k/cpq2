@@ -34,14 +34,14 @@ return new class extends Migration
                 ->cascadeOnDelete();
             $table->foreign('tenant_id')
                 ->references('id')
-                ->on('organisations')
+                ->on('tenants')
                 ->cascadeOnDelete();
         });
 
         Schema::table('organisations', function (Blueprint $table) {
             $table->foreign('tenant_id')
                 ->references('id')
-                ->on('organisations')
+                ->on('tenants')
                 ->cascadeOnDelete();
         });
     }
@@ -70,14 +70,14 @@ return new class extends Migration
                 ->cascadeOnDelete();
             $table->foreign('tenant_id')
                 ->references('id')
-                ->on('organizations')
+                ->on('tenants')
                 ->cascadeOnDelete();
         });
 
         Schema::table('organizations', function (Blueprint $table) {
             $table->foreign('tenant_id')
                 ->references('id')
-                ->on('organizations')
+                ->on('tenants')
                 ->cascadeOnDelete();
         });
     }

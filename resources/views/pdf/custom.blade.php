@@ -140,6 +140,11 @@
         .child-bg>td {
             background-color: whitesmoke;
         }
+
+
+        .text-primary {
+            color: var(--color-purple) !important;
+        }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
         integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
@@ -151,10 +156,9 @@
     <div id="print">
         <div class="row" id="header">
             <div class="col" id="header_left">
-                @if (!is_null($tenant['logo']))
-                    <div class="preview-logo">
-                        <img src="{{ public_path($tenant['logo']['route']) }}" alt="{{ $tenant['name'] }}"
-                            class="img-fluid" />
+                @if (!is_null($tenant['logo_docs']))
+                    <div class="app-logo preview-logo">
+                        <img src="{{ public_path($tenant['logo_docs']['route']) }}" alt="{{ $tenant['name'] }}" />
                     </div>
                 @endif
             </div>
@@ -282,7 +286,7 @@
                         <tbody>
                             <tr>
                                 <th>
-                                    <p class="small text-start">Monthly Total</p>
+                                    <p class="small text-start">Recurring Total</p>
                                 </th>
                                 <td id="total_monthly_net">
                                     £{{ number_format(quoteQuantityPrice('MONTHLY', $quote['items']), 2) }}

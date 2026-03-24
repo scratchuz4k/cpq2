@@ -102,14 +102,10 @@ class QuoteItem extends Model
         $this->refresh();
         $price = $this->original_price;
 
-        $discounts = $this->quote->discounts->where('discountable_type', PricePlan::class)->where('discountable_id', $this->pricePlan->id)->pluck('discount');
-        $discounts = [$this->discount, ...$discounts];
+        $price_line = format_currency(($price * (1 - ($this->discount / 100))));
+        $price = $price_line;
 
-        foreach ($discounts as $discount) {
-            $price = format_currency(($price * (1 - ($discount / 100))));
-        }
-
-        $this->price = $price;
+        $this->price = $price_line;
         $this->margin = $this->price - $this->raw_price;
         $this->total = format_currency($this->price * $this->quantity * $this->contract_length);
         $this->total_tax = format_currency($this->total * ($this->tax / 100));

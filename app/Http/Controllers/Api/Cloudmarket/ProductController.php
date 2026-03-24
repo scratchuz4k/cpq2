@@ -132,7 +132,14 @@ class ProductController extends BaseController
 
     private function decodeFilters(Request $request)
     {
-        return $request->has('filters') ? json_decode($request->filters, true) : [];
+        if ($request->has('filters') && is_string($request->filters)) {
+            return json_decode($request->filters, true);
+        }
+        if ($request->has('filters') && is_array($request->filters)) {
+            return $request->filters;
+        }
+
+        return [];
     }
 
     private function getQuote(Request $request)
@@ -159,11 +166,12 @@ class ProductController extends BaseController
         return new CloudMarketAddress(
             postCode: $address->postCode ?? null,
             uprn: $address->uprn ?? null,
+            districtCode: $address->districtCode ?? null,
             lat: $address->latitude ?? null,
             lon: $address->longitude ?? null,
             addressKey: $address->addressKey ?? null,
             buildingName: $address->premisesName ?? $address->organisationName ?? null,
-            buildingNumber: $address->buildingNumber ?? null,
+            buildingNumber: $address->buildingNumber ?? $address->thoroughfareNumber ?? null,
             subPremises: $address->subPremises ?? null,
             street: $address->thoroughfareName ?? $address->dependentThoroughfareName ?? null,
             town: $address->postTown ?? $address->locality ?? $address->doubleDependentLocality ?? null,

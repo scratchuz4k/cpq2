@@ -3,7 +3,7 @@ import Button from 'primevue/button';
 import { can, hasRole } from '@/Composables/useAuth.js';
 import { ref, onMounted, watch, reactive } from 'vue';
 import { usePage } from '@inertiajs/vue3';
-import queryString from 'query-string';
+import queryString from 'qs';
 import { exportData } from '@/Composables/export.js';
 import { Dialog, Timeline, MultiSelect, Select, Paginator, Card } from 'primevue';
 const props = defineProps({
@@ -112,7 +112,7 @@ const getActivity = async () => {
     }
     let string = queryString.stringify({
         page: meta.page,
-        filters: JSON.stringify(getFilters()),
+        filters: getFilters(),
         order: 'desc',
         orderBy: 'created_at',
         limit: meta.limit
@@ -174,7 +174,7 @@ function getEntityLabel(type) {
     <button
         :hidden="!(tenant.configurations.log_system_is_active === '1') || !has_viewAny_permission"
         id="btn-activity-open"
-        class="btn btn-outline-primary me-2"
+        class="btn btn-outline-primary ms-2"
         @click="() => (visible = !visible)"
     >
         <font-awesome-icon :icon="['fas', 'clock-rotate-left']"></font-awesome-icon>

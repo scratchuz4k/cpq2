@@ -12,6 +12,10 @@ class FilterProvider
     {
         $data = collect($data);
         foreach ($filters as $filter) {
+            if (! isset($filter['value'])) {
+                continue;
+            }
+
             if (is_null($filter['value']) || (is_array($filter['value']) && ! count($filter['value']))) {
                 continue;
             }

@@ -2,11 +2,12 @@
 import { quote, setQuote, getQuote } from '@composables/useQuote';
 import axios from 'axios';
 import { usePage } from '@inertiajs/vue3';
-import { computed, reactive, ref, watch } from 'vue';
-import queryString from 'query-string';
+import { computed, onMounted, onUnmounted, reactive, ref, watch, watchEffect } from 'vue';
+import queryString from 'qs';
 import format from '@/Composables/format.js';
 import { Checkbox } from 'primevue';
 import { updateQuoteItem, createQuoteItem, removeQuoteItem } from '@composables/useQuoteItem';
+import { actionBarButtons } from '@/Composables/useQuoteSteps.js';
 
 const props = defineProps({
     modelValue: Object
@@ -72,7 +73,7 @@ const loadItem = async (itemsList) => {
         return;
     }
     const string = queryString.stringify({
-        filters: JSON.stringify([
+        filters: [
             {
                 column: 'sku',
                 operator: 'in',
@@ -83,7 +84,7 @@ const loadItem = async (itemsList) => {
                 operator: 'equals',
                 value: 'Active'
             }
-        ])
+        ]
     });
     const res = await axios.get('/api/products?' + string);
     (res.data.data || []).forEach((p) => {
@@ -197,7 +198,7 @@ const getReviewProduct = async () => {
         let query = queryString.stringify({
             page: 1,
             perPage: 1,
-            filters: JSON.stringify(filters)
+            filters: filters
         });
 
         let res = await axios.get('/api/products' + '?' + query);
@@ -222,6 +223,43 @@ const dynamicSavings = computed(() => {
     }
     return 0;
 });
+
+const init = () => {
+    let temp =
+        configs.cloud_selected_option === 'none'
+            ? {
+                  btn: 'next',
+                  disabled: isLoading.value,
+                  id: 'btn-close-quote',
+                  icon: isLoading.value ? ['fa', 'spinner'] : ['fas', 'xmark'],
+                  iconClass: isLoading.value ? 'fa-spin' : '',
+                  label: 'Close',
+                  onClick: closeQuote
+              }
+            : {
+                  btn: 'next',
+                  disabled: isLoading.value,
+                  icon: isLoading.value ? ['fa', 'spinner'] : ['fas', 'arrow-right'],
+                  iconClass: isLoading.value ? 'fa-spin' : '',
+                  iconPosition: 'right',
+                  label: 'Next',
+                  onClick: handleQuoteItems
+              };
+
+    actionBarButtons.value = [temp].filter(Boolean);
+};
+onMounted(() => {
+    init();
+});
+
+watchEffect(() => {
+    init();
+});
+
+onUnmounted(() => {
+    actionBarButtons.value = [];
+});
+
 watch(
     items,
     async (newItems) => {
@@ -229,6 +267,12 @@ watch(
     },
     { immediate: true }
 );
+
+onMounted(() => {
+    window.addEventListener('pageshow', (event) => {
+        isLoading.value = false;
+    });
+});
 getReviewProduct();
 </script>
 <template>
@@ -424,30 +468,6 @@ getReviewProduct();
                         </p>
                     </RadioCard>
                 </div>
-            </div>
-            <div class="d-flex justify-content-between flex-row-reverse mt-3">
-                <button
-                    v-if="configs.cloud_selected_option === 'none'"
-                    id="btn-close-quote"
-                    class="btn btn-primary"
-                    @click="closeQuote()"
-                >
-                    Close
-                    <font-awesome-icon v-if="isLoading" :icon="['fa', 'spinner']" class="fa-spin"></font-awesome-icon>
-                    <font-awesome-icon :icon="['fas', 'xmark']" class="ms-2"></font-awesome-icon>
-                </button>
-
-                <button
-                    v-else
-                    id="btn-next-step"
-                    class="btn btn-primary"
-                    :disabled="isLoading"
-                    @click="handleQuoteItems()"
-                >
-                    Next
-                    <font-awesome-icon v-if="isLoading" :icon="['fa', 'spinner']" class="fa-spin"></font-awesome-icon>
-                    <font-awesome-icon :icon="['fas', 'arrow-right']" class="ms-2"></font-awesome-icon>
-                </button>
             </div>
         </div>
         <div class="col-lg-3">

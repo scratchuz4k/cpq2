@@ -1,6 +1,6 @@
 <script setup>
 import { usePage } from '@inertiajs/vue3';
-import queryString from 'query-string';
+import queryString from 'qs';
 import Button from 'primevue/button';
 import Card from 'primevue/card';
 import Dialog from 'primevue/dialog';
@@ -39,13 +39,13 @@ const getImages = async () => {
         orderBy: 'created_at',
         search: global.value,
         limit: meta.limit,
-        filters: JSON.stringify([
+        filters: [
             {
                 column: 'mime_type',
                 operator: 'in',
                 value: acceptedFiles.value.join(',')
             }
-        ])
+        ]
     });
     let res = await axios.get('/api/resources?' + string);
     images.value = res.data.data;

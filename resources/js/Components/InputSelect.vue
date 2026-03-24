@@ -1,7 +1,7 @@
 <script setup>
 import _ from 'lodash';
 import { IconField, InputIcon, InputText } from 'primevue';
-import queryString from 'query-string';
+import queryString from 'qs';
 import { ref, watch, computed, reactive, onMounted } from 'vue';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -52,23 +52,29 @@ const search = _.debounce(async (clearOptions = false) => {
     if (!props.url) return;
 
     let string = queryString.stringify({
-        filters: JSON.stringify(props.query),
+        filters: props.query,
         page: page.value,
         search: inputSearch.value
     });
 
     isLoading.value = true;
-    let res = await axios.get(`/api${props.url}?${string}`);
-    if (clearOptions) {
+    try {
+        let res = await axios.get(`/api${props.url}?${string}`);
+        if (clearOptions) {
+            options.value = [];
+        }
+        meta.total_pages = res.data.meta?.last_page ?? res.data.last_page;
+        if (page.value > 1) {
+            options.value.push(...res.data.data);
+        } else {
+            options.value = res.data.data;
+        }
+    } catch (error) {
         options.value = [];
+        console.error(error.response?.data?.message ?? error.response?.data);
+    } finally {
+        isLoading.value = false;
     }
-    meta.total_pages = res.data.meta?.last_page ?? res.data.last_page;
-    if (page.value > 1) {
-        options.value.push(...res.data.data);
-    } else {
-        options.value = res.data.data;
-    }
-    isLoading.value = false;
 }, 200);
 
 const getValue = (item, key) => {

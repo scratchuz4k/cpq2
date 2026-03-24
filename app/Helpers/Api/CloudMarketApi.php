@@ -219,6 +219,7 @@ class CloudMarketApi
             'Address1.Latitude' => $address->lat,
             'Address1.Longitude' => $address->lon,
             'Address1.UPRN' => $address->uprn,
+            'Address1.DistrictCode' => $address->districtCode,
             'Address1.AddressKey' => $address->addressKey,
             'Address1.BuildingName' => $address->buildingName,
             'Address1.BuildingNumber' => $address->buildingNumber,

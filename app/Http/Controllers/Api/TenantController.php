@@ -52,16 +52,16 @@ class TenantController extends BaseController
             return handleException($e);
         }
 
-        return JsonResource::make($tenant)->resolve();
+        return TenantResource::make($tenant)->resolve();
     }
 
     /**
      * Show Tenant
      */
     #[ExcludeRouteFromDocs]
-    public function show(string $id)
+    public function show(Tenant $tenant): array
     {
-        //
+        return (new TenantResource($tenant))->resolve();
     }
 
     /**

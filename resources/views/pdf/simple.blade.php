@@ -77,6 +77,10 @@
         .child-bg>td {
             background-color: whitesmoke;
         }
+
+        .text-primary {
+            color: var(--color-purple) !important;
+        }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
         integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
@@ -88,10 +92,9 @@
     <div id="print">
         <div class="row" id="header">
             <div class="col" id="header_left">
-                @if (!is_null($tenant['logo']))
-                    <div class="preview-logo">
-                        <img src="{{ public_path($tenant['logo']['route']) }}" alt="{{ $tenant['name'] }}"
-                            class="img-fluid" />
+                @if (!is_null($tenant['logo_docs']))
+                    <div class="app-logo preview-logo">
+                        <img src="{{ public_path($tenant['logo_docs']['route']) }}" alt="{{ $tenant['name'] }}" />
                     </div>
                 @endif
             </div>
@@ -189,7 +192,7 @@
 
                                                                 </span>
                                                             @endif
-                                                            @if (isset($group['data']->isContended) and $group['data']->isContended)
+                                                            {{-- @if (isset($group['data']->isContended) and $group['data']->isContended)
                                                                 <span
                                                                     class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm is-contended"
                                                                     data-bs-toggle="tooltip" data-bs-placement="top"
@@ -198,7 +201,7 @@
                                                                     v-tooltip>
                                                                     <i class="fa-solid fa-server"></i>
                                                                 </span>
-                                                            @endif
+                                                            @endif --}}
                                                             @if (isset($group['data']->additionalInfo->{'Type'}) && $group['data']->additionalInfo->{'Type'} == 'Fibre Flex 200+')
                                                                 <span
                                                                     class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm is-burstable"
@@ -298,7 +301,7 @@
                                                         {{ $group['data']->additionalInfo->{'router'} }}
                                                     </span>
                                                 @endif
-                                                @if (isset($group['data']->isContended) and $group['data']->isContended)
+                                                {{-- @if (isset($group['data']->isContended) and $group['data']->isContended)
                                                     <span
                                                         class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm is-contended"
                                                         data-bs-toggle="tooltip" data-bs-placement="top"
@@ -306,7 +309,7 @@
                                                         v-tooltip>
                                                         Contended Service
                                                     </span>
-                                                @endif
+                                                @endif --}}
                                                 @if (isset($group['data']->additionalInfo->{'Type'}) && $group['data']->additionalInfo->{'Type'} == 'Fibre Flex 200+')
                                                     <span
                                                         class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm is-contended"
@@ -339,58 +342,42 @@
                         </table>
                     </div>
                     <div class="mobile-price-group-heading mt-3 d-flex justify-content-between align-items-center">
-                        <h3>Totals</h3>
+                        <h3>Overall Totals</h3>
                     </div>
                     <table class="table table-dealmaker table-bordered text-end">
                         <thead>
-                            <tr>
+                            <tr class="border-0">
                                 <th></th>
-                                <th>NET</th>
-                                {{-- <th>VAT (20%)</th> --}}
-                                <th>GROSS</th>
+                                <th></th>
+                                <th></th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
                                 <th>
-                                    <p class="small text-start">Monthly Total</p>
+                                    <p class="small text-start">Recurring Total</p>
                                 </th>
+                                <td></td>
                                 <td id="total_monthly_net">
                                     £{{ number_format(quoteQuantityPrice('MONTHLY', $quote['items']), 2) }}
-                                </td>
-                                {{-- <td id="total_monthly_vat">
-                                    £{{ number_format(quoteQuantityPrice('MONTHLY', $quote['items'], 'tax'), 2) }}
-                                </td> --}}
-                                <td id="total_monthly_gross">
-                                    £{{ number_format(quoteQuantityPrice('MONTHLY', $quote['items'], 'total'), 2) }}
                                 </td>
                             </tr>
                             <tr>
                                 <th>
                                     <p class="small text-start">One Off Total</p>
                                 </th>
+                                <td></td>
                                 <td id="total_single_net">
                                     £{{ number_format(quoteTotal('SINGLE', 'total', $quote['items']), 2) }}
-                                </td>
-                                {{-- <td id="total_single_vat">
-                                    £{{ number_format(quoteTotal('SINGLE', 'total_tax', $quote['items']), 2) }}
-                                </td> --}}
-                                <td id="total_single_gross">
-                                    £{{ number_format(quoteTotal('SINGLE', 'total_gross', $quote['items']), 2) }}
                                 </td>
                             </tr>
                             <tr>
                                 <th>
                                     <p class="small text-start">Total</p>
                                 </th>
+                                <td></td>
                                 <td id="total_net">
                                     £{{ number_format($quote['total'], 2) }}
-                                </td>
-                                {{-- <td id="total_vat">
-                                    £{{ number_format($quote['total_tax'], 2) }}
-                                </td> --}}
-                                <td id="total_gross">
-                                    £{{ number_format($quote['total_gross'], 2) }}
                                 </td>
                             </tr>
                         </tbody>

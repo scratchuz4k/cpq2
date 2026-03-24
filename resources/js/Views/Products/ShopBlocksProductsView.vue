@@ -1,11 +1,12 @@
 <script setup>
 import _ from 'lodash';
-import queryString from 'query-string';
+import queryString from 'qs';
 import { Paginator, Select } from 'primevue';
 import { quote } from '@/Composables/useQuote';
 import { categories } from '@composables/custom/shopblocks';
 import { computed, onMounted, reactive, ref, watch } from 'vue';
 import ShopBlocksStorages from '@/Components/ShopBlocks/ShopBlocksStorages.vue';
+import StepActionBar from '@/Components/Steps/StepActionBar.vue';
 
 const emit = defineEmits(['save', 'update:modelValue']);
 const proxyValue = computed({
@@ -179,7 +180,7 @@ const getProductsShopBlocks = async () => {
     let query = queryString.stringify({
         page: meta.page,
         perPage: meta.limit,
-        filters: JSON.stringify(filters),
+        filters: filters,
         order: sort.value.order,
         orderBy: sort.value.orderBy,
         columns: 'description,name',
@@ -241,6 +242,24 @@ const handlePaginator = (ev) => {
 
 onMounted(async () => {
     await getProductsShopBlocks();
+});
+
+import { actionBarButtons } from '@/Composables/useQuoteSteps.js';
+import { watchEffect, onUnmounted } from 'vue';
+
+watchEffect(() => {
+    actionBarButtons.value = [
+        step.value !== 1
+            ? {
+                  btn: 'back',
+                  onClick: () => proxyValue.value--
+              }
+            : null,
+        {
+            btn: 'next',
+            onClick: () => emit('save')
+        }
+    ].filter(Boolean);
 });
 
 watch([filters, sort], () => {
@@ -405,25 +424,6 @@ watch(
                     >
                     </Paginator
                 ></template>
-            </div>
-        </div>
-        <div class="d-flex justify-content-between align-items-center mt-3">
-            <div>
-                <button
-                    v-if="step != 1"
-                    id="btn-step-previous"
-                    class="btn text-primary step-nav btn-sm me-3"
-                    type="button"
-                    @click="() => proxyValue--"
-                >
-                    <font-awesome-icon :icon="['fas', 'arrow-left']" /> Previous
-                </button>
-            </div>
-            <div>
-                <button id="btn-step-next" class="ms-3 btn btn-primary step-nav" type="button" @click="emit('save')">
-                    Next
-                    <font-awesome-icon :icon="['fas', 'arrow-right']" />
-                </button>
             </div>
         </div>
         <ProductCompareShopblocks v-if="selectedItems.length" v-model="selectedItems"></ProductCompareShopblocks>

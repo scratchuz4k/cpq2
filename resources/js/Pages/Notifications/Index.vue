@@ -73,7 +73,7 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link } from '@inertiajs/vue3';
 import { IconField, InputIcon, InputText } from 'primevue';
-import queryString from 'query-string';
+import queryString from 'qs';
 import { onMounted, ref, watch, reactive } from 'vue';
 import { usePage } from '@inertiajs/vue3';
 import { template, followNotification, getTotalUnread, totalUnread } from '@composables/useNotification';
@@ -117,13 +117,13 @@ const getNotifications = () => {
         groupOrder: 'desc',
         limit: meta.limit,
         page: meta.page,
-        filters: JSON.stringify([
+        filters: [
             {
                 column: 'user_id',
                 operator: 'equals',
                 value: user.id
             }
-        ]),
+        ],
         search: global.value
     });
 
@@ -141,7 +141,7 @@ const getNotifications = () => {
 
 const markAllasRead = async (item) => {
     let string = queryString.stringify({
-        filters: JSON.stringify([
+        filters: [
             {
                 column: 'user_id',
                 operator: 'equals',
@@ -152,7 +152,7 @@ const markAllasRead = async (item) => {
                 operator: 'equals',
                 value: false
             }
-        ]),
+        ],
         limit: 1000
     });
 

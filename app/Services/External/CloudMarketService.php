@@ -50,6 +50,9 @@ class CloudMarketService
         $items = FilterProvider::get($items->toArray(), $filters);
 
         foreach ($items as $key => $value) {
+            if (! isset($content['filters']) || is_null($content['filters'])) {
+                continue;
+            }
             $content['filters'] = FilterProvider::process($content['filters'], $value, true);
         }
 

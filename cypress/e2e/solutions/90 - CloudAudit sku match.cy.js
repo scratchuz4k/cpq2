@@ -17,14 +17,14 @@ describe('Match CouldAudit Sku', () => {
         cy.visit('/quotes/create');
 
         cy.selectFirstOption('account_id');
-        cy.get('#btn-next-step').click();
+        cy.get('.step-action-bar #btn-next-step').click();
 
         cy.get('#solution_type-cloud_audit').click();
-        cy.get('#btn-next-step').click();
+        cy.get('.step-action-bar #btn-next-step').click();
 
         cy.wait(500);
         cy.get('input[type="radio"]').click({ force: true });
-        cy.get('#btn-next-step').click();
+        cy.get('.step-action-bar #btn-next-step').click();
 
         cy.get('#table-simple tbody tr').each(($row) => {
             // Price column (5rd column)

@@ -1,9 +1,11 @@
 <script setup>
-import queryString from 'query-string';
-import { computed, reactive, ref, watch, onMounted } from 'vue';
+import queryString from 'qs';
+import { computed, reactive, ref, watch, onMounted, watchEffect } from 'vue';
 import { quote } from '@composables/useQuote';
 import _ from 'lodash';
 import { Paginator, Select, Skeleton } from 'primevue';
+import StepActionBar from '@/Components/Steps/StepActionBar.vue';
+import { actionBarButtons } from '@/Composables/useQuoteSteps.js';
 
 const meta = reactive({
     page: 1,
@@ -112,7 +114,7 @@ const getProducts = async () => {
     let query = queryString.stringify({
         page: meta.page,
         perPage: meta.limit,
-        filters: JSON.stringify(filters),
+        filters: filters,
         account_id: props.account.id,
         order: sort.value.order,
         orderBy: sort.value.orderBy,
@@ -180,7 +182,7 @@ const getCategories = async (categoryIds = []) => {
     ];
 
     const query = queryString.stringify({
-        filters: JSON.stringify(filters)
+        filters: filters
     });
 
     const res = await axios.get('/api/categories' + '?' + query);
@@ -199,6 +201,27 @@ const emitSaveQuote = () => {
 
 onMounted(async () => {
     getProducts();
+});
+
+watchEffect(() => {
+    if (proxyValue.value !== props.index) return;
+
+    actionBarButtons.value = [
+        props.index > 0
+            ? {
+                  btn: 'back',
+                  id: `btn-step-${props.index + 1}-previous`,
+                  disabled: meta.isLoading,
+                  onClick: () => proxyValue.value--
+              }
+            : null,
+        {
+            btn: 'next',
+            disabled: disableButton.value,
+            id: `btn-step-${props.index + 1}-next`,
+            onClick: emitSaveQuote
+        }
+    ].filter(Boolean);
 });
 
 watch(sort, () => {
@@ -317,32 +340,6 @@ watch(
                             @page="handlePaginator"
                         >
                         </Paginator>
-                        <div class="d-flex justify-content-between align-items-center mt-3">
-                            <div>
-                                <button
-                                    :disabled="meta.isLoading"
-                                    v-if="props.index > 0"
-                                    :id="'btn-step-' + (props.index + 1) + '-previous'"
-                                    class="btn text-primary step-nav btn-sm me-3"
-                                    type="button"
-                                    @click="() => proxyValue--"
-                                >
-                                    <font-awesome-icon :icon="['fas', 'arrow-left']" /> Previous
-                                </button>
-                            </div>
-                            <div>
-                                <button
-                                    :disabled="disableButton"
-                                    :id="'btn-step-' + (props.index + 1) + '-next'"
-                                    class="ms-3 btn btn-primary step-nav"
-                                    type="button"
-                                    @click="() => emitSaveQuote()"
-                                >
-                                    Next
-                                    <font-awesome-icon :icon="['fas', 'arrow-right']" />
-                                </button>
-                            </div>
-                        </div>
                     </template>
                 </div>
             </div>

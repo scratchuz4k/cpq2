@@ -27,7 +27,10 @@ const tenant = reactive({
             : 0,
         quote_margin_rules_operation: props.tenant.configurations.quote_margin_rules_operation ?? 'percentage',
         has_quote_approval: props.tenant.configurations.has_quote_approval ?? '0',
-        quote_approval_flow: props.tenant.configurations.quote_approval_flow ?? 'Internal review'
+        quote_approval_flow: props.tenant.configurations.quote_approval_flow ?? 'Internal review',
+        has_client_approval: props.tenant.configurations.has_client_approval ?? '0',
+        customization_header: JSON.parse(props.tenant.configurations.customization_header ?? '[]'),
+        customization_footer: JSON.parse(props.tenant.configurations.customization_footer ?? '[]')
     }
 });
 
@@ -53,14 +56,17 @@ const submitFileForm = async () => {
 const submitLogoForm = async () => {
     isLoading.value = true;
 
-    let success_message = tenant.logo_id ? 'Logo uploaded with Success' : 'Logo deleted with Success';
     let data = {
-        logo_id: tenant.logo_id
+        logo_id: tenant.logo_id,
+        logo_alt_id: tenant.logo_alt_id,
+        logo_docs_id: tenant.logo_docs_id
     };
+
     try {
         let res = await axios.put(`/api/tenants/` + tenant.id, data);
         Object.assign(tenant, res.data);
-        notyf.success(success_message);
+        emitter.emit('logo:updated');
+        notyf.success('Updated with Success');
     } catch (err) {
         notyf.error(err?.response?.data?.message ?? 'Something went wrong');
     }
@@ -85,8 +91,18 @@ const submitTextForm = async () => {
 
 const submitTenantSettings = async () => {
     try {
-        let res = await axios.put(`/api/tenants/` + tenant.id, tenant);
-        Object.assign(tenant, res.data);
+        let configs = {};
+        Object.assign(configs, tenant.configurations);
+        configs.customization_header = JSON.stringify(configs.customization_header);
+        configs.customization_footer = JSON.stringify(configs.customization_footer);
+
+        let res = await axios.put(`/api/tenants/` + tenant.id, { ...tenant, configurations: configs });
+
+        let temp = res.data;
+        temp.configurations.customization_header = JSON.parse(temp.configurations.customization_header);
+        temp.configurations.customization_footer = JSON.parse(temp.configurations.customization_footer);
+        Object.assign(tenant, temp);
+
         notyf.success('Content updated successfully');
         tenant.configurations.quote_margin_rules_value = tenant.configurations.quote_margin_rules_value
             ? Number(tenant.configurations.quote_margin_rules_value)
@@ -120,7 +136,7 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Settings', url: '/sett
     <Head title="Tenant" />
     <AuthenticatedLayout>
         <div class="panel">
-            <Header title="Tenant" :breadcrumbs="items"></Header>
+            <Header title="Tenant" :breadcrumbs="items"> </Header>
 
             <tabs>
                 <tab :selected="true" title="General">
@@ -153,7 +169,31 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Settings', url: '/sett
                                 aria-controls="v-pills-logo"
                                 aria-selected="false"
                             >
-                                Logo
+                                Logos
+                            </button>
+                            <button
+                                class="nav-link"
+                                id="v-pills-header-tab"
+                                data-bs-toggle="pill"
+                                data-bs-target="#v-pills-header"
+                                type="button"
+                                role="tab"
+                                aria-controls="v-pills-header"
+                                aria-selected="false"
+                            >
+                                Header
+                            </button>
+                            <button
+                                class="nav-link"
+                                id="v-pills-footer-tab"
+                                data-bs-toggle="pill"
+                                data-bs-target="#v-pills-footer"
+                                type="button"
+                                role="tab"
+                                aria-controls="v-pills-footer"
+                                aria-selected="false"
+                            >
+                                Footer
                             </button>
                         </div>
                         <div class="tab-content ps-3 w-100" id="v-pills-tabContent">
@@ -168,6 +208,7 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Settings', url: '/sett
                                     <p>The file to upload must be a .xml</p>
                                     <form @submit.prevent="submitFileForm" enctype="multipart/form-data">
                                         <InputResource
+                                            id="sso"
                                             v-model="tenant.sso_id"
                                             :resource="tenant.file"
                                             :acceptedFiles="['text/xml']"
@@ -209,25 +250,78 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Settings', url: '/sett
                                 <div class="col xml-in-tabs">
                                     <div class="d-flex">
                                         <div class="logo-form">
-                                            <h4>Import Logo for {{ tenant.name }}</h4>
-                                            <p>The file to upload must be a .jpeg, .jpg, .png, .gif</p>
-                                            <form @submit.prevent="submitLogoForm" enctype="multipart/form-data">
-                                                <InputResource
-                                                    v-model="tenant.logo_id"
-                                                    :resource="tenant.logo"
-                                                    :showLikeLine="false"
-                                                    :acceptedFiles="[
-                                                        'image/jpeg',
-                                                        'image/jpg',
-                                                        'image/png',
-                                                        'image/gif'
-                                                    ]"
-                                                    @change="submitLogoForm"
-                                                ></InputResource>
-                                            </form>
+                                            <h4>Import Logos for {{ tenant.name }}</h4>
+                                            <p>The files to upload must be a .jpeg, .jpg, .png, .gif</p>
+                                        </div>
+                                    </div>
+                                    <div class="row row-cols-3 mt-3">
+                                        <div>
+                                            <label>Header</label>
+                                            <InputResource
+                                                id="logo"
+                                                v-model="tenant.logo_id"
+                                                :resource="tenant.logo"
+                                                :showLikeLine="false"
+                                                :acceptedFiles="['image/jpeg', 'image/jpg', 'image/png', 'image/gif']"
+                                                @change="submitLogoForm"
+                                            ></InputResource>
+                                        </div>
+                                        <div>
+                                            <label>Footer</label>
+                                            <InputResource
+                                                id="logo-alt"
+                                                v-model="tenant.logo_alt_id"
+                                                :resource="tenant.logo_alt"
+                                                :showLikeLine="false"
+                                                :acceptedFiles="['image/jpeg', 'image/jpg', 'image/png', 'image/gif']"
+                                                @change="submitLogoForm"
+                                            ></InputResource>
+                                        </div>
+                                        <div>
+                                            <label>PDF documents</label>
+                                            <InputResource
+                                                id="logo-docs"
+                                                v-model="tenant.logo_docs_id"
+                                                :resource="tenant.logo_docs"
+                                                :showLikeLine="false"
+                                                :acceptedFiles="['image/jpeg', 'image/jpg', 'image/png', 'image/gif']"
+                                                @change="submitLogoForm"
+                                            ></InputResource>
                                         </div>
                                     </div>
                                 </div>
+                            </div>
+                            <div
+                                class="tab-pane fade"
+                                id="v-pills-header"
+                                role="tabpanel"
+                                aria-labelledby="v-pills-header-tab"
+                            >
+                                <h4>Header Links for {{ tenant.name }}</h4>
+                                <p class="mb-3">Manage the header navigation links</p>
+
+                                <TenantLinks
+                                    v-model="tenant.configurations.customization_header"
+                                    id="header"
+                                    :linkLimit="4"
+                                    @change="submitTenantSettings()"
+                                />
+                            </div>
+                            <div
+                                class="tab-pane fade"
+                                id="v-pills-footer"
+                                role="tabpanel"
+                                aria-labelledby="v-pills-footer-tab"
+                            >
+                                <h4>Footer Links for {{ tenant.name }}</h4>
+                                <p class="mb-3">Manage the footer navigation links</p>
+
+                                <TenantLinks
+                                    v-model="tenant.configurations.customization_footer"
+                                    id="footer"
+                                    :linkLimit="4"
+                                    @change="submitTenantSettings()"
+                                />
                             </div>
                         </div>
                     </div>
@@ -437,6 +531,31 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Settings', url: '/sett
                                                                 </select>
                                                             </div>
                                                         </div>
+                                                    </div>
+                                                    <div class="d-flex align-items-center">
+                                                        <label class="form-label m-0 me-2"
+                                                            >Send to Client Approval:</label
+                                                        >
+                                                        <ToggleSwitch
+                                                            id="active-client_approval-rules"
+                                                            v-model="tenant.configurations.has_client_approval"
+                                                            @change="submitTenantSettings"
+                                                            trueValue="1"
+                                                            falseValue="0"
+                                                            binary
+                                                        >
+                                                            <template #handle>
+                                                                <font-awesome-icon
+                                                                    :icon="
+                                                                        tenant.configurations.has_client_approval ===
+                                                                        '1'
+                                                                            ? ['fas', 'circle-check']
+                                                                            : ['far', 'circle-xmark']
+                                                                    "
+                                                                    class="text-primary"
+                                                                />
+                                                            </template>
+                                                        </ToggleSwitch>
                                                     </div>
                                                 </div>
                                             </div>

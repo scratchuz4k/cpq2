@@ -2,20 +2,22 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\BaseController;
 use App\Http\Requests\ShareLinkCreateRequest;
 use App\Http\Resources\SharedLinkResource;
-use App\Models\Quote;
 use App\Models\SharedLink;
+use App\Services\SharedLinkService;
 use Dedoc\Scramble\Attributes\ExcludeRouteFromDocs;
+use Exception;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
-class SharedLinkController extends Controller
+class SharedLinkController extends BaseController
 {
-    private $sharedModels = [
-        'quotes' => Quote::class,
-    ];
+    public function __construct(protected SharedLinkService $service)
+    {
+        parent::__construct();
+    }
 
     /**List of SharedLinks
      * @response AnonymousResourceCollection<LengthAwarePaginator<RegionResource>>
@@ -31,14 +33,13 @@ class SharedLinkController extends Controller
      */
     public function store(ShareLinkCreateRequest $request)
     {
-        $sharedLink = SharedLink::create([
-            ...$request->all(),
-            'tenant_id' => Auth::user()->tenant_id,
-            'shareable_type' => $this->sharedModels[$request->input('shareable_type')],
-            'expires_at' => $request->input('expires_at', null), // Expire after 7 days
-        ]);
 
-        // Optionally redirect or return the shareable resource
+        try {
+            $sharedLink = DB::transaction(fn () => $this->service->store($request->all()));
+        } catch (Exception $e) {
+            return handleException($e);
+        }
+
         return new SharedLinkResource($sharedLink);
     }
 

@@ -41,9 +41,7 @@ let view = component && Object.keys(solutionsViews).includes(component) ? soluti
         <div id="print" class="page">
             <div class="row">
                 <div class="col" id="header_left">
-                    <div class="preview-logo">
-                        <app-logo></app-logo>
-                    </div>
+                    <AppLogo type="logo_docs" :class="'preview-logo'"></AppLogo>
                 </div>
                 <div class="col text-end" id="header_right">
                     <p>{{ quote.account?.name }}<br />{{ quote.address_data?.label }}</p>
@@ -51,53 +49,46 @@ let view = component && Object.keys(solutionsViews).includes(component) ? soluti
                     <p>Email: sales@example.com</p>
                 </div>
             </div>
-            <div class="row mt-4">
+            <div class="mt-4 d-flex">
+                <h1 class="mb-1 w-auto">Quote Q-{{ quote.id }}</h1>
+                <span
+                    v-if="quote.status === 'EXPIRED'"
+                    class="badge border border-secondary text-secondary opacity-75 ms-4 lh-sm my-auto"
+                >
+                    {{ quote.status }}
+                </span>
+            </div>
+            <div class="row mb-3">
                 <div class="col">
-                    <div class="d-flex">
-                        <h1 class="mb-1 w-auto">Quote Q-{{ quote.id }}</h1>
-                        <span
-                            v-if="quote.status === 'EXPIRED'"
-                            class="badge border border-secondary text-secondary opacity-75 ms-4 lh-sm my-auto"
-                        >
-                            {{ quote.status }}
-                        </span>
-                    </div>
-                    <div class="row mb-3">
-                        <div class="col">
-                            <p>
-                                Quotation Date: {{ dayjs(quote.created_at).format('DD/MM/YYYY') }}<br />
-                                Valid Date:
-                                {{ format.expireDate(quote.created_at, tenant.configurations?.quote_expiration_days) }}
-                            </p>
-                        </div>
-                    </div>
-                    <div v-if="warningProviders.some((obj) => Object.values(obj).includes(true))">
-                        <div class="row">
-                            <div class="col">
-                                <InfoBox class="mb-4 p-0" severity="error">
-                                    <WarningNote :warnings="warningProviders" />
-                                </InfoBox>
-                            </div>
-                        </div>
-                    </div>
-                    <div>
-                        <TableCustom
-                            v-if="quote.solution_type.configurations?.has_custom_table == 1"
-                            :preview="true"
-                            :blockedColumns="['margin']"
-                        ></TableCustom>
-                        <component
-                            v-else
-                            :is="view"
-                            v-bind="{
-                                pricePlans: props.pricePlans,
-                                preview: true
-                            }"
-                        ></component>
-                        <TableTotal :quote="quote"></TableTotal>
+                    <p>
+                        Quotation Date: {{ dayjs(quote.created_at).format('DD/MM/YYYY') }}<br />
+                        Valid Date:
+                        {{ format.expireDate(quote.created_at, tenant.configurations?.quote_expiration_days) }}
+                    </p>
+                </div>
+            </div>
+            <div v-if="warningProviders.some((obj) => Object.values(obj).includes(true))">
+                <div class="row">
+                    <div class="col">
+                        <InfoBox class="mb-4 p-0" severity="error">
+                            <WarningNote :warnings="warningProviders" />
+                        </InfoBox>
                     </div>
                 </div>
             </div>
+            <TableCustom
+                v-if="quote.solution_type.configurations?.has_custom_table == 1"
+                :preview="true"
+                :blockedColumns="['margin']"
+            ></TableCustom>
+            <component
+                v-else
+                :is="view"
+                v-bind="{
+                    pricePlans: props.pricePlans,
+                    preview: true
+                }"
+            ></component>
         </div>
     </div>
 </template>

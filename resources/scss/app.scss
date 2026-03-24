@@ -58,6 +58,7 @@
     --radius: 6px;
     --font-primary: Montserrat, Helvetica, Arial, sans-serif;
     --table-header-grey: #dcdcdc;
+    --table-header-light-grey: #f3f2f2;
     --table-header-dark-grey: #646464;
     --p-breadcrumb-background: transparent !important;
     --p-breadcrumb-padding: 0.5rem 0 !important;
@@ -123,6 +124,10 @@ body {
 }
 
 #app {
+    flex-direction: column;
+    display: flex;
+    min-height: 100vh;
+
     a:not(.btn) {
         color: var(--color-purple);
     }
@@ -168,6 +173,18 @@ body {
     .btn-secondary:hover {
         background-color: var(--secondary-dark-lighter);
         border-color: var(--secondary-dark);
+    }
+
+    .btn-outline-dark {
+        border-color: var(--secondary-dark);
+        border-width: 0.175rem;
+        color: var(--secondary-dark);
+        font-weight: 600;
+
+        &:hover {
+            background-color: var(--secondary-dark);
+            color: var(--white);
+        }
     }
 
     .btn-text {
@@ -248,11 +265,6 @@ body {
         padding: 4px 12px !important;
     }
 
-    .navbar .navbar-brand img {
-        position: relative;
-        top: 5px;
-    }
-
     .navbar-nav .nav-link.active {
         background-color: var(--dark-grey);
         color: var(--white);
@@ -278,6 +290,7 @@ body {
     }
 
     main {
+        flex: 1;
         background: var(--grey-lighter);
         padding: 30px 0;
     }
@@ -1106,6 +1119,10 @@ body {
     z-index: 1101 !important;
 }
 
+.notyf .notyf__message {
+    text-align: center;
+}
+
 .notyf-error {
     background: var(--red) !important;
     border-radius: 0.5rem !important;
@@ -1245,18 +1262,29 @@ body {
     opacity: 1;
 }
 
+.app-logo,
 .preview-logo {
     display: flex;
     flex-direction: column;
-    height: 100px;
-    width: 300px;
+    min-height: 40px;
+    max-height: 40px;
+    max-width: 300px;
+}
+
+.preview-logo {
+    max-height: 100px;
+}
+
+.app-logo > img,
+.preview-logo > img {
+    max-height: 40px;
+    max-width: 300px;
+    object-fit: scale-down;
+    object-position: left;
 }
 
 .preview-logo > img {
     max-height: 100px;
-    max-width: 300px;
-    object-fit: scale-down;
-    object-position: left;
 }
 
 .dropzone {
@@ -1440,4 +1468,11 @@ body {
 .p-checkbox-checked .p-checkbox-box {
     border-color: var(--color-purple) !important;
     background: var(--color-purple) !important;
+}
+
+.dealmaker-panel {
+    background-color: var(--white);
+    border-radius: var(--radius);
+    padding: 20px;
+    margin-bottom: 20px;
 }
