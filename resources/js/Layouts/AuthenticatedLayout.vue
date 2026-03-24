@@ -8,6 +8,7 @@ import { can, hasRole } from '@/Composables/useAuth.js';
 import StepActionBar from '@/Components/Steps/StepActionBar.vue';
 import SvgIcon from '@/Components/Custom/SvgIcon.vue';
 import { actionBarButtons } from '@/Composables/useQuoteSteps.js';
+import { selectedItems, addSelected } from '@/Composables/useComparator';
 import * as Sentry from '@sentry/vue';
 import UserFeedback from '@/Components/UserFeedback.vue';
 
@@ -24,7 +25,8 @@ Sentry.setUser({
 defineProps({
     quote: Object,
     order: Object,
-    showStepActionBar: Boolean
+    showStepActionBar: Boolean,
+    showComparator: Boolean
 });
 
 const activeTab = ref(window.location.pathname.replace(/^\/|\/$/g, ''));
@@ -151,6 +153,7 @@ const hasActionBarContent = computed(() => {
             <slot />
         </div>
     </main>
+    <ProductCompareShopblocks v-if="showComparator && selectedItems.length"></ProductCompareShopblocks>
     <StepActionBar v-if="showStepActionBar && (hasActionBarContent || actionBarButtons.length)">
         <slot name="actionBar"></slot>
     </StepActionBar>
