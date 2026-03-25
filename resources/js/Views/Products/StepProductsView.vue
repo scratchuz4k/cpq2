@@ -113,7 +113,7 @@ const getProducts = async () => {
 
     let query = queryString.stringify({
         page: meta.page,
-        perPage: meta.limit,
+        limit: meta.limit,
         filters: filters,
         account_id: props.account.id,
         order: sort.value.order,

@@ -109,7 +109,7 @@ const onRowEditSave = async (event) => {
     }
 };
 
-const options = new DatatableOptions('product-links');
+const options = new DatatableOptions('product-links', 'product-links');
 options.addColumn('child.name', 'Name', { width: '50%' }, { hide: false, sticky: true });
 options.addColumn('child.sku', 'SKU', null, { hide: false, sticky: true });
 options.addColumn('child.description', 'description', null, { hide: false, sticky: false });
@@ -407,7 +407,13 @@ const items = ref([
                 </div>
             </tab>
             <tab title="Linked Products">
-                <RelationDatatable :options="options"></RelationDatatable>
+                <div class="d-flex justify-content-between my-3">
+                    <div>
+                        <h3>Products (1)</h3>
+                    </div>
+                    <div><ProductCreateRelation route="product-links" :product="product" column="child_id" /></div>
+                </div>
+                <NewDatatable :options="options"></NewDatatable>
             </tab>
         </tabs>
     </AuthenticatedLayout>

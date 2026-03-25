@@ -19,6 +19,7 @@ return new class extends Migration
             $table->foreignId('product_id')->constrained('products', 'id')->cascadeOnDelete();
             $table->foreignId('child_id')->constrained('products', 'id')->cascadeOnDelete();
             $table->timestamps();
+            $table->unique(['product_id', 'child_id']);
         });
 
         $procuts = Product::query()->whereNotNull('parent_id')->get();

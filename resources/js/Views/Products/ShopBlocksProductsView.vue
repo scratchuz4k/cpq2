@@ -179,7 +179,7 @@ const getProductsShopBlocks = async () => {
 
     let query = queryString.stringify({
         page: meta.page,
-        perPage: meta.limit,
+        limit: meta.limit,
         filters: filters,
         order: sort.value.order,
         orderBy: sort.value.orderBy,

@@ -13,7 +13,7 @@ class ShopBlocksApi
     {
         $params = [
             'page' => $page,
-            'perPage' => $limit,
+            'limit' => $limit,
             'fields' => 'slug,sku,name,price,created,product_category_id,brand_id,stock,primary_image,updated',
             'active' => 1,
         ];
@@ -50,7 +50,7 @@ class ShopBlocksApi
     {
         $params = [
             'page' => $page,
-            'perPage' => $limit,
+            'limit' => $limit,
         ];
 
         $response = Http::withOptions([
