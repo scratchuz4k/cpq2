@@ -94,7 +94,7 @@ const editableColumns = (columns, code) => {
                 <tfoot>
                     <tr>
                         <th :colspan="filterColumns(columns, pricePlan.code).length - 1">
-                            <p class="mb-0">{{ pricePlan.name === 'Recurring' ? 'Montly Subtotal' : 'Subtotal' }}</p>
+                            <p class="mb-0">{{ pricePlan.name === 'Recurring' ? 'Monthly Subtotal' : 'Subtotal' }}</p>
                         </th>
                         <th class="text-end" :id="pricePlanskeys[pricePlan.code] + '-total'">
                             <span v-if="props.preview || pricePlan.name != 'Recurring'">
