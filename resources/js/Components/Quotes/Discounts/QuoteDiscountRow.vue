@@ -109,10 +109,10 @@ watch(
 <template>
     <tr v-if="!props.preview || discount.discount">
         <td :colspan="props.pricePlan.name == 'Recurring' ? 4 : 3">
-            <p class="small">{{ props.pricePlan.name }} Discount</p>
+            <p class="small text-primary">{{ props.pricePlan.name }} Discount</p>
         </td>
         <td class="text-center">
-            <p class="small" v-if="!isEditing" :id="`global-${props.pricePlan.code}-discount`">
+            <p class="small text-primary" v-if="!isEditing" :id="`global-${props.pricePlan.code}-discount`">
                 {{ discount.discount }} %
             </p>
             <input
@@ -124,14 +124,14 @@ watch(
                 min="0"
             />
         </td>
-        <td colspan="2" class="text-right text-primary">
+        <td colspan="2" class="text-right text-primary bold">
             <p v-if="props.preview || props.pricePlan.name != 'Recurring'" class="small column_total">
                 -{{ format.GBP(discount.value) }}
             </p>
 
             <div v-else class="column_total cpq-tooltip">
                 -{{ format.GBP(discount.value) }}
-                <span class="cpq-tooltip-text bold"> Overall Discount:<br />- {{ format.GBP(discount.total) }} </span>
+                <span class="cpq-tooltip-text"> Overall Discount:<br />- {{ format.GBP(discount.total) }} </span>
             </div>
         </td>
         <td v-if="!props.preview && !quote.is_blocked">
