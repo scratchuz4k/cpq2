@@ -183,10 +183,10 @@ watch(
                 "
             >
                 <td class="column-discount-body">
-                    <p class="small text-start">Overall Discount</p>
+                    <p class="small text-start text-primary">Overall Discount</p>
                 </td>
                 <td>
-                    <p class="small text-center" v-if="!isEditing" :id="`global-quote-discount-discount`">
+                    <p class="small text-center text-primary" v-if="!isEditing" :id="`global-quote-discount-discount`">
                         {{ discount.discount }} %
                     </p>
                     <input
@@ -198,7 +198,7 @@ watch(
                         min="0"
                     />
                 </td>
-                <td class="text-primary">-{{ format.GBP(discount.total) }}</td>
+                <td class="text-primary bold">-{{ format.GBP(discount.total) }}</td>
                 <td v-if="!props.preview && !quote.is_blocked">
                     <div class="d-flex justify-content-end">
                         <template v-if="!isEditing">
