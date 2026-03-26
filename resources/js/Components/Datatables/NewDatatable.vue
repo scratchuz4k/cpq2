@@ -5,7 +5,7 @@ import { Link } from '@inertiajs/vue3';
 import Paginator from 'primevue/paginator';
 import { IconField, InputIcon, InputText } from 'primevue';
 
-import { reactive, ref, useSlots, watch } from 'vue';
+import { reactive, ref, useSlots, watch, watchEffect } from 'vue';
 import queryString from 'qs';
 import axios from 'axios';
 import { can, hasRole } from '@/Composables/useAuth.js';
@@ -29,16 +29,25 @@ const has_export_permission =
     can(`export ${pluralize.singular(props.options.route.replace(/^\//, ''))}`) || hasRole('Super Admin');
 
 const form = reactive({
-    filters: [],
+    filters: {},
     order: props.options.sort.order,
     orderBy: props.options.sort.orderBy,
     search: null
 });
 
+const setFilters = () => {
+    form.filters = {};
+    props.options.columns.forEach(
+        (el) => (form.filters[el.column] = { column: el.column, value: null, operator: 'contains' })
+    );
+};
+setFilters();
+
 const getData = async () => {
+    api.clearFilters();
     api.setColumns(props.options.columns.filter((data) => data.column !== 'actions').map((x) => x.column));
 
-    form.filters
+    Object.values(form.filters)
         .filter((x) => x.value != null)
         .forEach((x) => {
             api.addFilter(x.column, x.operator, x.value);
@@ -60,7 +69,7 @@ const sortBy = (column) => {
 };
 
 const clearFilters = () => {
-    form.filters.forEach((x) => (x.value = null));
+    Object.values(form.filters).forEach((x) => (x.value = null));
     getData();
 };
 
@@ -135,7 +144,7 @@ emitter.on('datatable-refresh' + (props.options.id ? ':' + props.options.id : ''
 watch(
     () => [form.order, form.orderBy],
     function () {
-        form.page = 1;
+        api.meta.page = 1;
         getData();
     }
 );
@@ -143,9 +152,11 @@ watch(
 watch(
     () => [form.filters, form.search],
     _.debounce(function () {
-        form.page = 1;
+        api.isLoading = true;
+        api.meta.page = 1;
         getData();
-    }, 200)
+    }, 200),
+    { deep: true }
 );
 
 getData();
@@ -172,7 +183,7 @@ getData();
                 v-if="activeFilters"
                 type="button"
                 class="btn btn-outline-primary btn-sm d-flex justify-content-center align-items-center p-0 px-2 me-2"
-                :severity="form.filters.find((x) => x.value) ? 'primary' : 'secondary'"
+                :severity="Object.values(form.filters).find((x) => x.value) ? 'primary' : 'secondary'"
                 @click="clearFilters()"
             >
                 <font-awesome-icon :icon="['fas', 'eraser']" class="me-1" />
@@ -192,56 +203,58 @@ getData();
         </div>
     </div>
     <div class="datatable-content">
-        <template v-if="api.items.length">
-            <table :id="props.options.id">
-                <thead>
-                    <tr>
-                        <th
-                            v-for="(data, key) in props.options.columns.filter((x) => !x.hide)"
-                            :key="key"
-                            class="datatable-table-header"
-                            :style="['position: sticky; top: 0;', data.sticky ? 'z-index: 3' : 'z-index: 2']"
-                            :class="[
-                                'datatable-col',
-                                data.sticky ? `datatable-col-sticky datatable-col-sticky-${key + 1}` : '',
-                                key === props.options.columns.filter((x) => x.sticky).length - 1
-                                    ? 'datatable-col-last-sticky'
-                                    : ''
-                            ]"
+        <table :id="props.options.id">
+            <thead>
+                <tr>
+                    <th
+                        v-for="(data, key) in props.options.columns.filter((x) => !x.hide)"
+                        :key="key"
+                        class="datatable-table-header"
+                        :style="['position: sticky; top: 0;', data.sticky ? 'z-index: 3' : 'z-index: 2']"
+                        :class="[
+                            'datatable-col',
+                            data.sticky ? `datatable-col-sticky datatable-col-sticky-${key + 1}` : '',
+                            key === props.options.columns.filter((x) => x.sticky).length - 1
+                                ? 'datatable-col-last-sticky'
+                                : ''
+                        ]"
+                    >
+                        <div
+                            v-if="data.column != 'actions'"
+                            class="d-flex justify-content-between align-items-center w-100 pe-3"
                         >
-                            <div
-                                v-if="data.column != 'actions'"
-                                class="d-flex justify-content-between align-items-center w-100 pe-3 position-relative"
+                            <p
+                                class="d-inline-flex align-items-center"
+                                @click="sortBy(data.column)"
+                                :style="{
+                                    textDecoration: data.column == form.orderBy ? 'underline' : 'none'
+                                }"
                             >
-                                <p
-                                    class="d-inline-flex align-items-center"
-                                    @click="sortBy(data.column)"
-                                    :style="{
-                                        textDecoration: data.column == form.orderBy ? 'underline' : 'none'
-                                    }"
-                                >
-                                    {{ data.title }}
-                                    <span class="text-center" style="width: 20px">
-                                        <template v-if="data.column == form.orderBy">
-                                            <font-awesome-icon
-                                                v-if="form.order == 'desc'"
-                                                :icon="['fas', 'sort-down']"
-                                            />
-                                            <font-awesome-icon v-else :icon="['fas', 'sort-up']" />
-                                        </template>
-                                    </span>
-                                </p>
-                                <!-- <DatatableFilter v-if="activeFilters"></DatatableFilter> -->
-                            </div>
-                        </th>
-                        <th
-                            v-if="props.options.allow.update || props.options.allow.link || props.options.allow.destroy"
-                            class="datatable-table-header"
-                            :class="['datatable-col', 'p-0']"
-                            style="position: sticky; top: 0; z-index: 2"
-                        ></th>
-                    </tr>
-                </thead>
+                                {{ data.title }}
+                                <span class="text-center" style="width: 20px">
+                                    <template v-if="data.column == form.orderBy">
+                                        <font-awesome-icon v-if="form.order == 'desc'" :icon="['fas', 'sort-down']" />
+                                        <font-awesome-icon v-else :icon="['fas', 'sort-up']" />
+                                    </template>
+                                </span>
+                            </p>
+                            <DatatableFilter
+                                v-if="activeFilters"
+                                v-model="form.filters[data.column]"
+                                :options="props.options"
+                                :index="key"
+                            ></DatatableFilter>
+                        </div>
+                    </th>
+                    <th
+                        v-if="props.options.allow.update || props.options.allow.link || props.options.allow.destroy"
+                        class="datatable-table-header"
+                        :class="['datatable-col', 'p-0']"
+                        style="position: sticky; top: 0; z-index: 2"
+                    ></th>
+                </tr>
+            </thead>
+            <template v-if="!api.isLoading">
                 <tbody>
                     <tr v-for="(item, index) in api.items" :key="index">
                         <td
@@ -306,12 +319,22 @@ getData();
                         </td>
                     </tr>
                 </tbody>
-                <tfoot></tfoot>
-            </table>
-        </template>
-        <div v-else class="d-flex justify-content-center align-items-center pt-2 pb-4">
-            <div>No records found</div>
-        </div>
+            </template>
+            <tbody v-else>
+                <tr>
+                    <td colspan="100%" class="text-center">
+                        <font-awesome-icon :icon="['fas', 'spinner']" spin size="2x" />
+                    </td>
+                </tr>
+            </tbody>
+            <tbody v-if="!api.items.length && !api.isLoading">
+                <tr>
+                    <td colspan="100%">
+                        <p class="w-full text-center">No records found</p>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
     </div>
     <Paginator
         v-model:first="api.meta.first"
@@ -328,7 +351,7 @@ getData();
 }
 .datatable-content {
     background-color: white;
-    max-height: 60vh;
+    height: 60vh;
     overflow: auto;
 }
 .datatable-table-header {

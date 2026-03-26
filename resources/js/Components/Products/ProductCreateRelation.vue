@@ -15,54 +15,86 @@
             <h2>Add Products</h2>
         </template>
         <div class="mb-3">
-            <p class="bold">Filter</p>
+            <p class="big bold mb-3">Filter</p>
 
-            <IconField>
-                <InputIcon>
-                    <font-awesome-icon :icon="['fas', 'search']" />
-                </InputIcon>
-                <InputText v-model="search" type="search" placeholder="Search" size="small" />
-            </IconField>
+            <div class="d-flex flex-wrap gap-3">
+                <div>
+                    <label for="search-sku" class="form-label">SKU</label>
+                    <IconField>
+                        <InputIcon>
+                            <font-awesome-icon :icon="['fas', 'search']" />
+                        </InputIcon>
+                        <InputText v-model="search.sku" type="search" placeholder="Search" size="small" />
+                    </IconField>
+                </div>
+                <div>
+                    <label for="search-name" class="form-label">Product Name</label>
+                    <IconField>
+                        <InputIcon>
+                            <font-awesome-icon :icon="['fas', 'search']" />
+                        </InputIcon>
+                        <InputText v-model="search.name" type="search" placeholder="Search" size="small" />
+                    </IconField>
+                </div>
+                <div>
+                    <label for="search-category" class="form-label">Category</label>
+                    <IconField>
+                        <InputIcon>
+                            <font-awesome-icon :icon="['fas', 'search']" />
+                        </InputIcon>
+                        <InputText v-model="search.category" type="search" placeholder="Search" size="small" />
+                    </IconField>
+                </div>
+            </div>
         </div>
-        <table class="table">
-            <thead>
-                <tr class="relation-table-header">
-                    <th style="background-color: lightgray"></th>
-                    <th>SKU</th>
-                    <th>Name</th>
-                    <th>Description</th>
-                    <th>Categories</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr
-                    v-for="product in api.items"
-                    :key="product.id"
-                    :class="{ 'relation-table-active': !!checked.find((temp) => temp.id === product.id) }"
-                >
-                    <td>
-                        <Checkbox
-                            class="form-check-input"
-                            @change="(ev) => toggleChecked(product)"
-                            :id="'checkbox-' + product.id"
-                            :checked="!!checked.find((temp) => temp.id === product.id)"
-                        />
-                    </td>
-                    <td>
-                        <p>{{ product.sku }}</p>
-                    </td>
-                    <td>
-                        <p>{{ product.name }}</p>
-                    </td>
-                    <td>
-                        <p>{{ product.description }}</p>
-                    </td>
-                    <td>
-                        <p>{{ product.categories.map((category) => category.name).join(', ') }}</p>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+        <div style="height: 40vh; overflow-y: auto">
+            <table class="table">
+                <thead>
+                    <tr class="relation-table-header">
+                        <th style="background-color: lightgray"></th>
+                        <th>SKU</th>
+                        <th>Name</th>
+                        <th>Description</th>
+                        <th>Categories</th>
+                    </tr>
+                </thead>
+                <tbody v-if="!api.isLoading">
+                    <tr
+                        v-for="product in api.items"
+                        :key="product.id"
+                        :class="{ 'relation-table-active': !!checked.find((temp) => temp.id === product.id) }"
+                    >
+                        <td>
+                            <Checkbox
+                                class="form-check-input"
+                                @change="(ev) => toggleChecked(product)"
+                                :id="'checkbox-' + product.id"
+                                :checked="!!checked.find((temp) => temp.id === product.id)"
+                            />
+                        </td>
+                        <td>
+                            <p>{{ product.sku }}</p>
+                        </td>
+                        <td>
+                            <p>{{ product.name }}</p>
+                        </td>
+                        <td>
+                            <p>{{ product.description }}</p>
+                        </td>
+                        <td>
+                            <p>{{ product.categories.map((category) => category.name).join(', ') }}</p>
+                        </td>
+                    </tr>
+                </tbody>
+                <tbody v-else>
+                    <tr>
+                        <td colspan="5" class="text-center">
+                            <font-awesome-icon :icon="['fas', 'spinner']" spin size="2x" />
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
 
         <Paginator
             v-model:first="api.meta.first"
@@ -77,6 +109,9 @@
                 <p class="small">Adding {{ checked[current].name }}...</p>
                 <progress :value="current" :max="checked.length - 1" class="w-full h-2"></progress>
             </div>
+            <div v-else-if="checked.length > 0" class="d-flex justify-content-center align-items-center me-2">
+                <p class="small">{{ checked.length }} selected ...</p>
+            </div>
             <button class="btn btn-outline-secondary me-2" @click="showModal = false">Cancel</button>
             <button class="btn btn-primary" @click="addProducts">Add</button>
         </div>
@@ -89,6 +124,7 @@ import Dialog from 'primevue/dialog';
 import { ref, reactive, watch } from 'vue';
 import { Api, FilterOperators } from '@composables/useApi';
 import _ from 'lodash';
+import { onMounted } from 'vue';
 
 const props = defineProps({
     product: Object,
@@ -99,14 +135,28 @@ const current = ref(0);
 const showModal = ref(false);
 const showProgress = ref(false);
 const checked = ref([]);
-const search = ref(null);
+const search = reactive({
+    sku: null,
+    name: null,
+    category: null
+});
 
 const api = reactive(new Api('products'));
 
 const getData = _.debounce(async () => {
+    api.clearFilters();
     api.addGroupFilter('main', 'id', FilterOperators.NOT_EQUALS, props.product.id);
     api.addGroupFilter('parent', 'parents.id', FilterOperators.IS_NULL, props.product.id);
-    api.setSearch(search.value);
+    if (search.sku) {
+        api.addGroupFilter('product', 'sku', FilterOperators.CONTAINS, search.sku);
+    }
+    if (search.name) {
+        api.addGroupFilter('product', 'name', FilterOperators.CONTAINS, search.name, 'orWhere');
+        api.addGroupFilter('product', 'description', FilterOperators.CONTAINS, search.name);
+    }
+    if (search.category) {
+        api.addGroupFilter('category', 'categories.name', FilterOperators.CONTAINS, search.category);
+    }
     await api.getData();
 }, 500);
 
@@ -138,6 +188,7 @@ const addProducts = async () => {
         }
     }
     notyf.success('Products added successfully');
+    api.meta.page = 1;
     getData();
     showProgress.value = false;
     checked.value = [];
@@ -146,10 +197,20 @@ const addProducts = async () => {
 watch(search, () => {
     getData();
 });
-getData();
+onMounted(() => {
+    getData();
+});
+
+watch(showModal, () => {
+    if (showModal.value) {
+        getData();
+    }
+});
 </script>
 <style scoped>
 .relation-table-header > th {
+    position: sticky;
+    top: 0;
     background-color: lightgray;
     color: gray;
     font-size: 14px;
