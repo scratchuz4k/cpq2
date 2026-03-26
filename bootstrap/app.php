@@ -75,7 +75,11 @@ return Application::configure(basePath: dirname(__DIR__))
             $message = $safeMessages[$status] ?? 'An unexpected error occurred.';
 
             if ($request->expectsJson()) {
-                return response()->json(['message' => $message], $status);
+                if (array_key_exists($status, $safeMessages)) {
+                    return response()->json(['message' => $message], $status);
+                }
+
+                return $response;
             }
 
             if ($status === 419) {

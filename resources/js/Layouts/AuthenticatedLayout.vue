@@ -103,7 +103,13 @@ const hasActionBarContent = computed(() => {
                     </li>
                     <li class="nav-item">
                         <a
+                            v-if="hasRole('Super Admin') || can('viewAny tenant')"
                             class="nav-link d-flex align-items-center h-100"
+                            :href="
+                                hasRole('Super Admin')
+                                    ? route('tenants.index')
+                                    : route('tenants.edit', { tenant: currentTenant.id })
+                            "
                             role="button"
                             v-tooltip
                             data-bs-toggle="tooltip"
@@ -112,6 +118,16 @@ const hasActionBarContent = computed(() => {
                         >
                             <font-awesome-icon :icon="['far', 'building']" />
                         </a>
+                        <span
+                            v-else
+                            class="nav-link d-flex align-items-center h-100"
+                            v-tooltip
+                            data-bs-toggle="tooltip"
+                            data-bs-placement="top"
+                            :title="currentTenant.name + ' (T' + currentTenant.id + ')'"
+                        >
+                            <font-awesome-icon :icon="['far', 'building']" />
+                        </span>
                     </li>
 
                     <li class="nav-item">
