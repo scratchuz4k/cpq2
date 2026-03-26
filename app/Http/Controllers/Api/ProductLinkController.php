@@ -77,6 +77,8 @@ class ProductLinkController extends BaseController
      */
     public function destroy(ProductLink $productLink)
     {
-        //
+        $productLink->delete();
+
+        return response()->json(null, 204);
     }
 }

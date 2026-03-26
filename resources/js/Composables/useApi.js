@@ -25,6 +25,8 @@ export class Api {
     groupedfilters = [];
     order = 'desc';
     orderBy = 'updated_at';
+    group = null;
+    groupOrder = 'asc';
     search = null;
     meta = null;
 
@@ -36,6 +38,7 @@ export class Api {
         this.route = route;
         this.meta = new ApiMeta();
         this.items = ref([]);
+        this.isLoading = ref(false);
     }
 
     /**
@@ -47,7 +50,12 @@ export class Api {
      */
 
     addFilter(column, operator, value, condition = 'where') {
-        this.filters.push({ column: column, operator: operator, value: value, function: condition });
+        this.filters.push({
+            column: column,
+            operator: operator,
+            value: value,
+            function: condition
+        });
     }
     /**
      * Adds a filter to querystring in the url as a parameter
@@ -74,6 +82,7 @@ export class Api {
 
     clearFilters() {
         this.filters = [];
+        this.groupedfilters = [];
     }
 
     /**
@@ -92,7 +101,28 @@ export class Api {
         this.search = search;
     }
 
+    /**
+     * Adds a search term to be sent to the backend for searching using the columns
+     * @param {group} group
+     * @param {('asc'|'desc')} order
+     */
+    setGroup(group, order = 'asc') {
+        this.group = group;
+        this.groupOrder = order;
+    }
+
+    /**
+     * Adds a search term to be sent to the backend for searching using the columns
+     * @param {group} column
+     * @param {('asc'|'desc')} order
+     */
+    setOrder(column, order = 'asc') {
+        this.orderBy = column;
+        this.order = order;
+    }
+
     getData = async () => {
+        this.isLoading.value = true;
         let object = {
             order: this.order,
             orderBy: this.orderBy,
@@ -106,12 +136,19 @@ export class Api {
             search: this.search
         };
 
+        if (this.group) {
+            object.group = this.group;
+            object.groupOrder = this.groupOrder;
+        }
+
         try {
             let res = await axios.get('/api/' + this.route + '?' + qs.stringify(object));
             this.meta.total = res.data.meta?.total ?? res.data.total;
             this.meta.first = (this.meta.page - 1) * this.meta.limit;
             this.items.value = res.data.data;
+            this.isLoading.value = false;
         } catch (ex) {
+            this.isLoading.value = false;
             notyf.error(ex.response.data.message);
         }
     };

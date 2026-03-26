@@ -12,6 +12,7 @@ import { can, hasRole } from '@/Composables/useAuth.js';
 import pluralize from 'pluralize';
 import { exportData } from '@/Composables/export.js';
 import { DatatableOptions } from './DatatableOptions';
+import { Api } from '@composables/useApi';
 
 const slots = useSlots();
 const usedSlots = Object.keys(slots);
@@ -22,6 +23,7 @@ const props = defineProps({
 
 const activeFilters = ref(false);
 const items = ref([]);
+const api = reactive(new Api(props.options.route));
 
 const has_export_permission =
     can(`export ${pluralize.singular(props.options.route.replace(/^\//, ''))}`) || hasRole('Super Admin');
@@ -30,33 +32,25 @@ const form = reactive({
     filters: [],
     order: props.options.sort.order,
     orderBy: props.options.sort.orderBy,
-    limit: 20,
-    page: 1,
-    total: 0,
-    first: 1,
     search: null
 });
 
 const getData = async () => {
-    let string = queryString.stringify({
-        ...form,
-        page: form.page,
-        columns: props.options.columns
-            .filter((data) => data.column !== 'actions')
-            .map((x) => x.column)
-            .join(','),
-        filters: [...form.filters.filter((x) => x.value != null), ...props.options.query],
-        search: form.search
+    api.setColumns(props.options.columns.filter((data) => data.column !== 'actions').map((x) => x.column));
+
+    form.filters
+        .filter((x) => x.value != null)
+        .forEach((x) => {
+            api.addFilter(x.column, x.operator, x.value);
+        });
+
+    props.options.query.forEach((x) => {
+        api.addFilter(x.column, x.operator, x.value);
     });
 
-    try {
-        let res = await axios.get('/api/' + props.options.route + '?' + string);
-        items.value = res.data.data;
-        form.total = res.data.meta?.total ?? res.data.total;
-        form.first = (form.page - 1) * form.limit;
-    } catch (ex) {
-        notyf.error(ex.response.data.message);
-    }
+    api.setOrder(form.orderBy, form.order);
+    api.setSearch(form.search);
+    await api.getData();
 };
 
 const sortBy = (column) => {
@@ -65,13 +59,9 @@ const sortBy = (column) => {
     form.orderBy = column;
 };
 
-const handlePaginator = (ev) => {
-    form.limit = ev.rows;
-    form.page = ev.page + 1;
-    getData();
-};
 const clearFilters = () => {
     form.filters.forEach((x) => (x.value = null));
+    getData();
 };
 
 const deleteRecord = async (id) => {
@@ -82,7 +72,7 @@ const deleteRecord = async (id) => {
             return;
         }
         try {
-            let res = await axios.delete('/api' + props.options.route + '/' + id);
+            let res = await axios.delete('/api/' + props.options.route + '/' + id);
             getData();
             notyf.success('Removed with success');
         } catch (err) {
@@ -202,7 +192,7 @@ getData();
         </div>
     </div>
     <div class="datatable-content">
-        <template v-if="items.length">
+        <template v-if="api.items.length">
             <table :id="props.options.id">
                 <thead>
                     <tr>
@@ -210,6 +200,7 @@ getData();
                             v-for="(data, key) in props.options.columns.filter((x) => !x.hide)"
                             :key="key"
                             class="datatable-table-header"
+                            :style="['position: sticky; top: 0;', data.sticky ? 'z-index: 3' : 'z-index: 2']"
                             :class="[
                                 'datatable-col',
                                 data.sticky ? `datatable-col-sticky datatable-col-sticky-${key + 1}` : '',
@@ -244,13 +235,15 @@ getData();
                             </div>
                         </th>
                         <th
-                            v-if="props.options.allow.update || props.options.allow.link || props.options.allow.delete"
+                            v-if="props.options.allow.update || props.options.allow.link || props.options.allow.destroy"
+                            class="datatable-table-header"
                             :class="['datatable-col', 'p-0']"
+                            style="position: sticky; top: 0; z-index: 2"
                         ></th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="(item, index) in items" :key="index">
+                    <tr v-for="(item, index) in api.items" :key="index">
                         <td
                             v-for="(data, key) in props.options.columns.filter((x) => !x.hide)"
                             :style="data.style"
@@ -275,7 +268,7 @@ getData();
                             <template v-else>{{ getValue(item, data.column) }}</template>
                         </td>
                         <td
-                            v-if="props.options.allow.update || props.options.allow.link || props.options.allow.delete"
+                            v-if="props.options.allow.update || props.options.allow.link || props.options.allow.destroy"
                             :class="['datatable-col', 'p-0']"
                         >
                             <div class="d-flex justify-content-center">
@@ -299,7 +292,7 @@ getData();
                                     </Link>
                                 </template>
 
-                                <template v-if="props.options.allow.delete">
+                                <template v-if="props.options.allow.destroy">
                                     <button
                                         type="button"
                                         :id="'datatable-btn-' + index + '-delete'"
@@ -321,11 +314,11 @@ getData();
         </div>
     </div>
     <Paginator
-        v-model:first="form.first"
-        :rows="form.limit"
-        :totalRecords="form.total"
-        :rowsPerPageOptions="[20, 30, 50]"
-        @page="handlePaginator"
+        v-model:first="api.meta.first"
+        :rows="api.meta.limit"
+        :totalRecords="api.meta.total"
+        :rowsPerPageOptions="[10, 20, 50]"
+        @page="api.handlePaginator"
     >
     </Paginator>
 </template>

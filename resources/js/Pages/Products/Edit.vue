@@ -15,6 +15,7 @@ import { DateTime } from 'luxon';
 import _ from 'lodash';
 import format from '@/Composables/format.js';
 import { DatatableOptions } from '@/Components/Datatables/DatatableOptions.js';
+import { FilterOperators } from '@composables/useApi';
 
 const props = defineProps({
     product: Object,
@@ -112,7 +113,7 @@ const onRowEditSave = async (event) => {
 const options = new DatatableOptions('product-links', 'product-links');
 options.addColumn('child.name', 'Name', { width: '50%' }, { hide: false, sticky: true });
 options.addColumn('child.sku', 'SKU', null, { hide: false, sticky: true });
-options.addColumn('child.description', 'description', null, { hide: false, sticky: false });
+options.addColumn('child.description', 'description', null, { hide: true, sticky: false });
 options.addColumn('child.status', 'status', null, { hide: false, sticky: false });
 options.addColumn('child.status', 'status', null, { hide: false, sticky: false });
 options.addColumn('child.status', 'status', null, { hide: false, sticky: false });
@@ -127,8 +128,8 @@ options.addColumn('child.status', 'status', null, { hide: false, sticky: false }
 options.addColumn('child.status', 'status', null, { hide: false, sticky: false });
 options.addColumn('child.status', 'status', null, { hide: false, sticky: false });
 
-options.addQuery('product_id', 'equals', product.id);
-options.setAllowedActions({ link: true });
+options.addQuery('product_id', FilterOperators.EQUALS, product.id);
+options.setAllowedActions({ destroy: true, link: true });
 
 const items = ref([
     { label: 'Home', url: '/' },

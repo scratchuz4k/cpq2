@@ -68,7 +68,7 @@
             v-model:first="api.meta.first"
             :rows="api.meta.limit"
             :totalRecords="api.meta.total"
-            :rowsPerPageOptions="[2, 30, 50]"
+            :rowsPerPageOptions="[10, 20, 50]"
             @page="api.handlePaginator"
         >
         </Paginator>
