@@ -221,7 +221,7 @@ watch(searchInput, () => {
                     <div class="actions d-flex align-items-center">
                         <InputQuantity
                             :id="'product-' + index"
-                            style="max-width: 120px"
+                            style="max-width: 130px"
                             v-model="proxyValue.quantity"
                             @change="(val) => checkQuantity(proxyValue, val, true)"
                         />

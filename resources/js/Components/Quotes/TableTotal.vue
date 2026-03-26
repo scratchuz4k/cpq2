@@ -147,11 +147,11 @@ watch(
     <div class="mobile-price-group-heading d-flex justify-content-between align-items-center">
         <h3>Overall Totals</h3>
     </div>
-    <table class="table-dealmaker table table-bordered text-end">
+    <table id="table-totals" class="table-dealmaker table table-bordered text-end">
         <colgroup>
-            <col style="width: 70%" class="text-start" />
-            <col style="width: 9%" />
-            <col style="width: 20%" />
+            <col class="column-name-header text-start" style="width: 70%" />
+            <col class="column-discount-header" style="width: 9%" />
+            <col class="column-total-header" style="width: 20%" />
             <col v-if="!props.preview" style="width: 60px" class="text-center" />
         </colgroup>
         <tbody>
