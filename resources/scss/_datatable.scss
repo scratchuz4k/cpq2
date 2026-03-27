@@ -14,9 +14,9 @@
         color: var(--table-header-dark-grey);
         font-size: 12px;
         vertical-align: middle;
-        position: sticky;
-        top: -1px;
-        z-index: 1;
+        //position: sticky;
+        //top: -1px;
+        //z-index: 1;
         cursor: pointer;
         font-weight: normal;
         border: none;
@@ -235,15 +235,13 @@
     margin: 0;
     width: 100%;
 }
-
-#print #table-totals colgroup .column-name-header {
-    width: 68% !important;
+#table-totals .column-total-header,
+#table-totals .column-total-body {
+    width: 23% !important;
 }
 
-#print #table-totals colgroup .column-discount-header {
-    width: 12% !important;
-}
-
-#print #table-totals colgroup .column-total-header {
-    width: 10% !important;
+#print .column-total-header,
+#print .column-total-body {
+    font-weight: bold !important;
+    width: 17% !important;
 }
