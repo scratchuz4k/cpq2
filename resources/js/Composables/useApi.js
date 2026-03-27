@@ -28,6 +28,7 @@ export class Api {
     group = null;
     groupOrder = 'asc';
     search = null;
+    route = null;
     meta = null;
 
     /**

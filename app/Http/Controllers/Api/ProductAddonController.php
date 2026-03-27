@@ -4,11 +4,11 @@ namespace App\Http\Controllers\Api;
 
 use App\Helpers\DataProvider;
 use App\Http\Controllers\BaseController;
+use App\Http\Resources\ProductAddonResource;
 use App\Models\ProductAddon;
 use App\Services\ProductAddonService;
 use Exception;
 use Illuminate\Http\Request;
-use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\DB;
 
 class ProductAddonController extends BaseController
@@ -33,7 +33,7 @@ class ProductAddonController extends BaseController
             return handleException($e);
         }
 
-        return JsonResource::collection($data);
+        return ProductAddonResource::collection($data);
     }
 
     /**
@@ -48,7 +48,7 @@ class ProductAddonController extends BaseController
             return handleException($e);
         }
 
-        return new JsonResource($price->refresh());
+        return new ProductAddonResource($price->refresh());
     }
 
     /**
@@ -71,7 +71,7 @@ class ProductAddonController extends BaseController
             return handleException($e);
         }
 
-        return new JsonResource($product);
+        return new ProductAddonResource($product);
     }
 
     /**
@@ -79,6 +79,8 @@ class ProductAddonController extends BaseController
      */
     public function destroy(ProductAddon $productAddon)
     {
-        //
+        $productAddon->delete();
+
+        return response()->noContent();
     }
 }

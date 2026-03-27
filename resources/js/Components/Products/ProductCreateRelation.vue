@@ -146,7 +146,7 @@ const api = reactive(new Api('products'));
 const getData = _.debounce(async () => {
     api.clearFilters();
     api.addGroupFilter('main', 'id', FilterOperators.NOT_EQUALS, props.product.id);
-    api.addGroupFilter('parent', 'parents.id', FilterOperators.IS_NULL, props.product.id);
+    api.addGroupFilter('parent', 'related.id', FilterOperators.IS_NULL, props.product.id);
     if (search.sku) {
         api.addGroupFilter('product', 'sku', FilterOperators.CONTAINS, search.sku);
     }
@@ -192,7 +192,7 @@ const addProducts = async () => {
     getData();
     showProgress.value = false;
     checked.value = [];
-    emitter.emit('datatable-refresh:product-links');
+    emitter.emit('datatable-refresh:' + props.route);
 };
 watch(search, () => {
     getData();

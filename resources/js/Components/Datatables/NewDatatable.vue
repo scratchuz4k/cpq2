@@ -5,14 +5,13 @@ import { Link } from '@inertiajs/vue3';
 import Paginator from 'primevue/paginator';
 import { IconField, InputIcon, InputText } from 'primevue';
 
-import { reactive, ref, useSlots, watch, watchEffect } from 'vue';
-import queryString from 'qs';
+import { reactive, ref, useSlots, watch, markRaw } from 'vue';
 import axios from 'axios';
 import { can, hasRole } from '@/Composables/useAuth.js';
 import pluralize from 'pluralize';
 import { exportData } from '@/Composables/export.js';
 import { DatatableOptions } from './DatatableOptions';
-import { Api } from '@composables/useApi';
+import { Api } from '../../Composables/useApi';
 
 const slots = useSlots();
 const usedSlots = Object.keys(slots);
@@ -22,11 +21,7 @@ const props = defineProps({
 });
 
 const activeFilters = ref(false);
-const items = ref([]);
 const api = reactive(new Api(props.options.route));
-
-const has_export_permission =
-    can(`export ${pluralize.singular(props.options.route.replace(/^\//, ''))}`) || hasRole('Super Admin');
 
 const form = reactive({
     filters: {},
@@ -45,7 +40,12 @@ setFilters();
 
 const getData = async () => {
     api.clearFilters();
-    api.setColumns(props.options.columns.filter((data) => data.column !== 'actions').map((x) => x.column));
+    api.setColumns(
+        props.options.columns
+            .filter((x) => x.isSearchable)
+            .filter((data) => data.column !== 'actions')
+            .map((x) => x.column)
+    );
 
     Object.values(form.filters)
         .filter((x) => x.value != null)
@@ -70,7 +70,6 @@ const sortBy = (column) => {
 
 const clearFilters = () => {
     Object.values(form.filters).forEach((x) => (x.value = null));
-    getData();
 };
 
 const deleteRecord = async (id) => {
@@ -125,12 +124,15 @@ const getExportData = async () => {
         .join(',');
 
     let filters = {
-        filters: JSON.stringify([...form.filters.filter((x) => x.value != null), ...props.options.query]),
+        filters: JSON.stringify([
+            ...Object.values(form.filters).filter((x) => x.value != null),
+            ...props.options.query
+        ]),
         search: form.search,
         columns: columns
     };
 
-    exportData(filters, props.options.route);
+    exportData(filters, '/' + props.options.route);
 
     setTimeout(() => {
         exportDisabled.value = false;
@@ -190,8 +192,8 @@ getData();
                 <p class="small">Clear</p>
             </button>
             <button
-                v-if="has_export_permission"
-                :disabled="!items.length || exportDisabled"
+                v-if="props.options.allow.export"
+                :disabled="!api.items.length || exportDisabled"
                 :severity="'secondary'"
                 class="btn btn-outline-primary btn-sm d-flex justify-content-center align-items-center p-0 px-2 me-2"
                 @click="getExportData()"
@@ -202,19 +204,20 @@ getData();
             </button>
         </div>
     </div>
+
     <div class="datatable-content">
-        <table :id="props.options.id">
+        <table class="w-100" :id="props.options.id">
             <thead>
                 <tr>
                     <th
-                        v-for="(data, key) in props.options.columns.filter((x) => !x.hide)"
+                        v-for="(data, key) in props.options.columns.filter((x) => !x.isHidden)"
                         :key="key"
                         class="datatable-table-header"
-                        :style="['position: sticky; top: 0;', data.sticky ? 'z-index: 3' : 'z-index: 2']"
+                        :style="['position: sticky; top: 0;', data.isSticky ? 'z-index: 3' : 'z-index: 2']"
                         :class="[
                             'datatable-col',
-                            data.sticky ? `datatable-col-sticky datatable-col-sticky-${key + 1}` : '',
-                            key === props.options.columns.filter((x) => x.sticky).length - 1
+                            data.isSticky ? `datatable-col-sticky datatable-col-sticky-${key + 1}` : '',
+                            key === props.options.columns.filter((x) => x.isSticky).length - 1
                                 ? 'datatable-col-last-sticky'
                                 : ''
                         ]"
@@ -224,7 +227,7 @@ getData();
                             class="d-flex justify-content-between align-items-center w-100 pe-3"
                         >
                             <p
-                                class="d-inline-flex align-items-center"
+                                class="datatable-table-header-text d-inline-flex align-items-center"
                                 @click="sortBy(data.column)"
                                 :style="{
                                     textDecoration: data.column == form.orderBy ? 'underline' : 'none'
@@ -258,14 +261,14 @@ getData();
                 <tbody>
                     <tr v-for="(item, index) in api.items" :key="index">
                         <td
-                            v-for="(data, key) in props.options.columns.filter((x) => !x.hide)"
+                            v-for="(data, key) in props.options.columns.filter((x) => !x.isHidden)"
                             :style="data.style"
                             :key="key"
                             class="datatable-table-column"
                             :class="[
                                 'datatable-col',
-                                data.sticky ? `datatable-col-sticky datatable-col-sticky-${key + 1}` : '',
-                                key === props.options.columns.filter((x) => x.sticky).length - 1
+                                data.isSticky ? `datatable-col-sticky datatable-col-sticky-${key + 1}` : '',
+                                key === props.options.columns.filter((x) => x.isSticky).length - 1
                                     ? 'datatable-col-last-sticky'
                                     : ''
                             ]"
@@ -278,7 +281,7 @@ getData();
                                 :value="getValue(item, data.column)"
                                 :id="`${data.column}-${index}`"
                             />
-                            <template v-else>{{ getValue(item, data.column) }}</template>
+                            <p v-else>{{ getValue(item, data.column) }}</p>
                         </td>
                         <td
                             v-if="props.options.allow.update || props.options.allow.link || props.options.allow.destroy"
@@ -323,7 +326,7 @@ getData();
             <tbody v-else>
                 <tr>
                     <td colspan="100%" class="text-center">
-                        <font-awesome-icon :icon="['fas', 'spinner']" spin size="2x" />
+                        <font-awesome-icon :icon="['fas', 'spinner']" spin size="2x" class="mt-3" />
                     </td>
                 </tr>
             </tbody>
@@ -358,18 +361,25 @@ getData();
     background-color: #e8e8e8;
     border-top: 1px solid #dee2e6;
 }
+
+.datatable-table-header-text {
+    font-weight: 500;
+    font-size: 12px;
+    line-height: 20px;
+    vertical-align: bottom;
+    color: #646464;
+}
 .datatable-table-column {
     background-color: white;
 }
 
 .datatable-col {
-    padding: 0.75rem;
+    padding: 0.5rem;
     vertical-align: middle;
     border-bottom: 1px solid #dee2e6;
 }
 
 .datatable-col-sticky {
-    padding: 0.75rem;
     vertical-align: middle;
     min-width: 150px !important;
 }
@@ -392,6 +402,5 @@ getData();
 
 .datatable-col-last-sticky {
     border-right: 2px solid #dee2e6;
-    box-shadow: 5px 0px 13.8px 0px #d4d4d4f2;
 }
 </style>

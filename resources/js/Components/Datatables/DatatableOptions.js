@@ -22,11 +22,19 @@ export class DatatableOptions {
      * @param {string} key
      * @param {string} title
      * @param {object} style
-     * @param {boolean} hide
-     * @param {boolean} sticky
+     * @param {boolean} isHidden
+     * @param {boolean} isSticky
+     * @param {boolean} isSearchable
      */
-    addColumn(column, title, style = {}, { hide = false, sticky = false } = {}) {
-        this.columns.push({ column: column, title: title, style: style, hide: hide, sticky: sticky });
+    addColumn(column, title, style = {}, { isHidden = false, isSticky = false, isSearchable = true } = {}) {
+        this.columns.push({
+            column: column,
+            title: title,
+            style: style,
+            isHidden: isHidden,
+            isSticky: isSticky,
+            isSearchable: isSearchable
+        });
         this.filters.push({ column: column, value: null, operator: FilterOperators.CONTAINS });
     }
 

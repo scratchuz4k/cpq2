@@ -20,8 +20,8 @@ class ProductLinkResource extends JsonResource
 
         return [
             ...$this->resource->toArray(),
-            'child' => $this->child,
-            'product' => $this->product,
+            'child' => $this->child->load(['categories', 'prices', 'steps']),
+            'product' => $this->product->load(['categories', 'prices']),
         ];
     }
 }

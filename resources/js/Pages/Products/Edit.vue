@@ -110,26 +110,36 @@ const onRowEditSave = async (event) => {
     }
 };
 
-const options = new DatatableOptions('product-links', 'product-links');
-options.addColumn('child.name', 'Name', { width: '50%' }, { hide: false, sticky: true });
-options.addColumn('child.sku', 'SKU', null, { hide: false, sticky: true });
-options.addColumn('child.description', 'description', null, { hide: true, sticky: false });
-options.addColumn('child.status', 'status', null, { hide: false, sticky: false });
-options.addColumn('child.status', 'status', null, { hide: false, sticky: false });
-options.addColumn('child.status', 'status', null, { hide: false, sticky: false });
-options.addColumn('child.status', 'status', null, { hide: false, sticky: false });
-options.addColumn('child.status', 'status', null, { hide: false, sticky: false });
-options.addColumn('child.status', 'status', null, { hide: false, sticky: false });
-options.addColumn('child.status', 'status', null, { hide: false, sticky: false });
-options.addColumn('child.status', 'status', null, { hide: false, sticky: false });
-options.addColumn('child.status', 'status', null, { hide: false, sticky: false });
-options.addColumn('child.status', 'status', null, { hide: false, sticky: false });
-options.addColumn('child.status', 'status', null, { hide: false, sticky: false });
-options.addColumn('child.status', 'status', null, { hide: false, sticky: false });
-options.addColumn('child.status', 'status', null, { hide: false, sticky: false });
+const optionLinks = new DatatableOptions('product-links', 'product-links');
+optionLinks.addColumn('child.name', 'Name', null, { isSticky: true });
+optionLinks.addColumn('child.description', 'Description', null, {});
+optionLinks.addColumn('child.status', 'Status', null, {});
+optionLinks.addColumn('child.sku', 'SKU', null, { isSticky: true });
+optionLinks.addColumn('child.prices.cost', 'Cost Price', { width: '150px' }, {});
+optionLinks.addColumn('child.prices.net_spa', 'Net Price', { width: '150px' }, { isSearchable: false });
+optionLinks.addColumn('child.steps.name', 'Solution Type', { width: '250px' }, {});
 
-options.addQuery('product_id', FilterOperators.EQUALS, product.id);
-options.setAllowedActions({ destroy: true, link: true });
+optionLinks.addQuery('product_id', FilterOperators.EQUALS, product.id);
+optionLinks.setAllowedActions({
+    destroy: true,
+    allowExport: can(`export product`) || hasRole('Super Admin')
+});
+
+const optionAddons = new DatatableOptions('product-addons', 'product-addons');
+optionAddons.addColumn('addon.name', 'Name', null, { isSticky: true });
+optionAddons.addColumn('addon.sku', 'SKU', null, { isSticky: true });
+optionAddons.addColumn('addon.description', 'Description', null, {});
+optionAddons.addColumn('addon.categories.name', 'Categories', null, {});
+optionAddons.addColumn('addon.status', 'Status', null, {});
+optionAddons.addColumn('addon.prices.cost', 'Cost Price', { width: '150px' }, {});
+optionAddons.addColumn('addon.prices.net_spa', 'Net Price', { width: '150px' }, { isSearchable: false });
+optionAddons.addColumn('addon.steps.name', 'Solution Type', { width: '250px' }, {});
+
+optionAddons.addQuery('product_id', FilterOperators.EQUALS, product.id);
+optionAddons.setAllowedActions({
+    destroy: true,
+    allowExport: can(`export product`) || hasRole('Super Admin')
+});
 
 const items = ref([
     { label: 'Home', url: '/' },
@@ -410,11 +420,20 @@ const items = ref([
             <tab title="Linked Products">
                 <div class="d-flex justify-content-between my-3">
                     <div>
-                        <h3>Products (1)</h3>
+                        <h3>Products</h3>
                     </div>
                     <div><ProductCreateRelation route="product-links" :product="product" column="child_id" /></div>
                 </div>
-                <NewDatatable :options="options"></NewDatatable>
+                <NewDatatable :options="optionLinks"></NewDatatable>
+            </tab>
+            <tab title="Addons">
+                <div class="d-flex justify-content-between my-3">
+                    <div>
+                        <h3>Addons</h3>
+                    </div>
+                    <div><ProductCreateRelation route="product-addons" :product="product" column="addon_id" /></div>
+                </div>
+                <NewDatatable :options="optionAddons"></NewDatatable>
             </tab>
         </tabs>
     </AuthenticatedLayout>

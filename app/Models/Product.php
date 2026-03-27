@@ -75,6 +75,26 @@ class Product extends Model
         );
     }
 
+    public function related()
+    {
+        return $this->belongsToMany(
+            Product::class,
+            'product_addons',
+            'addon_id',         // pivot key referencing related products (addons)
+            'product_id'        // pivot key referencing this product (parent)
+        );
+    }
+
+    public function addons()
+    {
+        return $this->belongsToMany(
+            Product::class,
+            'product_addons',
+            'product_id',      // pivot key referencing this product (parent)
+            'addon_id'         // pivot key referencing related products (addons)
+        );
+    }
+
     public function prices(): HasMany
     {
         return $this->hasMany(Price::class);
