@@ -13,6 +13,7 @@
             :id="'input-' + props.id + '-quantity'"
             type="number"
             :value="proxyValue"
+            :max="props.maxValue"
             class="input-quantity"
             @input="checkValue($event)"
         />
@@ -21,19 +22,22 @@
             class="btn-quantity btn-add-quantity"
             type="button"
             @click="() => proxyValue++"
-            :disabled="props.disabled"
+            :disabled="props.disabled || proxyValue >= props.maxValue"
         >
             <font-awesome-icon :icon="['fas', 'plus']" />
         </button>
     </div>
 </template>
 <script setup>
-import _ from 'lodash';
 import { computed } from 'vue';
 const props = defineProps({
     id: String,
     modelValue: Number,
-    disabled: Boolean
+    disabled: Boolean,
+    maxValue: {
+        type: Number,
+        default: 9999
+    }
 });
 
 const emit = defineEmits(['update:modelValue', 'change']);
@@ -48,12 +52,19 @@ const proxyValue = computed({
 });
 
 const checkValue = (event) => {
-    const temp = parseInt(event.target.value);
-    if (isNaN(temp)) {
-        proxyValue.value = 0;
-        return;
+    const temp = parseInt(event.target.value, 10);
+
+    let newValue = temp;
+    if (isNaN(newValue)) {
+        newValue = 0;
     }
-    proxyValue.value = temp;
+    const cap = Number.isFinite(props.maxValue) ? props.maxValue : 9999;
+    if (newValue > cap) {
+        newValue = cap;
+    }
+
+    proxyValue.value = newValue;
+    event.target.value = String(newValue);
 };
 </script>
 <style scoped>

@@ -188,12 +188,12 @@
 
 #print .column-name-header,
 #print .column-name-body {
-    width: 50%;
+    width: 45%;
 }
 
 #print #table-one_off .column-name-header,
 #print #table-one_off .column-name-body {
-    width: 60% !important;
+    width: 55% !important;
 }
 
 .column-total-header,
@@ -221,7 +221,7 @@
 .column-margin-body,
 .column-price-header,
 .column-price-body {
-    text-align: right;
+    text-align: center;
 }
 
 .column-speed-body,
@@ -234,4 +234,16 @@
     font-size: 14px !important;
     margin: 0;
     width: 100%;
+}
+
+#print #table-totals colgroup .column-name-header {
+    width: 68% !important;
+}
+
+#print #table-totals colgroup .column-discount-header {
+    width: 12% !important;
+}
+
+#print #table-totals colgroup .column-total-header {
+    width: 10% !important;
 }

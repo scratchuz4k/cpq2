@@ -1,6 +1,6 @@
 <template>
-    <div class="compare-bar" :style="{ height: show ? '100vh' : '80px', bottom: show ? '0' : '73px' }">
-        <div class="container" style="height: 80px; cursor: pointer">
+    <div class="compare-bar" :style="{ height: show ? '100vh' : '60px', bottom: show ? '0' : '73px' }">
+        <div class="container" style="height: 60px; cursor: pointer">
             <div class="row h-100">
                 <div class="w-20" @click="() => (show = !show)">
                     <div class="d-flex align-items-center justify-content-start h-100">
@@ -14,9 +14,7 @@
                             style="font-size: 24px; color: var(--color-purple)"
                             :icon="['fas', 'chevron-down']"
                         />
-                        <p class="big bold ms-2" style="color: var(--color-purple)">
-                            {{ show ? 'Close' : 'Open' }}
-                        </p>
+                        <p class="big bold ms-3">Compare</p>
                     </div>
                 </div>
                 <div v-for="(item, index) in selectedItems" class="w-20">
@@ -32,10 +30,9 @@
                             />
                         </div>
                         <div class="w-100 ms-2">
-                            <p class="bold truncate-1-line">
+                            <small class="bold truncate-1-lines">
                                 {{ item.name }}
-                            </p>
-                            <p class="truncate-1-line" :title="item.sku">{{ item.sku }}</p>
+                            </small>
                         </div>
                         <div class="me-2">
                             <button @click="() => removeCompareItem(index)" class="btn">
@@ -49,9 +46,9 @@
         <div
             v-if="show"
             class="container product-info"
-            style="overflow-y: scroll; overflow-x: hidden; height: calc(100% - 80px - 100px)"
+            style="overflow-y: auto; overflow-x: hidden; height: calc(100% - 133px)"
         >
-            <div class="panel h-100">
+            <div class="panel h-100 px-0 mb-0">
                 <h3 class="mb-3">General</h3>
                 <table class="table table-bordered">
                     <tbody>
@@ -242,6 +239,7 @@
                         </tr>
                     </tbody>
                 </table>
+                <div style="height: 20px"></div>
             </div>
         </div>
     </div>
@@ -281,11 +279,15 @@ watch(show, () => {
     position: sticky;
     left: 0;
     right: 0;
-    background: white;
-    z-index: 999;
+    background: #f6f6f6;
+    z-index: 98;
     transition: height 0.5s ease;
     border-top: 1px solid #e0e0e0;
     box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.compare-bar .panel {
+    background: transparent !important;
 }
 
 .table tbody th {
@@ -322,15 +324,5 @@ watch(show, () => {
 .w-20 {
     flex: 0 0 auto;
     width: 20%;
-}
-
-.truncate-1-line {
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 1;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    line-height: 1.5em; /* or a fixed px value, e.g. 24px */
-    height: calc(1.5em * 1); /* 3 lines × line-height */
 }
 </style>
