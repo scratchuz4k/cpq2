@@ -62,7 +62,7 @@ class ProductController extends BaseController
         return new LengthAwarePaginator(
             $items,
             $paginator['total'],
-            $paginator['limit'],
+            $paginator['perPage'],
             $paginator['currentPage'],
         );
     }

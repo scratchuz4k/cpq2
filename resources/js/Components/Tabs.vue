@@ -71,6 +71,7 @@ export default defineComponent({
 .tab-link {
     border: 0;
     background-color: transparent;
+    vertical-align: middle;
 }
 
 .tab-item.active > .tab-link {

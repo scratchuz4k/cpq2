@@ -25,6 +25,9 @@ return Application::configure(basePath: dirname(__DIR__))
             Route::prefix('api')
                 ->name('api.')
                 ->group(base_path('routes/api.php'));
+            Route::prefix('bulk')
+                ->name('bulk.')
+                ->group(base_path('routes/bulk.php'));
 
             Route::middleware('web')
                 ->group(base_path('routes/web.php'));

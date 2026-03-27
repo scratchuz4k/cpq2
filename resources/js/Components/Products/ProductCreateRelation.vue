@@ -122,14 +122,14 @@ import { IconField, InputIcon, InputText } from 'primevue';
 import Paginator from 'primevue/paginator';
 import Dialog from 'primevue/dialog';
 import { ref, reactive, watch } from 'vue';
-import { Api, FilterOperators } from '@composables/useApi';
+import { Api, FilterOperators } from '../../Composables/useApi';
 import _ from 'lodash';
-import { onMounted } from 'vue';
 
 const props = defineProps({
     product: Object,
     route: String,
-    column: String
+    column: String,
+    queries: Array
 });
 const current = ref(0);
 const showModal = ref(false);
@@ -146,7 +146,11 @@ const api = reactive(new Api('products'));
 const getData = _.debounce(async () => {
     api.clearFilters();
     api.addGroupFilter('main', 'id', FilterOperators.NOT_EQUALS, props.product.id);
-    api.addGroupFilter('parent', 'related.id', FilterOperators.IS_NULL, props.product.id);
+
+    props.queries.forEach((query) => {
+        api.addGroupFilter(query.group, query.column, query.operator, query.value);
+    });
+
     if (search.sku) {
         api.addGroupFilter('product', 'sku', FilterOperators.CONTAINS, search.sku);
     }
@@ -197,12 +201,10 @@ const addProducts = async () => {
 watch(search, () => {
     getData();
 });
-onMounted(() => {
-    getData();
-});
 
 watch(showModal, () => {
     if (showModal.value) {
+        api.isLoading = true;
         getData();
     }
 });

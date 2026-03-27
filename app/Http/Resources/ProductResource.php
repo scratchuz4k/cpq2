@@ -28,6 +28,7 @@ class ProductResource extends JsonResource
             'steps' => StepResource::collection($this->whenLoaded('steps', default: collect([])))->resolve(),
             'parents' => $this->parents,
             'children' => $this->children,
+            'addons' => $this->addons,
             'updated_at' => $this->updated_at,
             'created_at' => $this->created_at,
         ];

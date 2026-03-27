@@ -7,8 +7,6 @@ import { IconField, InputIcon, InputText } from 'primevue';
 
 import { reactive, ref, useSlots, watch, markRaw } from 'vue';
 import axios from 'axios';
-import { can, hasRole } from '@/Composables/useAuth.js';
-import pluralize from 'pluralize';
 import { exportData } from '@/Composables/export.js';
 import { DatatableOptions } from './DatatableOptions';
 import { Api } from '../../Composables/useApi';
@@ -20,6 +18,7 @@ const props = defineProps({
     options: DatatableOptions
 });
 
+const emit = defineEmits(['update:meta']);
 const activeFilters = ref(false);
 const api = reactive(new Api(props.options.route));
 
@@ -60,6 +59,7 @@ const getData = async () => {
     api.setOrder(form.orderBy, form.order);
     api.setSearch(form.search);
     await api.getData();
+    emit('update:meta', api.meta);
 };
 
 const sortBy = (column) => {
@@ -354,7 +354,8 @@ getData();
 }
 .datatable-content {
     background-color: white;
-    height: 60vh;
+    min-height: 40vh;
+    max-height: 60vh;
     overflow: auto;
 }
 .datatable-table-header {

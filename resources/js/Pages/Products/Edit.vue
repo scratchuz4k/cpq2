@@ -45,7 +45,6 @@ const saveProduct = () => {
         ...product,
         expires_at: product.expires_at ? DateTime.fromJSDate(product.expires_at).toISO() : null,
         supplier_id: product.supplier?.id ?? null,
-        parent_id: product.parent?.id ?? null,
         categories: categories.value.map((item) => item.id),
         steps: steps.value.map((item) => item.id)
     };
@@ -110,11 +109,16 @@ const onRowEditSave = async (event) => {
     }
 };
 
+const totals = reactive({
+    linked: product.children?.length ?? 0,
+    addons: product.addons?.length ?? 0
+});
+
 const optionLinks = new DatatableOptions('product-links', 'product-links');
+optionLinks.addColumn('child.sku', 'SKU', null, { isSticky: true });
 optionLinks.addColumn('child.name', 'Name', null, { isSticky: true });
 optionLinks.addColumn('child.description', 'Description', null, {});
 optionLinks.addColumn('child.status', 'Status', null, {});
-optionLinks.addColumn('child.sku', 'SKU', null, { isSticky: true });
 optionLinks.addColumn('child.prices.cost', 'Cost Price', { width: '150px' }, {});
 optionLinks.addColumn('child.prices.net_spa', 'Net Price', { width: '150px' }, { isSearchable: false });
 optionLinks.addColumn('child.steps.name', 'Solution Type', { width: '250px' }, {});
@@ -275,20 +279,6 @@ const items = ref([
                             >
                             </InputSelect>
                         </div>
-                        <div class="mb-3">
-                            <label for="product-parent" class="form-label">Parent:</label>
-                            <div class="input-group p-0">
-                                <InputSelect
-                                    id="product-parent"
-                                    url="/products"
-                                    :fields="['name']"
-                                    class="w-100"
-                                    v-model="product.parent"
-                                    placeholder="Select a Parent"
-                                    :query="[{ column: 'is_active', operator: 'equals', value: 1 }]"
-                                />
-                            </div>
-                        </div>
                     </div>
                 </div>
             </tab>
@@ -417,23 +407,57 @@ const items = ref([
                     </div>
                 </div>
             </tab>
-            <tab title="Linked Products">
+            <tab :title="`Linked Products <span class='badge rounded-pill ms-2'>${totals.linked}</span>`">
                 <div class="d-flex justify-content-between my-3">
                     <div>
-                        <h3>Products</h3>
+                        <h3>Children</h3>
                     </div>
-                    <div><ProductCreateRelation route="product-links" :product="product" column="child_id" /></div>
+                    <div>
+                        <ProductCreateRelation
+                            route="product-links"
+                            :product="product"
+                            column="child_id"
+                            :queries="[
+                                {
+                                    group: 'parent',
+                                    column: 'parents.id',
+                                    operator: FilterOperators.IS_NULL,
+                                    value: product.id
+                                }
+                            ]"
+                        />
+                    </div>
                 </div>
-                <NewDatatable :options="optionLinks"></NewDatatable>
+                <NewDatatable
+                    :options="optionLinks"
+                    @update:meta="(meta) => (totals.linked = meta.total)"
+                ></NewDatatable>
             </tab>
-            <tab title="Addons">
+            <tab :title="`Addons <span class='badge rounded-pill  ms-2'>${totals.addons}</span>`">
                 <div class="d-flex justify-content-between my-3">
                     <div>
                         <h3>Addons</h3>
                     </div>
-                    <div><ProductCreateRelation route="product-addons" :product="product" column="addon_id" /></div>
+                    <div>
+                        <ProductCreateRelation
+                            route="product-addons"
+                            :product="product"
+                            column="addon_id"
+                            :queries="[
+                                {
+                                    group: 'parent',
+                                    column: 'related.id',
+                                    operator: FilterOperators.IS_NULL,
+                                    value: product.id
+                                }
+                            ]"
+                        />
+                    </div>
                 </div>
-                <NewDatatable :options="optionAddons"></NewDatatable>
+                <NewDatatable
+                    :options="optionAddons"
+                    @update:meta="(meta) => (totals.addons = meta.total)"
+                ></NewDatatable>
             </tab>
         </tabs>
     </AuthenticatedLayout>

@@ -57,10 +57,6 @@ class ProductCreateRequest extends FormRequest
                 'integer',
                 new TenantExistsRule('categories'),
             ],
-            'parent_id' => [
-                'nullable',
-                new TenantExistsRule('products'),
-            ],
             'status' => [
                 'nullable',
                 'string',

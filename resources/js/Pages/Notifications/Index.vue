@@ -140,33 +140,7 @@ const getNotifications = () => {
 };
 
 const markAllasRead = async (item) => {
-    let string = queryString.stringify({
-        filters: [
-            {
-                column: 'user_id',
-                operator: 'equals',
-                value: user.id
-            },
-            {
-                column: 'is_read',
-                operator: 'equals',
-                value: false
-            }
-        ],
-        limit: 1000
-    });
-
-    let res = await axios.get('/api/notifications?' + string);
-    let items = res.data.data;
-    try {
-        for (const x of items) {
-            await axios.put(`/api/notifications/${x.id}`, {
-                is_read: true
-            });
-        }
-    } catch (ex) {
-        alert(ex.response.data.message);
-    }
+    let res = await axios.post('/bulk/notifications/mark-all-as-read');
     await getNotifications();
     await getTotalUnread();
 };
