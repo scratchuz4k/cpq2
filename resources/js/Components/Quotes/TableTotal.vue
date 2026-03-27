@@ -149,9 +149,9 @@ watch(
     </div>
     <table id="table-totals" class="table-dealmaker table table-bordered text-end">
         <colgroup>
-            <col class="column-name-header text-start" style="width: 70%" />
-            <col class="column-discount-header" style="width: 9%" />
-            <col class="column-total-header" style="width: 20%" />
+            <col class="column-name-header text-start" style="width: 72%" />
+            <col class="column-discount-header" style="width: 8%" />
+            <col class="column-total-header" style="width: 17%" />
             <col v-if="!props.preview" style="width: 60px" class="text-center" />
         </colgroup>
         <tbody>

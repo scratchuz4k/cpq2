@@ -347,9 +347,9 @@
                     <table class="table table-dealmaker table-bordered text-end">
                         <thead>
                             <colgroup>
-                                <col style="width: 68%" class="text-start" />
-                                <col style="width: 12%" />
-                                <col style="width: 10%" />
+                                <col style="width: 76%" class="text-start" />
+                                <col style="width: 8%" />
+                                <col style="width: 17%" />
                             </colgroup>
                         </thead>
                         <tbody>
