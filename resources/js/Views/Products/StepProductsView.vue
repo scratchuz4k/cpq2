@@ -4,7 +4,7 @@ import { computed, reactive, ref, watch, onMounted, watchEffect } from 'vue';
 import { quote } from '@composables/useQuote';
 import _ from 'lodash';
 import { Paginator, Select, Skeleton } from 'primevue';
-import StepActionBar from '@/Components/Steps/StepActionBar.vue';
+import { selectedItems, addSelected } from '@/Composables/useComparator';
 import { actionBarButtons } from '@/Composables/useQuoteSteps.js';
 
 const meta = reactive({
@@ -277,7 +277,7 @@ watch(
                 </div>
                 <div class="col-9">
                     <div class="d-flex justify-content-end align-items-end mb-3">
-                        <div class="d-flex flex-fill justify-content-start">
+                        <!-- <div class="d-flex flex-fill justify-content-start">
                             <button
                                 class="btn border"
                                 :class="[showCards ? 'btn-dark' : '']"
@@ -294,7 +294,7 @@ watch(
                             >
                                 <font-awesome-icon :icon="['fas', 'grip-lines']"></font-awesome-icon>
                             </button>
-                        </div>
+                        </div> -->
                         <div class="d-flex justify-content-end text-nowrap flex-shrink-0">
                             <span class="me-2 align-self-center">Sort by</span>
                             <Select v-model="sort" :options="sortOptions" optionLabel="label" placeholder="All">
@@ -324,6 +324,7 @@ watch(
                         <div class="text-center pt-2 pb-4" v-if="!products.length">No Results Found</div>
                         <div class="row" :class="[showCards ? 'row-cols-4' : 'row-cols-1']">
                             <ProductCard
+                                @select="(item) => addSelected(item)"
                                 v-for="(product, index) in products"
                                 :hasSelect="true"
                                 :showAsColumn="showCards"

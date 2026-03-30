@@ -6,7 +6,7 @@ use App\Helpers\Api\CloudMarketApi;
 use App\Models\Cloudmarket\Product;
 use App\Models\Quote;
 use Exception;
-use stdClass;
+use Illuminate\Support\Facades\Cache;
 
 class CloudMarketSaveQuote extends CloudMarket
 {
@@ -32,7 +32,7 @@ class CloudMarketSaveQuote extends CloudMarket
         $res = json_decode($temp, true);
 
         if ($res == '') {
-            throw new Exception('Something went wrong!');
+            throw new Exception('CloudMarketApi::saveQuote request: Something went wrong while saving your quote.');
         }
 
         if (array_key_exists('errors', $res)) {
@@ -42,14 +42,44 @@ class CloudMarketSaveQuote extends CloudMarket
             throw new Exception($res['errors']);
         }
 
-        $data = (object) ($this->quote->data ?? []);
+        $quoteReference = $res['quoteReference'] ?? null;
 
-        $filename = $data->filename.$res['quoteReference'];
-        Product::where('filename', $data->filename)->update(['filename' => $filename]);
+        $data = $this->quote->data ?? [];
+        $baseFilename = isset($data['filename']) && is_string($data['filename']) ? $data['filename'] : null;
 
-        $product = self::getPrimaryProduct($this->quote);
-        $data->quoteReference = $res['quoteReference'];
-        $data->quoteId = $product->data?->quoteId;
+        if ($quoteReference && $baseFilename) {
+            if (! str_ends_with($baseFilename, $quoteReference)) {
+
+                $newBaseFilename = $baseFilename.$quoteReference;
+
+                $productsToRename = Product::where('filename', 'like', '%'.$baseFilename.'%')->get(['filename']);
+
+                foreach ($productsToRename as $product) {
+                    $oldFilename = (string) $product->filename;
+                    $newFilename = $oldFilename.$quoteReference;
+
+                    if (str_ends_with($oldFilename, $quoteReference) || $newFilename === $oldFilename) {
+                        continue;
+                    }
+
+                    $cachedValue = Cache::get($oldFilename);
+                    if (! is_null($cachedValue)) {
+                        Cache::put($newFilename, $cachedValue, now()->addHours(24));
+                    }
+                    Cache::forget($oldFilename);
+
+                    $product->update([
+                        'filename' => $newFilename,
+                    ]);
+                }
+
+                $data['filename'] = $newBaseFilename;
+            }
+        }
+
+        $productPrimary = self::getPrimaryProduct($this->quote);
+        $data['quoteReference'] = $quoteReference;
+        $data['quoteId'] = $productPrimary->data?->quoteId;
         $this->quote->update(['data' => $data]);
     }
 

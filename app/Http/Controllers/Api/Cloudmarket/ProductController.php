@@ -69,15 +69,15 @@ class ProductController extends BaseController
     #[ExcludeRouteFromDocs]
     public function saveQuote(Request $request)
     {
-        if (! config('services.cloudaudit.live_data')) {
+        if (! config('services.cloudmarket.connection_live_data')) {
             return;
         }
 
         $quote = $this->getQuote($request);
         $address = $this->generateAddress($quote);
         $filename = $this->generateFilename($quote, $address);
-        $data = (object) ($quote->data ?? []);
-        $data->filename = $filename;
+        $data = $quote->data ?? [];
+        $data['filename'] = $filename;
         $quote->update(['data' => $data]);
         $product = $this->getProduct($quote, 'Primary Product');
 
@@ -89,7 +89,7 @@ class ProductController extends BaseController
             $job = new CloudMarketSaveQuote($quote);
             $results = $job->runSync();
         } catch (Exception $e) {
-            return handleException($e);
+            return handleException($e, 'Something went wrong while saving your quote.');
         }
     }
 
@@ -200,8 +200,8 @@ class ProductController extends BaseController
             ]]);
         }
 
-        if (isset($quote->data?->quoteReference)) {
-            $filename = $filename.$quote->data?->quoteReference;
+        if (is_array($quote->data) && isset($quote->data['quoteReference'])) {
+            $filename = $filename.$quote->data['quoteReference'];
         }
 
         return $filename;

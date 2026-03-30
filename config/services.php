@@ -66,11 +66,9 @@ return [
         'tag_manager' => [
             'api_key' => env('GOOGLE_TAG_MANAGER_KEY'),
         ],
-        'oidc' => [
-            'client_id' => env('GOOGLE_OIDC_CLIENT_ID'),
-            'client_secret' => env('GOOGLE_OIDC_CLIENT_SECRET'),
-            'redirect' => env('APP_URL').'/auth/google',
-        ],
+        'client_id' => env('GOOGLE_OIDC_CLIENT_ID'),
+        'client_secret' => env('GOOGLE_OIDC_CLIENT_SECRET'),
+        'redirect' => env('APP_URL').'/auth/google',
     ],
 
     'pandadoc' => [

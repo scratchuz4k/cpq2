@@ -60,6 +60,10 @@ class AppServiceProvider extends ServiceProvider
 
             $model = str_replace('-', '_', Str::singular($action[1]));
 
+            if (! array_key_exists($action[2], $this->abilities)) {
+                return false;
+            }
+
             $ability = $this->abilities[$action[2]];
 
             return auth()->user()->can("$ability $model");

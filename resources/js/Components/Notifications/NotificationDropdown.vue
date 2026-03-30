@@ -12,7 +12,7 @@
             <font-awesome-icon :icon="['far', 'bell']" />
 
             <div v-if="totalUnread && totalUnread > 0" class="notification-badge">
-                {{ totalUnread }}
+                {{ totalUnread > 99 ? '99+' : totalUnread }}
             </div>
         </a>
         <div id="header-notification-dropdown" :class="[showModal ? 'show' : '']">

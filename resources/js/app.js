@@ -156,6 +156,7 @@ createInertiaApp({
                     networkResponseHeaders: ['Referrer-Policy']
                 }),
                 Sentry.feedbackIntegration({
+                    autoInject: false,
                     triggerLabel: 'Provide Feedback',
                     submitButtonLabel: 'Submit Feedback',
                     formTitle: 'Provide Feedback',
@@ -166,7 +167,10 @@ createInertiaApp({
                         email: 'email'
                     },
                     // Additional SDK configuration goes in here, for example:
-                    colorScheme: 'light'
+                    colorScheme: 'light',
+                    onSubmitSuccess() {
+                        notyf.success('Thank you for your feedback!');
+                    }
                 })
             ],
             // Tracing
@@ -175,7 +179,15 @@ createInertiaApp({
             tracePropagationTargets: ['localhost', '*.cloudmarket.com'], ///^https:\/\/yourserver\.io\/api/
             // Session Replay
             replaysSessionSampleRate: 0.1, // This sets the sample rate at 10%. You may want to change it to 100% while in development and then sample at a lower rate in production.
-            replaysOnErrorSampleRate: 1.0 // If you're not already sampling the entire session, change the sample rate to 100% when sampling sessions where errors occur.
+            replaysOnErrorSampleRate: 1.0, // If you're not already sampling the entire session, change the sample rate to 100% when sampling sessions where errors occur.
+            beforeSend(event, hint) {
+                const error = hint?.originalException;
+                if (error?.isAxiosError && [401, 419].includes(error?.response?.status)) {
+                    return null;
+                }
+
+                return event;
+            }
         });
 
         return app.mount(el);
