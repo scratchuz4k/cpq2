@@ -163,7 +163,7 @@ const items = ref([
                 </PrimaryButton>
             </template>
         </Header>
-        <tabs class="mt-3">
+        <tabs id="tabs-product-edit" class="mt-3">
             <tab title="General" :selected="true">
                 <div class="my-3">
                     <p>
@@ -414,6 +414,7 @@ const items = ref([
                     </div>
                     <div>
                         <ProductCreateRelation
+                            id="links"
                             route="product-links"
                             :product="product"
                             column="child_id"
@@ -440,6 +441,7 @@ const items = ref([
                     </div>
                     <div>
                         <ProductCreateRelation
+                            id="addons"
                             route="product-addons"
                             :product="product"
                             column="addon_id"

@@ -1,5 +1,5 @@
 <template>
-    <button class="btn btn-primary" @click="showModal = true">
+    <button :id="'btn-add-' + id" class="btn btn-primary" @click="showModal = true">
         <font-awesome-icon :icon="['fas', 'plus']"></font-awesome-icon>
         New Product
     </button>
@@ -10,6 +10,7 @@
         :breakpoints="{ '1199px': '75vw', '575px': '90vw' }"
         :draggable="false"
         position="top"
+        :pt="{ id: props.id + '-dialog' }"
     >
         <template #header>
             <h2>Add Products</h2>
@@ -24,7 +25,13 @@
                         <InputIcon>
                             <font-awesome-icon :icon="['fas', 'search']" />
                         </InputIcon>
-                        <InputText v-model="search.sku" type="search" placeholder="Search" size="small" />
+                        <InputText
+                            :id="props.id + '-search-sku'"
+                            v-model="search.sku"
+                            type="search"
+                            placeholder="Search"
+                            size="small"
+                        />
                     </IconField>
                 </div>
                 <div>
@@ -33,7 +40,13 @@
                         <InputIcon>
                             <font-awesome-icon :icon="['fas', 'search']" />
                         </InputIcon>
-                        <InputText v-model="search.name" type="search" placeholder="Search" size="small" />
+                        <InputText
+                            :id="props.id + '-search-name'"
+                            v-model="search.name"
+                            type="search"
+                            placeholder="Search"
+                            size="small"
+                        />
                     </IconField>
                 </div>
                 <div>
@@ -42,13 +55,19 @@
                         <InputIcon>
                             <font-awesome-icon :icon="['fas', 'search']" />
                         </InputIcon>
-                        <InputText v-model="search.category" type="search" placeholder="Search" size="small" />
+                        <InputText
+                            :id="props.id + '-search-category'"
+                            v-model="search.category"
+                            type="search"
+                            placeholder="Search"
+                            size="small"
+                        />
                     </IconField>
                 </div>
             </div>
         </div>
         <div style="height: 40vh; overflow-y: auto">
-            <table class="table">
+            <table :id="props.id + '-table'" class="table">
                 <thead>
                     <tr class="relation-table-header">
                         <th style="background-color: lightgray"></th>
@@ -60,7 +79,7 @@
                 </thead>
                 <tbody v-if="!api.isLoading">
                     <tr
-                        v-for="product in api.items"
+                        v-for="(product, index) in api.items"
                         :key="product.id"
                         :class="{ 'relation-table-active': !!checked.find((temp) => temp.id === product.id) }"
                     >
@@ -68,7 +87,7 @@
                             <Checkbox
                                 class="form-check-input"
                                 @change="(ev) => toggleChecked(product)"
-                                :id="'checkbox-' + product.id"
+                                :id="props.id + '-checkbox-' + index"
                                 :checked="!!checked.find((temp) => temp.id === product.id)"
                             />
                         </td>
@@ -112,8 +131,14 @@
             <div v-else-if="checked.length > 0" class="d-flex justify-content-center align-items-center me-2">
                 <p class="small">{{ checked.length }} selected ...</p>
             </div>
-            <button class="btn btn-outline-secondary me-2" @click="showModal = false">Cancel</button>
-            <button class="btn btn-primary" @click="addProducts">Add</button>
+            <button
+                :id="'btn-relation-cancel-' + props.id"
+                class="btn btn-outline-secondary me-2"
+                @click="showModal = false"
+            >
+                Cancel
+            </button>
+            <button :id="'btn-relation-add-' + props.id" class="btn btn-primary" @click="addProducts">Add</button>
         </div>
     </Dialog>
 </template>
@@ -124,8 +149,15 @@ import Dialog from 'primevue/dialog';
 import { ref, reactive, watch } from 'vue';
 import { Api, FilterOperators } from '../../Composables/useApi';
 import _ from 'lodash';
+import { v4 as uuidv4 } from 'uuid';
 
 const props = defineProps({
+    id: {
+        required: false,
+        default: () => {
+            return `${uuidv4()}`;
+        }
+    },
     product: Object,
     route: String,
     column: String,

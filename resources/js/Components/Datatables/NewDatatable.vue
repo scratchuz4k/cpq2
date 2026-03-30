@@ -10,11 +10,18 @@ import axios from 'axios';
 import { exportData } from '@/Composables/export.js';
 import { DatatableOptions } from './DatatableOptions';
 import { Api } from '../../Composables/useApi';
+import { v4 as uuidv4 } from 'uuid';
 
 const slots = useSlots();
 const usedSlots = Object.keys(slots);
 
 const props = defineProps({
+    id: {
+        required: false,
+        default: () => {
+            return `${uuidv4()}`;
+        }
+    },
     options: DatatableOptions
 });
 
@@ -169,7 +176,13 @@ getData();
             <InputIcon>
                 <font-awesome-icon :icon="['fas', 'search']" />
             </InputIcon>
-            <InputText id="datatable-search" v-model="form.search" type="search" placeholder="Search" size="small" />
+            <InputText
+                :id="props.options.id + '-datatable-search'"
+                v-model="form.search"
+                type="search"
+                placeholder="Search"
+                size="small"
+            />
         </IconField>
         <div class="d-flex">
             <button
