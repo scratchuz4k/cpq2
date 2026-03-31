@@ -20,7 +20,6 @@ class CloudMarketFailOverProducts extends CloudMarket
         'contractTermMonths' => [],
         'bearer' => [],
         'speed' => [],
-        'isManaged' => [],
     ];
 
     /**

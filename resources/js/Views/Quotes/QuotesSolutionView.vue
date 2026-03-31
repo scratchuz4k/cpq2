@@ -30,7 +30,6 @@ const configurations = reactive({
     contract_length: props.modelValue.configs?.contract_length
         ? props.modelValue.configs.contract_length.split(',')
         : []
-    //managed: props.modelValue.configs?.managed ? props.modelValue.configs.managed : '0'
 });
 
 proxyValue.value.configs = configurations;

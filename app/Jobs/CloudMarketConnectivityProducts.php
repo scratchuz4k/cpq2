@@ -20,7 +20,6 @@ class CloudMarketConnectivityProducts extends CloudMarket
         'contractTermMonths' => [],
         'bearer' => [],
         'speed' => [],
-        'isManaged' => [],
     ];
 
     public function __construct(protected Quote $quote, protected string $file, protected CloudMarketAddress $address)
