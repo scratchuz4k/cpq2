@@ -28,7 +28,6 @@ const showLowestCost = ref(true);
 const showQuoted = ref(false);
 const showFilters = ref(true);
 const showContended = ref(null);
-const showManaged = ref(null);
 const articles = ref([]);
 const errors = ref([]);
 const selectedFilters = ref([]);
@@ -58,6 +57,11 @@ const filters = reactive({
         operator: 'greater_than_or_equal_to',
         value: quote.configs?.speed,
         name: 'Speed'
+    },
+    isManaged: {
+        operator: 'in',
+        value: null,
+        name: 'Managed'
     }
 });
 
@@ -66,7 +70,8 @@ const filterList = reactive({
     connectivitySupplierGroup: [],
     contractTermMonths: [],
     bearer: [],
-    speed: []
+    speed: [],
+    isManaged: []
 });
 
 const meta = reactive({
@@ -100,10 +105,6 @@ const getArticles = async (clearCache = false, runTimeout = false) => {
 
     if (showContended.value !== null) {
         temp.push({ column: 'isContended', operator: 'equals', value: showContended.value ? 1 : 0 });
-    }
-
-    if (showManaged.value !== null) {
-        temp.push({ column: 'isManaged', operator: 'not_in', value: showManaged.value ? 0 : 1 });
     }
 
     if (clearCache) {
@@ -172,21 +173,47 @@ const getArticles = async (clearCache = false, runTimeout = false) => {
 
         let bearerFilters = [];
         Object.keys(filterList.bearer).forEach((key) => {
-            bearerFilters.push({
-                label: format.speed(key),
-                value: key
-            });
+            if (key !== 'null') {
+                bearerFilters.push({
+                    label: format.speed(key),
+                    value: key
+                });
+            }
         });
         filterList.bearer = bearerFilters;
 
         let speedFilters = [];
         Object.keys(filterList.speed).forEach((key) => {
-            speedFilters.push({
-                label: format.speed(key),
-                value: key
-            });
+            if (key !== 'null') {
+                speedFilters.push({
+                    label: format.speed(key),
+                    value: key
+                });
+            }
         });
         filterList.speed = speedFilters;
+
+        let contractLengthsFilters = [];
+        Object.keys(filterList.contractTermMonths).forEach((key) => {
+            if (key !== 'null') {
+                contractLengthsFilters.push({
+                    label: key + ' Months',
+                    value: key
+                });
+            }
+        });
+        filterList.contractTermMonths = contractLengthsFilters;
+
+        let isManagedFilters = [];
+        Object.keys(filterList.isManaged).forEach((key) => {
+            let label = key === 'true' ? 'Yes' : key === 'false' ? 'No' : 'N/A';
+            let value = key === 'true' ? '1' : key === 'false' ? '0' : 'null';
+            isManagedFilters.push({
+                label: label,
+                value: value
+            });
+        });
+        filterList.isManaged = isManagedFilters;
 
         selectedFilters.value = Object.fromEntries(
             Object.entries(filters).filter(([key, filter]) => filter.value !== null)
@@ -235,7 +262,6 @@ const resetFilters = () => {
     showLowestCost.value = true;
     showQuoted.value = false;
     showContended.value = null;
-    showManaged.value = null;
 };
 
 const checkProduct = (article) => {
@@ -272,7 +298,7 @@ const handlePaginator = (ev) => {
 };
 
 watch(
-    [filters, showQuoted, showLowestCost, showContended, showManaged],
+    [filters, showQuoted, showLowestCost, showContended],
     _.debounce(function () {
         meta.page = 1;
         getArticles();
@@ -332,11 +358,14 @@ getArticles(false, true);
                                                       : [selectedFilter.value]
                                                   ).filter((v) => v !== null)"
                                             :value="
-                                                ['speed', 'bearer'].includes(column)
-                                                    ? 'Min. ' + _.capitalize(column) + ': ' + format.speed(value)
-                                                    : ['contractTermMonths'].includes(column)
-                                                      ? value + ' Months'
-                                                      : value
+                                                column === 'isManaged'
+                                                    ? 'Managed: ' +
+                                                      (value === '1' ? 'Yes' : value === '0' ? 'No' : 'N/A')
+                                                    : ['speed', 'bearer'].includes(column)
+                                                      ? 'Min. ' + _.capitalize(column) + ': ' + format.speed(value)
+                                                      : ['contractTermMonths'].includes(column)
+                                                        ? value + ' Months'
+                                                        : value
                                             "
                                             class="px-3 py-1"
                                             :title="selectedFilter.name"
@@ -442,14 +471,16 @@ getArticles(false, true);
                                     id="contract-length-multiselect"
                                     v-model="filters['contractTermMonths'].value"
                                     style="width: 100%"
-                                    :options="Object.keys(filterList.contractTermMonths)"
+                                    :options="filterList.contractTermMonths"
+                                    optionLabel="label"
+                                    optionValue="value"
                                     placeholder="All"
                                     size="small"
                                     class="me-3 custom-multiselect"
                                 >
                                     <template #option="slotProps">
                                         <div style="font-size: 14px; line-height: 1.5rem">
-                                            {{ slotProps.option }} Months
+                                            {{ slotProps.option.label }}
                                         </div>
                                     </template>
                                 </MultiSelect>
@@ -458,12 +489,20 @@ getArticles(false, true);
                                 <label for="filter-managed" class="form-label">Managed</label>
                                 <MultiSelect
                                     id="managed-multiselect"
+                                    v-model="filters['isManaged'].value"
                                     style="width: 100%"
-                                    :options="['Yes', 'No', 'N/A']"
+                                    :options="filterList.isManaged"
+                                    optionLabel="label"
+                                    optionValue="value"
                                     placeholder="All"
                                     size="small"
                                     class="me-3 custom-multiselect"
                                 >
+                                    <template #option="slotProps">
+                                        <div style="font-size: 14px; line-height: 1.5rem">
+                                            {{ slotProps.option.label }}
+                                        </div>
+                                    </template>
                                 </MultiSelect>
                             </div>
                         </div>
@@ -540,25 +579,6 @@ getArticles(false, true);
                                                 </TriStateToggle>
                                                 <label class="form-check-label" for="filter-show-contended">
                                                     Show contended products
-                                                </label>
-                                            </div>
-                                            <div class="checkbox d-flex py-1 px-2">
-                                                <TriStateToggle v-model="showManaged" id="filter-show-managed">
-                                                    <template #handle>
-                                                        <font-awesome-icon
-                                                            :icon="
-                                                                showManaged === true
-                                                                    ? ['fas', 'circle-check']
-                                                                    : showManaged === false
-                                                                      ? ['far', 'circle-xmark']
-                                                                      : ['far', 'circle']
-                                                            "
-                                                            class="text-primary"
-                                                        />
-                                                    </template>
-                                                </TriStateToggle>
-                                                <label class="form-check-label" for="filter-show-managed">
-                                                    Show managed products
                                                 </label>
                                             </div>
                                         </li>
