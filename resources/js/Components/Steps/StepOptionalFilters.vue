@@ -146,7 +146,7 @@ const formatInput = (ev, field, index) => {
                         </template>
                     </MultiSelect>
                 </div>
-                <div class="mb-3">
+                <div class="mb-3" v-show="false">
                     <p class="form-label mb-2">Managed Products:</p>
                     <div class="row row-cols-1 row-cols-md-3 g-3">
                         <div class="col">
