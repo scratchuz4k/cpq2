@@ -8,6 +8,14 @@ defineProps({
     index: Number
 });
 const item = defineModel();
+
+const checkValue = (e) => {
+    const min = Number(e.target.min);
+    if (Number(e.target.value) < min) {
+        temp.discount = min;
+        e.target.value = min;
+    }
+};
 </script>
 <template>
     <div v-if="!isGroup">
@@ -19,6 +27,7 @@ const item = defineModel();
             type="number"
             v-model="temp.discount"
             min="0"
+            @input="checkValue"
         />
     </div>
 </template>

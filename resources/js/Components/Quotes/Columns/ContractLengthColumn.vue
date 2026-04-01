@@ -9,6 +9,14 @@ defineProps({
     index: Number
 });
 const item = defineModel();
+
+const checkValue = (e) => {
+    const min = Number(e.target.min);
+    if (Number(e.target.value) < min) {
+        temp.contract_length = min;
+        e.target.value = min;
+    }
+};
 </script>
 <template>
     <template v-if="!isGroup">
@@ -20,7 +28,9 @@ const item = defineModel();
             :id="'input-' + code + '-' + index + '-contract_length'"
             class="form-control text-center p-0 px-1"
             type="number"
+            min="1"
             v-model="temp.contract_length"
+            @input="checkValue"
         />
     </template>
 </template>
