@@ -4,11 +4,12 @@ namespace App\Http\Controllers\Api;
 
 use App\Helpers\DataProvider;
 use App\Http\Controllers\BaseController;
+use App\Http\Requests\ProductLinkCreateRequest;
+use App\Http\Requests\ProductLinkUpdateRequest;
 use App\Http\Resources\ProductLinkResource;
 use App\Models\ProductLink;
 use App\Services\ProductLinkService;
 use Exception;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class ProductLinkController extends BaseController
@@ -39,10 +40,10 @@ class ProductLinkController extends BaseController
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(ProductLinkCreateRequest $request)
     {
         try {
-            $price = DB::transaction(fn () => $this->service->store($request->all()));
+            $price = DB::transaction(fn () => $this->service->store($request->validated()));
         } catch (Exception $e) {
             return handleException($e);
         }
@@ -61,10 +62,10 @@ class ProductLinkController extends BaseController
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, ProductLink $productLink)
+    public function update(ProductLinkUpdateRequest $request, ProductLink $productLink)
     {
         try {
-            $product = DB::transaction(fn () => $this->service->update($productLink, $request->all()));
+            $product = DB::transaction(fn () => $this->service->update($productLink, $request->validated()));
         } catch (Exception $e) {
             return handleException($e);
         }

@@ -221,6 +221,7 @@ const addProducts = async () => {
             await axios.post('/api/' + props.route, body);
         } catch (ex) {
             notyf.error(ex.response.data.message);
+            return;
         }
     }
     notyf.success('Products added successfully');
