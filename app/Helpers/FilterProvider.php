@@ -16,7 +16,7 @@ class FilterProvider
                 continue;
             }
 
-            if (is_null($filter['value']) || (is_array($filter['value']) && ! count($filter['value']))) {
+            if (is_array($filter['value']) && ! count($filter['value'])) {
                 continue;
             }
             $data = static::resolveQuery($filter['operator'], $filter['column'], $filter['value'], $data);
@@ -60,16 +60,19 @@ class FilterProvider
     public static function process($filters, $value, $addCount = false)
     {
         foreach ($filters as $filterKey => $items) {
-            if (! array_key_exists($filterKey, $value) || ! $value[$filterKey]) {
+            if (! array_key_exists($filterKey, $value)) {
                 continue;
             }
 
-            if (array_key_exists($value[$filterKey], $items) && $addCount) {
-                $filters[$filterKey][$value[$filterKey]]++;
+            $oldValue = $value[$filterKey];
+            $newValue = is_null($oldValue) ? 'null' : (is_bool($oldValue) ? ($oldValue ? 'true' : 'false') : (string) $oldValue);
+
+            if (array_key_exists($newValue, $items) && $addCount) {
+                $filters[$filterKey][$newValue]++;
 
                 continue;
             } else {
-                $filters[$filterKey][$value[$filterKey]] = 0;
+                $filters[$filterKey][$newValue] = 0;
             }
         }
 
@@ -84,15 +87,16 @@ class FilterProvider
             case 'contains':
                 return $data->filter(fn ($item) => Str::contains($item[$column], $value));
             case 'in':
-                $lowercaseSearch = is_array($value) ? array_map('strtolower', $value) : strtolower($value);
+                $value = is_array($value) ? $value : [$value];
+                $normalizedSearch = array_map(function ($v) {
+                    return static::normalizeValue($v);
+                }, $value);
 
-                return $data->filter(function ($item) use ($column, $lowercaseSearch) {
-                    $column = strtolower(is_array($item) ? $item[$column] : $item->{$column});
-                    if (is_array($lowercaseSearch)) {
-                        return in_array($column, $lowercaseSearch);
-                    }
+                return $data->filter(function ($item) use ($column, $normalizedSearch) {
+                    $val = is_array($item) ? $item[$column] : $item->{$column};
+                    $normalizedColumn = static::normalizeValue($val);
 
-                    return $column == $lowercaseSearch;
+                    return in_array($normalizedColumn, $normalizedSearch);
                 });
             case 'not_in':
                 return $data->whereNotIn($column, $value);
@@ -140,6 +144,21 @@ class FilterProvider
             default:
                 return $data;
         }
+    }
+
+    private static function normalizeValue($val)
+    {
+        if ($val === 'null') {
+            $val = null;
+        }
+        if (is_bool($val)) {
+            $val = $val ? 1 : 0;
+        }
+        if (is_null($val)) {
+            return null;
+        }
+
+        return strtolower((string) $val);
     }
 
     public function getCollection()
