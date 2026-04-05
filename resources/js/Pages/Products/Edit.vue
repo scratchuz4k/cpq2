@@ -121,7 +121,16 @@ optionLinks.addColumn('child.description', 'Description', null, {});
 optionLinks.addColumn('child.status', 'Status', null, {});
 optionLinks.addColumn('child.prices.cost', 'Cost Price', { width: '150px' }, {});
 optionLinks.addColumn('child.prices.net_spa', 'Net Price', { width: '150px' }, { isSearchable: false });
-optionLinks.addColumn('child.steps.name', 'Solution Type', { width: '250px' }, {});
+optionLinks.addColumn('child.steps.name', 'Steps', { width: '250px' }, {});
+optionLinks.addColumn('child.categories.name', 'Categories', { width: '250px' }, {});
+optionLinks.addColumn('child.categories.name', 'Categories', { width: '250px' }, {});
+optionLinks.addColumn('child.categories.name', 'Categories', { width: '250px' }, {});
+optionLinks.addColumn('child.categories.name', 'Categories', { width: '250px' }, {});
+optionLinks.addColumn('child.categories.name', 'Categories', { width: '250px' }, {});
+optionLinks.addColumn('child.categories.name', 'Categories', { width: '250px' }, {});
+optionLinks.addColumn('child.categories.name', 'Categories', { width: '250px' }, {});
+optionLinks.addColumn('child.categories.name', 'Categories', { width: '250px' }, {});
+optionLinks.addColumn('child.categories.name', 'Categories', { width: '250px' }, {});
 
 optionLinks.addQuery('product_id', FilterOperators.EQUALS, product.id);
 optionLinks.setAllowedActions({
@@ -137,7 +146,7 @@ optionAddons.addColumn('addon.categories.name', 'Categories', null, {});
 optionAddons.addColumn('addon.status', 'Status', null, {});
 optionAddons.addColumn('addon.prices.cost', 'Cost Price', { width: '150px' }, {});
 optionAddons.addColumn('addon.prices.net_spa', 'Net Price', { width: '150px' }, { isSearchable: false });
-optionAddons.addColumn('addon.steps.name', 'Solution Type', { width: '250px' }, {});
+optionAddons.addColumn('addon.steps.name', 'Steps', { width: '250px' }, {});
 
 optionAddons.addQuery('product_id', FilterOperators.EQUALS, product.id);
 optionAddons.setAllowedActions({
@@ -407,7 +416,7 @@ const items = ref([
                     </div>
                 </div>
             </tab>
-            <tab :title="`Linked Products <span class='badge rounded-pill ms-2'>${totals.linked}</span>`">
+            <tab :title="`Linked Products <span class='badge badge-primary rounded-pill ms-2'>${totals.linked}</span>`">
                 <div class="d-flex justify-content-between my-3">
                     <div>
                         <h3>Children</h3>

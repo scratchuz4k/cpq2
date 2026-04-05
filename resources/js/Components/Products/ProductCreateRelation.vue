@@ -85,7 +85,6 @@
                     >
                         <td>
                             <Checkbox
-                                class="form-check-input"
                                 @change="(ev) => toggleChecked(product)"
                                 :id="props.id + '-checkbox-' + index"
                                 :checked="!!checked.find((temp) => temp.id === product.id)"
