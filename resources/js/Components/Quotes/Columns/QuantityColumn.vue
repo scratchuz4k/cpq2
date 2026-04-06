@@ -1,5 +1,6 @@
 <script setup>
 import { temp } from '@composables/useQuoteItem';
+import { checkValue } from '@/Composables/input.js';
 defineProps({
     code: String,
     column: Object,
@@ -8,17 +9,6 @@ defineProps({
     index: Number
 });
 const item = defineModel();
-
-const checkValue = (e) => {
-    const min = Number(e.target.min);
-    if (Number(e.target.value) < min) {
-        temp.quantity = min;
-        e.target.value = min;
-    } else if (Number(e.target.value) > max) {
-        temp.quantity = min;
-        e.target.value = min;
-    }
-};
 </script>
 <template>
     <template v-if="!isGroup">
@@ -29,7 +19,7 @@ const checkValue = (e) => {
             class="form-control text-center p-0 px-1"
             type="number"
             min="0"
-            max="100"
+            max="9999"
             v-model="temp.quantity"
             @input="checkValue"
         />
