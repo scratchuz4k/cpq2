@@ -1,11 +1,9 @@
 const clamp = (value, min, max) => Math.min(Math.max(Number(value), min), max);
 
-export const checkPriceValue = (e) => {
-    const { target } = e.originalEvent;
-    target.value = clamp(target.value, 0, 99999999);
-};
-
 export const checkValue = (e) => {
-    const { target } = e;
-    target.value = clamp(target.value, target.min, target.max);
+    const { target } = e.originalEvent;
+    const min = target.min ? target.min : 0;
+    const max = target.max ? target.max : 99999999;
+
+    target.value = clamp(target.value, min, max);
 };

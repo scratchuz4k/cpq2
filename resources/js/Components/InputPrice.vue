@@ -1,15 +1,8 @@
 <template>
-    <InputNumber
-        :useGrouping="false"
-        :max="9999999999.99"
-        :min="0"
-        :maxFractionDigits="2"
-        fluid
-        @input="checkPriceValue"
-    />
+    <InputNumber :useGrouping="false" :max="9999999999.99" :min="0" :maxFractionDigits="2" fluid @input="checkValue" />
 </template>
 <script setup>
 import InputNumber from 'primevue/inputnumber';
-import { checkPriceValue } from '@/Composables/input.js';
+import { checkValue } from '@/Composables/input.js';
 </script>
 <style></style>
