@@ -399,6 +399,7 @@ getData();
     padding: 0.5rem;
     vertical-align: top;
     border-bottom: 1px solid #dee2e6;
+    width: 150px !important;
 }
 
 .datatable-col-sticky {

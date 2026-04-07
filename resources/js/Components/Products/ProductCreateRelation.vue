@@ -20,29 +20,14 @@
 
             <div class="d-flex flex-wrap gap-3">
                 <div>
-                    <label for="search-sku" class="form-label">SKU</label>
+                    <label for="search-global" class="form-label">Search</label>
                     <IconField>
                         <InputIcon>
                             <font-awesome-icon :icon="['fas', 'search']" />
                         </InputIcon>
                         <InputText
-                            :id="props.id + '-search-sku'"
-                            v-model="search.sku"
-                            type="search"
-                            placeholder="Search"
-                            size="small"
-                        />
-                    </IconField>
-                </div>
-                <div>
-                    <label for="search-name" class="form-label">Product Name</label>
-                    <IconField>
-                        <InputIcon>
-                            <font-awesome-icon :icon="['fas', 'search']" />
-                        </InputIcon>
-                        <InputText
-                            :id="props.id + '-search-name'"
-                            v-model="search.name"
+                            :id="props.id + '-search-global'"
+                            v-model="search.global"
                             type="search"
                             placeholder="Search"
                             size="small"
@@ -51,18 +36,14 @@
                 </div>
                 <div>
                     <label for="search-category" class="form-label">Category</label>
-                    <IconField>
-                        <InputIcon>
-                            <font-awesome-icon :icon="['fas', 'search']" />
-                        </InputIcon>
-                        <InputText
-                            :id="props.id + '-search-category'"
-                            v-model="search.category"
-                            type="search"
-                            placeholder="Search"
-                            size="small"
-                        />
-                    </IconField>
+
+                    <InputSelectMultiple
+                        id="select-category"
+                        url="/categories"
+                        :fields="['name']"
+                        v-model="search.categories"
+                        placeholder="Select a Categories"
+                    ></InputSelectMultiple>
                 </div>
             </div>
         </div>
@@ -91,16 +72,37 @@
                             />
                         </td>
                         <td>
-                            <p>{{ product.sku }}</p>
+                            <p class="small">{{ product.sku }}</p>
                         </td>
                         <td>
-                            <p>{{ product.name }}</p>
+                            <p class="small">{{ product.name }}</p>
                         </td>
                         <td>
-                            <p>{{ product.description }}</p>
+                            <p class="small">{{ product.description }}</p>
                         </td>
                         <td>
-                            <p>{{ product.categories.map((category) => category.name).join(', ') }}</p>
+                            <p class="small" v-if="product.categories.length == 1">
+                                {{ product.categories[0].name }}
+                            </p>
+                            <p
+                                class="small"
+                                v-else-if="product.categories.length > 1"
+                                v-tooltip
+                                data-bs-toggle="tooltip"
+                                data-bs-placement="bottom"
+                                :title="
+                                    product.categories
+                                        .slice(1)
+                                        .map((category) => category.name)
+                                        .join(', ')
+                                "
+                                style="cursor: pointer"
+                            >
+                                {{ product.categories[0].name }}
+                                <span class="color-purple-dark fw-semibold ms-2"
+                                    >+{{ product.categories.length - 1 }}</span
+                                >
+                            </p>
                         </td>
                     </tr>
                 </tbody>
@@ -111,24 +113,34 @@
                         </td>
                     </tr>
                 </tbody>
+                <tbody v-if="!api.items.length && !api.isLoading">
+                    <tr>
+                        <td colspan="100%">
+                            <p class="w-full text-center">No records found</p>
+                        </td>
+                    </tr>
+                </tbody>
             </table>
         </div>
 
-        <Paginator
-            v-model:first="api.meta.first"
-            :rows="api.meta.limit"
-            :totalRecords="api.meta.total"
-            :rowsPerPageOptions="[10, 20, 50]"
-            @page="api.handlePaginator"
-        >
-        </Paginator>
+        <div class="d-flex justify-content-center align-items-center" style="position: relative">
+            <p class="small text-muted" style="position: absolute; left: 0; top: 0">{{ api.meta.total }} total</p>
+            <Paginator
+                v-model:first="api.meta.first"
+                :rows="api.meta.limit"
+                :totalRecords="api.meta.total"
+                :rowsPerPageOptions="[10, 20, 50]"
+                @page="api.handlePaginator"
+            >
+            </Paginator>
+        </div>
         <div class="d-flex justify-content-end">
             <div v-if="showProgress" class="d-flex justify-content-center align-items-center me-2">
                 <p class="small">Adding {{ checked[current].name }}...</p>
                 <progress :value="current" :max="checked.length - 1" class="w-full h-2"></progress>
             </div>
             <div v-else-if="checked.length > 0" class="d-flex justify-content-center align-items-center me-2">
-                <p class="small">{{ checked.length }} selected ...</p>
+                <p class="small">{{ checked.length }} selected</p>
             </div>
             <button
                 :id="'btn-relation-cancel-' + props.id"
@@ -137,7 +149,14 @@
             >
                 Cancel
             </button>
-            <button :id="'btn-relation-add-' + props.id" class="btn btn-primary" @click="addProducts">Add</button>
+            <button
+                :id="'btn-relation-add-' + props.id"
+                class="btn btn-primary"
+                @click="addProducts"
+                :disabled="isDisabled || checked.length === 0"
+            >
+                Add
+            </button>
         </div>
     </Dialog>
 </template>
@@ -165,11 +184,12 @@ const props = defineProps({
 const current = ref(0);
 const showModal = ref(false);
 const showProgress = ref(false);
+const isDisabled = ref(false);
 const checked = ref([]);
 const search = reactive({
     sku: null,
     name: null,
-    category: null
+    categories: []
 });
 
 const api = reactive(new Api('products'));
@@ -182,15 +202,14 @@ const getData = _.debounce(async () => {
         api.addGroupFilter(query.group, query.column, query.operator, query.value);
     });
 
-    if (search.sku) {
-        api.addGroupFilter('product', 'sku', FilterOperators.CONTAINS, search.sku);
+    if (search.global) {
+        api.setSearch(search.global);
     }
-    if (search.name) {
-        api.addGroupFilter('product', 'name', FilterOperators.CONTAINS, search.name, 'orWhere');
-        api.addGroupFilter('product', 'description', FilterOperators.CONTAINS, search.name);
-    }
-    if (search.category) {
-        api.addGroupFilter('category', 'categories.name', FilterOperators.CONTAINS, search.category);
+
+    if (search.categories.length > 0) {
+        search.categories.forEach((category) => {
+            api.addGroupFilter('category', 'categories.name', FilterOperators.CONTAINS, category.name);
+        });
     }
     await api.getData();
 }, 500);
@@ -207,6 +226,8 @@ const toggleChecked = (product) => {
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 const addProducts = async () => {
     showProgress.value = true;
+    isDisabled.value = true;
+
     for (current.value = 0; current.value < checked.value.length; current.value++) {
         // wait 1 second before next iteration
         await sleep(200);
@@ -226,12 +247,17 @@ const addProducts = async () => {
     api.meta.page = 1;
     getData();
     showProgress.value = false;
+    isDisabled.value = false;
     checked.value = [];
     emitter.emit('datatable-refresh:' + props.route);
 };
-watch(search, () => {
-    getData();
-});
+watch(
+    search,
+    () => {
+        getData();
+    },
+    { deep: true }
+);
 
 watch(showModal, () => {
     if (showModal.value) {
