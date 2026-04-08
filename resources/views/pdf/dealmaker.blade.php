@@ -126,7 +126,7 @@
         .column-margin-body,
         .column-price-header,
         .column-price-body {
-            text-align: right;
+            text-align: center;
         }
 
         .column-speed-body,
@@ -303,14 +303,15 @@
                                 @endforeach
                                 @if ($discounts['monthly']['discount'])
                                     <tr class="item-row" style="vertical-align: middle;">
-                                        <td class="column-name-body" colspan="{{ $isConnectivity ? '8' : '4' }}">
+                                        <td class="column-name-body text-primary"
+                                            colspan="{{ $isConnectivity ? '8' : '4' }}">
                                             Recurring Discount
                                         </td>
-                                        <td class="text-center">
+                                        <td class="text-center text-primary">
                                             {{ number_format($discounts['monthly']['discount'], 2) }} %
                                         </td>
-                                        <td class="text-end  text-primary">
-                                            -£{{ number_format((float) $discounts['monthly']['value'], 2) }}
+                                        <td class="text-end text-primary">
+                                            <b>-£{{ number_format((float) $discounts['monthly']['value'], 2) }}</b>
                                         </td>
                                     </tr>
                                 @endif
@@ -318,7 +319,8 @@
 
                             <tfoot>
                                 <tr>
-                                    <th class="text-start" colspan="{{ $isConnectivity ? '9' : '5' }}">Subtotal
+                                    <th class="text-start" colspan="{{ $isConnectivity ? '9' : '5' }}">
+                                        Monthly Subtotal
                                     </th>
                                     <th class="text-end">
                                         £{{ number_format($monthly_items_total - $discounts['monthly']['value'], 2) }}
@@ -427,14 +429,15 @@
                                 @endforeach
                                 @if ($discounts['one_off']['discount'])
                                     <tr class="item-row" style="vertical-align: middle;"></tr>
-                                    <td class="column-name-body" colspan="{{ $isConnectivity ? '7' : '3' }}">
+                                    <td class="column-name-body text-primary"
+                                        colspan="{{ $isConnectivity ? '7' : '3' }}">
                                         One-Off Discount
                                     </td>
-                                    <td class="text-center">
+                                    <td class="text-center text-primary">
                                         {{ number_format($discounts['one_off']['discount'], 2) }} %
                                     </td>
                                     <td class="text-end  text-primary">
-                                        -£{{ number_format((float) $discounts['one_off']['value'], 2) }}
+                                        <b>-£{{ number_format((float) $discounts['one_off']['value'], 2) }}</b>
                                     </td>
                                     </tr>
                                 @endif
@@ -456,9 +459,9 @@
                     <table class="table table-dealmaker table-bordered text-end">
                         <thead>
                             <colgroup>
-                                <col style="width: 70%" class="text-start" />
-                                <col style="width: 9%" />
-                                <col style="width: 20%" />
+                                <col style="width: 76%" class="text-start" />
+                                <col style="width: 8%" />
+                                <col style="width: 17%" />
                             </colgroup>
                         </thead>
                         <tbody>
@@ -484,13 +487,13 @@
                             @if ($discounts['quote']['discount'])
                                 <tr class="item-row" style="vertical-align: middle;">
                                     <td>
-                                        <p class="small text-start">Overall Discount</p>
+                                        <p class="small text-start text-primary">Overall Discount</p>
                                     </td>
-                                    <td class="text-end">
+                                    <td class="text-end text-primary">
                                         {{ number_format($discounts['quote']['discount'], 2) }} %
                                     </td>
-                                    <td class="text-end  text-primary">
-                                        -£{{ number_format((float) $discounts['quote']['total'], 2) }}
+                                    <td class="text-end text-primary">
+                                        <b>-£{{ number_format((float) $discounts['quote']['total'], 2) }}</b>
                                     </td>
                                 </tr>
                             @endif

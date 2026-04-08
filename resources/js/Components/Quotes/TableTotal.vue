@@ -147,11 +147,11 @@ watch(
     <div class="mobile-price-group-heading d-flex justify-content-between align-items-center">
         <h3>Overall Totals</h3>
     </div>
-    <table class="table-dealmaker table table-bordered text-end">
+    <table id="table-totals" class="table-dealmaker table table-bordered text-end">
         <colgroup>
-            <col style="width: 70%" class="text-start" />
-            <col style="width: 9%" />
-            <col style="width: 20%" />
+            <col class="column-name-header text-start" style="width: 72%" />
+            <col class="column-discount-header" style="width: 8%" />
+            <col class="column-total-header" style="width: 17%" />
             <col v-if="!props.preview" style="width: 60px" class="text-center" />
         </colgroup>
         <tbody>
@@ -183,10 +183,10 @@ watch(
                 "
             >
                 <td class="column-discount-body">
-                    <p class="small text-start">Overall Discount</p>
+                    <p class="small text-start text-primary">Overall Discount</p>
                 </td>
                 <td>
-                    <p class="small text-center" v-if="!isEditing" :id="`global-quote-discount-discount`">
+                    <p class="small text-center text-primary" v-if="!isEditing" :id="`global-quote-discount-discount`">
                         {{ discount.discount }} %
                     </p>
                     <input
@@ -198,7 +198,7 @@ watch(
                         min="0"
                     />
                 </td>
-                <td class="text-primary">-{{ format.GBP(discount.total) }}</td>
+                <td class="text-primary bold">-{{ format.GBP(discount.total) }}</td>
                 <td v-if="!props.preview && !quote.is_blocked">
                     <div class="d-flex justify-content-end">
                         <template v-if="!isEditing">

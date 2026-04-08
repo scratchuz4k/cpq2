@@ -14,9 +14,9 @@
         color: var(--table-header-dark-grey);
         font-size: 12px;
         vertical-align: middle;
-        position: sticky;
-        top: -1px;
-        z-index: 1;
+        //position: sticky;
+        //top: -1px;
+        //z-index: 1;
         cursor: pointer;
         font-weight: normal;
         border: none;
@@ -188,12 +188,12 @@
 
 #print .column-name-header,
 #print .column-name-body {
-    width: 50%;
+    width: 45%;
 }
 
 #print #table-one_off .column-name-header,
 #print #table-one_off .column-name-body {
-    width: 60% !important;
+    width: 55% !important;
 }
 
 .column-total-header,
@@ -221,7 +221,7 @@
 .column-margin-body,
 .column-price-header,
 .column-price-body {
-    text-align: right;
+    text-align: center;
 }
 
 .column-speed-body,
@@ -234,4 +234,14 @@
     font-size: 14px !important;
     margin: 0;
     width: 100%;
+}
+#table-totals .column-total-header,
+#table-totals .column-total-body {
+    width: 23% !important;
+}
+
+#print .column-total-header,
+#print .column-total-body {
+    font-weight: bold !important;
+    width: 17% !important;
 }

@@ -116,7 +116,7 @@ const items = ref([
                                 url="/users"
                                 :fields="['name']"
                                 v-model="user"
-                                placeholder="Select an User"
+                                placeholder="Select a User"
                                 :query="[
                                     { column: 'groups.id', operator: 'is_null', value: '' },
                                     { column: 'is_active', operator: 'equals', value: 1 }

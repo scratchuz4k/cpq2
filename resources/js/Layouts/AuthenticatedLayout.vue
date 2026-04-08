@@ -2,17 +2,20 @@
 import _ from 'lodash';
 import { Link, usePage } from '@inertiajs/vue3';
 import { Comment, computed, ref, useSlots } from 'vue';
-import * as Sentry from '@sentry/vue';
 import TopBarSearchable from '@/Components/TopBarSearchable.vue';
 import Resources from '@/Components/Resources.vue';
 import { can, hasRole } from '@/Composables/useAuth.js';
 import StepActionBar from '@/Components/Steps/StepActionBar.vue';
 import SvgIcon from '@/Components/Custom/SvgIcon.vue';
 import { actionBarButtons } from '@/Composables/useQuoteSteps.js';
+import { selectedItems, addSelected } from '@/Composables/useComparator';
+import * as Sentry from '@sentry/vue';
+import UserFeedback from '@/Components/UserFeedback.vue';
 
 const page = usePage();
 const user = page.props.auth.user;
 const links = page.props.customization.header;
+const feedbackAvailable = !!Sentry.getFeedback();
 
 Sentry.setUser({
     fullName: user.name,
@@ -22,7 +25,8 @@ Sentry.setUser({
 defineProps({
     quote: Object,
     order: Object,
-    showStepActionBar: Boolean
+    showStepActionBar: Boolean,
+    showComparator: Boolean
 });
 
 const activeTab = ref(window.location.pathname.replace(/^\/|\/$/g, ''));
@@ -99,7 +103,13 @@ const hasActionBarContent = computed(() => {
                     </li>
                     <li class="nav-item">
                         <a
+                            v-if="hasRole('Super Admin') || can('viewAny tenant')"
                             class="nav-link d-flex align-items-center h-100"
+                            :href="
+                                hasRole('Super Admin')
+                                    ? route('tenants.index')
+                                    : route('tenants.edit', { tenant: currentTenant.id })
+                            "
                             role="button"
                             v-tooltip
                             data-bs-toggle="tooltip"
@@ -108,6 +118,16 @@ const hasActionBarContent = computed(() => {
                         >
                             <font-awesome-icon :icon="['far', 'building']" />
                         </a>
+                        <span
+                            v-else
+                            class="nav-link d-flex align-items-center h-100"
+                            v-tooltip
+                            data-bs-toggle="tooltip"
+                            data-bs-placement="top"
+                            :title="currentTenant.name + ' (T' + currentTenant.id + ')'"
+                        >
+                            <font-awesome-icon :icon="['far', 'building']" />
+                        </span>
                     </li>
 
                     <li class="nav-item">
@@ -149,11 +169,13 @@ const hasActionBarContent = computed(() => {
             <slot />
         </div>
     </main>
+    <ProductCompareShopblocks v-if="showComparator && selectedItems.length"></ProductCompareShopblocks>
     <StepActionBar v-if="showStepActionBar && (hasActionBarContent || actionBarButtons.length)">
         <slot name="actionBar"></slot>
     </StepActionBar>
     <Footer></Footer>
     <Resources></Resources>
+    <UserFeedback v-if="feedbackAvailable"></UserFeedback>
 </template>
 <style>
 .search-button:focus-visible,

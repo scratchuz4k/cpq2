@@ -183,7 +183,7 @@ onMounted(() => {
 });
 </script>
 <template>
-    <div class="datatable-header d-flex justify-content-between p-3">
+    <div class="datatable-header d-flex justify-content-between py-3">
         <IconField>
             <InputIcon>
                 <font-awesome-icon :icon="['fas', 'search']" />
@@ -358,7 +358,7 @@ onMounted(() => {
             <tbody v-if="!api.items.length && !api.isLoading">
                 <tr>
                     <td colspan="100%">
-                        <p class="w-full text-center">No records found</p>
+                        <p class="w-full text-center py-2">No records found</p>
                     </td>
                 </tr>
             </tbody>

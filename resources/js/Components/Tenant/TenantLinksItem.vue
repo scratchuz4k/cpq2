@@ -29,14 +29,25 @@
         <td>
             <p class="py-2 text-center">
                 <Checkbox
-                    :id="`${props.id}-${index}-is_active`"
-                    v-model="temp.is_active"
+                    v-if="!isEditing"
+                    :id="`${props.id}-${index}link-is_active`"
+                    v-model="proxyValue.is_active"
                     :checked="!!proxyValue.is_active"
                     class="ms-2 opacity-100"
                     binary
                     trueValue="1"
                     falseValue="0"
-                    :disabled="isEditing ? false : true"
+                    :disabled="true"
+                />
+                <Checkbox
+                    v-else
+                    :id="`${props.id}-${index}link-edit-is_active`"
+                    v-model="temp.is_active"
+                    :checked="!!temp.is_active"
+                    class="ms-2 opacity-100"
+                    binary
+                    trueValue="1"
+                    falseValue="0"
                 />
             </p>
         </td>
@@ -114,14 +125,18 @@ const edit = () => {
 };
 
 const cancel = () => {
+    temp.label = '';
+    temp.url = '';
+    temp.is_active = false;
     isEditing.value = false;
 };
 
 const save = () => {
     temp.label = temp.label.trim();
     temp.url = temp.url.trim();
-    if (!temp.label || !temp.url) {
-        notyf.error(`Please enter a valid URL`);
+
+    if (!temp.label) {
+        notyf.error(`Please enter a label`);
         return;
     }
 

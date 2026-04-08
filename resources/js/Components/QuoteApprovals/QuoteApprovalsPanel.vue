@@ -115,6 +115,7 @@ const updateQuoteApproval = async (status, fromModal = false) => {
         notyf.success(`Quote ${status} with success!`);
         await getQuote(quote.id);
         showModal.value = false;
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (ex) {
         notyf.error(ex.response?.data?.message ?? 'Something went wrong!');
     }

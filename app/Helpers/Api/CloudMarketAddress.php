@@ -9,6 +9,7 @@ class CloudMarketAddress
     public function __construct(
         public $postCode,
         public $uprn = null,
+        public $districtCode = null,
         public $lat = null,
         public $lon = null,
         public $addressKey = null,
