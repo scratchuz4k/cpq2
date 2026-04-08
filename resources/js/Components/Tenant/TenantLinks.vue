@@ -154,15 +154,14 @@ const removeRow = (index) => {
 };
 
 const add = () => {
-    debugger;
-    // const activeLinks = proxyValue.value.filter(item => !!item.is_active);
+    const activeLinks = proxyValue.value.filter((item) => !!item.is_active);
     if (props.linkLimit && activeLinks.length >= props.linkLimit) {
         notyf.error(`You can only add up to ${props.linkLimit} links`);
         return;
     }
 
     const newLink = {
-        label: temp.label.trim() ? temp.label.trim() : temp.icon.value,
+        label: temp.label.trim() ? temp.label.trim() : temp.icon?.value,
         url: temp.url.trim(),
         is_active: temp.is_active,
         ...(temp.icon && {
@@ -171,7 +170,7 @@ const add = () => {
     };
 
     if (!newLink.label) {
-        notyf.error(`Please enter a label`);
+        notyf.error(props.linkLimit ? `Please select an icon` : `Please enter a label`);
         return;
     }
 
