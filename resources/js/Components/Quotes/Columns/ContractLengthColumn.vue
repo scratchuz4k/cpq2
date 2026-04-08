@@ -1,7 +1,8 @@
 <script setup>
 import { temp } from '@composables/useQuoteItem';
 import { quote } from '@composables/useQuote';
-import { checkValue } from '@/Composables/input.js';
+import { integerOnly, checkValue } from '@/Composables/input.js';
+
 defineProps({
     code: String,
     column: Object,
@@ -22,7 +23,8 @@ const item = defineModel();
             class="form-control text-center p-0 px-1"
             type="number"
             min="1"
-            max="12"
+            max="99"
+            @keydown="integerOnly"
             v-model="temp.contract_length"
             @input="checkValue"
         />

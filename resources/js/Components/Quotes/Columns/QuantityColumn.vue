@@ -1,6 +1,6 @@
 <script setup>
 import { temp } from '@composables/useQuoteItem';
-import { checkValue } from '@/Composables/input.js';
+import { integerOnly, checkValue } from '@/Composables/input.js';
 defineProps({
     code: String,
     column: Object,
@@ -18,9 +18,10 @@ const item = defineModel();
             v-else
             class="form-control text-center p-0 px-1"
             type="number"
-            min="0"
+            min="1"
             max="9999"
             v-model="temp.quantity"
+            @keydown="integerOnly"
             @input="checkValue"
         />
     </template>
