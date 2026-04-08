@@ -146,47 +146,6 @@ const formatInput = (ev, field, index) => {
                         </template>
                     </MultiSelect>
                 </div>
-                <div class="mb-3">
-                    <p class="form-label mb-2">Managed Products:</p>
-                    <div class="row row-cols-1 row-cols-md-3 g-3">
-                        <div class="col">
-                            <RadioCard v-model="proxyValue.configs.managed" :value="'0'" name="managed-products">
-                                <div class="text-center">
-                                    <font-awesome-icon
-                                        class="py-3 opacity-25"
-                                        :icon="['fa', 'layer-group']"
-                                        size="2x"
-                                    ></font-awesome-icon>
-                                    <span class="d-block h6">Show All</span>
-                                </div>
-                            </RadioCard>
-                        </div>
-                        <div class="col">
-                            <RadioCard v-model="proxyValue.configs.managed" :value="'1'" name="managed-products">
-                                <div class="text-center">
-                                    <font-awesome-icon
-                                        class="py-3 opacity-25"
-                                        :icon="['fa', 'lock']"
-                                        size="2x"
-                                    ></font-awesome-icon>
-                                    <span class="d-block h6">Show Managed Only</span>
-                                </div>
-                            </RadioCard>
-                        </div>
-                        <div class="col">
-                            <RadioCard v-model="proxyValue.configs.managed" :value="'2'" name="managed-products">
-                                <div class="text-center">
-                                    <font-awesome-icon
-                                        class="py-3 opacity-25"
-                                        :icon="['fa', 'lock-open']"
-                                        size="2x"
-                                    ></font-awesome-icon>
-                                    <span class="d-block h6">Show Unmanaged Only</span>
-                                </div>
-                            </RadioCard>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
     </div>

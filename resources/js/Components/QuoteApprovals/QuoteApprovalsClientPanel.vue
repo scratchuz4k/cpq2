@@ -61,6 +61,7 @@ const updateQuoteApproval = async (status, fromModal = false) => {
         });
         showApproval.value = false;
         notyf.success(`Quote ${status} with success!`);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (ex) {
         notyf.error(ex.response?.data?.message ?? 'Something went wrong!');
     }

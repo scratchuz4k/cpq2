@@ -241,6 +241,7 @@ watchEffect(() => {
             ? {
                   btn: 'back',
                   label: 'Previous Step',
+                  disabled: isLoading.value,
                   onClick: checkGoPrevious
               }
             : null,
@@ -249,6 +250,7 @@ watchEffect(() => {
             ? {
                   btn: 'next',
                   id: 'btn-continue',
+                  disabled: isLoading.value,
                   label: 'Continue',
                   onClick: saveQuote
               }

@@ -57,6 +57,7 @@ class QuoteApprovalController extends BaseController
             return handleException($e);
         }
 
+        // TODO: Change this logic to send notification in quoteApprovalService
         // Get the current tenant
         $users = User::hasPermission('update quote_approval')->get();
 

@@ -20,12 +20,16 @@ class CloudMarketFailOverProducts extends CloudMarket
         'contractTermMonths' => [],
         'bearer' => [],
         'speed' => [],
+        'isManaged' => [],
     ];
 
     /**
      * Create a new job instance.
      */
-    public function __construct(protected Quote $quote, protected string $file, protected CloudMarketAddress $address) {}
+    public function __construct(protected Quote $quote, protected string $file, protected CloudMarketAddress $address)
+    {
+        parent::__construct();
+    }
 
     /**
      * Execute the job.
@@ -55,10 +59,11 @@ class CloudMarketFailOverProducts extends CloudMarket
             }
 
             $temp = (array) $value;
+            $supplierName = $this->getConsolidatedProviderName($temp['connectivitySupplierName']);
             $temp['providerKey'] = $temp['providerKey'] == 'virtual1' ? 'pxc' : $temp['providerKey'];
             $temp['providerName'] = $temp['providerName'] == 'Virtual1' ? 'PXC' : $temp['providerName'];
-            $temp['connectivitySupplierName'] = $temp['connectivitySupplierName'] == 'Virtual1' ? 'PXC' : $temp['connectivitySupplierName'];
-            $temp['connectivitySupplierGroup'] = $this->getConsolidatedProviderGroup($temp['connectivitySupplierName']);
+            $temp['connectivitySupplierName'] = $supplierName;
+            $temp['connectivitySupplierGroup'] = $this->getConsolidatedProviderGroup($supplierName);
             $temp['code'] = '';
             foreach (array_keys($temp) as $itemKey) {
                 if (! (is_string($temp[$itemKey]) || is_numeric($temp[$itemKey]))) {
