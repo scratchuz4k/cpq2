@@ -6,7 +6,10 @@
             </button>
         </td>
         <td>
-            <p :id="`${props.id}-${index}-link-label`" class="py-2" v-if="!isEditing">{{ proxyValue.label }}</p>
+            <p :id="`${props.id}-${index}-link-label`" class="py-2" v-if="!isEditing">
+                <font-awesome-icon class="me-3" v-if="proxyValue.icon" :icon="['fa-brands', proxyValue.icon]" />
+                {{ proxyValue.label }}
+            </p>
             <input
                 :id="`${props.id}-${index}-link-edit-label`"
                 v-else

@@ -10,7 +10,8 @@ import _ from 'lodash';
 const props = defineProps({
     isSuperAdmin: Boolean,
     tenant: Object,
-    quote_approval_flows: Array
+    quote_approval_flows: Array,
+    social_links: Array
 });
 
 const isLoading = ref(false);
@@ -30,7 +31,8 @@ const tenant = reactive({
         quote_approval_flow: props.tenant.configurations.quote_approval_flow ?? 'Internal review',
         has_client_approval: props.tenant.configurations.has_client_approval ?? '0',
         customization_header: JSON.parse(props.tenant.configurations.customization_header ?? '[]'),
-        customization_footer: JSON.parse(props.tenant.configurations.customization_footer ?? '[]')
+        customization_footer: JSON.parse(props.tenant.configurations.customization_footer ?? '[]'),
+        customization_social: JSON.parse(props.tenant.configurations.customization_social ?? '[]')
     }
 });
 
@@ -95,12 +97,14 @@ const submitTenantSettings = async () => {
         Object.assign(configs, tenant.configurations);
         configs.customization_header = JSON.stringify(configs.customization_header);
         configs.customization_footer = JSON.stringify(configs.customization_footer);
+        configs.customization_social = JSON.stringify(configs.customization_social);
 
         let res = await axios.put(`/api/tenants/` + tenant.id, { ...tenant, configurations: configs });
 
         let temp = res.data;
         temp.configurations.customization_header = JSON.parse(temp.configurations.customization_header);
         temp.configurations.customization_footer = JSON.parse(temp.configurations.customization_footer);
+        temp.configurations.customization_social = JSON.parse(temp.configurations.customization_social);
         Object.assign(tenant, temp);
 
         notyf.success('Content updated successfully');
@@ -194,6 +198,18 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Settings', url: '/sett
                                 aria-selected="false"
                             >
                                 Footer
+                            </button>
+                            <button
+                                class="nav-link"
+                                id="v-pills-social-tab"
+                                data-bs-toggle="pill"
+                                data-bs-target="#v-pills-social"
+                                type="button"
+                                role="tab"
+                                aria-controls="v-pills-social"
+                                aria-selected="false"
+                            >
+                                Social
                             </button>
                         </div>
                         <div class="tab-content ps-3 w-100" id="v-pills-tabContent">
@@ -319,6 +335,23 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Settings', url: '/sett
                                 <TenantLinks
                                     v-model="tenant.configurations.customization_footer"
                                     id="footer"
+                                    :linkLimit="4"
+                                    @change="submitTenantSettings()"
+                                />
+                            </div>
+                            <div
+                                class="tab-pane fade"
+                                id="v-pills-social"
+                                role="tabpanel"
+                                aria-labelledby="v-pills-social-tab"
+                            >
+                                <h4>Social Links for {{ tenant.name }}</h4>
+                                <p class="mb-3">Manage the social navigation links</p>
+
+                                <TenantLinks
+                                    v-model="tenant.configurations.customization_social"
+                                    :socialLinks="props.social_links"
+                                    id="social"
                                     :linkLimit="4"
                                     @change="submitTenantSettings()"
                                 />

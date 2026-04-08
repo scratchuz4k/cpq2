@@ -38,7 +38,32 @@
             <tr>
                 <th></th>
                 <th>
+                    <Select
+                        v-if="props.socialLinks?.length > 0"
+                        inputId="${props.id}-new-link-ion"
+                        v-model="temp.icon"
+                        :options="props.socialLinks"
+                        :optionLabel="'value' + ' ' + 'teste'"
+                        placeholder="Select an Icon"
+                        class="w-100"
+                    >
+                        <template #option="{ option }">
+                            <div class="d-flex align-items-center gap-2">
+                                <font-awesome-icon :icon="['fa-brands', option.icon]" />
+                                <span class="me-3">{{ option.value }}</span>
+                            </div>
+                        </template>
+
+                        <template #value="{ value }">
+                            <div v-if="value" class="d-flex align-items-center gap-2">
+                                <font-awesome-icon :icon="['fa-brands', value.icon]" />
+                                <span class="me-3">{{ value.value }}</span>
+                            </div>
+                        </template>
+                    </Select>
+
                     <input
+                        v-else
                         :id="`${props.id}-new-link-label`"
                         class="form-control"
                         v-model="temp.label"
@@ -75,12 +100,17 @@
 <script setup>
 import { computed, reactive, ref } from 'vue';
 import draggable from 'vuedraggable';
+import Select from 'primevue/select';
 
 const props = defineProps({
     modelValue: Array,
     id: String,
     linkLimit: {
         type: Number,
+        default: null
+    },
+    socialLinks: {
+        type: Array,
         default: null
     }
 });
@@ -113,9 +143,13 @@ const add = () => {
     }
 
     const newLink = {
-        label: temp.label.trim(),
+        label: temp.label.trim() ? temp.label.trim() : temp.icon.value,
         url: temp.url.trim(),
-        is_active: temp.is_active
+        is_active: temp.is_active,
+        ...(temp.icon && {
+            is_social: true,
+            icon: temp.icon.icon
+        })
     };
 
     if (!newLink.label) {
@@ -136,6 +170,7 @@ const add = () => {
     temp.label = '';
     temp.url = '';
     temp.is_active = false;
+    delete temp.icon;
     emit('change');
 };
 
