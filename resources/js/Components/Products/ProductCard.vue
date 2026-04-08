@@ -40,7 +40,7 @@ const checkQuantity = _.debounce(async (product, temp) => {
     product.quantity = temp;
 
     let code = product.sku ?? product.code;
-    let item = quote.items.find((x) => x.product_code == code);
+    let item = quote.items.find((x) => x.product_code == code && x.data?.type == 'main_product');
     if (!item) {
         if (product.quantity == 0) {
             return;
@@ -54,7 +54,8 @@ const checkQuantity = _.debounce(async (product, temp) => {
             name: product.name,
             raw_price: product.price ? product.price.net : 0,
             price: product.price ? product.price.net_spa : 0,
-            price_plan_id: product.price_plan_id
+            price_plan_id: product.price_plan_id,
+            data: { type: 'main_product' }
         });
     } else {
         if (product.quantity == 0) {
@@ -259,6 +260,16 @@ watch(searchInput, () => {
                             @change="(val) => checkQuantity(proxyValue, val, true)"
                         />
                     </div>
+                </div>
+                <div
+                    v-if="
+                        proxyValue.counts?.addons > 0 &&
+                        quote.items.some((x) => x.product_code == (proxyValue.sku ?? proxyValue.code) && x.quantity > 0)
+                    "
+                    class="mt-3"
+                >
+                    <hr class="my-2" />
+                    <ProductAddonsList :productId="proxyValue.id" :productSku="proxyValue.sku ?? proxyValue.code" />
                 </div>
             </div>
         </div>
