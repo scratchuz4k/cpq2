@@ -23,8 +23,14 @@
                         v-model="proxyValue[index]"
                         :id="props.id"
                         :index="index"
+                        :links="availableSocialLinks"
                         @removed="() => removeRow(index)"
-                        @edited="emit('change')"
+                        @edited="
+                            () => {
+                                emit('change');
+                                availableSocialLinks = getAvailableSocialLinks();
+                            }
+                        "
                     ></TenantLinksItem>
                 </template>
             </draggable>
@@ -39,11 +45,10 @@
                 <th></th>
                 <th>
                     <Select
-                        v-if="props.socialLinks?.length > 0"
+                        v-if="availableSocialLinks?.length > 0"
                         inputId="${props.id}-new-link-ion"
                         v-model="temp.icon"
-                        :options="props.socialLinks"
-                        :optionLabel="'value' + ' ' + 'teste'"
+                        :options="socialLinks"
                         placeholder="Select an Icon"
                         class="w-100"
                     >
@@ -125,6 +130,16 @@ const proxyValue = computed({
     }
 });
 
+const getAvailableSocialLinks = () =>
+    (props.socialLinks ?? []).filter(
+        (link) =>
+            !proxyValue.value?.some(
+                (item) => item.icon === link.icon && item.is_active !== 0 && item.is_active !== false
+            )
+    );
+
+const availableSocialLinks = ref(getAvailableSocialLinks());
+
 const temp = reactive({
     label: '',
     url: '',
@@ -132,12 +147,16 @@ const temp = reactive({
 });
 
 const removeRow = (index) => {
+    const removed = proxyValue.value[index];
     proxyValue.value.splice(index, 1);
+    availableSocialLinks.value = getAvailableSocialLinks();
     emit('change');
 };
 
 const add = () => {
-    if (props.linkLimit && proxyValue.value.length >= props.linkLimit) {
+    debugger;
+    // const activeLinks = proxyValue.value.filter(item => !!item.is_active);
+    if (props.linkLimit && activeLinks.length >= props.linkLimit) {
         notyf.error(`You can only add up to ${props.linkLimit} links`);
         return;
     }
@@ -147,7 +166,6 @@ const add = () => {
         url: temp.url.trim(),
         is_active: temp.is_active,
         ...(temp.icon && {
-            is_social: true,
             icon: temp.icon.icon
         })
     };
@@ -171,6 +189,7 @@ const add = () => {
     temp.url = '';
     temp.is_active = false;
     delete temp.icon;
+    availableSocialLinks.value = getAvailableSocialLinks();
     emit('change');
 };
 

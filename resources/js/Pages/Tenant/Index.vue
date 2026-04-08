@@ -352,7 +352,7 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Settings', url: '/sett
                                     v-model="tenant.configurations.customization_social"
                                     :socialLinks="props.social_links"
                                     id="social"
-                                    :linkLimit="4"
+                                    :linkLimit="5"
                                     @change="submitTenantSettings()"
                                 />
                             </div>

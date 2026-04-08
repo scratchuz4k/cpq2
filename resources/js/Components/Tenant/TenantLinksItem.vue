@@ -10,14 +10,38 @@
                 <font-awesome-icon class="me-3" v-if="proxyValue.icon" :icon="['fa-brands', proxyValue.icon]" />
                 {{ proxyValue.label }}
             </p>
-            <input
-                :id="`${props.id}-${index}-link-edit-label`"
-                v-else
-                class="form-control"
-                v-model="temp.label"
-                placeholder="Label"
-                maxlength="20"
-            />
+            <template v-else>
+                <Select
+                    v-if="props.links?.length > 0"
+                    inputId="${props.id}-new-link-ion"
+                    v-model="temp.icon"
+                    :options="props.links"
+                    placeholder="Select an Icon"
+                    class="w-100"
+                >
+                    <template #option="{ option }">
+                        <div class="d-flex align-items-center gap-2">
+                            <font-awesome-icon :icon="['fa-brands', option.icon]" />
+                            <span class="me-3">{{ option.value ?? option.label }}</span>
+                        </div>
+                    </template>
+
+                    <template #value="{ value }">
+                        <div v-if="value" class="d-flex align-items-center gap-2">
+                            <font-awesome-icon :icon="['fa-brands', value.icon]" />
+                            <span class="me-3">{{ value.value ?? value.label }}</span>
+                        </div>
+                    </template>
+                </Select>
+                <input
+                    :id="`${props.id}-${index}-link-edit-label`"
+                    v-else
+                    class="form-control"
+                    v-model="temp.label"
+                    placeholder="Label"
+                    maxlength="20"
+                />
+            </template>
         </td>
         <td>
             <p :id="`${props.id}-${index}-link-url`" class="py-2" v-if="!isEditing">{{ proxyValue.url }}</p>
@@ -96,11 +120,16 @@
 </template>
 <script setup>
 import { computed, reactive, ref } from 'vue';
+import Select from 'primevue/select';
 
 const props = defineProps({
     modelValue: Object,
     id: String,
-    index: Number
+    index: Number,
+    links: {
+        type: Array,
+        default: null
+    }
 });
 
 const emit = defineEmits(['update:modelValue', 'removed', 'edited']);
@@ -113,6 +142,7 @@ const proxyValue = computed({
     }
 });
 
+const availableLinks = props.links;
 const isEditing = ref(false);
 const temp = reactive({
     label: '',
@@ -124,6 +154,11 @@ const edit = () => {
     temp.label = proxyValue.value.label;
     temp.url = proxyValue.value.url;
     temp.is_active = proxyValue.value.is_active;
+    if (proxyValue.value.icon) {
+        temp.icon = { icon: proxyValue.value.icon, label: proxyValue.value.label };
+        availableLinks.push(temp.icon);
+    }
+
     isEditing.value = true;
 };
 
@@ -155,6 +190,7 @@ const save = () => {
     proxyValue.value.label = temp.label;
     proxyValue.value.url = temp.url;
     proxyValue.value.is_active = temp.is_active;
+    proxyValue.value.icon = temp.icon;
     isEditing.value = false;
     emit('edited');
 };
