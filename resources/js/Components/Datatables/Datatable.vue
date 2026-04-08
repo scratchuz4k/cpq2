@@ -16,6 +16,7 @@ import axios from 'axios';
 import { can, hasRole } from '@/Composables/useAuth.js';
 import pluralize from 'pluralize';
 import { exportData } from '@/Composables/export.js';
+import { isLoading } from '@/Composables/useConnectivityItem';
 
 const slots = useSlots();
 const usedSlots = Object.keys(slots);
@@ -67,7 +68,14 @@ const setFilters = () => {
     props.columns.forEach((el) => form.filters.push({ column: el.data, value: null, operator: 'contains' }));
 };
 
+let abortController = null;
+
 const getData = async () => {
+    if (abortController) {
+        abortController.abort();
+    }
+    abortController = new AbortController();
+
     let string = queryString.stringify({
         ...form,
         page: meta.page,
@@ -80,12 +88,15 @@ const getData = async () => {
     });
 
     try {
-        let res = await axios.get('/api' + props.route + '?' + string);
+        let res = await axios.get('/api' + props.route + '?' + string, { signal: abortController.signal });
         data.value = res.data.data;
         emptyData.value = !data.value.length;
         meta.total = res.data.meta?.total ?? res.data.total;
         meta.first = (meta.page - 1) * form.limit;
     } catch (ex) {
+        if (axios.isCancel(ex)) {
+            return;
+        }
         notyf.error(ex.response.data.message);
     }
 };
@@ -182,13 +193,15 @@ watch(
     }
 );
 
-watch(
-    [global, form.filters],
-    _.debounce(function () {
-        meta.page = 1;
-        getData();
-    }, 200)
-);
+const debouncedSearch = _.debounce(function () {
+    meta.page = 1;
+    getData();
+}, 200);
+
+watch([global, form.filters], () => {
+    data.value = [];
+    debouncedSearch();
+});
 
 getData();
 </script>

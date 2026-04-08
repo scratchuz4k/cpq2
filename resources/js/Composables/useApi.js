@@ -124,6 +124,11 @@ export class Api {
     }
 
     getData = async () => {
+        if (this._abortController) {
+            this._abortController.abort();
+        }
+        this._abortController = new AbortController();
+
         this.isLoading.value = true;
         let object = {
             order: this.order,
@@ -144,12 +149,17 @@ export class Api {
         }
 
         try {
-            let res = await axios.get('/api/' + this.route + '?' + qs.stringify(object));
+            let res = await axios.get('/api/' + this.route + '?' + qs.stringify(object), {
+                signal: this._abortController.signal
+            });
             this.meta.total = res.data.meta?.total ?? res.data.total;
             this.meta.first = (this.meta.page - 1) * this.meta.limit;
             this.items.value = res.data.data;
             this.isLoading.value = false;
         } catch (ex) {
+            if (axios.isCancel(ex)) {
+                return;
+            }
             this.isLoading.value = false;
             notyf.error(ex.response.data.message);
         }
