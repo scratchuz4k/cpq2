@@ -18,10 +18,10 @@
         <div class="mb-3">
             <p class="big bold mb-3">Filter</p>
 
-            <div class="d-flex flex-wrap gap-3">
-                <div>
+            <div class="row">
+                <div class="col">
                     <label for="search-global" class="form-label">Search</label>
-                    <IconField>
+                    <IconField class="w-100">
                         <InputIcon>
                             <font-awesome-icon :icon="['fas', 'search']" />
                         </InputIcon>
@@ -31,15 +31,17 @@
                             type="search"
                             placeholder="Search"
                             size="small"
+                            class="w-100 py-2"
                         />
                     </IconField>
                 </div>
-                <div>
+                <div class="col">
                     <label for="search-category" class="form-label">Category</label>
 
                     <InputSelectMultiple
                         id="select-category"
                         url="/categories"
+                        class="w-100"
                         :fields="['name']"
                         v-model="search.categories"
                         placeholder="Select a Categories"
@@ -99,7 +101,7 @@
                                 style="cursor: pointer"
                             >
                                 {{ product.categories[0].name }}
-                                <span class="color-purple-dark fw-semibold ms-2"
+                                <span class="color-purple-dark fw-semibold ms-1"
                                     >+{{ product.categories.length - 1 }}</span
                                 >
                             </p>
