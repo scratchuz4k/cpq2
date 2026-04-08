@@ -79,7 +79,7 @@ describe('Creates products and associates Category.cy', () => {
         cy.get('#datatable-btn-0-edit').click();
         cy.get('#tabs-product-edit-2-2').click();
         cy.get('#btn-add-links').click();
-        cy.get('#links-search-sku').type(product.sku);
+        cy.get('#links-search-global').type(product.sku);
         cy.get('#links-table').contains(product.sku);
         cy.wait(1000);
         cy.get('#links-checkbox-0').click({ force: true });

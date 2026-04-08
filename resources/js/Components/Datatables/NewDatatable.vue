@@ -15,6 +15,13 @@ import { v4 as uuidv4 } from 'uuid';
 const slots = useSlots();
 const usedSlots = Object.keys(slots);
 
+const tableContainer = ref(null);
+const isScrolled = ref(false);
+
+const onScroll = () => {
+    isScrolled.value = tableContainer.value?.scrollLeft > 0;
+};
+
 const props = defineProps({
     id: {
         required: false,
@@ -223,7 +230,7 @@ onMounted(() => {
         </div>
     </div>
 
-    <div class="datatable-content">
+    <div ref="tableContainer" class="datatable-content" :class="{ 'is-scrolled': isScrolled }" @scroll="onScroll">
         <table class="w-100" :id="props.options.id">
             <thead>
                 <tr>
@@ -231,7 +238,7 @@ onMounted(() => {
                         v-for="(data, key) in props.options.columns.filter((x) => !x.isHidden)"
                         :key="key"
                         class="datatable-table-header"
-                        :style="['position: sticky; top: 0;', data.isSticky ? 'z-index: 3' : 'z-index: 2']"
+                        :style="['position: sticky; top: -1px;', data.isSticky ? 'z-index: 3' : 'z-index: 2']"
                         :class="[
                             'datatable-col',
                             data.isSticky ? `datatable-col-sticky datatable-col-sticky-${key + 1}` : '',
@@ -271,7 +278,7 @@ onMounted(() => {
                         v-if="props.options.allow.update || props.options.allow.link || props.options.allow.destroy"
                         class="datatable-table-header"
                         :class="['datatable-col', 'p-0']"
-                        style="position: sticky; top: 0; z-index: 2"
+                        style="position: sticky; top: -1px; z-index: 2"
                     ></th>
                 </tr>
             </thead>
@@ -299,7 +306,7 @@ onMounted(() => {
                                 :value="getValue(item, data.column)"
                                 :id="`${data.column}-${index}`"
                             />
-                            <p v-else>{{ getValue(item, data.column) }}</p>
+                            <p class="small" v-else>{{ getValue(item, data.column) }}</p>
                         </td>
                         <td
                             v-if="props.options.allow.update || props.options.allow.link || props.options.allow.destroy"
@@ -372,7 +379,6 @@ onMounted(() => {
 }
 .datatable-content {
     background-color: white;
-    min-height: 40vh;
     max-height: 60vh;
     overflow: auto;
 }
@@ -388,19 +394,23 @@ onMounted(() => {
     vertical-align: bottom;
     color: #646464;
 }
+
 .datatable-table-column {
     background-color: white;
 }
 
 .datatable-col {
+    box-sizing: border-box;
     padding: 0.5rem;
-    vertical-align: middle;
+    vertical-align: top;
     border-bottom: 1px solid #dee2e6;
+    width: 150px !important;
 }
 
 .datatable-col-sticky {
-    vertical-align: middle;
+    vertical-align: top;
     min-width: 150px !important;
+    max-width: 150px !important;
 }
 
 .datatable-col-sticky-1 {
@@ -418,8 +428,18 @@ onMounted(() => {
     left: 300px;
     z-index: 2;
 }
+.datatable-col-last-sticky:after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 10px;
+    height: 100%;
+    transition: all 0.3s ease;
+    pointer-events: none;
+}
 
-.datatable-col-last-sticky {
-    border-right: 2px solid #dee2e6;
+.is-scrolled .datatable-col-last-sticky:after {
+    box-shadow: inset 10px 0 8px -8px #0003;
 }
 </style>

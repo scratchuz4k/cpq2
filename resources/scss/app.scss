@@ -204,11 +204,11 @@ body {
     }
 
     .text-primary {
-        color: var(--color-purple) !important;
+        color: var(--color-primary) !important;
     }
 
     .border-primary {
-        border-color: var(--color-purple) !important;
+        border-color: var(--color-primary) !important;
     }
 
     .text-left {
@@ -298,6 +298,9 @@ body {
     .badge {
         line-height: 16px;
         border: 0;
+    }
+
+    .badge-primary {
         background-color: #f5e5f3;
         color: #a34996;
     }

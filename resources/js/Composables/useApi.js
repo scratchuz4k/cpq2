@@ -84,6 +84,7 @@ export class Api {
     clearFilters() {
         this.filters = [];
         this.groupedfilters = [];
+        this.search = null;
     }
 
     /**

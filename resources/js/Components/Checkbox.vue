@@ -37,15 +37,22 @@ const proxyChecked = computed({
 </script>
 
 <template>
-    <input :id="props.id" type="checkbox" v-model="proxyChecked" :indeterminate="proxyChecked === null" />
+    <input
+        class="form-check-input"
+        :id="props.id"
+        type="checkbox"
+        v-model="proxyChecked"
+        :indeterminate="proxyChecked === null"
+    />
 </template>
 <style scoped>
 input[type='checkbox'] {
     width: 20px;
     height: 20px;
     margin: 0;
-    border-width: 2px;
+    border-width: 1px;
     cursor: pointer;
+    box-shadow: none !important;
 }
 
 input[type='checkbox']:checked {
@@ -53,7 +60,7 @@ input[type='checkbox']:checked {
     border-color: var(--color-purple) !important;
 }
 input[type='checkbox']:focus {
-    box-shadow: var(--color-purple) 0px 1px 4px;
+    box-shadow: none !important;
     border-color: var(--color-purple-light) !important;
 }
 </style>

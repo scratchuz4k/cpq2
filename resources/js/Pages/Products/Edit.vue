@@ -120,8 +120,9 @@ optionLinks.addColumn('child.name', 'Name', null, { isSticky: true });
 optionLinks.addColumn('child.description', 'Description', null, {});
 optionLinks.addColumn('child.status', 'Status', null, {});
 optionLinks.addColumn('child.prices.cost', 'Cost Price', { width: '150px' }, {});
-optionLinks.addColumn('child.prices.net_spa', 'Net Price', { width: '150px' }, { isSearchable: false });
-optionLinks.addColumn('child.steps.name', 'Solution Type', { width: '250px' }, {});
+optionLinks.addColumn('child.prices.net', 'Net Price', { width: '150px' }, { isSearchable: false });
+optionLinks.addColumn('child.steps.name', 'Steps', { width: '250px' }, {});
+optionLinks.addColumn('child.categories.name', 'Categories', { width: '250px' }, {});
 
 optionLinks.addQuery('product_id', FilterOperators.EQUALS, product.id);
 optionLinks.setAllowedActions({
@@ -136,8 +137,8 @@ optionAddons.addColumn('addon.description', 'Description', null, {});
 optionAddons.addColumn('addon.categories.name', 'Categories', null, {});
 optionAddons.addColumn('addon.status', 'Status', null, {});
 optionAddons.addColumn('addon.prices.cost', 'Cost Price', { width: '150px' }, {});
-optionAddons.addColumn('addon.prices.net_spa', 'Net Price', { width: '150px' }, { isSearchable: false });
-optionAddons.addColumn('addon.steps.name', 'Solution Type', { width: '250px' }, {});
+optionAddons.addColumn('addon.prices.net', 'Net Price', { width: '150px' }, { isSearchable: false });
+optionAddons.addColumn('addon.steps.name', 'Steps', { width: '250px' }, {});
 
 optionAddons.addQuery('product_id', FilterOperators.EQUALS, product.id);
 optionAddons.setAllowedActions({
@@ -321,7 +322,7 @@ const items = ref([
                                         <InputText type="number" v-model="data[field]" fluid />
                                     </template>
                                 </Column>
-                                <Column field="net_spa" header="Net SPA">
+                                <Column field="net" header="Net SPA">
                                     <template #body="{ data, field }">
                                         {{ format.GBP(data[field]) }}
                                     </template>
@@ -407,7 +408,7 @@ const items = ref([
                     </div>
                 </div>
             </tab>
-            <tab :title="`Linked Products <span class='badge rounded-pill ms-2'>${totals.linked}</span>`">
+            <tab :title="`Linked Products <span class='badge badge-primary rounded-pill ms-2'>${totals.linked}</span>`">
                 <div class="d-flex justify-content-between my-3">
                     <div>
                         <h3>Children</h3>
@@ -429,12 +430,21 @@ const items = ref([
                         />
                     </div>
                 </div>
-                <NewDatatable
-                    :options="optionLinks"
-                    @update:meta="(meta) => (totals.linked = meta.total)"
-                ></NewDatatable>
+                <NewDatatable :options="optionLinks" @update:meta="(meta) => (totals.linked = meta.total)">
+                    <template #child.status="{ data, value }">
+                        <div class="badge" :class="[value == 'Active' ? 'text-bg-success' : 'text-bg-secondary']">
+                            {{ value }}
+                        </div>
+                    </template>
+                    <template #child.prices.cost="{ data, value }">
+                        {{ value ? format.GBP(value) : 'N/A' }}
+                    </template>
+                    <template #child.prices.net="{ data, value }">
+                        {{ value ? format.GBP(value) : 'N/A' }}
+                    </template>
+                </NewDatatable>
             </tab>
-            <tab :title="`Addons <span class='badge rounded-pill  ms-2'>${totals.addons}</span>`">
+            <tab :title="`Addons <span class='badge badge-primary rounded-pill ms-2'>${totals.addons}</span>`">
                 <div class="d-flex justify-content-between my-3">
                     <div>
                         <h3>Addons</h3>
@@ -456,10 +466,19 @@ const items = ref([
                         />
                     </div>
                 </div>
-                <NewDatatable
-                    :options="optionAddons"
-                    @update:meta="(meta) => (totals.addons = meta.total)"
-                ></NewDatatable>
+                <NewDatatable :options="optionAddons" @update:meta="(meta) => (totals.addons = meta.total)">
+                    <template #addon.status="{ data, value }">
+                        <div class="badge" :class="[value == 'Active' ? 'text-bg-success' : 'text-bg-secondary']">
+                            {{ value }}
+                        </div>
+                    </template>
+                    <template #addon.prices.cost="{ data, value }">
+                        {{ value ? format.GBP(value) : 'N/A' }}
+                    </template>
+                    <template #addon.prices.net="{ data, value }">
+                        {{ value ? format.GBP(value) : 'N/A' }}
+                    </template>
+                </NewDatatable>
             </tab>
         </tabs>
     </AuthenticatedLayout>

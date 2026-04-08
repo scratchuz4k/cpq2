@@ -210,7 +210,7 @@ watch(search, () => {
                                 </button>
 
                                 <Checkbox @click="checkGroup(group)" :checked="getGroupCheck(group)" />
-                                <p>{{ group.title }}</p>
+                                <p class="ms-2">{{ group.title }}</p>
                             </div>
                             <ul class="ms-2 my-2 tree-childs" v-if="group.is_visble">
                                 <li class="ms-3 d-flex" v-for="item in group.children" :key="'permission-' + group.id">
