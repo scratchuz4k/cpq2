@@ -14,6 +14,8 @@ import Select from 'primevue/select';
 import { DateTime } from 'luxon';
 import _ from 'lodash';
 import format from '@/Composables/format.js';
+import { DatatableOptions } from '@/Components/Datatables/DatatableOptions.js';
+import { FilterOperators } from '@composables/useApi';
 
 const props = defineProps({
     product: Object,
@@ -43,7 +45,6 @@ const saveProduct = () => {
         ...product,
         expires_at: product.expires_at ? DateTime.fromJSDate(product.expires_at).toISO() : null,
         supplier_id: product.supplier?.id ?? null,
-        parent_id: product.parent?.id ?? null,
         categories: categories.value.map((item) => item.id),
         steps: steps.value.map((item) => item.id)
     };
@@ -108,6 +109,43 @@ const onRowEditSave = async (event) => {
     }
 };
 
+const totals = reactive({
+    linked: product.children?.length ?? 0,
+    addons: product.addons?.length ?? 0
+});
+
+const optionLinks = new DatatableOptions('product-links', 'product-links');
+optionLinks.addColumn('child.sku', 'SKU', null, { isSticky: true });
+optionLinks.addColumn('child.name', 'Name', null, { isSticky: true });
+optionLinks.addColumn('child.description', 'Description', null, {});
+optionLinks.addColumn('child.status', 'Status', null, {});
+optionLinks.addColumn('child.prices.cost', 'Cost Price', { width: '150px' }, {});
+optionLinks.addColumn('child.prices.net', 'Net Price', { width: '150px' }, { isSearchable: false });
+optionLinks.addColumn('child.steps.name', 'Steps', { width: '250px' }, {});
+optionLinks.addColumn('child.categories', 'Categories', { width: '250px' }, {});
+
+optionLinks.addQuery('product_id', FilterOperators.EQUALS, product.id);
+optionLinks.setAllowedActions({
+    destroy: true,
+    allowExport: can(`export product`) || hasRole('Super Admin')
+});
+
+const optionAddons = new DatatableOptions('product-addons', 'product-addons');
+optionAddons.addColumn('addon.sku', 'SKU', null, { isSticky: true });
+optionAddons.addColumn('addon.name', 'Name', null, { isSticky: true });
+optionAddons.addColumn('addon.description', 'Description', null, {});
+optionAddons.addColumn('addon.status', 'Status', null, {});
+optionAddons.addColumn('addon.prices.cost', 'Cost Price', { width: '150px' }, {});
+optionAddons.addColumn('addon.prices.net', 'Net Price', { width: '150px' }, { isSearchable: false });
+optionAddons.addColumn('addon.steps.name', 'Steps', { width: '250px' }, {});
+optionAddons.addColumn('addon.categories', 'Categories', { width: '250px' }, {});
+
+optionAddons.addQuery('product_id', FilterOperators.EQUALS, product.id);
+optionAddons.setAllowedActions({
+    destroy: true,
+    allowExport: can(`export product`) || hasRole('Super Admin')
+});
+
 const items = ref([
     { label: 'Home', url: '/' },
     { label: 'Settings', url: '/settings' },
@@ -127,7 +165,7 @@ const items = ref([
                     </PrimaryButton>
                 </template>
             </Header>
-            <tabs class="mt-3">
+            <tabs id="tabs-product-edit" class="mt-3">
                 <tab title="General" :selected="true">
                     <div class="my-3">
                         <p>
@@ -245,20 +283,6 @@ const items = ref([
                                 >
                                 </InputSelect>
                             </div>
-                            <div class="mb-3">
-                                <label for="product-parent" class="form-label">Parent:</label>
-                                <div class="input-group p-0">
-                                    <InputSelect
-                                        id="product-parent"
-                                        url="/products"
-                                        :fields="['name']"
-                                        class="w-100"
-                                        v-model="product.parent"
-                                        placeholder="Select a Parent"
-                                        :query="[{ column: 'is_active', operator: 'equals', value: 1 }]"
-                                    />
-                                </div>
-                            </div>
                         </div>
                     </div>
                 </tab>
@@ -305,7 +329,7 @@ const items = ref([
                                             <InputText type="number" v-model="data[field]" fluid />
                                         </template>
                                     </Column>
-                                    <Column field="net_spa" header="Net SPA">
+                                    <Column field="net" header="Net SPA">
                                         <template #body="{ data, field }">
                                             {{ format.GBP(data[field]) }}
                                         </template>
@@ -390,6 +414,124 @@ const items = ref([
                             </Dialog>
                         </div>
                     </div>
+                </tab>
+                <tab
+                    :title="`Linked Products <span class='badge badge-primary rounded-pill ms-2'>${totals.linked}</span>`"
+                >
+                    <div class="d-flex justify-content-between my-3">
+                        <div>
+                            <h3>Children</h3>
+                        </div>
+                        <div>
+                            <ProductCreateRelation
+                                id="links"
+                                route="product-links"
+                                :product="product"
+                                column="child_id"
+                                :queries="[
+                                    {
+                                        group: 'parent',
+                                        column: 'parents.id',
+                                        operator: FilterOperators.IS_NULL,
+                                        value: product.id
+                                    }
+                                ]"
+                            />
+                        </div>
+                    </div>
+                    <NewDatatable :options="optionLinks" @update:meta="(meta) => (totals.linked = meta.total)">
+                        <template #child.status="{ data, value }">
+                            <div class="badge" :class="[value == 'Active' ? 'text-bg-success' : 'text-bg-secondary']">
+                                {{ value }}
+                            </div>
+                        </template>
+                        <template #child.prices.cost="{ data, value }">
+                            {{ value ? format.GBP(value) : 'N/A' }}
+                        </template>
+                        <template #child.prices.net="{ data, value }">
+                            {{ value ? format.GBP(value) : 'N/A' }}
+                        </template>
+                        <template #child.categories="{ data, value }">
+                            <p class="small" v-if="value.length == 1">
+                                {{ value[0].name }}
+                            </p>
+                            <p
+                                class="small"
+                                v-else-if="value.length > 1"
+                                v-tooltip
+                                data-bs-toggle="tooltip"
+                                data-bs-placement="bottom"
+                                :title="
+                                    value
+                                        .slice(1)
+                                        .map((category) => category.name)
+                                        .join(', ')
+                                "
+                                style="cursor: pointer"
+                            >
+                                {{ value[0].name }}
+                                <span class="color-purple-dark fw-semibold ms-1">+{{ value.length - 1 }}</span>
+                            </p>
+                        </template>
+                    </NewDatatable>
+                </tab>
+                <tab :title="`Addons <span class='badge badge-primary rounded-pill ms-2'>${totals.addons}</span>`">
+                    <div class="d-flex justify-content-between my-3">
+                        <div>
+                            <h3>Addons</h3>
+                        </div>
+                        <div>
+                            <ProductCreateRelation
+                                id="addons"
+                                route="product-addons"
+                                :product="product"
+                                column="addon_id"
+                                :queries="[
+                                    {
+                                        group: 'parent',
+                                        column: 'related.id',
+                                        operator: FilterOperators.IS_NULL,
+                                        value: product.id
+                                    }
+                                ]"
+                            />
+                        </div>
+                    </div>
+                    <NewDatatable :options="optionAddons" @update:meta="(meta) => (totals.addons = meta.total)">
+                        <template #addon.status="{ data, value }">
+                            <div class="badge" :class="[value == 'Active' ? 'text-bg-success' : 'text-bg-secondary']">
+                                {{ value }}
+                            </div>
+                        </template>
+                        <template #addon.prices.cost="{ data, value }">
+                            {{ value ? format.GBP(value) : 'N/A' }}
+                        </template>
+                        <template #addon.prices.net="{ data, value }">
+                            {{ value ? format.GBP(value) : 'N/A' }}
+                        </template>
+                        <template #addon.categories="{ data, value }">
+                            <p class="small" v-if="value.length == 1">
+                                {{ value[0].name }}
+                            </p>
+                            <p
+                                class="small"
+                                v-else-if="value.length > 1"
+                                v-tooltip
+                                data-bs-toggle="tooltip"
+                                data-bs-placement="bottom"
+                                :title="
+                                    value
+                                        .slice(1)
+                                        .map((category) => category.name)
+                                        .join(', ')
+                                "
+                                style="cursor: pointer"
+                            >
+                                {{ value[0].name }}
+                                <span class="color-purple-dark fw-semibold ms-1">+{{ value.length - 1 }}</span>
+                            </p>
+                        </template>
+                    </NewDatatable>
                 </tab>
             </tabs>
         </div>

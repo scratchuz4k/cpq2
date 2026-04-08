@@ -10,6 +10,7 @@ use App\Models\Notification;
 use App\Services\NotificationService;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class NotificationController extends BaseController
@@ -71,5 +72,16 @@ class NotificationController extends BaseController
     public function destroy(Notification $notification)
     {
         //
+    }
+
+    public function markAllAsRead()
+    {
+        try {
+            $this->notificationService->markAllAsRead(Auth::user());
+        } catch (\Exception $e) {
+            return handleException($e);
+        }
+
+        return response()->json(['message' => 'All notifications marked as read']);
     }
 }

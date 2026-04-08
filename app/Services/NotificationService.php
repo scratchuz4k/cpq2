@@ -25,4 +25,11 @@ class NotificationService
 
         return $notification;
     }
+
+    public function markAllAsRead(User $user): void
+    {
+        foreach ($user->notifications()->where('is_read', false)->get() as $notification) {
+            $notification->update(['is_read' => true]);
+        }
+    }
 }

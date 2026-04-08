@@ -87,8 +87,8 @@ const getProducts = async () => {
         },
         {
             group: [
-                { column: 'parent_id', operator: 'in', value: quote.items.map((x) => x.product_id) },
-                { column: 'parent_id', operator: 'is_null', value: '', function: 'orWhere' }
+                { column: 'parents.id', operator: 'in', value: quote.items.map((x) => x.product_id) },
+                { column: 'parents.id', operator: 'is_null', value: '', function: 'orWhere' }
             ]
         }
     ];
@@ -113,7 +113,7 @@ const getProducts = async () => {
 
     let query = queryString.stringify({
         page: meta.page,
-        perPage: meta.limit,
+        limit: meta.limit,
         filters: filters,
         account_id: props.account.id,
         order: sort.value.order,
