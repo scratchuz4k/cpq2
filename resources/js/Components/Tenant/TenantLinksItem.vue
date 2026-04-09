@@ -21,14 +21,14 @@
                 >
                     <template #option="{ option }">
                         <div class="d-flex align-items-center gap-2">
-                            <font-awesome-icon :icon="['fa-brands', option.icon]" />
-                            <span class="me-3">{{ option.value ?? option.label }}</span>
+                            <font-awesome-icon :icon="['fa-brands', option.icon.icon]" />
+                            <span class="me-3">{{ option.label }}</span>
                         </div>
                     </template>
 
                     <template #value="{ value }">
                         <div v-if="value" class="d-flex align-items-center gap-2">
-                            <font-awesome-icon :icon="['fa-brands', value.icon]" />
+                            <font-awesome-icon :icon="['fa-brands', value.icon.icon]" />
                             <span class="me-3">{{ value.value ?? value.label }}</span>
                         </div>
                     </template>
@@ -86,15 +86,17 @@
                         class="btn p-2 mx-1 border-0"
                         role="button"
                         @click="edit()"
-                        ><font-awesome-icon class="text-primary" :icon="['fas', 'edit']"
-                    /></a>
+                    >
+                        <font-awesome-icon class="text-primary" :icon="['fas', 'edit']" />
+                    </a>
                     <a
                         :id="`${props.id}-${index}-link-remove`"
                         class="btn p-2 mx-1 border-0"
                         role="button"
                         @click="remove()"
-                        ><font-awesome-icon class="text-secondary" :icon="['fas', 'trash']"
-                    /></a>
+                    >
+                        <font-awesome-icon class="text-secondary" :icon="['fas', 'trash']" />
+                    </a>
                 </template>
                 <template v-else>
                     <a
@@ -142,7 +144,6 @@ const proxyValue = computed({
     }
 });
 
-const availableLinks = props.links;
 const isEditing = ref(false);
 const temp = reactive({
     label: '',
@@ -156,7 +157,6 @@ const edit = () => {
     temp.is_active = proxyValue.value.is_active;
     if (proxyValue.value.icon) {
         temp.icon = { icon: proxyValue.value.icon, label: proxyValue.value.label };
-        availableLinks.push(temp.icon);
     }
 
     isEditing.value = true;

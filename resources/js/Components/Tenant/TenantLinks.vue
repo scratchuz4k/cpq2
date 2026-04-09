@@ -23,14 +23,9 @@
                         v-model="proxyValue[index]"
                         :id="props.id"
                         :index="index"
-                        :links="availableSocialLinks"
+                        :links="socialLinks"
                         @removed="() => removeRow(index)"
-                        @edited="
-                            () => {
-                                emit('change');
-                                availableSocialLinks = getAvailableSocialLinks();
-                            }
-                        "
+                        @edited="emit('change')"
                     ></TenantLinksItem>
                 </template>
             </draggable>
@@ -45,7 +40,7 @@
                 <th></th>
                 <th>
                     <Select
-                        v-if="availableSocialLinks?.length > 0"
+                        v-if="socialLinks?.length > 0"
                         inputId="${props.id}-new-link-ion"
                         v-model="temp.icon"
                         :options="socialLinks"
@@ -130,16 +125,6 @@ const proxyValue = computed({
     }
 });
 
-const getAvailableSocialLinks = () =>
-    (props.socialLinks ?? []).filter(
-        (link) =>
-            !proxyValue.value?.some(
-                (item) => item.icon === link.icon && item.is_active !== 0 && item.is_active !== false
-            )
-    );
-
-const availableSocialLinks = ref(getAvailableSocialLinks());
-
 const temp = reactive({
     label: '',
     url: '',
@@ -147,9 +132,7 @@ const temp = reactive({
 });
 
 const removeRow = (index) => {
-    const removed = proxyValue.value[index];
     proxyValue.value.splice(index, 1);
-    availableSocialLinks.value = getAvailableSocialLinks();
     emit('change');
 };
 
@@ -188,7 +171,6 @@ const add = () => {
     temp.url = '';
     temp.is_active = false;
     delete temp.icon;
-    availableSocialLinks.value = getAvailableSocialLinks();
     emit('change');
 };
 
