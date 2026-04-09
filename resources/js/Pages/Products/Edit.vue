@@ -2,17 +2,16 @@
 import { reactive, ref, watch } from 'vue';
 import { can, hasRole } from '@composables/useAuth';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
+import InputPrice from '@/Components/InputPrice.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, router } from '@inertiajs/vue3';
 import { DataTable, DatePicker } from 'primevue';
 import Column from 'primevue/column';
-import InputText from 'primevue/inputtext';
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
 import ToggleSwitch from 'primevue/toggleswitch';
 import Select from 'primevue/select';
 import { DateTime } from 'luxon';
-import _ from 'lodash';
 import format from '@/Composables/format.js';
 import { DatatableOptions } from '@/Components/Datatables/DatatableOptions.js';
 import { FilterOperators } from '@composables/useApi';
@@ -318,7 +317,7 @@ const items = ref([
                                             {{ format.GBP(data[field]) }}
                                         </template>
                                         <template #editor="{ data, field }">
-                                            <InputText type="number" v-model="data[field]" fluid />
+                                            <InputPrice v-model="data[field]" />
                                         </template>
                                     </Column>
                                     <Column field="net" header="Net">
@@ -326,7 +325,7 @@ const items = ref([
                                             {{ format.GBP(data[field]) }}
                                         </template>
                                         <template #editor="{ data, field }">
-                                            <InputText type="number" v-model="data[field]" fluid />
+                                            <InputPrice v-model="data[field]" />
                                         </template>
                                     </Column>
                                     <Column field="net" header="Net SPA">
