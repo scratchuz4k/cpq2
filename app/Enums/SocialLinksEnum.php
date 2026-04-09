@@ -7,7 +7,7 @@ enum SocialLinksEnum: string
     case FB = 'Facebook';
     case IN = 'LinkedIn';
     case GO = 'Google';
-    case YA = 'Youtube';
+    case YT = 'Youtube';
     case X = 'X';
     case VI = 'Vimeo';
 
@@ -26,7 +26,7 @@ enum SocialLinksEnum: string
             self::FB => 'fa-facebook',
             self::IN => 'fa-linkedin',
             self::GO => 'fa-google',
-            self::YA => 'fa-youtube',
+            self::YT => 'fa-youtube',
             self::X => 'fa-square-x-twitter',
             self::VI => 'fa-vimeo',
         };

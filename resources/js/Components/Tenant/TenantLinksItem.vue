@@ -21,15 +21,15 @@
                 >
                     <template #option="{ option }">
                         <div class="d-flex align-items-center gap-2">
-                            <font-awesome-icon :icon="['fa-brands', option.icon.icon]" />
-                            <span class="me-3">{{ option.label }}</span>
+                            <font-awesome-icon :icon="['fa-brands', option.icon]" />
+                            <span class="me-3">{{ option.value }}</span>
                         </div>
                     </template>
 
                     <template #value="{ value }">
                         <div v-if="value" class="d-flex align-items-center gap-2">
-                            <font-awesome-icon :icon="['fa-brands', value.icon.icon]" />
-                            <span class="me-3">{{ value.value ?? value.label }}</span>
+                            <font-awesome-icon :icon="['fa-brands', value.icon]" />
+                            <span class="me-3">{{ value.label ?? value.value }}</span>
                         </div>
                     </template>
                 </Select>
@@ -170,7 +170,8 @@ const cancel = () => {
 };
 
 const save = () => {
-    temp.label = temp.label.trim();
+    const label = temp.icon.value ?? temp.label;
+    temp.label = label.trim();
     temp.url = temp.url.trim();
 
     if (!temp.label) {
@@ -190,7 +191,11 @@ const save = () => {
     proxyValue.value.label = temp.label;
     proxyValue.value.url = temp.url;
     proxyValue.value.is_active = temp.is_active;
-    proxyValue.value.icon = temp.icon;
+
+    if (temp.icon) {
+        proxyValue.value.icon = temp.icon.icon;
+    }
+
     isEditing.value = false;
     emit('edited');
 };
