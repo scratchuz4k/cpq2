@@ -16,7 +16,10 @@
             <h2>Add Products</h2>
         </template>
         <div class="mb-3">
-            <p class="big bold mb-3">Filter</p>
+            <div class="alert alert-warning d-flex align-items-center gap-2 mb-3 small" role="alert">
+                <font-awesome-icon :icon="['fas', 'circle-info']" />
+                Linked products can only be added to the main product if they are configured in different steps.
+            </div>
 
             <div class="row">
                 <div class="col">
@@ -65,10 +68,14 @@
                     <tr
                         v-for="(product, index) in api.items"
                         :key="product.id"
-                        :class="{ 'relation-table-active': !!checked.find((temp) => temp.id === product.id) }"
+                        :class="{
+                            'relation-table-active': !!checked.find((temp) => temp.id === product.id),
+                            'relation-table-disabled': sharesStep(product)
+                        }"
                     >
                         <td>
                             <Checkbox
+                                v-if="!sharesStep(product)"
                                 @change="(ev) => toggleChecked(product)"
                                 :id="props.id + '-checkbox-' + index"
                                 :checked="!!checked.find((temp) => temp.id === product.id)"
@@ -240,6 +247,8 @@ const getData = _.debounce(async () => {
     await api.getData();
 }, 500);
 
+const sharesStep = (product) => product.steps.some((s) => props.product.steps?.some((ps) => ps.id === s.id));
+
 const toggleChecked = (product) => {
     let index = checked.value.findIndex((temp) => temp.id === product.id);
     if (index > -1) {
@@ -250,6 +259,15 @@ const toggleChecked = (product) => {
 };
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+const resetState = () => {
+    api.meta.page = 1;
+    getData();
+    showProgress.value = false;
+    isDisabled.value = false;
+    checked.value = [];
+};
+
 const addProducts = async () => {
     showProgress.value = true;
     isDisabled.value = true;
@@ -267,15 +285,12 @@ const addProducts = async () => {
             await axios.post('/api/' + props.route, body);
         } catch (ex) {
             notyf.error('Error on ' + item.name + ': ' + ex.response.data.message);
+            resetState();
             return;
         }
     }
     notyf.success('Products added successfully');
-    api.meta.page = 1;
-    getData();
-    showProgress.value = false;
-    isDisabled.value = false;
-    checked.value = [];
+    resetState();
     emitter.emit('datatable-refresh:' + props.route);
 };
 watch(
@@ -303,5 +318,9 @@ watch(showModal, () => {
 }
 .relation-table-active > td {
     background-color: var(--lighter-grey);
+}
+.relation-table-disabled > td {
+    opacity: 0.45;
+    cursor: not-allowed;
 }
 </style>
