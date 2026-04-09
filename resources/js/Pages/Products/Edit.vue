@@ -16,6 +16,8 @@ import _ from 'lodash';
 import format from '@/Composables/format.js';
 import { DatatableOptions } from '@/Components/Datatables/DatatableOptions.js';
 import { FilterOperators } from '@composables/useApi';
+import ProductCreateLinked from '@/Components/Products/ProductCreateLinked.vue';
+import ProductCreateAddon from '@/Components/Products/ProductCreateAddon.vue';
 
 const props = defineProps({
     product: Object,
@@ -37,6 +39,7 @@ const price = reactive({
 const showModal = ref(false);
 const prices = ref(product.prices);
 const categories = ref(product.categories ?? []);
+const steps = ref(product.steps ?? []);
 const editingRows = ref([]);
 
 const saveProduct = () => {
@@ -45,7 +48,7 @@ const saveProduct = () => {
         expires_at: product.expires_at ? DateTime.fromJSDate(product.expires_at).toISO() : null,
         supplier_id: product.supplier?.id ?? null,
         categories: categories.value.map((item) => item.id),
-        steps: product.steps?.map((item) => item.id) ?? []
+        steps: steps.value.map((item) => item.id)
     };
 
     router.put(`/products/${product.id}`, temp, {
@@ -281,6 +284,19 @@ const items = ref([
                                 </InputSelectMultiple>
                             </div>
                             <div class="mb-3">
+                                <label for="product-steps" class="form-label">Steps:</label>
+                                <InputSelectMultiple
+                                    id="product-steps"
+                                    url="/steps"
+                                    :fields="['name', 'solution_type.name']"
+                                    v-model="steps"
+                                    placeholder="Select a Step"
+                                    :query="[{ column: 'is_active', operator: 'equals', value: 1 }]"
+                                >
+                                </InputSelectMultiple>
+                            </div>
+
+                            <div class="mb-3">
                                 <label for="product-supplier" class="form-label">Supplier:</label>
                                 <InputSelect
                                     id="product-supplier"
@@ -432,14 +448,7 @@ const items = ref([
                             <h3>Children</h3>
                         </div>
                         <div>
-                            <ProductCreateRelation
-                                id="links"
-                                route="product-links"
-                                :product="product"
-                                column="child_id"
-                                :queries="linkedProductQueries"
-                                warningMessage="Linked products can only be added to the main product if they are configured in different steps."
-                            />
+                            <ProductCreateLinked :product="product" :queries="linkedProductQueries" />
                         </div>
                     </div>
                     <NewDatatable :options="optionLinks" @update:meta="(meta) => (totals.linked = meta.total)">
@@ -484,11 +493,8 @@ const items = ref([
                             <h3>Addons</h3>
                         </div>
                         <div>
-                            <ProductCreateRelation
-                                id="addons"
-                                route="product-addons"
+                            <ProductCreateAddon
                                 :product="product"
-                                column="addon_id"
                                 :queries="[
                                     {
                                         group: 'parent',

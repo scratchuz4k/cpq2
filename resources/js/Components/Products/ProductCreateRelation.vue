@@ -74,12 +74,12 @@
                         :key="product.id"
                         :class="{
                             'relation-table-active': !!checked.find((temp) => temp.id === product.id),
-                            'relation-table-disabled': sharesStep(product)
+                            'relation-table-disabled': props.isRowDisabled(product)
                         }"
                     >
                         <td>
                             <Checkbox
-                                v-if="!sharesStep(product)"
+                                v-if="!props.isRowDisabled(product)"
                                 @change="(ev) => toggleChecked(product)"
                                 :id="props.id + '-checkbox-' + index"
                                 :checked="!!checked.find((temp) => temp.id === product.id)"
@@ -201,7 +201,7 @@
 import { IconField, InputIcon, InputText } from 'primevue';
 import Paginator from 'primevue/paginator';
 import Dialog from 'primevue/dialog';
-import { ref, reactive, watch, warn } from 'vue';
+import { ref, reactive, watch } from 'vue';
 import { Api, FilterOperators } from '../../Composables/useApi';
 import _ from 'lodash';
 import { v4 as uuidv4 } from 'uuid';
@@ -217,7 +217,11 @@ const props = defineProps({
     route: String,
     column: String,
     queries: Array,
-    warningMessage: String
+    warningMessage: String,
+    isRowDisabled: {
+        type: Function,
+        default: () => false
+    }
 });
 const current = ref(0);
 const showModal = ref(false);
@@ -251,8 +255,6 @@ const getData = _.debounce(async () => {
     }
     await api.getData();
 }, 500);
-
-const sharesStep = (product) => product.steps.some((s) => props.product.steps?.some((ps) => ps.id === s.id));
 
 const toggleChecked = (product) => {
     let index = checked.value.findIndex((temp) => temp.id === product.id);

@@ -49,7 +49,8 @@ const saveProduct = () => {
             expires_at: DateTime.fromJSDate(product.expires_at).toISO() ?? null,
             supplier_id: product.supplier?.id,
             parent_id: product.parent?.id,
-            categories: categories.value.map((item) => item.id)
+            categories: categories.value.map((item) => item.id),
+            steps: steps.value.map((item) => item.id)
         },
         {
             onSuccess: (page) => {
@@ -182,6 +183,18 @@ const items = ref([
                                 :fields="['name']"
                                 v-model="categories"
                                 placeholder="Select a Categories"
+                                :query="[{ column: 'is_active', operator: 'equals', value: 1 }]"
+                            >
+                            </InputSelectMultiple>
+                        </div>
+                        <div class="mb-3">
+                            <label for="product-steps" class="form-label">Steps:</label>
+                            <InputSelectMultiple
+                                id="product-steps"
+                                url="/steps"
+                                :fields="['name', 'solution_type.name']"
+                                v-model="steps"
+                                placeholder="Select Steps"
                                 :query="[{ column: 'is_active', operator: 'equals', value: 1 }]"
                             >
                             </InputSelectMultiple>
