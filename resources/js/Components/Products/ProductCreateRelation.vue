@@ -16,9 +16,13 @@
             <h2>Add Products</h2>
         </template>
         <div class="mb-3">
-            <div class="alert alert-warning d-flex align-items-center gap-2 mb-3 small" role="alert">
+            <div
+                v-if="props.warningMessage"
+                class="alert alert-warning d-flex align-items-center gap-2 mb-3 small"
+                role="alert"
+            >
                 <font-awesome-icon :icon="['fas', 'circle-info']" />
-                Linked products can only be added to the main product if they are configured in different steps.
+                {{ props.warningMessage }}
             </div>
 
             <div class="row">
@@ -197,7 +201,7 @@
 import { IconField, InputIcon, InputText } from 'primevue';
 import Paginator from 'primevue/paginator';
 import Dialog from 'primevue/dialog';
-import { ref, reactive, watch } from 'vue';
+import { ref, reactive, watch, warn } from 'vue';
 import { Api, FilterOperators } from '../../Composables/useApi';
 import _ from 'lodash';
 import { v4 as uuidv4 } from 'uuid';
@@ -212,7 +216,8 @@ const props = defineProps({
     product: Object,
     route: String,
     column: String,
-    queries: Array
+    queries: Array,
+    warningMessage: String
 });
 const current = ref(0);
 const showModal = ref(false);
@@ -315,6 +320,7 @@ watch(showModal, () => {
     background-color: lightgray;
     color: gray;
     font-size: 14px;
+    z-index: 1;
 }
 .relation-table-active > td {
     background-color: var(--lighter-grey);

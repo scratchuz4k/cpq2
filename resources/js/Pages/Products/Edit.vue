@@ -438,6 +438,7 @@ const items = ref([
                                 :product="product"
                                 column="child_id"
                                 :queries="linkedProductQueries"
+                                warningMessage="Linked products can only be added to the main product if they are configured in different steps."
                             />
                         </div>
                     </div>
