@@ -5,7 +5,7 @@ import { Link } from '@inertiajs/vue3';
 import Paginator from 'primevue/paginator';
 import { IconField, InputIcon, InputText } from 'primevue';
 
-import { reactive, ref, useSlots, watch, markRaw } from 'vue';
+import { reactive, ref, useSlots, watch, markRaw, onMounted } from 'vue';
 import axios from 'axios';
 import { exportData } from '@/Composables/export.js';
 import { DatatableOptions } from './DatatableOptions';
@@ -165,17 +165,23 @@ watch(
     }
 );
 
+const debouncedSearch = _.debounce(function () {
+    api.meta.page = 1;
+    getData();
+}, 500);
+
 watch(
     () => [form.filters, form.search],
-    _.debounce(function () {
+    () => {
         api.isLoading = true;
-        api.meta.page = 1;
-        getData();
-    }, 200),
+        debouncedSearch();
+    },
     { deep: true }
 );
 
-getData();
+onMounted(() => {
+    debouncedSearch();
+});
 </script>
 <template>
     <div class="datatable-header d-flex justify-content-between py-3">
@@ -374,6 +380,7 @@ getData();
 }
 .datatable-content {
     background-color: white;
+    min-height: 20vh;
     max-height: 60vh;
     overflow: auto;
 }

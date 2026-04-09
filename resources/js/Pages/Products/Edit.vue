@@ -15,6 +15,8 @@ import { DateTime } from 'luxon';
 import format from '@/Composables/format.js';
 import { DatatableOptions } from '@/Components/Datatables/DatatableOptions.js';
 import { FilterOperators } from '@composables/useApi';
+import ProductCreateLinked from '@/Components/Products/ProductCreateLinked.vue';
+import ProductCreateAddon from '@/Components/Products/ProductCreateAddon.vue';
 
 const props = defineProps({
     product: Object,
@@ -113,6 +115,28 @@ const totals = reactive({
     addons: product.addons?.length ?? 0
 });
 
+const parentIds = (product.parents ?? []).map((p) => p.id);
+
+const linkedProductQueries = [
+    {
+        group: 'parent',
+        column: 'parents.id',
+        operator: FilterOperators.IS_NULL,
+        value: product.id,
+        function: 'orWhere'
+    },
+    ...(parentIds.length > 0
+        ? [
+              {
+                  group: 'exclude-parents',
+                  column: 'id',
+                  operator: FilterOperators.NOT_IN,
+                  value: parentIds
+              }
+          ]
+        : [])
+];
+
 const optionLinks = new DatatableOptions('product-links', 'product-links');
 optionLinks.addColumn('child.sku', 'SKU', null, { isSticky: true });
 optionLinks.addColumn('child.name', 'Name', null, { isSticky: true });
@@ -121,7 +145,7 @@ optionLinks.addColumn('child.status', 'Status', null, {});
 optionLinks.addColumn('child.prices.cost', 'Cost Price', { width: '150px' }, {});
 optionLinks.addColumn('child.prices.net', 'Net Price', { width: '150px' }, { isSearchable: false });
 optionLinks.addColumn('child.steps.name', 'Steps', { width: '250px' }, {});
-optionLinks.addColumn('child.categories', 'Categories', { width: '250px' }, {});
+optionLinks.addColumn('child.categories.name', 'Categories', { width: '250px' }, {});
 
 optionLinks.addQuery('product_id', FilterOperators.EQUALS, product.id);
 optionLinks.setAllowedActions({
@@ -137,7 +161,7 @@ optionAddons.addColumn('addon.status', 'Status', null, {});
 optionAddons.addColumn('addon.prices.cost', 'Cost Price', { width: '150px' }, {});
 optionAddons.addColumn('addon.prices.net', 'Net Price', { width: '150px' }, { isSearchable: false });
 optionAddons.addColumn('addon.steps.name', 'Steps', { width: '250px' }, {});
-optionAddons.addColumn('addon.categories', 'Categories', { width: '250px' }, {});
+optionAddons.addColumn('addon.categories.name', 'Categories', { width: '250px' }, {});
 
 optionAddons.addQuery('product_id', FilterOperators.EQUALS, product.id);
 optionAddons.setAllowedActions({
@@ -270,6 +294,7 @@ const items = ref([
                                 >
                                 </InputSelectMultiple>
                             </div>
+
                             <div class="mb-3">
                                 <label for="product-supplier" class="form-label">Supplier:</label>
                                 <InputSelect
@@ -422,20 +447,7 @@ const items = ref([
                             <h3>Children</h3>
                         </div>
                         <div>
-                            <ProductCreateRelation
-                                id="links"
-                                route="product-links"
-                                :product="product"
-                                column="child_id"
-                                :queries="[
-                                    {
-                                        group: 'parent',
-                                        column: 'parents.id',
-                                        operator: FilterOperators.IS_NULL,
-                                        value: product.id
-                                    }
-                                ]"
-                            />
+                            <ProductCreateLinked :product="product" :queries="linkedProductQueries" />
                         </div>
                     </div>
                     <NewDatatable :options="optionLinks" @update:meta="(meta) => (totals.linked = meta.total)">
@@ -450,26 +462,29 @@ const items = ref([
                         <template #child.prices.net="{ data, value }">
                             {{ value ? format.GBP(value) : 'N/A' }}
                         </template>
-                        <template #child.categories="{ data, value }">
-                            <p class="small" v-if="value.length == 1">
-                                {{ value[0].name }}
+
+                        <template #child.categories.name="{ data, value }">
+                            <p class="small" v-if="data.child.categories && data.child.categories.length == 1">
+                                {{ data.child.categories[0].name }}
                             </p>
                             <p
                                 class="small"
-                                v-else-if="value.length > 1"
+                                v-else-if="data.child.categories && data.child.categories.length > 1"
                                 v-tooltip
                                 data-bs-toggle="tooltip"
                                 data-bs-placement="bottom"
                                 :title="
-                                    value
+                                    data.child.categories
                                         .slice(1)
                                         .map((category) => category.name)
                                         .join(', ')
                                 "
                                 style="cursor: pointer"
                             >
-                                {{ value[0].name }}
-                                <span class="color-purple-dark fw-semibold ms-1">+{{ value.length - 1 }}</span>
+                                {{ data.child.categories[0].name }}
+                                <span class="color-purple-dark fw-semibold ms-1"
+                                    >+{{ data.child.categories.length - 1 }}</span
+                                >
                             </p>
                         </template>
                     </NewDatatable>
@@ -480,11 +495,8 @@ const items = ref([
                             <h3>Addons</h3>
                         </div>
                         <div>
-                            <ProductCreateRelation
-                                id="addons"
-                                route="product-addons"
+                            <ProductCreateAddon
                                 :product="product"
-                                column="addon_id"
                                 :queries="[
                                     {
                                         group: 'parent',
@@ -508,26 +520,28 @@ const items = ref([
                         <template #addon.prices.net="{ data, value }">
                             {{ value ? format.GBP(value) : 'N/A' }}
                         </template>
-                        <template #addon.categories="{ data, value }">
-                            <p class="small" v-if="value.length == 1">
-                                {{ value[0].name }}
+                        <template #child.categories.name="{ data, value }">
+                            <p class="small" v-if="data.child.categories && data.child.categories.length == 1">
+                                {{ data.child.categories[0].name }}
                             </p>
                             <p
                                 class="small"
-                                v-else-if="value.length > 1"
+                                v-else-if="data.child.categories && data.child.categories.length > 1"
                                 v-tooltip
                                 data-bs-toggle="tooltip"
                                 data-bs-placement="bottom"
                                 :title="
-                                    value
+                                    data.child.categories
                                         .slice(1)
                                         .map((category) => category.name)
                                         .join(', ')
                                 "
                                 style="cursor: pointer"
                             >
-                                {{ value[0].name }}
-                                <span class="color-purple-dark fw-semibold ms-1">+{{ value.length - 1 }}</span>
+                                {{ data.child.categories[0].name }}
+                                <span class="color-purple-dark fw-semibold ms-1">
+                                    +{{ data.child.categories.length - 1 }}
+                                </span>
                             </p>
                         </template>
                     </NewDatatable>

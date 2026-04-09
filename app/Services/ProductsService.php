@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Product;
+use App\Models\Step;
 use Illuminate\Support\Carbon;
 
 class ProductsService
@@ -27,6 +28,7 @@ class ProductsService
         }
 
         if (array_key_exists('steps', $array)) {
+            $this->validateStepLinks($product, $array['steps']);
             $product->steps()->sync($array['steps']);
         }
 
@@ -46,10 +48,31 @@ class ProductsService
             $product->categories()->sync($array['categories']);
         }
 
-        if (array_key_exists('steps', $array)) {
+        if (array_key_exists('steps', $array) && ! is_null($array['steps'])) {
+            $this->validateStepLinks($product, $array['steps']);
             $product->steps()->sync($array['steps']);
+        } else {
+            $product->steps()->sync([]);
         }
 
         return $product->refresh();
+    }
+
+    private function validateStepLinks(Product $product, array $stepIds): void
+    {
+        $linkedProductIds = $product->children()->pluck('products.id')
+            ->merge($product->parents()->pluck('products.id'));
+
+        if ($linkedProductIds->isEmpty()) {
+            return;
+        }
+
+        $conflictingStep = Step::whereIn('id', $stepIds)
+            ->whereHas('products', fn ($q) => $q->whereIn('products.id', $linkedProductIds))
+            ->first();
+
+        if ($conflictingStep) {
+            throw new \Exception("Cannot assign product to step \"{$conflictingStep->name}\": it already contains a linked product.");
+        }
     }
 }
