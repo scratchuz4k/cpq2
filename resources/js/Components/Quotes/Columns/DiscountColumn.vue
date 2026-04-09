@@ -1,5 +1,6 @@
 <script setup>
 import { temp } from '@composables/useQuoteItem';
+import { checkValue } from '@/Composables/input.js';
 defineProps({
     code: String,
     column: Object,
@@ -19,6 +20,8 @@ const item = defineModel();
             type="number"
             v-model="temp.discount"
             min="0"
+            max="100"
+            @input="checkValue"
         />
     </div>
 </template>

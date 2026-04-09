@@ -73,7 +73,7 @@ class ProductsImport implements ToCollection, WithBatchInserts, WithHeadingRow
     /**
      * Insert a new product
      */
-    private function insertProduct(array $product, ?int $parentId = null): bool
+    private function insertProduct(array $product): bool
     {
         try {
             if (isset($product['status'])) {
@@ -143,7 +143,6 @@ class ProductsImport implements ToCollection, WithBatchInserts, WithHeadingRow
                 ],
                 'categories' => $product['categories'] ?? null,
                 'steps' => $product['steps'] ?? null,
-                'parent_id' => $parentId,
                 'tenant_id' => $this->tenant->id,
                 'is_active' => ucfirst(mb_strtolower($product['status'])) === ProductStatusesEnum::ACTIVE->value ? 1 : 0,
             ];
@@ -251,7 +250,7 @@ class ProductsImport implements ToCollection, WithBatchInserts, WithHeadingRow
                         $parent = Product::where('sku', $row['parent_sku'])->first();
                     }
 
-                    if ($this->insertProduct($row, $parent ? $parent->id : null)) {
+                    if ($this->insertProduct($row)) {
                         $processedInLastIteration = true;
                     }
                 } else {

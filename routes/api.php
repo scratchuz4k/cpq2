@@ -19,7 +19,10 @@ use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\PermissionController;
 use App\Http\Controllers\Api\PriceController;
 use App\Http\Controllers\Api\PricePlanController;
+use App\Http\Controllers\Api\ProductAddonController;
+use App\Http\Controllers\Api\ProductBundleController;
 use App\Http\Controllers\Api\ProductController;
+use App\Http\Controllers\Api\ProductLinkController;
 use App\Http\Controllers\Api\QuoteApprovalController;
 use App\Http\Controllers\Api\QuoteController;
 use App\Http\Controllers\Api\QuoteDiscountController;
@@ -95,6 +98,9 @@ Route::middleware(['api', 'auth:sanctum'])->group(function () {
         'contacts' => ContactController::class,
         'categories' => CategoryController::class,
         'products' => ProductController::class,
+        'product-links' => ProductLinkController::class,
+        'product-addons' => ProductAddonController::class,
+        'product-bundles' => ProductBundleController::class,
         'quotes' => QuoteController::class,
         'quote-items' => QuoteItemController::class,
         'quote-approvals' => QuoteApprovalController::class,

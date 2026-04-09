@@ -52,7 +52,6 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Settings', url: '/sett
                         { data: 'status', title: 'Status', style: 'width:4%' },
                         { data: 'sku', title: 'SKU', style: 'width:10%' },
                         { data: 'name', title: 'Name', style: 'width:25%' },
-                        { data: 'parent.name', title: 'Parent', style: 'width:12%' },
                         { data: 'steps.name', title: 'Steps', style: 'width:12%' },
                         {
                             data: 'steps.solution_type.name',
@@ -71,11 +70,6 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Settings', url: '/sett
                 >
                     <template #status="{ value }">
                         <span class="badge text-bg-secondary">{{ value }}</span>
-                    </template>
-                    <template #parent.name="{ value }">
-                        <span class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm">{{
-                            value
-                        }}</span>
                     </template>
                     <template #steps.name="{ data, value }">
                         <span>
