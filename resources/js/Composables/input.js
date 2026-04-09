@@ -4,8 +4,7 @@ export const checkValue = (e) => {
     const target = e.target ? e.target : e.originalEvent.target;
     const min = target.min ? Number(target.min) : 0;
     const max = target.max ? Number(target.max) : 99999999;
-    const temp_value = target.value ?? target.target.value;
-    const value = parseFloat(temp_value.replace(',', '.'));
+    const value = parseFloat(target.value.replace(',', '.'));
 
     const clamped = clamp(value, min, max);
 
