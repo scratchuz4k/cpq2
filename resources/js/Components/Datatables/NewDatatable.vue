@@ -168,14 +168,15 @@ watch(
 const debouncedSearch = _.debounce(function () {
     api.meta.page = 1;
     getData();
-}, 200);
+}, 500);
 
 watch(
     () => [form.filters, form.search],
     () => {
         api.isLoading = true;
         debouncedSearch();
-    }
+    },
+    { deep: true }
 );
 
 onMounted(() => {
@@ -379,6 +380,7 @@ onMounted(() => {
 }
 .datatable-content {
     background-color: white;
+    min-height: 20vh;
     max-height: 60vh;
     overflow: auto;
 }
