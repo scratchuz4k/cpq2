@@ -39,7 +39,7 @@ const setStepProduct = async (product_id, step_id) => {
         return;
     }
     try {
-        await axios.put('/api/products/' + product_id, { steps: step_id });
+        await axios.put('/api/products/' + product_id, { steps: [step_id] });
         product.value = null;
 
         notyf.success(step_id ? 'Product added with Success' : 'Product removed with success');

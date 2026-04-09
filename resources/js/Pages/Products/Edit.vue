@@ -37,7 +37,6 @@ const price = reactive({
 const showModal = ref(false);
 const prices = ref(product.prices);
 const categories = ref(product.categories ?? []);
-const steps = ref(product.steps ?? []);
 const editingRows = ref([]);
 
 const saveProduct = () => {
@@ -45,7 +44,8 @@ const saveProduct = () => {
         ...product,
         expires_at: product.expires_at ? DateTime.fromJSDate(product.expires_at).toISO() : null,
         supplier_id: product.supplier?.id ?? null,
-        categories: categories.value.map((item) => item.id)
+        categories: categories.value.map((item) => item.id),
+        steps: product.steps?.map((item) => item.id) ?? []
     };
 
     router.put(`/products/${product.id}`, temp, {

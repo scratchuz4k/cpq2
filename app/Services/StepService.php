@@ -17,22 +17,6 @@ class StepService
     {
         $step->update($array);
 
-        if (array_key_exists('product_id', $array)) {
-            $productId = $array['product_id'];
-
-            $hasLinkedProduct = $step->products()
-                ->where(function ($query) use ($productId) {
-                    $query->whereHas('children', fn ($q) => $q->where('products.id', $productId));
-                })
-                ->exists();
-
-            if ($hasLinkedProduct) {
-                throw new \Exception('Cannot add product: it is already linked to an existing product in this step.');
-            }
-
-            $step->products()->toggle($productId);
-        }
-
         return $step->refresh();
     }
 }
