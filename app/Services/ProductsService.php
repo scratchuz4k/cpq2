@@ -26,10 +26,6 @@ class ProductsService
             $product->categories()->sync($array['categories']);
         }
 
-        if (array_key_exists('steps', $array)) {
-            $product->steps()->sync($array['steps']);
-        }
-
         return $product;
     }
 

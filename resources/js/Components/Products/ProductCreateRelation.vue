@@ -58,6 +58,7 @@
                         <th>Name</th>
                         <th>Description</th>
                         <th>Categories</th>
+                        <th>Steps</th>
                     </tr>
                 </thead>
                 <tbody v-if="!api.isLoading">
@@ -106,11 +107,34 @@
                                 >
                             </p>
                         </td>
+
+                        <td>
+                            <p class="small" v-if="product.steps.length == 1">
+                                {{ product.steps[0].name }}
+                            </p>
+                            <p
+                                class="small"
+                                v-else-if="product.steps.length > 1"
+                                v-tooltip
+                                data-bs-toggle="tooltip"
+                                data-bs-placement="bottom"
+                                :title="
+                                    product.steps
+                                        .slice(1)
+                                        .map((step) => step.name)
+                                        .join(', ')
+                                "
+                                style="cursor: pointer"
+                            >
+                                {{ product.steps[0].name }}
+                                <span class="color-purple-dark fw-semibold ms-1">+{{ product.steps.length - 1 }}</span>
+                            </p>
+                        </td>
                     </tr>
                 </tbody>
                 <tbody v-else>
                     <tr>
-                        <td colspan="5" class="text-center">
+                        <td colspan="100%" class="text-center">
                             <font-awesome-icon :icon="['fas', 'spinner']" spin size="2x" />
                         </td>
                     </tr>
@@ -242,7 +266,7 @@ const addProducts = async () => {
 
             await axios.post('/api/' + props.route, body);
         } catch (ex) {
-            notyf.error(ex.response.data.message);
+            notyf.error('Error on ' + item.name + ': ' + ex.response.data.message);
             return;
         }
     }

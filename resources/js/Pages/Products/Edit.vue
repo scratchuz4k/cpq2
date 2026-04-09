@@ -45,8 +45,7 @@ const saveProduct = () => {
         ...product,
         expires_at: product.expires_at ? DateTime.fromJSDate(product.expires_at).toISO() : null,
         supplier_id: product.supplier?.id ?? null,
-        categories: categories.value.map((item) => item.id),
-        steps: steps.value.map((item) => item.id)
+        categories: categories.value.map((item) => item.id)
     };
 
     router.put(`/products/${product.id}`, temp, {
@@ -113,6 +112,28 @@ const totals = reactive({
     linked: product.children?.length ?? 0,
     addons: product.addons?.length ?? 0
 });
+
+const parentIds = (product.parents ?? []).map((p) => p.id);
+
+const linkedProductQueries = [
+    {
+        group: 'parent',
+        column: 'parents.id',
+        operator: FilterOperators.IS_NULL,
+        value: product.id,
+        function: 'orWhere'
+    },
+    ...(parentIds.length > 0
+        ? [
+              {
+                  group: 'exclude-parents',
+                  column: 'id',
+                  operator: FilterOperators.NOT_IN,
+                  value: parentIds
+              }
+          ]
+        : [])
+];
 
 const optionLinks = new DatatableOptions('product-links', 'product-links');
 optionLinks.addColumn('child.sku', 'SKU', null, { isSticky: true });
@@ -255,18 +276,6 @@ const items = ref([
                                     :fields="['name']"
                                     v-model="categories"
                                     placeholder="Select a Category"
-                                    :query="[{ column: 'is_active', operator: 'equals', value: 1 }]"
-                                >
-                                </InputSelectMultiple>
-                            </div>
-                            <div class="mb-3">
-                                <label for="product-steps" class="form-label">Steps:</label>
-                                <InputSelectMultiple
-                                    id="product-steps"
-                                    url="/steps"
-                                    :fields="['name', 'solution_type.name']"
-                                    v-model="steps"
-                                    placeholder="Select a Step"
                                     :query="[{ column: 'is_active', operator: 'equals', value: 1 }]"
                                 >
                                 </InputSelectMultiple>
@@ -428,14 +437,7 @@ const items = ref([
                                 route="product-links"
                                 :product="product"
                                 column="child_id"
-                                :queries="[
-                                    {
-                                        group: 'parent',
-                                        column: 'parents.id',
-                                        operator: FilterOperators.IS_NULL,
-                                        value: product.id
-                                    }
-                                ]"
+                                :queries="linkedProductQueries"
                             />
                         </div>
                     </div>
