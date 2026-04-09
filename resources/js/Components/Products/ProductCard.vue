@@ -263,7 +263,7 @@ watch(searchInput, () => {
                 </div>
                 <div
                     v-if="
-                        proxyValue.counts?.addons > 0 &&
+                        proxyValue.addons.length > 0 &&
                         quote.items.some((x) => x.product_code == (proxyValue.sku ?? proxyValue.code) && x.quantity > 0)
                     "
                     class="mt-3"

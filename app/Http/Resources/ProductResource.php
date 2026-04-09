@@ -26,11 +26,9 @@ class ProductResource extends JsonResource
             'prices' => PriceResource::collection($this->whenLoaded('prices', default: collect([])))->resolve(),
             'categories' => CategoryResource::collection($this->whenLoaded('categories', default: collect([])))->resolve(),
             'steps' => StepResource::collection($this->whenLoaded('steps', default: collect([])))->resolve(),
-            'counts' => [
-                'parents' => $this->parents->count(),
-                'children' => $this->children->count(),
-                'addons' => $this->addons->count(),
-            ],
+            'parents' => $this->parents,
+            'children' => $this->children,
+            'addons' => $this->addons,
             'updated_at' => $this->updated_at,
             'created_at' => $this->created_at,
         ];
