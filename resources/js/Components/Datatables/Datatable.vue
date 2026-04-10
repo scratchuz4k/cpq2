@@ -16,7 +16,6 @@ import axios from 'axios';
 import { can, hasRole } from '@/Composables/useAuth.js';
 import pluralize from 'pluralize';
 import { exportData } from '@/Composables/export.js';
-import { isLoading } from '@/Composables/useConnectivityItem';
 
 const slots = useSlots();
 const usedSlots = Object.keys(slots);

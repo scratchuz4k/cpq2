@@ -308,7 +308,13 @@ watch(
                     <div class="rounded bg-white p-3">
                         <div class="mb-4">
                             <h2>Search</h2>
-                            <input type="search" class="form-control" placeholder="" v-model="search" />
+                            <input
+                                :id="'step-' + (currentStep + 1) + '-search-products'"
+                                type="search"
+                                class="form-control"
+                                placeholder=""
+                                v-model="search"
+                            />
                         </div>
                         <div v-if="categories.length" class="mb-4">
                             <h2>Categories</h2>
@@ -330,6 +336,7 @@ watch(
                                 :showAsColumn="showCards"
                                 :index="index"
                                 v-model="products[index]"
+                                :addInternalProduct="true"
                             >
                             </ProductCard>
                         </div>

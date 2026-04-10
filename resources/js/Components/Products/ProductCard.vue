@@ -11,7 +11,8 @@ const props = defineProps({
     hasSelect: Boolean,
     showAsColumn: Boolean,
     modelValue: Object,
-    showFeatures: Boolean
+    showFeatures: Boolean,
+    addInternalProduct: Boolean
 });
 
 const displayBasic = ref(false);
@@ -51,7 +52,7 @@ const checkQuantity = _.debounce(async (product, temp) => {
             product_code: code,
             quantity: product.quantity,
             contract_length: product.contract_length,
-            product_id: product.id,
+            product_id: props.addInternalProduct ? product.id : null,
             name: product.name,
             raw_price: product.price ? product.price.net : 0,
             price: product.price ? product.price.net_spa : 0,
@@ -264,6 +265,7 @@ watch(searchInput, () => {
                 </div>
                 <div
                     v-if="
+                        proxyValue.addons &&
                         proxyValue.addons.length > 0 &&
                         quote.items.some((x) => x.product_code == (proxyValue.sku ?? proxyValue.code) && x.quantity > 0)
                     "
