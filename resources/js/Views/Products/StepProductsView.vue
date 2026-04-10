@@ -330,6 +330,7 @@ watch(
                                 :showAsColumn="showCards"
                                 :index="index"
                                 v-model="products[index]"
+                                :addInternalProduct="true"
                             >
                             </ProductCard>
                         </div>

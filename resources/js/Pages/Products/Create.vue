@@ -30,7 +30,6 @@ const product = reactive({
     name: null,
     price_plan_id: 1,
     supplier_id: null,
-    parent_id: null,
     sku: null,
     description: null,
     prices: [],
@@ -49,7 +48,6 @@ const saveProduct = () => {
             ...product,
             expires_at: DateTime.fromJSDate(product.expires_at).toISO() ?? null,
             supplier_id: product.supplier?.id,
-            parent_id: product.parent?.id,
             categories: categories.value.map((item) => item.id),
             steps: steps.value.map((item) => item.id)
         },
@@ -211,20 +209,6 @@ const items = ref([
                                 :query="[{ column: 'is_active', operator: 'equals', value: 1 }]"
                             >
                             </InputSelect>
-                        </div>
-                        <div class="mb-3">
-                            <label for="product-parent" class="form-label">Parent:</label>
-                            <div class="input-group p-0">
-                                <InputSelect
-                                    id="product-parent"
-                                    url="/products"
-                                    :fields="['name']"
-                                    class="w-100"
-                                    v-model="product.parent"
-                                    placeholder="Select a Parent"
-                                    :query="[{ column: 'is_active', operator: 'equals', value: 1 }]"
-                                />
-                            </div>
                         </div>
                     </div>
                 </tab>
