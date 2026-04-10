@@ -14,6 +14,7 @@ import ToggleSwitch from 'primevue/toggleswitch';
 import Select from 'primevue/select';
 import { DateTime } from 'luxon';
 import InputSelectMultiple from '@/Components/InputSelectMultiple.vue';
+import InputPrice from '@/Components/InputPrice.vue';
 
 const props = defineProps({
     price_plans: Object
@@ -259,7 +260,7 @@ const items = ref([
                                             {{ format.GBP(data[field]) }}
                                         </template>
                                         <template #editor="{ data, field }">
-                                            <InputText type="number" v-model="data[field]" fluid />
+                                            <InputPrice v-model="data[field]" />
                                         </template>
                                     </Column>
                                     <Column field="net" header="Net">
@@ -267,7 +268,7 @@ const items = ref([
                                             {{ format.GBP(data[field]) }}
                                         </template>
                                         <template #editor="{ data, field }">
-                                            <InputText type="number" v-model="data[field]" fluid />
+                                            <InputPrice v-model="data[field]" />
                                         </template>
                                     </Column>
 
@@ -327,11 +328,11 @@ const items = ref([
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label">Cost</label>
-                                    <input id="price-cost" class="form-control" type="number" v-model="price.cost" />
+                                    <InputPrice id="price-cost" v-model="price.cost" />
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label">Price</label>
-                                    <input id="price-price" class="form-control" type="number" v-model="price.net" />
+                                    <InputPrice id="price-price" v-model="price.net" />
                                 </div>
 
                                 <div class="d-flex justify-content-end">

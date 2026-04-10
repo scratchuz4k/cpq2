@@ -82,7 +82,7 @@ describe('Creates products and associates Category.cy', () => {
         cy.get('#links-search-global').type(product.sku);
         cy.get('#links-table').contains(product.sku);
         cy.wait(1000);
-        cy.get('#links-checkbox-0').click({ force: true });
+        cy.get('[id^="links-checkbox-"]').first().click({ force: true });
         cy.get('#btn-relation-add-links').click({ force: true });
         cy.wait(1000);
         cy.get('#btn-relation-cancel-links').click();
@@ -135,13 +135,10 @@ describe('Validates same-step product link restriction', () => {
         cy.get('#datatable-btn-0-edit').click();
         cy.get('#tabs-product-edit-2-2').click();
         cy.get('#btn-add-links').click();
-        cy.get('#links-search-sku').type(sameStepChild.sku);
+        cy.get('#links-search-global').type(sameStepChild.sku);
         cy.wait(1000);
         cy.get('#links-table').contains(sameStepChild.sku);
-        cy.get('#links-checkbox-0').click({ force: true });
-        cy.get('#btn-relation-add-links').click({ force: true });
-        cy.wait(1000);
-        cy.get('.notyf').contains('The child product cannot be added to the same step as the parent product.');
+        cy.get('[id^="links-checkbox-"]').should('not.exist');
         cy.get('#btn-relation-cancel-links').click();
         cy.get('#product-links-datatable-search').clear().type(sameStepChild.sku);
         cy.wait(1000);

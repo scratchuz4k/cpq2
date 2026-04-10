@@ -16,12 +16,19 @@
             <h2>Add Products</h2>
         </template>
         <div class="mb-3">
-            <p class="big bold mb-3">Filter</p>
+            <div
+                v-if="props.warningMessage"
+                class="alert alert-warning d-flex align-items-center gap-2 mb-3 small"
+                role="alert"
+            >
+                <font-awesome-icon :icon="['fas', 'circle-info']" />
+                {{ props.warningMessage }}
+            </div>
 
-            <div class="d-flex flex-wrap gap-3">
-                <div>
+            <div class="row">
+                <div class="col">
                     <label for="search-global" class="form-label">Search</label>
-                    <IconField>
+                    <IconField class="w-100">
                         <InputIcon>
                             <font-awesome-icon :icon="['fas', 'search']" />
                         </InputIcon>
@@ -31,15 +38,17 @@
                             type="search"
                             placeholder="Search"
                             size="small"
+                            class="w-100 py-2"
                         />
                     </IconField>
                 </div>
-                <div>
+                <div class="col">
                     <label for="search-category" class="form-label">Category</label>
 
                     <InputSelectMultiple
                         id="select-category"
                         url="/categories"
+                        class="w-100"
                         :fields="['name']"
                         v-model="search.categories"
                         placeholder="Select a Categories"
@@ -56,16 +65,21 @@
                         <th>Name</th>
                         <th>Description</th>
                         <th>Categories</th>
+                        <th>Steps</th>
                     </tr>
                 </thead>
                 <tbody v-if="!api.isLoading">
                     <tr
                         v-for="(product, index) in api.items"
                         :key="product.id"
-                        :class="{ 'relation-table-active': !!checked.find((temp) => temp.id === product.id) }"
+                        :class="{
+                            'relation-table-active': !!checked.find((temp) => temp.id === product.id),
+                            'relation-table-disabled': props.isRowDisabled(product)
+                        }"
                     >
                         <td>
                             <Checkbox
+                                v-if="!props.isRowDisabled(product)"
                                 @change="(ev) => toggleChecked(product)"
                                 :id="props.id + '-checkbox-' + index"
                                 :checked="!!checked.find((temp) => temp.id === product.id)"
@@ -99,16 +113,39 @@
                                 style="cursor: pointer"
                             >
                                 {{ product.categories[0].name }}
-                                <span class="color-purple-dark fw-semibold ms-2"
+                                <span class="color-purple-dark fw-semibold ms-1"
                                     >+{{ product.categories.length - 1 }}</span
                                 >
+                            </p>
+                        </td>
+
+                        <td>
+                            <p class="small" v-if="product.steps.length == 1">
+                                {{ product.steps[0].name }}
+                            </p>
+                            <p
+                                class="small"
+                                v-else-if="product.steps.length > 1"
+                                v-tooltip
+                                data-bs-toggle="tooltip"
+                                data-bs-placement="bottom"
+                                :title="
+                                    product.steps
+                                        .slice(1)
+                                        .map((step) => step.name)
+                                        .join(', ')
+                                "
+                                style="cursor: pointer"
+                            >
+                                {{ product.steps[0].name }}
+                                <span class="color-purple-dark fw-semibold ms-1">+{{ product.steps.length - 1 }}</span>
                             </p>
                         </td>
                     </tr>
                 </tbody>
                 <tbody v-else>
                     <tr>
-                        <td colspan="5" class="text-center">
+                        <td colspan="100%" class="text-center">
                             <font-awesome-icon :icon="['fas', 'spinner']" spin size="2x" />
                         </td>
                     </tr>
@@ -179,7 +216,12 @@ const props = defineProps({
     product: Object,
     route: String,
     column: String,
-    queries: Array
+    queries: Array,
+    warningMessage: String,
+    isRowDisabled: {
+        type: Function,
+        default: () => false
+    }
 });
 const current = ref(0);
 const showModal = ref(false);
@@ -224,6 +266,15 @@ const toggleChecked = (product) => {
 };
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+const resetState = () => {
+    api.meta.page = 1;
+    getData();
+    showProgress.value = false;
+    isDisabled.value = false;
+    checked.value = [];
+};
+
 const addProducts = async () => {
     showProgress.value = true;
     isDisabled.value = true;
@@ -240,16 +291,13 @@ const addProducts = async () => {
 
             await axios.post('/api/' + props.route, body);
         } catch (ex) {
-            notyf.error(ex.response.data.message);
+            notyf.error('Error on ' + item.name + ': ' + ex.response.data.message);
+            resetState();
             return;
         }
     }
     notyf.success('Products added successfully');
-    api.meta.page = 1;
-    getData();
-    showProgress.value = false;
-    isDisabled.value = false;
-    checked.value = [];
+    resetState();
     emitter.emit('datatable-refresh:' + props.route);
 };
 watch(
@@ -274,8 +322,13 @@ watch(showModal, () => {
     background-color: lightgray;
     color: gray;
     font-size: 14px;
+    z-index: 1;
 }
 .relation-table-active > td {
     background-color: var(--lighter-grey);
+}
+.relation-table-disabled > td {
+    opacity: 0.45;
+    cursor: not-allowed;
 }
 </style>

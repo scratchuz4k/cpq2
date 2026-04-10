@@ -7,6 +7,7 @@ use App\Helpers\FilterProvider;
 use App\Helpers\Prices\PriceRules;
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\IndexRequest;
+use App\Http\Requests\ProductUpdateRequest;
 use App\Http\Resources\ProductResource;
 use App\Models\Account;
 use App\Models\Product;
@@ -87,7 +88,7 @@ class ProductController extends BaseController
      * Update Product
      */
     #[ExcludeRouteFromDocs]
-    public function update(Request $request, Product $product)
+    public function update(ProductUpdateRequest $request, Product $product)
     {
         try {
             $product = DB::transaction(fn () => $this->service->update($product, $request->all()));
