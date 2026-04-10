@@ -269,7 +269,7 @@ watch(searchInput, () => {
                     class="mt-3"
                 >
                     <hr class="my-2" />
-                    <ProductAddonsList :productId="proxyValue.id" :productSku="proxyValue.sku ?? proxyValue.code" />
+                    <ProductCardAddonsList :productId="proxyValue.id" :productSku="proxyValue.sku ?? proxyValue.code" />
                 </div>
             </div>
         </div>
