@@ -422,11 +422,11 @@ const items = ref([
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label">Cost</label>
-                                    <input class="form-control" type="number" v-model="price.cost" />
+                                    <InputPrice id="price-cost" v-model="price.cost" />
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label">Price</label>
-                                    <input class="form-control" type="number" v-model="price.net" />
+                                    <InputPrice id="price-price" v-model="price.net" />
                                 </div>
 
                                 <div class="d-flex justify-content-end">
