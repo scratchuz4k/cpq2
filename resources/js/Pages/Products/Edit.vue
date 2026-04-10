@@ -520,27 +520,27 @@ const items = ref([
                         <template #addon.prices.net="{ data, value }">
                             {{ value ? format.GBP(value) : 'N/A' }}
                         </template>
-                        <template #child.categories.name="{ data, value }">
-                            <p class="small" v-if="data.child.categories && data.child.categories.length == 1">
-                                {{ data.child.categories[0].name }}
+                        <template #addon.categories.name="{ data, value }">
+                            <p class="small" v-if="data.addon.categories && data.addon.categories.length == 1">
+                                {{ data.addon.categories[0].name }}
                             </p>
                             <p
                                 class="small"
-                                v-else-if="data.child.categories && data.child.categories.length > 1"
+                                v-else-if="data.addon.categories && data.addon.categories.length > 1"
                                 v-tooltip
                                 data-bs-toggle="tooltip"
                                 data-bs-placement="bottom"
                                 :title="
-                                    data.child.categories
+                                    data.addon.categories
                                         .slice(1)
                                         .map((category) => category.name)
                                         .join(', ')
                                 "
                                 style="cursor: pointer"
                             >
-                                {{ data.child.categories[0].name }}
+                                {{ data.addon.categories[0].name }}
                                 <span class="color-purple-dark fw-semibold ms-1">
-                                    +{{ data.child.categories.length - 1 }}
+                                    +{{ data.addon.categories.length - 1 }}
                                 </span>
                             </p>
                         </template>
