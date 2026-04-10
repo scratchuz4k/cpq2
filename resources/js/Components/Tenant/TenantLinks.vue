@@ -41,7 +41,7 @@
                 <th>
                     <Select
                         v-if="socialLinks?.length > 0"
-                        inputId="${props.id}-new-link-ion"
+                        :inputId="`${props.id}-new-link-icon`"
                         v-model="temp.icon"
                         :options="socialLinks"
                         placeholder="Select an Icon"

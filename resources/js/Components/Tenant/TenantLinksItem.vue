@@ -13,7 +13,7 @@
             <template v-else>
                 <Select
                     v-if="props.links?.length > 0"
-                    inputId="${props.id}-new-link-ion"
+                    :inputId="`${props.id}-new-link-ion`"
                     v-model="temp.icon"
                     :options="props.links"
                     placeholder="Select an Icon"
