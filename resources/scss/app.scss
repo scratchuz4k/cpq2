@@ -216,11 +216,11 @@ body {
     }
 
     .text-primary {
-        color: var(--color-purple) !important;
+        color: var(--color-primary) !important;
     }
 
     .border-primary {
-        border-color: var(--color-purple) !important;
+        border-color: var(--color-primary) !important;
     }
 
     .text-left {
@@ -312,17 +312,17 @@ body {
         border: 0;
     }
 
+    .badge-primary {
+        background-color: #f5e5f3;
+        color: #a34996;
+    }
+
     h1 {
         margin-bottom: 30px;
     }
 
     h1 span {
         color: var(--primary-light);
-    }
-
-    h2 {
-        font-size: 18px;
-        font-weight: bold;
     }
 
     .bold {

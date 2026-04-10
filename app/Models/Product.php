@@ -19,7 +19,6 @@ class Product extends Model
 
     protected $fillable = [
         'tenant_id',
-        'parent_id',
         'price_plan_id',
         'supplier_id',
         'sku',
@@ -56,14 +55,44 @@ class Product extends Model
         return $this->prices()->first();
     }
 
-    public function parent()
+    public function parents()
     {
-        return $this->hasOne(Product::class, 'id', 'parent_id');
+        return $this->belongsToMany(
+            Product::class,
+            'product_links',   // pivot table
+            'child_id',        // foreign key on pivot referencing *this* model
+            'product_id'       // foreign key on pivot referencing the related model
+        );
     }
 
     public function children()
     {
-        return $this->hasMany(Product::class, 'parent_id', 'id');
+        return $this->belongsToMany(
+            Product::class,
+            'product_links',
+            'product_id',      // pivot key referencing this product (parent)
+            'child_id'         // pivot key referencing related products (children)
+        );
+    }
+
+    public function related()
+    {
+        return $this->belongsToMany(
+            Product::class,
+            'product_addons',
+            'addon_id',         // pivot key referencing related products (addons)
+            'product_id'        // pivot key referencing this product (parent)
+        );
+    }
+
+    public function addons()
+    {
+        return $this->belongsToMany(
+            Product::class,
+            'product_addons',
+            'product_id',      // pivot key referencing this product (parent)
+            'addon_id'         // pivot key referencing related products (addons)
+        );
     }
 
     public function prices(): HasMany

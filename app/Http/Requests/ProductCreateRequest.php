@@ -49,6 +49,9 @@ class ProductCreateRequest extends FormRequest
                 'numeric',
                 Rule::exists('price_plans', 'id'),
             ],
+            'steps' => [
+                'array', 'nullable',
+            ],
             'steps.*' => [
                 'integer',
                 new TenantExistsRule('steps'),
@@ -56,10 +59,6 @@ class ProductCreateRequest extends FormRequest
             'categories.*' => [
                 'integer',
                 new TenantExistsRule('categories'),
-            ],
-            'parent_id' => [
-                'nullable',
-                new TenantExistsRule('products'),
             ],
             'status' => [
                 'nullable',

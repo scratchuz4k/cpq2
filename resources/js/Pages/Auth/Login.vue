@@ -79,11 +79,11 @@ const submit = () => {
                                 </div>
 
                                 <div class="mb-3 d-flex align-items-center justify-content-between">
-                                    <div class="form-check">
+                                    <div class="form-check ps-0 d-flex align-items-center">
                                         <Checkbox
                                             inputId="remember"
                                             name="remember"
-                                            class="form-check-input"
+                                            class="form-check-input my-2 me-1"
                                             v-model:checked="form.remember"
                                         />
 

@@ -34,7 +34,7 @@ class ProductUpdateRequest extends FormRequest
         $user = Auth::user();
 
         return [
-            'sku' => ['required', 'string', 'max:255',
+            'sku' => ['string', 'max:255',
                 Rule::unique('products')->where(fn ($query) => $query->where('tenant_id', $user->tenant_id)
                     ->where('sku', request('sku')))->ignore($product_id),
             ],
@@ -42,6 +42,9 @@ class ProductUpdateRequest extends FormRequest
             'categories.*' => [
                 'integer',
                 new TenantExistsRule('categories'),
+            ],
+            'steps' => [
+                'array', 'nullable',
             ],
             'steps.*' => [
                 'integer',

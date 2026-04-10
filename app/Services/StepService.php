@@ -17,10 +17,6 @@ class StepService
     {
         $step->update($array);
 
-        if (array_key_exists('product_id', $array)) {
-            $step->products()->toggle($array['product_id']);
-        }
-
         return $step->refresh();
     }
 }
