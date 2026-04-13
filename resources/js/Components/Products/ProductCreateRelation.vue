@@ -1,7 +1,7 @@
 <template>
     <button :id="'btn-add-' + id" class="btn btn-primary" @click="showModal = true">
         <font-awesome-icon :icon="['fas', 'plus']"></font-awesome-icon>
-        New Product
+        Add Product
     </button>
     <Dialog
         v-model:visible="showModal"
