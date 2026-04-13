@@ -182,7 +182,7 @@
             <button
                 :id="'btn-relation-cancel-' + props.id"
                 class="btn btn-outline-secondary me-2"
-                @click="showModal = false"
+                @click="closeModal()"
             >
                 Cancel
             </button>
@@ -253,6 +253,7 @@ const getData = _.debounce(async () => {
             api.addGroupFilter('category', 'categories.name', FilterOperators.CONTAINS, category.name);
         });
     }
+
     await api.getData();
 }, 500);
 
@@ -300,6 +301,14 @@ const addProducts = async () => {
     resetState();
     emitter.emit('datatable-refresh:' + props.route);
 };
+
+const closeModal = () => {
+    showModal.value = false;
+    search.global = null;
+    search.categories = [];
+    resetState();
+};
+
 watch(
     search,
     () => {
