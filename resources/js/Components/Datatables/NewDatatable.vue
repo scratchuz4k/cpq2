@@ -76,10 +76,13 @@ const getData = async () => {
     emit('update:meta', api.meta);
 };
 
-const sortBy = (column) => {
+const sortBy = (data) => {
+    if (!data.isSearchable) {
+        return;
+    }
     let changeSort = form.order == 'asc' ? 'desc' : 'asc';
-    form.order = form.orderBy === column ? changeSort : form.order;
-    form.orderBy = column;
+    form.order = form.orderBy === data.column ? changeSort : form.order;
+    form.orderBy = data.column;
 };
 
 const clearFilters = () => {
@@ -254,8 +257,9 @@ onMounted(() => {
                         >
                             <p
                                 class="datatable-table-header-text d-inline-flex align-items-center"
-                                @click="sortBy(data.column)"
+                                @click="sortBy(data)"
                                 :style="{
+                                    cursor: data.isSearchable ? 'pointer' : 'default',
                                     textDecoration: data.column == form.orderBy ? 'underline' : 'none'
                                 }"
                             >
@@ -288,7 +292,6 @@ onMounted(() => {
                     <tr v-for="(item, index) in api.items" :key="index">
                         <td
                             v-for="(data, key) in props.options.columns.filter((x) => !x.isHidden)"
-                            :style="data.style"
                             :key="key"
                             class="datatable-table-column"
                             :class="[
@@ -307,7 +310,7 @@ onMounted(() => {
                                 :value="getValue(item, data.column)"
                                 :id="`${data.column}-${index}`"
                             />
-                            <p class="small" v-else>{{ getValue(item, data.column) }}</p>
+                            <p class="small" v-else :style="data.style">{{ getValue(item, data.column) }}</p>
                         </td>
                         <td
                             v-if="props.options.allow.update || props.options.allow.link || props.options.allow.destroy"
@@ -406,7 +409,6 @@ onMounted(() => {
     padding: 0.5rem;
     vertical-align: top;
     border-bottom: 1px solid #dee2e6;
-    width: 150px !important;
 }
 
 .datatable-col-sticky {
