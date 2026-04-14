@@ -46,7 +46,7 @@
                         :inputId="`${props.id}-new-link-icon`"
                         v-model="temp.icon"
                         :options="socialLinks"
-                        placeholder="Select an Icon"
+                        placeholder="Select a social network"
                         class="w-100"
                     >
                         <template #option="{ option }">
