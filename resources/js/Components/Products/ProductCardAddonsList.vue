@@ -7,22 +7,19 @@ import { quote, getQuote } from '@/Composables/useQuote';
 import { updateQuoteItem, removeQuoteItem, createQuoteItem } from '@/Composables/useQuoteItem';
 
 const props = defineProps({
-    productId: {
-        type: Number,
-        required: true
-    },
-    productSku: {
-        type: String,
+    modelValue: {
+        type: Object,
         required: true
     }
 });
 
-const visible = ref(true);
+const visible = ref(false);
 const searchQuery = ref('');
 const sentinel = ref(null);
 
 const api = new Api('product-addons');
 api.meta.limit = 10;
+api.meta.total = props.modelValue.addons?.length || 0;
 
 const addons = ref([]);
 const addonQuantities = ref({});
@@ -34,7 +31,9 @@ const selectedCount = computed(() => {
 });
 
 const appendPage = (items) => {
-    const parentItem = quote.items?.find((x) => x.product_code == props.productSku && x.data?.type == 'main_product');
+    const parentItem = quote.items?.find(
+        (x) => x.product_code == props.modelValue.sku && x.data?.type == 'main_product'
+    );
     items.forEach((item) => {
         addons.value.push(item);
         const addonId = item.addon.id;
@@ -59,7 +58,8 @@ const resetAndLoad = async () => {
     api.meta.page = 1;
     addons.value = [];
     api.clearFilters();
-    api.addFilter('product_id', FilterOperators.EQUALS, props.productId);
+    api.setColumns(['addon.name', 'addon.sku']);
+    api.addFilter('product_id', FilterOperators.EQUALS, props.modelValue.id);
     api.setSearch(searchQuery.value || null);
     await api.getData();
     appendPage(api.items.value);
@@ -111,13 +111,24 @@ const checkQuantity = _.debounce(async (addon, val) => {
 
     addonQuantities.value[addon.id] = quantity;
 
-    const parentItem = quote.items?.find((x) => x.product_code == props.productSku && x.data?.type == 'main_product');
+    const parentItem = quote.items?.find(
+        (x) => x.product_code == props.modelValue.sku && x.data?.type == 'main_product'
+    );
     const quoteItem = quote.items?.find(
         (x) => x.product_code == addon.sku && x.data?.type == 'addon_product' && x.group == parentItem?.group
     );
 
     if (!quoteItem) {
         if (quantity > 0) {
+            if (!hasParentSelected()) {
+                notyf.open({
+                    type: 'warning',
+                    message: 'You need to add the main product to the quote before adding add-ons'
+                });
+                addonQuantities.value[addon.id] = 0;
+                return;
+            }
+
             await createQuoteItem({
                 quote_id: quote.id,
                 product_code: addon.sku,
@@ -142,6 +153,39 @@ const checkQuantity = _.debounce(async (addon, val) => {
 
     await getQuote(quote.id);
 }, 500);
+
+const hasParentSelected = () => {
+    let code = props.modelValue.sku ?? props.modelValue.code;
+    return quote.items?.some((x) => x.product_code == code && x.data?.type === 'main_product' && x.quantity > 0);
+};
+
+watch(
+    () => quote.items,
+    async () => {
+        if (hasParentSelected()) {
+            visible.value = true;
+        } else {
+            visible.value = false;
+        }
+        addonQuantities.value = [];
+        let code = props.modelValue.sku ?? props.modelValue.code;
+        let group = quote.items?.find((x) => x.product_code == code && x.data?.type === 'main_product')?.group;
+        quote.items
+            ?.filter((x) => x.data?.type === 'addon_product' && x.group == group)
+            .forEach((item) => {
+                const addon = addons.value.find((a) => a.addon.sku === item.product_code);
+                if (addon) {
+                    addonQuantities.value[addon.addon.id] = item.quantity;
+                }
+            });
+    },
+    { deep: true }
+);
+onMounted(async () => {
+    if (hasParentSelected()) {
+        visible.value = true;
+    }
+});
 </script>
 
 <template>

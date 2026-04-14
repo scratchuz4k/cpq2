@@ -43,14 +43,14 @@ const checkQuantity = _.debounce(async (product, temp) => {
     let code = product.sku ?? product.code;
     let item = quote.items.find((x) => x.product_code == code && x.data?.type == 'main_product');
     if (!item) {
-        if (product.quantity == 0) {
+        if (temp == 0) {
             return;
         }
 
         await createQuoteItem({
             quote_id: quote.id,
             product_code: code,
-            quantity: product.quantity,
+            quantity: temp,
             contract_length: product.contract_length,
             product_id: props.addInternalProduct ? product.id : null,
             name: product.name,
@@ -60,10 +60,31 @@ const checkQuantity = _.debounce(async (product, temp) => {
             data: { type: 'main_product' }
         });
     } else {
-        if (product.quantity == 0) {
-            await removeQuoteItem(item.id);
+        if (temp == 0) {
+            let quoteItem = quote.items.find((x) => x.product_code == code && x.data?.type == 'main_product');
+            let items = quote.items.filter((x) => x.group == quoteItem.group);
+            let result = null;
+            if (items.length > 1) {
+                result = await swal.fire({
+                    title: 'Are you sure?',
+                    text: 'This line contains other associated lines, removing it deletes all associated lines'
+                });
+            } else {
+                result = await swal.fire({
+                    title: 'Are you sure?'
+                });
+            }
+
+            if (['cancel', 'backdrop'].includes(result.dismiss)) {
+                return;
+            }
+
+            items.forEach(async (x) => {
+                await removeQuoteItem(x.id);
+            });
+            await getQuote(quote.id);
         } else {
-            await updateQuoteItem(item.id, { quantity: product.quantity });
+            await updateQuoteItem(item.id, { quantity: temp });
         }
     }
 
@@ -263,16 +284,9 @@ watch(searchInput, () => {
                         />
                     </div>
                 </div>
-                <div
-                    v-if="
-                        proxyValue.addons &&
-                        proxyValue.addons.length > 0 &&
-                        quote.items.some((x) => x.product_code == (proxyValue.sku ?? proxyValue.code) && x.quantity > 0)
-                    "
-                    class="mt-3"
-                >
+                <div v-if="proxyValue.addons && proxyValue.addons.length > 0" class="mt-3">
                     <hr class="my-2" />
-                    <ProductCardAddonsList :productId="proxyValue.id" :productSku="proxyValue.sku ?? proxyValue.code" />
+                    <ProductCardAddonsList v-model="proxyValue" />
                 </div>
             </div>
         </div>
