@@ -131,6 +131,14 @@ const props = defineProps({
     links: {
         type: Array,
         default: null
+    },
+    linkLimit: {
+        type: Number,
+        default: null
+    },
+    allLinks: {
+        type: Array,
+        default: []
     }
 });
 
@@ -173,6 +181,12 @@ const save = () => {
     const label = temp.icon?.value ?? temp.label;
     temp.label = label.trim();
     temp.url = temp.url.trim();
+
+    const activeLinks = props.allLinks.filter((item) => !!item.is_active);
+    if (props.linkLimit && activeLinks.length >= props.linkLimit && !!temp.is_active) {
+        notyf.error(`You can only add up to ${props.linkLimit} links`);
+        return;
+    }
 
     if (!temp.label) {
         notyf.error(`Please enter a label`);

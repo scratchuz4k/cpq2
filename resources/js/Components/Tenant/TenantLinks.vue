@@ -23,6 +23,8 @@
                         v-model="proxyValue[index]"
                         :id="props.id"
                         :index="index"
+                        :allLinks="proxyValue"
+                        :linkLimit="props.linkLimit"
                         :links="socialLinks"
                         @removed="() => removeRow(index)"
                         @edited="emit('change')"
@@ -138,13 +140,13 @@ const removeRow = (index) => {
 
 const add = () => {
     const activeLinks = proxyValue.value.filter((item) => !!item.is_active);
-    if (props.linkLimit && activeLinks.length >= props.linkLimit) {
+    if (props.linkLimit && activeLinks.length >= props.linkLimit && !!temp.is_active) {
         notyf.error(`You can only add up to ${props.linkLimit} links`);
         return;
     }
 
     const newLink = {
-        label: temp.label.trim() ? temp.label.trim() : temp.icon?.value,
+        label: !props.socialLinks ? temp.label.trim() : temp.icon?.value,
         url: temp.url.trim(),
         is_active: temp.is_active,
         ...(temp.icon && {
@@ -153,7 +155,7 @@ const add = () => {
     };
 
     if (!newLink.label) {
-        notyf.error(props.linkLimit ? `Please select a social network` : `Please enter a label`);
+        notyf.error(props.socialLinks ? `Please select a social network` : `Please enter a label`);
         return;
     }
 
