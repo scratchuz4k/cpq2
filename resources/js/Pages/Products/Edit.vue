@@ -13,10 +13,6 @@ import ToggleSwitch from 'primevue/toggleswitch';
 import Select from 'primevue/select';
 import { DateTime } from 'luxon';
 import format from '@/Composables/format.js';
-import { DatatableOptions } from '@/Components/Datatables/DatatableOptions.js';
-import { FilterOperators } from '@composables/useApi';
-import ProductCreateLinked from '@/Components/Products/ProductCreateLinked.vue';
-import ProductCreateAddon from '@/Components/Products/ProductCreateAddon.vue';
 
 const props = defineProps({
     product: Object,
@@ -109,65 +105,6 @@ const onRowEditSave = async (event) => {
         notyf.error(ex.response.data.message);
     }
 };
-
-const totals = reactive({
-    linked: product.children?.length ?? 0,
-    addons: product.addons?.length ?? 0
-});
-
-const parentIds = (product.parents ?? []).map((p) => p.id);
-
-const linkedProductQueries = [
-    {
-        group: 'parent',
-        column: 'parents.id',
-        operator: FilterOperators.IS_NULL,
-        value: product.id,
-        function: 'orWhere'
-    },
-    ...(parentIds.length > 0
-        ? [
-              {
-                  group: 'exclude-parents',
-                  column: 'id',
-                  operator: FilterOperators.NOT_IN,
-                  value: parentIds
-              }
-          ]
-        : [])
-];
-
-const optionLinks = new DatatableOptions('product-links', 'product-links');
-optionLinks.addColumn('child.sku', 'SKU', null, { isSticky: true });
-optionLinks.addColumn('child.name', 'Name', null, { isSticky: true });
-optionLinks.addColumn('child.description', 'Description', null, {});
-optionLinks.addColumn('child.status', 'Status', null, {});
-optionLinks.addColumn('child.prices.cost', 'Cost Price', { width: '150px' }, {});
-optionLinks.addColumn('child.prices.net', 'Net Price', { width: '150px' }, { isSearchable: false });
-optionLinks.addColumn('child.steps.name', 'Steps', { width: '250px' }, {});
-optionLinks.addColumn('child.categories.name', 'Categories', { width: '250px' }, {});
-
-optionLinks.addQuery('product_id', FilterOperators.EQUALS, product.id);
-optionLinks.setAllowedActions({
-    destroy: true,
-    allowExport: can(`export product`) || hasRole('Super Admin')
-});
-
-const optionAddons = new DatatableOptions('product-addons', 'product-addons');
-optionAddons.addColumn('addon.sku', 'SKU', null, { isSticky: true });
-optionAddons.addColumn('addon.name', 'Name', null, { isSticky: true });
-optionAddons.addColumn('addon.description', 'Description', null, {});
-optionAddons.addColumn('addon.status', 'Status', null, {});
-optionAddons.addColumn('addon.prices.cost', 'Cost Price', { width: '150px' }, {});
-optionAddons.addColumn('addon.prices.net', 'Net Price', { width: '150px' }, { isSearchable: false });
-optionAddons.addColumn('addon.steps.name', 'Steps', { width: '250px' }, {});
-optionAddons.addColumn('addon.categories.name', 'Categories', { width: '250px' }, {});
-
-optionAddons.addQuery('product_id', FilterOperators.EQUALS, product.id);
-optionAddons.setAllowedActions({
-    destroy: true,
-    allowExport: can(`export product`) || hasRole('Super Admin')
-});
 
 const items = ref([
     { label: 'Home', url: '/' },
@@ -440,111 +377,14 @@ const items = ref([
                     </div>
                 </tab>
                 <tab
-                    :title="`Linked Products <span class='badge badge-primary rounded-pill ms-2'>${totals.linked}</span>`"
+                    :title="`Linked Products <span class='badge badge-primary rounded-pill ms-2'>${product.children.length}</span>`"
                 >
-                    <div class="d-flex justify-content-between my-3">
-                        <div>
-                            <h3>Children</h3>
-                        </div>
-                        <div>
-                            <ProductCreateLinked :product="product" :queries="linkedProductQueries" />
-                        </div>
-                    </div>
-                    <NewDatatable :options="optionLinks" @update:meta="(meta) => (totals.linked = meta.total)">
-                        <template #child.status="{ data, value }">
-                            <div class="badge" :class="[value == 'Active' ? 'text-bg-success' : 'text-bg-secondary']">
-                                {{ value }}
-                            </div>
-                        </template>
-                        <template #child.prices.cost="{ data, value }">
-                            {{ value ? format.GBP(value) : 'N/A' }}
-                        </template>
-                        <template #child.prices.net="{ data, value }">
-                            {{ value ? format.GBP(value) : 'N/A' }}
-                        </template>
-
-                        <template #child.categories.name="{ data, value }">
-                            <p class="small" v-if="data.child.categories && data.child.categories.length == 1">
-                                {{ data.child.categories[0].name }}
-                            </p>
-                            <p
-                                class="small"
-                                v-else-if="data.child.categories && data.child.categories.length > 1"
-                                v-tooltip
-                                data-bs-toggle="tooltip"
-                                data-bs-placement="bottom"
-                                :title="
-                                    data.child.categories
-                                        .slice(1)
-                                        .map((category) => category.name)
-                                        .join(', ')
-                                "
-                                style="cursor: pointer"
-                            >
-                                {{ data.child.categories[0].name }}
-                                <span class="color-purple-dark fw-semibold ms-1"
-                                    >+{{ data.child.categories.length - 1 }}</span
-                                >
-                            </p>
-                        </template>
-                    </NewDatatable>
+                    <ProductLinkedManage v-model="product" />
                 </tab>
-                <tab :title="`Addons <span class='badge badge-primary rounded-pill ms-2'>${totals.addons}</span>`">
-                    <div class="d-flex justify-content-between my-3">
-                        <div>
-                            <h3>Addons</h3>
-                        </div>
-                        <div>
-                            <ProductCreateAddon
-                                :product="product"
-                                :queries="[
-                                    {
-                                        group: 'parent',
-                                        column: 'related.id',
-                                        operator: FilterOperators.IS_NULL,
-                                        value: product.id
-                                    }
-                                ]"
-                            />
-                        </div>
-                    </div>
-                    <NewDatatable :options="optionAddons" @update:meta="(meta) => (totals.addons = meta.total)">
-                        <template #addon.status="{ data, value }">
-                            <div class="badge" :class="[value == 'Active' ? 'text-bg-success' : 'text-bg-secondary']">
-                                {{ value }}
-                            </div>
-                        </template>
-                        <template #addon.prices.cost="{ data, value }">
-                            {{ value ? format.GBP(value) : 'N/A' }}
-                        </template>
-                        <template #addon.prices.net="{ data, value }">
-                            {{ value ? format.GBP(value) : 'N/A' }}
-                        </template>
-                        <template #child.categories.name="{ data, value }">
-                            <p class="small" v-if="data.child.categories && data.child.categories.length == 1">
-                                {{ data.child.categories[0].name }}
-                            </p>
-                            <p
-                                class="small"
-                                v-else-if="data.child.categories && data.child.categories.length > 1"
-                                v-tooltip
-                                data-bs-toggle="tooltip"
-                                data-bs-placement="bottom"
-                                :title="
-                                    data.child.categories
-                                        .slice(1)
-                                        .map((category) => category.name)
-                                        .join(', ')
-                                "
-                                style="cursor: pointer"
-                            >
-                                {{ data.child.categories[0].name }}
-                                <span class="color-purple-dark fw-semibold ms-1">
-                                    +{{ data.child.categories.length - 1 }}
-                                </span>
-                            </p>
-                        </template>
-                    </NewDatatable>
+                <tab
+                    :title="`Addons <span class='badge badge-primary rounded-pill ms-2'>${product.addons.length}</span>`"
+                >
+                    <ProductAddonManage v-model="product" />
                 </tab>
             </tabs>
         </div>

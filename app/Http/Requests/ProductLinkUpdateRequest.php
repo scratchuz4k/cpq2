@@ -64,6 +64,19 @@ class ProductLinkUpdateRequest extends FormRequest
                     'The child product cannot be added to the same step as the parent product.'
                 );
             }
+
+            $alreadyExists = DB::table('product_links')
+                ->where('product_id', $parentId)
+                ->where('child_id', $childId)
+                ->where('id', '!=', $productLink->id)
+                ->exists();
+
+            if ($alreadyExists) {
+                $validator->errors()->add(
+                    'child_id',
+                    'This product link already exists.'
+                );
+            }
         });
     }
 }

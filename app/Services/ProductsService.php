@@ -37,11 +37,14 @@ class ProductsService
 
     public function update(Product $product, array $array): Product
     {
+        $expiresAt = $product->expires_at;
+        if (array_key_exists('expires_at', $array)) {
+            $expiresAt = is_null($array['expires_at']) ? null : Carbon::parse($array['expires_at'])->endOfDay();
+        }
+
         $product->update([
             ...$array,
-            'expires_at' => array_key_exists('expires_at', $array) && ! is_null($array['expires_at'])
-                ? Carbon::parse($array['expires_at'])->endOfDay()
-                : $product['expires_at'],
+            'expires_at' => $expiresAt,
         ]);
 
         if (array_key_exists('categories', $array)) {
