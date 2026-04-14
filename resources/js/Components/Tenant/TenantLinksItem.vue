@@ -16,7 +16,7 @@
                     :inputId="`${props.id}-new-link-ion`"
                     v-model="temp.icon"
                     :options="props.links"
-                    placeholder="Select an Icon"
+                    placeholder="Select a social network"
                     class="w-100"
                 >
                     <template #option="{ option }">
@@ -170,7 +170,7 @@ const cancel = () => {
 };
 
 const save = () => {
-    const label = temp.icon.value ?? temp.label;
+    const label = temp.icon?.value ?? temp.label;
     temp.label = label.trim();
     temp.url = temp.url.trim();
 

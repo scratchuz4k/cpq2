@@ -153,7 +153,7 @@ const add = () => {
     };
 
     if (!newLink.label) {
-        notyf.error(props.linkLimit ? `Please select an icon` : `Please enter a label`);
+        notyf.error(props.linkLimit ? `Please select a social network` : `Please enter a label`);
         return;
     }
 
