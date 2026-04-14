@@ -3,10 +3,13 @@
 namespace App\Http\Controllers\Api;
 
 use App\Helpers\DataProvider;
+use App\Helpers\FilterProvider;
+use App\Helpers\Prices\PriceRules;
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\ProductLinkCreateRequest;
 use App\Http\Requests\ProductLinkUpdateRequest;
 use App\Http\Resources\ProductLinkResource;
+use App\Models\Account;
 use App\Models\ProductLink;
 use App\Services\ProductLinkService;
 use Exception;
@@ -26,15 +29,39 @@ class ProductLinkController extends BaseController
      */
     public function index()
     {
+
         $dataProvider = new DataProvider($this->model);
 
         try {
-            $data = $dataProvider->get();
+            $data = $dataProvider->getCollection();
         } catch (Exception $e) {
             return handleException($e);
         }
 
-        return ProductLinkResource::collection($data);
+        $suppliers = [];
+        $priceRules = new PriceRules;
+        $account = Account::where('id', request()->input('account_id', null))->first();
+
+        $data = $data->map(function ($row) use ($priceRules, $account, $suppliers) {
+
+            if (array_key_exists($row->child?->supplier?->id.$row->child->pricePlan->code, $suppliers)) {
+                $priceRules->setAppliedSpas($suppliers[$row->child?->supplier?->id]);
+            } else {
+                $priceRules->find(supplier: $row->child?->supplier, account: $account, pricePlan: $row->child->pricePlan);
+                $suppliers[$row->child?->supplier?->id.$row->child->pricePlan->code] = $priceRules->getAppliedSpas();
+            }
+
+            $row->child->prices->map(function ($price) use ($priceRules) {
+                $price['net_spa'] = (float) $priceRules->apply($price->net);
+                $price['active_spas'] = $priceRules->getAppliedSpas();
+            });
+
+            return $row;
+        });
+
+        $data = ProductLinkResource::collection($data)->toArray(request());
+
+        return FilterProvider::paginate(collect($data));
     }
 
     /**
