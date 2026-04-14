@@ -37,6 +37,7 @@ class QuoteItemCreateRequest extends FormRequest
     {
         return [
             'quote_id' => 'required',
+            'product_id' => 'nullable|exists:products,id',
             'name' => 'required',
             'quantity' => 'required|numeric|min:1',
             'group' => 'numeric',
