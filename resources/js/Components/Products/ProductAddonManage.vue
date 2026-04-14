@@ -3,15 +3,23 @@ import { DatatableOptions } from '@/Components/Datatables/DatatableOptions.js';
 import { FilterOperators } from '@composables/useApi';
 import ProductCreateRelation from './ProductCreateRelation.vue';
 import { can, hasRole } from '@composables/useAuth';
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 
 const props = defineProps({
-    product: Object,
+    modelValue: Object,
     queries: Array
 });
 
-const totals = ref(props.product.addons?.length ?? 0);
+const proxyValue = computed({
+    get() {
+        return props.modelValue;
+    },
+    set(val) {
+        emit('update:modelValue', val);
+    }
+});
 
+const totals = ref(proxyValue.value.addons?.length ?? 0);
 const optionAddons = new DatatableOptions('product-addons', 'product-addons');
 optionAddons.addColumn('addon.sku', 'SKU', null, { isSticky: true });
 optionAddons.addColumn('addon.name', 'Name', null, { isSticky: true });
@@ -21,15 +29,40 @@ optionAddons.addColumn('addon.status', 'Status', null, {});
 optionAddons.addColumn('addon.price.cost', 'Cost Price', { width: '150px' }, { isSearchable: false });
 optionAddons.addColumn('addon.price.net', 'Net Price', { width: '150px' }, { isSearchable: false });
 optionAddons.addColumn('addon.price.net_spa', 'Net SPA', { width: '150px' }, { isSearchable: false });
-optionAddons.addColumn('addon.price.active_spas', 'Active SPAs', { width: '350px' }, { isSearchable: false });
+optionAddons.addColumn(
+    'addon.price.active_spas',
+    'Active SPAs',
+    { width: '350px' },
+    { isSearchable: false, isSortable: false }
+);
+optionAddons.addColumn('addon.price_plan.name', 'Contract Term', {}, {});
 optionAddons.addColumn('addon.steps.name', 'Steps', { width: '150px' }, {});
 optionAddons.addColumn('addon.steps.solution_type.name', 'Solution Type', { width: '250px' }, {});
 
-optionAddons.addQuery('product_id', FilterOperators.EQUALS, props.product.id);
+optionAddons.addQuery('product_id', FilterOperators.EQUALS, proxyValue.value.id);
 optionAddons.setAllowedActions({
     destroy: true,
     allowExport: can(`export product`) || hasRole('Super Admin')
 });
+const addonProductQueries = () => {
+    return [
+        {
+            group: 'parent',
+            column: 'related.id',
+            operator: FilterOperators.IS_NULL,
+            value: proxyValue.id
+        }
+    ];
+};
+
+const getProductAddons = async () => {
+    const res = await axios.get(`/api/products/${proxyValue.value.id}`);
+    proxyValue.value.addons = res.data.data.addons;
+};
+const setMeta = (newTotals) => {
+    totals.value = newTotals;
+    getProductAddons();
+};
 </script>
 
 <template>
@@ -41,20 +74,14 @@ optionAddons.setAllowedActions({
             <ProductCreateRelation
                 id="addons"
                 route="product-addons"
-                :product="props.product"
+                :product="proxyValue"
                 column="addon_id"
-                :queries="[
-                    {
-                        group: 'parent',
-                        column: 'related.id',
-                        operator: FilterOperators.IS_NULL,
-                        value: props.product.id
-                    }
-                ]"
+                :queries="addonProductQueries"
+                @product-added="getProductAddons()"
             />
         </div>
     </div>
-    <NewDatatable :options="optionAddons" @update:meta="(meta) => (totals = meta.total)">
+    <NewDatatable :options="optionAddons" @update:meta="(meta) => setMeta(meta.total)">
         <template #addon.status="{ data, value }">
             <div class="badge" :class="[value == 'Active' ? 'text-bg-success' : 'text-bg-secondary']">
                 {{ value }}
@@ -69,6 +96,7 @@ optionAddons.setAllowedActions({
         <template #addon.price.net_spa="{ data, value }">
             {{ value ? format.GBP(value) : 'N/A' }}
         </template>
+
         <template #addon.price.active_spas="{ data, value }">
             <p class="small" v-if="value && value.length == 1" style="width: 250px !important">
                 {{ value[0].rule.name }} - {{ value[0].operation.code }}:
@@ -93,16 +121,14 @@ optionAddons.setAllowedActions({
                                 ': ' +
                                 (category.percentage
                                     ? format.decimalPlaces(category.percentage) + '%'
-                                    : format.GBP(category.margin))
+                                    : format.GBP(category.value))
                         )
                         .join(', ')
                 "
                 style="cursor: pointer; width: 250px !important"
             >
                 {{ value[0].rule.name }} - {{ value[0].operation.code }}:
-                {{
-                    value[0].percentage ? format.decimalPlaces(value[0].percentage) + '%' : format.GBP(value[0].margin)
-                }}
+                {{ value[0].percentage ? format.decimalPlaces(value[0].percentage) + '%' : format.GBP(value[0].value) }}
                 <span class="color-purple-dark fw-semibold ms-1">+{{ value.length - 1 }}</span>
             </p>
         </template>

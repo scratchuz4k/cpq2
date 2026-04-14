@@ -61,6 +61,7 @@ class ProductController extends BaseController
 
             return $product;
         });
+
         $data = ProductResource::collection($data->load(['prices', 'categories', 'steps']))->toArray(request());
 
         return FilterProvider::paginate(collect($data));
@@ -81,7 +82,7 @@ class ProductController extends BaseController
     #[ExcludeRouteFromDocs]
     public function show(Product $product)
     {
-        //
+        return ProductResource::make($product->load(['prices', 'categories', 'steps']));
     }
 
     /**

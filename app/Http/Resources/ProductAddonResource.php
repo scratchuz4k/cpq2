@@ -20,7 +20,7 @@ class ProductAddonResource extends JsonResource
 
         return [
             ...$this->resource->toArray(),
-            'addon' => ProductResource::make($this->addon->load(['categories', 'steps']))->resolve(),
+            'addon' => ProductResource::make($this->addon->load(['categories', 'prices', 'steps']))->resolve(),
             'product' => $this->product->load(['categories']),
         ];
     }

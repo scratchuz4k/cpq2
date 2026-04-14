@@ -216,13 +216,15 @@ const props = defineProps({
     product: Object,
     route: String,
     column: String,
-    queries: Array,
+    queries: Function,
     warningMessage: String,
     isRowDisabled: {
         type: Function,
         default: () => false
     }
 });
+
+const emit = defineEmits(['product-added']);
 const current = ref(0);
 const showModal = ref(false);
 const showProgress = ref(false);
@@ -240,9 +242,11 @@ const getData = _.debounce(async () => {
     api.clearFilters();
     api.addGroupFilter('main', 'id', FilterOperators.NOT_EQUALS, props.product.id);
 
-    props.queries.forEach((query) => {
-        api.addGroupFilter(query.group, query.column, query.operator, query.value);
-    });
+    if (props.queries) {
+        props.queries().forEach((query) => {
+            api.addGroupFilter(query.group, query.column, query.operator, query.value);
+        });
+    }
 
     if (search.global) {
         api.setSearch(search.global);
@@ -297,6 +301,7 @@ const addProducts = async () => {
             return;
         }
     }
+    emit('product-added');
     notyf.success('Products added successfully');
     resetState();
     emitter.emit('datatable-refresh:' + props.route);

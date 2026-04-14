@@ -13,8 +13,6 @@ import ToggleSwitch from 'primevue/toggleswitch';
 import Select from 'primevue/select';
 import { DateTime } from 'luxon';
 import format from '@/Composables/format.js';
-import { DatatableOptions } from '@/Components/Datatables/DatatableOptions.js';
-import { FilterOperators } from '@composables/useApi';
 
 const props = defineProps({
     product: Object,
@@ -381,12 +379,12 @@ const items = ref([
                 <tab
                     :title="`Linked Products <span class='badge badge-primary rounded-pill ms-2'>${product.children.length}</span>`"
                 >
-                    <ProductLinkedManage :product="product" />
+                    <ProductLinkedManage v-model="product" />
                 </tab>
                 <tab
                     :title="`Addons <span class='badge badge-primary rounded-pill ms-2'>${product.addons.length}</span>`"
                 >
-                    <ProductAddonManage :product="product" />
+                    <ProductAddonManage v-model="product" />
                 </tab>
             </tabs>
         </div>

@@ -77,7 +77,7 @@ const getData = async () => {
 };
 
 const sortBy = (data) => {
-    if (!data.isSearchable) {
+    if (!data.isSortable) {
         return;
     }
     let changeSort = form.order == 'asc' ? 'desc' : 'asc';
@@ -235,14 +235,20 @@ onMounted(() => {
     </div>
 
     <div ref="tableContainer" class="datatable-content" :class="{ 'is-scrolled': isScrolled }" @scroll="onScroll">
-        <table class="w-100" :id="props.options.id">
+        <table class="relation-table" :id="props.options.id">
             <thead>
                 <tr>
                     <th
                         v-for="(data, key) in props.options.columns.filter((x) => !x.isHidden)"
                         :key="key"
                         class="datatable-table-header"
-                        :style="['position: sticky; top: -1px;', data.isSticky ? 'z-index: 3' : 'z-index: 2']"
+                        :style="{
+                            ...data.style,
+                            position: 'sticky',
+                            top: '-1px',
+                            zIndex: data.isSticky ? 3 : 2,
+                            cursor: data.isSearchable ? 'pointer' : 'default'
+                        }"
                         :class="[
                             'datatable-col',
                             data.isSticky ? `datatable-col-sticky datatable-col-sticky-${key + 1}` : '',
@@ -254,6 +260,7 @@ onMounted(() => {
                         <div
                             v-if="data.column != 'actions'"
                             class="d-flex justify-content-between align-items-center w-100 pe-3"
+                            style="position: relative"
                         >
                             <p
                                 class="datatable-table-header-text d-inline-flex align-items-center"
@@ -262,6 +269,7 @@ onMounted(() => {
                                     cursor: data.isSearchable ? 'pointer' : 'default',
                                     textDecoration: data.column == form.orderBy ? 'underline' : 'none'
                                 }"
+                                style="height: 100% !important"
                             >
                                 {{ data.title }}
                                 <span class="text-center" style="width: 20px">
@@ -272,7 +280,7 @@ onMounted(() => {
                                 </span>
                             </p>
                             <DatatableFilter
-                                v-if="activeFilters"
+                                v-if="activeFilters && data.isSearchable"
                                 v-model="form.filters[data.column]"
                                 :options="props.options"
                                 :index="key"
@@ -301,6 +309,7 @@ onMounted(() => {
                                     ? 'datatable-col-last-sticky'
                                     : ''
                             ]"
+                            :style="data.style"
                         >
                             <slot
                                 v-if="usedSlots.includes(data.column)"
@@ -310,7 +319,9 @@ onMounted(() => {
                                 :value="getValue(item, data.column)"
                                 :id="`${data.column}-${index}`"
                             />
-                            <p class="small" v-else :style="data.style">{{ getValue(item, data.column) }}</p>
+                            <p class="small overflow-hidden text-truncate" v-else :title="getValue(item, data.column)">
+                                {{ getValue(item, data.column) }}
+                            </p>
                         </td>
                         <td
                             v-if="props.options.allow.update || props.options.allow.link || props.options.allow.destroy"
@@ -378,6 +389,10 @@ onMounted(() => {
     </Paginator>
 </template>
 <style scoped>
+.relation-table {
+    width: 100%;
+    table-layout: fixed;
+}
 .datatable-header {
     background-color: white;
 }
@@ -390,6 +405,9 @@ onMounted(() => {
 .datatable-table-header {
     background-color: #e8e8e8;
     border-top: 1px solid #dee2e6;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .datatable-table-header-text {
@@ -402,6 +420,9 @@ onMounted(() => {
 
 .datatable-table-column {
     background-color: white;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .datatable-col {
@@ -409,6 +430,7 @@ onMounted(() => {
     padding: 0.5rem;
     vertical-align: top;
     border-bottom: 1px solid #dee2e6;
+    width: 150px;
 }
 
 .datatable-col-sticky {
