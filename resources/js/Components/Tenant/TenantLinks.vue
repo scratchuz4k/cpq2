@@ -16,7 +16,7 @@
                 tag="tbody"
                 v-bind="dragOptions"
                 handle=".handle"
-                @end="emit('change')"
+                @end="(e) => e.oldIndex !== e.newIndex && emit('change')"
             >
                 <template #item="{ element, index }">
                     <TenantLinksItem
