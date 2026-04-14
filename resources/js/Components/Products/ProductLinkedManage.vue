@@ -59,10 +59,15 @@ optionLinks.addColumn('child.name', 'Name', null, { isSticky: true });
 optionLinks.addColumn('child.description', 'Description', null, {});
 optionLinks.addColumn('child.categories.name', 'Categories', {}, {});
 optionLinks.addColumn('child.status', 'Status', null, {});
-optionLinks.addColumn('child.prices.cost', 'Cost Price', { width: '150px' }, {});
-optionLinks.addColumn('child.prices.net', 'Net Price', { width: '150px' }, {});
-optionLinks.addColumn('child.prices.net_spa', 'Net SPA', { width: '150px' }, {});
-optionLinks.addColumn('child.prices.active_spas', 'Active SPAs', { width: '350px' }, { isSearchable: false });
+optionLinks.addColumn('child.price.cost', 'Cost Price', { width: '150px' }, { isSearchable: false });
+optionLinks.addColumn('child.price.net', 'Net Price', { width: '150px' }, { isSearchable: false });
+optionLinks.addColumn('child.price.net_spa', 'Net SPA', { width: '150px' }, { isSearchable: false });
+optionLinks.addColumn(
+    'child.price.active_spas',
+    'Active SPAs',
+    { width: '350px' },
+    { isSearchable: false, isSortable: false }
+);
 optionLinks.addColumn('child.price_plan.name', 'Contract Term', {}, {});
 optionLinks.addColumn('child.steps.name', 'Steps', { width: '150px' }, {});
 optionLinks.addColumn('child.steps.solution_type.name', 'Solution Type', {}, {});
@@ -107,23 +112,23 @@ const setMeta = (newTotals) => {
                 {{ value }}
             </div>
         </template>
-        <template #child.prices.cost="{ data, value }">
+        <template #child.price.cost="{ data, value }">
             <p class="small">{{ value ? format.GBP(value) : 'N/A' }}</p>
         </template>
-        <template #child.prices.net="{ data, value }">
+        <template #child.price.net="{ data, value }">
             <p class="small">{{ value ? format.GBP(value) : 'N/A' }}</p>
         </template>
-        <template #child.prices.net_spa="{ data, value }">
+        <template #child.price.net_spa="{ data, value }">
             <p class="small">{{ value ? format.GBP(value) : 'N/A' }}</p>
         </template>
 
-        <!-- <template #child.prices.active_spas="{ data, value }">
+        <!-- <template #child.price.active_spas="{ data, value }">
             <p v-for="temp in value" class="small" style="width: 200px !important">
                 {{ temp.rule.name }} - {{ temp.operation.code }}:
                 {{ temp.percentage ? format.decimalPlaces(temp.percentage) + '%' : format.GBP(temp.value) }}
             </p>
         </template> -->
-        <template #child.prices.active_spas="{ data, value }">
+        <template #child.price.active_spas="{ data, value }">
             <p class="small" v-if="value && value.length == 1" style="width: 250px !important">
                 {{ value[0].rule.name }} - {{ value[0].operation.code }}:
                 {{
