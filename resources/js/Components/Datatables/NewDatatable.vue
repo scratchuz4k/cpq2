@@ -405,7 +405,6 @@ onMounted(() => {
 .datatable-table-header {
     background-color: #e8e8e8;
     border-top: 1px solid #dee2e6;
-    overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
 }

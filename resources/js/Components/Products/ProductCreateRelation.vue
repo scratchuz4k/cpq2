@@ -11,6 +11,7 @@
         :draggable="false"
         position="top"
         :pt="{ id: props.id + '-dialog' }"
+        @hide="closeModal()"
     >
         <template #header>
             <h2>Add Products</h2>
@@ -182,7 +183,7 @@
             <button
                 :id="'btn-relation-cancel-' + props.id"
                 class="btn btn-outline-secondary me-2"
-                @click="closeModal()"
+                @click="showModal = false"
             >
                 Cancel
             </button>
