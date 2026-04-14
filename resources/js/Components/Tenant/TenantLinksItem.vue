@@ -214,7 +214,15 @@ const save = () => {
     emit('edited');
 };
 
-const remove = () => {
+const remove = async () => {
+    let result = await swal.fire({
+        title: 'Are you sure?'
+    });
+
+    if (['cancel', 'backdrop'].includes(result.dismiss)) {
+        return;
+    }
+
     emit('removed', proxyValue);
 };
 
