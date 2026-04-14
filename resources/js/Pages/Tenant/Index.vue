@@ -6,6 +6,7 @@ import axios from 'axios';
 import ToggleSwitch from 'primevue/toggleswitch';
 import { InputText } from 'primevue';
 import _ from 'lodash';
+import InputColor from '@/Components/InputColor.vue';
 
 const props = defineProps({
     isSuperAdmin: Boolean,
@@ -30,10 +31,16 @@ const tenant = reactive({
         quote_approval_flow: props.tenant.configurations.quote_approval_flow ?? 'Internal review',
         has_client_approval: props.tenant.configurations.has_client_approval ?? '0',
         customization_header: JSON.parse(props.tenant.configurations.customization_header ?? '[]'),
-        customization_footer: JSON.parse(props.tenant.configurations.customization_footer ?? '[]')
+        customization_footer: JSON.parse(props.tenant.configurations.customization_footer ?? '[]'),
+        customization_colors: props.tenant.configurations.customization_colors
+            ? JSON.parse(props.tenant.configurations.customization_colors)
+            : {
+                  header: '#AAAAAA',
+                  navbar: '#EEEEEE',
+                  footer: '#AAAAAA'
+              }
     }
 });
-
 const submitFileForm = async () => {
     isLoading.value = true;
 
@@ -95,12 +102,14 @@ const submitTenantSettings = async () => {
         Object.assign(configs, tenant.configurations);
         configs.customization_header = JSON.stringify(configs.customization_header);
         configs.customization_footer = JSON.stringify(configs.customization_footer);
+        configs.customization_colors = JSON.stringify(configs.customization_colors);
 
         let res = await axios.put(`/api/tenants/` + tenant.id, { ...tenant, configurations: configs });
 
         let temp = res.data;
         temp.configurations.customization_header = JSON.parse(temp.configurations.customization_header);
         temp.configurations.customization_footer = JSON.parse(temp.configurations.customization_footer);
+        temp.configurations.customization_colors = JSON.parse(temp.configurations.customization_colors);
         Object.assign(tenant, temp);
 
         notyf.success('Content updated successfully');
@@ -121,6 +130,7 @@ const onQuoteDaysInput = _.debounce(() => {
     if (value > 365) value = 365;
 
     tenant.configurations.quote_expiration_days = value;
+    submitTenantSettings();
     submitTenantSettings();
 }, 1000);
 
@@ -194,6 +204,18 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Settings', url: '/sett
                                 aria-selected="false"
                             >
                                 Footer
+                            </button>
+                            <button
+                                class="nav-link"
+                                id="v-pills-colors-tab"
+                                data-bs-toggle="pill"
+                                data-bs-target="#v-pills-colors"
+                                type="button"
+                                role="tab"
+                                aria-controls="v-pills-colors"
+                                aria-selected="false"
+                            >
+                                Colors
                             </button>
                         </div>
                         <div class="tab-content ps-3 w-100" id="v-pills-tabContent">
@@ -322,6 +344,37 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Settings', url: '/sett
                                     :linkLimit="4"
                                     @change="submitTenantSettings()"
                                 />
+                            </div>
+                            <div
+                                class="tab-pane fade"
+                                id="v-pills-colors"
+                                role="tabpanel"
+                                aria-labelledby="v-pills-colors-tab"
+                            >
+                                <div class="d-flex">
+                                    <div class="colors-form">
+                                        <h4>Colors for tenant {{ tenant.name }}</h4>
+                                        <p class="mb-3">Manage tenant colors</p>
+                                    </div>
+                                </div>
+                                <div class="row row-cols-3 mt-3">
+                                    <div>
+                                        <label>Header</label>
+                                        {{ tenant.configurations.customization_colors.header }}
+                                        <InputColor
+                                            v-model="tenant.configurations.customization_colors.header"
+                                            @change="submitTenantSettings"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label>Navbar</label>
+                                        <InputColor v-model="tenant.configurations.customization_colors.navbar" />
+                                    </div>
+                                    <div>
+                                        <label>Footer</label>
+                                        <InputColor v-model="tenant.configurations.customization_colors.footer" />
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
