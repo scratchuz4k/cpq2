@@ -23,12 +23,12 @@ enum SocialLinksEnum: string
     public function icons(): string
     {
         return match ($this) {
-            self::FB => 'fa-facebook',
-            self::IN => 'fa-linkedin',
-            self::GO => 'fa-google',
-            self::YT => 'fa-youtube',
+            self::FACEBOOK => 'fa-facebook',
+            self::LINKEDIN => 'fa-linkedin',
+            self::GOOGLE => 'fa-google',
+            self::YOUTUBE => 'fa-youtube',
             self::X => 'fa-square-x-twitter',
-            self::VI => 'fa-vimeo',
+            self::VIMEO => 'fa-vimeo',
         };
     }
 }
