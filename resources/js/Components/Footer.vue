@@ -11,7 +11,7 @@
                 >
                     <a
                         v-for="link in socialLinks.filter((x) => x.is_active)"
-                        :title="link.Label"
+                        :title="link.label"
                         :href="link.url"
                         class="fs-4 social-link"
                         target="_blank"
