@@ -4,12 +4,12 @@ namespace App\Enums;
 
 enum SocialLinksEnum: string
 {
-    case FB = 'Facebook';
-    case IN = 'LinkedIn';
-    case GO = 'Google';
-    case YT = 'Youtube';
+    case FACEBOOK = 'Facebook';
+    case LINKEDIN = 'LinkedIn';
+    case GOOGLE = 'Google';
+    case YOUTUBE = 'Youtube';
     case X = 'X';
-    case VI = 'Vimeo';
+    case VIMEO = 'Vimeo';
 
     public static function asArray(): array
     {
