@@ -24,8 +24,7 @@ const quote = reactive({
     configs: {
         speed: null,
         bearer: null,
-        contract_length: [],
-        managed: '0'
+        contract_length: []
     },
     postCode: null,
     position: null,

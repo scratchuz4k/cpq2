@@ -2,17 +2,16 @@
 import { reactive, ref, watch } from 'vue';
 import { can, hasRole } from '@composables/useAuth';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
+import InputPrice from '@/Components/InputPrice.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, router } from '@inertiajs/vue3';
 import { DataTable, DatePicker } from 'primevue';
 import Column from 'primevue/column';
-import InputText from 'primevue/inputtext';
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
 import ToggleSwitch from 'primevue/toggleswitch';
 import Select from 'primevue/select';
 import { DateTime } from 'luxon';
-import _ from 'lodash';
 import format from '@/Composables/format.js';
 
 const props = defineProps({
@@ -43,7 +42,6 @@ const saveProduct = () => {
         ...product,
         expires_at: product.expires_at ? DateTime.fromJSDate(product.expires_at).toISO() : null,
         supplier_id: product.supplier?.id ?? null,
-        parent_id: product.parent?.id ?? null,
         categories: categories.value.map((item) => item.id),
         steps: steps.value.map((item) => item.id)
     };
@@ -127,7 +125,7 @@ const items = ref([
                     </PrimaryButton>
                 </template>
             </Header>
-            <tabs class="mt-3">
+            <tabs id="tabs-product-edit" class="mt-3">
                 <tab title="General" :selected="true">
                     <div class="my-3">
                         <p>
@@ -233,6 +231,7 @@ const items = ref([
                                 >
                                 </InputSelectMultiple>
                             </div>
+
                             <div class="mb-3">
                                 <label for="product-supplier" class="form-label">Supplier:</label>
                                 <InputSelect
@@ -244,20 +243,6 @@ const items = ref([
                                     :query="[{ column: 'is_active', operator: 'equals', value: 1 }]"
                                 >
                                 </InputSelect>
-                            </div>
-                            <div class="mb-3">
-                                <label for="product-parent" class="form-label">Parent:</label>
-                                <div class="input-group p-0">
-                                    <InputSelect
-                                        id="product-parent"
-                                        url="/products"
-                                        :fields="['name']"
-                                        class="w-100"
-                                        v-model="product.parent"
-                                        placeholder="Select a Parent"
-                                        :query="[{ column: 'is_active', operator: 'equals', value: 1 }]"
-                                    />
-                                </div>
                             </div>
                         </div>
                     </div>
@@ -294,7 +279,7 @@ const items = ref([
                                             {{ format.GBP(data[field]) }}
                                         </template>
                                         <template #editor="{ data, field }">
-                                            <InputText type="number" v-model="data[field]" fluid />
+                                            <InputPrice v-model="data[field]" />
                                         </template>
                                     </Column>
                                     <Column field="net" header="Net">
@@ -302,10 +287,10 @@ const items = ref([
                                             {{ format.GBP(data[field]) }}
                                         </template>
                                         <template #editor="{ data, field }">
-                                            <InputText type="number" v-model="data[field]" fluid />
+                                            <InputPrice v-model="data[field]" />
                                         </template>
                                     </Column>
-                                    <Column field="net_spa" header="Net SPA">
+                                    <Column field="net" header="Net SPA">
                                         <template #body="{ data, field }">
                                             {{ format.GBP(data[field]) }}
                                         </template>
@@ -374,11 +359,11 @@ const items = ref([
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label">Cost</label>
-                                    <input class="form-control" type="number" v-model="price.cost" />
+                                    <InputPrice id="price-cost" v-model="price.cost" />
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label">Price</label>
-                                    <input class="form-control" type="number" v-model="price.net" />
+                                    <InputPrice id="price-price" v-model="price.net" />
                                 </div>
 
                                 <div class="d-flex justify-content-end">
@@ -390,6 +375,16 @@ const items = ref([
                             </Dialog>
                         </div>
                     </div>
+                </tab>
+                <tab
+                    :title="`Linked Products <span class='badge badge-primary rounded-pill ms-2'>${product.children.length}</span>`"
+                >
+                    <ProductLinkedManage v-model="product" />
+                </tab>
+                <tab
+                    :title="`Addons <span class='badge badge-primary rounded-pill ms-2'>${product.addons.length}</span>`"
+                >
+                    <ProductAddonManage v-model="product" />
                 </tab>
             </tabs>
         </div>

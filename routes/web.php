@@ -13,7 +13,10 @@ use App\Http\Controllers\Web\GroupAccountController;
 use App\Http\Controllers\Web\GroupController;
 use App\Http\Controllers\Web\ImportController;
 use App\Http\Controllers\Web\NotificationController;
+use App\Http\Controllers\Web\ProductAddonController;
+use App\Http\Controllers\Web\ProductBundleController;
 use App\Http\Controllers\Web\ProductController;
+use App\Http\Controllers\Web\ProductLinkController;
 use App\Http\Controllers\Web\ProfileController;
 use App\Http\Controllers\Web\QuoteController;
 use App\Http\Controllers\Web\RoleController;
@@ -84,6 +87,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         'quotes' => QuoteController::class,
         'tenants' => TenantController::class,
         'products' => ProductController::class,
+        'product-links' => ProductLinkController::class,
+        'product-addons' => ProductAddonController::class,
+        'product-bundles' => ProductBundleController::class,
         'suppliers' => SupplierController::class,
         'spas' => SpaController::class,
         'users' => UserController::class,

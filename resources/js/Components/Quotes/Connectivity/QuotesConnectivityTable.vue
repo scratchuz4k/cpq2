@@ -28,7 +28,6 @@ const showLowestCost = ref(true);
 const showQuoted = ref(false);
 const showFilters = ref(true);
 const showContended = ref(null);
-const showManaged = ref(null);
 const articles = ref([]);
 const errors = ref([]);
 const selectedFilters = ref([]);
@@ -58,6 +57,11 @@ const filters = reactive({
         operator: 'greater_than_or_equal_to',
         value: quote.configs?.speed ?? null,
         name: 'Speed'
+    },
+    isManaged: {
+        operator: 'in',
+        value: null,
+        name: 'Managed'
     }
 });
 
@@ -66,7 +70,8 @@ const filterList = reactive({
     connectivitySupplierGroup: [],
     contractTermMonths: [],
     bearer: [],
-    speed: []
+    speed: [],
+    isManaged: []
 });
 
 const meta = reactive({
@@ -95,15 +100,11 @@ const getArticles = async (clearCache = false, runTimeout = false) => {
         temp.push({ column: 'code', operator: 'in', value: items });
     }
     if (showLowestCost.value) {
-        temp.push({ column: '*', operator: 'lowest-cost', value: true });
+        temp.push({ column: '*', operator: 'lowest-cost', value: 1 });
     }
 
-    // if (showContended.value !== null) {
-    //     temp.push({ column: 'isContended', operator: 'equals', value: showContended.value });
-    // }
-
-    if (showManaged.value !== null) {
-        temp.push({ column: 'isManaged', operator: 'equals', value: showManaged.value });
+    if (showContended.value !== null) {
+        temp.push({ column: 'isContended', operator: 'equals', value: showContended.value ? 1 : 0 });
     }
 
     if (clearCache) {
@@ -114,7 +115,7 @@ const getArticles = async (clearCache = false, runTimeout = false) => {
         quote_id: props.modelValue.id,
         filters: temp,
         page: meta.page,
-        perPage: meta.limit,
+        limit: meta.limit,
         order: sort.order,
         orderBy: sort.field,
         account_id: props.modelValue.account_id,
@@ -169,21 +170,47 @@ const getArticles = async (clearCache = false, runTimeout = false) => {
 
         let bearerFilters = [];
         Object.keys(filterList.bearer).forEach((key) => {
-            bearerFilters.push({
-                label: format.speed(key),
-                value: key
-            });
+            if (key !== 'null') {
+                bearerFilters.push({
+                    label: format.speed(key),
+                    value: key
+                });
+            }
         });
         filterList.bearer = bearerFilters;
 
         let speedFilters = [];
         Object.keys(filterList.speed).forEach((key) => {
-            speedFilters.push({
-                label: format.speed(key),
-                value: key
-            });
+            if (key !== 'null') {
+                speedFilters.push({
+                    label: format.speed(key),
+                    value: key
+                });
+            }
         });
         filterList.speed = speedFilters;
+
+        let contractLengthsFilters = [];
+        Object.keys(filterList.contractTermMonths).forEach((key) => {
+            if (key !== 'null') {
+                contractLengthsFilters.push({
+                    label: key + ' Months',
+                    value: key
+                });
+            }
+        });
+        filterList.contractTermMonths = contractLengthsFilters;
+
+        let isManagedFilters = [];
+        Object.keys(filterList.isManaged).forEach((key) => {
+            let label = key === 'true' ? 'Yes' : key === 'false' ? 'No' : 'N/A';
+            let value = key === 'true' ? '1' : key === 'false' ? '0' : 'null';
+            isManagedFilters.push({
+                label: label,
+                value: value
+            });
+        });
+        filterList.isManaged = isManagedFilters;
 
         selectedFilters.value = Object.fromEntries(
             Object.entries(filters).filter(([key, filter]) => filter.value !== null)
@@ -238,7 +265,6 @@ const resetFilters = () => {
     showLowestCost.value = true;
     showQuoted.value = false;
     showContended.value = null;
-    showManaged.value = null;
 };
 
 const checkProduct = (article) => {
@@ -274,7 +300,7 @@ const handlePaginator = (ev) => {
 };
 
 watch(
-    [filters, showQuoted, showLowestCost, showContended, showManaged],
+    [filters, showQuoted, showLowestCost, showContended],
     _.debounce(function () {
         meta.page = 1;
         getArticles();
@@ -342,11 +368,14 @@ onMounted(() => {
                                                       : [selectedFilter.value]
                                                   ).filter((v) => v !== null)"
                                             :value="
-                                                ['speed', 'bearer'].includes(column)
-                                                    ? 'Min. ' + _.capitalize(column) + ': ' + format.speed(value)
-                                                    : ['contractTermMonths'].includes(column)
-                                                      ? value + ' Months'
-                                                      : value
+                                                column === 'isManaged'
+                                                    ? 'Managed: ' +
+                                                      (value === '1' ? 'Yes' : value === '0' ? 'No' : 'N/A')
+                                                    : ['speed', 'bearer'].includes(column)
+                                                      ? 'Min. ' + _.capitalize(column) + ': ' + format.speed(value)
+                                                      : ['contractTermMonths'].includes(column)
+                                                        ? value + ' Months'
+                                                        : value
                                             "
                                             class="px-3 py-1"
                                             :title="selectedFilter.name"
@@ -362,31 +391,9 @@ onMounted(() => {
                                         </Badge>
                                     </template>
                                 </li>
-                                <li v-if="quote.configs?.managed && quote.configs?.managed != 0">
-                                    <Badge
-                                        :value="
-                                            quote.configs?.managed == 1
-                                                ? 'Managed Only'
-                                                : quote.configs?.managed == 2
-                                                  ? 'Unmanaged Only'
-                                                  : 'Managed and Unmanaged'
-                                        "
-                                        class="px-3 py-1"
-                                    >
-                                        <font-awesome-icon
-                                            :icon="['fas', 'shield-alt']"
-                                            class="ms-1 fs-7"
-                                        ></font-awesome-icon>
-                                    </Badge>
-                                </li>
                             </ul>
                             <div
-                                v-if="
-                                    quote.configs?.speed ||
-                                    quote.configs?.bearer ||
-                                    quote.configs?.contract_length ||
-                                    quote.configs?.managed !== '0'
-                                "
+                                v-if="quote.configs?.speed || quote.configs?.bearer || quote.configs?.contract_length"
                                 class="d-flex align-self-end justify-content-around mb-2"
                             >
                                 <tooltip-with-icon
@@ -398,135 +405,168 @@ onMounted(() => {
                     </div>
                 </div>
                 <div id="filters" v-if="showFilters" class="p-0 m-0 mt-2 mb-4 row">
-                    <div class="col-lg-2 col-12 p-0 pe-1">
-                        <label for="filter-provider" class="form-label">Provider</label>
-                        <MultiSelect
-                            id="provider-multiselect"
-                            v-model="filters['providerName'].value"
-                            style="width: 100%"
-                            :options="Object.keys(filterList.providerName)"
-                            placeholder="All"
-                            size="small"
-                            class="custom-multiselect"
-                        >
-                            <template #option="slotProps">
-                                <div style="font-size: 14px; line-height: 1.5rem">
-                                    {{ slotProps.option }} ( {{ filterList.providerName[slotProps.option] }} )
-                                </div>
-                            </template>
-                        </MultiSelect>
+                    <div class="col-lg-10 col-12">
+                        <div class="row">
+                            <div class="col-lg-2 col-12 p-0 pe-1">
+                                <label for="filter-provider" class="form-label">Provider</label>
+                                <MultiSelect
+                                    id="provider-multiselect"
+                                    v-model="filters['providerName'].value"
+                                    style="width: 100%"
+                                    :options="Object.keys(filterList.providerName)"
+                                    placeholder="All"
+                                    size="small"
+                                    class="custom-multiselect"
+                                >
+                                    <template #option="slotProps">
+                                        <div style="font-size: 14px; line-height: 1.5rem">
+                                            {{ slotProps.option }} ( {{ filterList.providerName[slotProps.option] }} )
+                                        </div>
+                                    </template>
+                                </MultiSelect>
+                            </div>
+                            <div class="col-lg-2 col-12 p-0 pe-1">
+                                <label for="filter-subprovider" class="form-label">Subprovider</label>
+                                <MultiSelect
+                                    id="subprovider-multiselect"
+                                    v-model="filters['connectivitySupplierGroup'].value"
+                                    style="width: 100%"
+                                    :options="Object.keys(filterList.connectivitySupplierGroup)"
+                                    placeholder="All"
+                                    size="small"
+                                    class="me-3 custom-multiselect"
+                                >
+                                    <template #option="slotProps">
+                                        <div style="font-size: 14px; line-height: 1.5rem">
+                                            {{ slotProps.option }} (
+                                            {{ filterList.connectivitySupplierGroup[slotProps.option] }} )
+                                        </div>
+                                    </template>
+                                </MultiSelect>
+                            </div>
+                            <div class="col-lg-2 col-12 p-0 pe-1">
+                                <label for="filter-contract" class="form-label">Min. Bearer</label>
+                                <Select
+                                    id="bearer-multiselect"
+                                    v-model="filters['bearer'].value"
+                                    style="width: 100%"
+                                    :options="filterList.bearer"
+                                    optionLabel="label"
+                                    optionValue="value"
+                                    placeholder="All"
+                                    size="small"
+                                    class="me-3 custom-select"
+                                >
+                                    <template #option="slotProps">
+                                        <div style="font-size: 14px; line-height: 1.5rem">
+                                            {{ slotProps.option.label }}
+                                        </div>
+                                    </template>
+                                </Select>
+                            </div>
+                            <div class="col-lg-2 col-12 p-0 pe-1">
+                                <label for="filter-contract" class="form-label">Min. Speed</label>
+                                <Select
+                                    id="speed-multiselect"
+                                    v-model="filters['speed'].value"
+                                    style="width: 100%"
+                                    :options="filterList.speed"
+                                    optionLabel="label"
+                                    optionValue="value"
+                                    placeholder="All"
+                                    size="small"
+                                    class="me-3 custom-select"
+                                >
+                                    <template #option="slotProps">
+                                        <div style="font-size: 14px; line-height: 1.5rem">
+                                            {{ slotProps.option.label }}
+                                        </div>
+                                    </template>
+                                </Select>
+                            </div>
+                            <div class="col-lg-2 col-12 p-0 pe-1">
+                                <label for="filter-contract" class="form-label">Contract Length</label>
+                                <MultiSelect
+                                    id="contract-length-multiselect"
+                                    v-model="filters['contractTermMonths'].value"
+                                    style="width: 100%"
+                                    :options="filterList.contractTermMonths"
+                                    optionLabel="label"
+                                    optionValue="value"
+                                    placeholder="All"
+                                    size="small"
+                                    class="me-3 custom-multiselect"
+                                >
+                                    <template #option="slotProps">
+                                        <div style="font-size: 14px; line-height: 1.5rem">
+                                            {{ slotProps.option.label }}
+                                        </div>
+                                    </template>
+                                </MultiSelect>
+                            </div>
+                            <div class="col-lg-2 col-12 p-0 pe-1">
+                                <label for="filter-managed" class="form-label">Managed</label>
+                                <MultiSelect
+                                    id="managed-multiselect"
+                                    v-model="filters['isManaged'].value"
+                                    style="width: 100%"
+                                    :options="filterList.isManaged"
+                                    optionLabel="label"
+                                    optionValue="value"
+                                    placeholder="All"
+                                    size="small"
+                                    class="me-3 custom-multiselect"
+                                >
+                                    <template #option="slotProps">
+                                        <div style="font-size: 14px; line-height: 1.5rem">
+                                            {{ slotProps.option.label }}
+                                        </div>
+                                    </template>
+                                </MultiSelect>
+                            </div>
+                        </div>
                     </div>
-                    <div class="col-lg-2 col-12 p-0 pe-1">
-                        <label for="filter-subprovider" class="form-label">Subprovider</label>
-                        <MultiSelect
-                            id="subprovider-multiselect"
-                            v-model="filters['connectivitySupplierGroup'].value"
-                            style="width: 100%"
-                            :options="Object.keys(filterList.connectivitySupplierGroup)"
-                            placeholder="All"
-                            size="small"
-                            class="me-3 custom-multiselect"
-                        >
-                            <template #option="slotProps">
-                                <div style="font-size: 14px; line-height: 1.5rem">
-                                    {{ slotProps.option }} (
-                                    {{ filterList.connectivitySupplierGroup[slotProps.option] }} )
-                                </div>
-                            </template>
-                        </MultiSelect>
-                    </div>
-                    <div class="col-lg-2 col-12 p-0 pe-1">
-                        <label for="filter-contract" class="form-label">Contract Length</label>
-                        <MultiSelect
-                            id="contract-length-multiselect"
-                            v-model="filters['contractTermMonths'].value"
-                            style="width: 100%"
-                            :options="Object.keys(filterList.contractTermMonths)"
-                            placeholder="All"
-                            size="small"
-                            class="me-3 custom-multiselect"
-                        >
-                            <template #option="slotProps">
-                                <div style="font-size: 14px; line-height: 1.5rem">{{ slotProps.option }} Months</div>
-                            </template>
-                        </MultiSelect>
-                    </div>
-                    <div class="col-lg-2 col-12 p-0 pe-1">
-                        <label for="filter-contract" class="form-label">Min. Bearer</label>
-                        <Select
-                            id="bearer-multiselect"
-                            v-model="filters['bearer'].value"
-                            style="width: 100%"
-                            :options="filterList.bearer"
-                            optionLabel="label"
-                            optionValue="value"
-                            placeholder="All"
-                            size="small"
-                            class="me-3 custom-select"
-                        >
-                            <template #option="slotProps">
-                                <div style="font-size: 14px; line-height: 1.5rem">
-                                    {{ slotProps.option.label }}
-                                </div>
-                            </template>
-                        </Select>
-                    </div>
-                    <div class="col-lg-2 col-12 p-0 pe-1">
-                        <label for="filter-contract" class="form-label">Min. Speed</label>
-                        <Select
-                            id="speed-multiselect"
-                            v-model="filters['speed'].value"
-                            style="width: 100%"
-                            :options="filterList.speed"
-                            optionLabel="label"
-                            optionValue="value"
-                            placeholder="All"
-                            size="small"
-                            class="me-3 custom-select"
-                        >
-                            <template #option="slotProps">
-                                <div style="font-size: 14px; line-height: 1.5rem">
-                                    {{ slotProps.option.label }}
-                                </div>
-                            </template>
-                        </Select>
-                    </div>
-                    <div
-                        class="col-lg-2 col-12 d-flex align-self-end justify-content-around"
-                        style="margin-bottom: 2px"
-                    >
-                        <button class="btn btn-secondary btn-sm mt-2 me-2 w-100" @click="resetFilters()">Reset</button>
-                        <div class="advanced-settings pt-2 w-100">
-                            <button
-                                id="btn-more-filters"
-                                class="btn btn-secondary dropdown-toggle lh-1 w-100"
-                                type="button"
-                                data-bs-toggle="dropdown"
-                                aria-expanded="false"
-                                data-bs-auto-close="outside"
-                            >
-                                <font-awesome-icon :icon="['fas', 'gear']"></font-awesome-icon>
-                            </button>
-                            <ul class="dropdown-menu dropdown-menu-end mt-1 p-1">
-                                <li>
-                                    <div class="checkbox d-flex py-1 px-2">
-                                        <ToggleSwitch class="me-2" id="filter-lower-cost" v-model="showLowestCost">
-                                            <template #handle>
-                                                <font-awesome-icon
-                                                    :icon="
-                                                        showLowestCost
-                                                            ? ['fas', 'circle-check']
-                                                            : ['far', 'circle-xmark']
-                                                    "
-                                                    class="text-primary"
-                                                />
-                                            </template>
-                                        </ToggleSwitch>
-                                        <label class="form-check-label" for="filter-lower-cost">
-                                            Show only lowest cost products
-                                        </label>
-                                    </div>
-                                    <div class="checkbox d-flex py-1 px-2">
+                    <div class="col-lg-2 col-12 align-self-end justify-content-around">
+                        <div class="row">
+                            <div class="col-12 d-flex align-self-end justify-content-around" style="margin-bottom: 2px">
+                                <button class="btn btn-secondary btn-sm mt-2 me-2 w-100" @click="resetFilters()">
+                                    Reset
+                                </button>
+                                <div class="advanced-settings pt-2 w-100">
+                                    <button
+                                        id="btn-more-filters"
+                                        class="btn btn-secondary dropdown-toggle lh-1 w-100"
+                                        type="button"
+                                        data-bs-toggle="dropdown"
+                                        aria-expanded="false"
+                                        data-bs-auto-close="outside"
+                                    >
+                                        <font-awesome-icon :icon="['fas', 'gear']"></font-awesome-icon>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-end mt-1 p-1">
+                                        <li>
+                                            <div class="checkbox d-flex py-1 px-2">
+                                                <ToggleSwitch
+                                                    class="me-2"
+                                                    id="filter-lower-cost"
+                                                    v-model="showLowestCost"
+                                                >
+                                                    <template #handle>
+                                                        <font-awesome-icon
+                                                            :icon="
+                                                                showLowestCost
+                                                                    ? ['fas', 'circle-check']
+                                                                    : ['far', 'circle-xmark']
+                                                            "
+                                                            class="text-primary"
+                                                        />
+                                                    </template>
+                                                </ToggleSwitch>
+                                                <label class="form-check-label" for="filter-lower-cost">
+                                                    Show only lowest cost products
+                                                </label>
+                                            </div>
+                                            <!-- <div class="checkbox d-flex py-1 px-2">
                                         <ToggleSwitch class="me-2" id="filter-show-quoted" v-model="showQuoted">
                                             <template #handle>
                                                 <font-awesome-icon
@@ -540,47 +580,30 @@ onMounted(() => {
                                         <label class="form-check-label" for="filter-show-quoted">
                                             Show only quoted items
                                         </label>
-                                    </div>
-                                    <!-- <div class="checkbox d-flex py-1 px-2">
-                    <TriStateToggle v-model="showContended" id="filter-show-contended">
-                      <template #handle>
-                        <font-awesome-icon
-                          :icon="
-                            showContended === true
-                              ? ['fas', 'circle-check']
-                              : showContended === false
-                              ? ['far', 'circle-xmark']
-                              : ['far', 'circle']
-                          "
-                          class="text-primary"
-                        />
-                      </template>
-                    </TriStateToggle>
-                    <label class="form-check-label" for="filter-show-contended">
-                      Show contended products
-                    </label>
-                  </div> -->
-                                    <div class="checkbox d-flex py-1 px-2">
-                                        <TriStateToggle v-model="showManaged" id="filter-show-managed">
-                                            <template #handle>
-                                                <font-awesome-icon
-                                                    :icon="
-                                                        showManaged === true
-                                                            ? ['fas', 'circle-check']
-                                                            : showManaged === false
-                                                              ? ['far', 'circle-xmark']
-                                                              : ['far', 'circle']
-                                                    "
-                                                    class="text-primary"
-                                                />
-                                            </template>
-                                        </TriStateToggle>
-                                        <label class="form-check-label" for="filter-show-managed">
-                                            Show managed products
-                                        </label>
-                                    </div>
-                                </li>
-                            </ul>
+                                    </div> -->
+                                            <div class="checkbox d-flex py-1 px-2">
+                                                <TriStateToggle v-model="showContended" id="filter-show-contended">
+                                                    <template #handle>
+                                                        <font-awesome-icon
+                                                            :icon="
+                                                                showContended === true
+                                                                    ? ['fas', 'circle-check']
+                                                                    : showContended === false
+                                                                      ? ['far', 'circle-xmark']
+                                                                      : ['far', 'circle']
+                                                            "
+                                                            class="text-primary"
+                                                        />
+                                                    </template>
+                                                </TriStateToggle>
+                                                <label class="form-check-label" for="filter-show-contended">
+                                                    Show contended products
+                                                </label>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -797,6 +820,28 @@ onMounted(() => {
                                     </span>
                                 </th>
                                 <th
+                                    id="table-header-managed"
+                                    class="text-center"
+                                    :style="{
+                                        whiteSpace: 'nowrap'
+                                    }"
+                                    @click="orderBy('isManaged')"
+                                >
+                                    Managed
+                                    <span class="text-center d-inline-block align-middle" style="width: 20px">
+                                        <template v-if="sort.field == 'isManaged'">
+                                            <font-awesome-icon
+                                                v-if="sort.order == 'desc'"
+                                                :icon="['fa-solid', 'fa-sort-amount-up-alt']"
+                                            />
+                                            <font-awesome-icon v-else :icon="['fa-solid', 'fa-sort-amount-down-alt']" />
+                                        </template>
+                                        <template v-else>
+                                            <font-awesome-icon :icon="['fa-solid', 'fa-sort']" />
+                                        </template>
+                                    </span>
+                                </th>
+                                <th
                                     v-if="!hasPrimaryProduct()"
                                     :style="{
                                         width: '130px'
@@ -825,17 +870,17 @@ onMounted(() => {
                                     >
                                         <font-awesome-icon :icon="['fas', 'plug']"></font-awesome-icon>
                                     </span>
-                                    <!-- <span
-                    v-if="article?.isContended"
-                    class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm is-contended"
-                    data-bs-toggle="tooltip"
-                    data-bs-placement="top"
-                    data-bs-html="true"
-                    data-bs-original-title="<b>Contended Service:</b> Contended, wires only full fibre service with symmetrical upload and download speeds"
-                    v-tooltip
-                  >
-                    <font-awesome-icon :icon="['fas', 'server']"></font-awesome-icon>
-                  </span> -->
+                                    <span
+                                        v-if="article?.isContended"
+                                        class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm is-contended"
+                                        data-bs-toggle="tooltip"
+                                        data-bs-placement="top"
+                                        data-bs-html="true"
+                                        data-bs-original-title="Contended Service"
+                                        v-tooltip
+                                    >
+                                        <font-awesome-icon :icon="['fas', 'server']"></font-awesome-icon>
+                                    </span>
                                     <span
                                         v-if="article?.additionalInfo?.['Type'] == 'Fibre Flex 200+'"
                                         v-tooltip
@@ -932,6 +977,9 @@ onMounted(() => {
                                     </span>
                                 </td>
                                 <td>{{ article.contractTermMonths }} Months</td>
+                                <td>
+                                    {{ article.isManaged == true ? 'Yes' : article.isManaged === false ? 'No' : 'N/A' }}
+                                </td>
                                 <td class="text-end" v-if="!hasPrimaryProduct()">
                                     <button class="btn btn-outline-primary me-2 py-1" @click="checkProduct(article)">
                                         <font-awesome-icon :icon="['fas', 'plus']" />

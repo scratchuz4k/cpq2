@@ -227,7 +227,7 @@ class CloudMarketApi
             'Address1.SubPremises' => $address->subPremises,
             'Address1.Street' => $address->street,
             'Address1.Town' => $address->town,
-            'ManagedOption' => $quote->configs['managed'] ?? 0,
+            'ManagedOption' => 0,
             'TermMonths' => ! empty($quote->configs['contract_length']) ? explode(',', (string) $quote->configs['contract_length']) : [],
             'ConnectionSpeeds.MinBearer' => is_numeric($quote->configs['bearer'] ?? null) ? (int) $quote->configs['bearer'] : 100,
             'ConnectionSpeeds.MaxBearer' => 100000,

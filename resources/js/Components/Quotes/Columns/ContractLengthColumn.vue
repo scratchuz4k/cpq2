@@ -1,6 +1,8 @@
 <script setup>
 import { temp } from '@composables/useQuoteItem';
 import { quote } from '@composables/useQuote';
+import { integerOnly, checkValue } from '@/Composables/input.js';
+
 defineProps({
     code: String,
     column: Object,
@@ -20,7 +22,11 @@ const item = defineModel();
             :id="'input-' + code + '-' + index + '-contract_length'"
             class="form-control text-center p-0 px-1"
             type="number"
+            min="1"
+            max="99"
+            @keydown="integerOnly"
             v-model="temp.contract_length"
+            @input="checkValue"
         />
     </template>
 </template>

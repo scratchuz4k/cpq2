@@ -197,7 +197,7 @@ const getReviewProduct = async () => {
 
         let query = queryString.stringify({
             page: 1,
-            perPage: 1,
+            limit: 1,
             filters: filters
         });
 
