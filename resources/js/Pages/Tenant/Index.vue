@@ -35,9 +35,9 @@ const tenant = reactive({
         customization_colors: props.tenant.configurations.customization_colors
             ? JSON.parse(props.tenant.configurations.customization_colors)
             : {
-                  header: '#AAAAAA',
-                  navbar: '#EEEEEE',
-                  footer: '#AAAAAA'
+                  header: 'AAAAAA',
+                  navbar: 'EEEEEE',
+                  footer: 'AAAAAA'
               }
     }
 });
@@ -351,28 +351,121 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Settings', url: '/sett
                                 role="tabpanel"
                                 aria-labelledby="v-pills-colors-tab"
                             >
-                                <div class="d-flex">
-                                    <div class="colors-form">
-                                        <h4>Colors for tenant {{ tenant.name }}</h4>
-                                        <p class="mb-3">Manage tenant colors</p>
+                                <div class="colors-form">
+                                    <h4>Colors for tenant {{ tenant.name }}</h4>
+                                    <p class="mb-3">Manage tenant colors</p>
+                                </div>
+                                <div class="col">
+                                    <h2 class="seperator">App</h2>
+                                    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
+                                        <div class="col">
+                                            <div class="card bg-light border-0 settings-block h-100">
+                                                <div class="card-body">
+                                                    <h6 class="fw-bold pe-5 mb-3">Header</h6>
+                                                    <div class="color-app-header">
+                                                        <InputColor
+                                                            v-model="tenant.configurations.customization_colors.header"
+                                                            :id="'color-app-header'"
+                                                            @change="submitTenantSettings"
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="card bg-light border-0 settings-block h-100">
+                                                <div class="card-body">
+                                                    <h6 class="fw-bold pe-5 mb-3">Navbar</h6>
+                                                    <div class="vcolor-app-navbar">
+                                                        <InputColor
+                                                            v-model="tenant.configurations.customization_colors.navbar"
+                                                            :id="'color-app-navbar'"
+                                                            @change="submitTenantSettings"
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="card bg-light border-0 settings-block h-100">
+                                                <div class="card-body">
+                                                    <h6 class="fw-bold pe-5 mb-3">Footer</h6>
+                                                    <div class="color-app-footer">
+                                                        <InputColor
+                                                            v-model="tenant.configurations.customization_colors.footer"
+                                                            :id="'color-app-footer'"
+                                                            @change="submitTenantSettings"
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="row row-cols-3 mt-3">
-                                    <div>
-                                        <label>Header</label>
-                                        {{ tenant.configurations.customization_colors.header }}
-                                        <InputColor
-                                            v-model="tenant.configurations.customization_colors.header"
-                                            @change="submitTenantSettings"
-                                        />
+                                <div class="col">
+                                    <h2 class="seperator">Customer Approval</h2>
+                                    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
+                                        <div class="col">
+                                            <div class="card bg-light border-0 settings-block h-100">
+                                                <div class="card-body">
+                                                    <h6 class="fw-bold pe-5 mb-3">Header</h6>
+                                                    <div class="color-app-header">
+                                                        <InputColor
+                                                            v-model="tenant.configurations.customization_colors.header"
+                                                            :id="'color-app-header'"
+                                                            @change="submitTenantSettings"
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="card bg-light border-0 settings-block h-100">
+                                                <div class="card-body">
+                                                    <h6 class="fw-bold pe-5 mb-3">Footer</h6>
+                                                    <div class="color-app-footer">
+                                                        <InputColor
+                                                            v-model="tenant.configurations.customization_colors.footer"
+                                                            :id="'color-app-footer'"
+                                                            @change="submitTenantSettings"
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div>
-                                        <label>Navbar</label>
-                                        <InputColor v-model="tenant.configurations.customization_colors.navbar" />
-                                    </div>
-                                    <div>
-                                        <label>Footer</label>
-                                        <InputColor v-model="tenant.configurations.customization_colors.footer" />
+                                </div>
+                                <div class="col">
+                                    <h2 class="seperator">Shareable Link</h2>
+                                    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
+                                        <div class="col">
+                                            <div class="card bg-light border-0 settings-block h-100">
+                                                <div class="card-body">
+                                                    <h6 class="fw-bold pe-5 mb-3">Header</h6>
+                                                    <div class="color-app-header">
+                                                        <InputColor
+                                                            v-model="tenant.configurations.customization_colors.header"
+                                                            :id="'color-app-header'"
+                                                            @change="submitTenantSettings"
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="card bg-light border-0 settings-block h-100">
+                                                <div class="card-body">
+                                                    <h6 class="fw-bold pe-5 mb-3">Footer</h6>
+                                                    <div class="color-app-footer">
+                                                        <InputColor
+                                                            v-model="tenant.configurations.customization_colors.footer"
+                                                            :id="'color-app-footer'"
+                                                            @change="submitTenantSettings"
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
