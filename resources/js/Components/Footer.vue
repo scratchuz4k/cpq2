@@ -5,26 +5,18 @@
                 <div class="col">
                     <app-logo type="logo_alt"></app-logo>
                 </div>
-                <div class="col d-flex justify-center justify-content-sm-end align-items-center">
-                    <a title="Facebook" class="fs-4" href="https://www.facebook.com/GiacomGroup" target="_blank">
-                        <font-awesome-icon :icon="['fa-brands', 'fa-facebook']"></font-awesome-icon>
-                    </a>
-                    <a title="LinkedIn" class="fs-4" href="https://uk.linkedin.com/company/giacom" target="_blank">
-                        <font-awesome-icon :icon="['fa-brands', 'fa-linkedin']"></font-awesome-icon>
-                    </a>
+                <div
+                    class="col d-flex justify-center justify-content-sm-end align-items-center"
+                    v-if="socialLinks.filter((x) => x.is_active).length"
+                >
                     <a
-                        title="YouTube"
-                        class="fs-4"
-                        href="https://www.youtube.com/channel/UCwjyeFJQzNaL_JtxqZkCSOA"
+                        v-for="link in socialLinks.filter((x) => x.is_active)"
+                        :title="link.label"
+                        :href="link.url"
+                        class="fs-4 social-link"
                         target="_blank"
                     >
-                        <font-awesome-icon :icon="['fa-brands', 'fa-youtube']"></font-awesome-icon>
-                    </a>
-                    <a title="Vimeo" class="fs-4" href="https://vimeo.com/user75859235" target="_blank">
-                        <font-awesome-icon :icon="['fa-brands', 'fa-vimeo']"></font-awesome-icon>
-                    </a>
-                    <a title="X" class="fs-4" href="https://x.com/GiacomCM" target="_blank">
-                        <font-awesome-icon :icon="['fa-brands', 'fa-square-x-twitter']"></font-awesome-icon>
+                        <font-awesome-icon :icon="['fa-brands', link.icon]" />
                     </a>
                 </div>
             </div>
@@ -50,4 +42,5 @@ import AppLogo from './AppLogo.vue';
 
 const page = usePage();
 const links = page.props.customization.footer;
+const socialLinks = page.props.customization.social;
 </script>
