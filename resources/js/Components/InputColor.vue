@@ -1,8 +1,7 @@
 <script setup>
 import ColorPicker from 'primevue/colorpicker';
-import InputText from 'primevue/inputtext';
-import { ref } from 'vue';
-import ToggleSwitch from 'primevue/toggleswitch';
+import { computed, ref } from 'vue';
+import _ from 'lodash';
 
 const props = defineProps({
     modelValue: String,
@@ -10,13 +9,24 @@ const props = defineProps({
 });
 
 const emit = defineEmits(['update:modelValue', 'change']);
-const color = ref(props.modelValue ?? null);
+const proxyValue = computed({
+    get() {
+        return props.modelValue;
+    },
+    set(val) {
+        emit('update:modelValue', val);
+    }
+});
+
+const updateColor = _.debounce(() => {
+    emit('change');
+}, 1000);
 </script>
 
 <template>
     <div class="d-flex">
         <div class="color-picker-wrapper">
-            <ColorPicker v-model="color" :id="`${props.id}-picker`" class="rounded-3 me-2" @change="" />
+            <ColorPicker v-model="proxyValue" :id="`${props.id}-picker`" class="rounded-3 me-2" @change="updateColor" />
         </div>
         <div class="color-input-wrapper form-control d-flex">
             <span>#</span>
@@ -25,8 +35,9 @@ const color = ref(props.modelValue ?? null);
                 type="text"
                 name="color"
                 class="hex-color-input"
-                v-model="color"
+                v-model="proxyValue"
                 maxlength="6"
+                @input="updateColor"
             />
         </div>
     </div>

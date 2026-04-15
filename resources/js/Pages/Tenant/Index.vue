@@ -35,9 +35,19 @@ const tenant = reactive({
         customization_colors: props.tenant.configurations.customization_colors
             ? JSON.parse(props.tenant.configurations.customization_colors)
             : {
-                  header: 'AAAAAA',
-                  navbar: 'EEEEEE',
-                  footer: 'AAAAAA'
+                  app: {
+                      header: 'AAAAAA',
+                      navbar: 'EEEEEE',
+                      footer: 'AAAAAA'
+                  },
+                  customer_approval: {
+                      header: 'AAAAAA',
+                      footer: 'AAAAAA'
+                  },
+                  shareable: {
+                      header: 'AAAAAA',
+                      footer: 'AAAAAA'
+                  }
               }
     }
 });
@@ -364,7 +374,9 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Settings', url: '/sett
                                                     <h6 class="fw-bold pe-5 mb-3">Header</h6>
                                                     <div class="color-app-header">
                                                         <InputColor
-                                                            v-model="tenant.configurations.customization_colors.header"
+                                                            v-model="
+                                                                tenant.configurations.customization_colors.app.header
+                                                            "
                                                             :id="'color-app-header'"
                                                             @change="submitTenantSettings"
                                                         />
@@ -378,7 +390,9 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Settings', url: '/sett
                                                     <h6 class="fw-bold pe-5 mb-3">Navbar</h6>
                                                     <div class="vcolor-app-navbar">
                                                         <InputColor
-                                                            v-model="tenant.configurations.customization_colors.navbar"
+                                                            v-model="
+                                                                tenant.configurations.customization_colors.app.navbar
+                                                            "
                                                             :id="'color-app-navbar'"
                                                             @change="submitTenantSettings"
                                                         />
@@ -392,7 +406,9 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Settings', url: '/sett
                                                     <h6 class="fw-bold pe-5 mb-3">Footer</h6>
                                                     <div class="color-app-footer">
                                                         <InputColor
-                                                            v-model="tenant.configurations.customization_colors.footer"
+                                                            v-model="
+                                                                tenant.configurations.customization_colors.app.footer
+                                                            "
                                                             :id="'color-app-footer'"
                                                             @change="submitTenantSettings"
                                                         />
@@ -411,7 +427,10 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Settings', url: '/sett
                                                     <h6 class="fw-bold pe-5 mb-3">Header</h6>
                                                     <div class="color-app-header">
                                                         <InputColor
-                                                            v-model="tenant.configurations.customization_colors.header"
+                                                            v-model="
+                                                                tenant.configurations.customization_colors
+                                                                    .customer_approval.header
+                                                            "
                                                             :id="'color-app-header'"
                                                             @change="submitTenantSettings"
                                                         />
@@ -425,7 +444,10 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Settings', url: '/sett
                                                     <h6 class="fw-bold pe-5 mb-3">Footer</h6>
                                                     <div class="color-app-footer">
                                                         <InputColor
-                                                            v-model="tenant.configurations.customization_colors.footer"
+                                                            v-model="
+                                                                tenant.configurations.customization_colors
+                                                                    .customer_approval.footer
+                                                            "
                                                             :id="'color-app-footer'"
                                                             @change="submitTenantSettings"
                                                         />
@@ -444,7 +466,10 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Settings', url: '/sett
                                                     <h6 class="fw-bold pe-5 mb-3">Header</h6>
                                                     <div class="color-app-header">
                                                         <InputColor
-                                                            v-model="tenant.configurations.customization_colors.header"
+                                                            v-model="
+                                                                tenant.configurations.customization_colors.shareable
+                                                                    .header
+                                                            "
                                                             :id="'color-app-header'"
                                                             @change="submitTenantSettings"
                                                         />
@@ -458,7 +483,10 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Settings', url: '/sett
                                                     <h6 class="fw-bold pe-5 mb-3">Footer</h6>
                                                     <div class="color-app-footer">
                                                         <InputColor
-                                                            v-model="tenant.configurations.customization_colors.footer"
+                                                            v-model="
+                                                                tenant.configurations.customization_colors.shareable
+                                                                    .footer
+                                                            "
                                                             :id="'color-app-footer'"
                                                             @change="submitTenantSettings"
                                                         />
