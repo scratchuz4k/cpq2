@@ -34,12 +34,10 @@ class ShopBlocksCategoriesSyncJob implements NotTenantAware, ShouldQueue
         ];
     }
 
-    
     public function retryUntil(): \DateTime
     {
         return now()->addHours(2);
     }
-
 
     /**
      * Execute the job.
