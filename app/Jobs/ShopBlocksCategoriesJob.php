@@ -7,11 +7,13 @@ use Exception;
 use Illuminate\Bus\Batch;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
+use Illuminate\Queue\Middleware\RateLimited;
 use Illuminate\Queue\Middleware\WithoutOverlapping;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Spatie\Multitenancy\Jobs\NotTenantAware;
+use Throwable;
 
 class ShopBlocksCategoriesJob implements NotTenantAware, ShouldQueue
 {
@@ -33,7 +35,15 @@ class ShopBlocksCategoriesJob implements NotTenantAware, ShouldQueue
 
     public function middleware()
     {
-        return [(new WithoutOverlapping('sync:ShopBlocksCategories'))->expireAfter(180)];
+        return [
+            (new WithoutOverlapping('sync:ShopBlocksCategories'))->expireAfter(180),
+            new RateLimited('shopblocks-api'),
+        ];
+    }
+
+    public function retryUntil(): \DateTime
+    {
+        return now()->addHours(2);
     }
 
     /**

@@ -35,16 +35,16 @@ class ResourceController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'file' => 'required',
-        ]);
-
-        $files = $request->file;
-        if (! is_array($files)) {
-            $files = [$request->file];
-        }
-
         try {
+            $request->validate([
+                'file' => 'required|file',
+            ]);
+
+            $files = $request->file;
+            if (! is_array($files)) {
+                $files = [$request->file];
+            }
+
             foreach ($files as $key) {
                 $folder = in_array($key->getClientMimeType(), ['image/jpeg', 'image/jpg', 'image/png', 'image/gif']) ? 'images' : 'files';
 
@@ -73,11 +73,12 @@ class ResourceController extends Controller
                     ]);
                 }
             }
+
+            return response(['file' => $newFile, 'message' => 'Resource uploaded successfully!', 'error' => false], 200);
         } catch (\Exception $e) {
             return handleException($e);
         }
 
-        return response(['file' => $newFile, 'message' => 'Resource uploaded successfully!', 'error' => false], 200);
     }
 
     /**
