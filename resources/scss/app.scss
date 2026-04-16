@@ -74,12 +74,10 @@
     --lightgrey: #f5f5f5;
     --purple: #98338a;
     --grey: #5b6479;
-    --header-grey: #aaaaaa;
-    --navbar-light-grey: #eeeeee;
 }
 
 body {
-    background: var(--secondary-dark);
+    background: var(--color-footer);
     font-family: var(--font-primary);
     color: var(--secondary-dark);
 
@@ -137,11 +135,11 @@ body {
     }
 
     .bg-theme-secondary-dark {
-        background: var(--header-grey);
+        background: var(--color-header);
     }
 
     .bg-theme-secondary-light {
-        background: var(--navbar-light-grey);
+        background: var(--color-navbar);
     }
 
     .btn-primary {
@@ -404,7 +402,7 @@ body {
     }
 
     .footer {
-        background-color: var(--header-grey);
+        background-color: var(--color-footer);
         padding: 30px 0;
         color: var(--white);
 

@@ -11,8 +11,11 @@ import { actionBarButtons } from '@/Composables/useQuoteSteps.js';
 import { selectedItems, addSelected } from '@/Composables/useComparator';
 import * as Sentry from '@sentry/vue';
 import UserFeedback from '@/Components/UserFeedback.vue';
+import { useColors } from '../Composables/layouts.js';
 
 const page = usePage();
+useColors();
+
 const user = page.props.auth.user;
 const links = page.props.customization.header;
 const headerColor = computed(() => `#${page.props.customization.colors?.app?.header}`);

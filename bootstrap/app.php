@@ -37,11 +37,11 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->web(append: [
             TenantPermission::class,
-            HandleInertiaRequests::class,
             AddLinkHeadersForPreloadedAssets::class,
             SetTenantBySession::class,
             NeedsTenant::class,
             CheckUserActive::class,
+            HandleInertiaRequests::class,
             // EnsureValidTenantSession::class
         ]);
         $middleware->api(append: [
