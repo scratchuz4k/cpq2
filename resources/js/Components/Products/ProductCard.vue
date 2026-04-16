@@ -42,6 +42,8 @@ const checkQuantity = _.debounce(async (product, temp) => {
 
     let code = product.sku ?? product.code;
     let item = quote.items.find((x) => x.product_code == code && x.data?.type == 'main_product');
+    let oldQuantity = item ? item.quantity : 0;
+
     if (!item) {
         if (temp == 0) {
             return;
@@ -61,28 +63,16 @@ const checkQuantity = _.debounce(async (product, temp) => {
         });
     } else {
         if (temp == 0) {
-            let quoteItem = quote.items.find((x) => x.product_code == code && x.data?.type == 'main_product');
-            let items = quote.items.filter((x) => x.group == quoteItem.group);
-            let result = null;
-            if (items.length > 1) {
-                result = await swal.fire({
-                    title: 'Are you sure?',
-                    text: 'This line contains other associated lines, removing it deletes all associated lines'
-                });
-            } else {
-                result = await swal.fire({
-                    title: 'Are you sure?'
-                });
-            }
+            let result = await swal.fire({
+                title: 'Are you sure?'
+            });
 
             if (['cancel', 'backdrop'].includes(result.dismiss)) {
+                proxyValue.value.quantity = oldQuantity;
                 return;
             }
 
-            items.forEach(async (x) => {
-                await removeQuoteItem(x.id);
-            });
-            await getQuote(quote.id);
+            await removeQuoteItem(item.id);
         } else {
             await updateQuoteItem(item.id, { quantity: temp });
         }
@@ -280,7 +270,7 @@ watch(searchInput, () => {
                             :id="'product-' + index"
                             style="max-width: 120px"
                             v-model="proxyValue.quantity"
-                            @change="(val) => checkQuantity(proxyValue, val, true)"
+                            @change="(val) => checkQuantity(proxyValue, val)"
                         />
                     </div>
                 </div>

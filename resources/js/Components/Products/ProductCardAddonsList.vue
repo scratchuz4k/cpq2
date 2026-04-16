@@ -2,7 +2,6 @@
 import { ref, watch, onMounted, onBeforeUnmount, computed } from 'vue';
 import _ from 'lodash';
 import { Api, FilterOperators } from '@/Composables/useApi';
-import InputQuantity from '@/Components/InputQuantity.vue';
 import { quote, getQuote } from '@/Composables/useQuote';
 import { updateQuoteItem, removeQuoteItem, createQuoteItem } from '@/Composables/useQuoteItem';
 
@@ -13,21 +12,22 @@ const props = defineProps({
     }
 });
 
+const isBlocked = ref(false);
 const visible = ref(false);
 const searchQuery = ref('');
 const sentinel = ref(null);
+const loaded = ref(false);
 
 const api = new Api('product-addons');
 api.meta.limit = 10;
 api.meta.total = props.modelValue.addons?.length || 0;
 
 const addons = ref([]);
-const addonQuantities = ref({});
 
 const hasMore = computed(() => addons.value.length < api.meta.total);
 
 const selectedCount = computed(() => {
-    return Object.values(addonQuantities.value).filter((q) => q > 0).length;
+    return addons.value.filter((item) => item.addon.quantity > 0).length;
 });
 
 const appendPage = (items) => {
@@ -35,20 +35,21 @@ const appendPage = (items) => {
         (x) => x.product_code == props.modelValue.sku && x.data?.type == 'main_product'
     );
     items.forEach((item) => {
-        addons.value.push(item);
         const addonId = item.addon.id;
-        if (!(addonId in addonQuantities.value)) {
-            const quoteItem = quote.items?.find(
-                (x) =>
-                    x.product_code == item.addon.sku && x.data?.type == 'addon_product' && x.group == parentItem?.group
-            );
-            addonQuantities.value[addonId] = quoteItem ? quoteItem.quantity : 0;
-        }
+        const quoteItem = quote.items?.find(
+            (x) => x.product_code == item.addon.sku && x.data?.type == 'addon_product' && x.group == parentItem?.group
+        );
+        item.addon.quantity = quoteItem ? quoteItem.quantity : 0;
+        addons.value.push(item);
     });
 };
 
 const loadNextPage = async () => {
     if (api.isLoading.value || !hasMore.value) return;
+    api.clearFilters();
+    api.setColumns(['addon.name', 'addon.sku']);
+    api.addFilter('product_id', FilterOperators.EQUALS, props.modelValue.id);
+    api.setSearch(searchQuery.value || null);
     await api.getData();
     appendPage(api.items.value);
     api.meta.page++;
@@ -90,7 +91,6 @@ watch(sentinel, (el) => {
 });
 
 onMounted(async () => {
-    await resetAndLoad();
     setupObserver();
 });
 
@@ -98,61 +98,67 @@ onBeforeUnmount(() => {
     if (observer) observer.disconnect();
 });
 
-const checkQuantity = _.debounce(async (addon, val) => {
-    let quantity = val;
+let currentPromise = Promise.resolve();
 
-    if (quantity > addon.stock) {
-        notyf.open({
-            type: 'warning',
-            message: 'You can only add up to the number of units in stock. The quantity is automatically adjusted'
-        });
-        quantity = addon.stock;
-    }
+const checkQuantity = _.throttle(async (addon, val) => {
+    isBlocked.value = true;
+    return (currentPromise = currentPromise.then(async () => {
+        let quantity = val;
 
-    addonQuantities.value[addon.id] = quantity;
-
-    const parentItem = quote.items?.find(
-        (x) => x.product_code == props.modelValue.sku && x.data?.type == 'main_product'
-    );
-    const quoteItem = quote.items?.find(
-        (x) => x.product_code == addon.sku && x.data?.type == 'addon_product' && x.group == parentItem?.group
-    );
-
-    if (!quoteItem) {
-        if (quantity > 0) {
-            if (!hasParentSelected()) {
-                notyf.open({
-                    type: 'warning',
-                    message: 'You need to add the main product to the quote before adding add-ons'
-                });
-                addonQuantities.value[addon.id] = 0;
-                return;
-            }
-
-            await createQuoteItem({
-                quote_id: quote.id,
-                product_code: addon.sku,
-                product_id: addon.id,
-                quantity: quantity,
-                contract_length: addon.contract_length,
-                name: addon.name,
-                raw_price: addon.price ? addon.price.net : 0,
-                price: addon.price ? addon.price.net_spa : 0,
-                price_plan_id: addon.price_plan_id,
-                group: parentItem?.group ?? null,
-                data: { type: 'addon_product' }
+        if (quantity > addon.stock) {
+            notyf.open({
+                type: 'warning',
+                message: 'You can only add up to the number of units in stock. The quantity is automatically adjusted'
             });
+            quantity = addon.stock;
         }
-    } else {
-        if (quantity === 0) {
-            await removeQuoteItem(quoteItem.id);
-        } else {
-            await updateQuoteItem(quoteItem.id, { quantity });
-        }
-    }
 
-    await getQuote(quote.id);
-}, 500);
+        addon.quantity = quantity;
+
+        const parentItem = quote.items?.find(
+            (x) => x.product_code == props.modelValue.sku && x.data?.type == 'main_product'
+        );
+        const quoteItem = quote.items?.find(
+            (x) => x.product_code == addon.sku && x.data?.type == 'addon_product' && x.group == parentItem?.group
+        );
+
+        if (!quoteItem) {
+            if (quantity > 0) {
+                if (!hasParentSelected()) {
+                    notyf.open({
+                        type: 'warning',
+                        message: 'You need to add the main product to the quote before adding add-ons'
+                    });
+                    addonQuantities.value[addon.id] = 0;
+                    return;
+                }
+
+                await createQuoteItem({
+                    quote_id: quote.id,
+                    product_code: addon.sku,
+                    product_id: addon.id,
+                    quantity: quantity,
+                    contract_length: addon.contract_length,
+                    name: addon.name,
+                    raw_price: addon.price ? addon.price.net : 0,
+                    price: addon.price ? addon.price.net_spa : 0,
+                    price_plan_id: addon.price_plan_id,
+                    group: parentItem?.group ?? null,
+                    data: { type: 'addon_product' }
+                });
+            }
+        } else {
+            if (quantity === 0) {
+                await removeQuoteItem(quoteItem.id);
+            } else {
+                await updateQuoteItem(quoteItem.id, { quantity });
+            }
+        }
+
+        isBlocked.value = false;
+        await getQuote(quote.id);
+    }));
+});
 
 const hasParentSelected = () => {
     let code = props.modelValue.sku ?? props.modelValue.code;
@@ -162,29 +168,34 @@ const hasParentSelected = () => {
 watch(
     () => quote.items,
     async () => {
+        const wasVisible = visible.value;
         if (hasParentSelected()) {
             visible.value = true;
+            if (!wasVisible && !loaded.value) {
+                loaded.value = true;
+                await resetAndLoad();
+            }
         } else {
             visible.value = false;
         }
-        addonQuantities.value = [];
         let code = props.modelValue.sku ?? props.modelValue.code;
         let group = quote.items?.find((x) => x.product_code == code && x.data?.type === 'main_product')?.group;
-        quote.items
-            ?.filter((x) => x.data?.type === 'addon_product' && x.group == group)
-            .forEach((item) => {
-                const addon = addons.value.find((a) => a.addon.sku === item.product_code);
-                if (addon) {
-                    addonQuantities.value[addon.addon.id] = item.quantity;
-                }
-            });
+        addons.value.forEach((addonItem) => {
+            const item = quote.items?.find(
+                (x) => x.product_code === addonItem.addon.sku && x.data?.type === 'addon_product' && x.group == group
+            );
+            addonItem.addon.quantity = item ? item.quantity : 0;
+        });
     },
     { deep: true }
 );
 onMounted(async () => {
     if (hasParentSelected()) {
         visible.value = true;
+        loaded.value = true;
+        await resetAndLoad();
     }
+    setupObserver();
 });
 </script>
 
@@ -192,7 +203,9 @@ onMounted(async () => {
     <div>
         <div class="d-flex justify-content-between align-items-center mb-2">
             <p class="small text-muted mb-0">
-                This product has {{ api.meta.total }} add-on<span v-if="api.meta.total !== 1">s</span>
+                This product has {{ modelValue.addons.length }} add-on<span v-if="modelValue.addons.length !== 1"
+                    >s</span
+                >
                 available
             </p>
             <span v-if="selectedCount > 0" class="badge bg-secondary">{{ selectedCount }} selected</span>
@@ -222,6 +235,7 @@ onMounted(async () => {
                         <p class="mb-0 me-3 flex-grow-1 small fw-semibold">{{ item.addon.name }}</p>
 
                         <span
+                            v-if="Object.keys(item.addon).includes('stock')"
                             class="badge me-3 text-nowrap addon-stock-badge"
                             :class="item.addon.stock > 0 ? 'addon-stock-badge' : 'bg-danger'"
                         >
@@ -231,10 +245,10 @@ onMounted(async () => {
                         <div style="width: 140px" class="me-3 flex-shrink-0">
                             <InputQuantity
                                 :id="'addon-' + item.id"
-                                :modelValue="addonQuantities[item.addon.id] ?? 0"
-                                :disabled="item.addon.stock <= 0"
+                                :modelValue="item.addon.quantity"
+                                :disabled="!hasParentSelected() || isBlocked"
                                 @change="(val) => checkQuantity(item.addon, val)"
-                                @update:modelValue="(val) => (addonQuantities[item.addon.id] = val)"
+                                @update:modelValue="(val) => (item.addon.quantity = val)"
                             />
                         </div>
 
@@ -282,7 +296,7 @@ onMounted(async () => {
 }
 
 .addon-list {
-    max-height: calc(4 * 48px);
+    max-height: calc(3 * 48px);
     overflow-y: auto;
 }
 </style>
