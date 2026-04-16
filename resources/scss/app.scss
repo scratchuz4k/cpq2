@@ -140,6 +140,12 @@ body {
 
     .bg-theme-secondary-light {
         background: var(--color-navbar);
+
+        &.navbar {
+            .nav-link {
+                color: var(--color-navbar-text, white);
+            }
+        }
     }
 
     .btn-primary {
@@ -269,7 +275,7 @@ body {
     }
 
     .navbar .nav-link {
-        color: var(--white);
+        color: var(--color-header-text, white);
         font-weight: bold;
         font-size: 16px;
         margin: 0 4px;
@@ -412,7 +418,7 @@ body {
         }
 
         a {
-            color: var(--white);
+            color: var(--color-footer-text, white);
             font-size: 14px;
             margin: 0 20px;
             text-decoration: none;

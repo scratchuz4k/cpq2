@@ -33,7 +33,7 @@ const tenant = reactive({
         has_client_approval: props.tenant.configurations.has_client_approval ?? '0',
         customization_header: JSON.parse(props.tenant.configurations.customization_header ?? '[]'),
         customization_footer: JSON.parse(props.tenant.configurations.customization_footer ?? '[]'),
-        customization_social: JSON.parse(props.tenant.configurations.customization_social ?? '[]')
+        customization_social: JSON.parse(props.tenant.configurations.customization_social ?? '[]'),
         customization_colors: props.tenant.configurations.customization_colors
             ? JSON.parse(props.tenant.configurations.customization_colors)
             : {
