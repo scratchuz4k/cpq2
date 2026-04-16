@@ -3,8 +3,11 @@
 namespace App\Http\Controllers\Api;
 
 use App\Helpers\DataProvider;
+use App\Helpers\FilterProvider;
+use App\Helpers\Prices\PriceRules;
 use App\Http\Controllers\BaseController;
 use App\Http\Resources\ProductAddonResource;
+use App\Models\Account;
 use App\Models\ProductAddon;
 use App\Services\ProductAddonService;
 use Exception;
@@ -28,12 +31,36 @@ class ProductAddonController extends BaseController
         $dataProvider = new DataProvider($this->model);
 
         try {
-            $data = $dataProvider->get();
+            $data = $dataProvider->getCollection();
         } catch (Exception $e) {
             return handleException($e);
         }
 
-        return ProductAddonResource::collection($data);
+        $suppliers = [];
+        $priceRules = new PriceRules;
+        $account = Account::where('id', request()->input('account_id', null))->first();
+
+        $data = $data->map(function ($row) use ($priceRules, $account, $suppliers) {
+
+            if (array_key_exists($row->addon?->supplier?->id.$row->addon->pricePlan->code, $suppliers)) {
+                $priceRules->setAppliedSpas($suppliers[$row->addon?->supplier?->id]);
+            } else {
+                $priceRules->find(supplier: $row->addon?->supplier, account: $account, pricePlan: $row->addon->pricePlan);
+                $suppliers[$row->addon?->supplier?->id.$row->addon->pricePlan->code] = $priceRules->getAppliedSpas();
+            }
+
+            $row->addon->prices->map(function ($price) use ($priceRules) {
+                $price['net_spa'] = (float) $priceRules->apply($price->net);
+                $price['active_spas'] = $priceRules->getAppliedSpas();
+            });
+
+            return $row;
+        });
+
+        $data = ProductAddonResource::collection($data)->toArray(request());
+
+        return FilterProvider::paginate(collect($data));
+
     }
 
     /**

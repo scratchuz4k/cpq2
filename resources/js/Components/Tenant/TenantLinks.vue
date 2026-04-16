@@ -16,13 +16,16 @@
                 tag="tbody"
                 v-bind="dragOptions"
                 handle=".handle"
-                @end="emit('change')"
+                @end="(e) => e.oldIndex !== e.newIndex && emit('change')"
             >
                 <template #item="{ element, index }">
                     <TenantLinksItem
                         v-model="proxyValue[index]"
                         :id="props.id"
                         :index="index"
+                        :allLinks="proxyValue"
+                        :linkLimit="props.linkLimit"
+                        :links="socialLinks"
                         @removed="() => removeRow(index)"
                         @edited="emit('change')"
                     ></TenantLinksItem>
@@ -38,7 +41,31 @@
             <tr>
                 <th></th>
                 <th>
+                    <Select
+                        v-if="socialLinks?.length > 0"
+                        :inputId="`${props.id}-new-link-icon`"
+                        v-model="temp.icon"
+                        :options="socialLinks"
+                        placeholder="Select a social network"
+                        class="w-100"
+                    >
+                        <template #option="{ option }">
+                            <div class="d-flex align-items-center gap-2">
+                                <font-awesome-icon :icon="['fa-brands', option.icon]" />
+                                <span class="me-3">{{ option.value }}</span>
+                            </div>
+                        </template>
+
+                        <template #value="{ value }">
+                            <div v-if="value" class="d-flex align-items-center gap-2">
+                                <font-awesome-icon :icon="['fa-brands', value.icon]" />
+                                <span class="me-3">{{ value.value }}</span>
+                            </div>
+                        </template>
+                    </Select>
+
                     <input
+                        v-else
                         :id="`${props.id}-new-link-label`"
                         class="form-control"
                         v-model="temp.label"
@@ -75,12 +102,17 @@
 <script setup>
 import { computed, reactive, ref } from 'vue';
 import draggable from 'vuedraggable';
+import Select from 'primevue/select';
 
 const props = defineProps({
     modelValue: Array,
     id: String,
     linkLimit: {
         type: Number,
+        default: null
+    },
+    socialLinks: {
+        type: Array,
         default: null
     }
 });
@@ -107,19 +139,23 @@ const removeRow = (index) => {
 };
 
 const add = () => {
-    if (props.linkLimit && proxyValue.value.length >= props.linkLimit) {
+    const activeLinks = proxyValue.value.filter((item) => !!item.is_active);
+    if (props.linkLimit && activeLinks.length >= props.linkLimit && !!temp.is_active) {
         notyf.error(`You can only add up to ${props.linkLimit} links`);
         return;
     }
 
     const newLink = {
-        label: temp.label.trim(),
+        label: !props.socialLinks ? temp.label.trim() : temp.icon?.value,
         url: temp.url.trim(),
-        is_active: temp.is_active
+        is_active: temp.is_active,
+        ...(temp.icon && {
+            icon: temp.icon.icon
+        })
     };
 
     if (!newLink.label) {
-        notyf.error(`Please enter a label`);
+        notyf.error(props.socialLinks ? `Please select a social network` : `Please enter a label`);
         return;
     }
 
@@ -136,6 +172,7 @@ const add = () => {
     temp.label = '';
     temp.url = '';
     temp.is_active = false;
+    delete temp.icon;
     emit('change');
 };
 

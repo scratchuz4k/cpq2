@@ -1,7 +1,7 @@
 <template>
     <button :id="'btn-add-' + id" class="btn btn-primary" @click="showModal = true">
         <font-awesome-icon :icon="['fas', 'plus']"></font-awesome-icon>
-        New Product
+        Add Product
     </button>
     <Dialog
         v-model:visible="showModal"
@@ -11,6 +11,7 @@
         :draggable="false"
         position="top"
         :pt="{ id: props.id + '-dialog' }"
+        @hide="closeModal()"
     >
         <template #header>
             <h2>Add Products</h2>
@@ -216,13 +217,15 @@ const props = defineProps({
     product: Object,
     route: String,
     column: String,
-    queries: Array,
+    queries: Function,
     warningMessage: String,
     isRowDisabled: {
         type: Function,
         default: () => false
     }
 });
+
+const emit = defineEmits(['product-added']);
 const current = ref(0);
 const showModal = ref(false);
 const showProgress = ref(false);
@@ -240,9 +243,11 @@ const getData = _.debounce(async () => {
     api.clearFilters();
     api.addGroupFilter('main', 'id', FilterOperators.NOT_EQUALS, props.product.id);
 
-    props.queries.forEach((query) => {
-        api.addGroupFilter(query.group, query.column, query.operator, query.value);
-    });
+    if (props.queries) {
+        props.queries().forEach((query) => {
+            api.addGroupFilter(query.group, query.column, query.operator, query.value);
+        });
+    }
 
     if (search.global) {
         api.setSearch(search.global);
@@ -253,6 +258,7 @@ const getData = _.debounce(async () => {
             api.addGroupFilter('category', 'categories.name', FilterOperators.CONTAINS, category.name);
         });
     }
+
     await api.getData();
 }, 500);
 
@@ -296,10 +302,19 @@ const addProducts = async () => {
             return;
         }
     }
+    emit('product-added');
     notyf.success('Products added successfully');
     resetState();
     emitter.emit('datatable-refresh:' + props.route);
 };
+
+const closeModal = () => {
+    showModal.value = false;
+    search.global = null;
+    search.categories = [];
+    resetState();
+};
+
 watch(
     search,
     () => {
