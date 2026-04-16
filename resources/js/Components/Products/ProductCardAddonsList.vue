@@ -28,7 +28,10 @@ const addons = ref([]);
 const hasMore = computed(() => addons.value.length < api.meta.total);
 
 const selectedCount = computed(() => {
-    return addons.value.filter((item) => item.addon.quantity > 0).length;
+    let group = quote.items?.find(
+        (x) => x.product_code == props.modelValue.sku && x.data?.type == 'main_product'
+    )?.group;
+    return quote.items.filter((item) => item.group == group && item.data?.type == 'addon_product').length;
 });
 
 const appendPage = (items) => {
