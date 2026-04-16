@@ -18,6 +18,7 @@ use Exception;
 use Illuminate\Bus\Batchable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
+use Illuminate\Queue\Middleware\RateLimited;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -42,6 +43,20 @@ class ShopBlocksProductsSyncJob implements NotTenantAware, ShouldQueue
     {
         $this->onQueue('shopblocks');
     }
+
+    public function middleware(): array
+    {
+        return [
+            new RateLimited('shopblocks-api'),
+        ];
+    }
+
+    
+    public function retryUntil(): \DateTime
+    {
+        return now()->addHours(2);
+    }
+
 
     /**
      * Execute the job.
