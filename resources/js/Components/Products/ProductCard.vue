@@ -4,6 +4,7 @@ import { ref, computed, watch } from 'vue';
 import _ from 'lodash';
 import { updateQuoteItem, removeQuoteItem, createQuoteItem } from '@composables/useQuoteItem';
 import { quote, getQuote } from '@/Composables/useQuote';
+import { isDisabled } from '@/Composables/useQuoteSteps';
 import queryString from 'qs';
 
 const props = defineProps({
@@ -25,9 +26,11 @@ const proxyValue = computed({
     set: (value) => emit('update:modelValue', value)
 });
 
-const checkQuantity = _.debounce(async (product, temp) => {
+const checkQuantity = _.throttle(async (product, temp) => {
+    isDisabled.value = true;
     if (temp < 0) {
         product.quantity = 0;
+        isDisabled.value = false;
         return;
     }
 
@@ -69,6 +72,7 @@ const checkQuantity = _.debounce(async (product, temp) => {
 
             if (['cancel', 'backdrop'].includes(result.dismiss)) {
                 proxyValue.value.quantity = oldQuantity;
+                isDisabled.value = false;
                 return;
             }
 
@@ -78,6 +82,7 @@ const checkQuantity = _.debounce(async (product, temp) => {
         }
     }
 
+    isDisabled.value = false;
     await getQuote(quote.id);
 }, 500);
 

@@ -4,6 +4,7 @@ import _ from 'lodash';
 import { Api, FilterOperators } from '@/Composables/useApi';
 import { quote, getQuote } from '@/Composables/useQuote';
 import { updateQuoteItem, removeQuoteItem, createQuoteItem } from '@/Composables/useQuoteItem';
+import { isDisabled } from '@/Composables/useQuoteSteps';
 
 const props = defineProps({
     modelValue: {
@@ -101,6 +102,7 @@ onBeforeUnmount(() => {
 let currentPromise = Promise.resolve();
 
 const checkQuantity = _.throttle(async (addon, val) => {
+    isDisabled.value = true;
     isBlocked.value = true;
     return (currentPromise = currentPromise.then(async () => {
         let quantity = val;
@@ -156,6 +158,7 @@ const checkQuantity = _.throttle(async (addon, val) => {
         }
 
         isBlocked.value = false;
+        isDisabled.value = false;
         await getQuote(quote.id);
     }));
 });
