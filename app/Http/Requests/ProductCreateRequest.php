@@ -95,6 +95,35 @@ class ProductCreateRequest extends FormRequest
                     );
                 }
             }
+
+            $stepIds = $this->input('steps', []);
+            if (! empty($stepIds)) {
+                $this->validateStepLinks(null, $stepIds, $validator);
+            }
         });
+    }
+
+    private function validateStepLinks(?Product $product, array $stepIds, $validator): void
+    {
+        $linkedProductIds = collect();
+        if ($product) {
+            $linkedProductIds = $product->children()->pluck('products.id')
+                ->merge($product->parents()->pluck('products.id'));
+        }
+
+        if ($linkedProductIds->isEmpty()) {
+            return;
+        }
+
+        $conflictingStep = \App\Models\Step::whereIn('id', $stepIds)
+            ->whereHas('products', fn ($q) => $q->whereIn('products.id', $linkedProductIds))
+            ->first();
+
+        if ($conflictingStep) {
+            $validator->errors()->add(
+                'steps',
+                "Cannot assign product to step \"{$conflictingStep->name}\": it already contains a linked product."
+            );
+        }
     }
 }
