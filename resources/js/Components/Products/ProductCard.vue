@@ -66,14 +66,19 @@ const checkQuantity = _.throttle(async (product, temp) => {
         });
     } else {
         if (temp == 0) {
-            let result = await swal.fire({
-                title: 'Are you sure?'
-            });
+            let items = quote.items.filter((x) => x.group == item.group && x.data?.type != 'main_product');
 
-            if (['cancel', 'backdrop'].includes(result.dismiss)) {
-                proxyValue.value.quantity = oldQuantity;
-                isDisabled.value = false;
-                return;
+            if (items.length > 0) {
+                let result = await swal.fire({
+                    title: 'Are you sure?',
+                    text: 'This product includes add-ons. Removing it will also remove them from the quote.'
+                });
+
+                if (['cancel', 'backdrop'].includes(result.dismiss)) {
+                    proxyValue.value.quantity = oldQuantity;
+                    isDisabled.value = false;
+                    return;
+                }
             }
 
             await removeQuoteItem(item.id);
