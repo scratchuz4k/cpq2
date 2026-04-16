@@ -258,8 +258,9 @@ describe('Creates a Mobile Quote', () => {
         cy.get('#datatable-btn-0-edit').click();
         cy.get('#step-1-search-products').clear().type(product.sku);
         cy.wait(1000);
-        cy.get(`#input-product-0-quantity`).clear().type(1);
+        cy.get(`#input-product-0-quantity`).clear().type(1).blur();
 
+        cy.wait(1000);
         cy.get('[id^="btn-addon-"][id$="-add-1"]').should('be.visible');
         // The product with the newly linked addon should be visible in step 1
         // Product is already in the quote (qty > 0), so the addon section is shown
