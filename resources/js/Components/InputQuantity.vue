@@ -113,4 +113,10 @@ const checkQuantity = async (quantity) => {
     background: #ffffff;
     border-width: 1px 1px 1px 0px;
 }
+
+.btn-quantity:disabled,
+.input-quantity:disabled {
+    color: #b7b7b7;
+    background-color: #fff;
+}
 </style>
