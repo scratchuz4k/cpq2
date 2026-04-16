@@ -15,6 +15,8 @@ import UserFeedback from '@/Components/UserFeedback.vue';
 const page = usePage();
 const user = page.props.auth.user;
 const links = page.props.customization.header;
+const headerColor = computed(() => `#${page.props.customization.colors?.app?.header}`);
+const navbarColor = computed(() => `#${page.props.customization.colors?.app?.navbar}`);
 const feedbackAvailable = !!Sentry.getFeedback();
 
 Sentry.setUser({
@@ -59,7 +61,7 @@ const hasActionBarContent = computed(() => {
 </script>
 
 <template>
-    <nav class="navbar navbar-expand-md bg-theme-secondary-dark">
+    <nav class="navbar navbar-expand-md bg-theme-secondary-dark" :style="{ background: headerColor }">
         <div class="container d-flex justify-space-between">
             <a class="navbar-brand" href="/">
                 <AppLogo />
@@ -88,7 +90,7 @@ const hasActionBarContent = computed(() => {
             </div>
         </div>
     </nav>
-    <nav class="navbar navbar-expand bg-theme-secondary-light">
+    <nav class="navbar navbar-expand bg-theme-secondary-light" :style="{ background: navbarColor }">
         <div class="container">
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">

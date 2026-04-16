@@ -74,6 +74,8 @@
     --lightgrey: #f5f5f5;
     --purple: #98338a;
     --grey: #5b6479;
+    --header-grey: #aaaaaa;
+    --navbar-light-grey: #eeeeee;
 }
 
 body {
@@ -135,11 +137,11 @@ body {
     }
 
     .bg-theme-secondary-dark {
-        background: var(--color-dark);
+        background: var(--header-grey);
     }
 
     .bg-theme-secondary-light {
-        background: var(--color-violet);
+        background: var(--navbar-light-grey);
     }
 
     .btn-primary {
@@ -402,7 +404,7 @@ body {
     }
 
     .footer {
-        background-color: var(--dark-purple);
+        background-color: var(--header-grey);
         padding: 30px 0;
         color: var(--white);
 

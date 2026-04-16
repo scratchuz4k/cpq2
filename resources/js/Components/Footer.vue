@@ -1,5 +1,5 @@
 <template>
-    <div class="footer">
+    <div class="footer" :style="{ background: footerColor }">
         <div class="container">
             <div class="row">
                 <div class="col">
@@ -47,7 +47,9 @@
 <script setup>
 import { usePage } from '@inertiajs/vue3';
 import AppLogo from './AppLogo.vue';
+import { computed } from 'vue';
 
 const page = usePage();
 const links = page.props.customization.footer;
+const footerColor = computed(() => `#${page.props.customization.colors?.app?.footer}`);
 </script>
