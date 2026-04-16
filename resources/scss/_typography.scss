@@ -63,6 +63,11 @@ p {
         font-weight: bold !important;
     }
 
+    &.semibold,
+    &.semi-bold {
+        font-weight: 500 !important;
+    }
+
     &.small {
         font-size: 14px !important;
         line-height: 24px !important;

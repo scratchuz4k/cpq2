@@ -1,4 +1,7 @@
 <script setup>
+import { quote } from '@/Composables/useQuote';
+import { computed } from 'vue';
+
 defineProps({
     code: String,
     column: Object,
@@ -7,9 +10,16 @@ defineProps({
     index: Number
 });
 const item = defineModel();
+
+const mainProduct = computed(() => {
+    if (!item.value.data || item.value.data?.type === 'main_product') {
+        return null;
+    }
+    return quote.items.find((x) => x.group === item.value.group && x.data?.type === 'main_product') || null;
+});
 </script>
 <template>
-    <p class="small">
+    <p class="small semibold">
         {{ item[column.value] }}
         <span
             v-if="item.data && item.data?.additionalInfo?.router"
@@ -57,6 +67,7 @@ const item = defineModel();
             <font-awesome-icon :icon="['fas', 'network-wired']"></font-awesome-icon>
         </span>
     </p>
+    <p v-if="mainProduct" class="has-main-product">{{ mainProduct.name }}</p>
 </template>
 
 <style>
@@ -65,5 +76,16 @@ const item = defineModel();
 .is-burstable,
 .addon-ipv4 {
     font-size: 0.75rem !important;
+}
+
+.has-main-product {
+    font-family: Font family/Body;
+    font-weight: 500;
+    line-height: 14px;
+    font-style: Regular;
+    font-size: 12px;
+    letter-spacing: 0%;
+    vertical-align: middle;
+    color: #4e4e4e;
 }
 </style>
