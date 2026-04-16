@@ -7,6 +7,7 @@ import ToggleSwitch from 'primevue/toggleswitch';
 import { InputText } from 'primevue';
 import _ from 'lodash';
 import InputColor from '@/Components/InputColor.vue';
+import Separator from '@/Components/Separator.vue';
 
 const props = defineProps({
     isSuperAdmin: Boolean,
@@ -203,7 +204,7 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Settings', url: '/sett
                                             @change="submitFileForm"
                                         ></InputResource>
                                     </form>
-                                    <div class="seperator">OR</div>
+                                    <Separator :title="'OR'" />
                                     <div class="mt-4">
                                         <h4>Input SSO configuration for {{ tenant.name }}</h4>
                                         <p>Please provide a valid xml syntax</p>
@@ -239,7 +240,7 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Settings', url: '/sett
                             the platform and reflected in all related features. Please review your settings carefully
                             before saving:
                         </div>
-                        <h2 class="seperator">Misc</h2>
+                        <Separator :title="'Misc'" />
                         <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-3">
                             <div class="col">
                                 <div class="card bg-light border-0 settings-block h-100">
@@ -321,7 +322,7 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Settings', url: '/sett
                                 </div>
                             </div>
                         </div>
-                        <h2 class="seperator">Quotes</h2>
+                        <Separator :title="'Quotes'" />
                         <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-3">
                             <div class="col">
                                 <div class="card bg-light border-0 settings-block h-100">
@@ -652,7 +653,7 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Settings', url: '/sett
                                     <p class="mb-3">Manage tenant colors</p>
                                 </div>
                                 <div class="col">
-                                    <h2 class="seperator">App</h2>
+                                    <Separator :title="'App'" />
                                     <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
                                         <div class="col">
                                             <div class="card bg-light border-0 settings-block h-100">
@@ -705,7 +706,7 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Settings', url: '/sett
                                     </div>
                                 </div>
                                 <div class="col">
-                                    <h2 class="seperator">Customer Approval</h2>
+                                    <Separator :title="'Customer Approval'" />
                                     <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
                                         <div class="col">
                                             <div class="card bg-light border-0 settings-block h-100">
@@ -744,7 +745,7 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Settings', url: '/sett
                                     </div>
                                 </div>
                                 <div class="col">
-                                    <h2 class="seperator">Shareable Link</h2>
+                                    <Separator :title="'Shareable Link'" />
                                     <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
                                         <div class="col">
                                             <div class="card bg-light border-0 settings-block h-100">
@@ -792,32 +793,6 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Settings', url: '/sett
 </template>
 
 <style scoped>
-.seperator {
-    position: relative;
-    text-align: center;
-    margin: 2rem auto;
-}
-
-.seperator:before {
-    content: '';
-    width: 40%;
-    height: 1px;
-    background-color: var(--light-grey);
-    position: absolute;
-    left: 0;
-    top: 50%;
-}
-
-.seperator:after {
-    content: '';
-    width: 40%;
-    height: 1px;
-    background-color: var(--light-grey);
-    position: absolute;
-    right: 0;
-    top: 50%;
-}
-
 .tab-content {
     border-left: 1px solid var(--light-grey);
 }
