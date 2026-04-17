@@ -44,6 +44,7 @@ class HandleInertiaRequests extends Middleware
             'customization' => [
                 'header' => json_decode(array_key_exists('customization_header', $configs) ? $configs['customization_header'] : '[]'),
                 'footer' => json_decode(array_key_exists('customization_footer', $configs) ? $configs['customization_footer'] : '[]'),
+                'social' => json_decode(array_key_exists('customization_social', $configs) ? $configs['customization_social'] : '[]'),
             ],
         ];
     }

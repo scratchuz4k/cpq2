@@ -209,7 +209,7 @@ const tenant_reviewed = ref(false);
                                         <div v-if="Object.keys(org.data).includes('errors')" class="org-tooltip">
                                             <font-awesome-icon
                                                 icon="fas fa-info"
-                                                class="badge bg-danger"
+                                                class="badge badge-danger"
                                             ></font-awesome-icon>
                                             <div class="org-tooltip-info rounded border p-2 px-4">
                                                 <p>Some errors have occurred trying to sync this organisation</p>

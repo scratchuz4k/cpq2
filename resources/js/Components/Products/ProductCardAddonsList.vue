@@ -214,14 +214,19 @@ onMounted(async () => {
                 >
                 available
             </p>
-            <span v-if="selectedCount > 0" class="badge bg-secondary">{{ selectedCount }} selected</span>
+            <span v-if="selectedCount > 0" class="badge badge-muted">{{ selectedCount }} selected</span>
         </div>
 
         <template v-if="visible">
             <div class="mb-2">
                 <div class="input-group input-group-sm">
-                    <input v-model="searchQuery" type="text" class="form-control" placeholder="search by add on" />
-                    <span class="input-group-text">
+                    <input
+                        v-model="searchQuery"
+                        type="text"
+                        class="form-control border-end-0"
+                        placeholder="Search by add on"
+                    />
+                    <span class="input-group-text bg-white">
                         <font-awesome-icon :icon="['fas', 'magnifying-glass']" />
                     </span>
                 </div>
@@ -242,8 +247,8 @@ onMounted(async () => {
 
                         <span
                             v-if="Object.keys(item.addon).includes('stock')"
-                            class="badge me-3 text-nowrap addon-stock-badge"
-                            :class="item.addon.stock > 0 ? 'addon-stock-badge' : 'bg-danger'"
+                            class="badge me-3 text-nowrap"
+                            :class="item.addon.stock > 0 ? 'badge-success' : 'badge-danger'"
                         >
                             {{ item.addon.stock > 0 ? item.addon.stock + ' in stock' : 'Out of stock' }}
                         </span>
@@ -302,7 +307,7 @@ onMounted(async () => {
 }
 
 .addon-list {
-    max-height: calc(3 * 48px);
+    max-height: calc(3 * 52px);
     overflow-y: auto;
 }
 </style>

@@ -16,6 +16,7 @@ const props = defineProps({
     addInternalProduct: Boolean
 });
 
+const isBlocked = ref(false);
 const displayBasic = ref(false);
 const showModal = ref(false);
 const loadingFeatures = ref(false);
@@ -28,9 +29,11 @@ const proxyValue = computed({
 
 const checkQuantity = _.throttle(async (product, temp) => {
     isDisabled.value = true;
+    isBlocked.value = true;
     if (temp < 0) {
         product.quantity = 0;
         isDisabled.value = false;
+        isBlocked.value = false;
         return;
     }
 
@@ -70,13 +73,15 @@ const checkQuantity = _.throttle(async (product, temp) => {
 
             if (items.length > 0) {
                 let result = await swal.fire({
+                    width: '400px',
                     title: 'Are you sure?',
-                    text: 'This product includes add-ons. Removing it will also remove them from the quote.'
+                    text: 'This product includes add-ons, removing it will also remove them from the quote.'
                 });
 
                 if (['cancel', 'backdrop'].includes(result.dismiss)) {
                     proxyValue.value.quantity = oldQuantity;
                     isDisabled.value = false;
+                    isBlocked.value = false;
                     return;
                 }
             }
@@ -88,6 +93,8 @@ const checkQuantity = _.throttle(async (product, temp) => {
     }
 
     isDisabled.value = false;
+    isBlocked.value = false;
+
     await getQuote(quote.id);
 }, 500);
 
@@ -215,7 +222,7 @@ watch(searchInput, () => {
                     </h3>
                     <p v-else class="truncate-2-lines bold">{{ proxyValue.name }}</p>
                     <div v-if="proxyValue.stock > 0">
-                        <p class="badge-success rounded-5 bold text-center" style="white-space: nowrap">
+                        <p class="badge badge-success" style="white-space: nowrap">
                             <span :id="'hardware-' + index + '-stock'">
                                 {{ proxyValue.stock }}
                             </span>
@@ -246,6 +253,7 @@ watch(searchInput, () => {
                         <InputQuantity
                             :id="'product-' + index"
                             style="max-width: 130px"
+                            :disabled="isBlocked"
                             v-model="proxyValue.quantity"
                             @change="(val) => checkQuantity(proxyValue, val, true)"
                         />
@@ -279,6 +287,7 @@ watch(searchInput, () => {
                         <InputQuantity
                             :id="'product-' + index"
                             style="max-width: 120px"
+                            :disabled="isBlocked"
                             v-model="proxyValue.quantity"
                             @change="(val) => checkQuantity(proxyValue, val)"
                         />
@@ -491,14 +500,6 @@ h3 {
 
 .p-galleria-close-button {
     z-index: 1000 !important;
-}
-
-.badge-success {
-    background-color: var(--bg-badge-success);
-    opacity: 80%;
-    padding: 4px 16px;
-    font-size: 12px;
-    color: var(--text-badge-success);
 }
 
 .sticky-row {
