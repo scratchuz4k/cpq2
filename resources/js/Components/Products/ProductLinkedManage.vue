@@ -108,9 +108,12 @@ const setMeta = (newTotals) => {
     </div>
     <NewDatatable :options="optionLinks" @update:meta="(meta) => setMeta(meta.total)">
         <template #child.status="{ data, value }">
-            <div class="badge" :class="[value == 'Active' ? 'text-bg-success' : 'text-bg-secondary']">
+            <span
+                class="badge"
+                :class="[value !== 'Active' ? (value == 'Inactive' ? 'badge-danger' : 'badge-muted') : 'badge-success']"
+            >
                 {{ value }}
-            </div>
+            </span>
         </template>
         <template #child.price.cost="{ data, value }">
             <p class="small">{{ value ? format.GBP(value) : 'N/A' }}</p>

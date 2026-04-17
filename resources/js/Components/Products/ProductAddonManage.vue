@@ -83,9 +83,12 @@ const setMeta = (newTotals) => {
     </div>
     <NewDatatable :options="optionAddons" @update:meta="(meta) => setMeta(meta.total)">
         <template #addon.status="{ data, value }">
-            <div class="badge" :class="[value == 'Active' ? 'text-bg-success' : 'text-bg-secondary']">
+            <span
+                class="badge"
+                :class="[value !== 'Active' ? (value == 'Inactive' ? 'badge-danger' : 'badge-muted') : 'badge-success']"
+            >
                 {{ value }}
-            </div>
+            </span>
         </template>
         <template #addon.price.cost="{ data, value }">
             {{ value ? format.GBP(value) : 'N/A' }}

@@ -135,13 +135,15 @@ export class Api {
             orderBy: this.orderBy,
             limit: this.meta.limit,
             page: this.meta.page,
-            columns: this.columns.length ? this.columns.filter((data) => data !== 'actions').join(',') : null,
             filters: [
                 ...this.filters.filter((x) => x.value != null),
                 ...this.groupedfilters.filter((x) => x.group.length > 0)
             ],
             search: this.search
         };
+        if (this.columns.length) {
+            object.columns = this.columns.filter((data) => data !== 'actions').join(',');
+        }
 
         if (this.group) {
             object.group = this.group;

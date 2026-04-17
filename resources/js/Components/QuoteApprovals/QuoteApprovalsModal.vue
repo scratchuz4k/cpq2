@@ -95,11 +95,11 @@
                         </td>
                         <td class="text-center" :id="'quote-approval-status-' + index" style="width: 10%">
                             <p
-                                class="badge rounded-pill"
+                                class="badge"
                                 :class="{
-                                    'bg-success text-white': item.status.toLowerCase() === 'approved',
-                                    'bg-danger text-white': item.status.toLowerCase() === 'pending',
-                                    'bg-error text-white': item.status.toLowerCase() === 'rejected'
+                                    'badge-success': item.status.toLowerCase() === 'approved',
+                                    'badge-warning': item.status.toLowerCase() === 'pending',
+                                    'badge-danger': item.status.toLowerCase() === 'rejected'
                                 }"
                             >
                                 {{ format.capitalizeFirstLetter(item.status) }}
