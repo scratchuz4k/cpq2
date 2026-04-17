@@ -10,7 +10,6 @@ use Exception;
 use Illuminate\Bus\Batch;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
-use Illuminate\Queue\Middleware\RateLimited;
 use Illuminate\Queue\Middleware\WithoutOverlapping;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\DB;
@@ -41,13 +40,7 @@ class ShopBlocksProductsJob implements NotTenantAware, ShouldQueue
     {
         return [
             (new WithoutOverlapping('sync:ShopBlocksProducts'))->expireAfter(180),
-            new RateLimited('shopblocks-api'),
         ];
-    }
-
-    public function retryUntil(): \DateTime
-    {
-        return now()->addHours(2);
     }
 
     /**
