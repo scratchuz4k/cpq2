@@ -272,8 +272,8 @@ onMounted(async () => {
                         <p class="small text-muted mb-0">No add-ons found</p>
                     </div>
 
-                    <div ref="sentinel" class="py-1">
-                        <div v-if="api.isLoading.value && addons.length" class="text-center py-2">
+                    <div ref="sentinel">
+                        <div v-if="api.isLoading.value && addons.length" class="py-1 text-center py-2">
                             <font-awesome-icon :icon="['fas', 'spinner']" spin />
                         </div>
                     </div>
@@ -307,7 +307,7 @@ onMounted(async () => {
 }
 
 .addon-list {
-    max-height: calc(3 * 52px);
+    max-height: 147px;
     overflow-y: auto;
 }
 </style>
