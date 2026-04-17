@@ -22,16 +22,6 @@
     );
 
     $warningProviders = [
-        'its' => array_reduce(
-            $quote['items'],
-            function ($carry, $item) {
-                return $carry ||
-                    (isset($item['data']) &&
-                        isset($item['data']->providerName) &&
-                        $item['data']->providerName === 'ITS');
-            },
-            false,
-        ),
         'pxc' => array_reduce(
             $quote['items'],
             function ($carry, $item) {

@@ -26,7 +26,6 @@ const show_calc_margin = ['DEFAULT', 'MARGIN'].includes(calc_layout) || calc_lay
 const show_calc_commission = ['DEFAULT', 'COMMISSION'].includes(calc_layout) || calc_layout === 'DEFAULT';
 
 const warningProviders = ref([
-    { name: 'its', is_present: quote.items.some((item) => item.data?.providerName === 'ITS') },
     { name: 'pxc', is_present: quote.items.some((item) => item.data?.providerName === 'PXC') }
 ]);
 

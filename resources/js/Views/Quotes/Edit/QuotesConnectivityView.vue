@@ -90,45 +90,42 @@ const removeItem = (article) => {
     getQuote(props.modelValue.id);
 };
 
-const steps =
-    import.meta.env.VITE_APP_ENV !== 'production'
-        ? {
-              pxc: [
-                  {
-                      title: 'Select a Primary Product',
-                      component: 'QuotesConnectivityTable',
-                      needAddons: true
-                  },
-                  {
-                      title: 'Failover Service',
-                      component: 'QuoteConnectivityFailOverTable',
-                      needAddons: true
-                  },
-                  {
-                      title: 'Addons',
-                      component: 'QuoteConnectivityExtrasTable',
-                      needAddons: false
-                  }
-              ],
-              its: [
-                  {
-                      title: 'Select a Primary Product',
-                      component: 'QuotesConnectivityTable',
-                      needAddons: true
-                  },
-                  {
-                      title: 'Failover Service',
-                      component: 'QuoteConnectivityFailOverTable',
-                      needAddons: true
-                  },
-                  {
-                      title: 'Addons',
-                      component: 'QuoteConnectivityExtrasTable',
-                      needAddons: false
-                  }
-              ]
-          }
-        : {};
+const steps = {
+    pxc: [
+        {
+            title: 'Select a Primary Product',
+            component: 'QuotesConnectivityTable',
+            needAddons: true
+        },
+        {
+            title: 'Failover Service',
+            component: 'QuoteConnectivityFailOverTable',
+            needAddons: true
+        },
+        {
+            title: 'Addons',
+            component: 'QuoteConnectivityExtrasTable',
+            needAddons: false
+        }
+    ],
+    its: [
+        {
+            title: 'Select a Primary Product',
+            component: 'QuotesConnectivityTable',
+            needAddons: true
+        },
+        {
+            title: 'Failover Service',
+            component: 'QuoteConnectivityFailOverTable',
+            needAddons: true
+        },
+        {
+            title: 'Addons',
+            component: 'QuoteConnectivityExtrasTable',
+            needAddons: false
+        }
+    ]
+};
 
 const getPrimary = () => {
     if (!quote.items) {
