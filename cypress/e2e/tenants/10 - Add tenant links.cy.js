@@ -5,6 +5,7 @@ describe('Add tenant links.cy', () => {
 
     it('Setup tenant header links and check', () => {
         cy.visit('/tenants');
+        cy.get('#2-2').click();
         cy.get('#v-pills-header-tab').click();
         cy.get('#header-new-link-label').clear().type('Header Link');
         cy.get('#header-new-link-is_active').click();
@@ -20,6 +21,7 @@ describe('Add tenant links.cy', () => {
 
     it('Setup tenant footer links and check', () => {
         cy.visit('/tenants');
+        cy.get('#2-2').click();
         cy.get('#v-pills-footer-tab').click();
         cy.get('#footer-new-link-label').clear().type('Footer Link');
         cy.get('#footer-new-link-is_active').click();
@@ -35,6 +37,7 @@ describe('Add tenant links.cy', () => {
 
     it('Setup tenant social links and check', () => {
         cy.visit('/tenants');
+        cy.get('#2-2').click();
         cy.get('#v-pills-social-tab').click();
         cy.selectOption('#social-new-link-icon', 'Facebook');
         cy.get('#social-new-link-is_active').click();
