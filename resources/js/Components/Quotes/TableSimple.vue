@@ -45,9 +45,8 @@ emitter.on('quote-items:updated', async () => {
             </tr>
         </thead>
         <tbody>
-            <template v-for="(item, index) in groups">
+            <template v-if="quote.solution_type.code == 3" v-for="(item, index) in groups">
                 <TableGroup
-                    v-if="quote.solution_type.code == 3"
                     :item="item"
                     :columns="columns"
                     :index="index"
@@ -81,8 +80,9 @@ emitter.on('quote-items:updated', async () => {
                         ></TableItem>
                     </template>
                 </TableGroup>
+            </template>
+            <template v-else v-for="(item, index) in quote.items">
                 <TableItem
-                    v-else
                     :item="item"
                     :columns="columns"
                     :groupColumns="groupColumns"
@@ -91,8 +91,8 @@ emitter.on('quote-items:updated', async () => {
                     :preview="preview"
                     code="Simple"
                 >
-                </TableItem>
-            </template>
+                </TableItem
+            ></template>
         </tbody>
     </table>
     <div class="row justify-content-end mt-5">

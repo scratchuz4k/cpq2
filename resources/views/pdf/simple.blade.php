@@ -54,6 +54,17 @@
             array_push($items[$index]['children'], $item);
         }
     }
+
+    function getMainProductName($quote, $item)
+    {
+        if (!$item['data'] || $item['data']->type === 'main_product') {
+            return null;
+        }
+
+        return collect($quote['items'])->first(
+            fn($i) => $i['group'] == $item['group'] && $i['data'] && $i['data']->type == 'main_product',
+        )['name'] ?? null;
+    }
 @endphp
 
 <!doctype html>
@@ -156,8 +167,8 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach ($items as $key => $group)
-                                    @if ($isConnectivity)
+                                @if ($isConnectivity)
+                                    @foreach ($items as $key => $group)
                                         <tr class="group-row" style="vertical-align: middle;">
                                             <td class="group-body" colspan="8">
                                                 <div class="d-flex py-2">
@@ -178,8 +189,6 @@
                                                         @endif
                                                     </div>
                                                     <div class="me-3 d-flex">
-
-
                                                         <p class="m-0">{{ $group['name'] }}
                                                             @if (isset($group['data']->additionalInfo->{'router'}))
                                                                 <span
@@ -273,6 +282,7 @@
                                                 </td>
                                                 <td class="column-price_plan-body">
                                                     {{ $group['price_plan']?->name }}
+
                                                 </td>
                                                 <td class="column-contract_length-body">
                                                     {{ $group['contract_length'] > 1 ? $group['contract_length'] : '' }}
@@ -288,36 +298,45 @@
                                                 </td>
                                             </tr>
                                         @endif
-                                    @else
+                                    @endforeach
+                                @else
+                                    @foreach ($quote['items'] as $key => $group)
                                         <tr class="item-row" style="vertical-align: middle;">
                                             <td class="column-quote_ref-body">
-                                                {{ $group['name'] }}
-                                                @if (isset($group['data']->additionalInfo->{'router'}))
-                                                    <span
-                                                        class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm router-model"
-                                                        data-bs-toggle="tooltip" data-bs-placement="top"
-                                                        title="Primary Router Model" v-tooltip>
-                                                        <i class="fa-solid fa-plug"></i>
-                                                        {{ $group['data']->additionalInfo->{'router'} }}
-                                                    </span>
-                                                @endif
-                                                {{-- @if (isset($group['data']->isContended) and $group['data']->isContended)
-                                                    <span
-                                                        class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm is-contended"
-                                                        data-bs-toggle="tooltip" data-bs-placement="top"
-                                                        title="Contended, wires only full fibre service with symmetrical upload and download speeds"
-                                                        v-tooltip>
-                                                        Contended Service
-                                                    </span>
-                                                @endif --}}
-                                                @if (isset($group['data']->additionalInfo->{'Type'}) && $group['data']->additionalInfo->{'Type'} == 'Fibre Flex 200+')
-                                                    <span
-                                                        class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm is-contended"
-                                                        data-bs-toggle="tooltip" data-bs-placement="top"
-                                                        title="This service offers guaranteed upload and download speeds of 200Mbps and can burst up to a peak of 1Gbps"
-                                                        v-tooltip>
-                                                        Burstable Service
-                                                    </span>
+                                                <p class="small semi-bold">
+                                                    {{ $group['name'] }}
+                                                    @if (isset($group['data']->additionalInfo->{'router'}))
+                                                        <span
+                                                            class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm router-model"
+                                                            data-bs-toggle="tooltip" data-bs-placement="top"
+                                                            title="Primary Router Model" v-tooltip>
+                                                            <i class="fa-solid fa-plug"></i>
+                                                            {{ $group['data']->additionalInfo->{'router'} }}
+                                                        </span>
+                                                    @endif
+                                                    {{-- @if (isset($group['data']->isContended) and $group['data']->isContended)
+                                                        <span
+                                                            class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm is-contended"
+                                                            data-bs-toggle="tooltip" data-bs-placement="top"
+                                                            title="Contended, wires only full fibre service with symmetrical upload and download speeds"
+                                                            v-tooltip>
+                                                            Contended Service
+                                                        </span>
+                                                    @endif --}}
+                                                    @if (isset($group['data']->additionalInfo->{'Type'}) && $group['data']->additionalInfo->{'Type'} == 'Fibre Flex 200+')
+                                                        <span
+                                                            class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm is-contended"
+                                                            data-bs-toggle="tooltip" data-bs-placement="top"
+                                                            title="This service offers guaranteed upload and download speeds of 200Mbps and can burst up to a peak of 1Gbps"
+                                                            v-tooltip>
+                                                            Burstable Service
+                                                        </span>
+                                                    @endif
+                                                </p>
+                                                @if (getMainProductName($quote, $group))
+                                                    <p class="main-product-reference">
+                                                        {{ getMainProductName($quote, $group) }}
+                                                    </p>
                                                 @endif
                                             </td>
                                             <td class="column-price_plan-body">
@@ -336,8 +355,8 @@
                                                 £{{ number_format($group['total'], 2) }}
                                             </td>
                                         </tr>
-                                    @endif
-                                @endforeach
+                                    @endforeach
+                                @endif
                             </tbody>
                         </table>
                     </div>
