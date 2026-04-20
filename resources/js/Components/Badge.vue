@@ -13,7 +13,7 @@ const props = defineProps({
 
 <style scoped>
 span {
-    background-color: #f5e5f3;
-    color: #a34996;
+    background-color: var(--color-purple-light);
+    color: var(--color-primary);
 }
 </style>

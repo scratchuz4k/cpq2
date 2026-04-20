@@ -11,15 +11,11 @@ import { actionBarButtons } from '@/Composables/useQuoteSteps.js';
 import { selectedItems, addSelected } from '@/Composables/useComparator';
 import * as Sentry from '@sentry/vue';
 import UserFeedback from '@/Components/UserFeedback.vue';
-import { useColors } from '../Composables/layouts.js';
 
 const page = usePage();
-useColors();
 
 const user = page.props.auth.user;
 const links = page.props.customization.header;
-const headerColor = computed(() => `#${page.props.customization.colors?.app?.header}`);
-const navbarColor = computed(() => `#${page.props.customization.colors?.app?.navbar}`);
 const feedbackAvailable = !!Sentry.getFeedback();
 
 Sentry.setUser({
@@ -64,7 +60,7 @@ const hasActionBarContent = computed(() => {
 </script>
 
 <template>
-    <nav class="navbar navbar-expand-md bg-theme-secondary-dark" :style="{ background: headerColor }">
+    <nav class="navbar navbar-expand-md bg-theme-secondary-dark">
         <div class="container d-flex justify-space-between">
             <a class="navbar-brand" href="/">
                 <AppLogo />
@@ -93,7 +89,7 @@ const hasActionBarContent = computed(() => {
             </div>
         </div>
     </nav>
-    <nav class="navbar navbar-expand bg-theme-secondary-light" :style="{ background: navbarColor }">
+    <nav class="navbar navbar-expand bg-theme-secondary-light">
         <div class="container">
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">

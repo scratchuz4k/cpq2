@@ -89,7 +89,7 @@ const checkValue = (event) => {
     height: 32px;
     gap: 0px;
     border-radius: 6px 0px 0px 6px;
-    background: #ffffff;
+    background: var(--color-white);
     border-width: 1px 0px 1px 1px;
     border-style: solid;
     border-color: #bdbdbd;
@@ -100,7 +100,7 @@ const checkValue = (event) => {
     height: 32px;
     gap: 0px;
     border-radius: 0px 6px 6px 0px;
-    background: #ffffff;
+    background: var(--color-white);
     border-width: 1px 1px 1px 0px;
 }
 </style>

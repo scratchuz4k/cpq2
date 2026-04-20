@@ -6,8 +6,8 @@ const props = defineProps({
     }
 });
 const options = {
-    default: { first: '#67236A', second: '#E1D3E1' },
-    info: { first: '#356E8E', second: '#DEF1FB' },
+    default: { first: 'var(--color-purple-dark)', second: '#E1D3E1' },
+    info: { first: 'var(--color-blue)', second: 'var(--color-blue-light)' },
     error: { first: 'transparent', second: 'transparent' },
     danger: { first: '#dc3545', second: '#f5cccc' }
 };
