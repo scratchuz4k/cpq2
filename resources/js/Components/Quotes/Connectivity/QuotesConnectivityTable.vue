@@ -60,7 +60,7 @@ const filters = reactive({
     },
     isManaged: {
         operator: 'in',
-        value: null,
+        value: ['1', 'null'],
         name: 'Managed'
     }
 });
@@ -70,8 +70,7 @@ const filterList = reactive({
     connectivitySupplierGroup: [],
     contractTermMonths: [],
     bearer: [],
-    speed: [],
-    isManaged: []
+    speed: []
 });
 
 const meta = reactive({
@@ -200,17 +199,6 @@ const getArticles = async (clearCache = false, runTimeout = false) => {
             }
         });
         filterList.contractTermMonths = contractLengthsFilters;
-
-        let isManagedFilters = [];
-        Object.keys(filterList.isManaged).forEach((key) => {
-            let label = key === 'true' ? 'Yes' : key === 'false' ? 'No' : 'N/A';
-            let value = key === 'true' ? '1' : key === 'false' ? '0' : 'null';
-            isManagedFilters.push({
-                label: label,
-                value: value
-            });
-        });
-        filterList.isManaged = isManagedFilters;
 
         selectedFilters.value = Object.fromEntries(
             Object.entries(filters).filter(([key, filter]) => filter.value !== null)
@@ -413,7 +401,11 @@ onMounted(() => {
                                     id="managed-multiselect"
                                     v-model="filters['isManaged'].value"
                                     style="width: 100%"
-                                    :options="filterList.isManaged"
+                                    :options="[
+                                        { label: 'Yes', value: '1' },
+                                        { label: 'No', value: '0' },
+                                        { label: 'N/A', value: 'null' }
+                                    ]"
                                     optionLabel="label"
                                     optionValue="value"
                                     placeholder="All"
