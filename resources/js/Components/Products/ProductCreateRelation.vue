@@ -10,6 +10,7 @@
         :breakpoints="{ '1199px': '75vw', '575px': '90vw' }"
         :draggable="false"
         position="top"
+        :dismissableMask="true"
         :pt="{ id: props.id + '-dialog' }"
         @hide="closeModal()"
     >

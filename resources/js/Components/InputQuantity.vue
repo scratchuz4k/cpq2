@@ -4,24 +4,25 @@
             :id="'btn-' + props.id + '-remove-1'"
             class="btn-quantity btn-minus-quantity"
             type="button"
-            @click="() => proxyValue--"
-            :disabled="!proxyValue"
+            @click="() => checkQuantity(proxyValue - 1)"
+            :disabled="!proxyValue || props.disabled"
         >
             <font-awesome-icon :icon="['fas', 'minus']" />
         </button>
         <input
             :id="'input-' + props.id + '-quantity'"
             type="number"
-            :value="proxyValue"
+            v-model="proxyValue"
             :max="props.maxValue"
             class="input-quantity"
-            @input="checkValue($event)"
+            @blur="checkValue($event)"
+            :disabled="props.disabled"
         />
         <button
             :id="'btn-' + props.id + '-add-1'"
             class="btn-quantity btn-add-quantity"
             type="button"
-            @click="() => proxyValue++"
+            @click="checkQuantity(proxyValue + 1)"
             :disabled="props.disabled || proxyValue >= props.maxValue"
         >
             <font-awesome-icon :icon="['fas', 'plus']" />
@@ -29,7 +30,7 @@
     </div>
 </template>
 <script setup>
-import { computed } from 'vue';
+import { computed, watch } from 'vue';
 const props = defineProps({
     id: String,
     modelValue: Number,
@@ -47,7 +48,6 @@ const proxyValue = computed({
     },
     set(val) {
         emit('update:modelValue', val);
-        emit('change', val);
     }
 });
 
@@ -65,6 +65,16 @@ const checkValue = (event) => {
 
     proxyValue.value = newValue;
     event.target.value = String(newValue);
+    emitChange(newValue);
+};
+
+const emitChange = (value) => {
+    emit('change', value);
+};
+
+const checkQuantity = async (quantity) => {
+    proxyValue.value = quantity;
+    emitChange(quantity);
 };
 </script>
 <style scoped>
@@ -102,5 +112,11 @@ const checkValue = (event) => {
     border-radius: 0px 6px 6px 0px;
     background: var(--color-white);
     border-width: 1px 1px 1px 0px;
+}
+
+.btn-quantity:disabled,
+.input-quantity:disabled {
+    color: #b7b7b7;
+    background-color: #fff;
 }
 </style>

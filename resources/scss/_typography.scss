@@ -63,6 +63,11 @@ p {
         font-weight: bold !important;
     }
 
+    &.semibold,
+    &.semi-bold {
+        font-weight: 500 !important;
+    }
+
     &.small {
         font-size: 14px !important;
         line-height: 24px !important;
@@ -93,4 +98,12 @@ label {
     font-size: 12px;
     line-height: 16px;
     color: black;
+}
+
+.main-product-reference {
+    font-weight: 500;
+    line-height: 14px;
+    font-size: 12px;
+    vertical-align: middle;
+    color: #4e4e4e;
 }

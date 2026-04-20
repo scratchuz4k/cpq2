@@ -17,7 +17,6 @@ const props = defineProps({
 setQuote(props.modelValue);
 
 const warningProviders = ref([
-    { name: 'its', is_present: quote.items.some((item) => item.data?.providerName === 'ITS') },
     { name: 'pxc', is_present: quote.items.some((item) => item.data?.providerName === 'PXC') }
 ]);
 
