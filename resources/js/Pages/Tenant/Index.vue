@@ -55,6 +55,15 @@ const tenant = reactive({
     }
 });
 
+const parseTenantConfigurations = (data) => {
+    if (data?.configurations) {
+        data.configurations.customization_header = JSON.parse(data.configurations.customization_header ?? '[]');
+        data.configurations.customization_footer = JSON.parse(data.configurations.customization_footer ?? '[]');
+        data.configurations.customization_social = JSON.parse(data.configurations.customization_social ?? '[]');
+        data.configurations.customization_colors = JSON.parse(data.configurations.customization_colors ?? {});
+    }
+    return data;
+};
 const submitFileForm = async () => {
     isLoading.value = true;
 
@@ -65,8 +74,7 @@ const submitFileForm = async () => {
     };
     try {
         let res = await axios.put(`/api/tenants/` + tenant.id, data);
-
-        Object.assign(tenant, res.data);
+        Object.assign(tenant, parseTenantConfigurations(res.data));
         if (!tenant.file) tenant.sso_text = null;
         notyf.success(success_message);
     } catch (err) {
@@ -85,7 +93,7 @@ const submitLogoForm = async () => {
 
     try {
         let res = await axios.put(`/api/tenants/` + tenant.id, data);
-        Object.assign(tenant, res.data);
+        Object.assign(tenant, parseTenantConfigurations(res.data));
         emitter.emit('logo:updated');
         notyf.success('Updated with Success');
     } catch (err) {
@@ -102,7 +110,7 @@ const submitTextForm = async () => {
 
     try {
         let res = await axios.put(`/api/tenants/` + tenant.id, data);
-        Object.assign(tenant, res.data);
+        Object.assign(tenant, parseTenantConfigurations(res.data));
         notyf.success('Content updated successfully');
     } catch (err) {
         notyf.error(err?.response?.data?.message ?? 'Something went wrong');
@@ -122,10 +130,6 @@ const submitTenantSettings = async () => {
         let res = await axios.put(`/api/tenants/` + tenant.id, { ...tenant, configurations: configs });
 
         let temp = res.data;
-        temp.configurations.customization_header = JSON.parse(temp.configurations.customization_header);
-        temp.configurations.customization_footer = JSON.parse(temp.configurations.customization_footer);
-        temp.configurations.customization_social = JSON.parse(temp.configurations.customization_social);
-        temp.configurations.customization_colors = JSON.parse(temp.configurations.customization_colors);
         Object.assign(tenant, temp);
 
         notyf.success('Content updated successfully');
@@ -162,7 +166,7 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Settings', url: '/sett
     <AuthenticatedLayout>
         <div class="panel">
             <Header title="Tenant" :breadcrumbs="items"> </Header>
-
+            {{ tenant.configurations.customization_colors }}
             <tabs>
                 <tab :selected="true" title="General">
                     <div class="d-flex align-items-start mt-5">

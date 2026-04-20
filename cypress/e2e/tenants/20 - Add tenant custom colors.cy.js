@@ -15,6 +15,9 @@ const appColors = {
         footer: '00ffff'
     }
 };
+
+let url = '';
+
 describe('Add tenant links.cy', () => {
     beforeEach(() => {
         cy.login('companyadmin@example.com', 'werwerwer');
@@ -44,5 +47,34 @@ describe('Add tenant links.cy', () => {
         cy.get('.bg-theme-secondary-dark').should('have.css', 'background-color', hexToRgb(appColors.app.header));
         cy.get('.bg-theme-secondary-light').should('have.css', 'background-color', hexToRgb(appColors.app.navbar));
         cy.get('.footer').should('have.css', 'background-color', hexToRgb(appColors.app.footer));
+    });
+
+    it('Create quote and a shared link', () => {
+        cy.visit('/quotes/create');
+        cy.selectLazyOption('account_id', account.name);
+        cy.get('.step-action-bar #btn-next-step').click();
+
+        cy.get('#solution_type-mobile').click();
+        cy.get('#btn-create-quote').click();
+        cy.visit('/quotes');
+        cy.get('#datatable-btn-0-show').click();
+        cy.get('#btn-shareable-open').click();
+        cy.get('#btn-shareable-create').click();
+        cy.get(`#input-shareable-link`)
+            .invoke('val')
+            .then((value) => {
+                cy.log(value);
+                url = value;
+            });
+    });
+
+    it('Access the shareablelink and check colors', () => {
+        cy.logout();
+        cy.visit('/quotes');
+        cy.log(url);
+        cy.visit(url);
+
+        cy.get('.bg-theme-secondary-dark').should('have.css', 'background-color', hexToRgb(appColors.shareable.header));
+        cy.get('.footer').should('have.css', 'background-color', hexToRgb(appColors.shareable.footer));
     });
 });
