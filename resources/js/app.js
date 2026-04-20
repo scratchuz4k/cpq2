@@ -142,7 +142,6 @@ createInertiaApp({
         });
 
         app.config.globalProperties.format = format;
-        debugger;
         useColors(props?.initialPage?.props ?? {});
 
         Sentry.init({

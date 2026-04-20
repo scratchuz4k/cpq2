@@ -718,7 +718,7 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Settings', url: '/sett
                                                                 tenant.configurations.customization_colors
                                                                     .customer_approval.header
                                                             "
-                                                            :id="'color-app-header'"
+                                                            :id="'color-approval-header'"
                                                             @change="submitTenantSettings"
                                                         />
                                                     </div>
@@ -735,7 +735,7 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Settings', url: '/sett
                                                                 tenant.configurations.customization_colors
                                                                     .customer_approval.footer
                                                             "
-                                                            :id="'color-app-footer'"
+                                                            :id="'color-approval-footer'"
                                                             @change="submitTenantSettings"
                                                         />
                                                     </div>
@@ -757,7 +757,7 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Settings', url: '/sett
                                                                 tenant.configurations.customization_colors.shareable
                                                                     .header
                                                             "
-                                                            :id="'color-app-header'"
+                                                            :id="'color-shareable-header'"
                                                             @change="submitTenantSettings"
                                                         />
                                                     </div>
@@ -774,7 +774,7 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Settings', url: '/sett
                                                                 tenant.configurations.customization_colors.shareable
                                                                     .footer
                                                             "
-                                                            :id="'color-app-footer'"
+                                                            :id="'color-shareable-footer'"
                                                             @change="submitTenantSettings"
                                                         />
                                                     </div>
