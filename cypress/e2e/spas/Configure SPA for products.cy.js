@@ -24,6 +24,16 @@ describe('Creates a Connectivity quote', () => {
         cy.get('#btn-create-quote').should('not.be.disabled').click();
 
         cy.wait(1000);
+
+        //Managed filter
+        cy.get('#managed-multiselect').click();
+        cy.wait(500);
+        cy.get('.p-multiselect-list-container')
+            .eq(0)
+            .within(() => {
+                cy.get('.p-multiselect-option').contains('No').click();
+            });
+
         //Provider filter
         cy.get('#provider-multiselect').click();
         cy.get('.p-multiselect-list-container')
@@ -82,6 +92,16 @@ describe('Creates a Connectivity quote', () => {
         cy.get('#datatable-btn-0-edit').click();
 
         cy.wait(1000);
+
+        //Managed filter
+        cy.get('#managed-multiselect').click();
+        cy.wait(500);
+        cy.get('.p-multiselect-list-container')
+            .eq(0)
+            .within(() => {
+                cy.get('.p-multiselect-option').contains('No').click();
+            });
+
         //Provider filter
         cy.get('#provider-multiselect').click();
         cy.get('.p-multiselect-list-container')
