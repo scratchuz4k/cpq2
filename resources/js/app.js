@@ -80,6 +80,7 @@ library.add(far);
 library.add(fab);
 
 import format from '@composables/format';
+import { useColors } from '@/Composables/layouts';
 
 createInertiaApp({
     title: (title) => `${title} - ${appName}`,
@@ -141,6 +142,8 @@ createInertiaApp({
         });
 
         app.config.globalProperties.format = format;
+        debugger;
+        useColors(props?.initialPage?.props ?? {});
 
         Sentry.init({
             app,

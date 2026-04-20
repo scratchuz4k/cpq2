@@ -50,11 +50,11 @@ const isLightColor = (color) => {
 
     return hsp > 127.5;
 };
-export const useColors = () => {
-    const page = usePage();
-    const context = contextLayout(page.props.shareableType);
-    const colors = page.props.customization.colors?.[context];
+export const useColors = (initialPageProps) => {
+    const context = contextLayout(initialPageProps?.shareableType);
+    const colors = initialPageProps?.customization?.colors?.[context];
 
+    if (!colors) return;
     function applyColors(colors) {
         if (!colors) colors = defaultColors;
 
@@ -68,7 +68,5 @@ export const useColors = () => {
             }
         });
     }
-
-    onMounted(() => applyColors(colors));
-    watch(() => colors, applyColors);
+    applyColors(colors);
 };

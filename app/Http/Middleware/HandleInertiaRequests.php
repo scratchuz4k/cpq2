@@ -4,7 +4,6 @@ namespace App\Http\Middleware;
 
 use App\Http\Resources\TenantResource;
 use App\Http\Resources\UserResource;
-use App\Models\Tenant;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 
@@ -32,8 +31,7 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
-        $tenant = $request->user()->currentTenant ?? Tenant::current();
-        $configs = $tenant->configs ?? [];
+        $configs = $request->user()->currentTenant?->configs ?? [];
 
         return [
             ...parent::share($request),
@@ -46,7 +44,7 @@ class HandleInertiaRequests extends Middleware
             'customization' => [
                 'header' => json_decode(array_key_exists('customization_header', $configs) ? $configs['customization_header'] : '[]'),
                 'footer' => json_decode(array_key_exists('customization_footer', $configs) ? $configs['customization_footer'] : '[]'),
-                'colors' => json_decode(array_key_exists('customization_colors', $configs) ? $configs['customization_colors'] : '[]'),
+                'colors' => json_decode($configs['customization_colors'] ?? '{}', true) ?: [],
                 'social' => json_decode(array_key_exists('customization_social', $configs) ? $configs['customization_social'] : '[]'),
             ],
         ];
