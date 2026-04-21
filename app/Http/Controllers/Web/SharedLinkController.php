@@ -36,15 +36,19 @@ class SharedLinkController extends Controller
             abort(410, 'This link has expired and is no longer available.');
         }
 
+        $component = $this->sharedModels[$sharedLink->shareable_type];
+        $configs = $sharedLink->tenant?->configs ?? [];
+
         // Check if a password is required
         if ($sharedLink->password) {
             return Inertia::render('Shareable/Index', [
                 'isAuthorized' => false,
                 'url' => $sharedLink->url,
+                'shareableType' => $component === 'QuoteApprovals' ? 'quote-approval' : 'shared-link',
+                'customization' => $this->getCustomizationColors($configs),
             ]);
         }
 
-        $component = $this->sharedModels[$sharedLink->shareable_type];
         $resource = $this->getResource($component, $sharedLink->shareable);
 
         return Inertia::render("Shareable/$component", $resource);
@@ -74,12 +78,14 @@ class SharedLinkController extends Controller
     private function getResource($component, $item)
     {
         $tenant = $component == 'QuoteApprovals' ? $item->quote->tenant : $item->tenant;
-        $configs = $tenant->configs ?? [];
 
         if ($tenant !== Tenant::current()) {
             $temp = Tenant::findOrFail($tenant->id);
             $temp->makeCurrent();
+            $tenant = $temp;
         }
+
+        $configs = $tenant->configs ?? [];
 
         return match ($component) {
             'Quotes' => [
@@ -94,12 +100,17 @@ class SharedLinkController extends Controller
             'QuoteApprovals' => [
                 'pricePlans' => PricePlan::all(),
                 'model' => new QuoteResource($item->quote->load(['items', 'tenant.logo', 'tenant.configurations'])),
-                'customization' => [
-                    'colors' => json_decode(array_key_exists('customization_colors', $configs) ? $configs['customization_colors'] : '[]'),
-                ],
+                'customization' => $this->getCustomizationColors($configs),
                 'shareableType' => 'quote-approval',
             ],
             default => $item,
         };
+    }
+
+    private function getCustomizationColors(array $configs)
+    {
+        return [
+            'colors' => json_decode(array_key_exists('customization_colors', $configs) ? $configs['customization_colors'] : '[]'),
+        ];
     }
 }
