@@ -58,10 +58,12 @@ export const useColors = (initialPageProps) => {
         const root = document.documentElement;
 
         Object.entries(colors).forEach(([key, value]) => {
-            root.style.setProperty(`--color-${key}`, `#${value}`);
+            if (!!value) {
+                root.style.setProperty(`--color-${key}`, `#${value}`);
 
-            if (isLightColor(value)) {
-                root.style.setProperty(`--color-${key}-text`, `#000`);
+                if (isLightColor(value)) {
+                    root.style.setProperty(`--color-${key}-text`, `#000`);
+                }
             }
         });
     }
