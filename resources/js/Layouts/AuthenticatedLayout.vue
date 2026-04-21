@@ -80,7 +80,7 @@ const hasActionBarContent = computed(() => {
                 <ul class="navbar-nav navme-auto mb-2 mb-lg-0">
                     <li
                         class="nav-item d-md-none d-lg-block"
-                        v-for="link in links.filter((x) => x.is_active)"
+                        v-for="link in links?.filter((x) => x.is_active)"
                         :key="link.name"
                     >
                         <a class="nav-link" :href="link.url" target="_blank">{{ link.label }}</a>
