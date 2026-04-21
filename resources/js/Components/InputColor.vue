@@ -27,23 +27,56 @@ const updateColor = _.debounce(() => {
     }
     emit('change');
 }, 1000);
+
+const cleanHexValue = (text) => {
+    return text
+        .replace(/^#/, '')
+        .replace(/[^0-9a-fA-F]/g, '')
+        .slice(0, 6);
+};
+
+const handleClipboardInput = (event) => {
+    event.preventDefault();
+    const clipboardData =
+        event.type === 'drop' ? event.dataTransfer.getData('text') : event.clipboardData.getData('text');
+    proxyValue.value = cleanHexValue(clipboardData);
+    updateColor();
+};
+
+const handleInput = (event) => {
+    proxyValue.value = cleanHexValue(event.target.value);
+    updateColor();
+};
+
+const colorPickerClass = computed(() => ({
+    'color-picker-empty': !proxyValue.value
+}));
 </script>
 
 <template>
     <div class="d-flex">
         <div class="color-picker-wrapper">
-            <ColorPicker v-model="proxyValue" :id="`${props.id}-picker`" class="rounded-3 me-2" @change="updateColor" />
+            <ColorPicker
+                v-model="proxyValue"
+                :id="`${props.id}-picker`"
+                :class="[colorPickerClass, 'rounded-3 me-2']"
+                @change="updateColor"
+            />
         </div>
-        <div class="color-input-wrapper form-control d-flex">
-            <span>#</span>
+        <div class="input-group">
+            <span class="input-group-text" id="hex-hash">#</span>
             <input
                 :id="`${props.id}-hex`"
+                aria-describedby="hex-hash"
                 type="text"
                 name="color"
-                class="hex-color-input"
+                class="form-control text-uppercase"
                 v-model="proxyValue"
                 maxlength="6"
-                @input="updateColor"
+                @input="handleInput"
+                @paste="handleClipboardInput"
+                @drop="handleClipboardInput"
+                @dragover.prevent
             />
         </div>
     </div>
@@ -59,15 +92,8 @@ const updateColor = _.debounce(() => {
     outline: none !important;
 }
 
-.color-input-wrapper {
-    display: flex;
-    align-items: center;
-    border: 1px solid #ccc;
-    padding: 5px;
-}
-
-.color-input-wrapper .hex-color-input {
-    border: none;
-    outline: none;
+.color-picker-empty .p-colorpicker-preview {
+    background-color: transparent !important;
+    border: 1px solid var(--bs-border-color) !important;
 }
 </style>
