@@ -1,7 +1,8 @@
 <script setup>
 import ColorPicker from 'primevue/colorpicker';
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 import _ from 'lodash';
+import { isValidHexColor } from '../Composables/layouts.js';
 
 const props = defineProps({
     modelValue: String,
@@ -19,6 +20,11 @@ const proxyValue = computed({
 });
 
 const updateColor = _.debounce(() => {
+    if (props.modelValue !== '' && !isValidHexColor(props.modelValue)) {
+        notyf.error('Please enter a valid color');
+        emit('update:modelValue', null);
+        return;
+    }
     emit('change');
 }, 1000);
 </script>

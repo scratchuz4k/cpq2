@@ -13,7 +13,7 @@ const contextLayout = (key) => {
     }
 };
 
-const isLightColor = (color) => {
+export const isLightColor = (color) => {
     let r, g, b;
 
     // Check the format of the color, HEX or RGB?
@@ -43,6 +43,11 @@ const isLightColor = (color) => {
     const hsp = Math.sqrt(0.299 * (r * r) + 0.587 * (g * g) + 0.114 * (b * b));
 
     return hsp > 127.5;
+};
+
+export const isValidHexColor = (value) => {
+    const reg = /^([0-9a-f]{3}){1,2}$/i;
+    return reg.test(value);
 };
 export const useColors = (initialPageProps) => {
     const context = contextLayout(initialPageProps?.shareableType);
