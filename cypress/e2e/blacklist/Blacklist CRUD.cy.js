@@ -48,6 +48,16 @@ describe('Blacklist Crud', () => {
         cy.get('#btn-create-quote').should('not.be.disabled').click();
         // Scroll back to top
         cy.scrollTo('top');
+
+        //Managed filter
+        cy.get('#managed-multiselect').click();
+        cy.wait(500);
+        cy.get('.p-multiselect-list-container')
+            .eq(0)
+            .within(() => {
+                cy.get('.p-multiselect-option').contains('No').click();
+            });
+
         //Provider filter
         cy.get('#provider-multiselect').click();
         cy.wait(500);

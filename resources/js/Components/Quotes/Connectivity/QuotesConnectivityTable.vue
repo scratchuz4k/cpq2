@@ -60,7 +60,7 @@ const filters = reactive({
     },
     isManaged: {
         operator: 'in',
-        value: null,
+        value: ['1', 'null'],
         name: 'Managed'
     }
 });
@@ -70,8 +70,7 @@ const filterList = reactive({
     connectivitySupplierGroup: [],
     contractTermMonths: [],
     bearer: [],
-    speed: [],
-    isManaged: []
+    speed: []
 });
 
 const meta = reactive({
@@ -200,17 +199,6 @@ const getArticles = async (clearCache = false, runTimeout = false) => {
             }
         });
         filterList.contractTermMonths = contractLengthsFilters;
-
-        let isManagedFilters = [];
-        Object.keys(filterList.isManaged).forEach((key) => {
-            let label = key === 'true' ? 'Yes' : key === 'false' ? 'No' : 'N/A';
-            let value = key === 'true' ? '1' : key === 'false' ? '0' : 'null';
-            isManagedFilters.push({
-                label: label,
-                value: value
-            });
-        });
-        filterList.isManaged = isManagedFilters;
 
         selectedFilters.value = Object.fromEntries(
             Object.entries(filters).filter(([key, filter]) => filter.value !== null)
@@ -408,6 +396,30 @@ onMounted(() => {
                     <div class="col-lg-10 col-12">
                         <div class="row">
                             <div class="col-lg-2 col-12 p-0 pe-1">
+                                <label for="filter-managed" class="form-label">Managed</label>
+                                <MultiSelect
+                                    id="managed-multiselect"
+                                    v-model="filters['isManaged'].value"
+                                    style="width: 100%"
+                                    :options="[
+                                        { label: 'Yes', value: '1' },
+                                        { label: 'No', value: '0' },
+                                        { label: 'N/A', value: 'null' }
+                                    ]"
+                                    optionLabel="label"
+                                    optionValue="value"
+                                    placeholder="All"
+                                    size="small"
+                                    class="me-3 custom-multiselect"
+                                >
+                                    <template #option="slotProps">
+                                        <div style="font-size: 14px; line-height: 1.5rem">
+                                            {{ slotProps.option.label }}
+                                        </div>
+                                    </template>
+                                </MultiSelect>
+                            </div>
+                            <div class="col-lg-2 col-12 p-0 pe-1">
                                 <label for="filter-provider" class="form-label">Provider</label>
                                 <MultiSelect
                                     id="provider-multiselect"
@@ -491,26 +503,6 @@ onMounted(() => {
                                     v-model="filters['contractTermMonths'].value"
                                     style="width: 100%"
                                     :options="filterList.contractTermMonths"
-                                    optionLabel="label"
-                                    optionValue="value"
-                                    placeholder="All"
-                                    size="small"
-                                    class="me-3 custom-multiselect"
-                                >
-                                    <template #option="slotProps">
-                                        <div style="font-size: 14px; line-height: 1.5rem">
-                                            {{ slotProps.option.label }}
-                                        </div>
-                                    </template>
-                                </MultiSelect>
-                            </div>
-                            <div class="col-lg-2 col-12 p-0 pe-1">
-                                <label for="filter-managed" class="form-label">Managed</label>
-                                <MultiSelect
-                                    id="managed-multiselect"
-                                    v-model="filters['isManaged'].value"
-                                    style="width: 100%"
-                                    :options="filterList.isManaged"
                                     optionLabel="label"
                                     optionValue="value"
                                     placeholder="All"
@@ -636,6 +628,28 @@ onMounted(() => {
                                     Product
                                     <span class="text-center d-inline-block align-middle" style="width: 20px">
                                         <template v-if="sort.field == 'productName'">
+                                            <font-awesome-icon
+                                                v-if="sort.order == 'desc'"
+                                                :icon="['fa-solid', 'fa-sort-amount-up-alt']"
+                                            />
+                                            <font-awesome-icon v-else :icon="['fa-solid', 'fa-sort-amount-down-alt']" />
+                                        </template>
+                                        <template v-else>
+                                            <font-awesome-icon :icon="['fa-solid', 'fa-sort']" />
+                                        </template>
+                                    </span>
+                                </th>
+                                <th
+                                    id="table-header-managed"
+                                    class="text-center"
+                                    :style="{
+                                        whiteSpace: 'nowrap'
+                                    }"
+                                    @click="orderBy('isManaged')"
+                                >
+                                    Managed
+                                    <span class="text-center d-inline-block align-middle" style="width: 20px">
+                                        <template v-if="sort.field == 'isManaged'">
                                             <font-awesome-icon
                                                 v-if="sort.order == 'desc'"
                                                 :icon="['fa-solid', 'fa-sort-amount-up-alt']"
@@ -820,28 +834,6 @@ onMounted(() => {
                                     </span>
                                 </th>
                                 <th
-                                    id="table-header-managed"
-                                    class="text-center"
-                                    :style="{
-                                        whiteSpace: 'nowrap'
-                                    }"
-                                    @click="orderBy('isManaged')"
-                                >
-                                    Managed
-                                    <span class="text-center d-inline-block align-middle" style="width: 20px">
-                                        <template v-if="sort.field == 'isManaged'">
-                                            <font-awesome-icon
-                                                v-if="sort.order == 'desc'"
-                                                :icon="['fa-solid', 'fa-sort-amount-up-alt']"
-                                            />
-                                            <font-awesome-icon v-else :icon="['fa-solid', 'fa-sort-amount-down-alt']" />
-                                        </template>
-                                        <template v-else>
-                                            <font-awesome-icon :icon="['fa-solid', 'fa-sort']" />
-                                        </template>
-                                    </span>
-                                </th>
-                                <th
                                     v-if="!hasPrimaryProduct()"
                                     :style="{
                                         width: '130px'
@@ -901,6 +893,55 @@ onMounted(() => {
                                         class="badge border border-secondary text-secondary opacity-75 ms-1 lh-sm addon-ipv4"
                                     >
                                         <font-awesome-icon :icon="['fas', 'network-wired']"></font-awesome-icon>
+                                    </span>
+                                </td>
+                                <td>
+                                    <span
+                                        v-if="
+                                            article.isManaged === null &&
+                                            article.providerKey === 'pxc' &&
+                                            article.isContended === false
+                                        "
+                                        title="This product is unmanaged and will become managed once a router is selected. For PXC Ethernet circuits routers are free of charge on 3 or 5 year terms."
+                                        data-bs-original-title="This product is unmanaged and will become managed once a router is selected. For PXC Ethernet circuits routers are free of charge on 3 or 5 year terms."
+                                        v-tooltip
+                                    >
+                                        {{
+                                            article.isManaged == true
+                                                ? 'Yes'
+                                                : article.isManaged === false
+                                                  ? 'No'
+                                                  : 'N/A'
+                                        }}
+                                        <SvgIcon class="h6 mt-1" width="20" height="20" name="info" />
+                                    </span>
+                                    <span
+                                        v-else-if="
+                                            article.isManaged === true &&
+                                            article.providerKey === 'its' &&
+                                            article.isContended === false
+                                        "
+                                        title="ITS Managed Fibre Bright and Leased Lines include 24/7 availability monitoring and a 6-hour fix SLA. No router is supplied — where ITS provide the fibre an ONT is included; where third-party."
+                                        data-bs-original-title="ITS Managed Fibre Bright and Leased Lines include 24/7 availability monitoring and a 6-hour fix SLA. No router is supplied — where ITS provide the fibre an ONT is included; where third-party."
+                                        v-tooltip
+                                    >
+                                        {{
+                                            article.isManaged == true
+                                                ? 'Yes'
+                                                : article.isManaged === false
+                                                  ? 'No'
+                                                  : 'N/A'
+                                        }}
+                                        <SvgIcon class="h6 mt-1" width="20" height="20" name="info" />
+                                    </span>
+                                    <span v-else>
+                                        {{
+                                            article.isManaged == true
+                                                ? 'Yes'
+                                                : article.isManaged === false
+                                                  ? 'No'
+                                                  : 'N/A'
+                                        }}
                                     </span>
                                 </td>
                                 <td>
@@ -977,9 +1018,6 @@ onMounted(() => {
                                     </span>
                                 </td>
                                 <td>{{ article.contractTermMonths }} Months</td>
-                                <td>
-                                    {{ article.isManaged == true ? 'Yes' : article.isManaged === false ? 'No' : 'N/A' }}
-                                </td>
                                 <td class="text-end" v-if="!hasPrimaryProduct()">
                                     <button class="btn btn-outline-primary me-2 py-1" @click="checkProduct(article)">
                                         <font-awesome-icon :icon="['fas', 'plus']" />

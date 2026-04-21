@@ -33,6 +33,15 @@ describe('Creates a Mobile Quote', () => {
         cy.get('.step-action-bar #btn-next-step').click();
         cy.get('#btn-create-quote').should('not.be.disabled').click();
 
+        //Managed filter
+        cy.get('#managed-multiselect').click();
+        cy.wait(500);
+        cy.get('.p-multiselect-list-container')
+            .eq(0)
+            .within(() => {
+                cy.get('.p-multiselect-option').contains('No').click();
+            });
+
         //Provider filter
         cy.get('#provider-multiselect').click();
         cy.wait(500);
