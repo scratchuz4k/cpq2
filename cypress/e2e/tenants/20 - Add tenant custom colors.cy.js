@@ -30,9 +30,9 @@ describe('Add tenant links.cy', () => {
 
     it('Check default colors', () => {
         cy.visit('/quotes');
-        cy.get('.bg-theme-secondary-dark').should('have.css', 'background-color', hexToRgb('aaaaaa'));
-        cy.get('.bg-theme-secondary-light').should('have.css', 'background-color', hexToRgb('eeeeee'));
-        cy.get('.footer').should('have.css', 'background-color', hexToRgb('aaaaaa'));
+        cy.get('.bg-theme-secondary-dark').should('have.css', 'background-color', hexToRgb('1e1e1e'));
+        cy.get('.bg-theme-secondary-light').should('have.css', 'background-color', hexToRgb('3d3d3d'));
+        cy.get('.footer').should('have.css', 'background-color', hexToRgb('1e1e1e'));
     });
 
     it('Update Tenant colors and check', () => {
