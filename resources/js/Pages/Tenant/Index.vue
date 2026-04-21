@@ -39,17 +39,17 @@ const tenant = reactive({
             ? JSON.parse(props.tenant.configurations.customization_colors)
             : {
                   app: {
-                      header: 'AAAAAA',
-                      navbar: 'EEEEEE',
-                      footer: 'AAAAAA'
+                      header: '',
+                      navbar: '',
+                      footer: ''
                   },
                   customer_approval: {
-                      header: 'AAAAAA',
-                      footer: 'AAAAAA'
+                      header: '',
+                      footer: ''
                   },
                   shareable: {
-                      header: 'AAAAAA',
-                      footer: 'AAAAAA'
+                      header: '',
+                      footer: ''
                   }
               }
     }
@@ -130,7 +130,7 @@ const submitTenantSettings = async () => {
         let res = await axios.put(`/api/tenants/` + tenant.id, { ...tenant, configurations: configs });
 
         let temp = res.data;
-        Object.assign(tenant, temp);
+        Object.assign(tenant, parseTenantConfigurations(res.data));
 
         notyf.success('Content updated successfully');
         tenant.configurations.quote_margin_rules_value = tenant.configurations.quote_margin_rules_value
@@ -166,7 +166,6 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Settings', url: '/sett
     <AuthenticatedLayout>
         <div class="panel">
             <Header title="Tenant" :breadcrumbs="items"> </Header>
-            {{ tenant.configurations.customization_colors }}
             <tabs>
                 <tab :selected="true" title="General">
                     <div class="d-flex align-items-start mt-5">

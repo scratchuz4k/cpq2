@@ -2,12 +2,6 @@ import { onMounted, watch } from 'vue';
 import { usePage } from '@inertiajs/vue3';
 import _ from 'lodash';
 
-export const defaultColors = {
-    header: 'AAAAAA',
-    navbar: 'EEEEEE',
-    footer: 'AAAAAA'
-};
-
 const contextLayout = (key) => {
     switch (key) {
         case 'shared-link':
@@ -56,8 +50,6 @@ export const useColors = (initialPageProps) => {
 
     if (!colors) return;
     function applyColors(colors) {
-        if (!colors) colors = defaultColors;
-
         const root = document.documentElement;
 
         Object.entries(colors).forEach(([key, value]) => {
