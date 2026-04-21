@@ -45,8 +45,9 @@ describe('Add tenant links.cy', () => {
             Object.entries(colors).forEach(([element, value]) => {
                 cy.get(`#color-${section}-${element}-hex`).clear().type(value);
             });
+            cy.wait(500);
         });
-
+        cy.wait(500);
         cy.visit('/quotes');
 
         cy.get('.bg-theme-secondary-dark').should('have.css', 'background-color', hexToRgb(appColors.app.header));
@@ -68,7 +69,6 @@ describe('Add tenant links.cy', () => {
         cy.get(`#input-shareable-link`)
             .invoke('val')
             .then((value) => {
-                cy.log(value);
                 url = value;
             });
     });

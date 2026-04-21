@@ -74,6 +74,8 @@ class SharedLinkController extends Controller
     private function getResource($component, $item)
     {
         $tenant = $component == 'QuoteApprovals' ? $item->quote->tenant : $item->tenant;
+        $configs = $tenant->configs ?? [];
+
         if ($tenant !== Tenant::current()) {
             $temp = Tenant::findOrFail($tenant->id);
             $temp->makeCurrent();
@@ -82,13 +84,19 @@ class SharedLinkController extends Controller
         return match ($component) {
             'Quotes' => [
                 'pricePlans' => PricePlan::all(),
-                'model' => new QuoteResource($item->load(['items', 'tenant.logo'])),
+                'model' => new QuoteResource($item->load(['items', 'tenant.logo', 'tenant.configurations'])),
+                'customization' => [
+                    'colors' => json_decode(array_key_exists('customization_colors', $configs) ? $configs['customization_colors'] : '[]'),
+                ],
                 'shareableType' => 'shared-link',
             ],
 
             'QuoteApprovals' => [
                 'pricePlans' => PricePlan::all(),
-                'model' => new QuoteResource($item->quote->load(['items', 'tenant.logo'])),
+                'model' => new QuoteResource($item->quote->load(['items', 'tenant.logo', 'tenant.configurations'])),
+                'customization' => [
+                    'colors' => json_decode(array_key_exists('customization_colors', $configs) ? $configs['customization_colors'] : '[]'),
+                ],
                 'shareableType' => 'quote-approval',
             ],
             default => $item,
