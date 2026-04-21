@@ -56,7 +56,7 @@ describe('Add tenant links.cy', () => {
 
     it('Create quote and a shared link', () => {
         cy.visit('/quotes/create');
-        cy.selectLazyOption('account_id', account.name);
+        cy.selectLazyOption('account_id');
         cy.get('.step-action-bar #btn-next-step').click();
 
         cy.get('#solution_type-mobile').click();
