@@ -542,7 +542,7 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Settings', url: '/sett
                                 aria-controls="v-pills-colors"
                                 aria-selected="false"
                             >
-                                Colors
+                                Colours
                             </button>
                         </div>
                         <div class="tab-content ps-3 w-100" id="v-pills-tabContent">
