@@ -45,7 +45,7 @@ describe('Add tenant links.cy', () => {
             Object.entries(colors).forEach(([element, value]) => {
                 cy.get(`#color-${section}-${element}-hex`).clear().type(value);
             });
-            cy.wait(500);
+            cy.wait(1000);
         });
         cy.wait(500);
         cy.visit('/quotes');
