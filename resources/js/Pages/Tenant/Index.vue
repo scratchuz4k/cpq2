@@ -555,7 +555,7 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Settings', url: '/sett
                                 <div class="col xml-in-tabs">
                                     <div class="d-flex">
                                         <div class="logo-form">
-                                            <h4>Import Logos for {{ tenant.name }}</h4>
+                                            <h4>Logos for {{ tenant.name }}</h4>
                                             <p>The files to upload must be a .jpeg, .jpg, .png, .gif</p>
                                         </div>
                                     </div>
@@ -652,8 +652,8 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Settings', url: '/sett
                                 aria-labelledby="v-pills-colors-tab"
                             >
                                 <div class="colors-form">
-                                    <h4>Colors for tenant {{ tenant.name }}</h4>
-                                    <p class="mb-3">Manage tenant colors</p>
+                                    <h4>Colours for {{ tenant.name }}</h4>
+                                    <p class="mb-3">Manage the colours of the application</p>
                                 </div>
                                 <div class="col">
                                     <Separator :title="'App'" />
