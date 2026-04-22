@@ -7,10 +7,10 @@
                 </div>
                 <div
                     class="col d-flex justify-center justify-content-sm-end align-items-center"
-                    v-if="socialLinks.filter((x) => x.is_active).length"
+                    v-if="socialLinks?.filter((x) => x.is_active).length"
                 >
                     <a
-                        v-for="link in socialLinks.filter((x) => x.is_active)"
+                        v-for="link in socialLinks?.filter((x) => x.is_active)"
                         :title="link.label"
                         :href="link.url"
                         class="fs-4 social-link"
@@ -20,12 +20,12 @@
                     </a>
                 </div>
             </div>
-            <div class="row mt-3" v-if="links.filter((x) => x.is_active).length">
+            <div class="row mt-3" v-if="links?.filter((x) => x.is_active).length">
                 <div class="col">
                     <div class="d-flex flex-column flex-sm-row justify-content-end">
                         <a
                             class="footer-link"
-                            v-for="link in links.filter((x) => x.is_active)"
+                            v-for="link in links?.filter((x) => x.is_active)"
                             :href="link.url"
                             target="_blank"
                             >{{ link.label }}</a

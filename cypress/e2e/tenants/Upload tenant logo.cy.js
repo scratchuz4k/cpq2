@@ -6,6 +6,7 @@ describe('Update tenant logo', () => {
         cy.visit('/quotes');
         cy.get('#settings').click();
         cy.get('#link-tenant').click();
+        cy.get('#2-2').click();
         cy.get('#v-pills-logo-tab').click();
     });
 
