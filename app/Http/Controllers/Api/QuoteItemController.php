@@ -101,6 +101,19 @@ class QuoteItemController extends BaseController
         if ($descendants->isNotEmpty()) {
             $quote->items()
                 ->whereIn('product_id', $descendants->pluck('id'))
+                ->where('data->type', '!=', 'addon_product') // keep linked, they will be deleted by cascade if parent is deleted
+                ->delete();
+        }
+
+        $addons = ! is_null($quoteItem->product_id)
+            ? Product::find($quoteItem->product_id)->addons
+            : collect();
+
+        // delete all items with descendant products
+        if ($addons->isNotEmpty()) {
+            $quote->items()
+                ->whereIn('product_id', $addons->pluck('id'))
+                ->where('data->type', '==', 'addon_product') // keep addons, they will be deleted by cascade if parent is deleted
                 ->delete();
         }
 

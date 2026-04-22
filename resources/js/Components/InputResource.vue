@@ -12,7 +12,13 @@
         <div
             v-else
             class="d-flex justify-center my-3 input-resource"
-            style="height: 120px; width: 120px; align-items: center; border: 3px dotted #a34796; border-radius: 10px"
+            style="
+                height: 120px;
+                width: 120px;
+                align-items: center;
+                border: 3px dotted var(--color-purple);
+                border-radius: 10px;
+            "
         >
             <font-awesome-icon class="w-100 mx-auto" style="font-size: 4rem" :icon="['fas', 'plus']" />
         </div>

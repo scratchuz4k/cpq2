@@ -106,8 +106,9 @@ jobs:
                   # Define the target username
                   TARGET_USER="$COMMIT_OWNER"
 
-                  # Get the user ID from the array using the target username
-                  USER_ID="${{ secrets.ID_DISCORD_CRIS }}"
+                   # Get the user ID from the array using the target username
+                  USER_ID="${users[$TARGET_USER]}"
+
                   # Check if the user ID exists
                   if [ -z "$USER_ID" ]; then
                     echo -e "User $TARGET_USER not found!"

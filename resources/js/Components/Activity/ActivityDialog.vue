@@ -261,7 +261,7 @@ function getEntityLabel(type) {
                         class="p-timeline-event-marker text-white"
                         :class="[
                             slotProps.item.operation == 'deleted'
-                                ? 'bg-error'
+                                ? 'bg-danger'
                                 : slotProps.item.operation == 'created'
                                   ? 'bg-success'
                                   : 'bg-primary'

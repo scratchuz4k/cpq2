@@ -32,6 +32,15 @@ describe('Creates a Connectivity quote', () => {
         cy.get('.step-action-bar #btn-next-step').click();
         cy.get('.step-action-bar #btn-create-quote').should('not.be.disabled').click();
 
+        //Managed filter
+        cy.get('#managed-multiselect').click();
+        cy.wait(500);
+        cy.get('.p-multiselect-list-container')
+            .eq(0)
+            .within(() => {
+                cy.get('.p-multiselect-option').contains('No').click();
+            });
+
         //Provider filter
         cy.get('#provider-multiselect').click();
         cy.wait(500);
@@ -133,6 +142,15 @@ describe('Creates a Connectivity quote', () => {
         cy.get('#btn-more-filters').click();
         cy.get("#filter-lower-cost input[type='checkbox']").should('be.checked');
         cy.wait(3000);
+
+        //Managed filter
+        cy.get('#managed-multiselect').click();
+        cy.wait(500);
+        cy.get('.p-multiselect-list-container')
+            .eq(0)
+            .within(() => {
+                cy.get('.p-multiselect-option').contains('No').click();
+            });
 
         //Provider filter
         cy.get('#provider-multiselect').click();
