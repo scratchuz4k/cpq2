@@ -43,6 +43,9 @@ const appendPage = (items) => {
         const quoteItem = quote.items?.find(
             (x) => x.product_code == item.addon.sku && x.data?.type == 'addon_product' && x.group == parentItem?.group
         );
+        if (!item.addon.contract_length) {
+            item.addon.contract_length = item.addon.price_plan?.code == 'SINGLE' ? 1 : 12;
+        }
         item.addon.quantity = quoteItem ? quoteItem.quantity : 0;
         addons.value.push(item);
     });
@@ -108,61 +111,71 @@ const checkQuantity = _.throttle(async (addon, val) => {
     isDisabled.value = true;
     isBlocked.value = true;
     return (currentPromise = currentPromise.then(async () => {
-        let quantity = val;
+        try {
+            let quantity = val;
 
-        if (quantity > addon.stock) {
-            notyf.open({
-                type: 'warning',
-                message: 'You can only add up to the number of units in stock. The quantity is automatically adjusted'
-            });
-            quantity = addon.stock;
-        }
-
-        addon.quantity = quantity;
-
-        const parentItem = quote.items?.find(
-            (x) => x.product_code == props.modelValue.sku && x.data?.type == 'main_product'
-        );
-        const quoteItem = quote.items?.find(
-            (x) => x.product_code == addon.sku && x.data?.type == 'addon_product' && x.group == parentItem?.group
-        );
-
-        if (!quoteItem) {
-            if (quantity > 0) {
-                if (!hasParentSelected()) {
-                    notyf.open({
-                        type: 'warning',
-                        message: 'You need to add the main product to the quote before adding add-ons'
-                    });
-                    addonQuantities.value[addon.id] = 0;
-                    return;
-                }
-
-                await createQuoteItem({
-                    quote_id: quote.id,
-                    product_code: addon.sku,
-                    product_id: addon.id,
-                    quantity: quantity,
-                    contract_length: addon.contract_length,
-                    name: addon.name,
-                    raw_price: addon.price ? addon.price.net : 0,
-                    price: addon.price ? addon.price.net_spa : 0,
-                    price_plan_id: addon.price_plan_id,
-                    group: parentItem?.group ?? null,
-                    data: { type: 'addon_product' }
+            if (quantity > addon.stock) {
+                notyf.open({
+                    type: 'warning',
+                    message:
+                        'You can only add up to the number of units in stock. The quantity is automatically adjusted'
                 });
+                quantity = addon.stock;
             }
-        } else {
-            if (quantity === 0) {
-                await removeQuoteItem(quoteItem.id);
-            } else {
-                await updateQuoteItem(quoteItem.id, { quantity });
-            }
-        }
 
-        isBlocked.value = false;
-        isDisabled.value = false;
-        await getQuote(quote.id);
+            addon.quantity = quantity;
+
+            const parentItem = quote.items?.find(
+                (x) => x.product_code == props.modelValue.sku && x.data?.type == 'main_product'
+            );
+            const quoteItem = quote.items?.find(
+                (x) => x.product_code == addon.sku && x.data?.type == 'addon_product' && x.group == parentItem?.group
+            );
+
+            if (!quoteItem) {
+                if (quantity > 0) {
+                    if (!hasParentSelected()) {
+                        notyf.open({
+                            type: 'warning',
+                            message: 'You need to add the main product to the quote before adding add-ons'
+                        });
+                        addon.quantity = 0;
+                        return;
+                    }
+
+                    await createQuoteItem({
+                        quote_id: quote.id,
+                        product_code: addon.sku,
+                        product_id: addon.id,
+                        quantity: quantity,
+                        contract_length: addon.contract_length,
+                        name: addon.name,
+                        raw_price: addon.price ? addon.price.net : 0,
+                        price: addon.price ? addon.price.net_spa : 0,
+                        price_plan_id: addon.price_plan_id,
+                        group: parentItem?.group ?? null,
+                        data: { type: 'addon_product' }
+                    });
+                }
+            } else {
+                if (quantity === 0) {
+                    await removeQuoteItem(quoteItem.id);
+                } else {
+                    await updateQuoteItem(quoteItem.id, { quantity });
+                }
+            }
+
+            await getQuote(quote.id);
+        } catch (error) {
+            console.error('Error updating addon quantity:', error);
+            notyf.open({
+                type: 'error',
+                message: 'An error occurred while updating the addon quantity, please try again.'
+            });
+        } finally {
+            isBlocked.value = false;
+            isDisabled.value = false;
+        }
     }));
 });
 
@@ -253,7 +266,7 @@ onMounted(async () => {
                             {{ item.addon.stock > 0 ? item.addon.stock + ' in stock' : 'Out of stock' }}
                         </span>
 
-                        <div style="width: 140px" class="me-3 flex-shrink-0">
+                        <div style="width: 130px" class="me-3 flex-shrink-0">
                             <InputQuantity
                                 :id="'addon-' + item.id"
                                 :modelValue="item.addon.quantity"
@@ -263,7 +276,7 @@ onMounted(async () => {
                             />
                         </div>
 
-                        <p class="mb-0 text-nowrap small fw-semibold text-end" style="width: 60px">
+                        <p class="mb-0 text-nowrap small fw-semibold text-end" style="width: 57px">
                             {{ format.GBP(item.addon.price?.net_spa || 0) }}
                         </p>
                     </div>
