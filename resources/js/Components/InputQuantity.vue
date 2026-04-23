@@ -15,7 +15,9 @@
             v-model="proxyValue"
             :max="props.maxValue"
             class="input-quantity"
-            @blur="checkValue($event)"
+            @keydown="integerOnly"
+            @input="checkValue"
+            @blur="blurCheckValue($event)"
             :disabled="props.disabled"
         />
         <button
@@ -30,7 +32,8 @@
     </div>
 </template>
 <script setup>
-import { computed, watch } from 'vue';
+import { computed } from 'vue';
+import { integerOnly, checkValue } from '@/Composables/input.js';
 const props = defineProps({
     id: String,
     modelValue: Number,
@@ -47,21 +50,14 @@ const proxyValue = computed({
         return props.modelValue;
     },
     set(val) {
-        emit('update:modelValue', val);
+        const parsedValue = Number(val);
+        emit('update:modelValue', Number.isFinite(parsedValue) ? parsedValue : 0);
     }
 });
 
-const checkValue = (event) => {
+const blurCheckValue = (event) => {
     const temp = parseInt(event.target.value, 10);
-
-    let newValue = temp;
-    if (isNaN(newValue)) {
-        newValue = 0;
-    }
-    const cap = Number.isFinite(props.maxValue) ? props.maxValue : 9999;
-    if (newValue > cap) {
-        newValue = cap;
-    }
+    const newValue = Number.isNaN(temp) ? 0 : temp;
 
     proxyValue.value = newValue;
     event.target.value = String(newValue);
