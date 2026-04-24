@@ -101,7 +101,9 @@ class Quote extends Model
 
     public function items(): HasMany
     {
-        return $this->hasMany(QuoteItem::class);
+        return $this->hasMany(QuoteItem::class)
+            ->orderBy('group')
+            ->orderBy('id');
     }
 
     public function approvals(): HasMany
@@ -116,7 +118,11 @@ class Quote extends Model
 
     public function itemsTrashed(): HasMany
     {
-        return $this->hasMany(QuoteItem::class)->withTrashed()->whereNotNull('deleted_at');
+        return $this->hasMany(QuoteItem::class)
+            ->withTrashed()
+            ->whereNotNull('deleted_at')
+            ->orderBy('group')
+            ->orderBy('id');
     }
 
     public function discounts(): HasMany

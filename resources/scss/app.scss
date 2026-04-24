@@ -57,6 +57,11 @@
     --grey: #5b6479;
 }
 
+html,
+body * {
+    scrollbar-width: thin;
+}
+
 body {
     font-family: var(--font-primary);
     color: var(--secondary-dark);
