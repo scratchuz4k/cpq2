@@ -40,15 +40,13 @@ const save = async (p) => {
 };
 
 const remove = async (p) => {
-    let items = quote.items.filter((x) => x.group == p.group);
     let result = null;
-    const productWithAddons = p.data?.type == 'main_product' && items.length > 1;
-
-    if (productWithAddons) {
+    let items = quote.items.filter((x) => x.group == p.group);
+    if (p.data?.type === 'main_product' && items.length > 1) {
         result = await swal.fire({
             width: '400px',
             title: 'Are you sure?',
-            text: 'This product includes add-ons, removing it will also remove them from the quote.'
+            text: 'This item includes other associated items, removing it will also remove them from the quote.'
         });
     } else {
         result = await swal.fire({
@@ -59,15 +57,7 @@ const remove = async (p) => {
     if (['cancel', 'backdrop'].includes(result.dismiss)) {
         return;
     }
-
-    if (productWithAddons) {
-        items.forEach(async (x) => {
-            await removeQuoteItem(x.id);
-        });
-    } else {
-        await removeQuoteItem(p.id);
-    }
-
+    await removeQuoteItem(p.id);
     await getQuote(quote.id);
 };
 

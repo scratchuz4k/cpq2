@@ -75,7 +75,7 @@ const checkQuantity = _.throttle(async (product, temp) => {
                 let result = await swal.fire({
                     width: '400px',
                     title: 'Are you sure?',
-                    text: 'This product includes add-ons, removing it will also remove them from the quote.'
+                    text: 'This item includes other associated items, removing it will also remove them from the quote.'
                 });
 
                 if (['cancel', 'backdrop'].includes(result.dismiss)) {
@@ -86,9 +86,7 @@ const checkQuantity = _.throttle(async (product, temp) => {
                 }
             }
 
-            for (let groupItem of groupItems) {
-                await removeQuoteItem(groupItem.id);
-            }
+            removeQuoteItem(item.id);
         } else {
             await updateQuoteItem(item.id, { quantity: temp });
         }
