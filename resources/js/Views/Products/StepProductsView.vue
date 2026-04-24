@@ -7,6 +7,9 @@ import { Paginator, Select, Skeleton } from 'primevue';
 import { selectedItems, addSelected } from '@/Composables/useComparator';
 import { actionBarButtons } from '@/Composables/useQuoteSteps.js';
 import OrderSummary from '@/Components/OrderSummary.vue';
+import InputText from 'primevue/inputtext';
+import InputIcon from 'primevue/inputicon';
+import IconField from 'primevue/iconfield';
 
 const meta = reactive({
     page: 1,
@@ -269,52 +272,39 @@ watch(
                     </p>
                 </div>
             </div>
-            <div class="row justify-content-end">
-                <div class="col-3">
+            <div class="row">
+                <div class="col-9">
                     <div class="d-flex justify-content-between mb-3">
                         <div class="d-flex">
                             <h2>Products ({{ meta.total }})</h2>
                         </div>
-                    </div>
-                </div>
-                <div class="col-9">
-                    <div class="d-flex justify-content-end align-items-end mb-3">
-                        <!-- <div class="d-flex flex-fill justify-content-start">
-                            <button
-                                class="btn border"
-                                :class="[showCards ? 'btn-dark' : '']"
-                                @click="() => (showCards = !showCards)"
-                                style="border-radius: 5px 0 0 5px"
-                            >
-                                <font-awesome-icon :icon="['fas', 'grip']"></font-awesome-icon>
-                            </button>
-                            <button
-                                class="btn border"
-                                :class="[showCards ? '' : 'btn-dark']"
-                                @click="() => (showCards = !showCards)"
-                                style="border-radius: 0 5px 5px 0"
-                            >
-                                <font-awesome-icon :icon="['fas', 'grip-lines']"></font-awesome-icon>
-                            </button>
-                        </div> -->
-                        <div class="d-flex justify-content-end text-nowrap flex-shrink-0">
-                            <span class="me-2 align-self-center">Sort by</span>
-                            <Select v-model="sort" :options="sortOptions" optionLabel="label" placeholder="All">
-                            </Select>
+                        <div class="d-flex mb-3">
+                            <IconField class="me-2">
+                                <InputText id="search" v-model="search" placeholder="Search" type="search" />
+                                <InputIcon class="text-black">
+                                    <font-awesome-icon :icon="['fas', 'search']" />
+                                </InputIcon>
+                            </IconField>
+                            <div class="d-flex justify-content-end text-nowrap flex-shrink-0">
+                                <Select
+                                    class="sort-order-select"
+                                    v-model="sort"
+                                    :options="sortOptions"
+                                    optionLabel="label"
+                                    placeholder="All"
+                                >
+                                </Select>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="row">
                 <div class="col-9">
-                    <div class="filters rounded bg-white p-3 mb-3">
+                    <div v-if="categories.length" class="filters rounded bg-white p-3 mb-3">
                         <div class="row">
                             <div class="col-3">
-                                <p class="bold">Search</p>
-                                <input type="search" class="form-control" placeholder="" v-model="search" />
-                            </div>
-                            <div class="col-3">
-                                <div v-if="categories.length" class="mb-4">
+                                <div class="mb-4">
                                     <h2>Categories</h2>
                                     <CategoriesTree v-model="currentCategory" :categories="categories"></CategoriesTree>
                                 </div>
