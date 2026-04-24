@@ -1543,3 +1543,28 @@ body {
     line-height: 1.5em; /* or a fixed px value, e.g. 24px */
     height: calc(1.5em * 3); /* 3 lines × line-height */
 }
+
+.custom-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 0, 0, 0.4) transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+    width: 4px; /* Thin scrollbar */
+}
+
+/* Hide the track and thumb by default */
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: transparent;
+    border-radius: 999px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-button {
+    display: none;
+    width: 0;
+    height: 0;
+}

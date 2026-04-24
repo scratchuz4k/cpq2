@@ -138,7 +138,10 @@ onMounted(() => {
                     <p class="fw-bold fs-5 lh-sm m-auto" style="max-width: 150px">
                         Drag & Drop or <span class="color-purple">browse</span>
                     </p>
-                    <p>Only {{ Object.values(extensions).join(', ') }} files can be selected</p>
+                    <p>
+                        Only {{ Object.values(extensions).join(', ') }} files can be selected, with a maximum size of
+                        2MB
+                    </p>
                 </div>
             </div>
         </dropzone>

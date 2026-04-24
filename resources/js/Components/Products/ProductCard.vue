@@ -69,9 +69,9 @@ const checkQuantity = _.throttle(async (product, temp) => {
         });
     } else {
         if (temp == 0) {
-            let items = quote.items.filter((x) => x.group == item.group && x.data?.type != 'main_product');
+            let groupItems = quote.items.filter((x) => x.group == item.group);
 
-            if (items.length > 0) {
+            if (groupItems.length > 1) {
                 let result = await swal.fire({
                     width: '400px',
                     title: 'Are you sure?',
@@ -86,7 +86,9 @@ const checkQuantity = _.throttle(async (product, temp) => {
                 }
             }
 
-            await removeQuoteItem(item.id);
+            for (let groupItem of groupItems) {
+                await removeQuoteItem(groupItem.id);
+            }
         } else {
             await updateQuoteItem(item.id, { quantity: temp });
         }
@@ -257,7 +259,7 @@ watch(searchInput, () => {
                             v-model="proxyValue.quantity"
                             @change="(val) => checkQuantity(proxyValue, val, true)"
                         />
-                        <p class="bold big ms-4">
+                        <p class="bold big ps-1 ms-4">
                             {{ format.GBP(proxyValue.price?.net_spa || 0) }}
                         </p>
                     </div>
