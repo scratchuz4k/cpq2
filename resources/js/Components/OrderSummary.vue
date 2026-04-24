@@ -8,16 +8,6 @@ const props = defineProps({
     modelValue: Object
 });
 
-// const emit = defineEmits(['update:modelValue']);
-// const proxyValue = computed({
-//     get() {
-//         return props.modelValue;
-//     },
-//     set(val) {
-//         emit('update:modelValue', val);
-//     }
-// });
-
 const productsTotal = ref(0);
 const addonTotal = ref(0);
 
@@ -51,7 +41,7 @@ watch(
 </script>
 
 <template>
-    <div class="price-mobile-sidebar commission-calculator px-4 pt-4 pb-2 mb-3">
+    <div class="order-summary-sidebar bg-white rounded px-4 pt-4 pb-2 mb-3">
         <h3 class="mb-3">Order summary</h3>
         <div class="quote-items">
             <div v-for="item in quote?.items.filter((item) => item.data?.type === 'main_product')" class="product mb-3">
@@ -116,6 +106,11 @@ watch(
     .addons-wrapper {
         border-left: 2px solid #0000001a;
     }
+}
+
+.order-summary-sidebar {
+    position: sticky;
+    top: 0;
 }
 hr {
     border-top: 1px solid var(--color-black);
