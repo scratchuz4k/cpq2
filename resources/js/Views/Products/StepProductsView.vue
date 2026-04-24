@@ -262,22 +262,9 @@ watch(
     <div v-if="proxyValue == currentStep" :id="'step-' + (currentStep + 1)" class="step">
         <div class="step">
             <div class="row">
-                <div class="d-flex justify-content-between mb-3">
-                    <h3>{{ currentStep + 1 }}. {{ step.name }}</h3>
-                    <p class="bigger text-primary bold">
-                        STEP
-                        <span id="current-step">{{ currentStep + 1 }}</span>
-                        /
-                        <span id="last-step">{{ props.total_steps }}</span>
-                    </p>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-9">
-                    <div class="d-flex justify-content-between mb-3">
-                        <div class="d-flex">
-                            <h2>Products ({{ meta.total }})</h2>
-                        </div>
+                <div class="d-flex justify-content-between">
+                    <div class="col-9 d-flex justify-content-between mb-1">
+                        <h3>{{ currentStep + 1 }}. {{ step.name }} ({{ meta.total }})</h3>
                         <div class="d-flex mb-3">
                             <IconField class="me-2">
                                 <InputText id="search" v-model="search" placeholder="Search" type="search" />
@@ -297,19 +284,21 @@ watch(
                             </div>
                         </div>
                     </div>
+                    <div class="col-3 d-flex justify-content-end">
+                        <p class="bigger text-primary bold">
+                            STEP
+                            <span id="current-step">{{ currentStep + 1 }}</span>
+                            /
+                            <span id="last-step">{{ props.total_steps }}</span>
+                        </p>
+                    </div>
                 </div>
             </div>
             <div class="row">
                 <div class="col-9">
                     <div v-if="categories.length" class="filters rounded bg-white p-3 mb-3">
-                        <div class="row">
-                            <div class="col-3">
-                                <div class="mb-4">
-                                    <h2>Categories</h2>
-                                    <CategoriesTree v-model="currentCategory" :categories="categories"></CategoriesTree>
-                                </div>
-                            </div>
-                        </div>
+                        <p class="bold">Categories</p>
+                        <CategoriesTree v-model="currentCategory" :categories="categories"></CategoriesTree>
                     </div>
                     <template v-if="meta.isLoading">
                         <ProductSkeleton v-for="item in [0, 1, 2, 3, 4]"></ProductSkeleton>

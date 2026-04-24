@@ -57,15 +57,13 @@
     --grey: #5b6479;
 }
 
-html,
-body * {
-    scrollbar-width: thin;
-}
-
 body {
     font-family: var(--font-primary);
     color: var(--secondary-dark);
 
+    * {
+        scrollbar-width: thin;
+    }
     .tooltip {
         --bs-tooltip-max-width: 300px;
         z-index: 1999;

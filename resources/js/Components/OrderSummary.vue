@@ -15,9 +15,9 @@ const totals = () => {
     const { productsTotal: products, addonTotal: addons } = quote?.items.reduce(
         (acc, item) => {
             if (item.data?.type === 'main_product') {
-                acc.productsTotal += item.original_price * item.quantity;
+                acc.productsTotal += item.original_price * item.contract_length * item.quantity;
             } else if (item.data?.type === 'addon_product') {
-                acc.addonTotal += item.original_price * item.quantity;
+                acc.addonTotal += item.original_price * item.contract_length * item.quantity;
             }
             return acc;
         },
@@ -110,7 +110,7 @@ watch(
 
 .order-summary-sidebar {
     position: sticky;
-    top: 0;
+    top: 1rem;
 }
 hr {
     border-top: 1px solid var(--color-black);
