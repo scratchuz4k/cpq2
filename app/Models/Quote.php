@@ -118,7 +118,11 @@ class Quote extends Model
 
     public function itemsTrashed(): HasMany
     {
-        return $this->hasMany(QuoteItem::class)->withTrashed()->whereNotNull('deleted_at');
+        return $this->hasMany(QuoteItem::class)
+            ->withTrashed()
+            ->whereNotNull('deleted_at')
+            ->orderBy('group')
+            ->orderBy('id');
     }
 
     public function discounts(): HasMany

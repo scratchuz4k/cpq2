@@ -259,7 +259,7 @@ watch(searchInput, () => {
                             v-model="proxyValue.quantity"
                             @change="(val) => checkQuantity(proxyValue, val, true)"
                         />
-                        <p class="bold big ms-4">
+                        <p class="bold big ps-1 ms-4">
                             {{ format.GBP(proxyValue.price?.net_spa || 0) }}
                         </p>
                     </div>

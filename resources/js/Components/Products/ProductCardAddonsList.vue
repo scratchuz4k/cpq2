@@ -250,11 +250,11 @@ onMounted(async () => {
             </div>
 
             <template v-else>
-                <div class="addon-list">
+                <div class="addon-list custom-scrollbar">
                     <div
                         v-for="item in addons"
                         :key="item.id"
-                        class="d-flex align-items-center justify-content-between py-2 border-bottom"
+                        class="d-flex align-items-center justify-content-between py-2 pe-2 border-bottom"
                     >
                         <p class="mb-0 me-3 flex-grow-1 small fw-semibold">{{ item.addon.name }}</p>
 
