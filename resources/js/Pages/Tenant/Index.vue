@@ -197,7 +197,7 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Settings', url: '/sett
                             >
                                 <div class="col xml-in-tabs">
                                     <h4>Import XML file for {{ tenant.name }}</h4>
-                                    <p>The file to upload must be a .xml</p>
+                                    <p>Files must be in .xml format, with a maximum size of 2MB</p>
                                     <form @submit.prevent="submitFileForm" enctype="multipart/form-data">
                                         <InputResource
                                             id="sso"
@@ -555,8 +555,11 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Settings', url: '/sett
                                 <div class="col xml-in-tabs">
                                     <div class="d-flex">
                                         <div class="logo-form">
-                                            <h4>Import Logos for {{ tenant.name }}</h4>
-                                            <p>The files to upload must be a .jpeg, .jpg, .png, .gif</p>
+                                            <h4>Logos for {{ tenant.name }}</h4>
+                                            <p>
+                                                Files must be in .jpeg, .jpg, .png, or .gif format, with a maximum size
+                                                of 2MB
+                                            </p>
                                         </div>
                                     </div>
                                     <div class="row row-cols-3 mt-3">
@@ -652,8 +655,8 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Settings', url: '/sett
                                 aria-labelledby="v-pills-colors-tab"
                             >
                                 <div class="colors-form">
-                                    <h4>Colors for tenant {{ tenant.name }}</h4>
-                                    <p class="mb-3">Manage tenant colors</p>
+                                    <h4>Colours for {{ tenant.name }}</h4>
+                                    <p class="mb-3">Manage the colours of the application</p>
                                 </div>
                                 <div class="col">
                                     <Separator :title="'App'" />

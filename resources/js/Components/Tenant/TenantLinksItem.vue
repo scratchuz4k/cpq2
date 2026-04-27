@@ -182,7 +182,7 @@ const save = () => {
     temp.label = label.trim();
     temp.url = temp.url.trim();
 
-    const activeLinks = props.allLinks.filter((item) => !!item.is_active);
+    const activeLinks = props.allLinks.filter((item, idx) => idx !== props.index && !!item.is_active);
     if (props.linkLimit && activeLinks.length >= props.linkLimit && !!temp.is_active) {
         notyf.error(`You can only add up to ${props.linkLimit} links`);
         return;
