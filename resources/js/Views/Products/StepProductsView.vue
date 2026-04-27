@@ -266,7 +266,12 @@ watch(
                     <h3>{{ currentStep + 1 }}. {{ step.name }} ({{ meta.total }})</h3>
                     <div class="d-flex mb-3">
                         <IconField class="me-2">
-                            <InputText id="search" v-model="search" placeholder="Search" type="search" />
+                            <InputText
+                                :id="'step-' + (currentStep + 1) + '-search-products'"
+                                v-model="search"
+                                placeholder="Search"
+                                type="search"
+                            />
                             <InputIcon class="text-black">
                                 <font-awesome-icon :icon="['fas', 'search']" />
                             </InputIcon>

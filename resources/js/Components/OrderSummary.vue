@@ -66,7 +66,10 @@ watch(
     <div class="order-summary-sidebar bg-white rounded px-4 pt-4 pb-2 mb-3">
         <h3 class="mb-3">Order summary</h3>
         <div class="quote-items">
-            <div v-for="item in quote?.items.filter((item) => item.data?.type === 'main_product')" class="product mb-3">
+            <div
+                v-for="item in quote?.items.filter((item) => item.data?.type === 'main_product')"
+                class="products-wrapper mb-3"
+            >
                 <div class="d-flex justify-content-between mb-0">
                     <p class="small fw-semibold product-name">{{ item.name }}</p>
                     <p class="small fw-semibold product-price text-right">

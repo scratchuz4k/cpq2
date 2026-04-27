@@ -282,7 +282,12 @@ watch(
                 <h3>{{ step }}. {{ quote.solution_type.code == 4 ? 'Handsets' : 'Hardware' }}</h3>
                 <div class="d-flex mb-3">
                     <IconField class="me-2">
-                        <InputText id="search" v-model="search" placeholder="Search" type="search" />
+                        <InputText
+                            :id="'step-' + (currentStep + 1) + '-search-products'"
+                            v-model="search"
+                            placeholder="Search"
+                            type="search"
+                        />
                         <InputIcon class="text-black">
                             <font-awesome-icon :icon="['fas', 'search']" />
                         </InputIcon>
