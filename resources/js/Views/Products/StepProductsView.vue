@@ -262,36 +262,32 @@ watch(
     <div v-if="proxyValue == currentStep" :id="'step-' + (currentStep + 1)" class="step">
         <div class="step">
             <div class="row">
-                <div class="d-flex justify-content-between">
-                    <div class="col-9 d-flex justify-content-between mb-1">
-                        <h3>{{ currentStep + 1 }}. {{ step.name }} ({{ meta.total }})</h3>
-                        <div class="d-flex mb-3">
-                            <IconField class="me-2">
-                                <InputText id="search" v-model="search" placeholder="Search" type="search" />
-                                <InputIcon class="text-black">
-                                    <font-awesome-icon :icon="['fas', 'search']" />
-                                </InputIcon>
-                            </IconField>
-                            <div class="d-flex justify-content-end text-nowrap flex-shrink-0">
-                                <Select
-                                    class="sort-order-select"
-                                    v-model="sort"
-                                    :options="sortOptions"
-                                    optionLabel="label"
-                                    placeholder="All"
-                                >
-                                </Select>
-                            </div>
-                        </div>
+                <div class="col-9 d-flex justify-content-between mb-1">
+                    <h3>{{ currentStep + 1 }}. {{ step.name }} ({{ meta.total }})</h3>
+                    <div class="d-flex mb-3">
+                        <IconField class="me-2">
+                            <InputText id="search" v-model="search" placeholder="Search" type="search" />
+                            <InputIcon class="text-black">
+                                <font-awesome-icon :icon="['fas', 'search']" />
+                            </InputIcon>
+                        </IconField>
+                        <Select
+                            class="sort-order-select"
+                            v-model="sort"
+                            :options="sortOptions"
+                            optionLabel="label"
+                            placeholder="All"
+                        >
+                        </Select>
                     </div>
-                    <div class="col-3 d-flex justify-content-end">
-                        <p class="bigger text-primary bold">
-                            STEP
-                            <span id="current-step">{{ currentStep + 1 }}</span>
-                            /
-                            <span id="last-step">{{ props.total_steps }}</span>
-                        </p>
-                    </div>
+                </div>
+                <div class="col-3 d-flex justify-content-end">
+                    <p class="bigger text-primary bold">
+                        STEP
+                        <span id="current-step">{{ currentStep + 1 }}</span>
+                        /
+                        <span id="last-step">{{ props.total_steps }}</span>
+                    </p>
                 </div>
             </div>
             <div class="row">

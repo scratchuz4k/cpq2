@@ -278,41 +278,32 @@ watch(
 <template>
     <div id="mobile_step_shopblocks" class="step">
         <div class="row">
-            <div class="d-flex justify-content-between mb-3">
+            <div class="col-9 d-flex justify-content-between mb-1">
                 <h3>{{ step }}. {{ quote.solution_type.code == 4 ? 'Handsets' : 'Hardware' }}</h3>
+                <div class="d-flex mb-3">
+                    <IconField class="me-2">
+                        <InputText id="search" v-model="search" placeholder="Search" type="search" />
+                        <InputIcon class="text-black">
+                            <font-awesome-icon :icon="['fas', 'search']" />
+                        </InputIcon>
+                    </IconField>
+                    <Select
+                        class="sort-order-select"
+                        v-model="sort"
+                        :options="sorts"
+                        optionLabel="label"
+                        placeholder="All"
+                    >
+                    </Select>
+                </div>
+            </div>
+            <div class="col-3 d-flex justify-content-end">
                 <p class="bigger text-primary bold">
                     STEP
                     <span id="current-step">{{ step }}</span>
                     /
                     <span id="last-step">{{ step }}</span>
                 </p>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-9">
-                <div class="d-flex justify-content-between mb-3">
-                    <div class="d-flex">
-                        <h2>Products ({{ meta.total }})</h2>
-                    </div>
-                    <div class="d-flex mb-3">
-                        <IconField class="me-2">
-                            <InputText id="search" v-model="search" placeholder="Search" type="search" />
-                            <InputIcon class="text-black">
-                                <font-awesome-icon :icon="['fas', 'search']" />
-                            </InputIcon>
-                        </IconField>
-                        <div class="d-flex justify-content-end text-nowrap flex-shrink-0">
-                            <Select
-                                class="sort-order-select"
-                                v-model="sort"
-                                :options="sorts"
-                                optionLabel="label"
-                                placeholder="All"
-                            >
-                            </Select>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
         <div class="row">
@@ -389,9 +380,6 @@ watch(
                         </div>
                     </div>
                 </div>
-            </div>
-
-            <div class="col-9">
                 <template v-if="meta.isLoading">
                     <ShopblocksProductSkeleton v-for="item in [0, 1, 2, 3, 4]"></ShopblocksProductSkeleton
                 ></template>
@@ -425,4 +413,4 @@ watch(
         </div>
     </div>
 </template>
-<style></style>
+<style scoped></style>
