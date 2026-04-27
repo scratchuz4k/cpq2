@@ -10,22 +10,44 @@ const props = defineProps({
 
 const productsTotal = ref(0);
 const addonTotal = ref(0);
+const recurringTotal = ref(0);
+const oneOffTotal = ref(0);
+const quoteTotal = ref(0);
 
 const totals = () => {
-    const { productsTotal: products, addonTotal: addons } = quote?.items.reduce(
+    const {
+        productsTotal: products,
+        addonTotal: addons,
+        recurringTotal: recurringItems,
+        oneOffTotal: oneOffItems
+    } = quote?.items.reduce(
         (acc, item) => {
             if (item.data?.type === 'main_product') {
                 acc.productsTotal += item.original_price * item.contract_length * item.quantity;
             } else if (item.data?.type === 'addon_product') {
                 acc.addonTotal += item.original_price * item.contract_length * item.quantity;
             }
+
+            if (item.price_plan?.code === 'MONTHLY') {
+                acc.recurringTotal += item.original_price * item.contract_length * item.quantity;
+            } else {
+                acc.oneOffTotal += item.original_price * item.contract_length * item.quantity;
+            }
             return acc;
         },
-        { productsTotal: 0, addonTotal: 0 }
+        {
+            productsTotal: 0,
+            addonTotal: 0,
+            recurringTotal: 0,
+            oneOffTotal: 0
+        }
     );
 
+    quoteTotal.value = recurringItems + oneOffItems;
     productsTotal.value = products;
     addonTotal.value = addons;
+    recurringTotal.value = recurringItems;
+    oneOffTotal.value = oneOffItems;
 };
 
 onMounted(() => {
@@ -45,10 +67,15 @@ watch(
         <h3 class="mb-3">Order summary</h3>
         <div class="quote-items">
             <div v-for="item in quote?.items.filter((item) => item.data?.type === 'main_product')" class="product mb-3">
-                <div class="d-flex justify-content-between mb-1">
+                <div class="d-flex justify-content-between mb-0">
                     <p class="small fw-semibold product-name">{{ item.name }}</p>
                     <p class="small fw-semibold product-price text-right">
                         {{ format.GBP(item.original_price * item.quantity) }}
+                    </p>
+                </div>
+                <div class="mb-1">
+                    <p v-if="item.price_plan?.code === 'MONTHLY'" class="small contract-length">
+                        {{ item.contract_length }} months
                     </p>
                 </div>
                 <div
@@ -68,6 +95,11 @@ watch(
                         </p>
                         <p class="small product-price text-right">
                             {{ format.GBP(addon.original_price * addon.quantity) }}
+                        </p>
+                    </div>
+                    <div>
+                        <p v-if="addon.price_plan?.code === 'MONTHLY'" class="small text-muted contract-length">
+                            {{ addon.contract_length }} months
                         </p>
                     </div>
                 </div>
@@ -90,9 +122,17 @@ watch(
         </div>
         <hr />
         <div class="total">
+            <div class="d-flex justify-content-between mb-2 sub-total-recurring">
+                <p class="small">Recurring Total</p>
+                <p class="small product-price text-right">{{ format.GBP(recurringTotal) }}</p>
+            </div>
+            <div class="d-flex justify-content-between mb-2 sub-total-one-off">
+                <p class="small">One Off Total</p>
+                <p class="small product-price text-right">{{ format.GBP(oneOffTotal) }}</p>
+            </div>
             <div class="d-flex justify-content-between mb-2">
                 <p class="small fw-semibold">Total</p>
-                <p class="small fw-semibold product-price text-right">{{ format.GBP(quote.total) }}</p>
+                <p class="small fw-semibold product-price text-right">{{ format.GBP(quoteTotal) }}</p>
             </div>
         </div>
     </div>
