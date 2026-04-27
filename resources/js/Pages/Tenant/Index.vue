@@ -60,7 +60,9 @@ const parseTenantConfigurations = (data) => {
         data.configurations.customization_header = JSON.parse(data.configurations.customization_header ?? '[]');
         data.configurations.customization_footer = JSON.parse(data.configurations.customization_footer ?? '[]');
         data.configurations.customization_social = JSON.parse(data.configurations.customization_social ?? '[]');
-        data.configurations.customization_colors = JSON.parse(data.configurations.customization_colors ?? {});
+        data.configurations.customization_colors = data.configurations.customization_colors
+            ? JSON.parse(data.configurations.customization_colors)
+            : {};
     }
     return data;
 };
