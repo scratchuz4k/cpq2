@@ -6,15 +6,42 @@
             </button>
         </td>
         <td>
-            <p :id="`${props.id}-${index}-link-label`" class="py-2" v-if="!isEditing">{{ proxyValue.label }}</p>
-            <input
-                :id="`${props.id}-${index}-link-edit-label`"
-                v-else
-                class="form-control"
-                v-model="temp.label"
-                placeholder="Label"
-                maxlength="20"
-            />
+            <p :id="`${props.id}-${index}-link-label`" class="py-2" v-if="!isEditing">
+                <font-awesome-icon class="me-3" v-if="proxyValue.icon" :icon="['fa-brands', proxyValue.icon]" />
+                {{ proxyValue.label }}
+            </p>
+            <template v-else>
+                <Select
+                    v-if="props.links?.length > 0"
+                    :inputId="`${props.id}-new-link-ion`"
+                    v-model="temp.icon"
+                    :options="props.links"
+                    placeholder="Select a social network"
+                    class="w-100"
+                >
+                    <template #option="{ option }">
+                        <div class="d-flex align-items-center gap-2">
+                            <font-awesome-icon :icon="['fa-brands', option.icon]" />
+                            <span class="me-3">{{ option.value }}</span>
+                        </div>
+                    </template>
+
+                    <template #value="{ value }">
+                        <div v-if="value" class="d-flex align-items-center gap-2">
+                            <font-awesome-icon :icon="['fa-brands', value.icon]" />
+                            <span class="me-3">{{ value.label ?? value.value }}</span>
+                        </div>
+                    </template>
+                </Select>
+                <input
+                    :id="`${props.id}-${index}-link-edit-label`"
+                    v-else
+                    class="form-control"
+                    v-model="temp.label"
+                    placeholder="Label"
+                    maxlength="20"
+                />
+            </template>
         </td>
         <td>
             <p :id="`${props.id}-${index}-link-url`" class="py-2" v-if="!isEditing">{{ proxyValue.url }}</p>
@@ -59,15 +86,17 @@
                         class="btn p-2 mx-1 border-0"
                         role="button"
                         @click="edit()"
-                        ><font-awesome-icon class="text-primary" :icon="['fas', 'edit']"
-                    /></a>
+                    >
+                        <font-awesome-icon class="text-primary" :icon="['fas', 'edit']" />
+                    </a>
                     <a
                         :id="`${props.id}-${index}-link-remove`"
                         class="btn p-2 mx-1 border-0"
                         role="button"
                         @click="remove()"
-                        ><font-awesome-icon class="text-secondary" :icon="['fas', 'trash']"
-                    /></a>
+                    >
+                        <font-awesome-icon class="text-secondary" :icon="['fas', 'trash']" />
+                    </a>
                 </template>
                 <template v-else>
                     <a
@@ -93,11 +122,24 @@
 </template>
 <script setup>
 import { computed, reactive, ref } from 'vue';
+import Select from 'primevue/select';
 
 const props = defineProps({
     modelValue: Object,
     id: String,
-    index: Number
+    index: Number,
+    links: {
+        type: Array,
+        default: null
+    },
+    linkLimit: {
+        type: Number,
+        default: null
+    },
+    allLinks: {
+        type: Array,
+        default: []
+    }
 });
 
 const emit = defineEmits(['update:modelValue', 'removed', 'edited']);
@@ -121,6 +163,10 @@ const edit = () => {
     temp.label = proxyValue.value.label;
     temp.url = proxyValue.value.url;
     temp.is_active = proxyValue.value.is_active;
+    if (proxyValue.value.icon) {
+        temp.icon = { icon: proxyValue.value.icon, label: proxyValue.value.label };
+    }
+
     isEditing.value = true;
 };
 
@@ -132,8 +178,15 @@ const cancel = () => {
 };
 
 const save = () => {
-    temp.label = temp.label.trim();
+    const label = temp.icon?.value ?? temp.label;
+    temp.label = label.trim();
     temp.url = temp.url.trim();
+
+    const activeLinks = props.allLinks.filter((item, idx) => idx !== props.index && !!item.is_active);
+    if (props.linkLimit && activeLinks.length >= props.linkLimit && !!temp.is_active) {
+        notyf.error(`You can only add up to ${props.linkLimit} links`);
+        return;
+    }
 
     if (!temp.label) {
         notyf.error(`Please enter a label`);
@@ -152,11 +205,24 @@ const save = () => {
     proxyValue.value.label = temp.label;
     proxyValue.value.url = temp.url;
     proxyValue.value.is_active = temp.is_active;
+
+    if (temp.icon) {
+        proxyValue.value.icon = temp.icon.icon;
+    }
+
     isEditing.value = false;
     emit('edited');
 };
 
-const remove = () => {
+const remove = async () => {
+    let result = await swal.fire({
+        title: 'Are you sure?'
+    });
+
+    if (['cancel', 'backdrop'].includes(result.dismiss)) {
+        return;
+    }
+
     emit('removed', proxyValue);
 };
 

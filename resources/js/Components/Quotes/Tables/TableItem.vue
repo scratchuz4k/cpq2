@@ -40,12 +40,13 @@ const save = async (p) => {
 };
 
 const remove = async (p) => {
-    let items = quote.items.filter((x) => x.group == p.group);
     let result = null;
-    if (items.length > 1) {
+    let items = quote.items.filter((x) => x.group == p.group);
+    if (p.data?.type === 'main_product' && items.length > 1) {
         result = await swal.fire({
+            width: '400px',
             title: 'Are you sure?',
-            text: 'This line contains other associated lines, removing it deletes all associated lines'
+            text: 'This item includes other associated items, removing it will also remove them from the quote.'
         });
     } else {
         result = await swal.fire({
@@ -56,10 +57,7 @@ const remove = async (p) => {
     if (['cancel', 'backdrop'].includes(result.dismiss)) {
         return;
     }
-
-    items.forEach(async (x) => {
-        await removeQuoteItem(x.id);
-    });
+    await removeQuoteItem(p.id);
     await getQuote(quote.id);
 };
 

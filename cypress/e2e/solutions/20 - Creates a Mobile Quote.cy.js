@@ -15,12 +15,15 @@ const product = { sku: generateHash(temp1), name: temp1 };
 const temp2 = getCurrentDate();
 const step = { name: 'step-1' + temp2 };
 
+const temp3 = getCurrentDate();
+const addonProduct = { sku: generateHash(temp3 + '-addon'), name: 'Addon ' + temp3 };
+
 describe('Creates a Mobile Quote', () => {
     beforeEach(() => {
         cy.login('companyadmin@example.com', 'werwerwer');
     });
 
-    it('Creates a Category', () => {
+    it('Creates a Step', () => {
         cy.visit('/quotes');
         cy.get('#settings').click();
         cy.get('#link-steps').click();
@@ -52,7 +55,7 @@ describe('Creates a Mobile Quote', () => {
                 cy.get('#product-name').type(product.name);
                 cy.get('#product-sku').type(product.sku);
 
-                cy.selectLazyOption('product-steps', step.name);
+                cy.selectLazyOption('product-steps', 'Plans');
 
                 cy.get('#btn-save-product').click();
                 cy.get('.notyf').contains('Created with Success');
@@ -66,11 +69,8 @@ describe('Creates a Mobile Quote', () => {
         cy.get('.step-action-bar #btn-next-step').click();
 
         cy.get('#solution_type-mobile').click();
-        cy.wait(1000);
         cy.get('#btn-create-quote').click();
-        cy.wait(2000);
         cy.get('#btn-product-0-add-1').click();
-        cy.wait(1000);
         cy.get('#btn-product-1-add-1').click();
         cy.wait(1000);
 
@@ -92,7 +92,7 @@ describe('Creates a Mobile Quote', () => {
         let hardwareCount = 0;
         let keys = [0, 1];
 
-        cy.wait(2000);
+        cy.wait(1000);
         keys.forEach((key) => {
             cy.get(`#hardware-${key}-stock`).then(($input) => {
                 const spanText = parseInt($input.text().trim()); // Get the text content from the <span> and trim any extra whitespace
@@ -200,7 +200,7 @@ describe('Creates a Mobile Quote', () => {
 
         cy.get('#btn-MONTHLY-save').click({ force: true });
 
-        cy.wait(2000);
+        cy.wait(1000);
 
         cy.get('#input-margin-order')
             .invoke('val')
@@ -218,36 +218,79 @@ describe('Creates a Mobile Quote', () => {
             });
     });
 
-    // it('I can add and delete a Custom Line', () => {
-    //     cy.visit('/quotes');
-    //     cy.get('#datatable-btn-0-show').click();
-    //     cy.get('#btn-recurring-add').click();
-    //     cy.get('#input-new-recurring-name').type('Custom line recurring');
-    //     cy.get('#input-new-recurring-quantity').type(10);
-    //     cy.get('#input-new-recurring-price').type(10);
-    //     cy.get('#input-new-recurring-discount').type(10);
-    //     cy.get('#btn-new-recurring-add').click();
-    //     cy.get('#table-recurring').contains('Custom line recurring');
+    it('Creates an addon product and add it to the main product', () => {
+        cy.visit('/');
+        cy.get('#settings').click();
+        cy.get('#link-products').click();
 
-    //     cy.get('#btn-one_off-add').click();
-    //     cy.get('#input-new-one_off-name').type('Custom line one_off');
-    //     cy.get('#input-new-one_off-quantity').type(10);
-    //     cy.get('#input-new-one_off-price').type(10);
-    //     cy.get('#input-new-one_off-discount').type(10);
-    //     cy.get('#btn-new-one_off-add').click();
-    //     cy.get('#table-one_off').contains('Custom line one_off');
+        cy.get('#datatable-search').type(addonProduct.sku);
+        cy.wait(1000);
+        cy.get('#products-table').then(($table) => {
+            if ($table.text().includes('No records found')) {
+                cy.get('#product-create-btn').click();
+                cy.get('#product-name').type(addonProduct.name);
+                cy.get('#product-sku').type(addonProduct.sku);
+                cy.get('#btn-save-product').click();
+                cy.get('.notyf').contains('Created with Success');
+            }
+        });
 
-    //     cy.get('.recurring-item')
-    //         .its('length')
-    //         .then((count) => {
-    //             cy.get(`#btn-recurring-${count - 1}-remove`).click();
-    //         });
-    //     cy.get('#swal-btn-confirm').click();
-    //     cy.get('.one_off-item')
-    //         .its('length')
-    //         .then((count) => {
-    //             cy.get(`#btn-one_off-${count - 1}-remove`).click();
-    //         });
-    //     cy.get('#swal-btn-confirm').click();
-    // });
+        cy.get('#datatable-search').clear().type(product.sku);
+        cy.wait(1000);
+        cy.get('#datatable-btn-0-edit').click();
+        cy.get('#tabs-product-edit-3-3').click();
+        cy.get('#btn-add-addons').click();
+        cy.get('#addons-search-global').type(addonProduct.sku);
+        cy.get('#addons-table').should('not.contain', 'Loading');
+        cy.get('#addons-table').contains(addonProduct.sku);
+        cy.get('[id^="addons-checkbox-"]').first().click({ force: true });
+        cy.get('#btn-relation-add-addons').click({ force: true });
+        cy.get('.notyf').contains('Products added successfully');
+        cy.get('#btn-relation-cancel-addons').click();
+        cy.wait(1000);
+        cy.get('#product-addons-datatable-search').clear().type(addonProduct.sku);
+        cy.get('#product-addons').should('not.contain', 'Loading');
+        cy.get('#product-addons').contains(addonProduct.sku);
+    });
+
+    it('Adds an addon to the Mobile quote and verifies it is in the quote', () => {
+        cy.visit('/quotes');
+        cy.get('#datatable-btn-0-edit').click();
+        cy.get('#step-1-search-products').clear().type(product.sku);
+        cy.wait(1000);
+        cy.get(`#input-product-0-quantity`).clear().type(1).blur();
+
+        cy.wait(1000);
+        cy.get('[id^="btn-addon-"][id$="-add-1"]').should('be.visible');
+        // The product with the newly linked addon should be visible in step 1
+        // Product is already in the quote (qty > 0), so the addon section is shown
+        cy.get('[id^="btn-addon-"][id$="-add-1"]').first().click();
+
+        // Verify the addon quantity was incremented to 1
+        cy.get('[id^="input-addon-"][id$="-quantity"]').first().should('have.value', '1');
+
+        cy.get('#current-step')
+            .invoke('text')
+            .then((currentStepText) => {
+                cy.get('#last-step')
+                    .invoke('text')
+                    .then((lastStepText) => {
+                        const current_step = parseInt(currentStepText.trim());
+                        const last_step = parseInt(lastStepText.trim());
+
+                        for (let i = current_step; i < last_step; i++) {
+                            cy.get(`#btn-step-${i}-next`).click();
+                        }
+                    });
+            });
+
+        // Complete the quote flow and verify the addon appears in the summary
+        cy.get('.step-action-bar #btn-step-next').click();
+        cy.get('.recurring-item, .one_off-item').should('exist');
+
+        cy.get('.recurring-item, .one_off-item').then(($items) => {
+            const names = [...$items].map((el) => el.textContent);
+            expect(names.some((text) => text.includes(addonProduct.name))).to.be.true;
+        });
+    });
 });

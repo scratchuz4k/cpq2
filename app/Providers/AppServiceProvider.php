@@ -5,9 +5,11 @@ namespace App\Providers;
 use App\Helpers\Routing\ResourceRegistrar;
 use App\Models\Token;
 use Dedoc\Scramble\Scramble;
+use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Routing\Route;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
 use Laravel\Sanctum\Sanctum;
@@ -70,5 +72,9 @@ class AppServiceProvider extends ServiceProvider
         });
 
         Sanctum::usePersonalAccessTokenModel(Token::class);
+
+        RateLimiter::for('shopblocks-api', function () {
+            return Limit::perMinute(100); // max API limit is 300
+        });
     }
 }

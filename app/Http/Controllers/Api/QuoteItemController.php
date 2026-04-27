@@ -91,16 +91,45 @@ class QuoteItemController extends BaseController
         }
 
         $quote = $quoteItem->quote;
-        $descendants = ! is_null($quoteItem->product_id)
-            ? Product::descendants($quoteItem->product_id)
+        $productId = $quoteItem->product_id;
+        $descendantIds = ! is_null($productId)
+            ? Product::descendants($productId)->pluck('id')
             : collect();
 
         $quoteItem->delete();
 
-        // delete all items with descendant products
-        if ($descendants->isNotEmpty()) {
+        // TODO: We need to refactor this so we don't erase all ids from the quote, as some of them could be added by
+        // the user without been assocatiated to the main product
+
+        // get all descendant products
+        $cascadeProductIds = collect($descendantIds);
+
+        // get addons from selected product
+        if (! is_null($productId)) {
+            $product = Product::find($productId);
+            if (! is_null($product)) {
+                $cascadeProductIds = $cascadeProductIds->merge($product->addons->pluck('id'));
+            }
+        }
+
+        // get addons from descendants
+        if ($descendantIds->isNotEmpty()) {
+            $descendantProducts = Product::query()
+                ->with('addons:id')
+                ->whereIn('id', $descendantIds)
+                ->get();
+
+            foreach ($descendantProducts as $descendantProduct) {
+                $cascadeProductIds = $cascadeProductIds->merge($descendantProduct->addons->pluck('id'));
+            }
+        }
+
+        $cascadeProductIds = $cascadeProductIds->unique()->values();
+
+        // delete related products from quote
+        if ($cascadeProductIds->isNotEmpty()) {
             $quote->items()
-                ->whereIn('product_id', $descendants->pluck('id'))
+                ->whereIn('product_id', $cascadeProductIds)
                 ->delete();
         }
 

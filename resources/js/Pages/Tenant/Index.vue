@@ -6,11 +6,14 @@ import axios from 'axios';
 import ToggleSwitch from 'primevue/toggleswitch';
 import { InputText } from 'primevue';
 import _ from 'lodash';
+import InputColor from '@/Components/InputColor.vue';
+import Separator from '@/Components/Separator.vue';
 
 const props = defineProps({
     isSuperAdmin: Boolean,
     tenant: Object,
-    quote_approval_flows: Array
+    quote_approval_flows: Array,
+    social_links: Array
 });
 
 const isLoading = ref(false);
@@ -30,10 +33,37 @@ const tenant = reactive({
         quote_approval_flow: props.tenant.configurations.quote_approval_flow ?? 'Internal review',
         has_client_approval: props.tenant.configurations.has_client_approval ?? '0',
         customization_header: JSON.parse(props.tenant.configurations.customization_header ?? '[]'),
-        customization_footer: JSON.parse(props.tenant.configurations.customization_footer ?? '[]')
+        customization_footer: JSON.parse(props.tenant.configurations.customization_footer ?? '[]'),
+        customization_social: JSON.parse(props.tenant.configurations.customization_social ?? '[]'),
+        customization_colors: props.tenant.configurations.customization_colors
+            ? JSON.parse(props.tenant.configurations.customization_colors)
+            : {
+                  app: {
+                      header: '',
+                      navbar: '',
+                      footer: ''
+                  },
+                  customer_approval: {
+                      header: '',
+                      footer: ''
+                  },
+                  shareable: {
+                      header: '',
+                      footer: ''
+                  }
+              }
     }
 });
 
+const parseTenantConfigurations = (data) => {
+    if (data?.configurations) {
+        data.configurations.customization_header = JSON.parse(data.configurations.customization_header ?? '[]');
+        data.configurations.customization_footer = JSON.parse(data.configurations.customization_footer ?? '[]');
+        data.configurations.customization_social = JSON.parse(data.configurations.customization_social ?? '[]');
+        data.configurations.customization_colors = JSON.parse(data.configurations.customization_colors ?? {});
+    }
+    return data;
+};
 const submitFileForm = async () => {
     isLoading.value = true;
 
@@ -44,8 +74,7 @@ const submitFileForm = async () => {
     };
     try {
         let res = await axios.put(`/api/tenants/` + tenant.id, data);
-
-        Object.assign(tenant, res.data);
+        Object.assign(tenant, parseTenantConfigurations(res.data));
         if (!tenant.file) tenant.sso_text = null;
         notyf.success(success_message);
     } catch (err) {
@@ -64,7 +93,7 @@ const submitLogoForm = async () => {
 
     try {
         let res = await axios.put(`/api/tenants/` + tenant.id, data);
-        Object.assign(tenant, res.data);
+        Object.assign(tenant, parseTenantConfigurations(res.data));
         emitter.emit('logo:updated');
         notyf.success('Updated with Success');
     } catch (err) {
@@ -81,7 +110,7 @@ const submitTextForm = async () => {
 
     try {
         let res = await axios.put(`/api/tenants/` + tenant.id, data);
-        Object.assign(tenant, res.data);
+        Object.assign(tenant, parseTenantConfigurations(res.data));
         notyf.success('Content updated successfully');
     } catch (err) {
         notyf.error(err?.response?.data?.message ?? 'Something went wrong');
@@ -95,13 +124,13 @@ const submitTenantSettings = async () => {
         Object.assign(configs, tenant.configurations);
         configs.customization_header = JSON.stringify(configs.customization_header);
         configs.customization_footer = JSON.stringify(configs.customization_footer);
+        configs.customization_social = JSON.stringify(configs.customization_social);
+        configs.customization_colors = JSON.stringify(configs.customization_colors);
 
         let res = await axios.put(`/api/tenants/` + tenant.id, { ...tenant, configurations: configs });
 
         let temp = res.data;
-        temp.configurations.customization_header = JSON.parse(temp.configurations.customization_header);
-        temp.configurations.customization_footer = JSON.parse(temp.configurations.customization_footer);
-        Object.assign(tenant, temp);
+        Object.assign(tenant, parseTenantConfigurations(res.data));
 
         notyf.success('Content updated successfully');
         tenant.configurations.quote_margin_rules_value = tenant.configurations.quote_margin_rules_value
@@ -137,7 +166,6 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Settings', url: '/sett
     <AuthenticatedLayout>
         <div class="panel">
             <Header title="Tenant" :breadcrumbs="items"> </Header>
-
             <tabs>
                 <tab :selected="true" title="General">
                     <div class="d-flex align-items-start mt-5">
@@ -159,42 +187,6 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Settings', url: '/sett
                             >
                                 SSO
                             </button>
-                            <button
-                                class="nav-link"
-                                id="v-pills-logo-tab"
-                                data-bs-toggle="pill"
-                                data-bs-target="#v-pills-logo"
-                                type="button"
-                                role="tab"
-                                aria-controls="v-pills-logo"
-                                aria-selected="false"
-                            >
-                                Logos
-                            </button>
-                            <button
-                                class="nav-link"
-                                id="v-pills-header-tab"
-                                data-bs-toggle="pill"
-                                data-bs-target="#v-pills-header"
-                                type="button"
-                                role="tab"
-                                aria-controls="v-pills-header"
-                                aria-selected="false"
-                            >
-                                Header
-                            </button>
-                            <button
-                                class="nav-link"
-                                id="v-pills-footer-tab"
-                                data-bs-toggle="pill"
-                                data-bs-target="#v-pills-footer"
-                                type="button"
-                                role="tab"
-                                aria-controls="v-pills-footer"
-                                aria-selected="false"
-                            >
-                                Footer
-                            </button>
                         </div>
                         <div class="tab-content ps-3 w-100" id="v-pills-tabContent">
                             <div
@@ -205,7 +197,7 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Settings', url: '/sett
                             >
                                 <div class="col xml-in-tabs">
                                     <h4>Import XML file for {{ tenant.name }}</h4>
-                                    <p>The file to upload must be a .xml</p>
+                                    <p>Files must be in .xml format, with a maximum size of 2MB</p>
                                     <form @submit.prevent="submitFileForm" enctype="multipart/form-data">
                                         <InputResource
                                             id="sso"
@@ -215,7 +207,7 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Settings', url: '/sett
                                             @change="submitFileForm"
                                         ></InputResource>
                                     </form>
-                                    <div class="seperator">OR</div>
+                                    <Separator :title="'OR'" />
                                     <div class="mt-4">
                                         <h4>Input SSO configuration for {{ tenant.name }}</h4>
                                         <p>Please provide a valid xml syntax</p>
@@ -241,88 +233,6 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Settings', url: '/sett
                                     </div>
                                 </div>
                             </div>
-                            <div
-                                class="tab-pane fade"
-                                id="v-pills-logo"
-                                role="tabpanel"
-                                aria-labelledby="v-pills-logo-tab"
-                            >
-                                <div class="col xml-in-tabs">
-                                    <div class="d-flex">
-                                        <div class="logo-form">
-                                            <h4>Import Logos for {{ tenant.name }}</h4>
-                                            <p>The files to upload must be a .jpeg, .jpg, .png, .gif</p>
-                                        </div>
-                                    </div>
-                                    <div class="row row-cols-3 mt-3">
-                                        <div>
-                                            <label>Header</label>
-                                            <InputResource
-                                                id="logo"
-                                                v-model="tenant.logo_id"
-                                                :resource="tenant.logo"
-                                                :showLikeLine="false"
-                                                :acceptedFiles="['image/jpeg', 'image/jpg', 'image/png', 'image/gif']"
-                                                @change="submitLogoForm"
-                                            ></InputResource>
-                                        </div>
-                                        <div>
-                                            <label>Footer</label>
-                                            <InputResource
-                                                id="logo-alt"
-                                                v-model="tenant.logo_alt_id"
-                                                :resource="tenant.logo_alt"
-                                                :showLikeLine="false"
-                                                :acceptedFiles="['image/jpeg', 'image/jpg', 'image/png', 'image/gif']"
-                                                @change="submitLogoForm"
-                                            ></InputResource>
-                                        </div>
-                                        <div>
-                                            <label>PDF documents</label>
-                                            <InputResource
-                                                id="logo-docs"
-                                                v-model="tenant.logo_docs_id"
-                                                :resource="tenant.logo_docs"
-                                                :showLikeLine="false"
-                                                :acceptedFiles="['image/jpeg', 'image/jpg', 'image/png', 'image/gif']"
-                                                @change="submitLogoForm"
-                                            ></InputResource>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div
-                                class="tab-pane fade"
-                                id="v-pills-header"
-                                role="tabpanel"
-                                aria-labelledby="v-pills-header-tab"
-                            >
-                                <h4>Header Links for {{ tenant.name }}</h4>
-                                <p class="mb-3">Manage the header navigation links</p>
-
-                                <TenantLinks
-                                    v-model="tenant.configurations.customization_header"
-                                    id="header"
-                                    :linkLimit="4"
-                                    @change="submitTenantSettings()"
-                                />
-                            </div>
-                            <div
-                                class="tab-pane fade"
-                                id="v-pills-footer"
-                                role="tabpanel"
-                                aria-labelledby="v-pills-footer-tab"
-                            >
-                                <h4>Footer Links for {{ tenant.name }}</h4>
-                                <p class="mb-3">Manage the footer navigation links</p>
-
-                                <TenantLinks
-                                    v-model="tenant.configurations.customization_footer"
-                                    id="footer"
-                                    :linkLimit="4"
-                                    @change="submitTenantSettings()"
-                                />
-                            </div>
                         </div>
                     </div>
                 </tab>
@@ -333,7 +243,7 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Settings', url: '/sett
                             the platform and reflected in all related features. Please review your settings carefully
                             before saving:
                         </div>
-                        <h2 class="seperator">Misc</h2>
+                        <Separator :title="'Misc'" />
                         <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-3">
                             <div class="col">
                                 <div class="card bg-light border-0 settings-block h-100">
@@ -415,7 +325,7 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Settings', url: '/sett
                                 </div>
                             </div>
                         </div>
-                        <h2 class="seperator">Quotes</h2>
+                        <Separator :title="'Quotes'" />
                         <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-3">
                             <div class="col">
                                 <div class="card bg-light border-0 settings-block h-100">
@@ -566,38 +476,329 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Settings', url: '/sett
                         </div>
                     </div>
                 </tab>
+                <tab title="Layout">
+                    <div class="d-flex align-items-start mt-5">
+                        <div
+                            class="nav flex-column nav-pills me-3"
+                            id="v-pills-tab"
+                            role="tablist"
+                            aria-orientation="vertical"
+                        >
+                            <button
+                                class="nav-link active"
+                                id="v-pills-logo-tab"
+                                data-bs-toggle="pill"
+                                data-bs-target="#v-pills-logo"
+                                type="button"
+                                role="tab"
+                                aria-controls="v-pills-logo"
+                                aria-selected="false"
+                            >
+                                Logos
+                            </button>
+                            <button
+                                class="nav-link"
+                                id="v-pills-header-tab"
+                                data-bs-toggle="pill"
+                                data-bs-target="#v-pills-header"
+                                type="button"
+                                role="tab"
+                                aria-controls="v-pills-header"
+                                aria-selected="false"
+                            >
+                                Header
+                            </button>
+                            <button
+                                class="nav-link"
+                                id="v-pills-footer-tab"
+                                data-bs-toggle="pill"
+                                data-bs-target="#v-pills-footer"
+                                type="button"
+                                role="tab"
+                                aria-controls="v-pills-footer"
+                                aria-selected="false"
+                            >
+                                Footer
+                            </button>
+                            <button
+                                class="nav-link"
+                                id="v-pills-social-tab"
+                                data-bs-toggle="pill"
+                                data-bs-target="#v-pills-social"
+                                type="button"
+                                role="tab"
+                                aria-controls="v-pills-social"
+                                aria-selected="false"
+                            >
+                                Social
+                            </button>
+                            <button
+                                class="nav-link"
+                                id="v-pills-colors-tab"
+                                data-bs-toggle="pill"
+                                data-bs-target="#v-pills-colors"
+                                type="button"
+                                role="tab"
+                                aria-controls="v-pills-colors"
+                                aria-selected="false"
+                            >
+                                Colours
+                            </button>
+                        </div>
+                        <div class="tab-content ps-3 w-100" id="v-pills-tabContent">
+                            <div
+                                class="tab-pane fade show active"
+                                id="v-pills-logo"
+                                role="tabpanel"
+                                aria-labelledby="v-pills-logo-tab"
+                            >
+                                <div class="col xml-in-tabs">
+                                    <div class="d-flex">
+                                        <div class="logo-form">
+                                            <h4>Logos for {{ tenant.name }}</h4>
+                                            <p>
+                                                Files must be in .jpeg, .jpg, .png, or .gif format, with a maximum size
+                                                of 2MB
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="row row-cols-3 mt-3">
+                                        <div>
+                                            <label>Header</label>
+                                            <InputResource
+                                                id="logo"
+                                                v-model="tenant.logo_id"
+                                                :resource="tenant.logo"
+                                                :showLikeLine="false"
+                                                :acceptedFiles="['image/jpeg', 'image/jpg', 'image/png', 'image/gif']"
+                                                @change="submitLogoForm"
+                                            ></InputResource>
+                                        </div>
+                                        <div>
+                                            <label>Footer</label>
+                                            <InputResource
+                                                id="logo-alt"
+                                                v-model="tenant.logo_alt_id"
+                                                :resource="tenant.logo_alt"
+                                                :showLikeLine="false"
+                                                :acceptedFiles="['image/jpeg', 'image/jpg', 'image/png', 'image/gif']"
+                                                @change="submitLogoForm"
+                                            ></InputResource>
+                                        </div>
+                                        <div>
+                                            <label>PDF documents</label>
+                                            <InputResource
+                                                id="logo-docs"
+                                                v-model="tenant.logo_docs_id"
+                                                :resource="tenant.logo_docs"
+                                                :showLikeLine="false"
+                                                :acceptedFiles="['image/jpeg', 'image/jpg', 'image/png', 'image/gif']"
+                                                @change="submitLogoForm"
+                                            ></InputResource>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div
+                                class="tab-pane fade"
+                                id="v-pills-header"
+                                role="tabpanel"
+                                aria-labelledby="v-pills-header-tab"
+                            >
+                                <h4>Header Links for {{ tenant.name }}</h4>
+                                <p class="mb-3">Manage the header navigation links</p>
+
+                                <TenantLinks
+                                    v-model="tenant.configurations.customization_header"
+                                    id="header"
+                                    :linkLimit="4"
+                                    @change="submitTenantSettings()"
+                                />
+                            </div>
+                            <div
+                                class="tab-pane fade"
+                                id="v-pills-footer"
+                                role="tabpanel"
+                                aria-labelledby="v-pills-footer-tab"
+                            >
+                                <h4>Footer Links for {{ tenant.name }}</h4>
+                                <p class="mb-3">Manage the footer navigation links</p>
+
+                                <TenantLinks
+                                    v-model="tenant.configurations.customization_footer"
+                                    id="footer"
+                                    :linkLimit="4"
+                                    @change="submitTenantSettings()"
+                                />
+                            </div>
+                            <div
+                                class="tab-pane fade"
+                                id="v-pills-social"
+                                role="tabpanel"
+                                aria-labelledby="v-pills-social-tab"
+                            >
+                                <h4>Social Links for {{ tenant.name }}</h4>
+                                <p class="mb-3">Manage the social navigation links</p>
+
+                                <TenantLinks
+                                    v-model="tenant.configurations.customization_social"
+                                    :socialLinks="props.social_links"
+                                    id="social"
+                                    :linkLimit="5"
+                                    @change="submitTenantSettings()"
+                                />
+                            </div>
+                            <div
+                                class="tab-pane fade"
+                                id="v-pills-colors"
+                                role="tabpanel"
+                                aria-labelledby="v-pills-colors-tab"
+                            >
+                                <div class="colors-form">
+                                    <h4>Colours for {{ tenant.name }}</h4>
+                                    <p class="mb-3">Manage the colours of the application</p>
+                                </div>
+                                <div class="col">
+                                    <Separator :title="'App'" />
+                                    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
+                                        <div class="col">
+                                            <div class="card bg-light border-0 settings-block h-100">
+                                                <div class="card-body">
+                                                    <h6 class="fw-bold pe-5 mb-3">Header</h6>
+                                                    <div class="color-app-header">
+                                                        <InputColor
+                                                            v-model="
+                                                                tenant.configurations.customization_colors.app.header
+                                                            "
+                                                            :id="'color-app-header'"
+                                                            @change="submitTenantSettings"
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="card bg-light border-0 settings-block h-100">
+                                                <div class="card-body">
+                                                    <h6 class="fw-bold pe-5 mb-3">Navbar</h6>
+                                                    <div class="vcolor-app-navbar">
+                                                        <InputColor
+                                                            v-model="
+                                                                tenant.configurations.customization_colors.app.navbar
+                                                            "
+                                                            :id="'color-app-navbar'"
+                                                            @change="submitTenantSettings"
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="card bg-light border-0 settings-block h-100">
+                                                <div class="card-body">
+                                                    <h6 class="fw-bold pe-5 mb-3">Footer</h6>
+                                                    <div class="color-app-footer">
+                                                        <InputColor
+                                                            v-model="
+                                                                tenant.configurations.customization_colors.app.footer
+                                                            "
+                                                            :id="'color-app-footer'"
+                                                            @change="submitTenantSettings"
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <Separator :title="'Customer Approval'" />
+                                    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
+                                        <div class="col">
+                                            <div class="card bg-light border-0 settings-block h-100">
+                                                <div class="card-body">
+                                                    <h6 class="fw-bold pe-5 mb-3">Header</h6>
+                                                    <div class="color-app-header">
+                                                        <InputColor
+                                                            v-model="
+                                                                tenant.configurations.customization_colors
+                                                                    .customer_approval.header
+                                                            "
+                                                            :id="'color-approval-header'"
+                                                            @change="submitTenantSettings"
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="card bg-light border-0 settings-block h-100">
+                                                <div class="card-body">
+                                                    <h6 class="fw-bold pe-5 mb-3">Footer</h6>
+                                                    <div class="color-app-footer">
+                                                        <InputColor
+                                                            v-model="
+                                                                tenant.configurations.customization_colors
+                                                                    .customer_approval.footer
+                                                            "
+                                                            :id="'color-approval-footer'"
+                                                            @change="submitTenantSettings"
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <Separator :title="'Shareable Link'" />
+                                    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
+                                        <div class="col">
+                                            <div class="card bg-light border-0 settings-block h-100">
+                                                <div class="card-body">
+                                                    <h6 class="fw-bold pe-5 mb-3">Header</h6>
+                                                    <div class="color-app-header">
+                                                        <InputColor
+                                                            v-model="
+                                                                tenant.configurations.customization_colors.shareable
+                                                                    .header
+                                                            "
+                                                            :id="'color-shareable-header'"
+                                                            @change="submitTenantSettings"
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="card bg-light border-0 settings-block h-100">
+                                                <div class="card-body">
+                                                    <h6 class="fw-bold pe-5 mb-3">Footer</h6>
+                                                    <div class="color-app-footer">
+                                                        <InputColor
+                                                            v-model="
+                                                                tenant.configurations.customization_colors.shareable
+                                                                    .footer
+                                                            "
+                                                            :id="'color-shareable-footer'"
+                                                            @change="submitTenantSettings"
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </tab>
             </tabs>
         </div>
     </AuthenticatedLayout>
 </template>
 
 <style scoped>
-.seperator {
-    position: relative;
-    text-align: center;
-    margin: 2rem auto;
-}
-
-.seperator:before {
-    content: '';
-    width: 40%;
-    height: 1px;
-    background-color: var(--light-grey);
-    position: absolute;
-    left: 0;
-    top: 50%;
-}
-
-.seperator:after {
-    content: '';
-    width: 40%;
-    height: 1px;
-    background-color: var(--light-grey);
-    position: absolute;
-    right: 0;
-    top: 50%;
-}
-
 .tab-content {
     border-left: 1px solid var(--light-grey);
 }

@@ -25,7 +25,7 @@ const withPassword = () => {
     <Head title="Share" />
     <ShareLayout>
         <h1 v-if="isAuthorized">Nothing to Show</h1>
-        <div v-else class="panel-login row justify-content-center" style="min-height: 50vh">
+        <div v-else class="panel-login row justify-content-center align-items-center h-100">
             <div class="col-12 col-md-8 col-lg-6 col-xl-4 d-flex align-items-center">
                 <form class="card" @submit.prevent="withPassword()">
                     <div class="card-body p-4">

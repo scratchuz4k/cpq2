@@ -48,7 +48,7 @@ const onUpload = (data) => {
 <style lang="scss" scoped>
 .dropzone {
     min-height: 150px;
-    border: 2px dashed #a34796;
+    border: 2px dashed var(--color-purple);
     background: white;
     padding: 20px 20px;
 }

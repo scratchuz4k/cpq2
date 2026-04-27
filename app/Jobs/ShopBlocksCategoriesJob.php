@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Spatie\Multitenancy\Jobs\NotTenantAware;
+use Throwable;
 
 class ShopBlocksCategoriesJob implements NotTenantAware, ShouldQueue
 {
@@ -33,7 +34,9 @@ class ShopBlocksCategoriesJob implements NotTenantAware, ShouldQueue
 
     public function middleware()
     {
-        return [(new WithoutOverlapping('sync:ShopBlocksCategories'))->expireAfter(180)];
+        return [
+            (new WithoutOverlapping('sync:ShopBlocksCategories'))->expireAfter(180),
+        ];
     }
 
     /**

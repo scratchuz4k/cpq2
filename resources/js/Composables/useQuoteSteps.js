@@ -4,5 +4,5 @@ export const currentStep = ref(0);
 export const initSteps = ['StepAccount', 'StepSolutionType'];
 export const steps = ref(initSteps);
 
-export const isDisabled = ref(true);
+export const isDisabled = ref(false);
 export const actionBarButtons = ref([]);
