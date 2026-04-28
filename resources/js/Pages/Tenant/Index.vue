@@ -4,7 +4,7 @@ import { Head } from '@inertiajs/vue3';
 import { reactive, ref } from 'vue';
 import axios from 'axios';
 import ToggleSwitch from 'primevue/toggleswitch';
-import { InputText } from 'primevue';
+import { InputText, MultiSelect, Select } from 'primevue';
 import _ from 'lodash';
 import InputColor from '@/Components/InputColor.vue';
 import Separator from '@/Components/Separator.vue';
@@ -13,7 +13,9 @@ const props = defineProps({
     isSuperAdmin: Boolean,
     tenant: Object,
     quote_approval_flows: Array,
-    social_links: Array
+    social_links: Array,
+    calculator_layouts: Array,
+    available_tables: Array
 });
 
 const isLoading = ref(false);
@@ -51,7 +53,9 @@ const tenant = reactive({
                       header: '',
                       footer: ''
                   }
-              }
+              },
+        table_view: props.tenant.configurations.component ?? 'DealMaker',
+        calculator_layout: JSON.parse(props.tenant.configurations.calculator_layout ?? '[]')
     }
 });
 
@@ -61,6 +65,8 @@ const parseTenantConfigurations = (data) => {
         data.configurations.customization_footer = JSON.parse(data.configurations.customization_footer ?? '[]');
         data.configurations.customization_social = JSON.parse(data.configurations.customization_social ?? '[]');
         data.configurations.customization_colors = JSON.parse(data.configurations.customization_colors ?? {});
+        data.configurations.calculator_layout = JSON.parse(data.configurations.calculator_layout ?? '[]');
+        data.configurations.table_view = data.configurations.table_view ?? 'DealMaker';
     }
     return data;
 };
@@ -126,6 +132,7 @@ const submitTenantSettings = async () => {
         configs.customization_footer = JSON.stringify(configs.customization_footer);
         configs.customization_social = JSON.stringify(configs.customization_social);
         configs.customization_colors = JSON.stringify(configs.customization_colors);
+        configs.calculator_layout = JSON.stringify(configs.calculator_layout);
 
         let res = await axios.put(`/api/tenants/` + tenant.id, { ...tenant, configurations: configs });
 
@@ -157,6 +164,10 @@ const setMarginDefaults = () => {
     tenant.configurations.quote_margin_rules_value = 0;
     submitTenantSettings();
 };
+
+const submitCalculatorLayout = _.debounce(function () {
+    submitTenantSettings();
+}, 1000);
 
 const items = ref([{ label: 'Home', url: '/' }, { label: 'Settings', url: '/settings' }, { label: 'Tenant' }]);
 </script>
@@ -466,6 +477,66 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Settings', url: '/sett
                                                                 />
                                                             </template>
                                                         </ToggleSwitch>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="card bg-light border-0 settings-block h-100">
+                                    <div class="card-body">
+                                        <h6 class="fw-bold pe-5 mb-3">Summary Layout</h6>
+                                        <div class="quote-summary-layout">
+                                            <div>
+                                                <label for="quote-summary-layout" class="form-label lh-sm small pb-2">
+                                                    <i>
+                                                        This section contains all the customisations for the appearance
+                                                        of the solution type to match specific preferences within the
+                                                        quote.
+                                                    </i>
+                                                </label>
+                                            </div>
+                                            <div class="row g-3 mb-3">
+                                                <div class="col">
+                                                    <div class="mb-3">
+                                                        <label>Choose the view:</label>
+                                                        <Select
+                                                            id="quote-approval-flow"
+                                                            class="form-select"
+                                                            v-model="tenant.configurations.table_view"
+                                                            @change="submitTenantSettings()"
+                                                            :options="available_tables"
+                                                            placeholder="Select a View"
+                                                        >
+                                                        </Select>
+                                                    </div>
+                                                    <div
+                                                        class="mb-3"
+                                                        v-if="tenant.configurations.table_view === 'DealMaker'"
+                                                    >
+                                                        <label>Choose the Calculator Layout:</label>
+                                                        <div class="row g-3 mb-3">
+                                                            <div class="col">
+                                                                <MultiSelect
+                                                                    v-model="tenant.configurations.calculator_layout"
+                                                                    style="width: 100%"
+                                                                    :options="calculator_layouts"
+                                                                    placeholder="Select Layouts"
+                                                                    optionLabel="value"
+                                                                    @change="submitCalculatorLayout"
+                                                                >
+                                                                    <template #option="slotProps">
+                                                                        <div
+                                                                            style="font-size: 14px; line-height: 1.5rem"
+                                                                        >
+                                                                            {{ slotProps.option.value }}
+                                                                        </div>
+                                                                    </template>
+                                                                </MultiSelect>
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>

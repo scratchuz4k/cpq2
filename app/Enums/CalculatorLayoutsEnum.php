@@ -4,9 +4,9 @@ namespace App\Enums;
 
 enum CalculatorLayoutsEnum: string
 {
-    case DEFAULT = 'Show Margin and Commission';
-    case MARGIN = 'Show Margin only';
-    case COMMISSION = 'Show Commission only';
+    case MARGIN = 'Show Margin';
+    case COMMISSION = 'Show Commission';
+    case TOTAL = 'Show Total';
 
     public static function asArray(): array
     {
