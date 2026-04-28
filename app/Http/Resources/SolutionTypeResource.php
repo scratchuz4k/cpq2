@@ -29,33 +29,12 @@ class SolutionTypeResource extends JsonResource
 
         $code = $solutionType ? $solutionType->getName() : 'Mobile';
         $steps = SolutionTypesEnum::getSteps()[$code] ?? [];
-        $fileName = (! empty($steps) && file_exists(app_path("Helpers/Tables/$solutionType->name.php")))
-            ? "$solutionType->name.php"
-            : 'Default.php';
-        $file = app_path("Helpers/Tables/$fileName");
-        $columns = [];
-        if (file_exists($file)) {
-            $data = require $file;
-            if (array_key_exists('component', $this->configs) && array_key_exists($this->configs['component'], $data)) {
-                $columns = $data[$this->configs['component']];
-            } else {
-                $columns = $data['DealMaker'];
-            }
-        }
-
-        $table = $this->tables->first() ? $this->tables->first()->toArray() : [];
-        // if (! array_key_exists('has_custom_table', $this->configs) || ! $this->configs['has_custom_table']) {
-        //     $table['columns'] = (array) $columns;
-        // }
-        $table['columns'] = (array) $columns;
-
         $info = $this->resource->tenant() ? $this->resource->tenant()->pivot->toArray() : [];
 
         return [
             ...$this->resource->toArray(),
             ...$info,
             'configurations' => $this->configs,
-            'table' => $table,
             'steps' => $this->steps,
         ];
     }
