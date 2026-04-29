@@ -256,7 +256,7 @@ onMounted(async () => {
                         :key="item.id"
                         class="d-flex align-items-center justify-content-between py-2 pe-2 border-bottom"
                     >
-                        <p class="mb-0 me-3 flex-grow-1 small fw-semibold">{{ item.addon.name }}</p>
+                        <p class="mb-0 me-3 flex-grow-1 small fw-semibold truncate-2-lines">{{ item.addon.name }}</p>
 
                         <span
                             v-if="Object.keys(item.addon).includes('stock')"
@@ -322,5 +322,9 @@ onMounted(async () => {
 .addon-list {
     max-height: 147px;
     overflow-y: auto;
+}
+
+.addon-list .truncate-2-lines {
+    height: auto;
 }
 </style>

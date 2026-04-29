@@ -277,10 +277,10 @@ watch(
 </script>
 <template>
     <div id="mobile_step_shopblocks" class="step">
-        <div class="row">
-            <div class="col-9 d-flex justify-content-between mb-1">
-                <h3>{{ step }}. {{ quote.solution_type.code == 4 ? 'Handsets' : 'Hardware' }}</h3>
-                <div class="d-flex mb-3">
+        <div class="row mb-3">
+            <div class="col-9 d-flex justify-content-between align-items-center">
+                <h3 class="mb-0">{{ step }}. {{ quote.solution_type.code == 4 ? 'Handsets' : 'Hardware' }}</h3>
+                <div class="d-flex">
                     <IconField class="me-2">
                         <InputText
                             :id="'step-' + (currentStep + 1) + '-search-products'"
@@ -302,7 +302,7 @@ watch(
                     </Select>
                 </div>
             </div>
-            <div class="col-3 d-flex justify-content-end">
+            <div class="col-3 d-flex justify-content-end align-items-center">
                 <p class="bigger text-primary bold">
                     STEP
                     <span id="current-step">{{ step }}</span>
@@ -314,30 +314,30 @@ watch(
         <div class="row">
             <div class="col-9">
                 <div class="filters rounded bg-white p-3 mb-3">
-                    <div class="row">
+                    <div class="row mb-3">
                         <div class="col-3">
-                            <div class="mb-4">
+                            <div class="mt-2">
                                 <p class="bold">Categories</p>
-                                <ShopBlocksCategoriesTree
+                                <ShopBlocksCategories
                                     v-model="currentCategory"
-                                    :defaultCategory="category"
-                                ></ShopBlocksCategoriesTree>
+                                    :categories="category"
+                                ></ShopBlocksCategories>
                             </div>
                         </div>
                         <div class="col-3">
-                            <div class="mb-4">
+                            <div class="mt-2">
                                 <p class="bold">Brands</p>
                                 <ShopBlocksBrands v-model="currentBrand" :category="currentCategory"></ShopBlocksBrands>
                             </div>
                         </div>
-                        <div v-if="!category > 0" class="col-3">
-                            <div class="mb-4">
+                        <div class="col-3">
+                            <div class="mt-2">
                                 <p class="bold">Models</p>
                                 <ShopBlocksModels v-model="currentModel" :category="currentCategory"></ShopBlocksModels>
                             </div>
                         </div>
                         <div class="col-3">
-                            <div class="mb-4">
+                            <div class="mt-2">
                                 <p class="bold">Storage</p>
                                 <ShopBlocksStorages
                                     v-model="currentStorage"
@@ -350,7 +350,7 @@ watch(
                         <div class="col">
                             <ul class="d-flex list-unstyled p-0 m-0">
                                 <li>
-                                    <Badge v-for="(brand, index) in currentBrand" :value="brand.name">
+                                    <Badge class="mb-1" v-for="(brand, index) in currentBrand" :value="brand.name">
                                         <template #close-button>
                                             <font-awesome-icon
                                                 :icon="['fas', 'x']"
@@ -360,7 +360,7 @@ watch(
                                             />
                                         </template>
                                     </Badge>
-                                    <Badge v-for="(model, index) in currentModel" :value="model.name">
+                                    <Badge class="mb-1" v-for="(model, index) in currentModel" :value="model.name">
                                         <template #close-button>
                                             <font-awesome-icon
                                                 :icon="['fas', 'x']"
@@ -370,7 +370,11 @@ watch(
                                             />
                                         </template>
                                     </Badge>
-                                    <Badge v-for="(model, index) in currentStorage" :value="model.value">
+                                    <Badge
+                                        class="mb-1"
+                                        v-for="(storage, index) in currentStorage"
+                                        :value="storage.value"
+                                    >
                                         <template #close-button>
                                             <font-awesome-icon
                                                 :icon="['fas', 'x']"

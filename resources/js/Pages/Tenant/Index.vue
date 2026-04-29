@@ -62,7 +62,21 @@ const parseTenantConfigurations = (data) => {
         data.configurations.customization_social = JSON.parse(data.configurations.customization_social ?? '[]');
         data.configurations.customization_colors = data.configurations.customization_colors
             ? JSON.parse(data.configurations.customization_colors)
-            : {};
+            : {
+                  app: {
+                      header: '',
+                      navbar: '',
+                      footer: ''
+                  },
+                  customer_approval: {
+                      header: '',
+                      footer: ''
+                  },
+                  shareable: {
+                      header: '',
+                      footer: ''
+                  }
+              };
     }
     return data;
 };

@@ -168,32 +168,6 @@ const getProducts = async () => {
     meta.isLoading = false;
 };
 
-const getCategories = async (categoryIds = []) => {
-    if (!categoryIds.length) {
-        return;
-    }
-
-    const filters = [
-        {
-            column: 'id',
-            operator: 'in',
-            value: categoryIds
-        },
-        {
-            column: 'is_active',
-            operator: 'equals',
-            value: 1
-        }
-    ];
-
-    const query = queryString.stringify({
-        filters: filters
-    });
-
-    const res = await axios.get('/api/categories' + '?' + query);
-    categories.value = res.data.data ?? [];
-};
-
 const handlePaginator = (ev) => {
     meta.limit = ev.rows;
     meta.page = ev.page + 1;
@@ -261,10 +235,10 @@ watch(
 <template>
     <div v-if="proxyValue == currentStep" :id="'step-' + (currentStep + 1)" class="step">
         <div class="step">
-            <div class="row">
-                <div class="col-9 d-flex justify-content-between mb-1">
-                    <h3>{{ currentStep + 1 }}. {{ step.name }} ({{ meta.total }})</h3>
-                    <div class="d-flex mb-3">
+            <div class="row mb-3">
+                <div class="col-9 d-flex justify-content-between align-items-center">
+                    <h3 class="mb-0">{{ currentStep + 1 }}. {{ step.name }} ({{ meta.total }})</h3>
+                    <div class="d-flex">
                         <IconField class="me-2">
                             <InputText
                                 :id="'step-' + (currentStep + 1) + '-search-products'"
@@ -286,7 +260,7 @@ watch(
                         </Select>
                     </div>
                 </div>
-                <div class="col-3 d-flex justify-content-end">
+                <div class="col-3 d-flex justify-content-end align-items-center">
                     <p class="bigger text-primary bold">
                         STEP
                         <span id="current-step">{{ currentStep + 1 }}</span>
@@ -298,8 +272,17 @@ watch(
             <div class="row">
                 <div class="col-9">
                     <div v-if="categories.length" class="filters rounded bg-white p-3 mb-3">
-                        <p class="bold">Categories</p>
-                        <CategoriesTree v-model="currentCategory" :categories="categories"></CategoriesTree>
+                        <div class="row mb-3">
+                            <div class="col-3">
+                                <div class="mt-2">
+                                    <p class="bold">Categories</p>
+                                    <CategoriesSelect
+                                        v-model="currentCategory"
+                                        :categories="categories.map((x) => x.id)"
+                                    ></CategoriesSelect>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <template v-if="meta.isLoading">
                         <ProductSkeleton v-for="item in [0, 1, 2, 3, 4]"></ProductSkeleton>
