@@ -6,7 +6,7 @@ enum CalculatorLayoutsEnum: string
 {
     case MARGIN = 'Show Margin';
     case COMMISSION = 'Show Commission';
-    case TOTAL = 'Show Total';
+    case TOTAL = 'Show Contract Total';
 
     public static function asArray(): array
     {
