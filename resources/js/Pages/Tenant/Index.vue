@@ -516,7 +516,13 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Settings', url: '/sett
                                                         class="mb-3"
                                                         v-if="tenant.configurations.component === 'DealMaker'"
                                                     >
-                                                        <label>Choose the Calculator Layout:</label>
+                                                        <label>
+                                                            Choose the Calculator Layout:
+                                                            <tooltip-with-icon
+                                                                class="ms-1 mt-1"
+                                                                :info_text="'If no layout is selected, all options will be shown.'"
+                                                            />
+                                                        </label>
                                                         <div class="row g-3 mb-3">
                                                             <div class="col">
                                                                 <MultiSelect

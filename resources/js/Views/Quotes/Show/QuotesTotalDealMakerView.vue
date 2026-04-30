@@ -89,13 +89,26 @@ const items = ref([
                 ></QuoteApprovalsPanel>
                 <div class="price-mobile-sidebar commission-calculator px-4 pt-4 pb-2 mb-3">
                     <h3 class="mb-3">Profitability Calculator</h3>
-                    <p class="mb-2" style="font-size: 14px">
+                    <p
+                        class="mb-2"
+                        style="font-size: 14px"
+                        v-if="
+                            !calc_layout.length || ['MARGIN', 'COMMISSION'].some((item) => calc_layout.includes(item))
+                        "
+                    >
                         Currently, you will make
                         <span id="commission_text" v-if="!calc_layout.length || calc_layout.includes('COMMISSION')">
                             <b>{{ format.GBP(quote.commission_value) }}</b>
                             commission
                         </span>
-                        <span v-if="calc_layout === 'DEFAULT'"> and </span>
+                        <span
+                            v-if="
+                                !calc_layout.length ||
+                                ['MARGIN', 'COMMISSION'].every((item) => calc_layout.includes(item))
+                            "
+                        >
+                            and
+                        </span>
                         <span id="margin_text" v-if="!calc_layout.length || calc_layout.includes('MARGIN')">
                             <b>{{ format.decimalPlaces(quote.margin) }} %</b>
                             margin
