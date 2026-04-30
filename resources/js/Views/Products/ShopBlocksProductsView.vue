@@ -38,7 +38,7 @@ const meta = reactive({
 });
 const search = ref(null);
 const showCards = ref(false);
-
+const currentStep = ref(props.current_step);
 const productsHardware = ref([]);
 
 const filters = reactive({

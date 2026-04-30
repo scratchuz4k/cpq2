@@ -179,7 +179,7 @@ watch(
 
 <style scoped>
 .quote-items {
-    max-height: 30vh;
+    max-height: 31vh;
     overflow-y: auto;
 }
 
