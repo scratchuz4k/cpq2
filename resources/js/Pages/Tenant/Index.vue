@@ -80,6 +80,7 @@ const parseTenantConfigurations = (data) => {
     }
     return data;
 };
+
 const submitFileForm = async () => {
     isLoading.value = true;
 
