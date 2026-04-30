@@ -16,6 +16,22 @@ const props = defineProps({
     social_links: Array
 });
 
+const defaultCustomizationColors = {
+    app: {
+        header: '',
+        navbar: '',
+        footer: ''
+    },
+    customer_approval: {
+        header: '',
+        footer: ''
+    },
+    shareable: {
+        header: '',
+        footer: ''
+    }
+};
+
 const isLoading = ref(false);
 const tenant = reactive({
     ...props.tenant,
@@ -37,21 +53,7 @@ const tenant = reactive({
         customization_social: JSON.parse(props.tenant.configurations.customization_social ?? '[]'),
         customization_colors: props.tenant.configurations.customization_colors
             ? JSON.parse(props.tenant.configurations.customization_colors)
-            : {
-                  app: {
-                      header: '',
-                      navbar: '',
-                      footer: ''
-                  },
-                  customer_approval: {
-                      header: '',
-                      footer: ''
-                  },
-                  shareable: {
-                      header: '',
-                      footer: ''
-                  }
-              }
+            : defaultCustomizationColors
     }
 });
 
@@ -62,21 +64,7 @@ const parseTenantConfigurations = (data) => {
         data.configurations.customization_social = JSON.parse(data.configurations.customization_social ?? '[]');
         data.configurations.customization_colors = data.configurations.customization_colors
             ? JSON.parse(data.configurations.customization_colors)
-            : {
-                  app: {
-                      header: '',
-                      navbar: '',
-                      footer: ''
-                  },
-                  customer_approval: {
-                      header: '',
-                      footer: ''
-                  },
-                  shareable: {
-                      header: '',
-                      footer: ''
-                  }
-              };
+            : defaultCustomizationColors;
     }
     return data;
 };
