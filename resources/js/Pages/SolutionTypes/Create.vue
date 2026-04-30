@@ -4,8 +4,6 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, router, usePage } from '@inertiajs/vue3';
 import { reactive, ref } from 'vue';
 import ToggleSwitch from 'primevue/toggleswitch';
-import { MultiSelect } from 'primevue';
-import InputSelectMultiple from '@/Components/InputSelectMultiple.vue';
 
 const page = usePage();
 const props = defineProps({
@@ -15,16 +13,8 @@ const props = defineProps({
 const solution = reactive({
     tenant_id: page.props.tenant.id,
     solution_type_id: null,
-    categories: [],
     is_active: true
 });
-
-const dragOptions = {
-    animation: 200,
-    group: 'description',
-    disabled: false,
-    ghostClass: 'ghost'
-};
 
 const saveSolution = () => {
     router.post('/solution-types', solution, {
