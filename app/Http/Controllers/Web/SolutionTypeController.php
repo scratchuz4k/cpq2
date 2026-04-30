@@ -66,9 +66,6 @@ class SolutionTypeController extends BaseController
      */
     public function edit(SolutionType $solutionType)
     {
-
-        $columns = require app_path('Helpers/Tables/Custom.php');
-
         return Inertia::render('SolutionTypes/Edit', [
             'solution_type' => (new SolutionTypeResource($solutionType))->resolve(),
             'suppliers' => CloudMarketSuppliersEnum::asArray(),

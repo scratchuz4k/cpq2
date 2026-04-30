@@ -1,5 +1,5 @@
 <script setup>
-import { Panel, MultiSelect } from 'primevue';
+import { Panel, MultiSelect, Select } from 'primevue';
 import draggable from 'vuedraggable';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, router } from '@inertiajs/vue3';
@@ -10,13 +10,19 @@ import Tabs from '@/Components/Tabs.vue';
 
 const props = defineProps({
     suppliers: Object,
-    solution_type: Object
+    solution_type: Object,
+    available_tables: Array,
+    available_columns: Array,
+    calculator_layouts: Array
 });
 
 const configurations = reactive({
     amortisation: props.solution_type.configurations.amortisation
         ? JSON.parse(props.solution_type.configurations.amortisation)
-        : {}
+        : {},
+    component: props.solution_type.configurations.component ?? 'DealMaker',
+    has_custom_table: props.solution_type.configurations.has_custom_table ?? '0',
+    calculator_layout: props.solution_type.configurations.calculator_layout ?? 'DEFAULT'
 });
 const solution = reactive({
     name: props.solution_type?.name,
