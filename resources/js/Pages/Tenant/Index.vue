@@ -503,7 +503,7 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Settings', url: '/sett
                                                     <div class="mb-3">
                                                         <label>Choose the view:</label>
                                                         <Select
-                                                            id="quote-approval-flow"
+                                                            id="solution-type-component"
                                                             class="form-select"
                                                             v-model="tenant.configurations.component"
                                                             @change="submitTenantSettings()"
@@ -526,6 +526,7 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Settings', url: '/sett
                                                         <div class="row g-3 mb-3">
                                                             <div class="col">
                                                                 <MultiSelect
+                                                                    id="solution-type-calculator-layout"
                                                                     v-model="tenant.configurations.calculator_layout"
                                                                     style="width: 100%"
                                                                     :options="calculator_layouts"

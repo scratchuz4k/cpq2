@@ -184,9 +184,11 @@ describe('Creates a Mobile Quote', () => {
         cy.get('#datatable-btn-0-show').click();
         let quote = { margin: null, commission: null, global: null };
 
-        cy.get('#input-margin-order').then(($input) => {
-            quote.margin = $input.val().trim();
-        });
+        cy.get('.commission-calculator .margin .value')
+            .first()
+            .then(($input) => {
+                quote.margin = $input.val().trim();
+            });
         cy.scrollTo('top', { duration: 500 });
 
         cy.get('#btn-MONTHLY-edit').click();
@@ -202,10 +204,11 @@ describe('Creates a Mobile Quote', () => {
 
         cy.wait(1000);
 
-        cy.get('#input-margin-order')
-            .invoke('val')
-            .then((val) => {
-                expect(val).to.not.equal(quote.margin);
+        cy.get('.commission-calculator .margin .value')
+            .first()
+            .invoke('text')
+            .then((text) => {
+                expect(text).to.not.equal(quote.margin);
             });
 
         cy.get('#btn-MONTHLY-remove').click();

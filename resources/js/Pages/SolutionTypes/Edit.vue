@@ -19,10 +19,7 @@ const props = defineProps({
 const configurations = reactive({
     amortisation: props.solution_type.configurations.amortisation
         ? JSON.parse(props.solution_type.configurations.amortisation)
-        : {},
-    component: props.solution_type.configurations.component ?? 'DealMaker',
-    has_custom_table: props.solution_type.configurations.has_custom_table ?? '0',
-    calculator_layout: props.solution_type.configurations.calculator_layout ?? 'DEFAULT'
+        : {}
 });
 const solution = reactive({
     name: props.solution_type?.name,
