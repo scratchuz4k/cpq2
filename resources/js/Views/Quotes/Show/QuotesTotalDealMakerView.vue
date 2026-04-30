@@ -19,11 +19,8 @@ const tenant = page.props.tenant;
 const user = page.props.auth.user;
 
 setQuote(props.modelValue);
-const group = quote.solution_type?.table?.group ?? null;
 
-const calc_layout = quote.solution_type.configurations?.calculator_layout ?? 'DEFAULT';
-const show_calc_margin = ['DEFAULT', 'MARGIN'].includes(calc_layout) || calc_layout === 'DEFAULT';
-const show_calc_commission = ['DEFAULT', 'COMMISSION'].includes(calc_layout) || calc_layout === 'DEFAULT';
+const calc_layout = JSON.parse(tenant.configurations?.calculator_layout ?? '[]');
 
 const warningProviders = ref([
     { name: 'pxc', is_present: quote.items.some((item) => item.data?.providerName === 'PXC') }
@@ -94,52 +91,40 @@ const items = ref([
                     <h3 class="mb-3">Profitability Calculator</h3>
                     <p class="mb-2" style="font-size: 14px">
                         Currently, you will make
-                        <span id="commission_text" v-if="show_calc_commission">
+                        <span id="commission_text" v-if="!calc_layout.length || calc_layout.includes('COMMISSION')">
                             <b>{{ format.GBP(quote.commission_value) }}</b>
                             commission
                         </span>
                         <span v-if="calc_layout === 'DEFAULT'"> and </span>
-                        <span id="margin_text" v-if="show_calc_margin">
+                        <span id="margin_text" v-if="!calc_layout.length || calc_layout.includes('MARGIN')">
                             <b>{{ format.decimalPlaces(quote.margin) }} %</b>
-                            margin</span
-                        >
+                            margin
+                        </span>
                         on this quote.
                     </p>
-                    <div class="p-3 mb-3" style="background: #e9edf0">
-                        <div v-if="show_calc_margin" class="mb-3">
-                            <label class="form-label">Margin</label>
-                            <div class="input-group">
-                                <input
-                                    id="input-margin-order"
-                                    class="form-control"
-                                    :value="format.decimalPlaces(quote.margin) + ' %'"
-                                    disabled
-                                />
-                                <span class="input-group-text"
-                                    ><font-awesome-icon :icon="['fas', 'lock']"></font-awesome-icon
-                                ></span>
+                    <div class="p-3 mb-3 fw-semibold" style="background: var(--lighter-grey)">
+                        <div v-if="!calc_layout.length || calc_layout.includes('MARGIN')" class="py-2">
+                            <div class="margin d-flex text-muted justify-content-between">
+                                <p class="small label">Margin</p>
+                                <p class="small value text-right">
+                                    {{ format.GBP(quote.margin) }}
+                                </p>
                             </div>
                         </div>
-                        <div v-if="show_calc_commission" class="mb-3">
-                            <label class="form-label"
-                                >Commission
-                                <b
-                                    >(<span id="order-tax-commission">
-                                        {{ format.decimalPlaces(quote.commission_rate) }}</span
-                                    >
-                                    %)</b
-                                >
-                            </label>
-                            <div class="input-group">
-                                <input
-                                    id="input-commission_value-order"
-                                    class="form-control"
-                                    :value="format.GBP(quote.commission_value)"
-                                    disabled
-                                />
-                                <span class="input-group-text"
-                                    ><font-awesome-icon :icon="['fas', 'lock']"></font-awesome-icon
-                                ></span>
+                        <div v-if="!calc_layout.length || calc_layout.includes('COMMISSION')" class="py-2">
+                            <div class="comission d-flex text-muted justify-content-between">
+                                <p class="small label">Commission</p>
+                                <p class="small value text-right">
+                                    {{ format.GBP(quote.commission_rate) }}
+                                </p>
+                            </div>
+                        </div>
+                        <div v-if="!calc_layout.length || calc_layout.includes('TOTAL')" class="py-2">
+                            <div class="margin d-flex text-muted justify-content-between">
+                                <p class="small total label">Contract total</p>
+                                <p class="small value text-right">
+                                    {{ format.GBP(quote.total) }}
+                                </p>
                             </div>
                         </div>
                     </div>

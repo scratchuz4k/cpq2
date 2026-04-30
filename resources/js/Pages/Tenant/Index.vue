@@ -54,7 +54,7 @@ const tenant = reactive({
                       footer: ''
                   }
               },
-        table_view: props.tenant.configurations.component ?? 'DealMaker',
+        component: props.tenant.configurations.component ?? 'DealMaker',
         calculator_layout: JSON.parse(props.tenant.configurations.calculator_layout ?? '[]')
     }
 });
@@ -66,7 +66,7 @@ const parseTenantConfigurations = (data) => {
         data.configurations.customization_social = JSON.parse(data.configurations.customization_social ?? '[]');
         data.configurations.customization_colors = JSON.parse(data.configurations.customization_colors ?? {});
         data.configurations.calculator_layout = JSON.parse(data.configurations.calculator_layout ?? '[]');
-        data.configurations.table_view = data.configurations.table_view ?? 'DealMaker';
+        data.configurations.component = data.configurations.component ?? 'DealMaker';
     }
     return data;
 };
@@ -505,7 +505,7 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Settings', url: '/sett
                                                         <Select
                                                             id="quote-approval-flow"
                                                             class="form-select"
-                                                            v-model="tenant.configurations.table_view"
+                                                            v-model="tenant.configurations.component"
                                                             @change="submitTenantSettings()"
                                                             :options="available_tables"
                                                             placeholder="Select a View"
@@ -514,7 +514,7 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Settings', url: '/sett
                                                     </div>
                                                     <div
                                                         class="mb-3"
-                                                        v-if="tenant.configurations.table_view === 'DealMaker'"
+                                                        v-if="tenant.configurations.component === 'DealMaker'"
                                                     >
                                                         <label>Choose the Calculator Layout:</label>
                                                         <div class="row g-3 mb-3">
@@ -525,16 +525,9 @@ const items = ref([{ label: 'Home', url: '/' }, { label: 'Settings', url: '/sett
                                                                     :options="calculator_layouts"
                                                                     placeholder="Select Layouts"
                                                                     optionLabel="value"
+                                                                    optionValue="name"
                                                                     @change="submitCalculatorLayout"
-                                                                >
-                                                                    <template #option="slotProps">
-                                                                        <div
-                                                                            style="font-size: 14px; line-height: 1.5rem"
-                                                                        >
-                                                                            {{ slotProps.option.value }}
-                                                                        </div>
-                                                                    </template>
-                                                                </MultiSelect>
+                                                                />
                                                             </div>
                                                         </div>
                                                     </div>
