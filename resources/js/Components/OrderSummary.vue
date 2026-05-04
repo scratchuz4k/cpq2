@@ -3,6 +3,7 @@ import format from '@/Composables/format.js';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { quote } from '@composables/useQuote';
 import { computed, onMounted, ref, watch } from 'vue';
+import SvgIcon from '@/Components/Custom/SvgIcon.vue';
 
 const props = defineProps({
     modelValue: Object
@@ -119,57 +120,46 @@ watch(
             </div>
         </div>
         <hr />
-        <div class="subtotals text-muted">
-            <div class="subtotal main-products d-flex justify-content-between mb-2">
-                <p class="small">
-                    Products ({{
-                        quote?.items
-                            .filter((item) => item.data?.type === 'main_product')
-                            .reduce((total, item) => total + (item.quantity || 0), 0)
-                    }})
-                </p>
-                <p class="small product-price ps-2 text-right">{{ format.GBP(productsTotal) }}</p>
-            </div>
-            <div class="subtotal addon-products d-flex justify-content-between">
-                <p class="small">
-                    Add-ons ({{
-                        quote?.items
-                            .filter((item) => item.data?.type === 'addon_product')
-                            .reduce((total, item) => total + (item.quantity || 0), 0)
-                    }})
-                </p>
-                <p class="small product-price ps-2 text-right">{{ format.GBP(addonTotal) }}</p>
-            </div>
-        </div>
-        <hr />
         <div class="total">
             <div class="d-flex justify-content-between mb-2 sub-total-recurring">
-                <p class="small product-name">
+                <p class="small product-name d-flex justify-content-center">
                     Recurring Total
-                    <tooltip-with-icon
-                        class="ms-1 mt-1"
-                        :info_text="'Total before discounts, final amount may vary.'"
-                    />
+                    <span
+                        class="d-flex justify-content-center ms-1 mt-1"
+                        title="Total before discounts, final amount may vary."
+                        data-bs-original-title="Total before discounts, final amount may vary."
+                        v-tooltip
+                    >
+                        <SvgIcon width="16" height="16" name="info" />
+                    </span>
                 </p>
                 <p class="small product-price ps-2 text-right">{{ format.GBP(recurringTotal) }}</p>
             </div>
             <div class="d-flex justify-content-between mb-2 sub-total-one-off">
-                <p class="small product-name">
+                <p class="small product-name d-flex justify-content-center">
                     One Off Total
-                    <tooltip-with-icon
-                        class="ms-1 mt-1"
-                        :info_text="'Total before discounts, final amount may vary.'"
-                    />
+                    <span
+                        class="d-flex justify-content-center ms-1 mt-1"
+                        title="Total before discounts, final amount may vary."
+                        data-bs-original-title="Total before discounts, final amount may vary."
+                        v-tooltip
+                    >
+                        <SvgIcon width="16" height="16" name="info" />
+                    </span>
                 </p>
                 <p class="small product-price ps-2 text-right">{{ format.GBP(oneOffTotal) }}</p>
             </div>
             <div class="d-flex justify-content-between">
-                <p class="small product-name">
+                <p class="small product-name d-flex justify-content-center">
                     <span class="fw-semibold">Total </span>
-                    <tooltip-with-icon
-                        class="ms-1 mt-1"
-                        :info_text="'Total before discounts, final amount may vary.'"
-                    />
+                    <span
+                        class="d-flex justify-content-center ms-1 mt-1"
+                        title="Total before discounts, final amount may vary."
+                        data-bs-original-title="Total before discounts, final amount may vary."
+                        v-tooltip
+                    >
+                        <SvgIcon width="16" height="16" name="info" />
+                    </span>
                 </p>
                 <p class="small fw-semibold product-price ps-2 text-right">{{ format.GBP(quoteTotal) }}</p>
             </div>
