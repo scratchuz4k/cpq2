@@ -1,18 +1,14 @@
 <script setup>
-import _ from 'lodash';
 import { quote, setQuote } from '@composables/useQuote';
-import axios from 'axios';
 import { router } from '@inertiajs/vue3';
 import { ref } from 'vue';
-import queryString from 'qs';
-import { getStepsWithProducts, loading } from '@/Composables/useQuoteSteps.js';
+import { active_steps, getStepsWithProducts, loading } from '@/Composables/useQuoteSteps.js';
 
 const props = defineProps({
     modelValue: Object
 });
 
 const solution_type = props.modelValue.solution_type;
-const active_steps = ref([]);
 
 const urlParams = new URLSearchParams(window.location.search);
 const params = new Proxy(urlParams, {

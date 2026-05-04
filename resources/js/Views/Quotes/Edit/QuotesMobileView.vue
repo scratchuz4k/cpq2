@@ -2,17 +2,15 @@
 import { quote, setQuote } from '@composables/useQuote';
 import { router, usePage } from '@inertiajs/vue3';
 import { ref } from 'vue';
-import { getStepsWithProducts, loading } from '@/Composables/useQuoteSteps.js';
+import { active_steps, getStepsWithProducts, loading } from '@/Composables/useQuoteSteps.js';
 
 const props = defineProps({
     modelValue: Object
 });
 
 const page = usePage();
-const tenant = page.props.tenant;
 
 const solution_type = props.modelValue.solution_type;
-const active_steps = ref([]);
 
 const urlParams = new URLSearchParams(window.location.search);
 const params = new Proxy(urlParams, {
