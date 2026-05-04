@@ -5,6 +5,7 @@ import axios from 'axios';
 import { router } from '@inertiajs/vue3';
 import { ref } from 'vue';
 import queryString from 'qs';
+import { getStepsWithProducts, loading } from '@/Composables/useQuoteSteps.js';
 
 const props = defineProps({
     modelValue: Object
@@ -12,39 +13,6 @@ const props = defineProps({
 
 const solution_type = props.modelValue.solution_type;
 const active_steps = ref([]);
-const loading = ref(true);
-
-const getStepsWithProducts = async () => {
-    loading.value = true;
-    let query = queryString.stringify({
-        limit: 200,
-        filters: [
-            {
-                column: 'id',
-                operator: 'in',
-                value: solution_type.steps.map((x) => x.id).join(',')
-            },
-            {
-                column: 'products.id',
-                operator: 'not_equals',
-                value: ''
-            },
-            {
-                column: 'is_active',
-                operator: 'equals',
-                value: 1
-            }
-        ]
-    });
-    let res = await axios.get('/api/steps?' + query);
-
-    const steps_order = solution_type.steps.map((x) => x.id);
-
-    active_steps.value = res.data.data.sort((a, b) => {
-        return steps_order.indexOf(a.id) - steps_order.indexOf(b.id);
-    });
-    loading.value = false;
-};
 
 const urlParams = new URLSearchParams(window.location.search);
 const params = new Proxy(urlParams, {
@@ -66,7 +34,7 @@ emitter.on('save-quote', () => {
     saveQuote();
 });
 
-getStepsWithProducts();
+getStepsWithProducts(solution_type);
 </script>
 <template>
     <div class="panel panel-mobile">
