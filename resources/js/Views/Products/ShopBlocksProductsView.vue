@@ -38,7 +38,7 @@ const meta = reactive({
 });
 const search = ref(null);
 const showCards = ref(false);
-
+const currentStep = ref(props.current_step);
 const productsHardware = ref([]);
 
 const filters = reactive({
@@ -232,6 +232,10 @@ onMounted(async () => {
 
 import { actionBarButtons } from '@/Composables/useQuoteSteps.js';
 import { watchEffect, onUnmounted } from 'vue';
+import InputText from 'primevue/inputtext';
+import InputIcon from 'primevue/inputicon';
+import IconField from 'primevue/iconfield';
+import OrderSummary from '@/Components/OrderSummary.vue';
 
 watchEffect(() => {
     actionBarButtons.value = [
@@ -273,9 +277,32 @@ watch(
 </script>
 <template>
     <div id="mobile_step_shopblocks" class="step">
-        <div class="row">
-            <div class="d-flex justify-content-between mb-3">
-                <h3>{{ quote.solution_type.code == 4 ? 'Handsets' : 'Hardware' }}</h3>
+        <div class="row mb-3">
+            <div class="col-9 d-flex justify-content-between align-items-center">
+                <h3 class="mb-0">{{ step }}. {{ quote.solution_type.code == 4 ? 'Handsets' : 'Hardware' }}</h3>
+                <div class="d-flex">
+                    <IconField class="me-2">
+                        <InputText
+                            :id="'step-' + (currentStep + 1) + '-search-products'"
+                            v-model="search"
+                            placeholder="Search"
+                            type="search"
+                        />
+                        <InputIcon class="text-black">
+                            <font-awesome-icon :icon="['fas', 'search']" />
+                        </InputIcon>
+                    </IconField>
+                    <Select
+                        class="sort-order-select"
+                        v-model="sort"
+                        :options="sorts"
+                        optionLabel="label"
+                        placeholder="All"
+                    >
+                    </Select>
+                </div>
+            </div>
+            <div class="col-3 d-flex justify-content-end align-items-center">
                 <p class="bigger text-primary bold">
                     STEP
                     <span id="current-step">{{ step }}</span>
@@ -284,107 +311,84 @@ watch(
                 </p>
             </div>
         </div>
-        <div class="row justify-content-end">
-            <div class="col-3">
-                <div class="d-flex justify-content-between mb-3">
-                    <div class="d-flex">
-                        <p class="bold">Products ({{ meta.total }})</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-9">
-                <div class="d-flex justify-content-end align-items-end mb-3">
-                    <!-- <div class="d-flex flex-fill justify-content-start">
-                        <button
-                            class="btn border"
-                            :class="[showCards ? 'btn-dark' : '']"
-                            @click="() => (showCards = !showCards)"
-                            style="border-radius: 5px 0 0 5px"
-                        >
-                            <font-awesome-icon :icon="['fas', 'grip']"></font-awesome-icon>
-                        </button>
-                        <button
-                            class="btn border"
-                            :class="[showCards ? '' : 'btn-dark']"
-                            @click="() => (showCards = !showCards)"
-                            style="border-radius: 0 5px 5px 0"
-                        >
-                            <font-awesome-icon :icon="['fas', 'grip-lines']"></font-awesome-icon>
-                        </button>
-                    </div> -->
-                    <div class="d-flex justify-content-end text-nowrap flex-shrink-0">
-                        <span class="me-2 align-self-center">Sort by</span>
-                        <Select v-model="sort" :options="sorts" optionLabel="label" placeholder="All"> </Select>
-                    </div>
-                </div>
-            </div>
-        </div>
         <div class="row">
-            <div class="col-3">
-                <div class="rounded bg-white p-3">
-                    <div class="mb-4">
-                        <p class="bold">Search</p>
-                        <input type="search" class="form-control" placeholder="" v-model="search" />
+            <div class="col-9">
+                <div class="filters rounded bg-white p-3 mb-3">
+                    <div class="row mb-3">
+                        <div class="col-3">
+                            <div class="mt-2">
+                                <p class="bold">Categories</p>
+                                <ShopBlocksCategories
+                                    v-model="currentCategory"
+                                    :categories="category"
+                                ></ShopBlocksCategories>
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <div class="mt-2">
+                                <p class="bold">Brands</p>
+                                <ShopBlocksBrands v-model="currentBrand" :category="currentCategory"></ShopBlocksBrands>
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <div class="mt-2">
+                                <p class="bold">Models</p>
+                                <ShopBlocksModels v-model="currentModel" :category="currentCategory"></ShopBlocksModels>
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <div class="mt-2">
+                                <p class="bold">Storage</p>
+                                <ShopBlocksStorages
+                                    v-model="currentStorage"
+                                    :category="currentCategory"
+                                ></ShopBlocksStorages>
+                            </div>
+                        </div>
                     </div>
-                    <ul class="d-flex list-unstyled">
-                        <li>
-                            <Badge v-for="(brand, index) in currentBrand" :value="brand.name">
-                                <template #close-button>
-                                    <font-awesome-icon
-                                        :icon="['fas', 'x']"
-                                        role="button"
-                                        class="me-1 fs-7"
-                                        @click="() => currentBrand.splice(index, 1)"
-                                    />
-                                </template>
-                            </Badge>
-                            <Badge v-for="(model, index) in currentModel" :value="model.name">
-                                <template #close-button>
-                                    <font-awesome-icon
-                                        :icon="['fas', 'x']"
-                                        role="button"
-                                        class="me-1 fs-7"
-                                        @click="() => currentModel.splice(index, 1)"
-                                    />
-                                </template>
-                            </Badge>
-                            <Badge v-for="(model, index) in currentStorage" :value="model.value">
-                                <template #close-button>
-                                    <font-awesome-icon
-                                        :icon="['fas', 'x']"
-                                        role="button"
-                                        class="me-1 fs-7"
-                                        @click="() => currentStorage.splice(index, 1)"
-                                    />
-                                </template>
-                            </Badge>
-                        </li>
-                    </ul>
-
-                    <div class="mb-4">
-                        <p class="bold">Categories</p>
-                        <ShopBlocksCategoriesTree
-                            v-model="currentCategory"
-                            :defaultCategory="category"
-                        ></ShopBlocksCategoriesTree>
-                    </div>
-                    <div class="mb-4">
-                        <p class="bold">Brands</p>
-                        <ShopBlocksBrands v-model="currentBrand" :category="currentCategory"></ShopBlocksBrands>
-                    </div>
-
-                    <div v-if="!category > 0" class="mb-4">
-                        <p class="bold">Models</p>
-                        <ShopBlocksModels v-model="currentModel" :category="currentCategory"></ShopBlocksModels>
-                    </div>
-
-                    <div class="mb-4">
-                        <p class="bold">Storage</p>
-                        <ShopBlocksStorages v-model="currentStorage" :category="currentCategory"></ShopBlocksStorages>
+                    <div class="row">
+                        <div class="col">
+                            <ul class="d-flex list-unstyled p-0 m-0">
+                                <li>
+                                    <Badge class="mb-1" v-for="(brand, index) in currentBrand" :value="brand.name">
+                                        <template #close-button>
+                                            <font-awesome-icon
+                                                :icon="['fas', 'x']"
+                                                role="button"
+                                                class="me-1 fs-7"
+                                                @click="() => currentBrand.splice(index, 1)"
+                                            />
+                                        </template>
+                                    </Badge>
+                                    <Badge class="mb-1" v-for="(model, index) in currentModel" :value="model.name">
+                                        <template #close-button>
+                                            <font-awesome-icon
+                                                :icon="['fas', 'x']"
+                                                role="button"
+                                                class="me-1 fs-7"
+                                                @click="() => currentModel.splice(index, 1)"
+                                            />
+                                        </template>
+                                    </Badge>
+                                    <Badge
+                                        class="mb-1"
+                                        v-for="(storage, index) in currentStorage"
+                                        :value="storage.value"
+                                    >
+                                        <template #close-button>
+                                            <font-awesome-icon
+                                                :icon="['fas', 'x']"
+                                                role="button"
+                                                class="me-1 fs-7"
+                                                @click="() => currentStorage.splice(index, 1)"
+                                            />
+                                        </template>
+                                    </Badge>
+                                </li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="col">
                 <template v-if="meta.isLoading">
                     <ShopblocksProductSkeleton v-for="item in [0, 1, 2, 3, 4]"></ShopblocksProductSkeleton
                 ></template>
@@ -412,7 +416,10 @@ watch(
                     </Paginator
                 ></template>
             </div>
+            <div class="col-3">
+                <OrderSummary />
+            </div>
         </div>
     </div>
 </template>
-<style></style>
+<style scoped></style>

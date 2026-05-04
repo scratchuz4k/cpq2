@@ -15,6 +15,11 @@ const active_steps = ref([]);
 const loading = ref(true);
 
 const getStepsWithProducts = async () => {
+    if (!solution_type.steps.length) {
+        loading.value = false;
+        return;
+    }
+
     loading.value = true;
     let query = queryString.stringify({
         limit: 200,
@@ -79,6 +84,7 @@ getStepsWithProducts();
                         v-model="current_step"
                         :index="index"
                         :total_steps="active_steps.length + 1"
+                        :quote="quote"
                     >
                     </StepProductsView>
                 </template>
