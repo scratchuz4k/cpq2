@@ -1,7 +1,6 @@
 <script setup>
 import { computed, onMounted, reactive, ref, watch } from 'vue';
 import queryString from 'qs';
-import { categories } from '@composables/custom/shopblocks';
 
 const props = defineProps({
     category: Object,
@@ -16,13 +15,13 @@ const proxyValue = computed({
 const filters = ref([]);
 
 const getFilters = async () => {
-    let query = {
+    let query = queryString.stringify({
         limit: 1,
         filters: JSON.stringify([
             { column: 'key', operator: 'contains', value: 'internal-storage-capacity' },
             { column: 'group', operator: 'equals', value: 'Storage' }
         ])
-    };
+    });
 
     let res = await axios.get('/api/shop-blocks/dimension-types?' + query);
 

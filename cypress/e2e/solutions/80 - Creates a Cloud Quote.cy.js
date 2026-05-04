@@ -70,9 +70,9 @@ describe('Creates a Cloud Quote', () => {
         cy.wait(1000);
         cy.get('#btn-create-quote').click();
         cy.wait(2000);
-        cy.get('#btn-product-0-add-1').click();
+        cy.addProductAndVerifySummary('#btn-product-0-add-1').click();
         cy.wait(1000);
-        cy.get('#btn-product-1-add-1').click();
+        cy.addProductAndVerifySummary('#btn-product-1-add-1').click();
         cy.wait(1000);
 
         cy.get('#current-step')

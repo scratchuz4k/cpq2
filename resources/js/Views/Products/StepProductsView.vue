@@ -6,6 +6,10 @@ import _ from 'lodash';
 import { Paginator, Select, Skeleton } from 'primevue';
 import { selectedItems, addSelected } from '@/Composables/useComparator';
 import { actionBarButtons } from '@/Composables/useQuoteSteps.js';
+import OrderSummary from '@/Components/OrderSummary.vue';
+import InputText from 'primevue/inputtext';
+import InputIcon from 'primevue/inputicon';
+import IconField from 'primevue/iconfield';
 
 const meta = reactive({
     page: 1,
@@ -23,7 +27,8 @@ const props = defineProps({
     account: Object,
     modelValue: Number,
     index: Number,
-    total_steps: Number
+    total_steps: Number,
+    quote: Object
 });
 
 const emit = defineEmits(['update:modelValue']);
@@ -163,32 +168,6 @@ const getProducts = async () => {
     meta.isLoading = false;
 };
 
-const getCategories = async (categoryIds = []) => {
-    if (!categoryIds.length) {
-        return;
-    }
-
-    const filters = [
-        {
-            column: 'id',
-            operator: 'in',
-            value: categoryIds
-        },
-        {
-            column: 'is_active',
-            operator: 'equals',
-            value: 1
-        }
-    ];
-
-    const query = queryString.stringify({
-        filters: filters
-    });
-
-    const res = await axios.get('/api/categories' + '?' + query);
-    categories.value = res.data.data ?? [];
-};
-
 const handlePaginator = (ev) => {
     meta.limit = ev.rows;
     meta.page = ev.page + 1;
@@ -256,9 +235,32 @@ watch(
 <template>
     <div v-if="proxyValue == currentStep" :id="'step-' + (currentStep + 1)" class="step">
         <div class="step">
-            <div class="row">
-                <div class="d-flex justify-content-between mb-3">
-                    <h3>{{ currentStep + 1 }}. {{ step.name }}</h3>
+            <div class="row mb-3">
+                <div class="col-9 d-flex justify-content-between align-items-center">
+                    <h3 class="mb-0">{{ currentStep + 1 }}. {{ step.name }} ({{ meta.total }})</h3>
+                    <div class="d-flex">
+                        <IconField class="me-2">
+                            <InputText
+                                :id="'step-' + (currentStep + 1) + '-search-products'"
+                                v-model="search"
+                                placeholder="Search"
+                                type="search"
+                            />
+                            <InputIcon class="text-black">
+                                <font-awesome-icon :icon="['fas', 'search']" />
+                            </InputIcon>
+                        </IconField>
+                        <Select
+                            class="sort-order-select"
+                            v-model="sort"
+                            :options="sortOptions"
+                            optionLabel="label"
+                            placeholder="All"
+                        >
+                        </Select>
+                    </div>
+                </div>
+                <div class="col-3 d-flex justify-content-end align-items-center">
                     <p class="bigger text-primary bold">
                         STEP
                         <span id="current-step">{{ currentStep + 1 }}</span>
@@ -267,62 +269,21 @@ watch(
                     </p>
                 </div>
             </div>
-            <div class="row justify-content-end">
-                <div class="col-3">
-                    <div class="d-flex justify-content-between mb-3">
-                        <div class="d-flex">
-                            <h2>Products ({{ meta.total }})</h2>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-9">
-                    <div class="d-flex justify-content-end align-items-end mb-3">
-                        <!-- <div class="d-flex flex-fill justify-content-start">
-                            <button
-                                class="btn border"
-                                :class="[showCards ? 'btn-dark' : '']"
-                                @click="() => (showCards = !showCards)"
-                                style="border-radius: 5px 0 0 5px"
-                            >
-                                <font-awesome-icon :icon="['fas', 'grip']"></font-awesome-icon>
-                            </button>
-                            <button
-                                class="btn border"
-                                :class="[showCards ? '' : 'btn-dark']"
-                                @click="() => (showCards = !showCards)"
-                                style="border-radius: 0 5px 5px 0"
-                            >
-                                <font-awesome-icon :icon="['fas', 'grip-lines']"></font-awesome-icon>
-                            </button>
-                        </div> -->
-                        <div class="d-flex justify-content-end text-nowrap flex-shrink-0">
-                            <span class="me-2 align-self-center">Sort by</span>
-                            <Select v-model="sort" :options="sortOptions" optionLabel="label" placeholder="All">
-                            </Select>
-                        </div>
-                    </div>
-                </div>
-            </div>
             <div class="row">
-                <div class="col-3">
-                    <div class="rounded bg-white p-3">
-                        <div class="mb-4">
-                            <h2>Search</h2>
-                            <input
-                                :id="'step-' + (currentStep + 1) + '-search-products'"
-                                type="search"
-                                class="form-control"
-                                placeholder=""
-                                v-model="search"
-                            />
-                        </div>
-                        <div v-if="categories.length" class="mb-4">
-                            <h2>Categories</h2>
-                            <CategoriesTree v-model="currentCategory" :categories="categories"></CategoriesTree>
+                <div class="col-9">
+                    <div v-if="categories.length" class="filters rounded bg-white p-3 mb-3">
+                        <div class="row mb-3">
+                            <div class="col-3">
+                                <div class="mt-2">
+                                    <p class="bold">Categories</p>
+                                    <CategoriesSelect
+                                        v-model="currentCategory"
+                                        :categories="categories.map((x) => x.id)"
+                                    ></CategoriesSelect>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="col">
                     <template v-if="meta.isLoading">
                         <ProductSkeleton v-for="item in [0, 1, 2, 3, 4]"></ProductSkeleton>
                     </template>
@@ -350,9 +311,12 @@ watch(
                         </Paginator>
                     </template>
                 </div>
+                <div class="col-3">
+                    <OrderSummary v-model="quote" />
+                </div>
             </div>
         </div>
     </div>
 </template>
 
-<style></style>
+<style scoped></style>
