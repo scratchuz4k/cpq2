@@ -94,9 +94,9 @@ const items = ref([
                             <div class="margin d-flex text-muted justify-content-between">
                                 <p class="small label">
                                     <span class="fw-semibold">Margin</span>
-                                    <span> ({{ format.decimalPlaces(quote.margin) }}%) </span>
+                                    <span id="margin-percentage"> ({{ format.decimalPlaces(quote.margin) }}%) </span>
                                 </p>
-                                <p class="small value fw-bold text-right">
+                                <p id="margin-value" class="small value fw-bold text-right">
                                     {{ format.GBP(quote.total * (quote.margin / 100)) }}
                                 </p>
                             </div>
@@ -105,17 +105,19 @@ const items = ref([
                             <div class="comission d-flex text-muted justify-content-between">
                                 <p class="small label">
                                     <span class="fw-semibold">Commission</span>
-                                    <span> ({{ format.decimalPlaces(quote.commission_rate) }}%) </span>
+                                    <span id="commission-percentage">
+                                        ({{ format.decimalPlaces(quote.commission_rate) }}%)
+                                    </span>
                                 </p>
-                                <p class="small value fw-bold text-right">
+                                <p id="commission-value" class="small value fw-bold text-right">
                                     {{ format.GBP(quote.commission_value) }}
                                 </p>
                             </div>
                         </div>
                         <div v-if="!calc_layout.length || calc_layout.includes('TOTAL')" class="py-1">
-                            <div class="margin d-flex text-muted justify-content-between">
+                            <div class="total d-flex text-muted justify-content-between">
                                 <p class="small total label fw-semibold">Contract total</p>
-                                <p class="small value fw-bold text-right">
+                                <p id="total-value" class="small value fw-bold text-right">
                                     {{ format.GBP(quote.total) }}
                                 </p>
                             </div>
